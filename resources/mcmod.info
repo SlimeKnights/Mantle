@@ -1,0 +1,19 @@
+[
+{
+  "modid": "Mantle",
+  "name": "Mantle",
+  "description": "Shared code for Slime Knights mods and others.",
+  "version": "@VERSION@",
+  "credits": "",
+  "logoFile": "Mantle.png",
+  "mcversion": "@MCVERSION@",
+  "url": "https://github.com/SlimeKnights/Mantle",
+  "updateUrl": "",
+  "authors": [ "mDiyo", "fuj1n", "Sunstrike", "progWML6" ],
+  "parent":"",
+  "screenshots": [],
+  "dependencies": [
+     "mod_MinecraftForge"
+  ]
+}
+]
