@@ -17,13 +17,18 @@ Please include the following:
 	* Steps to reproduce
 	* ForgeModLoader-client-0.log (the FML log) from the root folder of the client
 
+##Code Conventions
+See CONTRIBUTING.md in the root of the project repository.
+
 ##Licenses
-Most code is public domain under [Creative Commons 0](http://creativecommons.org/publicdomain/zero/1.0/).
+The MIT License (MIT)
+Copyright (c) 2013 Slime Knights (mDiyo, fuj1n, Sunstrike, progwml6)
 
-Textures and binaries are licensed under [Creative Commons 3](http://creativecommons.org/licenses/by/3.0/).
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Any modpack which uses Mantle takes **full** responsability for user support queries. For anyone else, we only support official builds from the main CI server, not custom built jars. We also do not take bug reports for outdated builds of Minecraft.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-If you have queries about any license or the above support restrictions, please drop by our IRC channel, #TinkersConstruct on irc.esper.net
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 Any alternate licenses are noted where appropriate.
