@@ -1,12 +1,11 @@
 package mantle.router
 
 import cpw.mods.fml.common.{FMLCommonHandler, Mod}
-import cpw.mods.fml.common.event.{FMLInterModComms, FMLPostInitializationEvent, FMLInitializationEvent, FMLPreInitializationEvent}
+import cpw.mods.fml.common.event.{FMLPostInitializationEvent, FMLInitializationEvent, FMLPreInitializationEvent}
 import cpw.mods.fml.common.Mod.EventHandler
 
 import mantle.router.lib.RouterRepo._
-import mantle.router.imc.{UnitDebugLogger, IMCHandler}
-import cpw.mods.fml.common.event.FMLInterModComms.IMCEvent
+import mantle.router.routing.{UnitDebugLogger, RouterCoordinator}
 
 /**
  * Mantle-Router
@@ -15,7 +14,7 @@ import cpw.mods.fml.common.event.FMLInterModComms.IMCEvent
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-@Mod(modid = modId, name = modName, version = modName, modLanguage = "scala")
+@Mod(modid = modId, name = modName, version = modName, dependencies = "required-after:Mantle-Core", modLanguage = "scala")
 object MantleRouter {
 
   /**
@@ -28,7 +27,8 @@ object MantleRouter {
   @EventHandler
   def preInit(evt:FMLPreInitializationEvent) {
     logger.setParent(FMLCommonHandler.instance().getFMLLogger)
-    logger.info("Router prepared for IMC message receipt.")
+    registerStandardUnits()
+    RouterCoordinator.processQueue()
   }
 
   /**
@@ -40,27 +40,15 @@ object MantleRouter {
    */
   @EventHandler
   def init(evt:FMLInitializationEvent) {
-
-  }
-
-  /**
-   * IMC event handler
-   *
-   * Called shortly after init to handle any IMC messages we've been sent.
-   *
-   * @param evt An IMCEvent.
-   */
-  @EventHandler
-  def retrieveIMC(evt:IMCEvent) {
-    registerStandardIMCUnits()
-    IMCHandler.handle(evt)
+    registerStandardUnits()
+    RouterCoordinator.processQueue()
   }
 
   /**
    * Registrar for built-in Router pipeline objects
    */
-  private def registerStandardIMCUnits() {
-    if (System.getenv("MANTLE_IMC") != null) IMCHandler.registerPipelineUnit(UnitDebugLogger) // Logs all IMC to console IF MANTLE_IMC is defined in env
+  private def registerStandardUnits() {
+    if (debugMessageSys) RouterCoordinator.registerPipelineUnit(UnitDebugLogger)
   }
 
   /**
@@ -72,7 +60,7 @@ object MantleRouter {
    */
   @EventHandler
   def postInit(evt:FMLPostInitializationEvent) {
-
+    RouterCoordinator.processQueue()
   }
 
 }

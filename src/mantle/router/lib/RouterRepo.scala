@@ -17,4 +17,7 @@ object RouterRepo {
 
    val logger = Logger.getLogger(modName)
 
+   // Debug flags
+   val debugMessageSys = System.getenv("MANTLE_MSG_SYS") != null
+
  }

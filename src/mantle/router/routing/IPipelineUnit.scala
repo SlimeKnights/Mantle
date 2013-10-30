@@ -1,6 +1,4 @@
-package mantle.router.imc
-
-import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage
+package mantle.router.routing
 
 /**
  * IMC pipeline unit interface
@@ -9,7 +7,7 @@ import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-trait IIMCPipelineUnit {
+trait IPipelineUnit {
 
   /**
    * Getter for the name of this unit
@@ -24,6 +22,8 @@ trait IIMCPipelineUnit {
    *
    * @param msg The IMC message from Router.
    */
-  def handleIMCMessage(msg:IMCMessage)
+  def handleMessage(msg:MantleMessage)
+
+  override def toString: String = s"MantlePipelineUnit($unitName)"
 
 }
