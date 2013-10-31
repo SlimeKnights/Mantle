@@ -33,7 +33,6 @@ object MantleRouter {
     RouterConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile))
 
     registerStandardUnits()
-    RouterCoordinator.processQueue()
   }
 
   /**
