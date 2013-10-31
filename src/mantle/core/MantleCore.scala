@@ -5,6 +5,8 @@ import cpw.mods.fml.common.event.{FMLPostInitializationEvent, FMLInitializationE
 import cpw.mods.fml.common.Mod.EventHandler
 
 import mantle.core.lib.CoreRepo._
+import net.minecraftforge.common.Configuration
+import mantle.core.lib.CoreConfig
 
 /**
  * Mantle-Core
@@ -26,6 +28,9 @@ object MantleCore {
   @EventHandler
   def preInit(evt:FMLPreInitializationEvent) {
     logger.setParent(FMLCommonHandler.instance().getFMLLogger)
+
+    CoreConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile))
+    
     logger.info("Mantle (" + modVersion + ") -- Preparing for launch.")
     logger.info("Entering preinitialization phase.")
   }

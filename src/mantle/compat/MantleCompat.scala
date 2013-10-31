@@ -6,6 +6,8 @@ import cpw.mods.fml.common.Mod.EventHandler
 
 import mantle.compat.lib.CompatRepo._
 import mantle.compat.plugins.{PluginDebug, PluginManager}
+import mantle.compat.lib.CompatConfig
+import net.minecraftforge.common.Configuration
 
 /**
  * Mantle-Compat
@@ -27,6 +29,8 @@ object MantleCompat {
   @EventHandler
   def preInit(evt:FMLPreInitializationEvent) {
     logger.setParent(FMLCommonHandler.instance().getFMLLogger)
+
+    CompatConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile))
 
     if (debugCompatPlugins) PluginManager.registerPluginCandidate(PluginDebug)
     PluginManager.preInitPlugins()

@@ -6,6 +6,8 @@ import cpw.mods.fml.common.Mod.EventHandler
 
 import mantle.router.lib.RouterRepo._
 import mantle.router.routing.{UnitDebugLogger, RouterCoordinator}
+import mantle.router.lib.RouterConfig
+import net.minecraftforge.common.Configuration
 
 /**
  * Mantle-Router
@@ -27,6 +29,9 @@ object MantleRouter {
   @EventHandler
   def preInit(evt:FMLPreInitializationEvent) {
     logger.setParent(FMLCommonHandler.instance().getFMLLogger)
+
+    RouterConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile))
+
     registerStandardUnits()
     RouterCoordinator.processQueue()
   }
