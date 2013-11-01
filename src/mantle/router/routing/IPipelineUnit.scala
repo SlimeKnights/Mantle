@@ -1,7 +1,7 @@
 package mantle.router.routing
 
 /**
- * IMC pipeline unit interface
+ * Message pipeline unit interface
  *
  * Defines the interface for objects that can be inserted into the IMCHandler pipeline.
  *
@@ -18,9 +18,9 @@ trait IPipelineUnit {
   def unitName:String
 
   /**
-   * Handles an incoming IMC message
+   * Handles an incoming Mantle message
    *
-   * @param msg The IMC message from Router.
+   * @param msg The Mantle message from Router.
    */
   def handleMessage(msg:MantleMessage)
 

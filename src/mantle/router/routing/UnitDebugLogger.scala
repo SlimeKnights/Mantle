@@ -5,7 +5,7 @@ import mantle.router.lib.RouterRepo._
 /**
  * Debug logging pipeline unit
  *
- * Logs all IMC messages to console during debug runs.
+ * Logs all Mantle messages to console during debug runs.
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */

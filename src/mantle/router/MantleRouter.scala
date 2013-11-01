@@ -38,7 +38,8 @@ object MantleRouter {
   /**
    * FML preinitialisation handler
    *
-   * This is where we handle basic loading and populating any missing data in the Repo
+   * This is where we handle basic loading and populating any missing data in the Repo.
+   * The Router also processes events here.
    *
    * @param evt The FMLInitializationEvent from FML
    */
@@ -58,7 +59,8 @@ object MantleRouter {
   /**
    * FML preinitialisation handler
    *
-   * Final chance for cleanup before main game launch
+   * Final chance for cleanup before main game launch.
+   * The Router also processes events here.
    *
    * @param evt The FMLPostInitializationEvent from FML
    */

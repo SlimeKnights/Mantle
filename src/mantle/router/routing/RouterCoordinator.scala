@@ -6,11 +6,11 @@ import scala.collection.mutable.{MutableList, Queue}
 import mantle.router.lib.RouterRepo._
 
 /**
- * Router IMC handler
+ * Router Message handler
  *
  * Handles all incoming Mantle messages and their processing.
  *
- * Reserved IMC messages:
+ * Reserved Mantle messages:
  * * registerDecorativeBlock (Block) -- Used for FMP/BC Facades. May be hooked by other units.
  *
  * @author Sunstrike <sunstrike@azurenode.net>
@@ -36,7 +36,7 @@ object RouterCoordinator {
   /**
    * Processing hook
    *
-   * Runs all current events through the pipeline. This is called at Touter preinit, init and postinit.
+   * Runs all current events through the pipeline. This is called at Router init and postinit.
    *
    * @note This should be considered an internal call; other mods should not call this!
    */
@@ -56,7 +56,7 @@ object RouterCoordinator {
    * Whenever Router receives an IMC message, it'll pass the message to all registered units.
    * This allows mods to register new units.
    *
-   * @note Units must be registered in preinit or init or the Unit may miss the IMC event.
+   * @note Units must be registered in preinit or the Unit may miss the first processing round.
    *
    * @param unit The unit to register into the pipeline
    * @return True if successful, False if registration failed.
