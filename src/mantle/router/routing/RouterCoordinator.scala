@@ -13,6 +13,7 @@ import mantle.router.lib.RouterRepo._
  * Reserved Mantle messages:
  * * registerDecorativeBlock (Int[] - bID & meta OR tuple(bID, meta)) -- Used for FMP/BC Facades. May be hooked by other units.
  * * movableTile (String (full class path)) -- Used for AE SpatialIO. May be hooked by other units.
+ * * myst_fluidSymbol (Tuple(FluidName, rarity, grammarWeight, blockInstability) OR a prebuilt NBT tag compound) -- Mystcraft fluid symbol. Should not be hooked.
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
