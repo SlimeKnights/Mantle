@@ -11,7 +11,8 @@ import mantle.router.lib.RouterRepo._
  * Handles all incoming Mantle messages and their processing.
  *
  * Reserved Mantle messages:
- * * registerDecorativeBlock (Block) -- Used for FMP/BC Facades. May be hooked by other units.
+ * * registerDecorativeBlock (Int[] - bID & meta OR tuple(bID, meta)) -- Used for FMP/BC Facades. May be hooked by other units.
+ * * movableTile (String (full class path)) -- Used for AE SpatialIO. May be hooked by other units.
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
