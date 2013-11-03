@@ -12,8 +12,12 @@ object UnitAppEng extends IPipelineUnit {
 
   def unitName: String = "AppEng Compat"
 
-  def handleMessage(msg: MantleMessage) = msg.getAttachment match {
-    case s:String => FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", s)
+  def handleMessage(msg: MantleMessage) {
+    if (msg.getMessage.equals("movableTile")) {
+      msg.getAttachment match {
+        case s:String => FMLInterModComms.sendMessage("AppliedEnergistics", "movabletile", s)
+      }
+    }
   }
 
 }

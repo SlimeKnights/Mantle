@@ -23,9 +23,13 @@ object UnitBCTransport extends IPipelineUnit {
    *
    * @param msg The Mantle message from Router.
    */
-  def handleMessage(msg: MantleMessage) = msg.getAttachment match {
-    case (bID:Int, meta:Int) => sendBCFacadeMessage(bID, meta)
-    case il:Array[Int]       => try { sendBCFacadeMessage(il(0), il(1)) } catch { case e:Exception => logWarn("Invalid Int array received.") }
+  def handleMessage(msg: MantleMessage) {
+    if (msg.getMessage.equals("registerDecorativeBlock")) {
+      msg.getAttachment match {
+        case (bID:Int, meta:Int) => sendBCFacadeMessage(bID, meta)
+        case il:Array[Int]       => try { sendBCFacadeMessage(il(0), il(1)) } catch { case e:Exception => logWarn("Invalid Int array received.") }
+      }
+    }
   }
 
   private def sendBCFacadeMessage(bID: Int, meta: Int) {
