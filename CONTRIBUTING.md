@@ -35,3 +35,6 @@ We love to see new ideas realised by people, however as a shared library we need
     - Also remember that *functions are data* in FP. We can pass functions around just like values. This may be used in idiomatic code.
 
 Perhaps most importantly out of all this, please **apply common sense** -- If you think your code looks a mess, it probably is! Tidy up and when you're happy with it, send us a PR and we'll give feedback if it's in a state we won't pull.
+
+## IntelliJ IDEA
+In the root of the repository, an IDEA settings jar is provided. It contains the SlimeKnights code formatting settings. The only deviation from this should be a newline before the closing brace of a class!
