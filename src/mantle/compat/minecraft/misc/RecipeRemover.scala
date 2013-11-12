@@ -1,5 +1,6 @@
 package mantle.compat.minecraft.misc
 
+import scala.collection.JavaConversions._
 import java.util
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.CraftingManager
