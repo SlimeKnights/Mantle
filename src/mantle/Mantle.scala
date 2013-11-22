@@ -1,13 +1,14 @@
 package mantle
 
 import cpw.mods.fml.common.{FMLCommonHandler, Mod}
+import cpw.mods.fml.common.network.NetworkMod
 import cpw.mods.fml.common.event.{FMLPostInitializationEvent, FMLInitializationEvent, FMLPreInitializationEvent}
 import cpw.mods.fml.common.Mod.EventHandler
 import net.minecraftforge.common.Configuration
 
 import mantle.lib.CoreRepo._
 import mantle.lib.CoreConfig
-import cpw.mods.fml.common.network.NetworkMod
+import mantle.internal.EnvironmentChecks
 
 /**
  * Mantle
@@ -35,6 +36,8 @@ object Mantle {
     
     logger.info("Mantle (" + modVersion + ") -- Preparing for launch.")
     logger.info("Entering preinitialization phase.")
+
+    EnvironmentChecks.examineEnvironment()
   }
 
   /**
