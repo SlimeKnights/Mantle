@@ -1,23 +1,24 @@
-package mantle.compat
+package mantle
 
 import cpw.mods.fml.common.{FMLCommonHandler, Mod}
 import cpw.mods.fml.common.event.{FMLPostInitializationEvent, FMLInitializationEvent, FMLPreInitializationEvent}
 import cpw.mods.fml.common.Mod.EventHandler
-
-import mantle.compat.lib.CompatRepo._
-import mantle.compat.plugins.{PluginDebug, PluginManager}
-import mantle.compat.lib.CompatConfig
 import net.minecraftforge.common.Configuration
 
+import mantle.lib.CoreRepo._
+import mantle.lib.CoreConfig
+import cpw.mods.fml.common.network.NetworkMod
+
 /**
- * Mantle-Compat
+ * Mantle
  *
- * Central mod object for Mantle (Compat Module)
+ * Central mod object for Mantle
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-@Mod(modid = modId, name = modName, version = modName, dependencies = "required-after:Mantle-Core; required-after:Mantle-Router", modLanguage = "scala")
-object MantleCompat {
+@Mod(modid = modId, name = modName, version = modName, modLanguage = "scala")
+@NetworkMod(clientSideRequired = true, serverSideRequired = false)
+object Mantle {
 
   /**
    * FML preinitialisation handler
@@ -30,10 +31,10 @@ object MantleCompat {
   def preInit(evt:FMLPreInitializationEvent) {
     logger.setParent(FMLCommonHandler.instance().getFMLLogger)
 
-    CompatConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile))
-
-    if (debugCompatPlugins) PluginManager.registerPluginCandidate(PluginDebug)
-    PluginManager.preInitPlugins()
+    CoreConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile))
+    
+    logger.info("Mantle (" + modVersion + ") -- Preparing for launch.")
+    logger.info("Entering preinitialization phase.")
   }
 
   /**
@@ -45,7 +46,7 @@ object MantleCompat {
    */
   @EventHandler
   def init(evt:FMLInitializationEvent) {
-    PluginManager.initPlugins()
+    logger.info("Entering initialization phase.")
   }
 
   /**
@@ -57,7 +58,7 @@ object MantleCompat {
    */
   @EventHandler
   def postInit(evt:FMLPostInitializationEvent) {
-    PluginManager.postInitPlugins()
+    logger.info("Entering postinitialization phase.")
   }
 
 }

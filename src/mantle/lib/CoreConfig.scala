@@ -1,16 +1,17 @@
-package mantle.router.lib
+package mantle.lib
 
 import net.minecraftforge.common.Configuration
-import mantle.router.lib.RouterRepo._
+
+import mantle.lib.CoreRepo._
 
 /**
-  * Mantle-Router configuration handler
-  *
-  * Stores configuration data for Mantle-Router, and handles save/load.
-  *
-  * @author Sunstrike <sunstrike@azurenode.net>
-  */
-object RouterConfig {
+ * Mantle configuration handler
+ *
+ * Stores configuration data for Mantle, and handles save/load.
+ *
+ * @author Sunstrike <sunstrike@azurenode.net>
+ */
+object CoreConfig {
 
   /**
    * Loads state from a Forge configuration object, or saves a new file if it doesn't already exist.
@@ -27,4 +28,4 @@ object RouterConfig {
     logger.info("Configuration load completed.")
   }
 
- }
+}

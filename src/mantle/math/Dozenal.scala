@@ -1,4 +1,4 @@
-package mantle.core.math
+package mantle.math
 
 import scala.collection.mutable.MutableList
 
