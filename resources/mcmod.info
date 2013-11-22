@@ -9,7 +9,7 @@
   "mcversion": "@MCVERSION@",
   "url": "https://github.com/SlimeKnights/Mantle",
   "updateUrl": "",
-  "authors": [ "mDiyo", "fuj1n", "Sunstrike", "progWML6" ],
+  "authors": [ "mDiyo", "Sunstrike", "progWML6" ],
   "parent":"",
   "screenshots": [],
   "dependencies": [
