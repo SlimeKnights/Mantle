@@ -4,8 +4,6 @@ import mantle.lib.CoreRepo._
 
 import scala.collection.mutable.MutableList
 import cpw.mods.fml.common.{FMLCommonHandler, Loader}
-import cpw.mods.fml.relauncher.Side
-import cpw.mods.fml.client.FMLClientHandler
 import mantle.internal.crash.{CallableUnsuppConfig, CallableSuppConfig}
 
 /**
@@ -28,6 +26,7 @@ object EnvironmentChecks {
       modIds += "gregtech_addon"
     }
 
+    // Removed 'Classic' Optifine check to work around MCP issue with scalac
     if (/*FMLCommonHandler.instance.getSide == Side.CLIENT && FMLClientHandler.instance.hasOptifine ||*/ Loader.isModLoaded("optifine")) {
       logger.warning("[Environment] Found unsupported mod: optifine")
       modIds += "optifine"
