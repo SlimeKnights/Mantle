@@ -29,8 +29,10 @@ repositories {
           url 'http://s3.amazonaws.com/Minecraft.Download/libraries'
      }
 }
-
-
+apply plugin: 'scala'
+dependencies {
+    compile 'org.scala-lang:scala-library:2.10.2'
+}
 apply plugin: 'forge'
 
 minecraft {
@@ -51,8 +53,8 @@ sourceSets {
 			srcDir 'resources'
 		}
 		scala {
-			srcDir 'src'
-		}
+            srcDirs = ['src']
+        }
 	}
 }
 processResources
