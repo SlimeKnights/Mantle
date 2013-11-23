@@ -50,7 +50,6 @@ sourceSets {
 		resources {
 			srcDir 'resources'
 		}
-	main {
 		scala {
 			srcDir 'src'
 		}
