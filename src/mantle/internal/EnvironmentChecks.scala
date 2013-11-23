@@ -28,7 +28,7 @@ object EnvironmentChecks {
       modIds += "gregtech_addon"
     }
 
-    if (FMLCommonHandler.instance.getSide == Side.CLIENT && FMLClientHandler.instance.hasOptifine || Loader.isModLoaded("optifine")) {
+    if (/*FMLCommonHandler.instance.getSide == Side.CLIENT && FMLClientHandler.instance.hasOptifine ||*/ Loader.isModLoaded("optifine")) {
       logger.warning("[Environment] Found unsupported mod: optifine")
       modIds += "optifine"
     }
