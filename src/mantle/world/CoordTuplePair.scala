@@ -6,7 +6,8 @@ package mantle.world
  * @param a The first CoordTuple
  * @param b The second CoordTuple
  *
- * @author mDiyo, Sunstrike
+ * @author mDiyo
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 class CoordTuplePair(val a:CoordTuple, val b:CoordTuple) {
 

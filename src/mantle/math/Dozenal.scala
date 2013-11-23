@@ -7,7 +7,8 @@ import scala.collection.mutable.MutableList
  *
  * Converts decimals into dozenal.
  *
- * @author mDiyo, Sunstrike
+ * @author mDiyo
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 object Dozenal {
 

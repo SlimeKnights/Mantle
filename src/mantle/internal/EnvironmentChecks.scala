@@ -13,7 +13,7 @@ import mantle.internal.crash.{CallableUnsuppConfig, CallableSuppConfig}
  *
  * Checks the runtime environment is safe for use. If not, registers warnings and adds a suitable crash callable.
  *
- * @author Sunstrike
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 object EnvironmentChecks {
 

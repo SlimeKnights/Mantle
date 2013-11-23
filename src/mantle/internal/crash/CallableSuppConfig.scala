@@ -5,7 +5,7 @@ import cpw.mods.fml.common.ICrashCallable
 /**
  * Crash Callable for supported environments.
  *
- * @author Sunstrike
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 class CallableSuppConfig extends ICrashCallable {
 

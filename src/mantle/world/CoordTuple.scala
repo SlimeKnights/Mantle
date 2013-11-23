@@ -9,7 +9,8 @@ import java.lang.String
  * @param y The y coordinate
  * @param z The z coordinate
  *
- * @author mDiyo, Sunstrike
+ * @author mDiyo
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 class CoordTuple(val x: Int, val y:Int, val z:Int) extends Comparable[CoordTuple] {
 

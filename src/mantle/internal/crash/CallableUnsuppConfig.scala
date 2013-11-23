@@ -7,7 +7,7 @@ import cpw.mods.fml.common.ICrashCallable
  *
  * @param modIds List of unsupported IDs.
  *
- * @author Sunstrike
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 class CallableUnsuppConfig(modIds:List[String]) extends ICrashCallable {
 

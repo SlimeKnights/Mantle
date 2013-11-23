@@ -9,7 +9,8 @@ import java.lang.String
  * @param x The x coordinate
  * @param z The z coordinate
  *
- * @author mDiyo, Sunstrike
+ * @author mDiyo
+ * @author Sunstrike <sunstrike@azurenode.net>
  */
 class DimensionCoordPair(val dim: Int, val x:Int, val z:Int) {
 
