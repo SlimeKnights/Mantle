@@ -62,6 +62,7 @@ processResources
         // replace stuff in text files, not binary ones.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
+        include '**/CoreRepo.scala'
                 // replace version and MCVersion
                 // forge version is also accessible via project.minecraftforgeVersion
                 // it contains the full minecraft version, including buildNumber
@@ -71,6 +72,7 @@ processResources
         // copy everything else, thats not text
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.info'
+        exclude '**/CoreRepo.scala'
     }
 }
 
