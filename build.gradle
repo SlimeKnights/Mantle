@@ -1,0 +1,87 @@
+/*
+ * Tinkers Construct
+ * Master build file
+ * 
+ * Authors: Sunstrike, ProgWML6
+ * Help from AbrarSyed
+ */
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'ForgeFS'
+            url = 'http://files.minecraftforge.net/maven'
+        }
+	}
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.0-SNAPSHOT'
+    }
+}
+
+repositories {
+	maven {
+          name 'ForgeFS'
+          url 'http://files.minecraftforge.net/maven'
+     }
+     maven {
+          name 'MinecraftS3'
+          url 'http://s3.amazonaws.com/Minecraft.Download/libraries'
+     }
+}
+apply plugin: 'scala'
+dependencies {
+    compile 'org.scala-lang:scala-library:2.10.2'
+}
+apply plugin: 'forge'
+
+minecraft {
+    version = '1.6.4-9.11.1.964'
+    assetDir = 'run/assets'
+}
+// sets version to the slimeKnights version format
+task buildInfo {
+    def cmd = "git rev-parse --short HEAD"
+    def proc = cmd.execute()
+    ext.revision = proc.text.trim()
+}
+version = "${minecraft.version}-${System.getenv().BUILD_NUMBER}.${project.buildInfo.revision}"
+
+sourceSets {
+	main {
+		resources {
+			srcDir 'resources'
+		}
+		scala {
+            srcDirs = ['src']
+        }
+	}
+}
+processResources
+{
+        // replace stuff in text files, not binary ones.
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/*.info'
+        include '**/CoreRepo.scala'
+                // replace version and MCVersion
+                // forge version is also accessible via project.minecraftforgeVersion
+                // it contains the full minecraft version, including buildNumber
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+        // copy everything else, thats not text
+    from(sourceSets.main.resources.srcDirs) {
+        exclude '**/*.info'
+        exclude '**/CoreRepo.scala'
+    }
+}
+
+// because the normal output has been made to be obfuscated
+task deobfJar(type: Jar) {
+        from sourceSets.main.output
+        classifier = 'deobf'
+}
+artifacts {
+        archives deobfJar
+}
+
