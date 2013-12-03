@@ -17,7 +17,7 @@ import mantle.internal.EnvironmentChecks
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-@Mod(modid = modId, name = modName, version = modVersion, modLanguage = "scala")
+@Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge@[8.9,)", modLanguage = "scala")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 object Mantle {
 
