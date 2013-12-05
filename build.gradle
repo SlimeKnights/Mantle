@@ -29,12 +29,8 @@ repositories {
           url 'http://s3.amazonaws.com/Minecraft.Download/libraries'
      }
 }
-apply plugin: 'scala'
-dependencies {
-    compile 'org.scala-lang:scala-library:2.10.2'
-}
-apply plugin: 'forge'
 
+apply plugin: 'forge'
 // define the properties file
 ext.configFile = file "build.properties"
 
@@ -74,8 +70,8 @@ sourceSets {
 		resources {
 			srcDir 'resources'
 		}
-		scala {
-            srcDirs = ['src']
+		java {
+            srcDir 'src'
         }
 	}
 }
@@ -84,7 +80,6 @@ processResources
         // replace stuff in text files, not binary ones.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
-        include '**/CoreRepo.scala'
                 // replace version and MCVersion
                 // forge version is also accessible via project.minecraftforgeVersion
                 // it contains the full minecraft version, including buildNumber
@@ -94,7 +89,6 @@ processResources
         // copy everything else, thats not text
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.info'
-        exclude '**/CoreRepo.scala'
     }
 }
 
