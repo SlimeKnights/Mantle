@@ -21,7 +21,7 @@ import mantle.internal.EnvironmentChecks;
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-@Mod(modid = CoreRepo.modId, name = CoreRepo.modName, version = CoreRepo.modVersion)
+@Mod(modid = CoreRepo.modId, name = CoreRepo.modName, version = CoreRepo.modVersion, dependencies = "required-after:Forge@[8.9,)")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class Mantle {
     
