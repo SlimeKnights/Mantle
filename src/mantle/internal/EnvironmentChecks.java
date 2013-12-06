@@ -79,12 +79,12 @@ public class EnvironmentChecks
 
         if (modIds.size() == 0)
         {
-            ICrashCallable callable = new CallableSuppConfig();
+            ICrashCallable callable = new CallableSuppConfig(modId);
             FMLCommonHandler.instance().registerCrashCallable(callable);
         }
         else
         {
-            ICrashCallable callable = new CallableUnsuppConfig(modIds);
+            ICrashCallable callable = new CallableUnsuppConfig(modId, modIds);
             FMLCommonHandler.instance().registerCrashCallable(callable);
         }
     }

@@ -8,17 +8,19 @@ import java.util.List;
 public class CallableUnsuppConfig implements ICrashCallable
 {
 
+    private String modId;
     private List<String> modIds;
 
-    public CallableUnsuppConfig(List<String> modIds)
+    public CallableUnsuppConfig(String modId, List<String> modIds)
     {
+        this.modId = modId;
         this.modIds = modIds;
     }
 
     @Override
     public String getLabel ()
     {
-        return "Mantle Environment";
+        return modId + " Environment";
     }
 
     @Override

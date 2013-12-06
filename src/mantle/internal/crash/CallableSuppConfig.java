@@ -10,6 +10,13 @@ import cpw.mods.fml.common.ICrashCallable;
 public class CallableSuppConfig implements ICrashCallable
 {
 
+    private String modId;
+
+    public CallableSuppConfig(String modId)
+    {
+        this.modId = modId;
+    }
+
     @Override
     public String call () throws Exception
     {
@@ -19,7 +26,7 @@ public class CallableSuppConfig implements ICrashCallable
     @Override
     public String getLabel ()
     {
-        return "Mantle Env";
+        return modId + " Environment";
     }
 
 }
