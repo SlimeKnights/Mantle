@@ -17,9 +17,6 @@ Please include the following:
 	* Steps to reproduce
 	* ForgeModLoader-client-0.log (the FML log) from the root folder of the client
 
-##Code Conventions
-See CONTRIBUTING.md in the root of the project repository.
-
 ##Licenses
 The MIT License (MIT)
 Copyright (c) 2013 Slime Knights (mDiyo, fuj1n, Sunstrike, progwml6, pillbox)
