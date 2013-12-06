@@ -20,7 +20,8 @@ import mantle.internal.crash.CallableSuppConfig;
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-public class EnvironmentChecks {
+public class EnvironmentChecks
+{
 
     public static boolean hasOptifine = false;
 
@@ -38,7 +39,8 @@ public class EnvironmentChecks {
 
         if (Loader.isModLoaded("gregtech_addon"))
         {
-            Mantle.logger.severe("[Environment Checks] Gelatinous iceberg dead ahead! Entering Greggy waters! Abandon hope all ye who enter here! (No, seriously, we don't support GT. Don't report any issues. Thanks.)");
+            Mantle.logger
+                    .severe("[Environment Checks] Gelatinous iceberg dead ahead! Entering Greggy waters! Abandon hope all ye who enter here! (No, seriously, we don't support GT. Don't report any issues. Thanks.)");
             modIds.add("gregtech_addon");
         }
 
@@ -48,7 +50,6 @@ public class EnvironmentChecks {
             modIds.add("optifine");
             hasOptifine = true;
         }
-
 
         try
         {

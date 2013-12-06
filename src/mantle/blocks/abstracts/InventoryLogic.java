@@ -12,8 +12,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 /**
- * NEEDS CONVERTED!
- *
  * Abstract logic for inventory Tile Entities.
  *
  * @author mDiyo

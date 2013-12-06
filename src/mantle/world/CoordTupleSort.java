@@ -28,4 +28,3 @@ public class CoordTupleSort implements Comparator
         return 0;
     }
 }
-

@@ -23,52 +23,55 @@ import mantle.internal.EnvironmentChecks;
  */
 @Mod(modid = CoreRepo.modId, name = CoreRepo.modName, version = CoreRepo.modVersion, dependencies = "required-after:Forge@[8.9,)")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
-public class Mantle {
-    
+public class Mantle
+{
+
     public static final Logger logger = Logger.getLogger(CoreRepo.modName);
 
+    /**
+     * FML preinitialisation handler
+     *
+     * This is where we load our configs and related data, preparing for main load.
+     *
+     * @param evt The FMLPreInitializationEvent from FML
+     */
+    @EventHandler
+    public void preInit (FMLPreInitializationEvent event)
+    {
+        logger.setParent(FMLCommonHandler.instance().getFMLLogger());
 
-  /**
-   * FML preinitialisation handler
-   *
-   * This is where we load our configs and related data, preparing for main load.
-   *
-   * @param evt The FMLPreInitializationEvent from FML
-   */
-  @EventHandler
-  public void preInit (FMLPreInitializationEvent event){
-    logger.setParent(FMLCommonHandler.instance().getFMLLogger());
+        CoreConfig.loadConfiguration(new Configuration(event.getSuggestedConfigurationFile()));
 
-    CoreConfig.loadConfiguration(new Configuration(event.getSuggestedConfigurationFile()));
-    
-    logger.info("Mantle (" + CoreRepo.modVersion + ") -- Preparing for launch.");
-    logger.info("Entering preinitialization phase.");
+        logger.info("Mantle (" + CoreRepo.modVersion + ") -- Preparing for launch.");
+        logger.info("Entering preinitialization phase.");
 
-    EnvironmentChecks.verifyEnvironmentSanity();
-  }
+        EnvironmentChecks.verifyEnvironmentSanity();
+    }
 
-  /**
-   * FML preinitialisation handler
-   *
-   * This is where we handle basic loading and populating any missing data in the Repo
-   *
-   * @param evt The FMLInitializationEvent from FML
-   */
-  @EventHandler
-  public void Init (FMLPreInitializationEvent event){
-    logger.info("Entering initialization phase.");
-  }
+    /**
+     * FML preinitialisation handler
+     *
+     * This is where we handle basic loading and populating any missing data in the Repo
+     *
+     * @param evt The FMLInitializationEvent from FML
+     */
+    @EventHandler
+    public void Init (FMLPreInitializationEvent event)
+    {
+        logger.info("Entering initialization phase.");
+    }
 
-  /**
-   * FML preinitialisation handler
-   *
-   * Final chance for cleanup before main game launch
-   *
-   * @param evt The FMLPostInitializationEvent from FML
-   */
-  @EventHandler
-  public void postInit (FMLPreInitializationEvent event){
-    logger.info("Entering postinitialization phase.");
-  }
+    /**
+     * FML preinitialisation handler
+     *
+     * Final chance for cleanup before main game launch
+     *
+     * @param evt The FMLPostInitializationEvent from FML
+     */
+    @EventHandler
+    public void postInit (FMLPreInitializationEvent event)
+    {
+        logger.info("Entering postinitialization phase.");
+    }
 
 }

@@ -8,7 +8,8 @@ import net.minecraft.entity.EntityLivingBase;
  *
  * @author mDiyo
  */
-public interface IFacingLogic {
+public interface IFacingLogic
+{
 
     public byte getRenderDirection ();
 

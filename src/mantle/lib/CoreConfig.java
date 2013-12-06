@@ -11,21 +11,23 @@ import mantle.lib.CoreRepo.*;
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-public class CoreConfig {
+public class CoreConfig
+{
 
-  /**
-   * Loads state from a Forge configuration object, or saves a new file if it doesn't already exist.
-   *
-   * @param config Configuration object (usually from a location given by FML in preinit)
-   */
-    public static void loadConfiguration(Configuration config) {
-    Mantle.logger.info("Loading configuration from disk.");
-    config.load();
+    /**
+     * Loads state from a Forge configuration object, or saves a new file if it doesn't already exist.
+     *
+     * @param config Configuration object (usually from a location given by FML in preinit)
+     */
+    public static void loadConfiguration (Configuration config)
+    {
+        Mantle.logger.info("Loading configuration from disk.");
+        config.load();
 
-    // TODO: Config vars get/set here
+        // TODO: Config vars get/set here
 
-    config.save();
-    Mantle.logger.info("Configuration load completed.");
-  }
+        config.save();
+        Mantle.logger.info("Configuration load completed.");
+    }
 
 }
