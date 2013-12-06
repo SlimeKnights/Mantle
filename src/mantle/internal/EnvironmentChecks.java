@@ -36,15 +36,9 @@ public class EnvironmentChecks
     {
         List<String> modIds = new ArrayList<String>();
 
-        if (Loader.isModLoaded("gregtech_addon"))
-        {
-            logger.severe("[Environment Checks] Gelatinous iceberg dead ahead! Entering Greggy waters! Abandon hope all ye who enter here! (No, seriously, we don't support GT. Don't report any issues. Thanks.)");
-            modIds.add("gregtech_addon");
-        }
-
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && FMLClientHandler.instance().hasOptifine() || Loader.isModLoaded("optifine"))
         {
-            logger.severe("[Environment Checks] Optifine detected. This is a Bad Thing(tm) and can crash Minecraft due to an Optifine bug during TCon armor renders! Capes also disabled.");
+            logger.severe("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
             modIds.add("optifine");
             hasOptifine = true;
         }
@@ -54,7 +48,7 @@ public class EnvironmentChecks
             Class cl = Class.forName("org.bukkit.Bukkit");
             if (cl != null)
             {
-                logger.severe("[Environment Checks] Bukkit implementation detected. This may be crashy. Bukkit implementations include Craftbukkit and MCPC+.");
+                logger.severe("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and MCPC+.");
                 modIds.add("bukkit");
             }
         }
@@ -68,13 +62,13 @@ public class EnvironmentChecks
             Class cl = Class.forName("magic.launcher.Launcher");
             if (cl != null)
             {
-                logger.severe("[Environment Checks] Magic Launcher detected. We recommend using anything else. Vanilla's launcher works fine, as do others.");
+                logger.severe("[Environment Checks] Magic Launcher detected. This launches the game in strange ways and as such is not recommended.");
                 modIds.add("magic_launcher");
             }
         }
         catch (Exception ex)
         {
-            // No derpy Magic Launcher in environment.
+            // No Magic Launcher in environment.
         }
 
         if (modIds.size() == 0)
