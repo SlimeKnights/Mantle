@@ -8,7 +8,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import net.minecraftforge.common.Configuration;
 import static mantle.lib.CoreRepo.*;
 import mantle.lib.CoreConfig;
-import mantle.internal.EnvironmentChecks;
+import mantle.lib.environment.EnvironmentChecks;
 
 /**
  * Mantle

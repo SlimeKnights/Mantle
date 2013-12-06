@@ -1,4 +1,4 @@
-package mantle.internal;
+package mantle.lib.environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,7 @@ import cpw.mods.fml.common.ICrashCallable;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import mantle.crash.*;
+import mantle.lib.CoreConfig;
 
 /**
  * Environment Checks
@@ -25,6 +26,9 @@ public class EnvironmentChecks
     {
     } // Singleton
 
+    // Usable by other mods to detect Optifine.
+    public static boolean hasOptifine = false;
+
     /**
      * Checks for conflicting stuff in environment; adds callable to any crash logs if so.
      * Note: This code adds additional data to crashlogs. It does not trigger any crashes.
@@ -35,7 +39,8 @@ public class EnvironmentChecks
 
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && FMLClientHandler.instance().hasOptifine() || Loader.isModLoaded("optifine"))
         {
-            logger.severe("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
+            if (!CoreConfig.silenceEnvChecks) logger.severe("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
+            hasOptifine = true;
             modIds.add("optifine");
         }
 
@@ -44,7 +49,7 @@ public class EnvironmentChecks
             Class cl = Class.forName("org.bukkit.Bukkit");
             if (cl != null)
             {
-                logger.severe("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and MCPC+.");
+                if (!CoreConfig.silenceEnvChecks) logger.severe("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and MCPC+.");
                 modIds.add("bukkit");
             }
         }
@@ -58,7 +63,7 @@ public class EnvironmentChecks
             Class cl = Class.forName("magic.launcher.Launcher");
             if (cl != null)
             {
-                logger.severe("[Environment Checks] Magic Launcher detected. This launches the game in strange ways and as such is not recommended.");
+                if (!CoreConfig.silenceEnvChecks) logger.severe("[Environment Checks] Magic Launcher detected. This launches the game in strange ways and as such is not recommended.");
                 modIds.add("magic_launcher");
             }
         }

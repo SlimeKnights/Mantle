@@ -23,10 +23,13 @@ public class CoreConfig
         logger.info("Loading configuration from disk.");
         config.load();
 
-        // TODO: Config vars get/set here
+        silenceEnvChecks = config.get("Environment", "unsupportedLogging", silenceEnvChecks).getBoolean(silenceEnvChecks);
 
         config.save();
         logger.info("Configuration load completed.");
     }
+
+    // BEGIN CONFIG VARS
+    public static boolean silenceEnvChecks = false;
 
 }
