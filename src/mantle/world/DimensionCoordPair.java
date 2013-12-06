@@ -5,10 +5,6 @@ import java.lang.String;
 /**
  * DimensionCoordPair
  *
- * @param dim The dimension ID
- * @param x The x coordinate
- * @param z The z coordinate
- *
  * @author mDiyo
  */
 public class DimensionCoordPair

@@ -3,9 +3,6 @@ package mantle.world;
 /**
  * CoordTuplePair
  *
- * @param a The first CoordTuple
- * @param b The second CoordTuple
- *
  * @author mDiyo
  */
 public class CoordTuplePair

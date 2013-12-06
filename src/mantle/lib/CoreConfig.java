@@ -1,8 +1,7 @@
 package mantle.lib;
 
 import net.minecraftforge.common.Configuration;
-import mantle.Mantle;
-import mantle.lib.CoreRepo.*;
+import static mantle.lib.CoreRepo.*;
 
 /**
  * Mantle configuration handler
@@ -21,13 +20,13 @@ public class CoreConfig
      */
     public static void loadConfiguration (Configuration config)
     {
-        Mantle.logger.info("Loading configuration from disk.");
+        logger.info("Loading configuration from disk.");
         config.load();
 
         // TODO: Config vars get/set here
 
         config.save();
-        Mantle.logger.info("Configuration load completed.");
+        logger.info("Configuration load completed.");
     }
 
 }

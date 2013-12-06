@@ -1,16 +1,12 @@
 package mantle;
 
-import java.util.logging.Logger;
-
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.Mod.EventHandler;
 import net.minecraftforge.common.Configuration;
-import mantle.lib.CoreRepo;
+import static mantle.lib.CoreRepo.*;
 import mantle.lib.CoreConfig;
 import mantle.internal.EnvironmentChecks;
 
@@ -21,12 +17,10 @@ import mantle.internal.EnvironmentChecks;
  *
  * @author Sunstrike <sunstrike@azurenode.net>
  */
-@Mod(modid = CoreRepo.modId, name = CoreRepo.modName, version = CoreRepo.modVersion, dependencies = "required-after:Forge@[8.9,)")
+@Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge@[8.9,)")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class Mantle
 {
-
-    public static final Logger logger = Logger.getLogger(CoreRepo.modName);
 
     /**
      * FML preinitialisation handler
@@ -36,13 +30,13 @@ public class Mantle
      * @param evt The FMLPreInitializationEvent from FML
      */
     @EventHandler
-    public void preInit (FMLPreInitializationEvent event)
+    public void preInit (FMLPreInitializationEvent evt)
     {
         logger.setParent(FMLCommonHandler.instance().getFMLLogger());
 
-        CoreConfig.loadConfiguration(new Configuration(event.getSuggestedConfigurationFile()));
+        CoreConfig.loadConfiguration(new Configuration(evt.getSuggestedConfigurationFile()));
 
-        logger.info("Mantle (" + CoreRepo.modVersion + ") -- Preparing for launch.");
+        logger.info("Mantle (" + modVersion + ") -- Preparing for launch.");
         logger.info("Entering preinitialization phase.");
 
         EnvironmentChecks.verifyEnvironmentSanity();
@@ -56,7 +50,7 @@ public class Mantle
      * @param evt The FMLInitializationEvent from FML
      */
     @EventHandler
-    public void Init (FMLPreInitializationEvent event)
+    public void Init (FMLPreInitializationEvent evt)
     {
         logger.info("Entering initialization phase.");
     }
@@ -69,7 +63,7 @@ public class Mantle
      * @param evt The FMLPostInitializationEvent from FML
      */
     @EventHandler
-    public void postInit (FMLPreInitializationEvent event)
+    public void postInit (FMLPreInitializationEvent evt)
     {
         logger.info("Entering postinitialization phase.");
     }

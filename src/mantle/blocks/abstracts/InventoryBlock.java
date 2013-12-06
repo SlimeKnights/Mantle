@@ -18,8 +18,6 @@ import mantle.blocks.iface.IFacingLogic;
 import java.util.Random;
 
 /**
- * CONVERSION NEEDED!
- *
  * Abstract for blocks with inventories.
  *
  * @author mDiyo

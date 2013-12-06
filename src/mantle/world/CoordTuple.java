@@ -5,10 +5,6 @@ import java.lang.String;
 /**
  * CoordTuple
  *
- * @param x The x coordinate
- * @param y The y coordinate
- * @param z The z coordinate
- *
  * @author mDiyo
  */
 public class CoordTuple implements Comparable
