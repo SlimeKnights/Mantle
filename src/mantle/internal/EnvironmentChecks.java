@@ -9,8 +9,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ICrashCallable;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
-import mantle.internal.crash.CallableUnsuppConfig;
-import mantle.internal.crash.CallableSuppConfig;
+import mantle.crash.*;
 
 /**
  * Environment Checks
@@ -21,8 +20,6 @@ import mantle.internal.crash.CallableSuppConfig;
  */
 public class EnvironmentChecks
 {
-
-    public static boolean hasOptifine = false;
 
     private EnvironmentChecks()
     {
@@ -40,7 +37,6 @@ public class EnvironmentChecks
         {
             logger.severe("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
             modIds.add("optifine");
-            hasOptifine = true;
         }
 
         try

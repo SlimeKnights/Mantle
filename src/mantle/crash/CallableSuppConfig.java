@@ -1,4 +1,4 @@
-package mantle.internal.crash;
+package mantle.crash;
 
 import cpw.mods.fml.common.ICrashCallable;
 
