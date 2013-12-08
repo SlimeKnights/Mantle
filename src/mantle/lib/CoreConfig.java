@@ -8,7 +8,7 @@ import static mantle.lib.CoreRepo.*;
  *
  * Stores configuration data for Mantle, and handles save/load.
  *
- * @author Sunstrike <sunstrike@azurenode.net>
+ * @author Sunstrike <sun@sunstrike.io>
  */
 public class CoreConfig
 {

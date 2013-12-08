@@ -7,7 +7,7 @@ import java.util.logging.Logger;
  *
  * Storage area for objects accessible throughout Mantle, such as loggers
  *
- * @author Sunstrike <sunstrike@azurenode.net>
+ * @author Sunstrike <sun@sunstrike.io>
  */
 public final class CoreRepo
 {

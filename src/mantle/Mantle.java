@@ -15,7 +15,7 @@ import mantle.lib.environment.EnvironmentChecks;
  *
  * Central mod object for Mantle
  *
- * @author Sunstrike <sunstrike@azurenode.net>
+ * @author Sunstrike <sun@sunstrike.io>
  */
 @Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge@[8.9,)")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)

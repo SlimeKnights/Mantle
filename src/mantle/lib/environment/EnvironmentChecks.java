@@ -17,7 +17,7 @@ import mantle.lib.CoreConfig;
  *
  * Checks the runtime environment is safe for use. If not, registers warnings and adds a suitable crash callable.
  *
- * @author Sunstrike <sunstrike@azurenode.net>
+ * @author Sunstrike <sun@sunstrike.io>
  */
 public class EnvironmentChecks
 {
