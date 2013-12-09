@@ -58,20 +58,6 @@ public class EnvironmentChecks
             // No Bukkit in environment.
         }
 
-        try
-        {
-            Class cl = Class.forName("magic.launcher.Launcher");
-            if (cl != null)
-            {
-                if (!CoreConfig.silenceEnvChecks) logger.severe("[Environment Checks] Magic Launcher detected. This launches the game in strange ways and as such is not recommended.");
-                modIds.add("magic_launcher");
-            }
-        }
-        catch (Exception ex)
-        {
-            // No Magic Launcher in environment.
-        }
-
         if (modIds.size() == 0)
         {
             ICrashCallable callable = new CallableSuppConfig(modId);
