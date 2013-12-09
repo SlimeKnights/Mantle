@@ -1,11 +1,15 @@
 package mantle.blocks.abstracts;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import mantle.blocks.iface.IDebuggable;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -189,5 +193,20 @@ public abstract class InventoryBlock extends BlockContainer
         {
             this.icons[i] = iconRegister.registerIcon("tinker:" + textureNames[i]);
         }
+    }
+
+    /* IDebuggable */
+    @Override
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.stick)
+        {
+            TileEntity te = world.getBlockTileEntity(x, y, z);
+            if (te instanceof IDebuggable)
+            {
+                ((IDebuggable) te).sendDebugToPlayer(player);
+            }
+        }
+
+        super.onBlockClicked(world, x, y, z, player);
     }
 }
