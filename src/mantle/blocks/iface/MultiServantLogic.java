@@ -3,6 +3,7 @@ package mantle.blocks.iface;
 import mantle.world.CoordTuple;
 import mantle.blocks.iface.IMasterLogic;
 import mantle.blocks.iface.IServantLogic;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -11,7 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 
-public class MultiServantLogic extends TileEntity implements IServantLogic
+public class MultiServantLogic extends TileEntity implements IServantLogic, IDebuggable
 {
     boolean hasMaster;
     CoordTuple master;
@@ -175,4 +176,17 @@ public class MultiServantLogic extends TileEntity implements IServantLogic
         readCustomNBT(packet.data);
         worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
     }
+
+    /* IDebuggable */
+    @Override
+    public void sendDebugToPlayer(EntityPlayer player)
+    {
+        player.addChatMessage("[MultiServantLogic] Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord);
+        if (hasMaster) {
+            player.addChatMessage("[MultiServantLogic] masterID: " + masterID + ", masterMeat: " + masterMeat);
+        } else {
+            player.addChatMessage("[MultiServantLogic] No active master.");
+        }
+    }
+
 }

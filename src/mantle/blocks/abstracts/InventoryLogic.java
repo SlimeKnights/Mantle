@@ -1,5 +1,6 @@
 package mantle.blocks.abstracts;
 
+import mantle.blocks.iface.IDebuggable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -16,7 +17,7 @@ import net.minecraft.world.World;
  *
  * @author mDiyo
  */
-public abstract class InventoryLogic extends TileEntity implements IInventory
+public abstract class InventoryLogic extends TileEntity implements IInventory, IDebuggable
 {
     protected ItemStack[] inventory;
     protected String invName;
@@ -224,4 +225,11 @@ public abstract class InventoryLogic extends TileEntity implements IInventory
     {
 
     }
+
+    /* IDebuggable */
+    @Override
+    public void sendDebugToPlayer(EntityPlayer player) {
+        player.addChatMessage("[InventoryLogic] invName: "+ invName + ", inventory.length: " + inventory.length + ", stackSizeLimit: " + stackSizeLimit);
+    }
+
 }
