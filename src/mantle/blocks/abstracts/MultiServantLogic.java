@@ -1,5 +1,6 @@
-package mantle.blocks.iface;
+package mantle.blocks.abstracts;
 
+import mantle.blocks.iface.IDebuggable;
 import mantle.world.CoordTuple;
 import mantle.blocks.iface.IMasterLogic;
 import mantle.blocks.iface.IServantLogic;
