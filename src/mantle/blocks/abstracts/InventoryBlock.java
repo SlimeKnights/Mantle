@@ -2,7 +2,8 @@ package mantle.blocks.abstracts;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import mantle.blocks.iface.IDebuggable;
+import mantle.debug.DebugHelper;
+import mantle.debug.IDebuggable;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -203,7 +204,7 @@ public abstract class InventoryBlock extends BlockContainer
             TileEntity te = world.getBlockTileEntity(x, y, z);
             if (te instanceof IDebuggable)
             {
-                ((IDebuggable) te).sendDebugToPlayer(player);
+                DebugHelper.handleDebugData(((IDebuggable) te).getDebugInfo(player));
             }
         }
 

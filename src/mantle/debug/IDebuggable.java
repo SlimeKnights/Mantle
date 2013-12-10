@@ -1,4 +1,4 @@
-package mantle.blocks.iface;
+package mantle.debug;
 
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -11,6 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
  */
 public interface IDebuggable {
 
-    public void sendDebugToPlayer(EntityPlayer player);
+    public DebugData getDebugInfo(EntityPlayer player);
 
 }

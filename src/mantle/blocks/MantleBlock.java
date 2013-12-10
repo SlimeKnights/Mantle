@@ -2,7 +2,8 @@ package mantle.blocks;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import mantle.blocks.iface.IDebuggable;
+import mantle.debug.DebugHelper;
+import mantle.debug.IDebuggable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,11 +29,10 @@ public abstract class MantleBlock extends Block {
         {
             TileEntity te = world.getBlockTileEntity(x, y, z);
             if (te instanceof IDebuggable)
-            {
-                ((IDebuggable) te).sendDebugToPlayer(player);
-            }
+                DebugHelper.handleDebugData(((IDebuggable) te).getDebugInfo(player));
         }
 
         super.onBlockClicked(world, x, y, z, player);
     }
+
 }

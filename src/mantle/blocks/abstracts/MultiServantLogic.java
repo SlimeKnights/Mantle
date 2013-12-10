@@ -1,6 +1,7 @@
 package mantle.blocks.abstracts;
 
-import mantle.blocks.iface.IDebuggable;
+import mantle.debug.DebugData;
+import mantle.debug.IDebuggable;
 import mantle.world.CoordTuple;
 import mantle.blocks.iface.IMasterLogic;
 import mantle.blocks.iface.IServantLogic;
@@ -180,14 +181,15 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
 
     /* IDebuggable */
     @Override
-    public void sendDebugToPlayer(EntityPlayer player)
-    {
-        player.addChatMessage("[MultiServantLogic] Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord);
+    public DebugData getDebugInfo(EntityPlayer player) {
+        String[] strs = new String[2];
+        strs[0] = "Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord;
         if (hasMaster) {
-            player.addChatMessage("[MultiServantLogic] masterID: " + masterID + ", masterMeat: " + masterMeat);
+            strs[1] = "masterID: " + masterID + ", masterMeat: " + masterMeat;
         } else {
-            player.addChatMessage("[MultiServantLogic] No active master.");
+            strs[1] = "No active master.";
         }
+        return new DebugData(player, getClass(), strs);
     }
 
 }
