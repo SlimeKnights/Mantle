@@ -16,4 +16,9 @@ public class DirectionUtils {
         return a != b && a != b.getOpposite() && a != ForgeDirection.UNKNOWN && b != ForgeDirection.UNKNOWN;
     }
 
+    public static boolean isHorizontal(ForgeDirection a)
+    {
+        return a == ForgeDirection.EAST || a == ForgeDirection.NORTH || a == ForgeDirection.SOUTH || a == ForgeDirection.WEST;
+    }
+
 }
