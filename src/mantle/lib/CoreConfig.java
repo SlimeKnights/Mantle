@@ -25,14 +25,30 @@ public class CoreConfig
 
         silenceEnvChecks = config.get("Environment", "unsupportedLogging", silenceEnvChecks).getBoolean(silenceEnvChecks);
 
-        // Also consult MANTLE_DBGCONSOLE/CHAT for override purposes.
         debug_enableConsole = config.get("DebugHelpers", "enableConsole", debug_enableConsole).getBoolean(debug_enableConsole);
-        if (System.getenv("MANTLE_DBGCONSOLE") != null) debug_enableConsole = true;
         debug_enableChat = config.get("DebugHelpers", "enableChat", debug_enableChat).getBoolean(debug_enableChat);
-        if (System.getenv("MANTLE_DBGCHAT") != null) debug_enableChat = true;
-
+        //check for debugging overrides in system environment
+        checkSysOverrides();
         config.save();
         logger.info("Configuration load completed.");
+
+    }
+
+    /**
+     * Checks for MANTLE_DBGCONSOLE/CHAT config overrides in system environment for compile time testing, and other dev work.
+     **/
+    private static void checkSysOverrides ()
+    {
+        if (System.getenv("MANTLE_DBGCONSOLE") != null)
+        {
+            debug_enableConsole = true;
+            logger.info("Mantle Console debugging override enabled via system properties.");
+        }
+        if (System.getenv("MANTLE_DBGCHAT") != null)
+        {
+            debug_enableChat = true;
+            logger.info("Mantle Chat debugging override enabled via system properties.");
+        }
     }
 
     // BEGIN CONFIG VARS
