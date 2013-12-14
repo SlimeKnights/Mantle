@@ -7,9 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import mantle.client.block.SmallFontRenderer;
-import mantle.client.pages.BlankPage;
-import mantle.client.pages.BookPage;
-import mantle.client.pages.CraftingPage;
+import mantle.client.pages.*;
+
 
 
 public class MProxyClient
@@ -34,5 +33,19 @@ public class MProxyClient
     {
         return pageClasses.get(type);
     }
+    void initManualPages ()
+    {
+        MProxyClient.registerManualPage("crafting", CraftingPage.class);
+        MProxyClient.registerManualPage("picture", PicturePage.class);
+        MProxyClient.registerManualPage("text", TextPage.class);
+        MProxyClient.registerManualPage("intro", TextPage.class);
+        MProxyClient.registerManualPage("sectionpage", SectionPage.class);
+        MProxyClient.registerManualPage("intro", TitlePage.class);
+        MProxyClient.registerManualPage("contents", ContentsTablePage.class);
+        MProxyClient.registerManualPage("furnace", FurnacePage.class);
+        MProxyClient.registerManualPage("sidebar", SidebarPage.class);
+        MProxyClient.registerManualPage("blank", BlankPage.class);
+    }
+
 
 }
