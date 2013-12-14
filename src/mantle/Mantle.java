@@ -2,11 +2,14 @@ package mantle;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import net.minecraftforge.common.Configuration;
 import static mantle.lib.CoreRepo.*;
+import mantle.common.MProxyCommon;
 import mantle.lib.CoreConfig;
 import mantle.lib.environment.EnvironmentChecks;
 
@@ -21,6 +24,12 @@ import mantle.lib.environment.EnvironmentChecks;
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class Mantle
 {
+    /* Instance of this mod, used for grabbing prototype fields */
+    @Instance("Mantle")
+    public static Mantle instance;
+    /* Proxies for sides, used for graphics processing */
+    @SidedProxy(clientSide = "Mantle.client.MProxyClient", serverSide = "Mantle.common.MProxyCommon")
+    public static MProxyCommon proxy;
 
     /**
      * FML preinitialisation handler
