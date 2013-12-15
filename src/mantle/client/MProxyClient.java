@@ -3,15 +3,22 @@ package mantle.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import mantle.client.block.SmallFontRenderer;
+import mantle.client.gui.GuiManual;
 import mantle.client.pages.*;
+import mantle.common.MProxyCommon;
 
 
 
-public class MProxyClient
+public class MProxyClient extends MProxyCommon
 {
     public static SmallFontRenderer smallFontRenderer;
 
@@ -46,6 +53,20 @@ public class MProxyClient
         MProxyClient.registerManualPage("sidebar", SidebarPage.class);
         MProxyClient.registerManualPage("blank", BlankPage.class);
     }
+    @Override
+    public Object getClientGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z)
+    {
+    if (ID == manualGuiID)
+    {
+        ItemStack stack = player.getCurrentEquippedItem();
+        return new GuiManual(stack, MProxyClient.getManualFromStack(stack));
+    }
+    return null;
+    }
 
-
+    private static Document getManualFromStack (ItemStack stack)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
