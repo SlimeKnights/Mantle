@@ -18,8 +18,6 @@ import mantle.client.gui.GuiManual;
 import mantle.client.pages.*;
 import mantle.common.MProxyCommon;
 
-
-
 public class MProxyClient extends MProxyCommon
 {
     public static SmallFontRenderer smallFontRenderer;
@@ -68,7 +66,6 @@ public class MProxyClient extends MProxyCommon
 
     private static Document getManualFromStack (ItemStack stack)
     {
-        // TODO Auto-generated method stub
         return null;
     }
 }
