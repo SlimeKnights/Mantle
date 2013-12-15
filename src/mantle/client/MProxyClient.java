@@ -1,5 +1,7 @@
 package mantle.client;
 
+import mantle.common.MProxyCommon;
+
 import java.util.HashMap;
 import java.util.Map;
 

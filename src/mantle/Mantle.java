@@ -28,7 +28,7 @@ public class Mantle
     @Instance("Mantle")
     public static Mantle instance;
     /* Proxies for sides, used for graphics processing */
-    @SidedProxy(clientSide = "Mantle.client.MProxyClient", serverSide = "Mantle.common.MProxyCommon")
+    @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
     public static MProxyCommon proxy;
 
     /**
