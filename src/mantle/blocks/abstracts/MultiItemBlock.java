@@ -17,6 +17,7 @@ public class MultiItemBlock extends ItemBlock
     protected static String blockType[];
     protected static String unlocalizedName;
     protected static String append;
+    private int specialIndex[] = { Integer.MIN_VALUE, Integer.MIN_VALUE };
 
     public MultiItemBlock(int id, String itemBlockUnlocalizedName, String[] blockTypes)
     {
@@ -37,9 +38,10 @@ public class MultiItemBlock extends ItemBlock
         this.append = appendToEnd;
     }
 
-    public void reverseBlockType ()
+    public void setSpecialIndex (int clampIndex, int stringBuilderIndex)
     {
-        ArrayUtils.reverse(blockType);
+        specialIndex[1] = clampIndex;
+        specialIndex[2] = stringBuilderIndex;
     }
 
     public int getMetadata (int meta)
@@ -49,8 +51,10 @@ public class MultiItemBlock extends ItemBlock
 
     public String getUnlocalizedName (ItemStack itemstack)
     {
-        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, blockType.length - 1);
-        return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[pos]).append(append).toString();
+
+        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[1] > Integer.MIN_VALUE) ? specialIndex[1] : (blockType.length - 1));
+        int sbIndex = (specialIndex[2] > Integer.MIN_VALUE) ? pos : (specialIndex[2] - pos);
+        return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[sbIndex]).append(append).toString();
     }
 
 }
