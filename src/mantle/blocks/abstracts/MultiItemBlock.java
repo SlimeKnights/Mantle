@@ -40,8 +40,8 @@ public class MultiItemBlock extends ItemBlock
 
     public void setSpecialIndex (int clampIndex, int stringBuilderIndex)
     {
-        specialIndex[1] = clampIndex;
-        specialIndex[2] = stringBuilderIndex;
+        specialIndex[0] = clampIndex;
+        specialIndex[1] = stringBuilderIndex;
     }
 
     public int getMetadata (int meta)
@@ -52,8 +52,8 @@ public class MultiItemBlock extends ItemBlock
     public String getUnlocalizedName (ItemStack itemstack)
     {
 
-        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[1] > Integer.MIN_VALUE) ? specialIndex[1] : (blockType.length - 1));
-        int sbIndex = (specialIndex[2] > Integer.MIN_VALUE) ? pos : (specialIndex[2] - pos);
+        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[0] > Integer.MIN_VALUE) ? specialIndex[0] : (blockType.length - 1));
+        int sbIndex = (specialIndex[1] > Integer.MIN_VALUE) ? pos : (specialIndex[1] - pos);
         return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[sbIndex]).append(append).toString();
     }
 
