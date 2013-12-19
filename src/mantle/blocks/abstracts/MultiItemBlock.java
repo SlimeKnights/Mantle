@@ -35,7 +35,7 @@ public class MultiItemBlock extends ItemBlock
         super(id);
         this.unlocalizedName = itemBlockUnlocalizedName;
         this.blockType = blockTypes;
-        this.append = appendToEnd;
+        this.append = "." + appendToEnd;
     }
 
     public void setSpecialIndex (int clampIndex, int stringBuilderIndex)
