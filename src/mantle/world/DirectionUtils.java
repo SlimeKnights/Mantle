@@ -1,7 +1,6 @@
 package mantle.world;
 
-import net.minecraftforge.common.ForgeDirection;
-
+import net.minecraftforge.common.util.ForgeDirection;
 /**
  * Helper functions for dealing with ForgeDirection
  *

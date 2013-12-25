@@ -42,7 +42,7 @@ public class GuiManual extends GuiScreen
 
     public GuiManual(ItemStack stack, Document doc)
     {
-        this.mc = Minecraft.getMinecraft();
+        this.field_146297_k = Minecraft.getMinecraft();
         this.itemstackBook = stack;
         currentPage = 0; //Stack page
         manual = doc;
@@ -158,13 +158,13 @@ public class GuiManual extends GuiScreen
     public void drawScreen (int par1, int par2, float par3)
     {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(bookRight);
+        this.field_146297_k.getTextureManager().bindTexture(bookRight);
         int localWidth = (this.width) / 2;
         byte localHeight = 8;
         this.drawTexturedModalRect(localWidth, localHeight, 0, 0, this.bookImageWidth, this.bookImageHeight);
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(bookLeft);
+        this.field_146297_k.getTextureManager().bindTexture(bookLeft);
         localWidth = localWidth - this.bookImageWidth;
         this.drawTexturedModalRect(localWidth, localHeight, 256 - this.bookImageWidth, 0, this.bookImageWidth, this.bookImageHeight);
 
@@ -183,7 +183,7 @@ public class GuiManual extends GuiScreen
 
     public Minecraft getMC ()
     {
-        return mc;
+        return field_146297_k;
     }
 
     public boolean doesGuiPauseGame ()

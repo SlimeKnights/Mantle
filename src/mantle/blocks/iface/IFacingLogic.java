@@ -1,6 +1,6 @@
 package mantle.blocks.iface;
 
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraft.entity.EntityLivingBase;
 
 /**

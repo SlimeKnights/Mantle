@@ -18,8 +18,8 @@ import net.minecraft.world.World;
  */
 public abstract class MantleBlock extends Block {
 
-    public MantleBlock(int id, Material material) {
-        super(id, material);
+    public MantleBlock(Material material) {
+        super(material);
     }
 
     // IDebuggable support - Uses a stick for debug purposes.
@@ -31,7 +31,6 @@ public abstract class MantleBlock extends Block {
             if (te instanceof IDebuggable)
                 DebugHelper.handleDebugData(((IDebuggable) te).getDebugInfo(player));
         }
-
         super.onBlockClicked(world, x, y, z, player);
     }
 

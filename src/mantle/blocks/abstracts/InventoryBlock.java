@@ -6,7 +6,7 @@ import mantle.debug.DebugHelper;
 import mantle.debug.IDebuggable;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import mantle.blocks.iface.IActiveLogic;
@@ -33,7 +33,7 @@ public abstract class InventoryBlock extends BlockContainer
 
     protected InventoryBlock(int id, Material material)
     {
-        super(id, material);
+        super(material);
     }
 
     /* Logic backend */
@@ -98,7 +98,7 @@ public abstract class InventoryBlock extends BlockContainer
                         }
 
                         stack.stackSize -= itemSize;
-                        EntityItem entityitem = new EntityItem(par1World, (double) ((float) x + jumpX), (double) ((float) y + jumpY), (double) ((float) z + jumpZ), new ItemStack(stack.itemID,
+                        EntityItem entityitem = new EntityItem(par1World, (double) ((float) x + jumpX), (double) ((float) y + jumpY), (double) ((float) z + jumpZ), new ItemStack(stack.getItem(),
                                 itemSize, stack.getItemDamage()));
 
                         if (stack.hasTagCompound())
@@ -180,15 +180,15 @@ public abstract class InventoryBlock extends BlockContainer
     }
 
     /* Textures */
-    public Icon[] icons;
+    public IIcon[] icons;
 
     public abstract String[] getTextureNames ();
 
     @Override
-    public void registerIcons (IconRegister iconRegister)
+    public void registerIcons (IIconRegister iconRegister)
     {
         String[] textureNames = getTextureNames();
-        this.icons = new Icon[textureNames.length];
+        this.icons = new IIcon[textureNames.length];
 
         for (int i = 0; i < this.icons.length; ++i)
         {

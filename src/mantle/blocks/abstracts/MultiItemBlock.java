@@ -1,5 +1,8 @@
 package mantle.blocks.abstracts;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -19,9 +22,9 @@ public class MultiItemBlock extends ItemBlock
     protected static String append;
     private int specialIndex[] = { Integer.MIN_VALUE, Integer.MIN_VALUE };
 
-    public MultiItemBlock(int id, String itemBlockUnlocalizedName, String[] blockTypes)
+    public MultiItemBlock(Block b, String itemBlockUnlocalizedName, String[] blockTypes)
     {
-        super(id);
+        super(b);
         if (itemBlockUnlocalizedName.isEmpty())
             this.unlocalizedName = super.getUnlocalizedName();
         else
@@ -30,9 +33,9 @@ public class MultiItemBlock extends ItemBlock
         this.append = "";
     }
 
-    public MultiItemBlock(int id, String itemBlockUnlocalizedName, String appendToEnd, String[] blockTypes)
+    public MultiItemBlock(Block b, String itemBlockUnlocalizedName, String appendToEnd, String[] blockTypes)
     {
-        super(id);
+        super(b);
         this.unlocalizedName = itemBlockUnlocalizedName;
         this.blockType = blockTypes;
         this.append = "." + appendToEnd;

@@ -1,15 +1,13 @@
 package mantle.items.abstracts;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -20,11 +18,11 @@ public class CraftingItem extends Item
     public String[] textureNames;
     public String[] unlocalizedNames;
     public String folder;
-    public Icon[] icons;
+    public IIcon[] icons;
 
-    public CraftingItem(int id, String[] names, String[] tex, String folder, String modTexturePrefix, CreativeTabs tab)
+    public CraftingItem(String[] names, String[] tex, String folder, String modTexturePrefix, CreativeTabs tab)
     {
-        super(id);
+        super();
         this.modTexPrefix = modTexturePrefix;
         this.setCreativeTab(tab);
         this.setMaxDamage(0);
@@ -35,7 +33,7 @@ public class CraftingItem extends Item
     }
 
     @SideOnly(Side.CLIENT)
-    public Icon getIconFromDamage (int meta)
+    public IIcon getIconFromDamage (int meta)
     {
         int arr = MathHelper.clamp_int(meta, 0, unlocalizedNames.length);
         return icons[arr];
@@ -43,9 +41,9 @@ public class CraftingItem extends Item
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons (IconRegister iconRegister)
+    public void registerIcons (IIconRegister iconRegister)
     {
-        this.icons = new Icon[textureNames.length];
+        this.icons = new IIcon[textureNames.length];
 
         for (int i = 0; i < this.icons.length; ++i)
         {
@@ -60,11 +58,11 @@ public class CraftingItem extends Item
         return getUnlocalizedName() + "." + unlocalizedNames[arr];
     }
 
-    public void getSubItems (int id, CreativeTabs tab, List list)
+    public void getSubItems (Block b, CreativeTabs tab, List list)
     {
         for (int i = 0; i < unlocalizedNames.length; i++)
             if (!(textureNames[i].equals("")))
-                list.add(new ItemStack(id, 1, i));
+                list.add(new ItemStack(b, 1, i));
     }
 
 }

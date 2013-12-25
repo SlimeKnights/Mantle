@@ -16,9 +16,9 @@ public class Manual extends CraftingItem
     static String[] name = new String[] { "beginner", "toolstation", "smeltery", "diary" };
     static String[] textureName = new String[] { "tinkerbook_diary", "tinkerbook_toolstation", "tinkerbook_smeltery", "tinkerbook_blue" };
 
-    public Manual(int id)
+    public Manual()
     {
-        super(id, name, textureName, "", "mantle", null);
+        super(name, textureName, "", "mantle", null);
         setUnlocalizedName("tconstruct.manual");
     }
 

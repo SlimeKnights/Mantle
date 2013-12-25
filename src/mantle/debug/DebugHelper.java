@@ -28,13 +28,14 @@ public class DebugHelper {
         String prefix = "[" + data.cl.getSimpleName() + "] ";
         for (String str : data.strings)
         {
-            player.addChatMessage(prefix + str);
+          //TODO find this
+          //  player.addChatMessage(prefix + str);
         }
     }
 
     private static void handleConsoleDebug(DebugData data)
     {
-        String player = data.player.username;
+        String player = data.player.getDisplayName();//.username;
         String prefix = "[" + player + ":" + data.cl.getSimpleName() + "] ";
         for (String str : data.strings)
         {
