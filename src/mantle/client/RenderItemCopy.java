@@ -71,16 +71,14 @@ public class RenderItemCopy extends Render
             int i;
 
             Block block = null;
-            if (itemstack.itemID < Block.blocksList.length)
-            {
-                block = Block.blocksList[itemstack.itemID];
-            }
+            
+                block = Block.func_149634_a(itemstack.getItem());
 
             if (ForgeHooksClient.renderEntityItem(par1EntityItem, itemstack, f2, f3, random, renderManager.renderEngine, renderBlocks))
             {
                 ;
             }
-            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(Block.blocksList[itemstack.itemID].getRenderType()))
+            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(block.getRenderType()))
             {
                 GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
 
@@ -142,7 +140,7 @@ public class RenderItemCopy extends Render
 
                         if (this.renderWithColor)
                         {
-                            i = Item.itemsList[itemstack.itemID].getColorFromItemStack(itemstack, k);
+                            i = itemstack.getItem().getColorFromItemStack(itemstack, k);
                             f5 = (float) (i >> 16 & 255) / 255.0F;
                             f4 = (float) (i >> 8 & 255) / 255.0F;
                             f6 = (float) (i & 255) / 255.0F;
@@ -171,7 +169,7 @@ public class RenderItemCopy extends Render
 
                     if (this.renderWithColor)
                     {
-                        int l = Item.itemsList[itemstack.itemID].getColorFromItemStack(itemstack, 0);
+                        int l = itemstack.getItem().getColorFromItemStack(itemstack, 0);
                         f8 = (float) (l >> 16 & 255) / 255.0F;
                         float f9 = (float) (l >> 8 & 255) / 255.0F;
                         f5 = (float) (l & 255) / 255.0F;
@@ -347,7 +345,7 @@ public class RenderItemCopy extends Render
 
     public void renderItemIntoGUI (SmallFontRenderer par1FontRenderer, TextureManager par2TextureManager, ItemStack par3ItemStack, int par4, int par5, boolean renderEffect)
     {
-        int k = par3ItemStack.itemID;
+        Item k = par3ItemStack.getItem();
         int l = par3ItemStack.getItemDamage();
         Object object = par3ItemStack.getItem() == null ? null : par3ItemStack.getIconIndex();
         float f;
@@ -355,8 +353,8 @@ public class RenderItemCopy extends Render
         float f1;
         float f2;
 
-        Block block = (k < Block.blocksList.length ? Block.blocksList[k] : null);
-        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(Block.blocksList[k].getRenderType()))
+        Block block = Block.func_149634_a(k);
+        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(block.getRenderType()))
         {
             par2TextureManager.bindTexture(TextureMap.locationBlocksTexture);
             GL11.glPushMatrix();
@@ -366,7 +364,7 @@ public class RenderItemCopy extends Render
             GL11.glScalef(1.0F, 1.0F, -1.0F);
             GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-            i1 = Item.itemsList[k].getColorFromItemStack(par3ItemStack, 0);
+            i1 = par3ItemStack.getItem().getColorFromItemStack(par3ItemStack, 0);
             f = (float) (i1 >> 16 & 255) / 255.0F;
             f1 = (float) (i1 >> 8 & 255) / 255.0F;
             f2 = (float) (i1 & 255) / 255.0F;
@@ -382,15 +380,15 @@ public class RenderItemCopy extends Render
             this.itemRenderBlocks.useInventoryTint = true;
             GL11.glPopMatrix();
         }
-        else if (Item.itemsList[k] != null && Item.itemsList[k].requiresMultipleRenderPasses())
+        else if (k != null && k.requiresMultipleRenderPasses())
         {
             GL11.glDisable(GL11.GL_LIGHTING);
 
-            for (int j1 = 0; j1 < Item.itemsList[k].getRenderPasses(l); ++j1)
+            for (int j1 = 0; j1 < k.getRenderPasses(l); ++j1)
             {
                 par2TextureManager.bindTexture(par3ItemStack.getItemSpriteNumber() == 0 ? TextureMap.locationBlocksTexture : TextureMap.locationItemsTexture);
-                IIcon icon = Item.itemsList[k].getIcon(par3ItemStack, j1);
-                int k1 = Item.itemsList[k].getColorFromItemStack(par3ItemStack, j1);
+                IIcon icon = k.getIcon(par3ItemStack, j1);
+                int k1 = k.getColorFromItemStack(par3ItemStack, j1);
                 f1 = (float) (k1 >> 16 & 255) / 255.0F;
                 f2 = (float) (k1 >> 8 & 255) / 255.0F;
                 float f3 = (float) (k1 & 255) / 255.0F;
@@ -421,7 +419,7 @@ public class RenderItemCopy extends Render
                 object = ((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(resourcelocation)).getAtlasSprite("missingno");
             }
 
-            i1 = Item.itemsList[k].getColorFromItemStack(par3ItemStack, 0);
+            i1 = k.getColorFromItemStack(par3ItemStack, 0);
             f = (float) (i1 >> 16 & 255) / 255.0F;
             f1 = (float) (i1 >> 8 & 255) / 255.0F;
             f2 = (float) (i1 & 255) / 255.0F;

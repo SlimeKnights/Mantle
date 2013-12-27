@@ -198,7 +198,7 @@ public abstract class InventoryBlock extends BlockContainer
 
     /* IDebuggable */
     @Override
-    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+    public void func_149670_a(World world, int x, int y, int z, EntityPlayer player) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.stick)
         {
             TileEntity te = world.getBlockTileEntity(x, y, z);
@@ -208,6 +208,6 @@ public abstract class InventoryBlock extends BlockContainer
             }
         }
 
-        super.onBlockClicked(world, x, y, z, player);
+        super.func_149670_a(world, x, y, z, player);
     }
 }
