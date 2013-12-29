@@ -28,12 +28,12 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         return false;
     }
 
-    public boolean hasValidMaster ()
+    public boolean hasValidMaster ( )
     {
         if (!hasMaster)
             return false;
-        //Minecraft.getMinecraft().getMinecraft().theWorld???
-        if (this.getBlock(master.x, master.y, master.z) == masterBlock && this.getBlockMetadata(master.x, master.y, master.z) == masterMeat)
+        //Minecraft.getMinecraft().getMinecraft().thegetWorld()???
+        if (getWorld().func_147439_a(master.x, master.y, master.z) == masterBlock && getWorld().getBlockMetadata(master.x, master.y, master.z) == masterMeat)
             return true;
 
         else
@@ -53,8 +53,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         hasMaster = true;
         master = new CoordTuple(x, y, z);
-        masterBlock = this.getBlock(x, y, z);
-        masterMeat = (byte) this.getBlockMetadata(x, y, z);
+        masterBlock = getWorld().func_147439_a(x, y, z);
+        masterMeat = (byte) getWorld().getBlockMetadata(x, y, z);
     }
 
     public void removeMaster ()
@@ -65,37 +65,14 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         masterMeat = 0;
     }
 
-    @Deprecated
-    public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
-    {
-        if (master.equalCoords(x, y, z) && this.getBlock(x, y, z) == masterBlock && this.getBlockMetadata(x, y, z) == masterMeat)
-            return true;
-        else
-            return false;
-    }
-
-    @Deprecated
-    public boolean setMaster (int x, int y, int z)
-    {
-        if (!hasMaster || this.getBlock(master.x, master.y, master.z) != masterBlock || (this.getBlockMetadata(master.x, master.y, master.z) != masterMeat))
-        {
-            overrideMaster(x, y, z);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     @Override
-    public boolean setPotentialMaster (IMasterLogic master, World world, int x, int y, int z)
+    public boolean setPotentialMaster (IMasterLogic master, int x, int y, int z)
     {
         return !hasMaster;
     }
 
     @Override
-    public boolean verifyMaster (IMasterLogic logic, World world, int x, int y, int z)
+    public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
     {
         if (hasMaster)
         {
@@ -109,7 +86,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public void invalidateMaster (IMasterLogic master, World world, int x, int y, int z)
+    public void invalidateMaster (IMasterLogic master, int x, int y, int z)
     {
         hasMaster = false;
         master = null;
@@ -119,7 +96,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) this.getBlockTileEntity(master.x, master.y, master.z);
+            IMasterLogic logic = (IMasterLogic) getWorld().getBlockTileEntity(master.x, master.y, master.z);
             logic.notifyChange(this, xCoord, yCoord, zCoord);
         }
     }
@@ -198,5 +175,9 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         }
         return new DebugData(player, getClass(), strs);
     }
+    public World getWorld()
+        {
+        return this.func_145831_w();
+        }
 
 }

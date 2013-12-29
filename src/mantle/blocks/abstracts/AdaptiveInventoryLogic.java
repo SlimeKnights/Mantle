@@ -5,6 +5,7 @@ import java.util.Random;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import mantle.blocks.iface.IFacingLogic;
 import mantle.blocks.abstracts.InventoryLogic;
 
@@ -75,7 +76,7 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             }
 
                             stack.stackSize -= itemSize;
-                            EntityItem entityitem = new EntityItem(this, (double) ((float) xCoord + jumpX + offsetX), (double) ((float) yCoord + jumpY),
+                            EntityItem entityitem = new EntityItem(getWorld(), (double) ((float) xCoord + jumpX + offsetX), (double) ((float) yCoord + jumpY),
                                     (double) ((float) zCoord + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
 
                             if (stack.hasTagCompound())
@@ -87,7 +88,7 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             entityitem.motionX = (double) ((float) random.nextGaussian() * offset);
                             entityitem.motionY = (double) ((float) random.nextGaussian() * offset + 0.2F);
                             entityitem.motionZ = (double) ((float) random.nextGaussian() * offset);
-                            this.spawnEntityInWorld(entityitem);
+                            getWorld().spawnEntityInWorld(entityitem);
                         }
                     }
                 }
@@ -98,5 +99,9 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
     public int getTossDirection ()
     {
         return getRenderDirection();
+    }
+    public World getWorld()
+    {
+    return this.func_145831_w();
     }
 }

@@ -74,7 +74,7 @@ public class RenderItemCopy extends Render
             
                 block = Block.func_149634_a(itemstack.getItem());
 
-            if (ForgeHooksClient.renderEntityItem(par1EntityItem, itemstack, f2, f3, random, renderManager.renderEngine, renderBlocks))
+            if (ForgeHooksClient.renderEntityItem(par1EntityItem, itemstack, f2, f3, random, renderManager.renderEngine, new RenderBlocks(), 000)) // TODO what goes here not 000
             {
                 ;
             }
@@ -466,7 +466,7 @@ public class RenderItemCopy extends Render
     {
         if (par3ItemStack != null)
         {
-            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, par2TextureManager, par3ItemStack, renderWithColor, zLevel, (float) par4, (float) par5))
+            if (!ForgeHooksClient.renderInventoryItem(new RenderBlocks(), par2TextureManager, par3ItemStack, renderWithColor, zLevel, (float) par4, (float) par5))
             {
                 this.renderItemIntoGUI(par1FontRenderer, par2TextureManager, par3ItemStack, par4, par5, true);
             }

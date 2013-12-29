@@ -48,8 +48,9 @@ public abstract class InventoryBlock extends BlockContainer
 
     public abstract Object getModInstance ();
 
+    //TODO:         onBlockActivated()
     @Override
-    public boolean onBlockActivated (World world, int x, int y, int z, EntityPlayer player, int side, float clickX, float clickY, float clickZ)
+    public boolean func_149727_a (World world, int x, int y, int z, EntityPlayer player, int side, float clickX, float clickY, float clickZ)
     {
         if (player.isSneaking())
             return false;
@@ -68,9 +69,9 @@ public abstract class InventoryBlock extends BlockContainer
     }
 
     /* Inventory */
-
+    //TODO:     breakBlock()
     @Override
-    public void breakBlock (World par1World, int x, int y, int z, int blockID, int meta)
+    public void func_149749_a (World par1World, int x, int y, int z, Block block, int meta)
     {
         TileEntity te = par1World.func_147438_o(x, y, z);
 
@@ -115,8 +116,7 @@ public abstract class InventoryBlock extends BlockContainer
                 }
             }
         }
-
-        super.breakBlock(par1World, x, y, z, blockID, meta);
+        super.func_149749_a(par1World, x, y, z, block, meta);
     }
 
     /* Placement */
@@ -124,8 +124,9 @@ public abstract class InventoryBlock extends BlockContainer
     int side = -1;
 
     //This class does not have an actual block placed in the world
+   //TODO onBlockPlaced
     @Override
-    public int onBlockPlaced (World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta)
+    public int func_149660_a (World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta)
     {
         this.side = side;
         return meta;
@@ -198,8 +199,8 @@ public abstract class InventoryBlock extends BlockContainer
 
     /* IDebuggable */
     @Override
-    public void func_149670_a(World world, int x, int y, int z, EntityPlayer player) {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.stick)
+    public void func_149699_a(World world, int x, int y, int z, EntityPlayer player) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.func_150899_d(000)) //TODO make this get a stick!!
         {
             TileEntity te = world.func_147438_o(x, y, z);
             if (te instanceof IDebuggable)
@@ -208,6 +209,6 @@ public abstract class InventoryBlock extends BlockContainer
             }
         }
 
-        super.func_149670_a(world, x, y, z, player);
+        super.func_149699_a(world, x, y, z, player);
     }
 }

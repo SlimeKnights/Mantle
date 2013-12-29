@@ -19,7 +19,7 @@ public interface IServantLogic
      * @return whether the servant can be tied to this master
      */
 
-    public boolean setPotentialMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
+    public boolean setPotentialMaster (IMasterLogic master,  int xMaster, int yMaster, int zMaster);
 
     /** Used to set and verify that this is the block's master
      * 
@@ -30,7 +30,7 @@ public interface IServantLogic
      * @return Is this block tied to this master?
      */
 
-    public boolean verifyMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
+    public boolean verifyMaster (IMasterLogic master,  int xMaster, int yMaster, int zMaster);
 
     /** Exactly what it says on the tin
      * 
@@ -40,5 +40,5 @@ public interface IServantLogic
      * @param z zCoord of master
      */
 
-    public void invalidateMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
+    public void invalidateMaster (IMasterLogic master,  int xMaster, int yMaster, int zMaster);
 }
