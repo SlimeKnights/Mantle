@@ -72,7 +72,7 @@ public abstract class InventoryBlock extends BlockContainer
     @Override
     public void breakBlock (World par1World, int x, int y, int z, int blockID, int meta)
     {
-        TileEntity te = par1World.getBlockTileEntity(x, y, z);
+        TileEntity te = par1World.func_147438_o(x, y, z);
 
         if (te != null && te instanceof InventoryLogic)
         {
@@ -134,7 +134,7 @@ public abstract class InventoryBlock extends BlockContainer
     @Override
     public void onBlockPlacedBy (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
     {
-        TileEntity logic = world.getBlockTileEntity(x, y, z);
+        TileEntity logic = world.func_147438_o(x, y, z);
         if (logic instanceof IFacingLogic)
         {
             IFacingLogic direction = (IFacingLogic) logic;
@@ -166,7 +166,7 @@ public abstract class InventoryBlock extends BlockContainer
 
     public static boolean isActive (IBlockAccess world, int x, int y, int z)
     {
-        TileEntity logic = world.getBlockTileEntity(x, y, z);
+        TileEntity logic = world.func_147438_o(x, y, z);
         if (logic instanceof IActiveLogic)
         {
             return ((IActiveLogic) logic).getActive();
@@ -185,7 +185,7 @@ public abstract class InventoryBlock extends BlockContainer
     public abstract String[] getTextureNames ();
 
     @Override
-    public void registerIcons (IIconRegister iconRegister)
+    public void func_149651_a (IIconRegister iconRegister)
     {
         String[] textureNames = getTextureNames();
         this.icons = new IIcon[textureNames.length];
@@ -201,7 +201,7 @@ public abstract class InventoryBlock extends BlockContainer
     public void func_149670_a(World world, int x, int y, int z, EntityPlayer player) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.stick)
         {
-            TileEntity te = world.getBlockTileEntity(x, y, z);
+            TileEntity te = world.func_147438_o(x, y, z);
             if (te instanceof IDebuggable)
             {
                 DebugHelper.handleDebugData(((IDebuggable) te).getDebugInfo(player));

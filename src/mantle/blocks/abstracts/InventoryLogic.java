@@ -103,7 +103,7 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if (this.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
             return false;
 
         else
@@ -125,11 +125,11 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     {
         super.readFromNBT(tags);
         this.invName = tags.getString("InvName");
-        NBTTagList nbttaglist = tags.getTagList("Items");
+        NBTTagList nbttaglist = tags.func_150295_c("Items", 0); //TODO WTF goes here <-
         inventory = new ItemStack[getSizeInventory()];
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
-            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.tagAt(iter);
+            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.func_150305_b(iter); //TODO tagAt?
             byte slotID = tagList.getByte("Slot");
             if (slotID >= 0 && slotID < inventory.length)
             {

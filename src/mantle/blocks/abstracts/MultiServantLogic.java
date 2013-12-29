@@ -1,21 +1,26 @@
 package mantle.blocks.abstracts;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import mantle.debug.DebugData;
 import mantle.debug.IDebuggable;
 import mantle.world.CoordTuple;
 import mantle.blocks.iface.IMasterLogic;
 import mantle.blocks.iface.IServantLogic;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
 
 public class MultiServantLogic extends TileEntity implements IServantLogic, IDebuggable
 {
     boolean hasMaster;
     CoordTuple master;
-    short masterID;
+    Block masterBlock;
     byte masterMeat; //Typo, it stays!
 
     public boolean canUpdate ()
@@ -27,8 +32,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (!hasMaster)
             return false;
-
-        if (worldObj.getBlockId(master.x, master.y, master.z) == masterID && worldObj.getBlockMetadata(master.x, master.y, master.z) == masterMeat)
+        //Minecraft.getMinecraft().getMinecraft().theWorld???
+        if (this.getBlock(master.x, master.y, master.z) == masterBlock && this.getBlockMetadata(master.x, master.y, master.z) == masterMeat)
             return true;
 
         else
@@ -48,22 +53,22 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         hasMaster = true;
         master = new CoordTuple(x, y, z);
-        masterID = (short) worldObj.getBlockId(x, y, z);
-        masterMeat = (byte) worldObj.getBlockMetadata(x, y, z);
+        masterBlock = this.getBlock(x, y, z);
+        masterMeat = (byte) this.getBlockMetadata(x, y, z);
     }
 
     public void removeMaster ()
     {
         hasMaster = false;
         master = null;
-        masterID = 0;
+        masterBlock = null;
         masterMeat = 0;
     }
 
     @Deprecated
     public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
     {
-        if (master.equalCoords(x, y, z) && worldObj.getBlockId(x, y, z) == masterID && worldObj.getBlockMetadata(x, y, z) == masterMeat)
+        if (master.equalCoords(x, y, z) && this.getBlock(x, y, z) == masterBlock && this.getBlockMetadata(x, y, z) == masterMeat)
             return true;
         else
             return false;
@@ -72,7 +77,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     @Deprecated
     public boolean setMaster (int x, int y, int z)
     {
-        if (!hasMaster || worldObj.getBlockId(master.x, master.y, master.z) != masterID || (worldObj.getBlockMetadata(master.x, master.y, master.z) != masterMeat))
+        if (!hasMaster || this.getBlock(master.x, master.y, master.z) != masterBlock || (this.getBlockMetadata(master.x, master.y, master.z) != masterMeat))
         {
             overrideMaster(x, y, z);
             return true;
@@ -114,7 +119,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) worldObj.getBlockTileEntity(master.x, master.y, master.z);
+            IMasterLogic logic = (IMasterLogic) this.getBlockTileEntity(master.x, master.y, master.z);
             logic.notifyChange(this, xCoord, yCoord, zCoord);
         }
     }
@@ -128,7 +133,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             int yCenter = tags.getInteger("yCenter");
             int zCenter = tags.getInteger("zCenter");
             master = new CoordTuple(xCenter, yCenter, zCenter);
-            masterID = tags.getShort("MasterID");
+            masterBlock = GameRegistry.findBlock(tags.getString("MasterModName"), tags.getString("MasterBlockName"));
             masterMeat = tags.getByte("masterMeat");
         }
     }
@@ -141,7 +146,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             tags.setInteger("xCenter", master.x);
             tags.setInteger("yCenter", master.y);
             tags.setInteger("zCenter", master.z);
-            tags.setShort("MasterID", masterID);
+            tags.setString("MasterBlockName", masterBlock.func_149702_O());//<- unlocalized name?
+            tags.setString("MasterModName", "MODNAME"); //TODO get mod name of block here!!
             tags.setByte("masterMeat", masterMeat);
         }
     }
@@ -166,24 +172,28 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         NBTTagCompound tag = new NBTTagCompound();
         writeCustomNBT(tag);
-        return new Packet132TileEntityData(xCoord, yCoord, zCoord, 1, tag);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
     }
 
     @Override
-    public void onDataPacket (INetworkManager net, Packet132TileEntityData packet)
+    public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
-        readCustomNBT(packet.data);
-        worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
+        readCustomNBT(packet.func_148857_g());
+        this.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
     }
 
     /* IDebuggable */
     @Override
-    public DebugData getDebugInfo(EntityPlayer player) {
+    public DebugData getDebugInfo (EntityPlayer player)
+    {
         String[] strs = new String[2];
         strs[0] = "Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord;
-        if (hasMaster) {
-            strs[1] = "masterID: " + masterID + ", masterMeat: " + masterMeat;
-        } else {
+        if (hasMaster)
+        {
+            strs[1] = "masterBlock: " + masterBlock.toString() + ", masterMeat: " + masterMeat;
+        }
+        else
+        {
             strs[1] = "No active master.";
         }
         return new DebugData(player, getClass(), strs);

@@ -78,7 +78,7 @@ public class RenderItemCopy extends Render
             {
                 ;
             }
-            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(block.getRenderType()))
+            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(block.func_149645_b()))
             {
                 GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
 
@@ -90,7 +90,7 @@ public class RenderItemCopy extends Render
                 }
 
                 float f7 = 0.25F;
-                int j = block.getRenderType();
+                int j = block.func_149645_b();
 
                 if (j == 1 || j == 19 || j == 12 || j == 2)
                 {
@@ -354,7 +354,7 @@ public class RenderItemCopy extends Render
         float f2;
 
         Block block = Block.func_149634_a(k);
-        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(block.getRenderType()))
+        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(block.func_149645_b()))
         {
             par2TextureManager.bindTexture(TextureMap.locationBlocksTexture);
             GL11.glPushMatrix();

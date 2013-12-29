@@ -60,8 +60,8 @@ public class MultiItemBlock extends ItemBlock
         try {
             return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[sbIndex]).append(append).toString();
         } catch (ArrayIndexOutOfBoundsException ex) {
-            logger.warning("[MultiItemBlock] Caught array index error in getUnlocalizedName: " + ex.getMessage());
-            logger.warning("[MultiItemBlock] Returning unlocalized name!");
+            logger.warn("[MultiItemBlock] Caught array index error in getUnlocalizedName: " + ex.getMessage());
+            logger.warn("[MultiItemBlock] Returning unlocalized name!");
             return getUnlocalizedName();
         }
     }

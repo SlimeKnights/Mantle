@@ -1,6 +1,8 @@
 package mantle.lib;
 
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * Mantle object repository
@@ -16,6 +18,6 @@ public final class CoreRepo
     public static final String modName = "Mantle";
     public static final String modVersion = "${version}";
 
-    public static final Logger logger = Logger.getLogger(modId);
+    public static final Logger logger = LogManager.getLogger();
 
 }

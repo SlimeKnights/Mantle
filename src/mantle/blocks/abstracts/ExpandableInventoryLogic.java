@@ -106,7 +106,7 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if (this.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
             return false;
 
         else
