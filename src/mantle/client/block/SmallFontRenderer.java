@@ -520,13 +520,13 @@ public class SmallFontRenderer implements ResourceManagerReloadListener
             }
             else
             {
-                j = ChatAllowedCharacters.allowedCharacters.indexOf(c0);
+                j = ChatAllowedCharacters.allowedCharactersArray.indexOf(c0);
 
                 if (this.randomStyle && j > 0)
                 {
                     do
                     {
-                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharacters.length());
+                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharactersArray.length);
                     } while (this.charWidth[j + 32] != this.charWidth[k + 32]);
 
                     j = k;
@@ -719,7 +719,7 @@ public class SmallFontRenderer implements ResourceManagerReloadListener
         }
         else
         {
-            int i = ChatAllowedCharacters.allowedCharacters.indexOf(par1);
+            int i = ChatAllowedCharacters.allowedCharactersArray[par1];
 
             if (i >= 0 && !this.unicodeFlag)
             {
