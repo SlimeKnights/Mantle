@@ -14,8 +14,8 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.ResourceManager;
-import net.minecraft.client.resources.ResourceManagerReloadListener;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
@@ -26,7 +26,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class SmallFontRenderer implements ResourceManagerReloadListener
+public class SmallFontRenderer implements IResourceManagerReloadListener
 {
     private static final ResourceLocation[] field_111274_c = new ResourceLocation[256];
 
@@ -144,7 +144,7 @@ public class SmallFontRenderer implements ResourceManagerReloadListener
         this.readGlyphSizes();
     }
 
-    public void onResourceManagerReload (ResourceManager par1ResourceManager)
+    public void onResourceManagerReload (IResourceManager par1ResourceManager)
     {
         this.func_111272_d();
     }

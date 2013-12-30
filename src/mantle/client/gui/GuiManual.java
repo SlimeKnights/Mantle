@@ -64,7 +64,7 @@ public class GuiManual extends GuiScreen
     {
         maxPages = manual.getElementsByTagName("page").getLength();
         updateText();
-        int xPos = (this.width) / 2;
+        int xPos = (this.field_146294_l) / 2; //TODO Width?
         this.buttonList.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true));
         this.buttonList.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false));
     }
@@ -159,7 +159,7 @@ public class GuiManual extends GuiScreen
     {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.field_146297_k.getTextureManager().bindTexture(bookRight);
-        int localWidth = (this.width) / 2;
+        int localWidth = (this.field_146294_l / 2);
         byte localHeight = 8;
         this.drawTexturedModalRect(localWidth, localHeight, 0, 0, this.bookImageWidth, this.bookImageHeight);
 

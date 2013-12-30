@@ -115,15 +115,15 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
 
     /* NBT */
     @Override
-    public void readFromNBT (NBTTagCompound tags)
+    public void func_145841_b (NBTTagCompound tags)
     {
-        super.readFromNBT(tags);
+        super.func_145841_b(tags);
         readInventoryFromNBT(tags);
     }
 
     public void readInventoryFromNBT (NBTTagCompound tags)
     {
-        super.readFromNBT(tags);
+        super.func_145841_b(tags);
         this.invName = tags.getString("InvName");
         NBTTagList nbttaglist = tags.func_150295_c("Items", 0); //TODO WTF goes here <-
         inventory = new ItemStack[getSizeInventory()];
@@ -139,9 +139,9 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     }
 
     @Override
-    public void writeToNBT (NBTTagCompound tags)
+    public void func_145839_a (NBTTagCompound tags)
     {
-        super.writeToNBT(tags);
+        super.func_145839_a(tags);
         writeInventoryToNBT(tags);
     }
 
