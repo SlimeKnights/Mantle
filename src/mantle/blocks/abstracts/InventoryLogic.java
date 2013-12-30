@@ -103,11 +103,11 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (this.getBlockTileEntity(xCoord, yCoord, zCoord) != this)
+        if (this.getBlockTileEntity(field_145851_c, field_145848_d, field_145849_e) != this)
             return false;
 
         else
-            return entityplayer.getDistance((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D) <= 64D;
+            return entityplayer.getDistance((double) field_145851_c + 0.5D, (double) field_145848_d + 0.5D, (double) field_145849_e + 0.5D) <= 64D;
 
     }
 

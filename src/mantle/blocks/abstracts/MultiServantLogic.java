@@ -97,7 +97,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         if (hasValidMaster())
         {
             IMasterLogic logic = (IMasterLogic) getWorld().getBlockTileEntity(master.x, master.y, master.z);
-            logic.notifyChange(this, xCoord, yCoord, zCoord);
+            logic.notifyChange(this, field_145851_c, field_145848_d, field_145849_e);
         }
     }
 
@@ -153,14 +153,15 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         NBTTagCompound tag = new NBTTagCompound();
         writeCustomNBT(tag);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
+        //TODO xCoord, yCoord, zCoord
+        return new S35PacketUpdateTileEntity(field_145851_c, field_145848_d, field_145849_e, 1, tag);
     }
 
     @Override
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
         readCustomNBT(packet.func_148857_g());
-        this.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
+        this.markBlockForRenderUpdate(field_145851_c, field_145848_d, field_145849_e);
     }
 
     /* IDebuggable */
@@ -168,7 +169,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public DebugData getDebugInfo (EntityPlayer player)
     {
         String[] strs = new String[2];
-        strs[0] = "Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord;
+        strs[0] = "Location: x" + field_145851_c + ", y" + field_145848_d + ", z" + field_145849_e;
         if (hasMaster)
         {
             strs[1] = "masterBlock: " + masterBlock.toString() + ", masterMeat: " + masterMeat;

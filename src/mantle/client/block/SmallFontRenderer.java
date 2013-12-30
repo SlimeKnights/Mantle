@@ -520,7 +520,15 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             }
             else
             {
-                j = ChatAllowedCharacters.allowedCharactersArray.indexOf(c0);
+                j = ' '; 
+                for (char c : ChatAllowedCharacters.allowedCharactersArray)
+                {
+                    if (c == c0)
+                    {
+                        j = c0;
+                        break;
+                    }
+                }
 
                 if (this.randomStyle && j > 0)
                 {
