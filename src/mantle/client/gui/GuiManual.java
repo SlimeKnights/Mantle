@@ -65,17 +65,20 @@ public class GuiManual extends GuiScreen
         maxPages = manual.getElementsByTagName("page").getLength();
         updateText();
         int xPos = (this.field_146294_l) / 2; //TODO Width?
-        this.buttonList.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true));
-        this.buttonList.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false));
+        //TODO buttonList
+        this.field_146292_n.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true));
+        this.field_146292_n.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false));
     }
 
     protected void actionPerformed (GuiButton button)
     {
-        if (button.enabled)
+        //TODO ENABLED???
+        if (button.field_146124_l)
         {
-            if (button.id == 1)
+            //TODO ID????
+            if (button.field_146129_i == 1)
                 currentPage += 2;
-            if (button.id == 2)
+            if (button.field_146129_i == 2)
                 currentPage -= 2;
 
             updateText();

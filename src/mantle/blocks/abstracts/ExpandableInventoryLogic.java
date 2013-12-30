@@ -106,7 +106,7 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (this.getBlockTileEntity(field_145851_c, field_145848_d, field_145849_e) != this)
+        if (getWorld().func_147438_o(field_145851_c, field_145848_d, field_145849_e) != this)
             return false;
 
         else
@@ -213,6 +213,10 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
             return slot < getMaxSize();
         }
         return false;
+    }
+    public World getWorld()
+    {
+    return this.func_145831_w();
     }
 
 }

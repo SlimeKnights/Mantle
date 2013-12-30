@@ -78,7 +78,7 @@ public class RenderItemCopy extends Render
             {
                 ;
             }
-            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(block.func_149645_b()))
+            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.func_147739_a(block.func_149645_b()))
             {
                 GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
 
@@ -112,7 +112,8 @@ public class RenderItemCopy extends Render
                     }
 
                     f5 = 1.0F;
-                    this.itemRenderBlocks.renderBlockAsItem(block, itemstack.getItemDamage(), f5);
+                    //TODO renderBlockAsItem
+                    this.itemRenderBlocks.func_147800_a(block, itemstack.getItemDamage(), f5);
                     GL11.glPopMatrix();
                 }
             }
@@ -354,7 +355,8 @@ public class RenderItemCopy extends Render
         float f2;
 
         Block block = Block.func_149634_a(k);
-        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(block.func_149645_b()))
+        //TODO renderItemIn3d
+        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.func_147739_a(block.func_149645_b()))
         {
             par2TextureManager.bindTexture(TextureMap.locationBlocksTexture);
             GL11.glPushMatrix();
@@ -375,9 +377,11 @@ public class RenderItemCopy extends Render
             }
 
             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-            this.itemRenderBlocks.useInventoryTint = this.renderWithColor;
-            this.itemRenderBlocks.renderBlockAsItem(block, l, 1.0F);
-            this.itemRenderBlocks.useInventoryTint = true;
+            //TODO FIX THESE
+            //this.itemRenderBlocks.useInventoryTint = this.renderWithColor;
+            this.itemRenderBlocks.func_147800_a(block, l, 1.0F);
+            //TODO FIX THESE
+            //this.itemRenderBlocks.useInventoryTint = true;
             GL11.glPopMatrix();
         }
         else if (k != null && k.requiresMultipleRenderPasses())

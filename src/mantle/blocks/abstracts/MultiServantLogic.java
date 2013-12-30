@@ -96,7 +96,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) getWorld().getBlockTileEntity(master.x, master.y, master.z);
+            IMasterLogic logic = (IMasterLogic) getWorld().func_147438_o(master.x, master.y, master.z);
             logic.notifyChange(this, field_145851_c, field_145848_d, field_145849_e);
         }
     }
@@ -161,7 +161,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
         readCustomNBT(packet.func_148857_g());
-        this.markBlockForRenderUpdate(field_145851_c, field_145848_d, field_145849_e);
+        //TODO markblockforRenderUpdate() ???
+        getWorld().func_147471_g(field_145851_c, field_145848_d, field_145849_e);
     }
 
     /* IDebuggable */

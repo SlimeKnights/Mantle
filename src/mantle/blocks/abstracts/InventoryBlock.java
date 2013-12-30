@@ -132,9 +132,9 @@ public abstract class InventoryBlock extends BlockContainer
         this.side = side;
         return meta;
     }
-
+    //TODO onBlockPlacedBy
     @Override
-    public void onBlockPlacedBy (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
+    public void func_149689_a (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
     {
         TileEntity logic = world.func_147438_o(x, y, z);
         if (logic instanceof IFacingLogic)

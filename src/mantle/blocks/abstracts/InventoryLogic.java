@@ -103,7 +103,8 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (this.getBlockTileEntity(field_145851_c, field_145848_d, field_145849_e) != this)
+        //getBlockTileEntity
+        if (getWorld().func_147438_o(field_145851_c, field_145848_d, field_145849_e) != this)
             return false;
 
         else
@@ -226,7 +227,10 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     {
 
     }
-
+    public World getWorld()
+    {
+    return this.func_145831_w();
+    }
     /* IDebuggable */
     @Override
     public DebugData getDebugInfo(EntityPlayer player) {
