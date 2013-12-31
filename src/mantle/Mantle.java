@@ -21,7 +21,8 @@ import mantle.lib.environment.EnvironmentChecks;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-@Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge@[8.9,)")
+@Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge")
+//@[8.9,)")
 public class Mantle
 {
     /* Instance of this mod, used for grabbing prototype fields */
