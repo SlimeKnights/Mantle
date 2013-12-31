@@ -32,7 +32,7 @@ public abstract class InventoryBlock extends BlockContainer
 {
     protected Random rand = new Random();
 
-    protected InventoryBlock(int id, Material material)
+    protected InventoryBlock(Material material)
     {
         super(material);
     }
