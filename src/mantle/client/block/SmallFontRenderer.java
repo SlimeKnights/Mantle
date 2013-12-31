@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import static mantle.lib.CoreRepo.*;
 
 import javax.imageio.ImageIO;
 
@@ -105,10 +106,12 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     public SmallFontRenderer(GameSettings par1GameSettings, ResourceLocation par2ResourceLocation, TextureManager par3TextureManager, boolean par4)
     {
         this.field_111273_g = par2ResourceLocation;
+        logger.error(this.field_111273_g.toString() + "    " + this.field_111273_g.getResourcePath());
         this.renderEngine = par3TextureManager;
         this.unicodeFlag = true;
-        par3TextureManager.bindTexture(this.field_111273_g);
-
+        if (this.renderEngine != null)
+            this.renderEngine.bindTexture(par2ResourceLocation);
+            //Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("textures/font/ascii.png"));
         for (int i = 0; i < 32; ++i)
         {
             int j = (i >> 3 & 1) * 85;
@@ -520,7 +523,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             }
             else
             {
-                j = ' '; 
+                j = ' ';
                 for (char c : ChatAllowedCharacters.allowedCharactersArray)
                 {
                     if (c == c0)
