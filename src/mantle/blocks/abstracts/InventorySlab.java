@@ -14,9 +14,9 @@ import java.util.List;
  */
 public abstract class InventorySlab extends InventoryBlock
 {
-    public InventorySlab(int id, Material material)
+    public InventorySlab(Material material)
     {
-        super(id, material);
+        super(material);
     }
 
     /* Rendering */
