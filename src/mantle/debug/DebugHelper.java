@@ -1,7 +1,8 @@
 package mantle.debug;
 
+import mantle.player.PlayerUtils;
 import net.minecraft.entity.player.EntityPlayer;
-
+import net.minecraft.util.ChatComponentText;
 import static mantle.lib.CoreRepo.*;
 import static mantle.lib.CoreConfig.*;
 
@@ -10,11 +11,14 @@ import static mantle.lib.CoreConfig.*;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-public class DebugHelper {
+public class DebugHelper
+{
 
-    private DebugHelper() {} //Singleton
+    private DebugHelper()
+    {
+    } //Singleton
 
-    public static void handleDebugData(DebugData data)
+    public static void handleDebugData (DebugData data)
     {
         if (debug_enableChat)
             handleChatDebug(data);
@@ -28,12 +32,11 @@ public class DebugHelper {
         String prefix = "[" + data.cl.getSimpleName() + "] ";
         for (String str : data.strings)
         {
-          //TODO find this
-          //  player.addChatMessage(prefix + str);
+            PlayerUtils.sendChatMessage(player, prefix + str);
         }
     }
 
-    private static void handleConsoleDebug(DebugData data)
+    private static void handleConsoleDebug (DebugData data)
     {
         String player = data.player.getDisplayName();//.username;
         String prefix = "[" + player + ":" + data.cl.getSimpleName() + "] ";
