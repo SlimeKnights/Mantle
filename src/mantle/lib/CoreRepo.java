@@ -18,6 +18,6 @@ public final class CoreRepo
     public static final String modName = "Mantle";
     public static final String modVersion = "${version}";
 
-    public static final Logger logger = LogManager.getLogger();
+    public static final Logger logger = LogManager.getLogger("Mantle");
 
 }
