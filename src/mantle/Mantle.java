@@ -64,7 +64,7 @@ public class Mantle
      * @param evt The FMLInitializationEvent from FML
      */
     @EventHandler
-    public void Init (FMLPreInitializationEvent evt)
+    public void Init (FMLInitializationEvent evt)
     {
         logger.info("Entering initialization phase.");
     }
@@ -77,7 +77,7 @@ public class Mantle
      * @param evt The FMLPostInitializationEvent from FML
      */
     @EventHandler
-    public void postInit (FMLPreInitializationEvent evt)
+    public void postInit (FMLPostInitializationEvent evt)
     {
         logger.info("Entering postinitialization phase.");
     }
