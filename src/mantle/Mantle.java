@@ -1,6 +1,8 @@
 package mantle;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -43,6 +45,9 @@ public class Mantle
     public void preInit (FMLPreInitializationEvent evt)
     {
         //logger.setParent(FMLCommonHandler.instance().getFMLLogger());
+        LoggerConfig fmlConf = new LoggerConfig(FMLCommonHandler.instance().getFMLLogger().getName(), Level.ALL, true);
+        LoggerConfig modConf = new LoggerConfig(logger.getName(), Level.ALL, true);
+        modConf.setParent(fmlConf);
 
         CoreConfig.loadConfiguration(new net.minecraftforge.common.config.Configuration(evt.getSuggestedConfigurationFile()));
 
