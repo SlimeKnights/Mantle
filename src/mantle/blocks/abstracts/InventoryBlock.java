@@ -37,8 +37,9 @@ public abstract class InventoryBlock extends BlockContainer
         super(material);
     }
 
+    //TODO createNewTileEntity()
     /* Logic backend */
-    public TileEntity createNewTileEntity (World var1)
+    public TileEntity func_149915_a (World var1)
     {
         return null;
     }

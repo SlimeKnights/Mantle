@@ -72,7 +72,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
+    public boolean verifyMaster (IMasterLogic logic, World w, int x, int y, int z)
     {
         if (hasMaster)
         {
