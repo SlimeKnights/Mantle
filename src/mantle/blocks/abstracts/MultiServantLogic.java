@@ -66,7 +66,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public boolean setPotentialMaster (IMasterLogic master, int x, int y, int z)
+    public boolean setPotentialMaster (IMasterLogic master, World w, int x, int y, int z)
     {
         return !hasMaster;
     }

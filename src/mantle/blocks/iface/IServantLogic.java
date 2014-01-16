@@ -13,13 +13,14 @@ public interface IServantLogic
     /** Checks if this block can be tied to this master
      * 
      * @param master
+     * @param world the world of master
      * @param x xCoord of master
      * @param y yCoord of master
      * @param z zCoord of master
      * @return whether the servant can be tied to this master
      */
 
-    public boolean setPotentialMaster (IMasterLogic master, int xMaster, int yMaster, int zMaster);
+    public boolean setPotentialMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
 
     /** Used to set and verify that this is the block's master
      * 
