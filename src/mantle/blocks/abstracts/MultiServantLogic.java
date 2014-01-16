@@ -86,7 +86,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public void invalidateMaster (IMasterLogic master, int x, int y, int z)
+    public void invalidateMaster (IMasterLogic master,World w, int x, int y, int z)
     {
         hasMaster = false;
         master = null;
