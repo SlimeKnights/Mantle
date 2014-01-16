@@ -37,10 +37,11 @@ public interface IServantLogic
     /** Exactly what it says on the tin
      * 
      * @param master
+     * @param world 
      * @param x xCoord of master
      * @param y yCoord of master
      * @param z zCoord of master
      */
 
-    public void invalidateMaster (IMasterLogic master,  int xMaster, int yMaster, int zMaster);
+    public void invalidateMaster (IMasterLogic master,  World world, int xMaster, int yMaster, int zMaster);
 }
