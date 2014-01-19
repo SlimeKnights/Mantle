@@ -130,19 +130,17 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public void func_145841_b (NBTTagCompound tags)
+    public void func_145839_a (NBTTagCompound tags)
     {
-        //TODO        readFromNBT(tags) ???
-        super.func_145841_b(tags);
+        super.func_145839_a(tags);
         func_145841_b(tags);
         readCustomNBT(tags);
     }
 
     @Override
-    public void func_145839_a (NBTTagCompound tags)
+    public void func_145841_b (NBTTagCompound tags)
     {
-        //TODO        writeToNBT(tags) ???
-        super.func_145839_a(tags);
+        super.func_145841_b(tags);
         writeCustomNBT(tags);
     }
 
