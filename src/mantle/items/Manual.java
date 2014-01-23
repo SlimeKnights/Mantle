@@ -3,6 +3,7 @@ package mantle.items;
 import java.util.List;
 
 import mantle.Mantle;
+import mantle.books.BookDataStore;
 import mantle.items.abstracts.CraftingItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -36,17 +37,6 @@ public class Manual extends CraftingItem
     @SideOnly(Side.CLIENT)
     public void addInformation (ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
-        switch (stack.getItemDamage())
-        {
-        case 0:
-            list.add("\u00a7o" + StatCollector.translateToLocal("manual1.tooltip"));
-            break;
-        case 1:
-            list.add("\u00a7o" + StatCollector.translateToLocal("manual2.tooltip"));
-            break;
-        case 2:
-            list.add("\u00a7o" + StatCollector.translateToLocal("manual3.tooltip"));
-            break;
-        }
+        list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getItemDamage()).toolTip));
     }
 }
