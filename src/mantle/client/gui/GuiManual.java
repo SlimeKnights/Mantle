@@ -155,8 +155,8 @@ public class GuiManual extends GuiScreen
         }
     }
 
-    private static final ResourceLocation bookRight = new ResourceLocation("tinker", "textures/gui/bookright.png");
-    private static final ResourceLocation bookLeft = new ResourceLocation("tinker", "textures/gui/bookleft.png");
+    private static final ResourceLocation bookRight = new ResourceLocation("mantle", "textures/gui/bookright.png");
+    private static final ResourceLocation bookLeft = new ResourceLocation("mantle", "textures/gui/bookleft.png");
 
     public void drawScreen (int par1, int par2, float par3)
     {

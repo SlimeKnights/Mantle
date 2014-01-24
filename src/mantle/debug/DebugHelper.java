@@ -1,5 +1,7 @@
 package mantle.debug;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mantle.player.PlayerUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;

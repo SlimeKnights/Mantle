@@ -3,6 +3,7 @@ package mantle.lib.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -10,7 +11,7 @@ public class MantleClientRegistry
 {
     public static Map<String, ItemStack> manualIcons = new HashMap<String, ItemStack>();
     public static Map<String, ItemStack[]> recipeIcons = new HashMap<String, ItemStack[]>();
-    public static ItemStack defaultStack = new ItemStack(Item.func_150899_d(265));
+    public static ItemStack defaultStack = new ItemStack(Items.iron_ingot);
 
     public static void registerManualIcon (String name, ItemStack stack)
     {

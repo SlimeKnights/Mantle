@@ -1,5 +1,6 @@
 package mantle.client;
 
+import mantle.books.BookDataStore;
 import mantle.common.MProxyCommon;
 
 import java.util.HashMap;
@@ -66,6 +67,6 @@ public class MProxyClient extends MProxyCommon
 
     private static Document getManualFromStack (ItemStack stack)
     {
-        return null;
+        return BookDataStore.getBookFromName(stack.getItem().getUnlocalizedName()).getDoc();
     }
 }

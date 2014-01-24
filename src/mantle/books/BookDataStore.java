@@ -9,17 +9,17 @@ public class BookDataStore
 
     public void addBook (BookData bd)
     {
-        int pos = data.size();
+        int insertOrder = data.size();
         data.put(bd.getFullUnlocalizedName(), bd);
-        intMap.put(pos, bd.getFullUnlocalizedName());
+        intMap.put(insertOrder, bd.getFullUnlocalizedName());
     }
 
-    public BookData getBookfromName (String ModID, String unlocalizedName)
+    public static BookData getBookfromName (String ModID, String unlocalizedName)
     {
         return getBookFromName(ModID + ":" + unlocalizedName);
     }
 
-    public BookData getBookFromName (String fullBookName)
+    public static BookData getBookFromName (String fullBookName)
     {
         return data.get(fullBookName);
     }
@@ -29,12 +29,12 @@ public class BookDataStore
         return data.get(intMap.get(bookIDNum));
     }
 
-    public int getIDFromName (String FullUnlocalizedName)
+    public static int getIDFromName (String FullUnlocalizedName)
     {
         return intMap.inverse().get(FullUnlocalizedName);
     }
 
-    public int getIDFromBook (BookData b)
+    public static int getIDFromBook (BookData b)
     {
         return getIDFromName(data.inverse().get(b));
     }
