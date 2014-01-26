@@ -1,5 +1,6 @@
 package mantle.client;
 
+import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.MProxyCommon;
 
@@ -60,13 +61,13 @@ public class MProxyClient extends MProxyCommon
     if (ID == manualGuiID)
     {
         ItemStack stack = player.getCurrentEquippedItem();
-        return new GuiManual(stack, MProxyClient.getManualFromStack(stack));
+        return new GuiManual(stack, MProxyClient.getBookDataFromStack(stack));
     }
     return null;
     }
 
-    private static Document getManualFromStack (ItemStack stack)
+    private static BookData getBookDataFromStack (ItemStack stack)
     {
-        return BookDataStore.getBookFromName(stack.getItem().getUnlocalizedName()).getDoc();
+        return BookDataStore.getBookFromName(stack.getItem().getUnlocalizedName());
     }
 }

@@ -12,11 +12,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import mantle.books.BookData;
 import mantle.client.RenderItemCopy;
 import mantle.client.MProxyClient;
 import mantle.client.block.SmallFontRenderer;
 import mantle.client.pages.BookPage;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -34,18 +34,25 @@ public class GuiManual extends GuiScreen
 
     private TurnPageButton buttonNextPage;
     private TurnPageButton buttonPreviousPage;
+    private static ResourceLocation bookRight;// = new ResourceLocation("mantle", "textures/gui/bookright.png");
+    private static ResourceLocation bookLeft;// = new ResourceLocation("mantle", "textures/gui/bookleft.png");
 
     BookPage pageLeft;
     BookPage pageRight;
 
     public SmallFontRenderer fonts = MProxyClient.smallFontRenderer;
 
-    public GuiManual(ItemStack stack, Document doc)
+    public GuiManual(ItemStack stack, BookData data)
     {
         this.field_146297_k = Minecraft.getMinecraft();
         this.itemstackBook = stack;
         currentPage = 0; //Stack page
-        manual = doc;
+        manual = data.getDoc();
+        if (data.font != null)
+            this.fonts = data.font;
+        bookLeft = new ResourceLocation(data.modID, data.leftImageLocation);
+        bookRight = new ResourceLocation(data.modID, data.rightImageLocation);
+
         //renderitem.renderInFrame = true;
     }
 
@@ -155,8 +162,6 @@ public class GuiManual extends GuiScreen
         }
     }
 
-    private static final ResourceLocation bookRight = new ResourceLocation("mantle", "textures/gui/bookright.png");
-    private static final ResourceLocation bookLeft = new ResourceLocation("mantle", "textures/gui/bookleft.png");
 
     public void drawScreen (int par1, int par2, float par3)
     {

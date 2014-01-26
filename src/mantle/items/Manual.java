@@ -5,6 +5,7 @@ import java.util.List;
 import mantle.Mantle;
 import mantle.books.BookDataStore;
 import mantle.items.abstracts.CraftingItem;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -18,6 +19,11 @@ public class Manual extends CraftingItem
     static String[] textureName = new String[] { "tinkerbook_diary", "tinkerbook_toolstation", "tinkerbook_smeltery", "tinkerbook_blue" };
 
     public Manual()
+    {
+        super(name, textureName, "", "mantle", null);
+        setUnlocalizedName("tconstruct.manual");
+    }
+    public Manual(String[] name, String[] textureName, String folder, String modTexturePrefix, CreativeTabs tab)
     {
         super(name, textureName, "", "mantle", null);
         setUnlocalizedName("tconstruct.manual");
