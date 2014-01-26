@@ -1,6 +1,7 @@
 package mantle.client.pages;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -25,8 +26,10 @@ public class PicturePage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight)
+    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
+        if(isTranslatable)
+            text = StatCollector.translateToLocal(text);
         manual.fonts.drawSplitString(text, localWidth + 8, localHeight, 178, 0);
     }
 

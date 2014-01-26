@@ -21,5 +21,5 @@ public abstract class BookPage
     {
     }
 
-    public abstract void renderContentLayer (int localwidth, int localheight);
+    public abstract void renderContentLayer (int localwidth, int localheight, boolean isTranslatable);
 }

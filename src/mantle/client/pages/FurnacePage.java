@@ -3,6 +3,7 @@ package mantle.client.pages;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -29,11 +30,13 @@ public class FurnacePage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight)
+    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
-        if (text != null)
+        if (text != null){
+            if(isTranslatable)
+                text = StatCollector.translateToLocal(text);
             manual.fonts.drawString("\u00a7n" + text, localWidth + 50, localHeight + 4, 0);
-
+        }
         GL11.glScalef(2f, 2f, 2f);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.enableGUIStandardItemLighting();
@@ -52,7 +55,7 @@ public class FurnacePage extends BookPage
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
     }
 
-    private static final ResourceLocation background = new ResourceLocation("tinker", "textures/gui/bookfurnace.png");
+    private static final ResourceLocation background = new ResourceLocation("mantle", "textures/gui/bookfurnace.png");
 
     public void renderBackgroundLayer (int localWidth, int localHeight)
     {

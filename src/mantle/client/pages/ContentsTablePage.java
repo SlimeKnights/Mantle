@@ -2,6 +2,7 @@ package mantle.client.pages;
 
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -35,10 +36,14 @@ public class ContentsTablePage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight)
+    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
         if (text != null)
+        {
+            if (isTranslatable)
+                text = StatCollector.translateToLocal(text);
             manual.fonts.drawString("\u00a7n" + text, localWidth + 25 + manual.fonts.getStringWidth(text) / 2, localHeight + 4, 0);
+        }
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.enableGUIStandardItemLighting();
         manual.renderitem.zLevel = 100;
@@ -46,6 +51,9 @@ public class ContentsTablePage extends BookPage
         {
             manual.renderitem.renderItemIntoGUI(manual.fonts, manual.getMC().renderEngine, icons[i], localWidth + 16, localHeight + 18 * i + 18);
             int yOffset = 18;
+            if (isTranslatable)
+                iconText[i] = StatCollector.translateToLocal(iconText[i]);
+
             if (iconText[i].length() > 40)
                 yOffset = 13;
             manual.fonts.drawString(iconText[i], localWidth + 38, localHeight + 18 * i + yOffset, 0);

@@ -31,6 +31,7 @@ public class GuiManual extends GuiScreen
     int bookTotalPages = 1;
     int currentPage;
     int maxPages;
+    BookData bData;
 
     private TurnPageButton buttonNextPage;
     private TurnPageButton buttonPreviousPage;
@@ -50,8 +51,9 @@ public class GuiManual extends GuiScreen
         manual = data.getDoc();
         if (data.font != null)
             this.fonts = data.font;
-        bookLeft = new ResourceLocation(data.modID, data.leftImageLocation);
-        bookRight = new ResourceLocation(data.modID, data.rightImageLocation);
+        bookLeft = data.leftImage;
+        bookRight = data.rightImage;
+        this.bData = data;
 
         //renderitem.renderInFrame = true;
     }
@@ -73,8 +75,8 @@ public class GuiManual extends GuiScreen
         updateText();
         int xPos = (this.field_146294_l) / 2; //TODO Width?
         //TODO buttonList
-        this.field_146292_n.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true));
-        this.field_146292_n.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false));
+        this.field_146292_n.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true, bData));
+        this.field_146292_n.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false, bData));
     }
 
     protected void actionPerformed (GuiButton button)
@@ -184,9 +186,9 @@ public class GuiManual extends GuiScreen
             pageRight.renderBackgroundLayer(localWidth + 220, localHeight + 12);
 
         if (pageLeft != null)
-            pageLeft.renderContentLayer(localWidth + 16, localHeight + 12);
+            pageLeft.renderContentLayer(localWidth + 16, localHeight + 12, bData.isTranslatable);
         if (pageRight != null)
-            pageRight.renderContentLayer(localWidth + 220, localHeight + 12);
+            pageRight.renderContentLayer(localWidth + 220, localHeight + 12, bData.isTranslatable);
     }
 
     public Minecraft getMC ()

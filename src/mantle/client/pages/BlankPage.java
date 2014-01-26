@@ -11,7 +11,7 @@ public class BlankPage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localwidth, int localheight)
+    public void renderContentLayer (int localwidth, int localheight, boolean isTranslatable)
     {
     }
 

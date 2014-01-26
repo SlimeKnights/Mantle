@@ -3,6 +3,7 @@ package mantle.client.pages;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -34,8 +35,10 @@ public class CraftingPage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight)
+    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
+        if (isTranslatable)
+            text = StatCollector.translateToLocal(text);
         if (size.equals("two"))
             drawCraftingPage(text, icons, 2, localWidth, localHeight + 12);
         if (size.equals("three"))
@@ -91,7 +94,7 @@ public class CraftingPage extends BookPage
             drawBackground(3, localwidth + (side != 1 ? 6 : 0), localheight + 12);
     }
 
-    private static final ResourceLocation background = new ResourceLocation("tinker", "textures/gui/bookcrafting.png");
+    private static final ResourceLocation background = new ResourceLocation("mantle", "textures/gui/bookcrafting.png");
 
     public void drawBackground (int size, int localWidth, int localHeight)
     {

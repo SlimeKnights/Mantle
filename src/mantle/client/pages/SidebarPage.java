@@ -3,6 +3,7 @@ package mantle.client.pages;
 import mantle.lib.client.MantleClientRegistry;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -34,8 +35,11 @@ public class SidebarPage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight)
+    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
+        if(isTranslatable){
+            text = StatCollector.translateToLocal(text);
+        }
         manual.fonts.drawSplitString(text, localWidth, localHeight, 178, 0);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.enableGUIStandardItemLighting();
@@ -43,6 +47,9 @@ public class SidebarPage extends BookPage
         int offset = text.length() / 4 + 10;
         for (int i = 0; i < icons.length; i++)
         {
+            if(isTranslatable){
+                iconText[i]= StatCollector.translateToLocal(iconText[i]);
+            }
             manual.renderitem.renderItemIntoGUI(manual.fonts, manual.getMC().renderEngine, icons[i], localWidth + 8, localHeight + 18 * i + offset);
             int yOffset = 39;
             if (iconText[i].length() > 40)

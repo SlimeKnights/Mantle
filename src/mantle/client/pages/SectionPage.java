@@ -1,5 +1,7 @@
 package mantle.client.pages;
 
+import net.minecraft.util.StatCollector;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -21,8 +23,13 @@ public class SectionPage extends BookPage
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight)
+    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
+        if (isTranslatable)
+        {
+            title = StatCollector.translateToLocal(title);
+            body = StatCollector.translateToLocal(body);
+        }
         manual.fonts.drawSplitString("\u00a7n" + title, localWidth + 70, localHeight + 4, 178, 0);
         manual.fonts.drawSplitString(body, localWidth, localHeight + 16, 190, 0);
     }
