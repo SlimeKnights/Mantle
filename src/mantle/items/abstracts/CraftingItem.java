@@ -32,6 +32,14 @@ public class CraftingItem extends Item
         this.folder = folder;
     }
 
+    public void updateData (String[] names, String[] tex, String folder, String modTexturePrefix)
+    {
+        this.modTexPrefix = modTexturePrefix;
+        this.textureNames = tex;
+        this.unlocalizedNames = names;
+        this.folder = folder;
+    }
+
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage (int meta)
     {

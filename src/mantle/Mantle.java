@@ -44,7 +44,7 @@ public class Mantle
     /* Proxies for sides, used for graphics processing */
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
     public static MProxyCommon proxy;
-    public static Item mantleBook;
+    public static Manual mantleBook;
     /**
      * FML preinitialisation handler
      *
@@ -69,7 +69,7 @@ public class Mantle
         proxy.registerRenderer();
         proxy.readManuals();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
-        mantleBook = new Manual().setUnlocalizedName("mantle.manual");
+        mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
         
         BookData data = new BookData();
@@ -78,6 +78,7 @@ public class Mantle
         data.modID = CoreRepo.modId;
         
         BookDataStore.addBook(data);
+        mantleBook.updateManual();
 
 
     }

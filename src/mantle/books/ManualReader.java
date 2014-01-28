@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import mantle.Mantle;
+import static mantle.lib.CoreRepo.logger;
 
 import org.w3c.dom.Document;
 
@@ -17,6 +18,7 @@ public class ManualReader
 
         try
         {
+            logger.info("Loading Manual XML from: " + location);
             InputStream stream = Mantle.class.getResourceAsStream(location);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(stream);

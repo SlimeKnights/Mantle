@@ -13,11 +13,11 @@ import net.minecraft.world.World;
 import net.minecraft.util.StatCollector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
+import static mantle.lib.CoreRepo.logger;
 public class Manual extends CraftingItem
 {
-	
-	public final String modID;
+
+    public final String modID;
     static String[] name = new String[] { "beginner", "toolstation", "smeltery", "diary" };
     static String[] textureName = new String[] { "tinkerbook_diary", "tinkerbook_toolstation", "tinkerbook_smeltery", "tinkerbook_blue" };
 
@@ -26,6 +26,12 @@ public class Manual extends CraftingItem
         super(name, textureName, "", "mantle", CreativeTabs.tabMisc);
         modID = CoreRepo.modId;
     }
+
+    public void updateManual ()
+    {
+        updateData(new String[] { "test" }, new String[] { "mantlebook_blue" }, "", "mantle");
+    }
+
     public Manual(String[] name, String[] textureName, String folder, String modTexturePrefix, CreativeTabs tab, String modID)
     {
         super(name, textureName, "", "mantle", tab);
@@ -42,22 +48,24 @@ public class Manual extends CraftingItem
             FMLClientHandler.instance().displayGuiScreen(player, new GuiManual(player.getCurrentEquippedItem(), getManualFromStack(stack)));*/
         return stack;
     }
-    
-    @Override
 
+    @Override
     @SideOnly(Side.CLIENT)
     public void addInformation (ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
+        //logger.info(stack.getItemDamage() + " "+ BookDataStore.getBookfromID(stack.getItemDamage()) + " " + BookDataStore.getBookfromID(stack.getItemDamage()) );
         list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getItemDamage()).toolTip));
     }
-    
+
     @Override
-    public String getUnlocalizedName(){
-    	return modID + ":" + super.getUnlocalizedName();
+    public String getUnlocalizedName ()
+    {
+        return modID + ":" + super.getUnlocalizedName();
     }
-    
+
     @Override
-    public String getUnlocalizedName(ItemStack par1ItemStack){
+    public String getUnlocalizedName (ItemStack par1ItemStack)
+    {
         return modID + ":" + super.getUnlocalizedName(par1ItemStack);
     }
 }
