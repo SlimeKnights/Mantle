@@ -20,13 +20,13 @@ public class Manual extends CraftingItem
 
     public Manual()
     {
-        super(name, textureName, "", "mantle", null);
-        setUnlocalizedName("tconstruct.manual");
+        super(name, textureName, "", "mantle", CreativeTabs.tabMisc);
+        setUnlocalizedName("mantle.manual");
     }
     public Manual(String[] name, String[] textureName, String folder, String modTexturePrefix, CreativeTabs tab)
     {
-        super(name, textureName, "", "mantle", null);
-        setUnlocalizedName("tconstruct.manual");
+        super(name, textureName, "", "mantle", tab);
+        setUnlocalizedName("mantle.manual");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package mantle;
 
+import net.minecraft.item.Item;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -8,6 +10,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -15,6 +18,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import static mantle.lib.CoreRepo.*;
 import mantle.common.MProxyCommon;
+import mantle.items.Manual;
 import mantle.lib.CoreConfig;
 import mantle.lib.environment.EnvironmentChecks;
 
@@ -35,7 +39,7 @@ public class Mantle
     /* Proxies for sides, used for graphics processing */
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
     public static MProxyCommon proxy;
-
+    public static Item mantleBook;
     /**
      * FML preinitialisation handler
      *
@@ -60,6 +64,9 @@ public class Mantle
         proxy.registerRenderer();
         proxy.readManuals();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+        mantleBook = new Manual();
+        GameRegistry.registerItem(mantleBook, "mantleBook");
+
 
     }
 
