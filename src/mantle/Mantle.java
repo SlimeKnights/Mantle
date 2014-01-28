@@ -1,26 +1,31 @@
 package mantle;
 
-import net.minecraft.item.Item;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import static mantle.lib.CoreRepo.*;
+import static mantle.lib.CoreRepo.logger;
+import static mantle.lib.CoreRepo.modId;
+import static mantle.lib.CoreRepo.modName;
+import static mantle.lib.CoreRepo.modVersion;
+import mantle.books.BookData;
+import mantle.books.BookDataStore;
 import mantle.common.MProxyCommon;
 import mantle.items.Manual;
 import mantle.lib.CoreConfig;
+import mantle.lib.CoreRepo;
 import mantle.lib.environment.EnvironmentChecks;
+import net.minecraft.item.Item;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * Mantle
@@ -64,8 +69,15 @@ public class Mantle
         proxy.registerRenderer();
         proxy.readManuals();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
-        mantleBook = new Manual();
+        mantleBook = new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
+        
+        BookData data = new BookData();
+        data.unlocalizedName = "item.mantle.manual";
+        data.toolTip = "Test Book";
+        data.modID = CoreRepo.modId;
+        
+        BookDataStore.addBook(data);
 
 
     }

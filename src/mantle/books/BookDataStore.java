@@ -4,10 +4,10 @@ import com.google.common.collect.HashBiMap;
 
 public class BookDataStore
 {
-    private static HashBiMap<String, BookData> data;
-    private static HashBiMap<Integer, String> intMap;
+    private static HashBiMap<String, BookData> data = HashBiMap.create();
+    private static HashBiMap<Integer, String> intMap = HashBiMap.create();
 
-    public void addBook (BookData bd)
+    public static void addBook (BookData bd)
     {
         int insertOrder = data.size();
         data.put(bd.getFullUnlocalizedName(), bd);

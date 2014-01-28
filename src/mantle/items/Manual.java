@@ -5,6 +5,7 @@ import java.util.List;
 import mantle.Mantle;
 import mantle.books.BookDataStore;
 import mantle.items.abstracts.CraftingItem;
+import mantle.lib.CoreRepo;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,18 +16,20 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class Manual extends CraftingItem
 {
+	
+	public final String modID;
     static String[] name = new String[] { "beginner", "toolstation", "smeltery", "diary" };
     static String[] textureName = new String[] { "tinkerbook_diary", "tinkerbook_toolstation", "tinkerbook_smeltery", "tinkerbook_blue" };
 
     public Manual()
     {
         super(name, textureName, "", "mantle", CreativeTabs.tabMisc);
-        setUnlocalizedName("mantle.manual");
+        modID = CoreRepo.modId;
     }
-    public Manual(String[] name, String[] textureName, String folder, String modTexturePrefix, CreativeTabs tab)
+    public Manual(String[] name, String[] textureName, String folder, String modTexturePrefix, CreativeTabs tab, String modID)
     {
         super(name, textureName, "", "mantle", tab);
-        setUnlocalizedName("mantle.manual");
+        this.modID = modID;
     }
 
     @Override
@@ -39,10 +42,22 @@ public class Manual extends CraftingItem
             FMLClientHandler.instance().displayGuiScreen(player, new GuiManual(player.getCurrentEquippedItem(), getManualFromStack(stack)));*/
         return stack;
     }
+    
+    @Override
 
     @SideOnly(Side.CLIENT)
     public void addInformation (ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
         list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getItemDamage()).toolTip));
+    }
+    
+    @Override
+    public String getUnlocalizedName(){
+    	return modID + ":" + super.getUnlocalizedName();
+    }
+    
+    @Override
+    public String getUnlocalizedName(ItemStack par1ItemStack){
+        return modID + ":" + super.getUnlocalizedName(par1ItemStack);
     }
 }
