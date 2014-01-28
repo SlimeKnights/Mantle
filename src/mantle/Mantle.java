@@ -73,7 +73,7 @@ public class Mantle
         GameRegistry.registerItem(mantleBook, "mantleBook");
         
         BookData data = new BookData();
-        data.unlocalizedName = "item.mantle.manual";
+        data.unlocalizedName = "item.mantle.manual.test";
         data.toolTip = "Test Book";
         data.modID = CoreRepo.modId;
         

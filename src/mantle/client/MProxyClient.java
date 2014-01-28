@@ -68,6 +68,6 @@ public class MProxyClient extends MProxyCommon
 
     private static BookData getBookDataFromStack (ItemStack stack)
     {
-        return BookDataStore.getBookFromName(stack.getItem().getUnlocalizedName());
+        return BookDataStore.getBookFromName(stack.getItem().getUnlocalizedName(stack));
     }
 }

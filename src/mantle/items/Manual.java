@@ -66,6 +66,6 @@ public class Manual extends CraftingItem
     @Override
     public String getUnlocalizedName (ItemStack par1ItemStack)
     {
-        return modID + ":" + super.getUnlocalizedName(par1ItemStack);
+        return super.getUnlocalizedName(par1ItemStack);
     }
 }
