@@ -85,9 +85,9 @@ public class GuiManual extends GuiScreen
         if (button.field_146124_l)
         {
             //TODO ID????
-            if (button.field_146129_i == 1)
+            if (button.field_146127_k == 1)
                 currentPage += 2;
-            if (button.field_146129_i == 2)
+            if (button.field_146127_k == 2)
                 currentPage -= 2;
 
             updateText();
@@ -164,7 +164,6 @@ public class GuiManual extends GuiScreen
         }
     }
 
-
     public void drawScreen (int par1, int par2, float par3)
     {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -184,11 +183,11 @@ public class GuiManual extends GuiScreen
             pageLeft.renderBackgroundLayer(localWidth + 16, localHeight + 12);
         if (pageRight != null)
             pageRight.renderBackgroundLayer(localWidth + 220, localHeight + 12);
-
         if (pageLeft != null)
             pageLeft.renderContentLayer(localWidth + 16, localHeight + 12, bData.isTranslatable);
         if (pageRight != null)
             pageRight.renderContentLayer(localWidth + 220, localHeight + 12, bData.isTranslatable);
+
     }
 
     public Minecraft getMC ()

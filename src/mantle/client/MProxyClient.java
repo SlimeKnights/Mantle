@@ -42,6 +42,12 @@ public class MProxyClient extends MProxyCommon
     {
         return pageClasses.get(type);
     }
+
+    public void readManuals ()
+    {
+        initManualPages();
+    }
+
     void initManualPages ()
     {
         MProxyClient.registerManualPage("crafting", CraftingPage.class);
@@ -55,15 +61,25 @@ public class MProxyClient extends MProxyCommon
         MProxyClient.registerManualPage("sidebar", SidebarPage.class);
         MProxyClient.registerManualPage("blank", BlankPage.class);
     }
+
     @Override
     public Object getClientGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-    if (ID == manualGuiID)
-    {
-        ItemStack stack = player.getCurrentEquippedItem();
-        return new GuiManual(stack, MProxyClient.getBookDataFromStack(stack));
-    }
-    return null;
+        if (ID == manualGuiID)
+        {
+            ItemStack stack = player.getCurrentEquippedItem();
+            if (stack == null)
+                logger.error("stack null in book");
+            if (stack != null && stack.getItem() == null)
+                logger.error("item null in book");
+            if (stack != null && stack.getItem() != null && stack.getItem().getUnlocalizedName() == null)
+                logger.error("unlocalized name null in book");
+            else
+            {
+                return new GuiManual(stack, MProxyClient.getBookDataFromStack(stack));
+            }
+        }
+        return null;
     }
 
     private static BookData getBookDataFromStack (ItemStack stack)
