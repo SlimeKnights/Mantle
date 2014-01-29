@@ -60,12 +60,14 @@ public class Manual extends CraftingItem
     @Override
     public String getUnlocalizedName ()
     {
+      //  logger.info("unloc: " + super.getUnlocalizedName());
         return modID + ":" + super.getUnlocalizedName();
     }
 
     @Override
     public String getUnlocalizedName (ItemStack par1ItemStack)
     {
+     //   logger.info("unloc IS " + super.getUnlocalizedName(par1ItemStack));
         return super.getUnlocalizedName(par1ItemStack);
     }
 }

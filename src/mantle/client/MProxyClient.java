@@ -19,6 +19,7 @@ import mantle.client.block.SmallFontRenderer;
 import mantle.client.gui.GuiManual;
 import mantle.client.pages.*;
 import mantle.common.MProxyCommon;
+import static mantle.lib.CoreRepo.logger;
 
 public class MProxyClient extends MProxyCommon
 {
@@ -28,6 +29,10 @@ public class MProxyClient extends MProxyCommon
     public void registerRenderer ()
     {
         Minecraft mc = Minecraft.getMinecraft();
+        if(mc.getTextureManager() == null)
+            logger.error("vanilla tex man is null");
+        if (mc.renderEngine == null)
+            logger.error("vanilla render engine is null");
         smallFontRenderer = new SmallFontRenderer(mc.gameSettings, new ResourceLocation("minecraft:textures/font/ascii.png"), mc.renderEngine, false);
     }
 
@@ -40,6 +45,8 @@ public class MProxyClient extends MProxyCommon
 
     public static Class<? extends BookPage> getPageClass (String type)
     {
+       // logger.info(type);
+        //logger.info(pageClasses.get(type).getName());
         return pageClasses.get(type);
     }
 

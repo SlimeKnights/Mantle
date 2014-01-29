@@ -51,7 +51,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     private final ResourceLocation field_111273_g;
 
     /** The RenderEngine used to load and setup glyph textures. */
-    private final TextureManager renderEngine;
+    private TextureManager renderEngine;
 
     /** Current X coordinate at which to draw the next character. */
     private float posX;
@@ -106,12 +106,14 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     public SmallFontRenderer(GameSettings par1GameSettings, ResourceLocation par2ResourceLocation, TextureManager par3TextureManager, boolean par4)
     {
         this.field_111273_g = par2ResourceLocation;
-        logger.error(this.field_111273_g.toString() + "    " + this.field_111273_g.getResourcePath());
+        //logger.error(this.field_111273_g.toString() + "    " + this.field_111273_g.getResourcePath());
         this.renderEngine = par3TextureManager;
         this.unicodeFlag = true;
         if (this.renderEngine != null)
             this.renderEngine.bindTexture(par2ResourceLocation);
-            //Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("textures/font/ascii.png"));
+        if (this.renderEngine == null)
+            logger.error("renderEngine is null");
+       //Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("Minecraft", "textures/font/ascii.png"));
         for (int i = 0; i < 32; ++i)
         {
             int j = (i >> 3 & 1) * 85;
@@ -267,9 +269,13 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     {
         if (field_111274_c[par1] == null)
         {
-            field_111274_c[par1] = new ResourceLocation(String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
+            logger.info(par1);
+            logger.info(String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
+            field_111274_c[par1] = new ResourceLocation("minecraft", String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
         }
-
+        if (field_111274_c[par1] == null)
+            logger.error("resource location failded to initialize " + par1);
+        logger.info(field_111274_c[par1].getResourceDomain() +"   " + field_111274_c[par1].getResourcePath() );
         return field_111274_c[par1];
     }
 
@@ -278,6 +284,10 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
      */
     private void loadGlyphTexture (int par1)
     {
+        if(this.func_111271_a(par1) == null)
+            logger.error("resource location null");
+        if(this.renderEngine == null)
+            logger.error("renderengine null");
         this.renderEngine.bindTexture(this.func_111271_a(par1));
     }
 
@@ -293,6 +303,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         else
         {
             int i = par1 / 256;
+            logger.info("loading texture for glyph " + par1 + " which is " + i);
             this.loadGlyphTexture(i);
             int j = this.glyphWidth[par1] >>> 4;
             int k = this.glyphWidth[par1] & 15;
@@ -551,7 +562,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                     this.posX -= f;
                     this.posY -= f;
                 }
-
+                logger.info("rendering char " + c0);
                 float f1 = this.renderCharAtPos(j, c0, this.italicStyle);
 
                 if (flag1)
@@ -624,9 +635,11 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         if (this.bidiFlag)
         {
             par1Str = this.bidiReorder(par1Str);
+            logger.info("bidi " + par1Str);
             int i1 = this.getStringWidth(par1Str);
             par2 = par2 + par4 - i1;
         }
+        logger.info("renderStringAligned " + par1Str);
 
         return this.renderString(par1Str, par2, par3, par5, par6);
     }
@@ -730,7 +743,13 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         }
         else
         {
-            int i = ChatAllowedCharacters.allowedCharactersArray[par1];
+            int i;
+            if(ChatAllowedCharacters.isAllowedCharacter(par1))
+                i = par1;
+            else{
+                i =69;
+                logger.error("dont send bad chat characters to my font renderer!");
+                }
 
             if (i >= 0 && !this.unicodeFlag)
             {
