@@ -1,6 +1,5 @@
 package mantle.client.gui;
 
-import static mantle.lib.CoreRepo.logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;

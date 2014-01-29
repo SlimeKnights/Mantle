@@ -55,30 +55,15 @@ public class Mantle
     @EventHandler
     public void preInit (FMLPreInitializationEvent evt)
     {
-        //logger.setParent(FMLCommonHandler.instance().getFMLLogger());
-        LoggerConfig fmlConf = new LoggerConfig(FMLCommonHandler.instance().getFMLLogger().getName(), Level.ALL, true);
-        LoggerConfig modConf = new LoggerConfig(logger.getName(), Level.ALL, true);
-        modConf.setParent(fmlConf);
-
-        CoreConfig.loadConfiguration(new net.minecraftforge.common.config.Configuration(evt.getSuggestedConfigurationFile()));
-
         logger.info("Mantle (" + modVersion + ") -- Preparing for launch.");
         logger.info("Entering preinitialization phase.");
 
         EnvironmentChecks.verifyEnvironmentSanity();
-        proxy.registerRenderer();
-        proxy.readManuals();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
         
-        BookData data = new BookData();
-        data.unlocalizedName = "item.mantle.manual.test";
-        data.toolTip = "Test Book";
-        data.modID = CoreRepo.modId;
-        
-        BookDataStore.addBook(data);
-        mantleBook.updateManual();
 
 
     }
@@ -94,6 +79,8 @@ public class Mantle
     public void Init (FMLInitializationEvent evt)
     {
         logger.info("Entering initialization phase.");
+        proxy.registerRenderer();
+
     }
 
     /**
@@ -107,6 +94,13 @@ public class Mantle
     public void postInit (FMLPostInitializationEvent evt)
     {
         logger.info("Entering postinitialization phase.");
+        proxy.readManuals();
+        BookData data = new BookData();
+        data.unlocalizedName = "item.mantle.manual.test";
+        data.toolTip = "Test Book";
+        data.modID = CoreRepo.modId;
+        BookDataStore.addBook(data);
+        mantleBook.updateManual();
     }
 
 }

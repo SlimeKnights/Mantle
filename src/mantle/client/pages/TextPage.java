@@ -23,7 +23,6 @@ public class TextPage extends BookPage
     {
         if (IsTranslatable)
             text = StatCollector.translateToLocal(text);
-        logger.info("rendering text " + text);
         manual.fonts.drawSplitString(text, localWidth, localHeight, 178, 0);
     }
 }

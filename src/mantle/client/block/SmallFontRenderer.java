@@ -269,13 +269,8 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     {
         if (field_111274_c[par1] == null)
         {
-            logger.info(par1);
-            logger.info(String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
             field_111274_c[par1] = new ResourceLocation("minecraft", String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
         }
-        if (field_111274_c[par1] == null)
-            logger.error("resource location failded to initialize " + par1);
-        logger.info(field_111274_c[par1].getResourceDomain() +"   " + field_111274_c[par1].getResourcePath() );
         return field_111274_c[par1];
     }
 
@@ -284,10 +279,6 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
      */
     private void loadGlyphTexture (int par1)
     {
-        if(this.func_111271_a(par1) == null)
-            logger.error("resource location null");
-        if(this.renderEngine == null)
-            logger.error("renderengine null");
         this.renderEngine.bindTexture(this.func_111271_a(par1));
     }
 
@@ -303,7 +294,6 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         else
         {
             int i = par1 / 256;
-            logger.info("loading texture for glyph " + par1 + " which is " + i);
             this.loadGlyphTexture(i);
             int j = this.glyphWidth[par1] >>> 4;
             int k = this.glyphWidth[par1] & 15;
@@ -562,7 +552,6 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                     this.posX -= f;
                     this.posY -= f;
                 }
-                logger.info("rendering char " + c0);
                 float f1 = this.renderCharAtPos(j, c0, this.italicStyle);
 
                 if (flag1)
@@ -635,11 +624,9 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         if (this.bidiFlag)
         {
             par1Str = this.bidiReorder(par1Str);
-            logger.info("bidi " + par1Str);
             int i1 = this.getStringWidth(par1Str);
             par2 = par2 + par4 - i1;
         }
-        logger.info("renderStringAligned " + par1Str);
 
         return this.renderString(par1Str, par2, par3, par5, par6);
     }
