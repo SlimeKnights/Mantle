@@ -21,5 +21,9 @@ public class WorldHelper
     {
         return ComparisonHelper.areEquivalent(access.func_147439_a(x, y, z), Blocks.air);
     }
+    public static boolean isAirBlock (World access, int x, int y, int z)
+    {
+        return ComparisonHelper.areEquivalent(access.func_147439_a(x, y, z), Blocks.air);
+    }
 
 }
