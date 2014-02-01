@@ -159,7 +159,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
         readCustomNBT(packet.func_148857_g());
-        //TODO markblockforRenderUpdate() ???
+        field_145850_b.func_147479_m(this.field_145851_c, this.field_145848_d, this.field_145849_e);
         getWorld().func_147471_g(field_145851_c, field_145848_d, field_145849_e);
     }
 
