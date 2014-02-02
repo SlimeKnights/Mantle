@@ -44,7 +44,7 @@ public abstract class InventoryBlock extends BlockContainer
         return null;
     }
 
-    public abstract TileEntity createTileEntity (World world, int metadata);
+    public abstract TileEntity func_149915_a (World world, int metadata);
 
     public abstract Integer getGui (World world, int x, int y, int z, EntityPlayer entityplayer);
 
