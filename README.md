@@ -3,7 +3,10 @@
 **Shared code for Forge mods**
 
 ##Compile from Source
-Run [Apache Ant](http://ant.apache.org/bindownload.cgi) in the repository root: `ant package`
+Note: Git MUST be installed and in the system path to use our scripts.
+setup: Run [gradle]in the repository root: `gradlew[.bat] [setupDevWorkspace|setupDecompWorkspace] [eclipse|idea]`
+build: Run [gradle]in the repository root: `gradlew[.bat] build'
+if obscure gradle issues are found try running 'gradlew clean' or/and 'gradlew cleanCache'
 
 ##Issue reporting
 Please include the following:
