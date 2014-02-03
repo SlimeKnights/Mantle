@@ -23,3 +23,7 @@ Thumbs.db
 *~
 #manual version override
 version.properties
+#eclipse stuffs
+/*.classpath
+/*.project
+/.settings/
