@@ -33,7 +33,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         if (!hasMaster)
             return false;
         //Minecraft.getMinecraft().getMinecraft().thegetWorld()???
-        if (getWorld().func_147439_a(master.x, master.y, master.z) == masterBlock && getWorld().getBlockMetadata(master.x, master.y, master.z) == masterMeat)
+        if (getWorld().getBlock(master.x, master.y, master.z) == masterBlock && getWorld().getBlockMetadata(master.x, master.y, master.z) == masterMeat)
             return true;
 
         else
@@ -53,7 +53,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         hasMaster = true;
         master = new CoordTuple(x, y, z);
-        masterBlock = getWorld().func_147439_a(x, y, z);
+        masterBlock = getWorld().getBlock(x, y, z);
         masterMeat = (byte) getWorld().getBlockMetadata(x, y, z);
     }
 
@@ -96,8 +96,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) getWorld().func_147438_o(master.x, master.y, master.z);
-            logic.notifyChange(this, field_145851_c, field_145848_d, field_145849_e);
+            IMasterLogic logic = (IMasterLogic) getWorld().getTileEntity(master.x, master.y, master.z);
+            logic.notifyChange(this, xCoord, yCoord, zCoord);
         }
     }
 
@@ -123,44 +123,44 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             tags.setInteger("xCenter", master.x);
             tags.setInteger("yCenter", master.y);
             tags.setInteger("zCenter", master.z);
-            tags.setString("MasterBlockName", masterBlock.func_149702_O());//<- unlocalized name?
+            tags.setString("MasterBlockName", masterBlock.getItemIconName());//<- unlocalized name?
             tags.setString("MasterModName", "MODNAME"); //TODO get mod name of block here!!
             tags.setByte("masterMeat", masterMeat);
         }
     }
 
     @Override
-    public void func_145839_a (NBTTagCompound tags)
+    public void readFromNBT (NBTTagCompound tags)
     {
-        super.func_145839_a(tags);
-        func_145841_b(tags);
+        super.readFromNBT(tags);
+        writeToNBT(tags);
         readCustomNBT(tags);
     }
 
     @Override
-    public void func_145841_b (NBTTagCompound tags)
+    public void writeToNBT (NBTTagCompound tags)
     {
-        super.func_145841_b(tags);
+        super.writeToNBT(tags);
         writeCustomNBT(tags);
     }
 
     /* Packets */
     //TODO getDescriptionPacket()??
     @Override
-    public Packet func_145844_m ()
+    public Packet getDescriptionPacket ()
     {
         NBTTagCompound tag = new NBTTagCompound();
         writeCustomNBT(tag);
         //TODO xCoord, yCoord, zCoord
-        return new S35PacketUpdateTileEntity(field_145851_c, field_145848_d, field_145849_e, 1, tag);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
     }
 
     @Override
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
         readCustomNBT(packet.func_148857_g());
-        field_145850_b.func_147479_m(this.field_145851_c, this.field_145848_d, this.field_145849_e);
-        getWorld().func_147471_g(field_145851_c, field_145848_d, field_145849_e);
+        worldObj.func_147479_m(this.xCoord, this.yCoord, this.zCoord);
+        getWorld().markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     /* IDebuggable */
@@ -168,7 +168,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public DebugData getDebugInfo (EntityPlayer player)
     {
         String[] strs = new String[2];
-        strs[0] = "Location: x" + field_145851_c + ", y" + field_145848_d + ", z" + field_145849_e;
+        strs[0] = "Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord;
         if (hasMaster)
         {
             strs[1] = "masterBlock: " + masterBlock.toString() + ", masterMeat: " + masterMeat;
@@ -181,7 +181,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
     public World getWorld()
         {
-        return this.func_145831_w();
+        return this.getWorldObj();
         }
 
 }

@@ -8,7 +8,7 @@ public class BlockUtils
 {
     public static Block getBlockFromItem (Item item)
     {
-        return Block.func_149634_a(item);
+        return Block.getBlockFromItem(item);
     }
     public static Block getBlockFromItemStack (ItemStack itemStack)
     {

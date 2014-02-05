@@ -45,7 +45,7 @@ public class GuiManual extends GuiScreen
 
     public GuiManual(ItemStack stack, BookData data)
     {
-        this.field_146297_k = Minecraft.getMinecraft();
+        this.mc = Minecraft.getMinecraft();
         this.itemstackBook = stack;
         currentPage = 0; //Stack page
         manual = data.getDoc();
@@ -73,21 +73,21 @@ public class GuiManual extends GuiScreen
     {
         maxPages = manual.getElementsByTagName("page").getLength();
         updateText();
-        int xPos = (this.field_146294_l) / 2; //TODO Width?
+        int xPos = (this.width) / 2; //TODO Width?
         //TODO buttonList
-        this.field_146292_n.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true, bData));
-        this.field_146292_n.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false, bData));
+        this.buttonList.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true, bData));
+        this.buttonList.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false, bData));
     }
 
     protected void actionPerformed (GuiButton button)
     {
         //TODO ENABLED???
-        if (button.field_146124_l)
+        if (button.enabled)
         {
             //TODO ID????
-            if (button.field_146127_k == 1)
+            if (button.id == 1)
                 currentPage += 2;
-            if (button.field_146127_k == 2)
+            if (button.id == 2)
                 currentPage -= 2;
 
             updateText();
@@ -167,13 +167,13 @@ public class GuiManual extends GuiScreen
     public void drawScreen (int par1, int par2, float par3)
     {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.field_146297_k.getTextureManager().bindTexture(bookRight);
-        int localWidth = (this.field_146294_l / 2);
+        this.mc.getTextureManager().bindTexture(bookRight);
+        int localWidth = (this.width / 2);
         byte localHeight = 8;
         this.drawTexturedModalRect(localWidth, localHeight, 0, 0, this.bookImageWidth, this.bookImageHeight);
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.field_146297_k.getTextureManager().bindTexture(bookLeft);
+        this.mc.getTextureManager().bindTexture(bookLeft);
         localWidth = localWidth - this.bookImageWidth;
         this.drawTexturedModalRect(localWidth, localHeight, 256 - this.bookImageWidth, 0, this.bookImageWidth, this.bookImageHeight);
 
@@ -192,7 +192,7 @@ public class GuiManual extends GuiScreen
 
     public Minecraft getMC ()
     {
-        return field_146297_k;
+        return mc;
     }
 
     public boolean doesGuiPauseGame ()

@@ -30,7 +30,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderItemCopy extends Render
 {
-    private static final ResourceLocation field_110798_h = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+    private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
     private RenderBlocks itemRenderBlocks = new RenderBlocks();
 
     /** The RNG used in RenderItem (for bobbing itemstacks on the ground) */
@@ -72,13 +72,13 @@ public class RenderItemCopy extends Render
 
             Block block = null;
             
-                block = Block.func_149634_a(itemstack.getItem());
+                block = Block.getBlockFromItem(itemstack.getItem());
 
             if (ForgeHooksClient.renderEntityItem(par1EntityItem, itemstack, f2, f3, random, renderManager.renderEngine, new RenderBlocks(), 000)) // TODO what goes here not 000
             {
                 ;
             }
-            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.func_147739_a(block.func_149645_b()))
+            else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(block.getRenderType()))
             {
                 GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
 
@@ -90,7 +90,7 @@ public class RenderItemCopy extends Render
                 }
 
                 float f7 = 0.25F;
-                int j = block.func_149645_b();
+                int j = block.getRenderType();
 
                 if (j == 1 || j == 19 || j == 12 || j == 2)
                 {
@@ -113,7 +113,7 @@ public class RenderItemCopy extends Render
 
                     f5 = 1.0F;
                     //TODO renderBlockAsItem
-                    this.itemRenderBlocks.func_147800_a(block, itemstack.getItemDamage(), f5);
+                    this.itemRenderBlocks.renderBlockAsItem(block, itemstack.getItemDamage(), f5);
                     GL11.glPopMatrix();
                 }
             }
@@ -274,7 +274,7 @@ public class RenderItemCopy extends Render
                 {
                     GL11.glDepthFunc(GL11.GL_EQUAL);
                     GL11.glDisable(GL11.GL_LIGHTING);
-                    this.renderManager.renderEngine.bindTexture(field_110798_h);
+                    this.renderManager.renderEngine.bindTexture(RES_ITEM_GLINT);
                     GL11.glEnable(GL11.GL_BLEND);
                     GL11.glBlendFunc(GL11.GL_SRC_COLOR, GL11.GL_ONE);
                     float f13 = 0.76F;
@@ -354,9 +354,9 @@ public class RenderItemCopy extends Render
         float f1;
         float f2;
 
-        Block block = Block.func_149634_a(k);
+        Block block = Block.getBlockFromItem(k);
         //TODO renderItemIn3d
-        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.func_147739_a(block.func_149645_b()))
+        if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(block.getRenderType()))
         {
             par2TextureManager.bindTexture(TextureMap.locationBlocksTexture);
             GL11.glPushMatrix();
@@ -379,7 +379,7 @@ public class RenderItemCopy extends Render
             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
             //TODO FIX THESE
             //this.itemRenderBlocks.useInventoryTint = this.renderWithColor;
-            this.itemRenderBlocks.func_147800_a(block, l, 1.0F);
+            this.itemRenderBlocks.renderBlockAsItem(block, l, 1.0F);
             //TODO FIX THESE
             //this.itemRenderBlocks.useInventoryTint = true;
             GL11.glPopMatrix();
@@ -450,7 +450,7 @@ public class RenderItemCopy extends Render
         GL11.glDepthFunc(GL11.GL_GREATER);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);
-        manager.bindTexture(field_110798_h);
+        manager.bindTexture(RES_ITEM_GLINT);
         this.zLevel -= 50.0F;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_DST_COLOR);
@@ -481,7 +481,7 @@ public class RenderItemCopy extends Render
                 GL11.glDepthFunc(GL11.GL_GREATER);
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDepthMask(false);
-                par2TextureManager.bindTexture(field_110798_h);
+                par2TextureManager.bindTexture(RES_ITEM_GLINT);
                 this.zLevel -= 50.0F;
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_DST_COLOR);

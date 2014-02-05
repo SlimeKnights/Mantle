@@ -37,7 +37,7 @@ public class TurnPageButton extends GuiButton
         {
             logger.info("rendering the button");
             //TODO xPosition, yPosition, zPosition, width, height
-            boolean var4 = par2 >= this.field_146128_h && par3 >= this.field_146129_i && par2 < this.field_146128_h + this.field_146120_f && par3 < this.field_146129_i + this.field_146121_g;
+            boolean var4 = par2 >= this.xPosition && par3 >= this.yPosition && par2 < this.xPosition + this.width && par3 < this.yPosition + this.height;
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             par1Minecraft.getTextureManager().bindTexture(background);
             int var5 = 0;
@@ -53,7 +53,7 @@ public class TurnPageButton extends GuiButton
                 var6 += 13;
             }
 
-            this.drawTexturedModalRect(this.field_146128_h, this.field_146129_i, var5, var6, 23, 13);
+            this.drawTexturedModalRect(this.xPosition, this.yPosition, var5, var6, 23, 13);
         }
     }
 }

@@ -25,14 +25,14 @@ public abstract class MantleBlock extends Block {
     // IDebuggable support - Uses a stick for debug purposes.
     //TODO onBlockClicked
     @Override
-    public void func_149699_a(World world, int x, int y, int z, EntityPlayer player) {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null && player.getHeldItem().getItem() == Item.func_150898_a(Block.func_149684_b("Item_Stick")))
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null && player.getHeldItem().getItem() == Item.getItemFromBlock(Block.getBlockFromName("Item_Stick")))
         {
-            TileEntity te = world.func_147438_o(x, y, z);
+            TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof IDebuggable)
                 DebugHelper.handleDebugData(((IDebuggable) te).getDebugInfo(player));
         }
-        super.func_149699_a(world, x, y, z, player);
+        super.onBlockClicked(world, x, y, z, player);
     }
 
 }

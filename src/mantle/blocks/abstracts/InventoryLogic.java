@@ -104,11 +104,11 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
         //getBlockTileEntity
-        if (getWorld().func_147438_o(field_145851_c, field_145848_d, field_145849_e) != this)
+        if (getWorld().getTileEntity(xCoord, yCoord, zCoord) != this)
             return false;
 
         else
-            return entityplayer.getDistance((double) field_145851_c + 0.5D, (double) field_145848_d + 0.5D, (double) field_145849_e + 0.5D) <= 64D;
+            return entityplayer.getDistance((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D) <= 64D;
 
     }
 
@@ -116,21 +116,21 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
 
     /* NBT */
     @Override
-    public void func_145841_b (NBTTagCompound tags)
+    public void writeToNBT (NBTTagCompound tags)
     {
-        super.func_145841_b(tags);
+        super.writeToNBT(tags);
         readInventoryFromNBT(tags);
     }
 
     public void readInventoryFromNBT (NBTTagCompound tags)
     {
-        super.func_145841_b(tags);
+        super.writeToNBT(tags);
         this.invName = tags.getString("InvName");
-        NBTTagList nbttaglist = tags.func_150295_c("Items", 0); //TODO WTF goes here <-
+        NBTTagList nbttaglist = tags.getTagList("Items", 0); //TODO WTF goes here <-
         inventory = new ItemStack[getSizeInventory()];
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
-            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.func_150305_b(iter); //TODO tagAt?
+            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter); //TODO tagAt?
             byte slotID = tagList.getByte("Slot");
             if (slotID >= 0 && slotID < inventory.length)
             {
@@ -140,9 +140,9 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     }
 
     @Override
-    public void func_145839_a (NBTTagCompound tags)
+    public void readFromNBT (NBTTagCompound tags)
     {
-        super.func_145839_a(tags);
+        super.readFromNBT(tags);
         writeInventoryToNBT(tags);
     }
 
@@ -229,7 +229,7 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     }
     public World getWorld()
     {
-    return this.func_145831_w();
+    return this.getWorldObj();
     }
     /* IDebuggable */
     @Override

@@ -29,7 +29,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class SmallFontRenderer implements IResourceManagerReloadListener
 {
-    private static final ResourceLocation[] field_111274_c = new ResourceLocation[256];
+    private static final ResourceLocation[] unicodePageLocations = new ResourceLocation[256];
 
     /** Array of width of all the characters in default.png */
     private int[] charWidth = new int[256];
@@ -48,7 +48,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
      * drop shadows.
      */
     private int[] colorCode = new int[32];
-    private final ResourceLocation field_111273_g;
+    private final ResourceLocation locationFontTexture;
 
     /** The RenderEngine used to load and setup glyph textures. */
     private TextureManager renderEngine;
@@ -105,8 +105,8 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
 
     public SmallFontRenderer(GameSettings par1GameSettings, ResourceLocation par2ResourceLocation, TextureManager par3TextureManager, boolean par4)
     {
-        this.field_111273_g = par2ResourceLocation;
-        //logger.error(this.field_111273_g.toString() + "    " + this.field_111273_g.getResourcePath());
+        this.locationFontTexture = par2ResourceLocation;
+        //logger.error(this.locationFontTexture.toString() + "    " + this.locationFontTexture.getResourcePath());
         this.renderEngine = par3TextureManager;
         this.unicodeFlag = true;
         if (this.renderEngine != null)
@@ -151,16 +151,16 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
 
     public void onResourceManagerReload (IResourceManager par1ResourceManager)
     {
-        this.func_111272_d();
+        this.readFontTexture();
     }
 
-    private void func_111272_d ()
+    private void readFontTexture ()
     {
         BufferedImage bufferedimage;
 
         try
         {
-            bufferedimage = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(this.field_111273_g).getInputStream());
+            bufferedimage = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(this.locationFontTexture).getInputStream());
         }
         catch (IOException ioexception)
         {
@@ -250,7 +250,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         float f = (float) (par1 % 16 * 8);
         float f1 = (float) (par1 / 16 * 8);
         float f2 = par2 ? 1.0F : 0.0F;
-        this.renderEngine.bindTexture(this.field_111273_g);
+        this.renderEngine.bindTexture(this.locationFontTexture);
         float f3 = (float) this.charWidth[par1] - 0.01F;
         GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
         GL11.glTexCoord2f(f / 128.0F, f1 / 128.0F);
@@ -265,13 +265,13 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         return (float) this.charWidth[par1];
     }
 
-    private ResourceLocation func_111271_a (int par1)
+    private ResourceLocation getUnicodePageLocation (int par1)
     {
-        if (field_111274_c[par1] == null)
+        if (unicodePageLocations[par1] == null)
         {
-            field_111274_c[par1] = new ResourceLocation("minecraft", String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
+            unicodePageLocations[par1] = new ResourceLocation("minecraft", String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
         }
-        return field_111274_c[par1];
+        return unicodePageLocations[par1];
     }
 
     /**
@@ -279,7 +279,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
      */
     private void loadGlyphTexture (int par1)
     {
-        this.renderEngine.bindTexture(this.func_111271_a(par1));
+        this.renderEngine.bindTexture(this.getUnicodePageLocation(par1));
     }
 
     /**
@@ -525,7 +525,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             else
             {
                 j = ' ';
-                for (char c : ChatAllowedCharacters.allowedCharactersArray)
+                for (char c : ChatAllowedCharacters.allowedCharacters)
                 {
                     if (c == c0)
                     {
@@ -538,7 +538,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                 {
                     do
                     {
-                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharactersArray.length);
+                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharacters.length);
                     } while (this.charWidth[j + 32] != this.charWidth[k + 32]);
 
                     j = k;

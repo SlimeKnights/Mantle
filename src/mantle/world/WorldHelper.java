@@ -9,21 +9,21 @@ public class WorldHelper
 {
     public static void setBlockToAir (World w, int x, int y, int z)
     {
-        w.func_147465_d(x, y, z, Blocks.air, 0, 0);
+        w.setBlock(x, y, z, Blocks.air, 0, 0);
     }
 
     public static boolean setBlockToAirBool (World w, int x, int y, int z)
     {
-        return w.func_147465_d(x, y, z, Blocks.air, 0, 0);
+        return w.setBlock(x, y, z, Blocks.air, 0, 0);
     }
 
     public static boolean isAirBlock (IBlockAccess access, int x, int y, int z)
     {
-        return ComparisonHelper.areEquivalent(access.func_147439_a(x, y, z), Blocks.air);
+        return ComparisonHelper.areEquivalent(access.getBlock(x, y, z), Blocks.air);
     }
     public static boolean isAirBlock (World access, int x, int y, int z)
     {
-        return ComparisonHelper.areEquivalent(access.func_147439_a(x, y, z), Blocks.air);
+        return ComparisonHelper.areEquivalent(access.getBlock(x, y, z), Blocks.air);
     }
 
 }

@@ -106,11 +106,11 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (getWorld().func_147438_o(field_145851_c, field_145848_d, field_145849_e) != this)
+        if (getWorld().getTileEntity(xCoord, yCoord, zCoord) != this)
             return false;
 
         else
-            return entityplayer.getDistance((double) field_145851_c + 0.5D, (double) field_145848_d + 0.5D, (double) field_145849_e + 0.5D) <= 64D;
+            return entityplayer.getDistance((double) xCoord + 0.5D, (double) yCoord + 0.5D, (double) zCoord + 0.5D) <= 64D;
 
     }
 
@@ -118,16 +118,16 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
 
     /* NBT */
     @Override
-    public void func_145841_b (NBTTagCompound tags)
+    public void writeToNBT (NBTTagCompound tags)
     {
-        super.func_145841_b(tags);
+        super.writeToNBT(tags);
         this.invName = tags.getString("InvName");
-        NBTTagList nbttaglist = tags.func_150295_c("Items", 000); //TODO wtf goes here???
+        NBTTagList nbttaglist = tags.getTagList("Items", 000); //TODO wtf goes here???
         inventory = new ArrayList<ItemStack>();
         inventory.ensureCapacity(nbttaglist.tagCount() > getMaxSize() ? getMaxSize() : nbttaglist.tagCount());
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
-            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.func_150305_b(iter);
+            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter);
             byte slotID = tagList.getByte("Slot");
             if (slotID >= 0 && slotID < inventory.size())
             {
@@ -137,9 +137,9 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     }
 
     @Override
-    public void func_145839_a (NBTTagCompound tags)
+    public void readFromNBT (NBTTagCompound tags)
     {
-        super.func_145839_a(tags);
+        super.readFromNBT(tags);
         if (invName != null)
             tags.setString("InvName", invName);
         NBTTagList nbttaglist = new NBTTagList();
@@ -216,7 +216,7 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     }
     public World getWorld()
     {
-    return this.func_145831_w();
+    return this.getWorldObj();
     }
 
 }
