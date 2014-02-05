@@ -100,8 +100,9 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
     {
         return getRenderDirection();
     }
-    public World getWorld()
+
+    public World getWorld ()
     {
-    return this.getWorldObj();
+        return this.getWorldObj();
     }
 }

@@ -126,13 +126,14 @@ public abstract class InventoryBlock extends BlockContainer
     int side = -1;
 
     //This class does not have an actual block placed in the world
-   //TODO onBlockPlaced
+    //TODO onBlockPlaced
     @Override
     public int onBlockPlaced (World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta)
     {
         this.side = side;
         return meta;
     }
+
     //TODO onBlockPlacedBy
     @Override
     public void onBlockPlacedBy (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
@@ -201,7 +202,8 @@ public abstract class InventoryBlock extends BlockContainer
 
     /* IDebuggable */
     @Override
-    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+    public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
+    {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.getItemById(000)) //TODO make this get a stick!!
         {
             TileEntity te = world.getTileEntity(x, y, z);

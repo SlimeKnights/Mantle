@@ -21,6 +21,7 @@ public class WorldHelper
     {
         return ComparisonHelper.areEquivalent(access.getBlock(x, y, z), Blocks.air);
     }
+
     public static boolean isAirBlock (World access, int x, int y, int z)
     {
         return ComparisonHelper.areEquivalent(access.getBlock(x, y, z), Blocks.air);

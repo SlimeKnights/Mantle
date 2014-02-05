@@ -28,7 +28,7 @@ public class PicturePage extends BookPage
     @Override
     public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
-        if(isTranslatable)
+        if (isTranslatable)
             text = StatCollector.translateToLocal(text);
         manual.fonts.drawSplitString(text, localWidth + 8, localHeight, 178, 0);
     }

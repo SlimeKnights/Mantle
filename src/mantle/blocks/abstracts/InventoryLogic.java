@@ -126,7 +126,7 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     {
         super.writeToNBT(tags);
         this.invName = tags.getString("InvName");
-        NBTTagList nbttaglist = tags.getTagList("Items", 0); //TODO WTF goes here <-
+        NBTTagList nbttaglist = tags.getTagList("Items", 9);
         inventory = new ItemStack[getSizeInventory()];
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
@@ -227,15 +227,18 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     {
 
     }
-    public World getWorld()
+
+    public World getWorld ()
     {
-    return this.getWorldObj();
+        return this.getWorldObj();
     }
+
     /* IDebuggable */
     @Override
-    public DebugData getDebugInfo(EntityPlayer player) {
+    public DebugData getDebugInfo (EntityPlayer player)
+    {
         String[] strs = new String[1];
-        strs[0] = "invName: "+ invName + ", inventory.length: " + inventory.length + ", stackSizeLimit: " + stackSizeLimit;
+        strs[0] = "invName: " + invName + ", inventory.length: " + inventory.length + ", stackSizeLimit: " + stackSizeLimit;
         return new DebugData(player, getClass(), strs);
     }
 

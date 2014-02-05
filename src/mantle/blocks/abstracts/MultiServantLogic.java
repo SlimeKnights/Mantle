@@ -28,7 +28,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         return false;
     }
 
-    public boolean hasValidMaster ( )
+    public boolean hasValidMaster ()
     {
         if (!hasMaster)
             return false;
@@ -86,7 +86,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public void invalidateMaster (IMasterLogic master,World w, int x, int y, int z)
+    public void invalidateMaster (IMasterLogic master, World w, int x, int y, int z)
     {
         hasMaster = false;
         master = null;
@@ -179,9 +179,10 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         }
         return new DebugData(player, getClass(), strs);
     }
-    public World getWorld()
-        {
+
+    public World getWorld ()
+    {
         return this.getWorldObj();
-        }
+    }
 
 }

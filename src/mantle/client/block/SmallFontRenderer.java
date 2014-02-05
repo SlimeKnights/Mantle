@@ -113,7 +113,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             this.renderEngine.bindTexture(par2ResourceLocation);
         if (this.renderEngine == null)
             logger.error("renderEngine is null");
-       //Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("Minecraft", "textures/font/ascii.png"));
+        //Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("Minecraft", "textures/font/ascii.png"));
         for (int i = 0; i < 32; ++i)
         {
             int j = (i >> 3 & 1) * 85;
@@ -731,12 +731,13 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
         else
         {
             int i;
-            if(ChatAllowedCharacters.isAllowedCharacter(par1))
+            if (ChatAllowedCharacters.isAllowedCharacter(par1))
                 i = par1;
-            else{
-                i =69;
+            else
+            {
+                i = 69;
                 logger.error("dont send bad chat characters to my font renderer!");
-                }
+            }
 
             if (i >= 0 && !this.unicodeFlag)
             {

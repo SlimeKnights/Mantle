@@ -7,7 +7,8 @@ import net.minecraft.entity.player.EntityPlayer;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-public class DebugData {
+public class DebugData
+{
 
     public final EntityPlayer player;
     public final Class cl;

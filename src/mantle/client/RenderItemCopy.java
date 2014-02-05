@@ -71,8 +71,8 @@ public class RenderItemCopy extends Render
             int i;
 
             Block block = null;
-            
-                block = Block.getBlockFromItem(itemstack.getItem());
+
+            block = Block.getBlockFromItem(itemstack.getItem());
 
             if (ForgeHooksClient.renderEntityItem(par1EntityItem, itemstack, f2, f3, random, renderManager.renderEngine, new RenderBlocks(), 000)) // TODO what goes here not 000
             {

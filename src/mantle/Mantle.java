@@ -45,6 +45,7 @@ public class Mantle
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
     public static MProxyCommon proxy;
     public static Manual mantleBook;
+
     /**
      * FML preinitialisation handler
      *
@@ -63,8 +64,6 @@ public class Mantle
 
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
-        
-
 
     }
 

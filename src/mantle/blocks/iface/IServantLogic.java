@@ -32,7 +32,7 @@ public interface IServantLogic
      * @return Is this block tied to this master?
      */
 
-    public boolean verifyMaster (IMasterLogic master,  World world, int xMaster, int yMaster, int zMaster);
+    public boolean verifyMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
 
     /** Exactly what it says on the tin
      * 
@@ -43,5 +43,5 @@ public interface IServantLogic
      * @param z zCoord of master
      */
 
-    public void invalidateMaster (IMasterLogic master,  World world, int xMaster, int yMaster, int zMaster);
+    public void invalidateMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
 }

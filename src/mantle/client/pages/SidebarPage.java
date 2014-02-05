@@ -37,7 +37,8 @@ public class SidebarPage extends BookPage
     @Override
     public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
-        if(isTranslatable){
+        if (isTranslatable)
+        {
             text = StatCollector.translateToLocal(text);
         }
         manual.fonts.drawSplitString(text, localWidth, localHeight, 178, 0);
@@ -47,8 +48,9 @@ public class SidebarPage extends BookPage
         int offset = text.length() / 4 + 10;
         for (int i = 0; i < icons.length; i++)
         {
-            if(isTranslatable){
-                iconText[i]= StatCollector.translateToLocal(iconText[i]);
+            if (isTranslatable)
+            {
+                iconText[i] = StatCollector.translateToLocal(iconText[i]);
             }
             manual.renderitem.renderItemIntoGUI(manual.fonts, manual.getMC().renderEngine, icons[i], localWidth + 8, localHeight + 18 * i + offset);
             int yOffset = 39;

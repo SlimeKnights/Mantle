@@ -32,8 +32,9 @@ public class FurnacePage extends BookPage
     @Override
     public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
     {
-        if (text != null){
-            if(isTranslatable)
+        if (text != null)
+        {
+            if (isTranslatable)
                 text = StatCollector.translateToLocal(text);
             manual.fonts.drawString("\u00a7n" + text, localWidth + 50, localHeight + 4, 0);
         }

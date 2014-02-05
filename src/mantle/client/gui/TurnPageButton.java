@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import static mantle.lib.CoreRepo.logger;
+
 @SideOnly(Side.CLIENT)
 public class TurnPageButton extends GuiButton
 {
@@ -19,14 +20,12 @@ public class TurnPageButton extends GuiButton
     private final boolean nextPage;
     private static ResourceLocation background;// = new ResourceLocation("tinker", "textures/gui/bookleft.png");
 
-
     public TurnPageButton(int par1, int par2, int par3, boolean par4, BookData data)
     {
         super(par1, par2, par3, 23, 13, "");
         this.nextPage = par4;
         background = data.leftImage;
     }
-
 
     /**
      * Draws this button to the screen.

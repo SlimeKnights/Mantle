@@ -16,17 +16,21 @@ import net.minecraft.world.World;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-public abstract class MantleBlock extends Block {
+public abstract class MantleBlock extends Block
+{
 
-    public MantleBlock(Material material) {
+    public MantleBlock(Material material)
+    {
         super(material);
     }
 
     // IDebuggable support - Uses a stick for debug purposes.
     //TODO onBlockClicked
     @Override
-    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null && player.getHeldItem().getItem() == Item.getItemFromBlock(Block.getBlockFromName("Item_Stick")))
+    public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
+    {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null
+                && player.getHeldItem().getItem() == Item.getItemFromBlock(Block.getBlockFromName("Item_Stick")))
         {
             TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof IDebuggable)

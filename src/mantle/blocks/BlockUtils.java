@@ -10,6 +10,7 @@ public class BlockUtils
     {
         return Block.getBlockFromItem(item);
     }
+
     public static Block getBlockFromItemStack (ItemStack itemStack)
     {
         return getBlockFromItem(itemStack.getItem());

@@ -28,7 +28,7 @@ public class DebugHelper
             handleConsoleDebug(data);
     }
 
-    private static void handleChatDebug(DebugData data)
+    private static void handleChatDebug (DebugData data)
     {
         EntityPlayer player = data.player;
         String prefix = "[" + data.cl.getSimpleName() + "] ";

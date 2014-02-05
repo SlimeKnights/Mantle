@@ -214,9 +214,10 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
         }
         return false;
     }
-    public World getWorld()
+
+    public World getWorld ()
     {
-    return this.getWorldObj();
+        return this.getWorldObj();
     }
 
 }

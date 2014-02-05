@@ -48,7 +48,7 @@ public abstract class InventorySlab extends InventoryBlock
 
         return super.shouldSideBeRendered(world, x, y, z, side);
     }
-    
+
     //TODO:     addCollisionBoxesToList()
     @Override
     public void addCollisionBoxesToList (World world, int x, int y, int z, AxisAlignedBB axisalignedbb, List arraylist, Entity entity)

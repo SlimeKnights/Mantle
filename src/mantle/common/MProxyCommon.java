@@ -7,7 +7,6 @@ import net.minecraft.world.World;
 public class MProxyCommon implements IGuiHandler
 {
     public static int manualGuiID = -1;
-    
 
     @Override
     public Object getServerGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z)
@@ -24,9 +23,11 @@ public class MProxyCommon implements IGuiHandler
         // TODO Auto-generated method stub
         return null;
     }
+
     public void registerRenderer ()
     {
     }
+
     public void readManuals ()
     {
     }

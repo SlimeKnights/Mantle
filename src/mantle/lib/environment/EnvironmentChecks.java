@@ -39,7 +39,8 @@ public class EnvironmentChecks
 
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && FMLClientHandler.instance().hasOptifine() || Loader.isModLoaded("optifine"))
         {
-            if (!CoreConfig.silenceEnvChecks) logger.error("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
+            if (!CoreConfig.silenceEnvChecks)
+                logger.error("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
             hasOptifine = true;
             modIds.add("optifine");
         }
@@ -49,7 +50,8 @@ public class EnvironmentChecks
             Class cl = Class.forName("org.bukkit.Bukkit");
             if (cl != null)
             {
-                if (!CoreConfig.silenceEnvChecks) logger.error("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and MCPC+.");
+                if (!CoreConfig.silenceEnvChecks)
+                    logger.error("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and MCPC+.");
                 modIds.add("bukkit");
             }
         }

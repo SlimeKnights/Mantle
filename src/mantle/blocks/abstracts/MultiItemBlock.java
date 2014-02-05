@@ -57,9 +57,12 @@ public class MultiItemBlock extends ItemBlock
 
         int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[0] > Integer.MIN_VALUE) ? specialIndex[0] : (blockType.length - 1));
         int sbIndex = (specialIndex[1] > Integer.MIN_VALUE) ? pos : (specialIndex[1] - pos);
-        try {
+        try
+        {
             return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[sbIndex]).append(append).toString();
-        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
+        catch (ArrayIndexOutOfBoundsException ex)
+        {
             logger.warn("[MultiItemBlock] Caught array index error in getUnlocalizedName: " + ex.getMessage());
             logger.warn("[MultiItemBlock] Returning unlocalized name!");
             return getUnlocalizedName();

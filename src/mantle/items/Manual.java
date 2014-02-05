@@ -14,6 +14,7 @@ import net.minecraft.util.StatCollector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import static mantle.lib.CoreRepo.logger;
+
 public class Manual extends CraftingItem
 {
 
@@ -60,14 +61,14 @@ public class Manual extends CraftingItem
     @Override
     public String getUnlocalizedName ()
     {
-      //  logger.info("unloc: " + super.getUnlocalizedName());
+        //  logger.info("unloc: " + super.getUnlocalizedName());
         return modID + ":" + super.getUnlocalizedName();
     }
 
     @Override
     public String getUnlocalizedName (ItemStack par1ItemStack)
     {
-     //   logger.info("unloc IS " + super.getUnlocalizedName(par1ItemStack));
+        //   logger.info("unloc IS " + super.getUnlocalizedName(par1ItemStack));
         return super.getUnlocalizedName(par1ItemStack);
     }
 }
