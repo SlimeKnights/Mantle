@@ -123,8 +123,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             tags.setInteger("xCenter", master.x);
             tags.setInteger("yCenter", master.y);
             tags.setInteger("zCenter", master.z);
-            tags.setString("MasterBlockName", masterBlock.getItemIconName());//<- unlocalized name?
-            tags.setString("MasterModName", "MODNAME"); //TODO get mod name of block here!!
+            tags.setString("MasterBlockName", masterBlock.getUnlocalizedName());//<- unlocalized name?
+            tags.setString("MasterModName", "TConstruct"); //TODO get mod name of block here!!
             tags.setByte("masterMeat", masterMeat);
         }
     }
