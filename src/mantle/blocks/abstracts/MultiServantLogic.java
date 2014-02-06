@@ -184,5 +184,18 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         return this.getWorldObj();
     }
+    @Deprecated
+    public boolean setMaster (int x, int y, int z)
+    {
+        if (!hasMaster || worldObj.getBlock(master.x, master.y, master.z) != masterBlock || (worldObj.getBlockMetadata(master.x, master.y, master.z) != masterMeat))
+        {
+            overrideMaster(x, y, z);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
 }
