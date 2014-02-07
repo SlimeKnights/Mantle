@@ -1,7 +1,5 @@
 package mantle.blocks.abstracts;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -17,10 +15,10 @@ import static mantle.lib.CoreRepo.*;
 
 public class MultiItemBlock extends ItemBlock
 {
-    protected static String blockType[];
-    protected static String unlocalizedName;
-    protected static String append;
-    private int specialIndex[] = { Integer.MIN_VALUE, Integer.MIN_VALUE };
+    private String blockType[];
+    private String unlocalizedName;
+    private String append;
+    private int specialIndex[] = { -1, -1 };
 
     public MultiItemBlock(Block b, String itemBlockUnlocalizedName, String[] blockTypes)
     {
@@ -55,16 +53,18 @@ public class MultiItemBlock extends ItemBlock
     public String getUnlocalizedName (ItemStack itemstack)
     {
 
-        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[0] > Integer.MIN_VALUE) ? specialIndex[0] : (blockType.length - 1));
-        int sbIndex = (specialIndex[1] > Integer.MIN_VALUE) ? pos : (specialIndex[1] - pos);
+        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[0] > -1) ? specialIndex[0] : (blockType.length - 1));
+        int sbIndex = (specialIndex[1] > -1) ? pos : (specialIndex[1] - pos);
+        if (sbIndex < 0)
+            sbIndex = -1 * sbIndex;
         try
         {
-            return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[sbIndex]).append(append).toString();
+            return (new StringBuilder()).append(unlocalizedName).append(".").append(blockType[sbIndex - 1]).append(append).toString();
         }
         catch (ArrayIndexOutOfBoundsException ex)
         {
             logger.warn("[MultiItemBlock] Caught array index error in getUnlocalizedName: " + ex.getMessage());
-            logger.warn("[MultiItemBlock] Returning unlocalized name!");
+            logger.warn("[MultiItemBlock] Returning unlocalized name: " + getUnlocalizedName());
             return getUnlocalizedName();
         }
     }
