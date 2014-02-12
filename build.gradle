@@ -35,6 +35,8 @@ repositories {
 
 
 apply plugin: 'forge'
+group = 'mantle'
+
 // define the properties file
 ext.configFile = file "build.properties"
 
