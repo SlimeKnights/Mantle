@@ -28,6 +28,11 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         return false;
     }
 
+    public boolean getHasMaster ()
+    {
+        return hasMaster;
+    }
+
     public boolean hasValidMaster ()
     {
         if (!hasMaster)
@@ -184,6 +189,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         return this.getWorldObj();
     }
+
     @Deprecated
     public boolean setMaster (int x, int y, int z)
     {
