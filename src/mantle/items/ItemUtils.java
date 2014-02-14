@@ -9,4 +9,8 @@ public class ItemUtils
     {
         return GameData.itemRegistry.getNameForObject(item);
     }
+    public static Item getItemFromUniqueName (String uniqueName)
+    {
+        return GameData.itemRegistry.getObject(uniqueName);
+    }
 }

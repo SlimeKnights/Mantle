@@ -22,4 +22,9 @@ public class BlockUtils
         return GameData.blockRegistry.getNameForObject(block);
     }
 
+    public static Block getBlockFromUniqueName (String uniqueName)
+    {
+        return GameData.blockRegistry.getObject(uniqueName);
+    }
+
 }

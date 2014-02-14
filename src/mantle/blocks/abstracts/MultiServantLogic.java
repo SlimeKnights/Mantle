@@ -1,5 +1,6 @@
 package mantle.blocks.abstracts;
 
+import mantle.blocks.BlockUtils;
 import mantle.blocks.iface.IMasterLogic;
 import mantle.blocks.iface.IServantLogic;
 import mantle.debug.DebugData;
@@ -123,7 +124,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             int yCenter = tags.getInteger("yCenter");
             int zCenter = tags.getInteger("zCenter");
             master = new CoordTuple(xCenter, yCenter, zCenter);
-            masterBlock = GameRegistry.findBlock(tags.getString("MasterModName"), tags.getString("MasterBlockName"));
+            masterBlock = BlockUtils.getBlockFromUniqueName(tags.getString("MasterBlockName"));
             masterMeat = tags.getByte("masterMeat");
         }
     }
@@ -136,8 +137,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             tags.setInteger("xCenter", master.x);
             tags.setInteger("yCenter", master.y);
             tags.setInteger("zCenter", master.z);
-            tags.setString("MasterBlockName", masterBlock.getUnlocalizedName());//<- unlocalized name?
-            tags.setString("MasterModName", "TConstruct"); //TODO get mod name of block here!!
+            tags.setString("MasterBlockName", BlockUtils.getUniqueName(masterBlock));
             tags.setByte("masterMeat", masterMeat);
         }
     }
