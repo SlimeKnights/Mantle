@@ -36,8 +36,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (!hasMaster)
             return false;
-        //Minecraft.getMinecraft().getMinecraft().thegetWorld()???
-        if (getWorld().getBlock(master.x, master.y, master.z) == masterBlock && getWorld().getBlockMetadata(master.x, master.y, master.z) == masterMeat)
+
+        if (worldObj.getBlock(master.x, master.y, master.z) == masterBlock && worldObj.getBlockMetadata(master.x, master.y, master.z) == masterMeat)
             return true;
 
         else
@@ -57,8 +57,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         hasMaster = true;
         master = new CoordTuple(x, y, z);
-        masterBlock = getWorld().getBlock(x, y, z);
-        masterMeat = (byte) getWorld().getBlockMetadata(x, y, z);
+        masterBlock = worldObj.getBlock(x, y, z);
+        masterMeat = (byte) worldObj.getBlockMetadata(x, y, z);
     }
 
     public void removeMaster ()
@@ -75,8 +75,17 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         return !hasMaster;
     }
 
+    @Deprecated
+    public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
+    {
+        if (master.equalCoords(x, y, z) && worldObj.getBlock(x, y, z) == masterBlock && worldObj.getBlockMetadata(x, y, z) == masterMeat)
+            return true;
+        else
+            return false;
+    }
+
     @Override
-    public boolean verifyMaster (IMasterLogic logic, World w, int x, int y, int z)
+    public boolean verifyMaster (IMasterLogic logic, World world, int x, int y, int z)
     {
         if (hasMaster)
         {
@@ -100,7 +109,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) getWorld().getTileEntity(master.x, master.y, master.z);
+            IMasterLogic logic = (IMasterLogic) worldObj.getTileEntity(master.x, master.y, master.z);
             logic.notifyChange(this, xCoord, yCoord, zCoord);
         }
     }
@@ -137,7 +146,6 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public void readFromNBT (NBTTagCompound tags)
     {
         super.readFromNBT(tags);
-        writeToNBT(tags);
         readCustomNBT(tags);
     }
 
@@ -149,13 +157,11 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     /* Packets */
-    //TODO getDescriptionPacket()??
     @Override
     public Packet getDescriptionPacket ()
     {
         NBTTagCompound tag = new NBTTagCompound();
         writeCustomNBT(tag);
-        //TODO xCoord, yCoord, zCoord
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
     }
 
@@ -163,8 +169,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
         readCustomNBT(packet.func_148857_g());
-        worldObj.func_147479_m(this.xCoord, this.yCoord, this.zCoord);
-        getWorld().markBlockForUpdate(xCoord, yCoord, zCoord);
+        worldObj.func_147479_m(xCoord, yCoord, zCoord);
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     /* IDebuggable */
