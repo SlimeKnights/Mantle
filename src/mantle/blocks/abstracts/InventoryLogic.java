@@ -1,5 +1,7 @@
 package mantle.blocks.abstracts;
 
+import mantle.debug.DebugData;
+import mantle.debug.IDebuggable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -16,7 +18,7 @@ import net.minecraft.world.World;
  * Abstract to avoid instantiation
  */
 
-public abstract class InventoryLogic extends TileEntity implements IInventory
+public abstract class InventoryLogic extends TileEntity implements IInventory, IDebuggable
 {
     protected ItemStack[] inventory;
     protected String invName;
@@ -223,5 +225,14 @@ public abstract class InventoryLogic extends TileEntity implements IInventory
     public void removeBlock ()
     {
 
+    }
+
+    /* IDebuggable */
+    @Override
+    public DebugData getDebugInfo (EntityPlayer player)
+    {
+        String[] strs = new String[1];
+        strs[0] = "invName: " + invName + ", inventory.length: " + inventory.length + ", stackSizeLimit: " + stackSizeLimit;
+        return new DebugData(player, getClass(), strs);
     }
 }
