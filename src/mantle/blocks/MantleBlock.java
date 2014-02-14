@@ -1,7 +1,5 @@
 package mantle.blocks;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 import mantle.debug.DebugHelper;
 import mantle.debug.IDebuggable;
 import net.minecraft.block.Block;
@@ -10,6 +8,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * Root class for inheriting the Minecraft Block.

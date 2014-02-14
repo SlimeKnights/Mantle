@@ -4,7 +4,6 @@ import net.minecraft.util.StatCollector;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import static mantle.lib.CoreRepo.logger;
 
 public class TextPage extends BookPage
 {

@@ -8,15 +8,8 @@ import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.MProxyCommon;
 import mantle.items.Manual;
-import mantle.lib.CoreConfig;
 import mantle.lib.CoreRepo;
 import mantle.lib.environment.EnvironmentChecks;
-import net.minecraft.item.Item;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;

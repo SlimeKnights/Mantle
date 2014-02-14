@@ -1,7 +1,7 @@
 package mantle.lib;
 
+import static mantle.lib.CoreRepo.logger;
 import net.minecraftforge.common.config.Configuration;
-import static mantle.lib.CoreRepo.*;
 
 /**
  * Mantle configuration handler

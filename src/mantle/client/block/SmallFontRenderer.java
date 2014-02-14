@@ -1,5 +1,7 @@
 package mantle.client.block;
 
+import static mantle.lib.CoreRepo.logger;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +10,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import static mantle.lib.CoreRepo.*;
 
 import javax.imageio.ImageIO;
 

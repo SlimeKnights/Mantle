@@ -1,11 +1,10 @@
 package mantle.blocks.abstracts;
 
+import static mantle.lib.CoreRepo.logger;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
-
-import static mantle.lib.CoreRepo.*;
 
 /**
  * 

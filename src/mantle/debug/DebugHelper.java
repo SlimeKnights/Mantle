@@ -1,12 +1,10 @@
 package mantle.debug;
 
-import org.apache.commons.lang3.StringUtils;
-
+import static mantle.lib.CoreConfig.debug_enableChat;
+import static mantle.lib.CoreConfig.debug_enableConsole;
+import static mantle.lib.CoreRepo.logger;
 import mantle.player.PlayerUtils;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import static mantle.lib.CoreRepo.*;
-import static mantle.lib.CoreConfig.*;
 
 /**
  * IDebuggable helper

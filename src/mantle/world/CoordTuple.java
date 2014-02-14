@@ -1,7 +1,5 @@
 package mantle.world;
 
-import java.lang.String;
-
 /**
  * CoordTuple
  *

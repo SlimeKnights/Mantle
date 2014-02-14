@@ -1,21 +1,30 @@
 package mantle.client;
 
-import mantle.books.BookData;
-import mantle.books.BookDataStore;
-import mantle.common.MProxyCommon;
+import static mantle.lib.CoreRepo.logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import mantle.books.BookData;
+import mantle.books.BookDataStore;
+import mantle.client.block.SmallFontRenderer;
+import mantle.client.gui.GuiManual;
+import mantle.client.pages.BlankPage;
+import mantle.client.pages.BookPage;
+import mantle.client.pages.ContentsTablePage;
+import mantle.client.pages.CraftingPage;
+import mantle.client.pages.FurnacePage;
+import mantle.client.pages.PicturePage;
+import mantle.client.pages.SectionPage;
+import mantle.client.pages.SidebarPage;
+import mantle.client.pages.TextPage;
+import mantle.client.pages.TitlePage;
+import mantle.common.MProxyCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import mantle.client.block.SmallFontRenderer;
-import mantle.client.gui.GuiManual;
-import mantle.client.pages.*;
-import static mantle.lib.CoreRepo.logger;
 
 public class MProxyClient extends MProxyCommon
 {

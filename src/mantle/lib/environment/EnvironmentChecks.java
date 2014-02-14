@@ -1,16 +1,19 @@
 package mantle.lib.environment;
 
+import static mantle.lib.CoreRepo.logger;
+import static mantle.lib.CoreRepo.modId;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static mantle.lib.CoreRepo.*;
+import mantle.crash.CallableSuppConfig;
+import mantle.crash.CallableUnsuppConfig;
+import mantle.lib.CoreConfig;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ICrashCallable;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
-import mantle.crash.*;
-import mantle.lib.CoreConfig;
 
 /**
  * Environment Checks

@@ -1,12 +1,16 @@
 package mantle.blocks.abstracts;
 
-import java.util.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.inventory.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
-import mantle.blocks.abstracts.InventoryLogic;
 
 public abstract class ExpandableInventoryLogic extends InventoryLogic implements IInventory
 {

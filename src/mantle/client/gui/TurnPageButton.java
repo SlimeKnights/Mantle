@@ -1,5 +1,6 @@
 package mantle.client.gui;
 
+import static mantle.lib.CoreRepo.logger;
 import mantle.books.BookData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -9,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import static mantle.lib.CoreRepo.logger;
 
 @SideOnly(Side.CLIENT)
 public class TurnPageButton extends GuiButton

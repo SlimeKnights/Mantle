@@ -2,12 +2,11 @@ package mantle.blocks.abstracts;
 
 import java.util.Random;
 
+import mantle.blocks.iface.IFacingLogic;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import mantle.blocks.iface.IFacingLogic;
-import mantle.blocks.abstracts.InventoryLogic;
 
 public abstract class AdaptiveInventoryLogic extends InventoryLogic implements IFacingLogic
 {

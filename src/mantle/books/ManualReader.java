@@ -1,12 +1,13 @@
 package mantle.books;
 
+import static mantle.lib.CoreRepo.logger;
+
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import mantle.Mantle;
-import static mantle.lib.CoreRepo.logger;
 
 import org.w3c.dom.Document;
 
