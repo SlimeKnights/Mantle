@@ -1,7 +1,5 @@
 package mantle.blocks.abstracts;
 
-import mantle.debug.DebugData;
-import mantle.debug.IDebuggable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -13,12 +11,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-/**
- * Abstract logic for inventory Tile Entities.
- *
- * @author mDiyo
+/*
+ * A simple logic class for storing items
+ * Abstract to avoid instantiation
  */
-public abstract class InventoryLogic extends TileEntity implements IInventory, IDebuggable
+
+public abstract class InventoryLogic extends TileEntity implements IInventory
 {
     protected ItemStack[] inventory;
     protected String invName;
@@ -103,8 +101,7 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        //getBlockTileEntity
-        if (getWorld().getTileEntity(xCoord, yCoord, zCoord) != this)
+        if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this)
             return false;
 
         else
@@ -116,21 +113,21 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
 
     /* NBT */
     @Override
-    public void writeToNBT (NBTTagCompound tags)
+    public void readFromNBT (NBTTagCompound tags)
     {
-        super.writeToNBT(tags);
+        super.readFromNBT(tags);
         readInventoryFromNBT(tags);
     }
 
     public void readInventoryFromNBT (NBTTagCompound tags)
     {
-        super.writeToNBT(tags);
+        super.readFromNBT(tags);
         this.invName = tags.getString("InvName");
         NBTTagList nbttaglist = tags.getTagList("Items", 9);
         inventory = new ItemStack[getSizeInventory()];
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
-            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter); //TODO tagAt?
+            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter);
             byte slotID = tagList.getByte("Slot");
             if (slotID >= 0 && slotID < inventory.length)
             {
@@ -140,9 +137,9 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     }
 
     @Override
-    public void readFromNBT (NBTTagCompound tags)
+    public void writeToNBT (NBTTagCompound tags)
     {
-        super.readFromNBT(tags);
+        super.writeToNBT(tags);
         writeInventoryToNBT(tags);
     }
 
@@ -227,19 +224,4 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     {
 
     }
-
-    public World getWorld ()
-    {
-        return this.getWorldObj();
-    }
-
-    /* IDebuggable */
-    @Override
-    public DebugData getDebugInfo (EntityPlayer player)
-    {
-        String[] strs = new String[1];
-        strs[0] = "invName: " + invName + ", inventory.length: " + inventory.length + ", stackSizeLimit: " + stackSizeLimit;
-        return new DebugData(player, getClass(), strs);
-    }
-
 }
