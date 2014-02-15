@@ -168,7 +168,6 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
 
     public void writeInventoryToNBT (NBTTagCompound tags)
     {
-    	System.out.println("fdsfs");
         super.writeToNBT(tags);
         NBTTagList nbttaglist = new NBTTagList();
 
