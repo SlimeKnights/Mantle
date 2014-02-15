@@ -1,15 +1,10 @@
 package mantle.blocks.abstracts;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
+import java.util.*;
+import net.minecraft.entity.player.*;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.*;
 import net.minecraft.world.World;
 
 public abstract class ExpandableInventoryLogic extends InventoryLogic implements IInventory
@@ -110,7 +105,7 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     @Override
     public boolean isUseableByPlayer (EntityPlayer entityplayer)
     {
-        if (getWorld().getTileEntity(xCoord, yCoord, zCoord) != this)
+        if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this)
             return false;
 
         else
@@ -122,11 +117,11 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
 
     /* NBT */
     @Override
-    public void writeToNBT (NBTTagCompound tags)
+    public void readFromNBT (NBTTagCompound tags)
     {
-        super.writeToNBT(tags);
+        super.readFromNBT(tags);
         this.invName = tags.getString("InvName");
-        NBTTagList nbttaglist = tags.getTagList("Items", 000); //TODO wtf goes here???
+        NBTTagList nbttaglist = tags.getTagList("Items", 9);
         inventory = new ArrayList<ItemStack>();
         inventory.ensureCapacity(nbttaglist.tagCount() > getMaxSize() ? getMaxSize() : nbttaglist.tagCount());
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
@@ -141,9 +136,9 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     }
 
     @Override
-    public void readFromNBT (NBTTagCompound tags)
+    public void writeToNBT (NBTTagCompound tags)
     {
-        super.readFromNBT(tags);
+        super.writeToNBT(tags);
         if (invName != null)
             tags.setString("InvName", invName);
         NBTTagList nbttaglist = new NBTTagList();
@@ -217,11 +212,6 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
             return slot < getMaxSize();
         }
         return false;
-    }
-
-    public World getWorld ()
-    {
-        return this.getWorldObj();
     }
 
 }

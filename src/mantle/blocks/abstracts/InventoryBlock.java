@@ -2,6 +2,8 @@ package mantle.blocks.abstracts;
 
 import java.util.Random;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import mantle.blocks.iface.IActiveLogic;
 import mantle.blocks.iface.IFacingLogic;
 import mantle.debug.DebugHelper;
@@ -17,17 +19,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 
-/**
- * Abstract for blocks with inventories.
- *
- * @author mDiyo
- */
 public abstract class InventoryBlock extends BlockContainer
 {
     protected Random rand = new Random();
@@ -37,7 +34,6 @@ public abstract class InventoryBlock extends BlockContainer
         super(material);
     }
 
-    //TODO createNewTileEntity()
     /* Logic backend */
     public TileEntity createNewTileEntity (World var1)
     {
@@ -50,7 +46,6 @@ public abstract class InventoryBlock extends BlockContainer
 
     public abstract Object getModInstance ();
 
-    //TODO:         onBlockActivated()
     @Override
     public boolean onBlockActivated (World world, int x, int y, int z, EntityPlayer player, int side, float clickX, float clickY, float clickZ)
     {
@@ -71,9 +66,8 @@ public abstract class InventoryBlock extends BlockContainer
     }
 
     /* Inventory */
-    //TODO:     breakBlock()
     @Override
-    public void breakBlock (World par1World, int x, int y, int z, Block block, int meta)
+    public void breakBlock (World par1World, int x, int y, int z, Block blockID, int meta)
     {
         TileEntity te = par1World.getTileEntity(x, y, z);
 
@@ -118,7 +112,8 @@ public abstract class InventoryBlock extends BlockContainer
                 }
             }
         }
-        super.breakBlock(par1World, x, y, z, block, meta);
+
+        super.breakBlock(par1World, x, y, z, blockID, meta);
     }
 
     /* Placement */
@@ -126,7 +121,6 @@ public abstract class InventoryBlock extends BlockContainer
     int side = -1;
 
     //This class does not have an actual block placed in the world
-    //TODO onBlockPlaced
     @Override
     public int onBlockPlaced (World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta)
     {
@@ -134,7 +128,6 @@ public abstract class InventoryBlock extends BlockContainer
         return meta;
     }
 
-    //TODO onBlockPlacedBy
     @Override
     public void onBlockPlacedBy (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
     {
@@ -199,7 +192,7 @@ public abstract class InventoryBlock extends BlockContainer
             this.icons[i] = iconRegister.registerIcon("tinker:" + textureNames[i]);
         }
     }
-
+    
     /* IDebuggable */
     @Override
     public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)

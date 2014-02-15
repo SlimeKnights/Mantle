@@ -6,7 +6,7 @@ import mantle.blocks.iface.IFacingLogic;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public abstract class AdaptiveInventoryLogic extends InventoryLogic implements IFacingLogic
 {
@@ -75,7 +75,7 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             }
 
                             stack.stackSize -= itemSize;
-                            EntityItem entityitem = new EntityItem(getWorld(), (double) ((float) xCoord + jumpX + offsetX), (double) ((float) yCoord + jumpY),
+                            EntityItem entityitem = new EntityItem(worldObj, (double) ((float) xCoord + jumpX + offsetX), (double) ((float) yCoord + jumpY),
                                     (double) ((float) zCoord + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
 
                             if (stack.hasTagCompound())
@@ -87,7 +87,7 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             entityitem.motionX = (double) ((float) random.nextGaussian() * offset);
                             entityitem.motionY = (double) ((float) random.nextGaussian() * offset + 0.2F);
                             entityitem.motionZ = (double) ((float) random.nextGaussian() * offset);
-                            getWorld().spawnEntityInWorld(entityitem);
+                            worldObj.spawnEntityInWorld(entityitem);
                         }
                     }
                 }
@@ -98,10 +98,5 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
     public int getTossDirection ()
     {
         return getRenderDirection();
-    }
-
-    public World getWorld ()
-    {
-        return this.getWorldObj();
     }
 }
