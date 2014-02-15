@@ -23,7 +23,7 @@ public class Manual extends CraftingItem
 
     public Manual()
     {
-        super(name, textureName, "", "mantle", CreativeTabs.tabMisc);
+        super(name, textureName, "", "mantle", null);
         modID = CoreRepo.modId;
     }
 

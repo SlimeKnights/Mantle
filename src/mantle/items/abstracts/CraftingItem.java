@@ -23,7 +23,10 @@ public class CraftingItem extends Item
     {
         super();
         this.modTexPrefix = modTexturePrefix;
-        this.setCreativeTab(tab);
+        if (tab != null)
+        {
+            this.setCreativeTab(tab);
+        }
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
         this.textureNames = tex;
