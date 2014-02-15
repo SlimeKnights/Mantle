@@ -123,19 +123,40 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
 
     public void readInventoryFromNBT (NBTTagCompound tags)
     {
-        super.readFromNBT(tags);
-        this.invName = tags.getString("InvName");
-        NBTTagList nbttaglist = tags.getTagList("Items", 9);
-        inventory = new ItemStack[getSizeInventory()];
-        for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
+    	super.readFromNBT(tags);
+        NBTTagList nbttaglist = tags.getTagList("Items", 10);
+        this.inventory = new ItemStack[this.getSizeInventory()];
+
+        if (tags.hasKey("CustomName", 8))
         {
-            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter);
-            byte slotID = tagList.getByte("Slot");
-            if (slotID >= 0 && slotID < inventory.length)
+            this.invName = tags.getString("CustomName");
+        }
+
+        for (int i = 0; i < nbttaglist.tagCount(); ++i)
+        {
+            NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
+            int j = nbttagcompound1.getByte("Slot") & 255;
+
+            if (j >= 0 && j < this.inventory.length)
             {
-                inventory[slotID] = ItemStack.loadItemStackFromNBT(tagList);
+                this.inventory[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
             }
         }
+    	
+        //Not removed in case of things going terribly wrong
+//        super.readFromNBT(tags);
+//        this.invName = tags.getString("InvName");
+//        NBTTagList nbttaglist = tags.getTagList("Items", 9);
+//        inventory = new ItemStack[getSizeInventory()];
+//        for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
+//        {
+//            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter);
+//            byte slotID = tagList.getByte("Slot");
+//            if (slotID >= 0 && slotID < inventory.length)
+//            {
+//                inventory[slotID] = ItemStack.loadItemStackFromNBT(tagList);
+//            }
+//        }
     }
 
     @Override
@@ -147,21 +168,44 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
 
     public void writeInventoryToNBT (NBTTagCompound tags)
     {
-        if (invName != null)
-            tags.setString("InvName", invName);
+    	System.out.println("fdsfs");
+        super.writeToNBT(tags);
         NBTTagList nbttaglist = new NBTTagList();
-        for (int iter = 0; iter < inventory.length; iter++)
+
+        for (int i = 0; i < this.inventory.length; ++i)
         {
-            if (inventory[iter] != null)
+            if (this.inventory[i] != null)
             {
-                NBTTagCompound tagList = new NBTTagCompound();
-                tagList.setByte("Slot", (byte) iter);
-                inventory[iter].writeToNBT(tagList);
-                nbttaglist.appendTag(tagList);
+                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+                nbttagcompound1.setByte("Slot", (byte)i);
+                this.inventory[i].writeToNBT(nbttagcompound1);
+                nbttaglist.appendTag(nbttagcompound1);
             }
         }
 
         tags.setTag("Items", nbttaglist);
+
+        if (this.isInvNameLocalized())
+        {
+            tags.setString("CustomName", this.invName);
+        }
+    	
+      //Not removed in case of things going terribly wrong
+//        if (invName != null)
+//            tags.setString("InvName", invName);
+//        NBTTagList nbttaglist = new NBTTagList();
+//        for (int iter = 0; iter < inventory.length; iter++)
+//        {
+//            if (inventory[iter] != null)
+//            {
+//                NBTTagCompound tagList = new NBTTagCompound();
+//                tagList.setByte("Slot", (byte) iter);
+//                inventory[iter].writeToNBT(tagList);
+//                nbttaglist.appendTag(tagList);
+//            }
+//        }
+//
+//        tags.setTag("Items", nbttaglist);
     }
 
     /* Cause of the heisenbug. Do not uncomment! */
@@ -201,6 +245,11 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
         return this.isInvNameLocalized() ? this.invName : getDefaultName();
     }
 
+    public boolean hasCustomInventoryName()
+    {
+        return isInvNameLocalized();
+    }
+    
     public boolean isInvNameLocalized ()
     {
         return this.invName != null && this.invName.length() > 0;
@@ -226,7 +275,7 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     {
 
     }
-
+    
     /* IDebuggable */
     @Override
     public DebugData getDebugInfo (EntityPlayer player)
