@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -197,7 +198,7 @@ public abstract class InventoryBlock extends BlockContainer
     @Override
     public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Item.getItemById(000)) //TODO make this get a stick!!
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Items.stick);
         {
             TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof IDebuggable)
