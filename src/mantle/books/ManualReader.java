@@ -13,7 +13,7 @@ import org.w3c.dom.Document;
 
 public class ManualReader
 {
-    static Document readManual (String location)
+    public static Document readManual (String location)
     {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 

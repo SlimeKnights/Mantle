@@ -81,10 +81,8 @@ public class GuiManual extends GuiScreen
 
     protected void actionPerformed (GuiButton button)
     {
-        //TODO ENABLED???
         if (button.enabled)
         {
-            //TODO ID????
             if (button.id == 1)
                 currentPage += 2;
             if (button.id == 2)
