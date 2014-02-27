@@ -182,6 +182,8 @@ public abstract class InventoryBlock extends BlockContainer
 
     public abstract String[] getTextureNames ();
 
+    public abstract String getTextureDomain (int textureNameIndex);
+
     @Override
     public void registerBlockIcons (IIconRegister iconRegister)
     {
@@ -190,15 +192,16 @@ public abstract class InventoryBlock extends BlockContainer
 
         for (int i = 0; i < this.icons.length; ++i)
         {
-            this.icons[i] = iconRegister.registerIcon("tinker:" + textureNames[i]);
+            this.icons[i] = iconRegister.registerIcon(getTextureDomain(i) + ":" + textureNames[i]);
         }
     }
-    
+
     /* IDebuggable */
     @Override
     public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Items.stick);
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Items.stick)
+            ;
         {
             TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof IDebuggable)
