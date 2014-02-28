@@ -200,8 +200,7 @@ public abstract class InventoryBlock extends BlockContainer
     @Override
     public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
     {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem().getItem() == Items.stick)
-            ;
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null &&  player.getHeldItem().getItem() != null && player.getHeldItem().getItem() == Items.stick)
         {
             TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof IDebuggable)
