@@ -3,13 +3,18 @@ package mantle.lib.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
+import mantle.books.client.BookImage;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 public class MantleClientRegistry
 {
-    public static Map<String, ItemStack> manualIcons = new HashMap<String, ItemStack>();
-    public static Map<String, ItemStack[]> recipeIcons = new HashMap<String, ItemStack[]>();
+    public static Map<String, ItemStack> manualIcons = Maps.newHashMap();
+    public static Map<String, ItemStack[]> recipeIcons = Maps.newHashMap();
+    public static HashMap<String, BookImage> imageCache = Maps.newHashMap();
+
     public static ItemStack defaultStack = new ItemStack(Items.iron_ingot);
 
     public static void registerManualIcon (String name, ItemStack stack)

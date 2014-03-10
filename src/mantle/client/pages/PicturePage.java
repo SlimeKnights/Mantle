@@ -1,5 +1,6 @@
 package mantle.client.pages;
 
+import mantle.lib.client.MantleClientRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -17,12 +18,18 @@ public class PicturePage extends BookPage
         NodeList nodes = element.getElementsByTagName("text");
         if (nodes != null)
             text = nodes.item(0).getTextContent();
-
+        nodes = element.getElementsByTagName("bookImage");
+        if (nodes != null)
+        {
+            //TODO 1.7 null check all of this
+            background = MantleClientRegistry.imageCache.get(nodes.item(0).getTextContent()).resource;
+        }
         nodes = element.getElementsByTagName("location");
         if (nodes != null)
+        {
             location = nodes.item(0).getTextContent();
-
-        background = new ResourceLocation(location);
+            background = new ResourceLocation(location);
+        }
     }
 
     @Override

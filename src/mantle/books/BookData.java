@@ -17,6 +17,7 @@ public class BookData
     //font can be left null if so, the default from mantle will be used
     public SmallFontRenderer font;
     public Boolean isTranslatable = false;
+    public boolean isFromZip = false;
 
     public Document getDoc ()
     {
