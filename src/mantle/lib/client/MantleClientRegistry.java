@@ -17,6 +17,11 @@ public class MantleClientRegistry
 
     public static ItemStack defaultStack = new ItemStack(Items.iron_ingot);
 
+    public static BookImage getBookImageFromCache (String s)
+    {
+        return imageCache.get(s);
+    }
+
     public static void registerManualIcon (String name, ItemStack stack)
     {
         manualIcons.put(name, stack);

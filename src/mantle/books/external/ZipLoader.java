@@ -13,8 +13,12 @@ import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.books.ManualReader;
 import mantle.books.client.BookImage;
+import mantle.lib.client.MantleClientRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 
@@ -61,7 +65,7 @@ public class ZipLoader
                                 DynamicTexture dynTexture = new DynamicTexture(img);
                                 ResourceLocation rsLoc = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation(id, dynTexture);
                                 BookImage bI = new BookImage(img.getWidth(), img.getHeight(), dynTexture, rsLoc);
-
+                                MantleClientRegistry.imageCache.put(id, bI);
                             }
                             if (flExt.equalsIgnoreCase("xml"))
                             {
@@ -89,7 +93,22 @@ public class ZipLoader
                                 nodes = config.getElementsByTagName("RightImage");
                                 if (nodes != null)
                                     lImg = nodes.item(0).getTextContent();
-                                //TODO 1.7.2 add in ability to register stuff w/ client registry via this file
+                                if (isClient)
+                                {
+                                    nodes = config.getElementsByTagName("smallRecipe");
+                                    if (nodes != null)
+                                        registerSmallRecipes(nodes);
+                                    nodes = config.getElementsByTagName("largeRecipe");
+                                    if (nodes != null)
+                                        registerLargeRecipes(nodes);
+                                    nodes = config.getElementsByTagName("furnaceRecipe");
+                                    if (nodes != null)
+                                        registerFurnaceRecipes(nodes);
+                                    nodes = config.getElementsByTagName("registerIcon");
+                                    if (nodes != null)
+                                        registerIcons(nodes);
+                                }
+
                             }
 
                         }
@@ -99,9 +118,9 @@ public class ZipLoader
                     b.unlocalizedName = unlocName;
                     b.toolTip = toolTip;
                     b.isTranslatable = translatable;
-                    b.leftImage = new ResourceLocation("mantle", "textures/gui/bookleft.png");
-                    b.rightImage = new ResourceLocation("mantle", "textures/gui/bookright.png");
-                    b.itemImage = new ResourceLocation("mantle", "textures/items/mantlebook_blue.png");
+                    b.leftImage = lImg == null ? new ResourceLocation("mantle", "textures/gui/bookleft.png") : MantleClientRegistry.getBookImageFromCache(lImg).resource;
+                    b.rightImage = rImg == null ? new ResourceLocation("mantle", "textures/gui/bookright.png") : MantleClientRegistry.getBookImageFromCache(rImg).resource;
+                    b.itemImage = bIcon == null ? new ResourceLocation("mantle", "textures/items/mantlebook_blue.png") : MantleClientRegistry.getBookImageFromCache(bIcon).resource;
                     b.isFromZip = true;
                     BookDataStore.addBook(b);
                 }
@@ -129,5 +148,113 @@ public class ZipLoader
         if (ext.equalsIgnoreCase("png"))
             return true;
         return false;
+    }
+
+    //    public static void registerManualSmallRecipe (String name, ItemStack output, ItemStack... stacks)
+    public void registerSmallRecipes (NodeList node)
+    {
+        String item[];
+        String name = new String();
+        ItemStack isOut;
+        ItemStack[] isIn = new ItemStack[4];
+        int meta = 0;
+        int num = 0;
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            item = node.item(i).getTextContent().split("|");
+            name = item[0];
+            isOut = getISFromString(item[1]);
+            for (int j = 2; j < 6; j++)
+            {
+                isIn[j - 2] = item[j].equalsIgnoreCase("null") ? null : getISFromString(item[j]);
+            }
+            MantleClientRegistry.registerManualSmallRecipe(name, isOut, isIn);
+        }
+    }
+
+    //    public static void registerManualLargeRecipe (String name, ItemStack output, ItemStack... stacks)
+    public void registerLargeRecipes (NodeList node)
+    {
+        String item[];
+        String name = new String();
+        ItemStack isOut;
+        ItemStack[] isIn = new ItemStack[9];
+        int meta = 0;
+        int num = 0;
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            item = node.item(i).getTextContent().split("|");
+            name = item[0];
+            isOut = getISFromString(item[1]);
+            for (int j = 2; j < 11; j++)
+            {
+                isIn[j - 2] = item[j].equalsIgnoreCase("null") ? null : getISFromString(item[j]);
+            }
+            MantleClientRegistry.registerManualLargeRecipe(name, isOut, isIn);
+        }
+    }
+
+    //name, Out, in, 
+    public void registerFurnaceRecipes (NodeList node)
+    {
+        String item[];
+        String name = new String();
+        ItemStack isOut;
+        ItemStack isIn;
+        int meta = 0;
+        int num = 0;
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            item = node.item(i).getTextContent().split("|");
+            name = item[0];
+            isOut = getISFromString(item[1]);
+            isIn = getISFromString(item[2]);
+            MantleClientRegistry.registerManualFurnaceRecipe(name, isOut, isIn);
+        }
+    }
+
+    //name, out
+    public void registerIcons (NodeList node)
+    {
+        String item[];
+        String name = new String();
+        ItemStack is;
+        int meta = 0;
+        int num = 0;
+        for (int i = 0; i < node.getLength(); i++)
+        {
+            item = node.item(i).getTextContent().split("|");
+            name = item[0];
+            is = getISFromString(item[1]);
+            MantleClientRegistry.registerManualIcon(name, is);
+        }
+    }
+
+    //TODO null protect this!!!
+    public ItemStack getISFromString (String s)
+    {
+        try
+        {
+            String name = s.substring(0, s.indexOf("@") - 1);
+            int meta = Integer.parseInt(s.substring(s.indexOf("@") + 1, s.contains("#") ? s.indexOf("#") - 1 : s.length() - 1));
+            int stacksize = s.contains("#") ? Integer.parseInt(s.substring(s.indexOf("#") + 1)) : 1;
+            String key = name + ":" + meta;
+            Item i = (Item) Item.itemRegistry.getObject(key);
+            Block b = (Block) Block.blockRegistry.getObject(key);
+            if (i != null)
+            {
+                return new ItemStack(i, stacksize, meta);
+            }
+            if (b != null)
+            {
+                return new ItemStack(b, stacksize, meta);
+            }
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+
+        return null;
     }
 }
