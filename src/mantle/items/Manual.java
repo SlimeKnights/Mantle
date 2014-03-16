@@ -1,5 +1,9 @@
 package mantle.items;
 
+import net.minecraftforge.common.MinecraftForge;
+
+import mantle.event.ManualOpenEvent;
+
 import java.util.List;
 
 import mantle.Mantle;
@@ -41,11 +45,15 @@ public class Manual extends CraftingItem
     @Override
     public ItemStack onItemRightClick (ItemStack stack, World world, EntityPlayer player)
     {
+    	ManualOpenEvent.Pre preOpenEvent = new ManualOpenEvent.Pre(stack, player);
+    	MinecraftForge.EVENT_BUS.post(preOpenEvent);
         //player.addStat(TAchievements.achievements.get("tconstruct.beginner"), 1);
         player.openGui(Mantle.instance, mantle.client.MProxyClient.manualGuiID, world, 0, 0, 0);
         /*Side side = FMLCommonHandler.instance().getEffectiveSide();
         if (side.isClient())
             FMLClientHandler.instance().displayGuiScreen(player, new GuiManual(player.getCurrentEquippedItem(), getManualFromStack(stack)));*/
+        ManualOpenEvent.Post postOpenEvent = new ManualOpenEvent.Post(stack, player);
+        MinecraftForge.EVENT_BUS.post(postOpenEvent);
         return stack;
     }
 
