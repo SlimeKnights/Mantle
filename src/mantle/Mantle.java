@@ -4,10 +4,12 @@ import static mantle.lib.CoreRepo.logger;
 import static mantle.lib.CoreRepo.modId;
 import static mantle.lib.CoreRepo.modName;
 import static mantle.lib.CoreRepo.modVersion;
+import net.minecraft.world.biome.BiomeGenBase;
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.MProxyCommon;
 import mantle.items.Manual;
+import mantle.lib.CoreConfig;
 import mantle.lib.CoreRepo;
 import mantle.lib.environment.EnvironmentChecks;
 import cpw.mods.fml.common.Mod;
@@ -40,6 +42,18 @@ public class Mantle
     public static Manual mantleBook;
 
     /**
+     * Method Loaded once FML loads mod containers
+     * Environment loaded here to check for other
+     */
+
+    public Mantle()
+    {
+
+        EnvironmentChecks.verifyEnvironmentSanity();
+
+    }
+
+    /**
      * FML preinitialisation handler
      *
      * This is where we load our configs and related data, preparing for main load.
@@ -51,8 +65,7 @@ public class Mantle
     {
         logger.info("Mantle (" + modVersion + ") -- Preparing for launch.");
         logger.info("Entering preinitialization phase.");
-
-        EnvironmentChecks.verifyEnvironmentSanity();
+        CoreConfig.loadConfiguration(evt.getModConfigurationDirectory());
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
 
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
@@ -93,6 +106,18 @@ public class Mantle
         data.modID = CoreRepo.modId;
         BookDataStore.addBook(data);
         mantleBook.updateManual();
+        CoreConfig.loadBookLocations();
+
+        for (BiomeGenBase b : BiomeGenBase.getBiomeGenArray())
+        {
+            if (CoreConfig.dumpBiomeIDs)
+            {
+                if (b != null && b.biomeName != null)
+                {
+                    logger.info(b.biomeID + " " + b.biomeName);
+                }
+            }
+        }
     }
 
 }

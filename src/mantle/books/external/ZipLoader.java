@@ -3,6 +3,7 @@ package mantle.books.external;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -26,12 +27,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.google.common.collect.Maps;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
 public class ZipLoader
 {
-    public BookData loadZip (File f)
+    public static Map<String, ItemStack> loadedIS = Maps.newHashMap();
+
+    public static BookData loadZip (File f)
     {
         String flName = new String();
         String flExt = new String();
@@ -49,6 +54,7 @@ public class ZipLoader
             {
                 try
                 {
+                    logger.info("Loading book zip " + f.getName());
                     ZipFile zipfile = new ZipFile(f);
                     Enumeration e = zipfile.entries();
                     while (e.hasMoreElements())
@@ -70,6 +76,10 @@ public class ZipLoader
                             if (flExt.equalsIgnoreCase("xml"))
                             {
                                 b.doc = ManualReader.readManual(zipfile.getInputStream(entry), flName);
+                            }
+                            if (flExt.equalsIgnoreCase("lang"))
+                            {
+                                //TODO 1.7 put this data into the vanilla lang stuffs
                             }
                             if (flExt.equalsIgnoreCase("bookconfig"))
                             {
@@ -126,13 +136,14 @@ public class ZipLoader
                 }
                 catch (Exception e)
                 {
+                    logger.info(" Error Loading book zip " + f.getName());
                 }
                 return null;
 
             }
             else
             {
-                logger.error("Attempted to load non-zip file for mantle book. File will be skipped");
+                logger.error("Attempted to load non-zip file for mantle book. File " + f.getName() + " will be skipped");
             }
         }
         else
@@ -143,7 +154,7 @@ public class ZipLoader
         return null;
     }
 
-    public boolean isImage (String ext)
+    public static boolean isImage (String ext)
     {
         if (ext.equalsIgnoreCase("png"))
             return true;
@@ -151,14 +162,12 @@ public class ZipLoader
     }
 
     //    public static void registerManualSmallRecipe (String name, ItemStack output, ItemStack... stacks)
-    public void registerSmallRecipes (NodeList node)
+    public static void registerSmallRecipes (NodeList node)
     {
         String item[];
         String name = new String();
         ItemStack isOut;
         ItemStack[] isIn = new ItemStack[4];
-        int meta = 0;
-        int num = 0;
         for (int i = 0; i < node.getLength(); i++)
         {
             item = node.item(i).getTextContent().split("|");
@@ -173,14 +182,12 @@ public class ZipLoader
     }
 
     //    public static void registerManualLargeRecipe (String name, ItemStack output, ItemStack... stacks)
-    public void registerLargeRecipes (NodeList node)
+    public static void registerLargeRecipes (NodeList node)
     {
         String item[];
         String name = new String();
         ItemStack isOut;
         ItemStack[] isIn = new ItemStack[9];
-        int meta = 0;
-        int num = 0;
         for (int i = 0; i < node.getLength(); i++)
         {
             item = node.item(i).getTextContent().split("|");
@@ -195,14 +202,12 @@ public class ZipLoader
     }
 
     //name, Out, in, 
-    public void registerFurnaceRecipes (NodeList node)
+    public static void registerFurnaceRecipes (NodeList node)
     {
         String item[];
         String name = new String();
         ItemStack isOut;
         ItemStack isIn;
-        int meta = 0;
-        int num = 0;
         for (int i = 0; i < node.getLength(); i++)
         {
             item = node.item(i).getTextContent().split("|");
@@ -214,13 +219,11 @@ public class ZipLoader
     }
 
     //name, out
-    public void registerIcons (NodeList node)
+    public static void registerIcons (NodeList node)
     {
         String item[];
         String name = new String();
         ItemStack is;
-        int meta = 0;
-        int num = 0;
         for (int i = 0; i < node.getLength(); i++)
         {
             item = node.item(i).getTextContent().split("|");
@@ -230,28 +233,40 @@ public class ZipLoader
         }
     }
 
-    //TODO null protect this!!!
-    public ItemStack getISFromString (String s)
+    public static ItemStack getISFromString (String s)
     {
         try
         {
-            String name = s.substring(0, s.indexOf("@") - 1);
-            int meta = Integer.parseInt(s.substring(s.indexOf("@") + 1, s.contains("#") ? s.indexOf("#") - 1 : s.length() - 1));
-            int stacksize = s.contains("#") ? Integer.parseInt(s.substring(s.indexOf("#") + 1)) : 1;
-            String key = name + ":" + meta;
-            Item i = (Item) Item.itemRegistry.getObject(key);
-            Block b = (Block) Block.blockRegistry.getObject(key);
-            if (i != null)
+            ItemStack is = loadedIS.get(s);
+            if (is == null)
             {
-                return new ItemStack(i, stacksize, meta);
+                String name = s.substring(0, s.indexOf("@") - 1);
+                int meta = Integer.parseInt(s.substring(s.indexOf("@") + 1, s.contains("#") ? s.indexOf("#") - 1 : s.length() - 1));
+                int stacksize = s.contains("#") ? Integer.parseInt(s.substring(s.indexOf("#") + 1)) : 1;
+                String key = name + ":" + meta;
+                Item i = (Item) Item.itemRegistry.getObject(key);
+                Block b = (Block) Block.blockRegistry.getObject(key);
+                if (i != null)
+                {
+                    is = new ItemStack(i, stacksize, meta);
+                    return is;
+                }
+                if (b != null)
+                {
+                    is = new ItemStack(b, stacksize, meta);
+                    loadedIS.put(s, is);
+                    return is;
+                }
             }
-            if (b != null)
+            else
             {
-                return new ItemStack(b, stacksize, meta);
+                return is;
             }
         }
         catch (Exception e)
         {
+            logger.error("Error creating ItemStack");
+            e.printStackTrace();
             return null;
         }
 
