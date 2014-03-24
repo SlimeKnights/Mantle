@@ -11,6 +11,7 @@ import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.IDDumps;
 import mantle.common.MProxyCommon;
+import mantle.debug.LogIdentifier;
 import mantle.items.Manual;
 import mantle.lib.CoreConfig;
 import mantle.lib.CoreRepo;
@@ -43,6 +44,7 @@ public class Mantle
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
     public static MProxyCommon proxy;
     public static Manual mantleBook;
+    public static LogIdentifier logID;
 
     /**
      * Method Loaded once FML loads mod containers
@@ -69,6 +71,11 @@ public class Mantle
         logger.info("Mantle (" + modVersion + ") -- Preparing for launch.");
         logger.info("Entering preinitialization phase.");
         CoreConfig.loadConfiguration(evt.getModConfigurationDirectory());
+
+        if(CoreConfig.identifyLogs){
+            logID = new LogIdentifier();
+            logID.preinit();
+            }
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
 
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");

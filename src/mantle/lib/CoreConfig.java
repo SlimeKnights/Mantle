@@ -49,11 +49,14 @@ public class CoreConfig
 
         debug_enableConsole = config.get("DebugHelpers", "enableConsole", debug_enableConsole).getBoolean(debug_enableConsole);
         debug_enableChat = config.get("DebugHelpers", "enableChat", debug_enableChat).getBoolean(debug_enableChat);
-        //check for debugging overrides in system environment
+
         dumpBiomeIDs = config.get("DebugHelpers", "Dump BIOME ID's in log", dumpBiomeIDs).getBoolean(dumpBiomeIDs);
         dumpPotionIDs = config.get("DebugHelpers", "Dump POTION ID's in log", dumpPotionIDs).getBoolean(dumpPotionIDs);
         dumpEnchantIDs = config.get("DebugHelpers", "Dump ENCHANT ID's in log", dumpEnchantIDs).getBoolean(dumpEnchantIDs);
 
+        identifyLogs = config.get("DebugHelpers", "force all non identified logging entries through loggers", identifyLogs).getBoolean(identifyLogs);
+        
+        //check for debugging overrides in system environment
         checkSysOverrides();
         config.save();
         logger.info("Configuration load completed.");
@@ -95,6 +98,7 @@ public class CoreConfig
     public static boolean dumpBiomeIDs = false;
     public static boolean dumpPotionIDs = false;
     public static boolean dumpEnchantIDs = false;
+    public static boolean identifyLogs = false;
 
 
 }
