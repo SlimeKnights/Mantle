@@ -18,7 +18,7 @@ public class LogIdentifier
         logger.info("TracingPrintStream inserted on STDOUT/STDERR. These will now be redirected to the Mantle-STDOUT/Mantle-STDERR loggers.");
         //logger.info("Forcing Java.util.Logger logging into log4j2");
         //JavaLoggingRedirector.activate();
-      //  logger.info("Successfully redirected java.util.logging");
+        //  logger.info("Successfully redirected java.util.logging");
     }
 
 }
@@ -38,9 +38,10 @@ class TracingPrintStream extends PrintStream
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         // stack(2) is calling object.
         String name = stack[2].getClassName();
-        l.info("[" + name + "]: " + x);
+        if (name != null)
+            l.info("[" + name + "]: " + x);
+        else
+            l.info("[" + Thread.currentThread().getName() + "]: " + x);
     }
 
 }
-
-
