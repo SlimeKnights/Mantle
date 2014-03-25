@@ -84,7 +84,7 @@ public class Mantle
     }
 
     /**
-     * FML preinitialisation handler
+     * FML initialisation handler
      *
      * This is where we handle basic loading and populating any missing data in the Repo
      *
@@ -99,7 +99,7 @@ public class Mantle
     }
 
     /**
-     * FML preinitialisation handler
+     * FML postinitialisation handler
      *
      * Final chance for cleanup before main game launch
      *
