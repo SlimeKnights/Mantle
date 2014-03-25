@@ -35,6 +35,7 @@ class TracingPrintStream extends PrintStream
     @Override
     public void println (String x)
     {
+        x = x != null ? x : "";
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         // stack(2) is calling object.
         String name = stack[2].getClassName();
