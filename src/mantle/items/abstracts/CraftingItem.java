@@ -46,6 +46,8 @@ public class CraftingItem extends Item
     public IIcon getIconFromDamage (int meta)
     {
         int arr = MathHelper.clamp_int(meta, 0, unlocalizedNames.length);
+        if(arr > icons.length)
+            return icons[0];
         return icons[arr];
     }
 
