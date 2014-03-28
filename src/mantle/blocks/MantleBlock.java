@@ -2,9 +2,11 @@ package mantle.blocks;
 
 import mantle.debug.DebugHelper;
 import mantle.debug.IDebuggable;
+import mantle.items.iface.IDebugItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -25,12 +27,11 @@ public abstract class MantleBlock extends Block
     }
 
     // IDebuggable support - Uses a stick for debug purposes.
-    //TODO onBlockClicked
     @Override
     public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
     {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null
-                && player.getHeldItem().getItem() == Item.getItemFromBlock(Block.getBlockFromName("Item_Stick")))
+                && (player.getHeldItem().getItem() == Items.stick || player.getHeldItem().getItem() instanceof IDebugItem))
         {
             TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof IDebuggable)

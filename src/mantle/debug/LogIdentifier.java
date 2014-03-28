@@ -16,6 +16,9 @@ public class LogIdentifier
         System.setOut(new TracingPrintStream(outLogger, "STDOUT", System.out));
         System.setErr(new TracingPrintStream(errLogger, "STDERR", System.err));
         logger.info("TracingPrintStream inserted on STDOUT/STDERR. These will now be redirected to the Mantle-STDOUT/Mantle-STDERR loggers.");
+        System.out.println("Mantle redirect test-out");
+        System.err.println("Mantle redirect test-err");
+
         //logger.info("Forcing Java.util.Logger logging into log4j2");
         //JavaLoggingRedirector.activate();
         //  logger.info("Successfully redirected java.util.logging");
@@ -25,24 +28,25 @@ public class LogIdentifier
 
 class TracingPrintStream extends PrintStream
 {
-    static Logger l;
+    static Logger log;
 
     public TracingPrintStream(Logger l, String Stream, PrintStream original)
     {
         super(original);
+        this.log = l;
     }
 
     @Override
     public void println (String x)
     {
-        x = x != null ? x : "";
+        x = (x == null ? " " : x);
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         // stack(2) is calling object.
         String name = stack[2].getClassName();
         if (name != null)
-            l.info("[" + name + "]: " + x);
+            log.info("[" + name + "]: " + x);
         else
-            l.info("[" + Thread.currentThread().getName() + "]: " + x);
+            log.info("[" + Thread.currentThread().getName() + "]: " + x);
     }
 
 }
