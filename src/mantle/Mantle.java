@@ -34,7 +34,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
  * @author Sunstrike <sun@sunstrike.io>
  */
 @Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge")
-//@[8.9,)")
 public class Mantle
 {
     /* Instance of this mod, used for grabbing prototype fields */
@@ -53,9 +52,7 @@ public class Mantle
 
     public Mantle()
     {
-
         EnvironmentChecks.verifyEnvironmentSanity();
-
     }
 
     /**
@@ -80,7 +77,6 @@ public class Mantle
 
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
-
     }
 
     /**
@@ -95,7 +91,6 @@ public class Mantle
     {
         logger.info("Entering initialization phase.");
         proxy.registerRenderer();
-
     }
 
     /**
@@ -118,7 +113,6 @@ public class Mantle
         mantleBook.updateManual();
         CoreConfig.loadBookLocations();
         IDDumps.dump();
-
     }
 
 }
