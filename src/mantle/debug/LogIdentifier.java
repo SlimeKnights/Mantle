@@ -46,7 +46,7 @@ class TracingPrintStream extends PrintStream
         if (name != null)
             log.info("[" + name + "]: " + x);
         else
-            log.info("[" + Thread.currentThread().getName() + "]: " + x);
+            log.info("[null|" + Thread.currentThread().getName() + "]: " + x);
     }
 
 }

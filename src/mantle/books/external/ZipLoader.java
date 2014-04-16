@@ -20,14 +20,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
 
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import org.apache.commons.io.IOUtils;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -38,6 +42,7 @@ public class ZipLoader
 
     public static BookData loadZip (File f)
     {
+        BookLoad bl;
         String flName = new String();
         String flExt = new String();
         String lImg = new String();
@@ -81,46 +86,113 @@ public class ZipLoader
                             {
                                 //TODO 1.7 put this data into the vanilla lang stuffs
                             }
-                            if (flExt.equalsIgnoreCase("bookconfig"))
+                            if (flExt.equalsIgnoreCase("json"))
                             {
-                                Document config = ManualReader.readManual(zipfile.getInputStream(entry), flName);
-                                NodeList nodes = config.getElementsByTagName("UnlocalizedName");
-                                if (nodes != null)
-                                    unlocName = nodes.item(0).getTextContent();
-                                nodes = config.getElementsByTagName("Tooltip");
-                                if (nodes != null)
-                                    toolTip = nodes.item(0).getTextContent();
-                                nodes = config.getElementsByTagName("Translatable");
-                                if (nodes != null)
-                                    translatable = StringUtils.isNullOrEmpty(nodes.item(0).getTextContent()) ? false : nodes.item(0).getTextContent().equalsIgnoreCase("true") ? true : false;
-                                //if these 3 are null or empty or invalid then the book will use the mantle defaults
-                                nodes = config.getElementsByTagName("BookIcon");
-                                if (nodes != null)
-                                    bIcon = nodes.item(0).getTextContent();
-                                nodes = config.getElementsByTagName("LeftImage");
-                                if (nodes != null)
-                                    lImg = nodes.item(0).getTextContent();
-                                nodes = config.getElementsByTagName("RightImage");
-                                if (nodes != null)
-                                    lImg = nodes.item(0).getTextContent();
+                                Gson g = new Gson();
+                                bl = g.fromJson(IOUtils.toString(zipfile.getInputStream(entry), Charsets.UTF_8), BookLoad.class);
+                                for (BookIS bis : bl.registerItemStacks)
+                                {
+                                    try
+                                    {
+                                        ItemStack is = loadedIS.get(bis.cname);
+                                        if (is == null)
+                                        {
+                                            Block blok = (Block) Block.blockRegistry.getObject(bis.cname);
+                                            Item it = (Item) Item.itemRegistry.getObject(bis.cname);
+                                            if (it != null)
+                                            {
+                                                is = new ItemStack(it, bis.getStackSize(), bis.metadata);
+                                            }
+
+                                            else if (bl != null)
+                                            {
+                                                is = new ItemStack(blok, bis.getStackSize(), bis.metadata);
+                                            }
+                                            if (is != null)
+                                            {
+                                                if (bis.tags != null && !bis.tags.isEmpty())
+                                                {
+                                                    try
+                                                    {
+                                                        is.stackTagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(bis.tags);
+                                                    }
+                                                    catch (Exception e1)
+                                                    {
+                                                    }
+                                                }
+                                                loadedIS.put(bis.cname, is);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception e1)
+                                    {
+                                    }
+                                }
                                 if (isClient)
                                 {
-                                    nodes = config.getElementsByTagName("smallRecipe");
-                                    if (nodes != null)
-                                        registerSmallRecipes(nodes);
-                                    nodes = config.getElementsByTagName("largeRecipe");
-                                    if (nodes != null)
-                                        registerLargeRecipes(nodes);
-                                    nodes = config.getElementsByTagName("furnaceRecipe");
-                                    if (nodes != null)
-                                        registerFurnaceRecipes(nodes);
-                                    nodes = config.getElementsByTagName("registerIcon");
-                                    if (nodes != null)
-                                        registerIcons(nodes);
+                                    for (JsonObject jso : bl.smallRecipes)
+                                    {
+                                        if (jso != null)
+                                        {
+                                            ItemStack out = loadedIS.get(jso.get("out").getAsString());
+                                            ItemStack in[] = getISArray(jso.getAsJsonArray("in"));
+                                            String name = jso.get("name").getAsString();
+                                            if (out != null && in != null && in.length <= 4 && name != null && !name.isEmpty())
+                                            {
+                                                MantleClientRegistry.registerManualSmallRecipe(name, out, in);
+                                            }
+                                        }
+                                    }
+                                    for (JsonObject jso : bl.largeRecipes)
+                                    {
+                                        if (jso != null)
+                                        {
+                                            ItemStack out = loadedIS.get(jso.get("out").getAsString());
+                                            ItemStack in[] = getISArray(jso.getAsJsonArray("in"));
+                                            String name = jso.get("name").getAsString();
+                                            if (out != null && in != null && in.length <= 9 && name != null && !name.isEmpty())
+                                            {
+                                                MantleClientRegistry.registerManualLargeRecipe(name, out, in);
+                                            }
+                                        }
+                                    }
+                                    for (JsonObject jso : bl.furnaceRecipes)
+                                    {
+                                        if (jso != null)
+                                        {
+                                            ItemStack out = loadedIS.get(jso.get("out").getAsString());
+                                            ItemStack in = loadedIS.get(jso.get("in").getAsString());
+                                            String name = jso.get("name").getAsString();
+                                            if (out != null && in != null && name != null && !name.isEmpty())
+                                            {
+                                                MantleClientRegistry.registerManualFurnaceRecipe(name, out, in);
+                                            }
+                                        }
+                                    }
+                                    for (JsonObject jso : bl.manualIcons)
+                                    {
+                                        if (jso != null)
+                                        {
+                                            ItemStack in = loadedIS.get(jso.get("stack").getAsString());
+                                            String name = jso.get("name").getAsString();
+                                            if (in != null && name != null && !name.isEmpty())
+                                            {
+                                                MantleClientRegistry.registerManualIcon(name, in);
+                                            }
+                                        }
+                                    }
                                 }
-
+                                b.unlocalizedName = bl.unlocalizedName;
+                                b.toolTip = bl.tooltip;
+                                b.isTranslatable = bl.translatable;
+                                b.leftImage = bl.LeftImage == null ? new ResourceLocation("mantle", "textures/gui/bookleft.png") : MantleClientRegistry.getBookImageFromCache(bl.LeftImage).resource;
+                                b.rightImage = bl.rightImage == null ? new ResourceLocation("mantle", "textures/gui/bookright.png")
+                                        : MantleClientRegistry.getBookImageFromCache(bl.rightImage).resource;
+                                b.itemImage = bl.BookIcon == null ? new ResourceLocation("mantle", "textures/items/mantlebook_blue.png")
+                                        : MantleClientRegistry.getBookImageFromCache(bl.BookIcon).resource;
+                                b.isFromZip = true;
+                                BookDataStore.addBook(b);
                             }
-
                         }
 
                     }
@@ -161,115 +233,27 @@ public class ZipLoader
         return false;
     }
 
-    //    public static void registerManualSmallRecipe (String name, ItemStack output, ItemStack... stacks)
-    public static void registerSmallRecipes (NodeList node)
+    public static ItemStack[] getISArray (JsonArray a)
     {
-        String item[];
-        String name = new String();
-        ItemStack isOut;
-        ItemStack[] isIn = new ItemStack[4];
-        for (int i = 0; i < node.getLength(); i++)
+        ItemStack[] is = new ItemStack[a.size()];
+        ItemStack loadedStack;
+        for (int i = 0; i < a.size(); i++)
         {
-            item = node.item(i).getTextContent().split("|");
-            name = item[0];
-            isOut = getISFromString(item[1]);
-            for (int j = 2; j < 6; j++)
+            if (a.get(i).getAsString() != null && !a.get(i).getAsString().isEmpty() && a.get(i).getAsString().equals("none"))
             {
-                isIn[j - 2] = item[j].equalsIgnoreCase("null") ? null : getISFromString(item[j]);
-            }
-            MantleClientRegistry.registerManualSmallRecipe(name, isOut, isIn);
-        }
-    }
-
-    //    public static void registerManualLargeRecipe (String name, ItemStack output, ItemStack... stacks)
-    public static void registerLargeRecipes (NodeList node)
-    {
-        String item[];
-        String name = new String();
-        ItemStack isOut;
-        ItemStack[] isIn = new ItemStack[9];
-        for (int i = 0; i < node.getLength(); i++)
-        {
-            item = node.item(i).getTextContent().split("|");
-            name = item[0];
-            isOut = getISFromString(item[1]);
-            for (int j = 2; j < 11; j++)
-            {
-                isIn[j - 2] = item[j].equalsIgnoreCase("null") ? null : getISFromString(item[j]);
-            }
-            MantleClientRegistry.registerManualLargeRecipe(name, isOut, isIn);
-        }
-    }
-
-    //name, Out, in, 
-    public static void registerFurnaceRecipes (NodeList node)
-    {
-        String item[];
-        String name = new String();
-        ItemStack isOut;
-        ItemStack isIn;
-        for (int i = 0; i < node.getLength(); i++)
-        {
-            item = node.item(i).getTextContent().split("|");
-            name = item[0];
-            isOut = getISFromString(item[1]);
-            isIn = getISFromString(item[2]);
-            MantleClientRegistry.registerManualFurnaceRecipe(name, isOut, isIn);
-        }
-    }
-
-    //name, out
-    public static void registerIcons (NodeList node)
-    {
-        String item[];
-        String name = new String();
-        ItemStack is;
-        for (int i = 0; i < node.getLength(); i++)
-        {
-            item = node.item(i).getTextContent().split("|");
-            name = item[0];
-            is = getISFromString(item[1]);
-            MantleClientRegistry.registerManualIcon(name, is);
-        }
-    }
-
-    public static ItemStack getISFromString (String s)
-    {
-        try
-        {
-            ItemStack is = loadedIS.get(s);
-            if (is == null)
-            {
-                String name = s.substring(0, s.indexOf("@") - 1);
-                int meta = Integer.parseInt(s.substring(s.indexOf("@") + 1, s.contains("#") ? s.indexOf("#") - 1 : s.length() - 1));
-                int stacksize = s.contains("#") ? Integer.parseInt(s.substring(s.indexOf("#") + 1)) : 1;
-                String key = name + ":" + meta;
-                Item i = (Item) Item.itemRegistry.getObject(key);
-                Block b = (Block) Block.blockRegistry.getObject(key);
-                if (i != null)
-                {
-                    is = new ItemStack(i, stacksize, meta);
-                    return is;
-                }
-                if (b != null)
-                {
-                    is = new ItemStack(b, stacksize, meta);
-                    loadedIS.put(s, is);
-                    return is;
-                }
+                is[i] = null;
             }
             else
             {
-                return is;
+                loadedStack = loadedIS.get(a.get(i).getAsString());
+                if (loadedStack == null)
+                {
+                    is = null;
+                    return is;
+                }
+                is[i] = loadedStack;
             }
         }
-        catch (Exception e)
-        {
-            logger.error("Error creating ItemStack");
-            e.printStackTrace();
-            return null;
-        }
-
-        return null;
+        return is;
     }
 }
