@@ -13,6 +13,7 @@ import mantle.items.Manual;
 import mantle.lib.CoreConfig;
 import mantle.lib.CoreRepo;
 import mantle.lib.environment.EnvironmentChecks;
+import mantle.module.ModuleController;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -41,6 +42,7 @@ public class Mantle
     public static MProxyCommon proxy;
     public static Manual mantleBook;
     public static LogIdentifier logID;
+    public static ModuleController moduleLoader = new ModuleController("Mantle-Modules.cfg", "Mantle");
 
     /**
      * Method Loaded once FML loads mod containers
@@ -66,14 +68,16 @@ public class Mantle
         logger.info("Entering preinitialization phase.");
         CoreConfig.loadConfiguration(evt.getModConfigurationDirectory());
 
-        if(CoreConfig.identifyLogs){
+        if (CoreConfig.identifyLogs) {
             logID = new LogIdentifier();
             logID.preinit();
-            }
+        }
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
 
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
+
+        moduleLoader.preInit();
     }
 
     /**
@@ -88,6 +92,8 @@ public class Mantle
     {
         logger.info("Entering initialization phase.");
         proxy.registerRenderer();
+
+        moduleLoader.init();
     }
 
     /**
@@ -110,6 +116,8 @@ public class Mantle
         mantleBook.updateManual();
         CoreConfig.loadBookLocations();
         IDDumps.dump();
+
+        moduleLoader.postInit();
     }
 
 }
