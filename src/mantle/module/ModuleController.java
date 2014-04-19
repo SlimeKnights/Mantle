@@ -20,7 +20,7 @@ public class ModuleController {
         WAITING, PREINIT, INIT, POSTINIT, DONE
     }
 
-    private ArrayList<IModule> modules = new ArrayList<IModule>();
+    private ArrayList<ILoadableModule> modules = new ArrayList<ILoadableModule>();
     private State currentState = State.WAITING;
     private Logger logger;
     private Configuration config;
@@ -51,7 +51,7 @@ public class ModuleController {
      */
     public void preInit() {
         currentState = State.PREINIT;
-        for (IModule m : modules) m.preInit();
+        for (ILoadableModule m : modules) m.preInit();
     }
 
     /**
@@ -59,7 +59,7 @@ public class ModuleController {
      */
     public void init() {
         currentState = State.INIT;
-        for (IModule m : modules) m.init();
+        for (ILoadableModule m : modules) m.init();
     }
 
     /**
@@ -67,7 +67,7 @@ public class ModuleController {
      */
     public void postInit() {
         currentState = State.POSTINIT;
-        for (IModule m : modules) m.postInit();
+        for (ILoadableModule m : modules) m.postInit();
         currentState = State.DONE;
     }
 
@@ -80,7 +80,7 @@ public class ModuleController {
      * @param mod The module to attempt to register.
      * @return True on success, false on error or rejection.
      */
-    public boolean registerModule(Class<? extends IModule> mod) {
+    public boolean registerModule(Class<? extends ILoadableModule> mod) {
         String mID = getModId(mod);
         if (mID == null || !Loader.isModLoaded(mID)) return false;
 
@@ -103,14 +103,14 @@ public class ModuleController {
      * @param mod The module to attempt to register.
      * @return True on success, false on error.
      */
-    public boolean registerUncheckedModule(Class<? extends IModule> mod) {
+    public boolean registerUncheckedModule(Class<? extends ILoadableModule> mod) {
         String mID = getModId(mod);
         if (mID == null || !Loader.isModLoaded(mID)) return false;
 
         return doSetup(mod, mID);
     }
 
-    private String getModId(Class<? extends IModule> mod) {
+    private String getModId(Class<? extends ILoadableModule> mod) {
         String mID;
         try {
             mID = (String)mod.getField("modId").get(null);
@@ -127,8 +127,8 @@ public class ModuleController {
      * @param mod Module class to setup
      * @return True on success, else false.
      */
-    private boolean doSetup(Class<? extends IModule> mod, String mID) {
-        IModule module;
+    private boolean doSetup(Class<? extends ILoadableModule> mod, String mID) {
+        ILoadableModule module;
         try {
             module = mod.newInstance();
             modules.add(module);
