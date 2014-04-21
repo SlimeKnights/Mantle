@@ -24,9 +24,9 @@ public class CoreConfig
     public static File configFolder;
 
     /**
-     * Loads state from a Forge configuration object, or saves a new file if it doesn't already exist.
+     * Loads state from the configuration folder.
      *
-     * @param config Configuration object (usually from a location given by FML in preinit)
+     * @param mainConfigFolder Configuration folder (as a Java File)
      */
     public static void loadConfiguration (File mainConfigFolder)
     {
@@ -39,7 +39,7 @@ public class CoreConfig
         }
         catch (IOException e)
         {
-            logger.error("Error creating Mantle's Config File: " + e.getMessage());
+            logger.error("Error getting/creating Mantle configuration directory: " + e.getMessage());
         }
 
         config = new Configuration(new File(configFolder, (modId + ".cfg")));
@@ -54,7 +54,7 @@ public class CoreConfig
         dumpPotionIDs = config.get("DebugHelpers", "Dump POTION ID's in log", dumpPotionIDs).getBoolean(dumpPotionIDs);
         dumpEnchantIDs = config.get("DebugHelpers", "Dump ENCHANT ID's in log", dumpEnchantIDs).getBoolean(dumpEnchantIDs);
 
-        identifyLogs = config.get("DebugHelpers", "force all non identified logging entries through loggers", identifyLogs).getBoolean(identifyLogs);
+        identifyLogs = config.get("DebugHelpers", "Force all unidentified logging entries (STDOUT/STDERR) through log4j", identifyLogs).getBoolean(identifyLogs);
         
         //check for debugging overrides in system environment
         checkSysOverrides();

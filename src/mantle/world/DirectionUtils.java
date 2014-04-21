@@ -7,12 +7,14 @@ import net.minecraftforge.common.util.ForgeDirection;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
+@SuppressWarnings("unused")
 public class DirectionUtils
 {
 
     private DirectionUtils()
     {
-    } // All static
+        // No instantiation
+    }
 
     public static boolean isRightAngles (ForgeDirection a, ForgeDirection b)
     {

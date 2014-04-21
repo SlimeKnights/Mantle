@@ -2,7 +2,6 @@ package mantle.client;
 
 import java.util.Random;
 
-import mantle.client.block.SmallFontRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;

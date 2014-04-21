@@ -1,6 +1,6 @@
 package mantle.books;
 
-import mantle.client.block.SmallFontRenderer;
+import mantle.client.SmallFontRenderer;
 import net.minecraft.util.ResourceLocation;
 
 import org.w3c.dom.Document;

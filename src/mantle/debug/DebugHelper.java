@@ -16,7 +16,8 @@ public class DebugHelper
 
     private DebugHelper()
     {
-    } //Singleton
+        // No instantiation
+    }
 
     public static void handleDebugData (DebugData data)
     {

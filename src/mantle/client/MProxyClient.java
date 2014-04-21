@@ -7,7 +7,6 @@ import java.util.Map;
 
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
-import mantle.client.block.SmallFontRenderer;
 import mantle.client.gui.GuiManual;
 import mantle.client.pages.BlankPage;
 import mantle.client.pages.BookPage;
@@ -28,6 +27,9 @@ import net.minecraft.world.World;
 
 public class MProxyClient extends MProxyCommon
 {
+
+    public static final String MINECRAFT_ASCII_PATH = "minecraft:textures/font/ascii.png";
+
     public static SmallFontRenderer smallFontRenderer;
 
     /* Registers any rendering code. */
@@ -35,10 +37,10 @@ public class MProxyClient extends MProxyCommon
     {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.getTextureManager() == null)
-            logger.error("vanilla texture man is null");
+            logger.error("Vanilla texture manager is null!");
         if (mc.renderEngine == null)
-            logger.error("vanilla render engine is null");
-        smallFontRenderer = new SmallFontRenderer(mc.gameSettings, new ResourceLocation("minecraft:textures/font/ascii.png"), mc.renderEngine, false);
+            logger.error("Vanilla render engine is null!");
+        smallFontRenderer = new SmallFontRenderer(mc.gameSettings, new ResourceLocation(MINECRAFT_ASCII_PATH), mc.renderEngine, false);
     }
 
     public static Map<String, Class<? extends BookPage>> pageClasses = new HashMap<String, Class<? extends BookPage>>();
@@ -50,8 +52,6 @@ public class MProxyClient extends MProxyCommon
 
     public static Class<? extends BookPage> getPageClass (String type)
     {
-        // logger.info(type);
-        //logger.info(pageClasses.get(type).getName());
         return pageClasses.get(type);
     }
 
@@ -81,11 +81,11 @@ public class MProxyClient extends MProxyCommon
         {
             ItemStack stack = player.getCurrentEquippedItem();
             if (stack == null)
-                logger.error("stack null in book");
+                logger.error("Null stack in book.");
             if (stack != null && stack.getItem() == null)
-                logger.error("item null in book");
+                logger.error("Null item in book.");
             if (stack != null && stack.getItem() != null && stack.getItem().getUnlocalizedName() == null)
-                logger.error("unlocalized name null in book");
+                logger.error("Null unlocalized name in book.");
             else
             {
                 return new GuiManual(stack, MProxyClient.getBookDataFromStack(stack));

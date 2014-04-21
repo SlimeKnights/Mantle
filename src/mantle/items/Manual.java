@@ -47,13 +47,11 @@ public class Manual extends CraftingItem
     {
     	ManualOpenEvent.Pre preOpenEvent = new ManualOpenEvent.Pre(stack, player);
     	MinecraftForge.EVENT_BUS.post(preOpenEvent);
-        //player.addStat(TAchievements.achievements.get("tconstruct.beginner"), 1);
+
         player.openGui(Mantle.instance, mantle.client.MProxyClient.manualGuiID, world, 0, 0, 0);
-        /*Side side = FMLCommonHandler.instance().getEffectiveSide();
-        if (side.isClient())
-            FMLClientHandler.instance().displayGuiScreen(player, new GuiManual(player.getCurrentEquippedItem(), getManualFromStack(stack)));*/
         ManualOpenEvent.Post postOpenEvent = new ManualOpenEvent.Post(stack, player);
         MinecraftForge.EVENT_BUS.post(postOpenEvent);
+
         return stack;
     }
 
@@ -61,21 +59,18 @@ public class Manual extends CraftingItem
     @SideOnly(Side.CLIENT)
     public void addInformation (ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
-        //logger.info(stack.getItemDamage() + " "+ BookDataStore.getBookfromID(stack.getItemDamage()) + " " + BookDataStore.getBookfromID(stack.getItemDamage()) );
         list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getItemDamage()).toolTip));
     }
 
     @Override
     public String getUnlocalizedName ()
     {
-        //  logger.info("unloc: " + super.getUnlocalizedName());
         return modID + ":" + super.getUnlocalizedName();
     }
 
     @Override
     public String getUnlocalizedName (ItemStack par1ItemStack)
     {
-        //   logger.info("unloc IS " + super.getUnlocalizedName(par1ItemStack));
         return super.getUnlocalizedName(par1ItemStack);
     }
 }

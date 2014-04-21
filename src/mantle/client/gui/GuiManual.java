@@ -3,7 +3,7 @@ package mantle.client.gui;
 import mantle.books.BookData;
 import mantle.client.MProxyClient;
 import mantle.client.RenderItemCopy;
-import mantle.client.block.SmallFontRenderer;
+import mantle.client.SmallFontRenderer;
 import mantle.client.pages.BookPage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

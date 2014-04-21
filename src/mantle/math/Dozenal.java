@@ -12,16 +12,20 @@ import java.util.LinkedList;
 
 public class Dozenal
 {
+
+    @SuppressWarnings("unused")
     public static String convertToDozenal (byte i)
     {
         return convertDecimal(i);
     }
 
+    @SuppressWarnings("unused")
     public static String convertToDozenal (short i)
     {
         return convertDecimal(i);
     }
 
+    @SuppressWarnings("unused")
     public static String convertToDozenal (int i)
     {
         return convertDecimal(i);

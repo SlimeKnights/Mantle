@@ -1,4 +1,4 @@
-package mantle.client.block;
+package mantle.client;
 
 import static mantle.lib.CoreRepo.logger;
 

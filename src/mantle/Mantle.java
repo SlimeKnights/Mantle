@@ -39,16 +39,17 @@ public class Mantle
     public static Mantle instance;
     /* Proxies for sides, used for graphics processing */
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
+
     public static MProxyCommon proxy;
     public static Manual mantleBook;
     public static LogIdentifier logID;
     public static ModuleController moduleLoader = new ModuleController("Mantle-Modules.cfg", "Mantle");
 
     /**
-     * Method Loaded once FML loads mod containers
-     * Environment loaded here to check for other
+     * Constructor
+     *
+     * EnvChecks invoked here so they run as soon as possible to enhance crash reports that may happen in preinit.
      */
-
     public Mantle()
     {
         EnvironmentChecks.verifyEnvironmentSanity();
