@@ -15,8 +15,10 @@ public interface IFacingLogic
 
     public ForgeDirection getForgeDirection ();
 
+    @Deprecated
     public void setDirection (int side);
 
+    @Deprecated
     public void setDirection (float yaw, float pitch, EntityLivingBase player);
 
     /** This will be added next version

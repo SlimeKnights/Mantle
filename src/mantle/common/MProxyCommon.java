@@ -11,6 +11,8 @@ public class MProxyCommon implements IGuiHandler
     @Override
     public Object getServerGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z)
     {
+        if (ID < 0)
+            return null;
         return null;
     }
 

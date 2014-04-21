@@ -16,7 +16,8 @@ public class LogIdentifier
         System.setOut(new TracingPrintStream(outLogger, "STDOUT", System.out));
         System.setErr(new TracingPrintStream(errLogger, "STDERR", System.err));
         logger.info("TracingPrintStream inserted on STDOUT/STDERR. These will now be redirected to the Mantle-STDOUT/Mantle-STDERR loggers.");
-
+        System.out.println("Mantle redirect test-out");
+        System.err.println("Mantle redirect test-err");//intended behavior to be able to ensure the integrity of the redirector
         //logger.info("Forcing Java.util.Logger logging into log4j2");
         //JavaLoggingRedirector.activate();
         //  logger.info("Successfully redirected java.util.logging");

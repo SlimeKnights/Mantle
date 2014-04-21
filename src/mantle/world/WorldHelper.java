@@ -7,6 +7,11 @@ import net.minecraft.world.World;
 
 public class WorldHelper
 {
+    @Deprecated
+    public static boolean setBlockToAirBool (World w, int x, int y, int z)
+    {
+        return setBlockToAir(w, x, y, z);
+    }
 
     public static boolean setBlockToAir (World w, int x, int y, int z)
     {
