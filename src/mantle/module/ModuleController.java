@@ -117,6 +117,9 @@ public class ModuleController {
         } catch (Exception e) {
             logger.error("Module loading failed for class " + mod + "; modId field may be missing.");
             return null;
+        } catch (NoClassDefFoundError ncdf) { // NOTE: Catching Errors is usually bad practice, but we need to here.
+            logger.error("Module loading failed for class " + mod + "; a referenced class is missing.");
+            return null;
         }
         return mID;
     }
