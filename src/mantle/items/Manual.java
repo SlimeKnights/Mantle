@@ -57,6 +57,7 @@ public class Manual extends CraftingItem
 
     @Override
     @SideOnly(Side.CLIENT)
+    @SuppressWarnings("unchecked")
     public void addInformation (ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
         list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getItemDamage()).toolTip));

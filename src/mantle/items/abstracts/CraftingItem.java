@@ -70,6 +70,7 @@ public class CraftingItem extends Item
         return getUnlocalizedName() + "." + unlocalizedNames[arr];
     }
 
+    @SuppressWarnings("unchecked")
     public void getSubItems (Item b, CreativeTabs tab, List list)
     {
         for (int i = 0; i < unlocalizedNames.length; i++)

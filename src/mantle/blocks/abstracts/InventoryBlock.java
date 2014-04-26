@@ -130,12 +130,14 @@ public abstract class InventoryBlock extends BlockContainer
     }
 
     @Override
+    @SuppressWarnings("deprecation") // TODO: Remove this when setDirection calls updated.
     public void onBlockPlacedBy (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
     {
         TileEntity logic = world.getTileEntity(x, y, z);
         if (logic instanceof IFacingLogic)
         {
             IFacingLogic direction = (IFacingLogic) logic;
+            // TODO: Convert all setDirection calls to modern invokation, when that's ready.
             if (side != -1)
             {
                 direction.setDirection(side);
@@ -162,6 +164,7 @@ public abstract class InventoryBlock extends BlockContainer
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean isActive (IBlockAccess world, int x, int y, int z)
     {
         TileEntity logic = world.getTileEntity(x, y, z);

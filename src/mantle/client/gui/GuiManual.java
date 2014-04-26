@@ -69,6 +69,7 @@ public class GuiManual extends GuiScreen
         this.initGui();
     }*/
 
+    @SuppressWarnings("unchecked")
     public void initGui ()
     {
         maxPages = manual.getElementsByTagName("page").getLength();
