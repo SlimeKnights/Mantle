@@ -7,10 +7,10 @@ public class ItemUtils
 {
     public static String getUniqueName (Item item)
     {
-        return GameData.itemRegistry.getNameForObject(item);
+        return GameData.getItemRegistry().getNameForObject(item);
     }
     public static Item getItemFromUniqueName (String uniqueName)
     {
-        return GameData.itemRegistry.getObject(uniqueName);
+        return GameData.getItemRegistry().getObject(uniqueName);
     }
 }

@@ -12,6 +12,7 @@ public class BlockUtils
         return Block.getBlockFromItem(item);
     }
 
+    @SuppressWarnings("unused")
     public static Block getBlockFromItemStack (ItemStack itemStack)
     {
         return getBlockFromItem(itemStack.getItem());
@@ -19,12 +20,12 @@ public class BlockUtils
 
     public static String getUniqueName (Block block)
     {
-        return GameData.blockRegistry.getNameForObject(block);
+        return GameData.getBlockRegistry().getNameForObject(block);
     }
 
     public static Block getBlockFromUniqueName (String uniqueName)
     {
-        return GameData.blockRegistry.getObject(uniqueName);
+        return GameData.getBlockRegistry().getObject(uniqueName);
     }
 
 }
