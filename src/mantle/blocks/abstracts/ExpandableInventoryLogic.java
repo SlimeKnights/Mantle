@@ -126,7 +126,7 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
         inventory.ensureCapacity(nbttaglist.tagCount() > getMaxSize() ? getMaxSize() : nbttaglist.tagCount());
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
-            NBTTagCompound tagList = (NBTTagCompound) nbttaglist.getCompoundTagAt(iter);
+            NBTTagCompound tagList = nbttaglist.getCompoundTagAt(iter);
             byte slotID = tagList.getByte("Slot");
             if (slotID >= 0 && slotID < inventory.size())
             {

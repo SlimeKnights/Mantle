@@ -116,12 +116,12 @@ public class GuiManual extends GuiScreen
         if (node.getNodeType() == Node.ELEMENT_NODE)
         {
             Element element = (Element) node;
-            Class clazz = MProxyClient.getPageClass(element.getAttribute("type"));
+            Class<? extends BookPage> clazz = MProxyClient.getPageClass(element.getAttribute("type"));
             if (clazz != null)
             {
                 try
                 {
-                    pageLeft = (BookPage) clazz.newInstance();
+                    pageLeft = clazz.newInstance();
                     pageLeft.init(this, 0);
                     pageLeft.readPageFromXML(element);
                 }
@@ -139,12 +139,12 @@ public class GuiManual extends GuiScreen
         if (node != null && node.getNodeType() == Node.ELEMENT_NODE)
         {
             Element element = (Element) node;
-            Class clazz = MProxyClient.getPageClass(element.getAttribute("type"));
+            Class<? extends BookPage> clazz = MProxyClient.getPageClass(element.getAttribute("type"));
             if (clazz != null)
             {
                 try
                 {
-                    pageRight = (BookPage) clazz.newInstance();
+                    pageRight = clazz.newInstance();
                     pageRight.init(this, 1);
                     pageRight.readPageFromXML(element);
                 }

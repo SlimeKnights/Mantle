@@ -211,10 +211,10 @@ public class RenderItemCopy extends Render
             par2Icon = ((TextureMap) texturemanager.getTexture(resourcelocation)).getAtlasSprite("missingno");
         }
 
-        float f4 = ((IIcon) par2Icon).getMinU();
-        float f5 = ((IIcon) par2Icon).getMaxU();
-        float f6 = ((IIcon) par2Icon).getMinV();
-        float f7 = ((IIcon) par2Icon).getMaxV();
+        float f4 = par2Icon.getMinU();
+        float f5 = par2Icon.getMaxU();
+        float f6 = par2Icon.getMinV();
+        float f7 = par2Icon.getMaxV();
         float f8 = 1.0F;
         float f9 = 0.5F;
         float f10 = 0.25F;
@@ -266,7 +266,7 @@ public class RenderItemCopy extends Render
                 }
 
                 GL11.glColor4f(par5, par6, par7, 1.0F);
-                ItemRenderer.renderItemIn2D(tessellator, f5, f6, f4, f7, ((IIcon) par2Icon).getIconWidth(), ((IIcon) par2Icon).getIconHeight(), f12);
+                ItemRenderer.renderItemIn2D(tessellator, f5, f6, f4, f7, par2Icon.getIconWidth(), par2Icon.getIconHeight(), f12);
 
                 if (itemstack.hasEffect(pass))
                 {

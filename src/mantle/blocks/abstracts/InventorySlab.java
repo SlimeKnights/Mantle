@@ -52,6 +52,7 @@ public abstract class InventorySlab extends InventoryBlock
 
     //TODO:     addCollisionBoxesToList()
     @Override
+    @SuppressWarnings("rawtypes")
     public void addCollisionBoxesToList (World world, int x, int y, int z, AxisAlignedBB axisalignedbb, List arraylist, Entity entity)
     {
         setBlockBoundsBasedOnState(world, x, y, z);

@@ -383,7 +383,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                 astring[j] = s1;
             }
 
-            String[] astring1 = (String[]) astring.clone();
+            String[] astring1 = astring.clone();
             Bidi.reorderVisually(abyte, 0, astring, 0, abyte.length);
             StringBuilder stringbuilder = new StringBuilder();
             i = 0;
@@ -866,13 +866,14 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
      * Perform actual work of rendering a multi-line string with wordwrap and with darker drop shadow color if flag is
      * set
      */
+    @SuppressWarnings("raw")
     private void renderSplitString (String par1Str, int par2, int par3, int par4, boolean par5)
     {
-        List list = this.listFormattedStringToWidth(par1Str, par4);
+        List<String> list = this.listFormattedStringToWidth(par1Str, par4);
 
-        for (Iterator iterator = list.iterator(); iterator.hasNext(); par3 += this.FONT_HEIGHT)
+        for (Iterator<String> iterator = list.iterator(); iterator.hasNext(); par3 += this.FONT_HEIGHT)
         {
-            String s1 = (String) iterator.next();
+            String s1 = iterator.next();
             this.renderStringAligned(s1, par2, par3, par4, this.textColor, par5);
         }
     }
@@ -914,7 +915,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     /**
      * Breaks a string into a list of pieces that will fit a specified width.
      */
-    public List listFormattedStringToWidth (String par1Str, int par2)
+    public List<String> listFormattedStringToWidth (String par1Str, int par2)
     {
         return Arrays.asList(this.wrapFormattedStringToWidth(par1Str, par2).split("\n"));
     }
@@ -943,6 +944,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     /**
      * Determines how many characters from the string will fit into the specified width.
      */
+    @SuppressWarnings("fallthrough")
     private int sizeStringToWidth (String par1Str, int par2)
     {
         int j = par1Str.length();

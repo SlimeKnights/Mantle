@@ -32,7 +32,7 @@ class TracingPrintStream extends PrintStream
     public TracingPrintStream(Logger l, String Stream, PrintStream original)
     {
         super(original);
-        this.log = l;
+        log = l;
     }
 
     @Override

@@ -11,9 +11,10 @@ public class DebugData
 {
 
     public final EntityPlayer player;
-    public final Class cl;
+    @SuppressWarnings("rawtypes") public final Class cl;
     public final String[] strings;
 
+    @SuppressWarnings("rawtypes")
     public DebugData(EntityPlayer player, Class cl, String[] strings)
     {
         this.player = player;

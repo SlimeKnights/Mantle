@@ -61,10 +61,10 @@ public class ZipLoader
                 {
                     logger.info("Loading book zip " + f.getName());
                     ZipFile zipfile = new ZipFile(f);
-                    Enumeration e = zipfile.entries();
+                    Enumeration<? extends ZipEntry> e = zipfile.entries();
                     while (e.hasMoreElements())
                     {
-                        ZipEntry entry = (ZipEntry) e.nextElement();
+                        ZipEntry entry = e.nextElement();
                         flName = entry.getName();
                         flExt = FilenameUtils.getExtension(flName);
                         if (!entry.isDirectory())

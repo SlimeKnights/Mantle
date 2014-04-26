@@ -7,6 +7,7 @@ import java.util.Comparator;
  *
  * @author mDiyo
  */
+@SuppressWarnings("rawtypes")
 public class CoordTupleSort implements Comparator
 {
     @Override

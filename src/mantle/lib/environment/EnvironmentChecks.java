@@ -36,6 +36,7 @@ public class EnvironmentChecks
      * Checks for conflicting stuff in environment; adds callable to any crash logs if so.
      * Note: This code adds additional data to crashlogs. It does not trigger any crashes.
      */
+    @SuppressWarnings("rawtypes")
     public static void verifyEnvironmentSanity ()
     {
         List<String> modIds = new ArrayList<String>();

@@ -5,6 +5,7 @@ package mantle.world;
  *
  * @author mDiyo
  */
+@SuppressWarnings("rawtypes")
 public class CoordTuple implements Comparable
 {
     public final int x;
