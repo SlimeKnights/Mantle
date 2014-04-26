@@ -30,6 +30,7 @@ public class ModuleController {
      *
      * @param modName The human-readable name of the invoking mod. Used for logger construction.
      */
+    @SuppressWarnings("unused")
     public ModuleController(String modName) {
         this.logger = LogManager.getLogger(modName + "-ModuleController");
         this.config = null;
@@ -80,6 +81,7 @@ public class ModuleController {
      * @param mod The module to attempt to register.
      * @return True on success, false on error or rejection.
      */
+    @SuppressWarnings("unused")
     public boolean registerModule(Class<? extends ILoadableModule> mod) {
         String mID = getModId(mod);
         if (mID == null) return false;
@@ -105,6 +107,7 @@ public class ModuleController {
      * @param mod The module to attempt to register.
      * @return True on success, false on error.
      */
+    @SuppressWarnings("unused")
     public boolean registerUncheckedModule(Class<? extends ILoadableModule> mod) {
         String mID = getModId(mod);
         if (mID == null || !Loader.isModLoaded(mID)) return false;
