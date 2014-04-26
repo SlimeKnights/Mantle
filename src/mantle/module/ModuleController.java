@@ -82,7 +82,7 @@ public class ModuleController {
      */
     public boolean registerModule(Class<? extends ILoadableModule> mod) {
         String mID = getModId(mod);
-        if (mID == null || !Loader.isModLoaded(mID)) return false;
+        if (mID == null) return false;
 
         boolean allowedByConf = true;
         if (config != null) {
@@ -91,7 +91,9 @@ public class ModuleController {
             config.save();
         }
 
-        return allowedByConf && doSetup(mod, mID);
+        if (!allowedByConf || !Loader.isModLoaded(mID)) return false;
+
+        return doSetup(mod, mID);
     }
 
     /**
