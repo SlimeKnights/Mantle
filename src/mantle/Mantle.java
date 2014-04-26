@@ -24,6 +24,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
+import java.io.File;
+
 /**
  * Mantle
  *
@@ -43,7 +45,7 @@ public class Mantle
     public static MProxyCommon proxy;
     public static Manual mantleBook;
     public static LogIdentifier logID;
-    public static ModuleController moduleLoader = new ModuleController("Mantle-Modules.cfg", "Mantle");
+    public static ModuleController moduleLoader = new ModuleController("SlimeKnights" + File.separator + "Mantle-Modules.cfg", "Mantle");
 
     /**
      * Constructor
