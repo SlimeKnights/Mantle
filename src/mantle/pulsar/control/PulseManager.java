@@ -1,6 +1,5 @@
 package mantle.pulsar.control;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,11 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
+import mantle.pulsar.internal.Configuration;
 import mantle.pulsar.internal.PulseMeta;
 import mantle.pulsar.pulse.IPulse;
 import mantle.pulsar.pulse.Pulse;
@@ -30,11 +29,12 @@ public class PulseManager {
 
     private final Logger log;
     private final boolean useConfig;
-    private final String configPath;
+    private final String configName;
 
     private final HashMap<IPulse, PulseMeta> pulses = new HashMap<IPulse, PulseMeta>();
 
     private boolean blockNewRegistrations = false;
+    private Configuration conf = null;
 
     /**
      * Configuration-less constructor.
@@ -43,10 +43,11 @@ public class PulseManager {
      *
      * @param modId The parents ModID.
      */
+    @Deprecated
     public PulseManager(String modId) {
         log = LogManager.getLogger("PulseManager-" + modId);
         useConfig = false;
-        configPath = null;
+        configName = null;
     }
 
     /**
@@ -60,7 +61,7 @@ public class PulseManager {
     public PulseManager(String modId, String configName) {
         log = LogManager.getLogger("PulseManager-" + modId);
         useConfig = true;
-        this.configPath = Loader.instance().getConfigDir().toString() + File.pathSeparator + configName;
+        this.configName = configName;
     }
 
     /**
@@ -96,9 +97,13 @@ public class PulseManager {
     }
 
     private boolean getEnabledFromConfig(PulseMeta meta) {
-        if (meta.isForced()) return true;
-        // TODO: Check configuration and set enabled flag as needed.
-        return true;
+        if (meta.isForced() || !useConfig) return true; // Forced or no config set.
+
+        if (conf == null) {
+            conf = new Configuration(configName, log);
+        }
+
+        return conf.isModuleEnabled(meta.getId(), meta.isEnabled());
     }
 
     private void parseAndAddProxies(IPulse pulse) {
