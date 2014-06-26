@@ -55,7 +55,7 @@ public class EnvironmentChecks
             if (cl != null)
             {
                 if (!CoreConfig.silenceEnvChecks)
-                    logger.error("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and MCPC+.");
+                    logger.error("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and Cauldron(MCPC+).");
                 modIds.add("bukkit");
             }
         }
