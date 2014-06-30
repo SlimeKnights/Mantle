@@ -14,22 +14,22 @@ public interface IPulse {
     /**
      * FML preinit from the parent mod.
      *
-     * @param evt The FML event inherited from this Pulses parent.
+     * @param event The FML event inherited from this Pulses parent.
      */
-    public void preInit(FMLPreInitializationEvent evt);
+    public void preInit(FMLPreInitializationEvent event);
 
     /**
      * FML init from the parent mod.
      *
-     * @param evt The FML event inherited from this Pulses parent.
+     * @param event The FML event inherited from this Pulses parent.
      */
-    public void init(FMLInitializationEvent evt);
+    public void init(FMLInitializationEvent event);
 
     /**
      * FML postinit from the parent mod.
      *
-     * @param evt The FML event inherited from this Pulses parent.
+     * @param event The FML event inherited from this Pulses parent.
      */
-    public void postInit(FMLPostInitializationEvent evt);
+    public void postInit(FMLPostInitializationEvent event);
 
 }
