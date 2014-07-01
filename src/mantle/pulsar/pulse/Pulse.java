@@ -27,4 +27,8 @@ public @interface Pulse {
      */
     public boolean defaultEnable() default true;
 
+    /**
+     * @return A description for this Pulse, if present this is used for config descriptions
+     */
+    public String description() default "";
 }

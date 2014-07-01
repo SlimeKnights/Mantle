@@ -75,7 +75,7 @@ public class PulseManager {
         if (blockNewRegistrations) throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
                 + pulse);
 
-        String id;
+        String id, description;
         boolean forced, enabled;
 
         try {
@@ -83,11 +83,12 @@ public class PulseManager {
             id = p.id();
             forced = p.forced();
             enabled = p.defaultEnable();
+            description = p.description();
         } catch (NullPointerException ex) {
             throw new RuntimeException("Could not parse @Pulse annotation for Pulse: " + pulse);
         }
 
-        PulseMeta meta = new PulseMeta(id, forced, enabled);
+        PulseMeta meta = new PulseMeta(id, forced, enabled, description);
         meta.setEnabled(getEnabledFromConfig(meta));
 
         if (meta.isEnabled()) {

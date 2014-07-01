@@ -7,13 +7,14 @@ package mantle.pulsar.internal;
  */
 public class PulseMeta {
 
-    private String id;
+    private String id, description;
     private boolean forced, enabled;
 
-    public PulseMeta(String id, boolean forced, boolean enabled) {
+    public PulseMeta(String id, boolean forced, boolean enabled, String description) {
         this.id = id;
         this.forced = forced;
         this.enabled = enabled;
+        setDescription(description);
     }
 
     public String getId() {
@@ -30,5 +31,17 @@ public class PulseMeta {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void setDescription(String description)
+    {
+        if(description == null || description.isEmpty())
+            this.description = null;
+        else
+            this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
