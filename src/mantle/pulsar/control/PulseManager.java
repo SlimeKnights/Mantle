@@ -104,7 +104,7 @@ public class PulseManager {
             conf = new Configuration(configName, log);
         }
 
-        return conf.isModuleEnabled(meta.getId(), meta.isEnabled());
+        return conf.isModuleEnabled(meta.getId(), meta.isEnabled(), meta.getDescription());
     }
 
     private void parseAndAddProxies(IPulse pulse) {
