@@ -45,7 +45,6 @@ public class PulseManager {
      *
      * @param modId The parents ModID.
      */
-    @Deprecated
     public PulseManager(String modId) {
         log = LogManager.getLogger("PulseManager-" + modId);
         useConfig = false;
