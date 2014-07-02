@@ -12,17 +12,16 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 @Documented
-@Deprecated
 public @interface PulseProxy {
 
     /**
      * @return The FQCN of the client proxy.
      */
-    public String client();
+    public String clientSide();
 
     /**
      * @return The FQCN of the server proxy.
      */
-    public String server();
+    public String serverSide();
 
 }
