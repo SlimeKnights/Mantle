@@ -32,6 +32,7 @@ public class ForgeCFG implements IConfiguration{
     @Override
     public void load() {
         config = new Configuration(new File(confPath));
+        config.load();
     }
 
     @Override
