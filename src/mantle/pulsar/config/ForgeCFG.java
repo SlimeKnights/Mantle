@@ -35,7 +35,6 @@ public class ForgeCFG implements IConfiguration{
 
     @Override
     public boolean isModuleEnabled(PulseMeta meta) {
-        logger.warn("pulsar stuffs " + meta.getId());
         return config.get(description, meta.getId(), meta.isEnabled(), meta.getDescription()).getBoolean(meta.isEnabled());
     }
 
