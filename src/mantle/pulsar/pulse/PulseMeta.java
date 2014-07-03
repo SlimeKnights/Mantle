@@ -1,4 +1,4 @@
-package mantle.pulsar.internal;
+package mantle.pulsar.pulse;
 
 /**
  * Metadata wrapper for parsed @Pulse metadata.
@@ -10,15 +10,19 @@ public class PulseMeta {
     private String id, description;
     private boolean forced, enabled;
 
-    public PulseMeta(String id, boolean forced, boolean enabled, String description) {
+    public PulseMeta(String id, String description, boolean forced, boolean enabled) {
         this.id = id;
+        this.description = description;
         this.forced = forced;
         this.enabled = enabled;
-        setDescription(description);
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public boolean isForced() {
@@ -31,17 +35,5 @@ public class PulseMeta {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public void setDescription(String description)
-    {
-        if(description == null || description.isEmpty())
-            this.description = null;
-        else
-            this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

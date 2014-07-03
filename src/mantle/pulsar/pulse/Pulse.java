@@ -18,6 +18,16 @@ public @interface Pulse {
     public String id();
 
     /**
+     * @return This Pulses description, human-readable for config files. Can be blank.
+     */
+    public String description() default "";
+
+    /**
+     * @return Dependant mod IDs, seperated by ; as in FML. Skips checks when undefined.
+     */
+    public String modsRequired() default "";
+
+    /**
      * @return Whether this Pulse is mandatory or not (true -> mandatory).
      */
     public boolean forced() default false;
@@ -27,8 +37,4 @@ public @interface Pulse {
      */
     public boolean defaultEnable() default true;
 
-    /**
-     * @return A description for this Pulse, if present this is used for config descriptions
-     */
-    public String description() default "";
 }
