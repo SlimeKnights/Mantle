@@ -14,8 +14,6 @@ public class ForgeCFG implements IConfiguration{
     private final String confPath;
     private final String description;
 
-    private Map<String, Boolean> modules;
-
     /**
      * Creates a new Configuration object.
      *
@@ -37,14 +35,8 @@ public class ForgeCFG implements IConfiguration{
 
     @Override
     public boolean isModuleEnabled(PulseMeta meta) {
-        Boolean enabled = modules.get(meta.getId());
-            if (enabled == null) {
-                modules.put(meta.getId(), meta.isEnabled());
-                enabled = meta.isEnabled();
-                config.get(description, meta.getId(), meta.isEnabled(), meta.getDescription()).set(meta.isEnabled());
-            }
-        return enabled;
-
+        logger.warn("pulsar stuffs " + meta.getId());
+        return config.get(description, meta.getId(), meta.isEnabled(), meta.getDescription()).getBoolean(meta.isEnabled());
     }
 
     @Override
