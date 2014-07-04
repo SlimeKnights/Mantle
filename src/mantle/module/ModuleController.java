@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * @author Sunstrike <sun@sunstrike.io>
  * @author Arkan Emberwalker <arkan@emberwalker.cc>
  */
+@Deprecated //See PulseManager for replacement
 public class ModuleController {
 
     private enum State {

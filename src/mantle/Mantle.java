@@ -45,6 +45,7 @@ public class Mantle
     public static MProxyCommon proxy;
     public static Manual mantleBook;
     public static LogIdentifier logID;
+    @Deprecated //See PulseManager for replacement
     public static ModuleController moduleLoader = new ModuleController("SlimeKnights" + File.separator + "Mantle-Modules.cfg", "Mantle");
 
     /**
