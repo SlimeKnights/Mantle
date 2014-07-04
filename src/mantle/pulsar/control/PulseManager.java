@@ -2,22 +2,23 @@ package mantle.pulsar.control;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import mantle.pulsar.config.IConfiguration;
 import mantle.pulsar.internal.Configuration;
-import mantle.pulsar.pulse.PulseMeta;
 import mantle.pulsar.internal.logging.ILogger;
 import mantle.pulsar.internal.logging.LogManager;
 import mantle.pulsar.pulse.Handler;
 import mantle.pulsar.pulse.IPulse;
 import mantle.pulsar.pulse.Pulse;
+import mantle.pulsar.pulse.PulseMeta;
 import mantle.pulsar.pulse.PulseProxy;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * Manager class for a given mods Pulses.
@@ -32,7 +33,7 @@ public class PulseManager {
     private final ILogger log;
     private final boolean useConfig;
 
-    private final HashMap<Object, PulseMeta> pulses = new HashMap<Object, PulseMeta>();
+    private final LinkedHashMap<Object, PulseMeta> pulses = new LinkedHashMap<Object, PulseMeta>();
 
     private boolean blockNewRegistrations = false;
     private boolean configLoaded = false;
