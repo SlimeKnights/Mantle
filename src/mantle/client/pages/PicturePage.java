@@ -19,7 +19,19 @@ public class PicturePage extends BookPage
         NodeList nodes = element.getElementsByTagName("text");
         if (nodes != null)
             text = nodes.item(0).getTextContent();
-        nodes = element.getElementsByTagName("bookImage");
+        nodes = element.getElementsByTagName("location");
+        if (nodes != null)
+        {
+            location = nodes.item(0).getTextContent();
+            background = new ResourceLocation(location);
+            if(background == null)
+            {
+                logger.warn(nodes.item(0).getTextContent() + " could not be found in the image cache(location)!");
+            }
+        }
+
+        //this borked stuffs somehow unless someone is interested in using it this stays disabled for now
+       /* nodes = element.getElementsByTagName("bookImage");
         if (nodes != null)
         {
             //TODO 1.7 null check all of this
@@ -27,17 +39,8 @@ public class PicturePage extends BookPage
             if(background == null){
                 logger.warn(nodes.item(0).getTextContent() + " could not be found in the image cache(bookimage)!");
             }
-        }
-        nodes = element.getElementsByTagName("location");
-        if (nodes != null)
-        {
-            location = nodes.item(0).getTextContent();
-            background = new ResourceLocation(location);
-            if(background == null){
-                logger.warn(nodes.item(0).getTextContent() + " could not be found in the image cache(location)!");
-            }
+        }*/
 
-        }
     }
 
     @Override

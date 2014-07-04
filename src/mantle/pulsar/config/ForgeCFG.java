@@ -1,13 +1,15 @@
 package mantle.pulsar.config;
 
 import cpw.mods.fml.common.Loader;
-import mantle.pulsar.internal.logging.ILogger;
 import mantle.pulsar.pulse.PulseMeta;
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.*;
-import java.util.Map;
 
+/**
+ * Mantle specific pulsar addon class to support using the forge CFG format for configurations
+ * @author progwml6
+ */
 public class ForgeCFG implements IConfiguration{
 
     private static Configuration config;

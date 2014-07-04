@@ -152,8 +152,8 @@ public class PulseManager {
                 log.debug("Parsing field: " + f);
                 PulseProxy p = f.getAnnotation(PulseProxy.class);
                 if (p != null) { // Support for deprecated PulseProxy annotation
-                    log.warn("Pulse " + pulse + " used the deprecated PulseProxy annotation. As of Pulsar 0.1.0, it's now preferred to use FML's SidedProxy annotation.");
-                    log.warn("The old PulseProxy parsing will be removed in the next breaking update (Pulsar 1.x).");
+                    //log.warn("Pulse " + pulse + " used the deprecated PulseProxy annotation. As of Pulsar 0.1.0, it's now preferred to use FML's SidedProxy annotation.");
+                    //log.warn("The old PulseProxy parsing will be removed in the next breaking update (Pulsar 1.x).");
                     setProxyField(pulse, f, p.clientSide(), p.serverSide());
                 }
             }
