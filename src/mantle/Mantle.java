@@ -33,7 +33,7 @@ import java.io.File;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-@Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge")
+@Mod(modid = modId, name = modName, version = modVersion, dependencies = "required-after:Forge@[10.13,)")
 public class Mantle
 {
     /* Instance of this mod, used for grabbing prototype fields */
@@ -45,9 +45,6 @@ public class Mantle
     public static MProxyCommon proxy;
     public static Manual mantleBook;
     public static LogIdentifier logID;
-    @Deprecated //See PulseManager for replacement
-    public static ModuleController moduleLoader = new ModuleController("SlimeKnights" + File.separator + "Mantle-Modules.cfg", "Mantle");
-
     /**
      * Constructor
      *
@@ -81,7 +78,6 @@ public class Mantle
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
 
-        moduleLoader.preInit();
     }
 
     /**
@@ -96,8 +92,6 @@ public class Mantle
     {
         logger.info("Entering initialization phase.");
         proxy.registerRenderer();
-
-        moduleLoader.init();
     }
 
     /**
@@ -120,8 +114,6 @@ public class Mantle
         mantleBook.updateManual();
         CoreConfig.loadBookLocations();
         IDDumps.dump();
-
-        moduleLoader.postInit();
     }
 
 }

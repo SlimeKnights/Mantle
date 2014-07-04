@@ -8,6 +8,7 @@ package mantle.module;
  *
  * @author Arkan <arkan@emberwalker.cc>
  */
+@Deprecated  //See Pulsar package for replacement
 public interface ILoadableModule {
 
     // Example modId field
