@@ -37,33 +37,18 @@ repositories {
 apply plugin: 'forge'
 group = 'mantle'
 
-// define the properties file
+// Define properties file
 ext.configFile = file "build.properties"
 
 configFile.withReader {
-    // read config.  it shall from now on be referenced as simply config or as project.config
+    // Load config.  It shall from now be referenced as simply config or project.config
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
 }
-ext.artifact_version_override = 'NotUsed'
-//gitignored config file -- if this has the entry for override it will override the version for local builds
-//create a file called version.properties with the line artifact_version_override=NotUsed
-//replace NotUsed w/ version #'s for manual local overrides
-ext.configFile2 = file "version.properties"
-if (configFile2.exists()){
-	configFile2.withReader {
-    	def prop2 = new Properties()
-    	prop2.load(it)
-    	ext.GIVersionFL = new ConfigSlurper().parse prop2
-		if (GIVersionFL != null){
-			project.artifact_version_override = GIVersionFL.artifact_version_override
-		}
-	}
-}
-
 
 // sets version to the slimeKnights default version format
+// Finds and sets version data
 task buildInfo {
     def cmd = "git rev-parse --short HEAD"
     def proc = cmd.execute()
@@ -75,21 +60,19 @@ task buildInfo {
     }
 
     if (System.getenv().BUILD_NUMBER != null) {
-        ext.buildNum = System.getenv().BUILD_NUMBER
+        ext.buildNum = "jenkins${System.getenv().BUILD_NUMBER}"
     } else {
-        ext.buildNum = "DEV"
+        ext.buildNum = "DEV.${project.buildInfo.revision}"
     }
 }
 ext.artifact_version = 'NFG'
-if (System.getenv().ARTIFACT_VERSION == null && artifact_version_override == 'NotUsed') {
-    artifact_version = "${project.buildInfo.buildNum}.${project.buildInfo.revision}"
+if (System.getenv().ARTIFACT_VERSION == null) {
+    artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
 }
-if (System.getenv().ARTIFACT_VERSION != null && artifact_version_override == 'NotUsed') {
+if (System.getenv().ARTIFACT_VERSION != null) {
     artifact_version = "${system.getenv().ARTIFACT_VERSION}"
 }
-if (artifact_version_override != 'NotUsed') {
-    artifact_version = "${artifact_version_override}"
-}
+
 version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
@@ -111,6 +94,9 @@ sourceSets {
 }
 processResources
 {
+    inputs.property "version", artifact_version
+    inputs.property "MCversion", config.minecraft_version
+
         // replace stuff in text files, not binary ones.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
