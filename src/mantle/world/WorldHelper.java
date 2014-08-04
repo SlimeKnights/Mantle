@@ -15,17 +15,17 @@ public class WorldHelper
 
     public static boolean setBlockToAir (World w, int x, int y, int z)
     {
-        return w.setBlock(x, y, z, Blocks.air, 0, 0);
+        return w.setBlockToAir(x, y, z);
     }
 
     public static boolean isAirBlock (IBlockAccess access, int x, int y, int z)
     {
-        return ComparisonHelper.areEquivalent(access.getBlock(x, y, z), Blocks.air);
+        return access.getBlock(x,y,z).isAir(access, x,y,z);
     }
 
     public static boolean isAirBlock (World access, int x, int y, int z)
     {
-        return ComparisonHelper.areEquivalent(access.getBlock(x, y, z), Blocks.air);
+        return access.isAirBlock(x,y,z);
     }
 
 }
