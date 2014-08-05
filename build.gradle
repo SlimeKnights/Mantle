@@ -9,28 +9,27 @@
 buildscript {
     repositories {
         mavenCentral()
-		mavenLocal()
+	mavenLocal()
         maven {
             name = 'ForgeFS'
             url = 'http://files.minecraftforge.net/maven'
         }
-		maven {
+	maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
-
-	}
+    }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
     }
 }
 
 repositories {
-	mavenLocal()
-	maven {
-          name 'ForgeFS'
-          url 'http://files.minecraftforge.net/maven'
-     }
+    mavenLocal()
+    maven {
+        name 'ForgeFS'
+        url 'http://files.minecraftforge.net/maven'
+    }
 }
 
 
@@ -77,20 +76,20 @@ version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version
-    assetDir = 'run/assets'
+    runDir = 'run'
     replace '${version}', project.version
 }
 
 
 sourceSets {
-	main {
-		resources {
-			srcDir 'resources'
-		}
-		java {
+    main {
+        resources {
+            srcDir 'resources'
+        }
+        java {
             srcDir 'src'
         }
-	}
+    }
 }
 processResources
 {
@@ -112,11 +111,18 @@ processResources
 
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
-        from sourceSets.main.output
-        classifier = 'deobf'
+    from sourceSets.main.output
+    classifier = 'deobf'
 }
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
 artifacts {
-        archives deobfJar
+    archives deobfJar
+    archives sourcesJar
 }
 
 task("uploadJars", dependsOn:"build") {
