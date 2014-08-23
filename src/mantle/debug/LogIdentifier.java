@@ -2,6 +2,8 @@ package mantle.debug;
 
 import java.io.PrintStream;
 import static mantle.lib.CoreRepo.logger;
+
+import cpw.mods.fml.common.Loader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,15 +14,18 @@ public class LogIdentifier
 
     public void preinit ()
     {
-        logger.info("Inserting TracingPrintStream...");
-        System.setOut(new TracingPrintStream(outLogger, "STDOUT", System.out));
-        System.setErr(new TracingPrintStream(errLogger, "STDERR", System.err));
-        logger.info("TracingPrintStream inserted on STDOUT/STDERR. These will now be redirected to the Mantle-STDOUT/Mantle-STDERR loggers.");
-        System.out.println("Mantle redirect test-out");
-        System.err.println("Mantle redirect test-err");//intended behavior to be able to ensure the integrity of the redirector
-        //logger.info("Forcing Java.util.Logger logging into log4j2");
-        //JavaLoggingRedirector.activate();
-        //  logger.info("Successfully redirected java.util.logging");
+        if(!Loader.isModLoaded("Artemis"))//this is completely useless if artemis is installed
+        {
+            logger.info("Inserting TracingPrintStream...");
+            System.setOut(new TracingPrintStream(outLogger, "STDOUT", System.out));
+            System.setErr(new TracingPrintStream(errLogger, "STDERR", System.err));
+            logger.info("TracingPrintStream inserted on STDOUT/STDERR. These will now be redirected to the Mantle-STDOUT/Mantle-STDERR loggers.");
+            System.out.println("Mantle redirect test-out");
+            System.err.println("Mantle redirect test-err");//intended behavior to be able to ensure the integrity of the redirector
+            //logger.info("Forcing Java.util.Logger logging into log4j2");
+            //JavaLoggingRedirector.activate();
+            //  logger.info("Successfully redirected java.util.logging");
+        }
     }
 
 }
