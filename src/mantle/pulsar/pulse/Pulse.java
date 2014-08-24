@@ -28,6 +28,11 @@ public @interface Pulse {
     public String modsRequired() default "";
 
     /**
+     * @return Dependeant Pulse IDs, seperated by ; . Skips checks when undefined.
+     */
+    public String pulsesRequired() default "";
+
+    /**
      * @return Whether this Pulse is mandatory or not (true -> mandatory).
      */
     public boolean forced() default false;

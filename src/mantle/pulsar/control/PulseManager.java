@@ -2,23 +2,22 @@ package mantle.pulsar.control;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-import mantle.pulsar.config.IConfiguration;
-import mantle.pulsar.internal.Configuration;
-import mantle.pulsar.internal.logging.ILogger;
-import mantle.pulsar.internal.logging.LogManager;
-import mantle.pulsar.pulse.Handler;
-import mantle.pulsar.pulse.IPulse;
-import mantle.pulsar.pulse.Pulse;
-import mantle.pulsar.pulse.PulseMeta;
-import mantle.pulsar.pulse.PulseProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import mantle.pulsar.config.IConfiguration;
+import mantle.pulsar.internal.Configuration;
+import mantle.pulsar.pulse.PulseMeta;
+import mantle.pulsar.internal.logging.ILogger;
+import mantle.pulsar.internal.logging.LogManager;
+import mantle.pulsar.pulse.Handler;
+import mantle.pulsar.pulse.IPulse;
+import mantle.pulsar.pulse.Pulse;
+import mantle.pulsar.pulse.PulseProxy;
 
 /**
  * Manager class for a given mods Pulses.
@@ -153,8 +152,8 @@ public class PulseManager {
                 log.debug("Parsing field: " + f);
                 PulseProxy p = f.getAnnotation(PulseProxy.class);
                 if (p != null) { // Support for deprecated PulseProxy annotation
-                    //log.warn("Pulse " + pulse + " used the deprecated PulseProxy annotation. As of Pulsar 0.1.0, it's now preferred to use FML's SidedProxy annotation.");
-                    //log.warn("The old PulseProxy parsing will be removed in the next breaking update (Pulsar 1.x).");
+                    log.warn("Pulse " + pulse + " used the deprecated PulseProxy annotation. As of Pulsar 0.1.0, it's now preferred to use FML's SidedProxy annotation.");
+                    log.warn("The old PulseProxy parsing will be removed in the next breaking update (Pulsar 1.x).");
                     setProxyField(pulse, f, p.clientSide(), p.serverSide());
                 }
             }
@@ -182,11 +181,13 @@ public class PulseManager {
         blockNewRegistrations = true;
 
         for (Map.Entry<Object, PulseMeta> e : pulses.entrySet()) {
-            log.debug("Preinitialising Pulse " + e.getValue().getId() + "...");
-            if (e.getKey() instanceof IPulse) { // Deprecated IPulse handling
-                IPulse ip = (IPulse)e.getKey();
-                ip.preInit(evt);
-            } else findAndInvokeHandlers(e.getKey(), evt);
+            if(hasRequiredPulses(e)) {
+                log.debug("Preinitialising Pulse " + e.getValue().getId() + "...");
+                if (e.getKey() instanceof IPulse) { // Deprecated IPulse handling
+                    IPulse ip = (IPulse)e.getKey();
+                    ip.preInit(evt);
+                } else findAndInvokeHandlers(e.getKey(), evt);
+            }
         }
     }
 
@@ -240,4 +241,26 @@ public class PulseManager {
         }
     }
 
+    private boolean hasRequiredPulses(Map.Entry<Object, PulseMeta> entry) {
+        String deps = entry.getKey().getClass().getAnnotation(Pulse.class).pulsesRequired();
+        if (!deps.equals("")) {
+            String[] parsedDeps = deps.split(";");
+            for (String s : parsedDeps) {
+                if (!isPulseLoaded(s)) {
+                    log.info("Skipping Pulse " + entry.getValue().getId() + "; missing pulse: " + s);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isPulseLoaded(String pulseId) {
+        for(Map.Entry<Object, PulseMeta> entry : pulses.entrySet()) {
+            if(entry.getValue().getId().equals(pulseId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

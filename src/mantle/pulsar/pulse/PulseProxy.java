@@ -5,6 +5,8 @@ import java.lang.annotation.*;
 /**
  * Annotation to denote a field that should be populated by a side-specific proxy.
  *
+ * @deprecated Use FML's @SidedProxy instead.
+ *
  * @author Arkan <arkan@drakon.io>
  */
 @Retention(RetentionPolicy.RUNTIME)
