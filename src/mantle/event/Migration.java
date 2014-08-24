@@ -1,11 +1,23 @@
 package mantle.event;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
 import cpw.mods.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+
+import java.util.List;
+import java.util.Map;
 
 public abstract class Migration
 {
+    Map<String, Item> remapItem = Maps.newHashMap();
+    Map<String, Block> remapBlock = Maps.newHashMap();
+    List<String> ignore = Lists.newArrayList();
     private ModContainer mod;
 
     private String modID;
@@ -20,31 +32,49 @@ public abstract class Migration
 
     /*
      * Add a new migration to the internal replacement map e.g. "olditem" -> "newitem" (without ID prefix!).
-     * Use an encapsulated object of form Map<String,String> to store this.
+     * Use an encapsulated object of form Map<String,Item> to store this.
      * The prefix will be created using the ID given during construction during processing.
      */
-    public void addMigration (String old, String newName)
+    public void addMigration (String old, Item newItem)
     {
+        remapItem.put(modID + ":" + old, newItem);
     }
 
     /*
+    * Add a new migration to the internal replacement map e.g. "olditem" -> "newitem" (without ID prefix!).
+    * Use an encapsulated object of form Map<String,Block> to store this.
+    * The prefix will be created using the ID given during construction during processing.
+    */
+    public void addMigration (String old, Block newBlock)
+    {
+        remapBlock.put(modID + ":" + old, newBlock);
+    }
+    /*
      * Register an old ID that's been removed entirely. This isn't suitable for renaming operations!
      * Store this in a List<String> seperate to the rename mapping.
+     * @param id ID to be removed (without ID prefix!).
      */
     public void addRemoval (String id)
     {
+        ignore.add(modID + ":" + id);
     };
 
     /*
      * This works on the assumption the FML event will have a list of string IDs that are missing.
      * During this phase, check for old IDs and remap as needed, or destroy ones marked for removal.
      */
-    public void processMigrationEvent (FMLMissingMappingsEvent event)
-    {
-        event.applyModContainer(mod);
-        for (MissingMapping miss : event.get())
-        {
+    @SubscribeEvent
+    public void processMigrationEvent (FMLMissingMappingsEvent event) {
+        if (!remapBlock.isEmpty() || !remapItem.isEmpty()) {
+            event.applyModContainer(mod);
+            for (MissingMapping miss : event.get()) {
+                if(remapItem.containsKey(miss.name))
+                    miss.remap(remapItem.get(miss.name));
+                else if(remapBlock.containsKey(miss.name))
+                    miss.remap(remapBlock.get(miss.name));
+                else if(ignore.contains(miss.name))
+                    miss.ignore();
+            }
         }
     }
-
 }
