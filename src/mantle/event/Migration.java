@@ -63,12 +63,13 @@ public abstract class Migration
      * During this phase, check for old IDs and remap as needed, or destroy ones marked for removal.
      */
     public void processMigrationEvent (FMLMissingMappingsEvent event) {
-        if ((!remapBlock.isEmpty() || !remapItem.isEmpty())) {
-            event.applyModContainer(mod);
-            List<MissingMapping> l = event.get();
+        if ((!remapBlock.isEmpty() || !remapItem.isEmpty()))
+        {
+            List<MissingMapping> l = event.getAll();
             if(l != null)
             {
-                for (MissingMapping miss : event.get()) {
+                for (MissingMapping miss : event.getAll())//yes its slow to go through extra stuff feel free to fix
+                {
                     if (remapItem.containsKey(miss.name))
                         miss.remap(remapItem.get(miss.name));
                     else if (remapBlock.containsKey(miss.name))
