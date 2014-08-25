@@ -60,10 +60,10 @@ public abstract class Migration
     };
 
     /*
+     * This must be called from your mod's main class as it requires @EventHandler notation
      * This works on the assumption the FML event will have a list of string IDs that are missing.
      * During this phase, check for old IDs and remap as needed, or destroy ones marked for removal.
      */
-    @SubscribeEvent
     public void processMigrationEvent (FMLMissingMappingsEvent event) {
         if (!remapBlock.isEmpty() || !remapItem.isEmpty()) {
             event.applyModContainer(mod);
