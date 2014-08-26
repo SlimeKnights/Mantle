@@ -8,25 +8,22 @@ public class ComparisonHelper
 {
     public static boolean areEquivalent (Item item, Block block)
     {
-        //TODO figure this out!!!
-        return item.equals(block);
+        return item.equals(Item.getItemFromBlock(block));
     }
 
     public static boolean areEquivalent (Block block1, Block block2)
     {
-        //TODO figure this out!!!
         return block1.equals(block2);
     }
 
     public static boolean areEquivalent (Item item1, Item item2)
     {
-        //TODO figure this out!!!
         return item1.equals(item2);
     }
 
     public static boolean areEquivalent (ItemStack is1, ItemStack is2)
     {
-        //TODO figure this out!!!
+        // TODO - do you want to check metadata as well? Or NBT tag existence?
         return is1.getItem().equals(is2.getItem());
     }
 }
