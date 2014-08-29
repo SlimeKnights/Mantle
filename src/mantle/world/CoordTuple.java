@@ -26,6 +26,15 @@ public class CoordTuple implements Comparable
         else
             return false;
     }
+    
+    public boolean equals (Object obj) {
+    	if (!(obj instanceof CoordTuple)) {
+    		return false;
+    	}
+    	
+    	CoordTuple that = (CoordTuple)obj;
+    	return this.x == that.x && this.y == that.y && this.z == that.z;
+    }
 
     @Override
     public int hashCode ()
