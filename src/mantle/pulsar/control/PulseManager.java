@@ -26,7 +26,7 @@ import mantle.pulsar.pulse.PulseProxy;
  *
  * @author Arkan <arkan@drakon.io>
  */
-@SuppressWarnings({"unused", "deprecated"})
+@SuppressWarnings({"deprecation"})
 public class PulseManager {
 
     private final ILogger log;
