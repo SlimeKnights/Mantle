@@ -866,7 +866,6 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
      * Perform actual work of rendering a multi-line string with wordwrap and with darker drop shadow color if flag is
      * set
      */
-    @SuppressWarnings("raw")
     private void renderSplitString (String par1Str, int par2, int par3, int par4, boolean par5)
     {
         List<String> list = this.listFormattedStringToWidth(par1Str, par4);

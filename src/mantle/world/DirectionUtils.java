@@ -7,7 +7,6 @@ import net.minecraftforge.common.util.ForgeDirection;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-@SuppressWarnings("unused")
 public class DirectionUtils
 {
 
