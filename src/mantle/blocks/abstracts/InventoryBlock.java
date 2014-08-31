@@ -164,7 +164,6 @@ public abstract class InventoryBlock extends BlockContainer
         }
     }
 
-    @SuppressWarnings("unused")
     public static boolean isActive (IBlockAccess world, int x, int y, int z)
     {
         TileEntity logic = world.getTileEntity(x, y, z);
