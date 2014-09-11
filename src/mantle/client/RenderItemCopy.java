@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -345,7 +346,16 @@ public class RenderItemCopy extends Render
     public void renderItemIntoGUI (SmallFontRenderer par1FontRenderer, TextureManager par2TextureManager, ItemStack par3ItemStack, int par4, int par5, boolean renderEffect)
     {
         Item k = par3ItemStack.getItem();
-        int l = par3ItemStack.getItemDamage();
+        int l;
+        if(k == null)
+        {
+            k = Items.iron_pickaxe;
+            l = 0;
+        }
+        else
+        {
+            l = par3ItemStack.getItemDamage();
+        }
         Object object = par3ItemStack.getItem() == null ? null : par3ItemStack.getIconIndex();
         float f;
         int i1;
