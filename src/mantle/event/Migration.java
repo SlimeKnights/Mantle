@@ -25,7 +25,8 @@ public abstract class Migration
      */
     public Migration(ModContainer m)
     {
-        m.getModId();
+        mod = m;
+        modID = m.getModId();
     }
 
     /*
