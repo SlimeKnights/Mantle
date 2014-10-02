@@ -16,7 +16,7 @@ public class PlayerUtils
      */
     public static void sendChatMessage (EntityPlayer p, String message)
     {
-        if (p != null && message != null && message.isEmpty())
+        if (p != null && message != null && !message.isEmpty())
             p.addChatComponentMessage(new ChatComponentText(message));
     }
 

@@ -39,7 +39,7 @@ public class DebugHelper
 
     private static void handleConsoleDebug (DebugData data)
     {
-        String player = data.player.getDisplayName();//.username;
+        String player = data.player.getGameProfile().getName();
         String prefix = "[" + player + ":" + data.cl.getSimpleName() + "] ";
         for (String str : data.strings)
         {
