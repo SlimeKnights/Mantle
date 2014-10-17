@@ -40,12 +40,12 @@ public abstract class InventoryLogic extends TileEntity implements IInventory, I
     @Override
     public ItemStack getStackInSlot (int slot)
     {
-        return inventory[slot];
+        return slot < inventory.length ? inventory[slot] : null;
     }
 
     public boolean isStackInSlot (int slot)
     {
-        return inventory[slot] != null;
+        return slot < inventory.length && inventory[slot] != null;
     }
 
     @Override
