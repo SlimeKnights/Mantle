@@ -24,9 +24,8 @@ public class ItemStackWrapper extends ItemMetaWrapper {
 
         ItemStackWrapper that = (ItemStackWrapper) o;
 
-        if (stacksize != null ? !stacksize.equals(that.stacksize) : that.stacksize != null) return false;
+        return !(stacksize != null ? !stacksize.equals(that.stacksize) : that.stacksize != null);
 
-        return true;
     }
 
     @Override

@@ -2,9 +2,9 @@ package mantle.event;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
-import cpw.mods.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent;
+import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent.MissingMapping;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import static mantle.lib.CoreRepo.logger;
@@ -56,7 +56,7 @@ public abstract class Migration
     public void addRemoval (String id)
     {
         ignore.add(modID + ":" + id);
-    };
+    }
 
     /*
      * This must be called from your mod's main class as it requires @EventHandler notation

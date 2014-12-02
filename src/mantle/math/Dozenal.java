@@ -8,6 +8,8 @@ package mantle.math;
  * @author mDiyo
  */
 
+import com.google.common.collect.Lists;
+
 import java.util.LinkedList;
 
 public class Dozenal
@@ -34,7 +36,7 @@ public class Dozenal
     public static String convertDecimal (int i)
     {
         int num = i;
-        LinkedList<Character> list = new LinkedList<Character>();
+        LinkedList<Character> list = Lists.newLinkedList();
         while (num > 0)
         {
             list.add(getDozenalCharacter(num % 12));

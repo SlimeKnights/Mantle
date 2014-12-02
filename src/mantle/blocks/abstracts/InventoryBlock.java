@@ -2,8 +2,8 @@ package mantle.blocks.abstracts;
 
 import java.util.Random;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import mantle.blocks.iface.IActiveLogic;
 import mantle.blocks.iface.IFacingLogic;
 import mantle.debug.DebugHelper;
@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
@@ -48,12 +49,12 @@ public abstract class InventoryBlock extends BlockContainer
     public abstract Object getModInstance ();
 
     @Override
-    public boolean onBlockActivated (World world, int x, int y, int z, EntityPlayer player, int side, float clickX, float clickY, float clickZ)
+    public boolean onBlockActivated (World world, BlockPos pos, EntityPlayer player, int side, float clickX, float clickY, float clickZ)
     {
         if (player.isSneaking())
             return false;
 
-        Integer integer = getGui(world, x, y, z, player);
+        Integer integer = getGui(world, pos, player);
         if (integer == null || integer == -1)
         {
             return false;
@@ -61,16 +62,16 @@ public abstract class InventoryBlock extends BlockContainer
         else
         {
             if (!world.isRemote)
-                player.openGui(getModInstance(), integer, world, x, y, z);
+                player.openGui(getModInstance(), integer, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
     }
 
     /* Inventory */
     @Override
-    public void breakBlock (World par1World, int x, int y, int z, Block blockID, int meta)
+    public void breakBlock (World par1World, BlockPos pos, Block blockID, int meta)
     {
-        TileEntity te = par1World.getTileEntity(x, y, z);
+        TileEntity te = par1World.getTileEntity(pos);
 
         if (te != null && te instanceof InventoryLogic)
         {
@@ -96,7 +97,7 @@ public abstract class InventoryBlock extends BlockContainer
                         }
 
                         stack.stackSize -= itemSize;
-                        EntityItem entityitem = new EntityItem(par1World, (double) ((float) x + jumpX), (double) ((float) y + jumpY), (double) ((float) z + jumpZ), new ItemStack(stack.getItem(),
+                        EntityItem entityitem = new EntityItem(par1World, (double) ((float) pos.getX() + jumpX), (double) ((float) pos.getY() + jumpY), (double) ((float) pos.getZ() + jumpZ), new ItemStack(stack.getItem(),
                                 itemSize, stack.getItemDamage()));
 
                         if (stack.hasTagCompound())
@@ -114,7 +115,7 @@ public abstract class InventoryBlock extends BlockContainer
             }
         }
 
-        super.breakBlock(par1World, x, y, z, blockID, meta);
+        super.breakBlock(par1World, pos, blockID, meta);
     }
 
     /* Placement */
@@ -123,7 +124,7 @@ public abstract class InventoryBlock extends BlockContainer
 
     //This class does not have an actual block placed in the world
     @Override
-    public int onBlockPlaced (World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta)
+    public int onBlockPlaced (World world, BlockPos pos, int side, float hitX, float hitY, float hitZ, int meta)
     {
         this.side = side;
         return meta;
@@ -131,9 +132,9 @@ public abstract class InventoryBlock extends BlockContainer
 
     @Override
     @SuppressWarnings("deprecation") // TODO: Remove this when setDirection calls updated.
-    public void onBlockPlacedBy (World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack stack)
+    public void onBlockPlacedBy (World world, BlockPos pos, EntityLivingBase entityliving, ItemStack stack)
     {
-        TileEntity logic = world.getTileEntity(x, y, z);
+        TileEntity logic = world.getTileEntity(pos);
         if (logic instanceof IFacingLogic)
         {
             IFacingLogic direction = (IFacingLogic) logic;
@@ -165,9 +166,9 @@ public abstract class InventoryBlock extends BlockContainer
     }
 
     @SuppressWarnings("unused")
-    public static boolean isActive (IBlockAccess world, int x, int y, int z)
+    public static boolean isActive (IBlockAccess world, BlockPos pos)
     {
-        TileEntity logic = world.getTileEntity(x, y, z);
+        TileEntity logic = world.getTileEntity(pos);
         if (logic instanceof IActiveLogic)
         {
             return ((IActiveLogic) logic).getActive();
@@ -201,17 +202,17 @@ public abstract class InventoryBlock extends BlockContainer
 
     /* IDebuggable */
     @Override
-    public void onBlockClicked (World world, int x, int y, int z, EntityPlayer player)
+    public void onBlockClicked (World world, BlockPos pos, EntityPlayer player)
     {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && player.getHeldItem() != null &&  player.getHeldItem().getItem() != null && player.getHeldItem().getItem() == Items.stick)
         {
-            TileEntity te = world.getTileEntity(x, y, z);
+            TileEntity te = world.getTileEntity(pos);
             if (te instanceof IDebuggable)
             {
                 DebugHelper.handleDebugData(((IDebuggable) te).getDebugInfo(player));
             }
         }
 
-        super.onBlockClicked(world, x, y, z, player);
+        super.onBlockClicked(world, pos, player);
     }
 }

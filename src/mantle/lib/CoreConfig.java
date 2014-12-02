@@ -54,8 +54,6 @@ public class CoreConfig
         dumpPotionIDs = config.get("DebugHelpers", "Dump POTION ID's in log", dumpPotionIDs).getBoolean(dumpPotionIDs);
         dumpEnchantIDs = config.get("DebugHelpers", "Dump ENCHANT ID's in log", dumpEnchantIDs).getBoolean(dumpEnchantIDs);
 
-        identifyLogs = config.get("DebugHelpers", "Force all unidentified logging entries (STDOUT/STDERR) through log4j2", identifyLogs).getBoolean(identifyLogs);
-        
         //check for debugging overrides in system environment
         checkSysOverrides();
         config.save();
@@ -98,7 +96,6 @@ public class CoreConfig
     public static boolean dumpBiomeIDs = false;
     public static boolean dumpPotionIDs = false;
     public static boolean dumpEnchantIDs = false;
-    public static boolean identifyLogs = false;
 
 
 }

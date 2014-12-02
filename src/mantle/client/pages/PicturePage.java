@@ -1,6 +1,5 @@
 package mantle.client.pages;
 
-import mantle.lib.client.MantleClientRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import static mantle.lib.CoreRepo.logger;

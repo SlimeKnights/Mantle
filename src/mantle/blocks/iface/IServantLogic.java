@@ -14,9 +14,9 @@ public interface IServantLogic
      * 
      * @param master
      * @param world the world of master
-     * @param x xCoord of master
-     * @param y yCoord of master
-     * @param z zCoord of master
+     * @param xMaster xCoord of master
+     * @param yMaster yCoord of master
+     * @param zMaster zCoord of master
      * @return whether the servant can be tied to this master
      */
 
@@ -26,9 +26,9 @@ public interface IServantLogic
      * 
      * @param master
      * @param world 
-     * @param x xCoord of master
-     * @param y yCoord of master
-     * @param z zCoord of master
+     * @param xMaster xCoord of master
+     * @param yMaster yCoord of master
+     * @param zMaster zCoord of master
      * @return Is this block tied to this master?
      */
 
@@ -38,9 +38,9 @@ public interface IServantLogic
      * 
      * @param master
      * @param world 
-     * @param x xCoord of master
-     * @param y yCoord of master
-     * @param z zCoord of master
+     * @param xMaster xCoord of master
+     * @param yMaster yCoord of master
+     * @param zMaster zCoord of master
      */
 
     public void invalidateMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);

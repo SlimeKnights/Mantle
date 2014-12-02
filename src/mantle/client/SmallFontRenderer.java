@@ -24,8 +24,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SmallFontRenderer implements IResourceManagerReloadListener
@@ -270,7 +270,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
     {
         if (unicodePageLocations[par1] == null)
         {
-            unicodePageLocations[par1] = new ResourceLocation("minecraft", String.format("textures/font/unicode_page_%02x.png", new Object[] { Integer.valueOf(par1) }));
+            unicodePageLocations[par1] = new ResourceLocation("minecraft", String.format("textures/font/unicode_page_%02x.png", new Object[] { par1 }));
         }
         return unicodePageLocations[par1];
     }
@@ -526,7 +526,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             else
             {
                 j = ' ';
-                for (char c : ChatAllowedCharacters.allowedCharacters)
+                for (char c : ChatAllowedCharacters.allowedCharactersArray)
                 {
                     if (c == c0)
                     {
@@ -539,7 +539,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                 {
                     do
                     {
-                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharacters.length);
+                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharactersArray.length);
                     } while (this.charWidth[j + 32] != this.charWidth[k + 32]);
 
                     j = k;
@@ -587,7 +587,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
 
                 if (this.strikethroughStyle)
                 {
-                    tessellator = Tessellator.instance;
+                    tessellator = Tessellator.getInstance();
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     tessellator.startDrawingQuads();
                     tessellator.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
@@ -600,7 +600,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
 
                 if (this.underlineStyle)
                 {
-                    tessellator = Tessellator.instance;
+                    tessellator = Tessellator.getInstance();
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     tessellator.startDrawingQuads();
                     int l = this.underlineStyle ? -1 : 0;

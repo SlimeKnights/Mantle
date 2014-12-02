@@ -21,6 +21,7 @@ public interface IFacingLogic
     @Deprecated
     public void setDirection (float yaw, float pitch, EntityLivingBase player);
 
+    //TODO 1.8 \/
     /** This will be added next version
     * public void setDirection(int side, float yaw, float pitch, EntityLivingBase player); */
 

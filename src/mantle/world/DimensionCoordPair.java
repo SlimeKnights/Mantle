@@ -20,10 +20,7 @@ public class DimensionCoordPair
 
     public boolean equalCoords (int worldID, int posX, int posZ)
     {
-        if (this.dim == posX && this.x == posX && this.z == posZ)
-            return true;
-        else
-            return false;
+        return this.dim == posX && this.x == posX && this.z == posZ;
     }
 
     @Override

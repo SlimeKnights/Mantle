@@ -13,15 +13,15 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class MultiServantLogic extends TileEntity implements IServantLogic, IDebuggable
 {
     boolean hasMaster;
-    CoordTuple master;
+    BlockPos master;
     Block masterBlock;
-    byte masterMeat; //Typo, it stays!
+    byte masterMeat; //TODO rename this!
 
     public boolean canUpdate ()
     {
@@ -38,7 +38,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         if (!hasMaster)
             return false;
 
-        if (worldObj.getBlock(master.x, master.y, master.z) == masterBlock && worldObj.getBlockMetadata(master.x, master.y, master.z) == masterMeat)
+        if (worldObj.getBlock(master) == masterBlock && worldObj.getBlockMetadata(master) == masterMeat)
             return true;
 
         else
@@ -49,7 +49,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         }
     }
 
-    public CoordTuple getMasterPosition ()
+    public BlockPos getMasterPosition ()
     {
         return master;
     }
@@ -79,10 +79,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     @Deprecated
     public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
     {
-        if (master.equalCoords(x, y, z) && worldObj.getBlock(x, y, z) == masterBlock && worldObj.getBlockMetadata(x, y, z) == masterMeat)
-            return true;
-        else
-            return false;
+        return master.equalCoords(x, y, z) && worldObj.getBlock(x, y, z) == masterBlock && worldObj.getBlockMetadata(x, y, z) == masterMeat;
     }
 
     @Override

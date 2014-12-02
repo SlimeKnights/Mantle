@@ -23,8 +23,8 @@ import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderItemCopy extends Render
@@ -75,7 +75,7 @@ public class RenderItemCopy extends Render
 
             if (ForgeHooksClient.renderEntityItem(par1EntityItem, itemstack, f2, f3, random, renderManager.renderEngine, new RenderBlocks(), 000)) // TODO what goes here not 000
             {
-                ;
+
             }
             else if (itemstack.getItemSpriteNumber() == 0 && block != null && RenderBlocks.renderItemIn3d(block.getRenderType()))
             {
@@ -111,7 +111,6 @@ public class RenderItemCopy extends Render
                     }
 
                     f5 = 1.0F;
-                    //TODO renderBlockAsItem
                     this.itemRenderBlocks.renderBlockAsItem(block, itemstack.getItemDamage(), f5);
                     GL11.glPopMatrix();
                 }
@@ -363,7 +362,6 @@ public class RenderItemCopy extends Render
         float f2;
 
         Block block = Block.getBlockFromItem(k);
-        //TODO renderItemIn3d
         if (block != null && par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(block.getRenderType()))
         {
             par2TextureManager.bindTexture(TextureMap.locationBlocksTexture);
@@ -532,11 +530,11 @@ public class RenderItemCopy extends Render
             }
 
             tessellator.startDrawingQuads();
-            tessellator.addVertexWithUV((double) (par2 + 0), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par5 * f4) * f), (double) ((f3 + (float) par5) * f1));
+            tessellator.addVertexWithUV((double) (par2), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par5 * f4) * f), (double) ((f3 + (float) par5) * f1));
             tessellator.addVertexWithUV((double) (par2 + par4), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par4 + (float) par5 * f4) * f),
                     (double) ((f3 + (float) par5) * f1));
-            tessellator.addVertexWithUV((double) (par2 + par4), (double) (par3 + 0), (double) this.zLevel, (double) ((f2 + (float) par4) * f), (double) ((f3 + 0.0F) * f1));
-            tessellator.addVertexWithUV((double) (par2 + 0), (double) (par3 + 0), (double) this.zLevel, (double) ((f2 + 0.0F) * f), (double) ((f3 + 0.0F) * f1));
+            tessellator.addVertexWithUV((double) (par2 + par4), (double) (par3), (double) this.zLevel, (double) ((f2 + (float) par4) * f), (double) ((f3 + 0.0F) * f1));
+            tessellator.addVertexWithUV((double) (par2), (double) (par3), (double) this.zLevel, (double) ((f2 + 0.0F) * f), (double) ((f3 + 0.0F) * f1));
             tessellator.draw();
         }
     }
@@ -593,10 +591,10 @@ public class RenderItemCopy extends Render
     {
         par1Tessellator.startDrawingQuads();
         par1Tessellator.setColorOpaque_I(par6);
-        par1Tessellator.addVertex((double) (par2 + 0), (double) (par3 + 0), 0.0D);
-        par1Tessellator.addVertex((double) (par2 + 0), (double) (par3 + par5), 0.0D);
+        par1Tessellator.addVertex((double) (par2), (double) (par3), 0.0D);
+        par1Tessellator.addVertex((double) (par2), (double) (par3 + par5), 0.0D);
         par1Tessellator.addVertex((double) (par2 + par4), (double) (par3 + par5), 0.0D);
-        par1Tessellator.addVertex((double) (par2 + par4), (double) (par3 + 0), 0.0D);
+        par1Tessellator.addVertex((double) (par2 + par4), (double) (par3), 0.0D);
         par1Tessellator.draw();
     }
 
@@ -604,10 +602,10 @@ public class RenderItemCopy extends Render
     {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double) (par1 + 0), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMaxV());
+        tessellator.addVertexWithUV((double) (par1), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMaxV());
         tessellator.addVertexWithUV((double) (par1 + par4), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double) (par1 + par4), (double) (par2 + 0), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMinV());
-        tessellator.addVertexWithUV((double) (par1 + 0), (double) (par2 + 0), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMinV());
+        tessellator.addVertexWithUV((double) (par1 + par4), (double) (par2), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMinV());
+        tessellator.addVertexWithUV((double) (par1), (double) (par2), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMinV());
         tessellator.draw();
     }
 
@@ -662,7 +660,7 @@ public class RenderItemCopy extends Render
     /**
      * Allows for a subclass to override how many rendered items appear in a
      * "mini item 3d stack"
-     * @param stack
+     * @param stack the ItemStack
      * @return
      */
     public byte getMiniItemCount (ItemStack stack)

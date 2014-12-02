@@ -1,5 +1,7 @@
 package mantle.world;
 
+import net.minecraft.util.BlockPos;
+
 /**
  * CoordTuplePair
  *
@@ -7,10 +9,10 @@ package mantle.world;
  */
 public class CoordTuplePair
 {
-    public CoordTuple a;
-    public CoordTuple b;
+    public BlockPos a;
+    public BlockPos b;
 
-    public CoordTuplePair(CoordTuple a, CoordTuple b)
+    public CoordTuplePair(BlockPos a, BlockPos b)
     {
         this.a = a;
         this.b = b;
@@ -18,7 +20,7 @@ public class CoordTuplePair
 
     public CoordTuplePair(int aX, int aY, int aZ, int bX, int bY, int bZ)
     {
-        this.a = new CoordTuple(aX, aY, aZ);
-        this.b = new CoordTuple(bX, bY, bZ);
+        this.a = new BlockPos(aX, aY, aZ);
+        this.b = new BlockPos(bX, bY, bZ);
     }
 }

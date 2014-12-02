@@ -33,8 +33,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ZipLoader
 {
@@ -43,13 +43,13 @@ public class ZipLoader
     public static BookData loadZip (File f)
     {
         BookLoad bl;
-        String flName = new String();
-        String flExt = new String();
-        String lImg = new String();
-        String rImg = new String();
-        String bIcon = new String();
-        String unlocName = new String();
-        String toolTip = new String();
+        String flName = "";
+        String flExt = "";
+        String lImg = "";
+        String rImg = "";
+        String bIcon = "";
+        String unlocName = "";
+        String toolTip = "";
         Boolean translatable = false;
         BookData b = new BookData();
         boolean isClient = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
@@ -228,9 +228,7 @@ public class ZipLoader
 
     public static boolean isImage (String ext)
     {
-        if (ext.equalsIgnoreCase("png"))
-            return true;
-        return false;
+        return ext.equalsIgnoreCase("png");
     }
 
     public static ItemStack[] getISArray (JsonArray a)

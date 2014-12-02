@@ -18,9 +18,10 @@ public class ComparisonHelper
 
     public static boolean areEquivalent (Item item1, Item item2)
     {
-        return item1.equals(item2);
+        return item1 == item2;
     }
 
+    //@TODO make this a more verbose comparison
     public static boolean areEquivalent (ItemStack is1, ItemStack is2)
     {
         return is1.getItem() ==  is2.getItem();

@@ -26,9 +26,8 @@ public class ItemMetaWrapper {
         ItemMetaWrapper itemMeta = (ItemMetaWrapper) o;
 
         if (item != null ? !(item == itemMeta.item) : itemMeta.item != null) return false;
-        if (meta != null ? !meta.equals(itemMeta.meta) : itemMeta.meta != null) return false;
+        return !(meta != null ? !meta.equals(itemMeta.meta) : itemMeta.meta != null);
 
-        return true;
     }
 
     @Override

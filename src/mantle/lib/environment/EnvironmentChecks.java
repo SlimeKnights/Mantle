@@ -3,9 +3,9 @@ package mantle.lib.environment;
 import static mantle.lib.CoreRepo.logger;
 import static mantle.lib.CoreRepo.modId;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import mantle.crash.CallableSuppConfig;
 import mantle.crash.CallableUnsuppConfig;
 import mantle.lib.CoreConfig;
@@ -39,7 +39,7 @@ public class EnvironmentChecks
     @SuppressWarnings("rawtypes")
     public static void verifyEnvironmentSanity ()
     {
-        List<String> modIds = new ArrayList<String>();
+        List<String> modIds = Lists.newArrayList();
 
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && FMLClientHandler.instance().hasOptifine() || Loader.isModLoaded("optifine"))
         {

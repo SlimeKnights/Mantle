@@ -23,10 +23,7 @@ public class DimensionCoordTuple
 
     public boolean equalCoords (int worldID, int posX, int posY, int posZ)
     {
-        if (this.dim == worldID && this.x == posX && this.y == posY && this.z == posZ)
-            return true;
-        else
-            return false;
+        return this.dim == worldID && this.x == posX && this.y == posY && this.z == posZ;
     }
 
     @Override

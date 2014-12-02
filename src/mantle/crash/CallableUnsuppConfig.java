@@ -2,7 +2,7 @@ package mantle.crash;
 
 import java.util.List;
 
-import cpw.mods.fml.common.ICrashCallable;
+import net.minecraftforge.fml.common.ICrashCallable;
 
 // Crash handler for when an unsupported mod is running alongside us
 public class CallableUnsuppConfig implements ICrashCallable

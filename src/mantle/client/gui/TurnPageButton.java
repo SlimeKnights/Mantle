@@ -1,6 +1,5 @@
 package mantle.client.gui;
 
-import static mantle.lib.CoreRepo.logger;
 import mantle.books.BookData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

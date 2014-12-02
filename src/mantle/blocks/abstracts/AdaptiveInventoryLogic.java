@@ -6,7 +6,6 @@ import mantle.blocks.iface.IFacingLogic;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public abstract class AdaptiveInventoryLogic extends InventoryLogic implements IFacingLogic
 {
@@ -75,8 +74,8 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             }
 
                             stack.stackSize -= itemSize;
-                            EntityItem entityitem = new EntityItem(worldObj, (double) ((float) xCoord + jumpX + offsetX), (double) ((float) yCoord + jumpY),
-                                    (double) ((float) zCoord + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
+                            EntityItem entityitem = new EntityItem(worldObj, (double) ((float) pos.getX() + jumpX + offsetX), (double) ((float) pos.getY() + jumpY),
+                                    (double) ((float) pos.getZ() + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
 
                             if (stack.hasTagCompound())
                             {

@@ -3,8 +3,10 @@ package mantle.blocks.abstracts;
 import java.util.List;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -22,50 +24,45 @@ public abstract class InventorySlab extends InventoryBlock
 
     /* Rendering */
     @Override
-    //TODO:        renderAsNormalBlock()
     public boolean renderAsNormalBlock ()
     {
         return false;
     }
 
-    //TODO:        isOpaqueCube()
     @Override
     public boolean isOpaqueCube ()
     {
         return false;
     }
 
-    //TODO          shouldSideBeRendered
     @Override
-    public boolean shouldSideBeRendered (IBlockAccess world, int x, int y, int z, int side)
+    public boolean shouldSideBeRendered (IBlockAccess world, BlockPos pos, int side)
     {
         if (side > 1)
-            return super.shouldSideBeRendered(world, x, y, z, side);
+            return super.shouldSideBeRendered(world, pos, side);
 
-        int meta = world.getBlockMetadata(x, y, z);
+        int meta = world.getBlockMetadata(pos);
         boolean top = (meta | 8) == 1;
         if ((top && side == 0) || (!top && side == 1))
             return true;
 
-        return super.shouldSideBeRendered(world, x, y, z, side);
+        return super.shouldSideBeRendered(world, pos, side);
     }
 
-    //TODO:     addCollisionBoxesToList()
     @Override
     @SuppressWarnings("rawtypes")
-    public void addCollisionBoxesToList (World world, int x, int y, int z, AxisAlignedBB axisalignedbb, List arraylist, Entity entity)
+    public void addCollisionBoxesToList (World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity entity)
     {
-        setBlockBoundsBasedOnState(world, x, y, z);
-        super.addCollisionBoxesToList(world, x, y, z, axisalignedbb, arraylist, entity);
+        setBlockBoundsBasedOnState(world, pos);
+        super.addCollisionBoxesToList(world,pos ,state,  axisalignedbb, arraylist, entity);
     }
 
     public void setBlockBoundsForItemRender ()
     {
-        //TODO: setBlockBounds     
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
     }
 
-    public void setBlockBoundsBasedOnState (IBlockAccess world, int x, int y, int z)
+    public void setBlockBoundsBasedOnState (IBlockAccess world, BlockPos pos, IBlockState state)
     {
         int meta = world.getBlockMetadata(x, y, z) / 8;
         float minY = meta == 1 ? 0.5F : 0.0F;

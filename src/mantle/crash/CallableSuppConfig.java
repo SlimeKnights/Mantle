@@ -1,6 +1,6 @@
 package mantle.crash;
 
-import cpw.mods.fml.common.ICrashCallable;
+import net.minecraftforge.fml.common.ICrashCallable;
 
 /**
  * Crash Callable for supported environments.
