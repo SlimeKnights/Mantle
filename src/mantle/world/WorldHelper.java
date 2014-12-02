@@ -1,31 +1,24 @@
 package mantle.world;
 
-import mantle.common.ComparisonHelper;
-import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class WorldHelper
 {
-    @Deprecated
-    public static boolean setBlockToAirBool (World w, int x, int y, int z)
+    public static boolean setBlockToAir (World w, BlockPos pos)
     {
-        return setBlockToAir(w, x, y, z);
+        return w.setBlockToAir(pos);
     }
 
-    public static boolean setBlockToAir (World w, int x, int y, int z)
+    public static boolean isAirBlock (IBlockAccess access, BlockPos pos)
     {
-        return w.setBlockToAir(x, y, z);
+        return access.getBlock(pos).isAir(access, pos);
     }
 
-    public static boolean isAirBlock (IBlockAccess access, int x, int y, int z)
+    public static boolean isAirBlock (World access, BlockPos pos)
     {
-        return access.getBlock(x,y,z).isAir(access, x,y,z);
-    }
-
-    public static boolean isAirBlock (World access, int x, int y, int z)
-    {
-        return access.isAirBlock(x,y,z);
+        return access.isAirBlock(pos);
     }
 
 }

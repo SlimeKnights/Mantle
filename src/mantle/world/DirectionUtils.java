@@ -1,6 +1,6 @@
 package mantle.world;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Helper functions for dealing with ForgeDirection
@@ -16,14 +16,14 @@ public class DirectionUtils
         // No instantiation
     }
 
-    public static boolean isRightAngles (ForgeDirection a, ForgeDirection b)
+    public static boolean isRightAngles (EnumFacing a, EnumFacing b)
     {
-        return a != b && a != b.getOpposite() && a != ForgeDirection.UNKNOWN && b != ForgeDirection.UNKNOWN;
+        return a != b && a != b.getOpposite();
     }
 
-    public static boolean isHorizontal (ForgeDirection a)
+    public static boolean isHorizontal (EnumFacing a)
     {
-        return a == ForgeDirection.EAST || a == ForgeDirection.NORTH || a == ForgeDirection.SOUTH || a == ForgeDirection.WEST;
+        return a == EnumFacing.EAST || a == EnumFacing.NORTH || a == EnumFacing.SOUTH || a == EnumFacing.WEST;
     }
 
 }
