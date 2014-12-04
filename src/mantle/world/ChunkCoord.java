@@ -2,7 +2,7 @@ package mantle.world;
 
 import java.io.Serializable;
 
-import mantle.world.CoordTuple;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
 /**
@@ -24,10 +24,10 @@ public final class ChunkCoord implements Comparable<ChunkCoord>, Serializable
         this.chunkZ = chunk.zPosition;
     }
 
-    public ChunkCoord(CoordTuple c)
+    public ChunkCoord(BlockPos pos)
     {
 
-        this(c.x >> 4, c.z >> 4);
+        this(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public ChunkCoord(int x, int z)

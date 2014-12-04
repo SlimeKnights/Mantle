@@ -13,7 +13,7 @@ public class WorldHelper
 
     public static boolean isAirBlock (IBlockAccess access, BlockPos pos)
     {
-        return access.getBlock(pos).isAir(access, pos);
+        return access.getBlockState(pos).getBlock().isAir(access, pos);
     }
 
     public static boolean isAirBlock (World access, BlockPos pos)
