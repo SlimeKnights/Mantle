@@ -1,6 +1,6 @@
 package mantle.pulsar.config;
 
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 import mantle.pulsar.pulse.PulseMeta;
 import net.minecraftforge.common.config.Configuration;
 

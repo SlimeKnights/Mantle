@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 import mantle.pulsar.config.IConfiguration;
 import mantle.pulsar.internal.logging.ILogger;
 import mantle.pulsar.pulse.PulseMeta;

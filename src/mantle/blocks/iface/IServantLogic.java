@@ -1,11 +1,11 @@
 package mantle.blocks.iface;
 
-import mantle.world.CoordTuple;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public interface IServantLogic
 {
-    public CoordTuple getMasterPosition ();
+    public BlockPos getMasterPosition ();
 
     /** The block should already have a valid master */
     public void notifyMasterOfChange ();

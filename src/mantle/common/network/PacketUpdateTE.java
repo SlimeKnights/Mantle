@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 
 public class PacketUpdateTE extends AbstractPacket
 {
@@ -62,7 +63,7 @@ public class PacketUpdateTE extends AbstractPacket
     @Override
     public void handleClientSide (EntityPlayer player)
     {
-        TileEntity te = player.worldObj.getTileEntity(x, y, z);
+        TileEntity te = player.worldObj.getTileEntity(new BlockPos(x, y, z));
 
         if (te != null)
         {

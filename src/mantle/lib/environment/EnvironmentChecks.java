@@ -9,11 +9,11 @@ import com.google.common.collect.Lists;
 import mantle.crash.CallableSuppConfig;
 import mantle.crash.CallableUnsuppConfig;
 import mantle.lib.CoreConfig;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.ICrashCallable;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.ICrashCallable;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Environment Checks

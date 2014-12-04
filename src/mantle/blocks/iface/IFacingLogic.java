@@ -1,7 +1,7 @@
 package mantle.blocks.iface;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Logic for blocks which have a specific direction facing.
@@ -13,7 +13,7 @@ public interface IFacingLogic
 
     public byte getRenderDirection ();
 
-    public ForgeDirection getForgeDirection ();
+    public EnumFacing getForgeDirection ();
 
     @Deprecated
     public void setDirection (int side);

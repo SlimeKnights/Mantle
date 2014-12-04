@@ -75,7 +75,7 @@ public class RecipeRemover
 
     public static void removeFurnaceRecipe (ItemStack resultItem)
     {
-        Map<ItemStack, ItemStack> recipes = FurnaceRecipes.smelting().getSmeltingList();
+        Map<ItemStack, ItemStack> recipes = FurnaceRecipes.instance().getSmeltingList();
         recipes.remove(resultItem);
     }
 
