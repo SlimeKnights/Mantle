@@ -5,7 +5,6 @@ import mantle.blocks.iface.IMasterLogic;
 import mantle.blocks.iface.IServantLogic;
 import mantle.debug.DebugData;
 import mantle.debug.IDebuggable;
-import mantle.world.CoordTuple;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -84,7 +83,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Override
-    public boolean verifyMaster (IMasterLogic logic, World world, int x, int y, int z)
+    public boolean verifyMaster (IMasterLogic logic, World world, BlockPos pos)
     {
         if (hasMaster)
         {
@@ -92,13 +91,13 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         }
         else
         {
-            overrideMaster(x, y, z);
+            overrideMaster(pos.getX(), pos.getY(), pos.getZ());
             return true;
         }
     }
 
     @Override
-    public void invalidateMaster (IMasterLogic master, World w, int x, int y, int z)
+    public void invalidateMaster (IMasterLogic master, World w, BlockPos pos)
     {
         hasMaster = false;
         master = null;
@@ -167,7 +166,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
         readCustomNBT(packet.getNbtCompound());
-        worldObj.markBlockForRenderUpdate(pos);
+        worldObj.notifyLightSet(pos);
         worldObj.markBlockForUpdate(pos);
     }
 

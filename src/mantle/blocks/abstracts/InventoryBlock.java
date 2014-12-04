@@ -52,7 +52,7 @@ public abstract class InventoryBlock extends BlockContainer
     public abstract Object getModInstance ();
 
     @Override
-    public boolean onBlockActivated (World world, BlockPos pos, EntityPlayer player, EnumFacing side, float clickX, float clickY, float clickZ)
+    public boolean onBlockActivated (World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float clickX, float clickY, float clickZ)
     {
         if (player.isSneaking())
             return false;
@@ -127,15 +127,15 @@ public abstract class InventoryBlock extends BlockContainer
 
     //This class does not have an actual block placed in the world
     @Override
-    public IBlockState onBlockPlaced (World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState meta)
+    public IBlockState onBlockPlaced (World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         this.side = side;
-        return meta;
+        return world.getBlockState(pos).getBlock().getStateFromMeta(meta);
     }
 
     @Override
     @SuppressWarnings("deprecation") // TODO: Remove this when setDirection calls updated.
-    public void onBlockPlacedBy (World world, BlockPos pos, EntityLivingBase entityliving, ItemStack stack)
+    public void onBlockPlacedBy (World world, BlockPos pos, IBlockState state, EntityLivingBase entityliving, ItemStack stack)
     {
         TileEntity logic = world.getTileEntity(pos);
         if (logic instanceof IFacingLogic)

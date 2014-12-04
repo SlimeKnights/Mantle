@@ -25,7 +25,7 @@ public abstract class InventorySlab extends InventoryBlock
 
     /* Rendering */
     @Override
-    public boolean renderAsNormalBlock ()
+    public boolean isFullCube ()
     {
         return false;
     }
@@ -39,12 +39,13 @@ public abstract class InventorySlab extends InventoryBlock
     @Override
     public boolean shouldSideBeRendered (IBlockAccess world, BlockPos pos, EnumFacing side)
     {
-        if (side > 1)
+        if (side.getHorizontalIndex() > 1)
             return super.shouldSideBeRendered(world, pos, side);
 
-        int meta = world.getBlockMetadata(pos);
+        IBlockState iblockstate = world.getBlockState(pos);
+        int meta = iblockstate.getBlock().getMetaFromState(iblockstate);
         boolean top = (meta | 8) == 1;
-        if ((top && side == 0) || (!top && side == 1))
+        if ((top && side == side.DOWN) || (!top && side == side.UP))
             return true;
 
         return super.shouldSideBeRendered(world, pos, side);
@@ -65,7 +66,8 @@ public abstract class InventorySlab extends InventoryBlock
 
     public void setBlockBoundsBasedOnState (IBlockAccess world, BlockPos pos, IBlockState state)
     {
-        int meta = world.getBlockState(pos) / 8;
+        IBlockState iblockstate = world.getBlockState(pos);
+        int meta = iblockstate.getBlock().getMetaFromState(iblockstate) / 8;
         float minY = meta == 1 ? 0.5F : 0.0F;
         float maxY = meta == 1 ? 1.0F : 0.5F;
         setBlockBounds(0.0F, minY, 0F, 1.0F, maxY, 1.0F);
