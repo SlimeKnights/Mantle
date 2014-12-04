@@ -14,34 +14,28 @@ public interface IServantLogic
      * 
      * @param master
      * @param world the world of master
-     * @param xMaster xCoord of master
-     * @param yMaster yCoord of master
-     * @param zMaster zCoord of master
+     * @param pos position of master
      * @return whether the servant can be tied to this master
      */
 
-    public boolean setPotentialMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
+    public boolean setPotentialMaster (IMasterLogic master, World world, BlockPos pos);
 
     /** Used to set and verify that this is the block's master
      * 
      * @param master
      * @param world 
-     * @param xMaster xCoord of master
-     * @param yMaster yCoord of master
-     * @param zMaster zCoord of master
+     * @param pos position of master
      * @return Is this block tied to this master?
      */
 
-    public boolean verifyMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
+    public boolean verifyMaster (IMasterLogic master, World world, BlockPos pos);
 
     /** Exactly what it says on the tin
      * 
      * @param master
      * @param world 
-     * @param xMaster xCoord of master
-     * @param yMaster yCoord of master
-     * @param zMaster zCoord of master
+     * @param pos position of master
      */
 
-    public void invalidateMaster (IMasterLogic master, World world, int xMaster, int yMaster, int zMaster);
+    public void invalidateMaster (IMasterLogic master, World world, BlockPos pos);
 }

@@ -10,7 +10,7 @@ import net.minecraft.util.BlockPos;
 
 public class PacketUpdateTE extends AbstractPacket
 {
-    private int x, y, z;
+    private BlockPos pos;
     private NBTTagCompound data;
 
     public PacketUpdateTE()
@@ -18,11 +18,9 @@ public class PacketUpdateTE extends AbstractPacket
 
     }
 
-    public PacketUpdateTE(int x, int y, int z, NBTTagCompound data)
+    public PacketUpdateTE(BlockPos pos, NBTTagCompound data)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.pos = pos;
         this.data = data;
     }
 
@@ -30,9 +28,9 @@ public class PacketUpdateTE extends AbstractPacket
     public void encodeInto (ChannelHandlerContext ctx, ByteBuf buffer)
     {
         PacketBuffer pbuff = new PacketBuffer(buffer);
-        pbuff.writeInt(x);
-        pbuff.writeShort(y);
-        pbuff.writeInt(z);
+        pbuff.writeInt(pos.getX());
+        pbuff.writeShort(pos.getY());
+        pbuff.writeInt(pos.getZ());
         try
         {
             pbuff.writeNBTTagCompoundToBuffer(data);
@@ -47,9 +45,7 @@ public class PacketUpdateTE extends AbstractPacket
     public void decodeInto (ChannelHandlerContext ctx, ByteBuf buffer)
     {
         PacketBuffer pbuff = new PacketBuffer(buffer);
-        x = pbuff.readInt();
-        y = pbuff.readShort();
-        z = pbuff.readInt();
+        pos = new BlockPos(pbuff.readInt(), pbuff.readShort(), pbuff.readInt());
         try
         {
             data = pbuff.readNBTTagCompoundFromBuffer();
@@ -63,7 +59,7 @@ public class PacketUpdateTE extends AbstractPacket
     @Override
     public void handleClientSide (EntityPlayer player)
     {
-        TileEntity te = player.worldObj.getTileEntity(new BlockPos(x, y, z));
+        TileEntity te = player.worldObj.getTileEntity(pos);
 
         if (te != null)
         {

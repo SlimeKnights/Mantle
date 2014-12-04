@@ -1,6 +1,8 @@
 package mantle.blocks.abstracts;
 
 import java.util.*;
+
+import com.google.common.collect.Lists;
 import net.minecraft.entity.player.*;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
@@ -16,7 +18,7 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
         super(0);
     }
 
-    protected ArrayList<ItemStack> inventory = new ArrayList<ItemStack>();
+    protected ArrayList<ItemStack> inventory = Lists.newArrayList();
     protected String invName;
 
     @Override

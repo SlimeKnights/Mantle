@@ -3,7 +3,7 @@ package mantle.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameData;
 
 public class BlockUtils
 {
@@ -20,7 +20,7 @@ public class BlockUtils
 
     public static String getUniqueName (Block block)
     {
-        return GameData.getBlockRegistry().getNameForObject(block);
+        return GameData.getBlockRegistry().getNameForObject(block).toString();
     }
 
     public static Block getBlockFromUniqueName (String uniqueName)

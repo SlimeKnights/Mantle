@@ -15,14 +15,7 @@ public interface IFacingLogic
 
     public EnumFacing getForgeDirection ();
 
-    @Deprecated
-    public void setDirection (int side);
 
-    @Deprecated
-    public void setDirection (float yaw, float pitch, EntityLivingBase player);
-
-    //TODO 1.8 \/
-    /** This will be added next version
-    * public void setDirection(int side, float yaw, float pitch, EntityLivingBase player); */
+     public void setDirection(EnumFacing facing, float yaw, float pitch, EntityLivingBase player);
 
 }

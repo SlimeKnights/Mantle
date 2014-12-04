@@ -5,9 +5,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.block.model.ModelBlock;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
@@ -40,8 +42,9 @@ public class RenderItemCopy extends Render
     public float zLevel;
     public static boolean renderInFrame;
 
-    public RenderItemCopy()
+    protected RenderItemCopy(RenderManager mgr)
     {
+        super(mgr);
         this.shadowSize = 0.15F;
         this.shadowOpaque = 0.75F;
     }
@@ -202,7 +205,8 @@ public class RenderItemCopy extends Render
 
     private void renderDroppedItem (EntityItem par1EntityItem, IIcon par2Icon, int par3, float par4, float par5, float par6, float par7, int pass)
     {
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 
         if (par2Icon == null)
         {
@@ -322,12 +326,12 @@ public class RenderItemCopy extends Render
                 }
 
                 GL11.glColor4f(par5, par6, par7, 1.0F);
-                tessellator.startDrawingQuads();
-                tessellator.setNormal(0.0F, 1.0F, 0.0F);
-                tessellator.addVertexWithUV((double) (0.0F - f9), (double) (0.0F - f10), 0.0D, (double) f4, (double) f7);
-                tessellator.addVertexWithUV((double) (f8 - f9), (double) (0.0F - f10), 0.0D, (double) f5, (double) f7);
-                tessellator.addVertexWithUV((double) (f8 - f9), (double) (1.0F - f10), 0.0D, (double) f5, (double) f6);
-                tessellator.addVertexWithUV((double) (0.0F - f9), (double) (1.0F - f10), 0.0D, (double) f4, (double) f6);
+                worldRenderer.startDrawingQuads();
+                worldRenderer.setNormal(0.0F, 1.0F, 0.0F);
+                worldRenderer.addVertexWithUV((double) (0.0F - f9), (double) (0.0F - f10), 0.0D, (double) f4, (double) f7);
+                worldRenderer.addVertexWithUV((double) (f8 - f9), (double) (0.0F - f10), 0.0D, (double) f5, (double) f7);
+                worldRenderer.addVertexWithUV((double) (f8 - f9), (double) (1.0F - f10), 0.0D, (double) f5, (double) f6);
+                worldRenderer.addVertexWithUV((double) (0.0F - f9), (double) (1.0F - f10), 0.0D, (double) f4, (double) f6);
                 tessellator.draw();
                 GL11.glPopMatrix();
             }
@@ -521,20 +525,20 @@ public class RenderItemCopy extends Render
             float f1 = 0.00390625F;
             float f2 = (float) (Minecraft.getSystemTime() % (long) (3000 + j1 * 1873)) / (3000.0F + (float) (j1 * 1873)) * 256.0F;
             float f3 = 0.0F;
-            Tessellator tessellator = Tessellator.instance;
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer worldRenderer = tessellator.getWorldRenderer();
             float f4 = 4.0F;
 
             if (j1 == 1)
             {
                 f4 = -1.0F;
             }
-
-            tessellator.startDrawingQuads();
-            tessellator.addVertexWithUV((double) (par2), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par5 * f4) * f), (double) ((f3 + (float) par5) * f1));
-            tessellator.addVertexWithUV((double) (par2 + par4), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par4 + (float) par5 * f4) * f),
+            worldRenderer.startDrawingQuads();
+            worldRenderer.addVertexWithUV((double) (par2), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par5 * f4) * f), (double) ((f3 + (float) par5) * f1));
+            worldRenderer.addVertexWithUV((double) (par2 + par4), (double) (par3 + par5), (double) this.zLevel, (double) ((f2 + (float) par4 + (float) par5 * f4) * f),
                     (double) ((f3 + (float) par5) * f1));
-            tessellator.addVertexWithUV((double) (par2 + par4), (double) (par3), (double) this.zLevel, (double) ((f2 + (float) par4) * f), (double) ((f3 + 0.0F) * f1));
-            tessellator.addVertexWithUV((double) (par2), (double) (par3), (double) this.zLevel, (double) ((f2 + 0.0F) * f), (double) ((f3 + 0.0F) * f1));
+            worldRenderer.addVertexWithUV((double) (par2 + par4), (double) (par3), (double) this.zLevel, (double) ((f2 + (float) par4) * f), (double) ((f3 + 0.0F) * f1));
+            worldRenderer.addVertexWithUV((double) (par2), (double) (par3), (double) this.zLevel, (double) ((f2 + 0.0F) * f), (double) ((f3 + 0.0F) * f1));
             tessellator.draw();
         }
     }
@@ -569,7 +573,7 @@ public class RenderItemCopy extends Render
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
-                Tessellator tessellator = Tessellator.instance;
+                Tessellator tessellator = Tessellator.getInstance();
                 int i1 = 255 - l << 16 | l << 8;
                 int j1 = (255 - l) / 4 << 16 | 16128;
                 this.renderQuad(tessellator, par4 + 2, par5 + 13, 13, 2, 0);
@@ -587,26 +591,28 @@ public class RenderItemCopy extends Render
      * Adds a quad to the tesselator at the specified position with the set width and height and color.  Args:
      * tessellator, x, y, width, height, color
      */
-    private void renderQuad (Tessellator par1Tessellator, int par2, int par3, int par4, int par5, int par6)
+    private void renderQuad (Tessellator tessellator, int par2, int par3, int par4, int par5, int par6)
     {
-        par1Tessellator.startDrawingQuads();
-        par1Tessellator.setColorOpaque_I(par6);
-        par1Tessellator.addVertex((double) (par2), (double) (par3), 0.0D);
-        par1Tessellator.addVertex((double) (par2), (double) (par3 + par5), 0.0D);
-        par1Tessellator.addVertex((double) (par2 + par4), (double) (par3 + par5), 0.0D);
-        par1Tessellator.addVertex((double) (par2 + par4), (double) (par3), 0.0D);
-        par1Tessellator.draw();
+        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        worldRenderer.startDrawingQuads();
+        worldRenderer.setColorOpaque_I(par6);
+        worldRenderer.addVertex((double) (par2), (double) (par3), 0.0D);
+        worldRenderer.addVertex((double) (par2), (double) (par3 + par5), 0.0D);
+        worldRenderer.addVertex((double) (par2 + par4), (double) (par3 + par5), 0.0D);
+        worldRenderer.addVertex((double) (par2 + par4), (double) (par3), 0.0D);
+        worldRenderer.draw();
     }
 
     public void renderIcon (int par1, int par2, IIcon par3Icon, int par4, int par5)
     {
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double) (par1), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double) (par1 + par4), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double) (par1 + par4), (double) (par2), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMinV());
-        tessellator.addVertexWithUV((double) (par1), (double) (par2), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMinV());
-        tessellator.draw();
+        WorldRenderer worldRenderer = Tessellator.getInstance().getWorldRenderer();
+        worldRenderer.startDrawingQuads();
+
+        worldRenderer.addVertexWithUV((double) (par1), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMaxV());
+        worldRenderer.addVertexWithUV((double) (par1 + par4), (double) (par2 + par5), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMaxV());
+        worldRenderer.addVertexWithUV((double) (par1 + par4), (double) (par2), (double) this.zLevel, (double) par3Icon.getMaxU(), (double) par3Icon.getMinV());
+        worldRenderer.addVertexWithUV((double) (par1), (double) (par2), (double) this.zLevel, (double) par3Icon.getMinU(), (double) par3Icon.getMinV());
+        worldRenderer.draw();
     }
 
     protected ResourceLocation getEntityTexture (Entity par1Entity)

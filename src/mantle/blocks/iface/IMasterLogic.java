@@ -1,12 +1,12 @@
 package mantle.blocks.iface;
 
+import net.minecraft.util.BlockPos;
+
 public interface IMasterLogic
 {
     /** Called when servants change their state
      * 
-     * @param x Servant X
-     * @param y Servant Y
-     * @param z Servant Z
+     * @param pos servant position
      */
-    public void notifyChange (IServantLogic servant, int x, int y, int z);
+    public void notifyChange (IServantLogic servant, BlockPos pos);
 }

@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -36,7 +37,7 @@ public abstract class InventorySlab extends InventoryBlock
     }
 
     @Override
-    public boolean shouldSideBeRendered (IBlockAccess world, BlockPos pos, int side)
+    public boolean shouldSideBeRendered (IBlockAccess world, BlockPos pos, EnumFacing side)
     {
         if (side > 1)
             return super.shouldSideBeRendered(world, pos, side);
@@ -64,7 +65,7 @@ public abstract class InventorySlab extends InventoryBlock
 
     public void setBlockBoundsBasedOnState (IBlockAccess world, BlockPos pos, IBlockState state)
     {
-        int meta = world.getBlockMetadata(x, y, z) / 8;
+        int meta = world.getBlockState(pos) / 8;
         float minY = meta == 1 ? 0.5F : 0.0F;
         float maxY = meta == 1 ? 1.0F : 0.5F;
         setBlockBounds(0.0F, minY, 0F, 1.0F, maxY, 1.0F);

@@ -7,6 +7,7 @@ import mantle.debug.DebugData;
 import mantle.debug.IDebuggable;
 import mantle.world.CoordTuple;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -21,7 +22,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     boolean hasMaster;
     BlockPos master;
     Block masterBlock;
-    byte masterMeat; //TODO rename this!
+    IBlockState state;
 
     public boolean canUpdate ()
     {
@@ -38,7 +39,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         if (!hasMaster)
             return false;
 
-        if (worldObj.getBlock(master) == masterBlock && worldObj.getBlockMetadata(master) == masterMeat)
+        if (worldObj.getBlockState(master).getBlock() == masterBlock && worldObj.getBlockState(master) == state)
             return true;
 
         else
@@ -57,9 +58,9 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public void overrideMaster (int x, int y, int z)
     {
         hasMaster = true;
-        master = new CoordTuple(x, y, z);
-        masterBlock = worldObj.getBlock(x, y, z);
-        masterMeat = (byte) worldObj.getBlockMetadata(x, y, z);
+        master = new BlockPos(x, y, z);
+        state = worldObj.getBlockState(master);
+        masterBlock = state.getBlock();
     }
 
     public void removeMaster ()
@@ -67,19 +68,19 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         hasMaster = false;
         master = null;
         masterBlock = null;
-        masterMeat = 0;
+        state = null;
     }
 
     @Override
-    public boolean setPotentialMaster (IMasterLogic master, World w, int x, int y, int z)
+    public boolean setPotentialMaster (IMasterLogic master, World w, BlockPos pos)
     {
         return !hasMaster;
     }
 
     @Deprecated
-    public boolean verifyMaster (IMasterLogic logic, int x, int y, int z)
+    public boolean verifyMaster (IMasterLogic logic, BlockPos pos)
     {
-        return master.equalCoords(x, y, z) && worldObj.getBlock(x, y, z) == masterBlock && worldObj.getBlockMetadata(x, y, z) == masterMeat;
+        return master.equals(pos) && worldObj.getBlockState(pos) == state && worldObj.getBlockState(pos).getBlock() == masterBlock;
     }
 
     @Override
@@ -107,8 +108,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         if (hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) worldObj.getTileEntity(master.x, master.y, master.z);
-            logic.notifyChange(this, xCoord, yCoord, zCoord);
+            IMasterLogic logic = (IMasterLogic) worldObj.getTileEntity(pos);
+            logic.notifyChange(this, pos);
         }
     }
 
@@ -120,9 +121,9 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             int xCenter = tags.getInteger("xCenter");
             int yCenter = tags.getInteger("yCenter");
             int zCenter = tags.getInteger("zCenter");
-            master = new CoordTuple(xCenter, yCenter, zCenter);
+            master = new BlockPos(xCenter, yCenter, zCenter);
             masterBlock = BlockUtils.getBlockFromUniqueName(tags.getString("MasterBlockName"));
-            masterMeat = tags.getByte("masterMeat");
+            state = tags.getByte("masterMeat");
         }
     }
 
@@ -131,11 +132,11 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         tags.setBoolean("TiedToMaster", hasMaster);
         if (hasMaster)
         {
-            tags.setInteger("xCenter", master.x);
-            tags.setInteger("yCenter", master.y);
-            tags.setInteger("zCenter", master.z);
+            tags.setInteger("xCenter", master.getX());
+            tags.setInteger("yCenter", master.getY());
+            tags.setInteger("zCenter", master.getZ());
             tags.setString("MasterBlockName", BlockUtils.getUniqueName(masterBlock));
-            tags.setByte("masterMeat", masterMeat);
+            tags.setByte("masterMeat", state);
         }
     }
 
@@ -159,15 +160,15 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     {
         NBTTagCompound tag = new NBTTagCompound();
         writeCustomNBT(tag);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tag);
+        return new S35PacketUpdateTileEntity(pos, 1, tag);
     }
 
     @Override
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
-        readCustomNBT(packet.func_148857_g());
-        worldObj.func_147479_m(xCoord, yCoord, zCoord);
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        readCustomNBT(packet.getNbtCompound());
+        worldObj.markBlockForRenderUpdate(pos);
+        worldObj.markBlockForUpdate(pos);
     }
 
     /* IDebuggable */
@@ -175,10 +176,10 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     public DebugData getDebugInfo (EntityPlayer player)
     {
         String[] strs = new String[2];
-        strs[0] = "Location: x" + xCoord + ", y" + yCoord + ", z" + zCoord;
+        strs[0] = "Location: x" + pos.getX() + ", y" + pos.getY() + ", z" + pos.getZ();
         if (hasMaster)
         {
-            strs[1] = "masterBlock: " + masterBlock.toString() + ", masterMeat: " + masterMeat;
+            strs[1] = "masterBlock: " + masterBlock.toString() + ", masterMeat: " + state.toString();
         }
         else
         {
@@ -189,13 +190,13 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
 
     public World getWorld ()
     {
-        return this.getWorldObj();
+        return worldObj;
     }
 
     @Deprecated
     public boolean setMaster (int x, int y, int z)
     {
-        if (!hasMaster || worldObj.getBlock(master.x, master.y, master.z) != masterBlock || (worldObj.getBlockMetadata(master.x, master.y, master.z) != masterMeat))
+        if (!hasMaster || worldObj.getBlockState(master) != state || (worldObj.getBlockState(master) != masterBlock))
         {
             overrideMaster(x, y, z);
             return true;

@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -584,16 +585,17 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                 }
 
                 Tessellator tessellator;
-
+                WorldRenderer worldRenderer;
                 if (this.strikethroughStyle)
                 {
                     tessellator = Tessellator.getInstance();
+                    worldRenderer = tessellator.getWorldRenderer();
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    tessellator.startDrawingQuads();
-                    tessellator.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
-                    tessellator.addVertex((double) (this.posX + f1), (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
-                    tessellator.addVertex((double) (this.posX + f1), (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F), 0.0D);
-                    tessellator.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F), 0.0D);
+                    worldRenderer.startDrawingQuads();
+                    worldRenderer.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
+                    worldRenderer.addVertex((double) (this.posX + f1), (double) (this.posY + (float) (this.FONT_HEIGHT / 2)), 0.0D);
+                    worldRenderer.addVertex((double) (this.posX + f1), (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F), 0.0D);
+                    worldRenderer.addVertex((double) this.posX, (double) (this.posY + (float) (this.FONT_HEIGHT / 2) - 1.0F), 0.0D);
                     tessellator.draw();
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }
@@ -601,13 +603,14 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                 if (this.underlineStyle)
                 {
                     tessellator = Tessellator.getInstance();
+                    worldRenderer = tessellator.getWorldRenderer();
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    tessellator.startDrawingQuads();
+                    worldRenderer.startDrawingQuads();
                     int l = this.underlineStyle ? -1 : 0;
-                    tessellator.addVertex((double) (this.posX + (float) l), (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
-                    tessellator.addVertex((double) (this.posX + f1), (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
-                    tessellator.addVertex((double) (this.posX + f1), (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F), 0.0D);
-                    tessellator.addVertex((double) (this.posX + (float) l), (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F), 0.0D);
+                    worldRenderer.addVertex((double) (this.posX + (float) l), (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
+                    worldRenderer.addVertex((double) (this.posX + f1), (double) (this.posY + (float) this.FONT_HEIGHT), 0.0D);
+                    worldRenderer.addVertex((double) (this.posX + f1), (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F), 0.0D);
+                    worldRenderer.addVertex((double) (this.posX + (float) l), (double) (this.posY + (float) this.FONT_HEIGHT - 1.0F), 0.0D);
                     tessellator.draw();
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }

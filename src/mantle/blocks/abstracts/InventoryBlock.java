@@ -2,6 +2,9 @@ package mantle.blocks.abstracts;
 
 import java.util.Random;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.EnumFaceDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import mantle.blocks.iface.IActiveLogic;
@@ -49,12 +52,12 @@ public abstract class InventoryBlock extends BlockContainer
     public abstract Object getModInstance ();
 
     @Override
-    public boolean onBlockActivated (World world, BlockPos pos, EntityPlayer player, int side, float clickX, float clickY, float clickZ)
+    public boolean onBlockActivated (World world, BlockPos pos, EntityPlayer player, EnumFacing side, float clickX, float clickY, float clickZ)
     {
         if (player.isSneaking())
             return false;
 
-        Integer integer = getGui(world, pos, player);
+        Integer integer = getGui(world, pos.getX(), pos.getY(), pos.getZ(), player);
         if (integer == null || integer == -1)
         {
             return false;
@@ -69,7 +72,7 @@ public abstract class InventoryBlock extends BlockContainer
 
     /* Inventory */
     @Override
-    public void breakBlock (World par1World, BlockPos pos, Block blockID, int meta)
+    public void breakBlock (World par1World, BlockPos pos, IBlockState meta)
     {
         TileEntity te = par1World.getTileEntity(pos);
 
@@ -115,16 +118,16 @@ public abstract class InventoryBlock extends BlockContainer
             }
         }
 
-        super.breakBlock(par1World, pos, blockID, meta);
+        super.breakBlock(par1World, pos, meta);
     }
 
     /* Placement */
 
-    int side = -1;
+    EnumFacing side;
 
     //This class does not have an actual block placed in the world
     @Override
-    public int onBlockPlaced (World world, BlockPos pos, int side, float hitX, float hitY, float hitZ, int meta)
+    public IBlockState onBlockPlaced (World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState meta)
     {
         this.side = side;
         return meta;
@@ -139,18 +142,18 @@ public abstract class InventoryBlock extends BlockContainer
         {
             IFacingLogic direction = (IFacingLogic) logic;
             // TODO: Convert all setDirection calls to modern invokation, when that's ready.
-            if (side != -1)
+            if (side != null)
             {
-                direction.setDirection(side);
-                side = -1;
+                direction.setDirection(side, 0F, 0F, null);
+                side = null;
             }
             if (entityliving == null)
             {
-                direction.setDirection(0F, 0F, null);
+                direction.setDirection(null, 0F, 0F, null);
             }
             else
             {
-                direction.setDirection(entityliving.rotationYaw * 4F, entityliving.rotationPitch, entityliving);
+                direction.setDirection(null, entityliving.rotationYaw * 4F, entityliving.rotationPitch, entityliving);
             }
         }
 
