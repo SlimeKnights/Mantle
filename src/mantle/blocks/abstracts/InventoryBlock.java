@@ -14,7 +14,6 @@ import mantle.debug.IDebuggable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +24,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -182,25 +180,6 @@ public abstract class InventoryBlock extends BlockContainer
     public int damageDropped (int meta)
     {
         return meta;
-    }
-
-    /* Textures */
-    public IIcon[] icons;
-
-    public abstract String[] getTextureNames ();
-
-    public abstract String getTextureDomain (int textureNameIndex);
-
-    @Override
-    public void registerBlockIcons (IIconRegister iconRegister)
-    {
-        String[] textureNames = getTextureNames();
-        this.icons = new IIcon[textureNames.length];
-
-        for (int i = 0; i < this.icons.length; ++i)
-        {
-            this.icons[i] = iconRegister.registerIcon(getTextureDomain(i) + ":" + textureNames[i]);
-        }
     }
 
     /* IDebuggable */

@@ -52,7 +52,7 @@ public class SidebarPage extends BookPage
             {
                 iconText[i] = StatCollector.translateToLocal(iconText[i]);
             }
-            manual.renderitem.renderItemIntoGUI(manual.fonts, manual.getMC().renderEngine, icons[i], localWidth + 8, localHeight + 18 * i + offset);
+            manual.renderitem.func_175042_a(icons[i], localWidth + 8, localHeight + 18 * i + offset);
             int yOffset = 39;
             if (iconText[i].length() > 40)
                 yOffset = 34;

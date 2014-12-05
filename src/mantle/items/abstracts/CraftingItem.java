@@ -2,11 +2,9 @@ package mantle.items.abstracts;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,7 +15,6 @@ public class CraftingItem extends Item
     public String[] textureNames;
     public String[] unlocalizedNames;
     public String folder;
-    public IIcon[] icons;
 
     public CraftingItem(String[] names, String[] tex, String folder, String modTexturePrefix, CreativeTabs tab)
     {
@@ -40,28 +37,6 @@ public class CraftingItem extends Item
         this.textureNames = tex;
         this.unlocalizedNames = names;
         this.folder = folder;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public IIcon getIconFromDamage (int meta)
-    {
-        int arr = MathHelper.clamp_int(meta, 0, unlocalizedNames.length);
-        if(arr > icons.length)
-            return icons[0];
-        return icons[arr];
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons (IIconRegister iconRegister)
-    {
-        this.icons = new IIcon[textureNames.length];
-
-        for (int i = 0; i < this.icons.length; ++i)
-        {
-            if (!(textureNames[i].equals("")))
-                this.icons[i] = iconRegister.registerIcon(modTexPrefix + ":" + folder + textureNames[i]);
-        }
     }
 
     public String getUnlocalizedName (ItemStack stack)

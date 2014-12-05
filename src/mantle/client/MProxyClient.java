@@ -5,6 +5,7 @@ import static mantle.lib.CoreRepo.logger;
 import java.util.HashMap;
 import java.util.Map;
 
+import mantle.Mantle;
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.client.gui.GuiManual;
@@ -30,17 +31,10 @@ public class MProxyClient extends MProxyCommon
 
     public static final String MINECRAFT_ASCII_PATH = "minecraft:textures/font/ascii.png";
 
-    public static SmallFontRenderer smallFontRenderer;
-
     /* Registers any rendering code. */
     public void registerRenderer ()
     {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.getTextureManager() == null)
-            logger.error("Vanilla texture manager is null!");
-        if (mc.renderEngine == null)
-            logger.error("Vanilla render engine is null!");
-        smallFontRenderer = new SmallFontRenderer(mc.gameSettings, new ResourceLocation(MINECRAFT_ASCII_PATH), mc.renderEngine, false);
+        ModelHelper.registerItem(Mantle.mantleBook, "mantleBook");
     }
 
     public static Map<String, Class<? extends BookPage>> pageClasses = new HashMap<String, Class<? extends BookPage>>();

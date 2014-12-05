@@ -12,7 +12,6 @@ import mantle.items.Manual;
 import mantle.lib.CoreConfig;
 import mantle.lib.CoreRepo;
 import mantle.lib.environment.EnvironmentChecks;
-import mantle.module.ModuleController;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;

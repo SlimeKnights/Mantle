@@ -2,12 +2,12 @@ package mantle.client.gui;
 
 import mantle.books.BookData;
 import mantle.client.MProxyClient;
-import mantle.client.RenderItemCopy;
-import mantle.client.SmallFontRenderer;
 import mantle.client.pages.BookPage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -25,7 +25,7 @@ public class GuiManual extends GuiScreen
 {
     ItemStack itemstackBook;
     Document manual;
-    public RenderItemCopy renderitem = new RenderItemCopy();
+    public RenderItem renderitem = Minecraft.getMinecraft().getRenderItem();
     int bookImageWidth = 206;
     int bookImageHeight = 200;
     int bookTotalPages = 1;
@@ -41,7 +41,7 @@ public class GuiManual extends GuiScreen
     BookPage pageLeft;
     BookPage pageRight;
 
-    public SmallFontRenderer fonts = MProxyClient.smallFontRenderer;
+    public FontRenderer fonts = Minecraft.getMinecraft().fontRendererObj;
 
     public GuiManual(ItemStack stack, BookData data)
     {
