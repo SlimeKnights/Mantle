@@ -122,7 +122,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             int zCenter = tags.getInteger("zCenter");
             master = new BlockPos(xCenter, yCenter, zCenter);
             masterBlock = BlockUtils.getBlockFromUniqueName(tags.getString("MasterBlockName"));
-            state = tags.getByte("masterMeat");
+            // TODO: Make this a byte.
+            state = Block.getStateById(tags.getInteger("masterState"));
         }
     }
 
@@ -135,7 +136,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
             tags.setInteger("yCenter", master.getY());
             tags.setInteger("zCenter", master.getZ());
             tags.setString("MasterBlockName", BlockUtils.getUniqueName(masterBlock));
-            tags.setByte("masterMeat", state);
+            // TODO: Make this a byte.
+            tags.setInteger("masterState", Block.getStateId(state));
         }
     }
 
@@ -195,7 +197,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     @Deprecated
     public boolean setMaster (int x, int y, int z)
     {
-        if (!hasMaster || worldObj.getBlockState(master) != state || (worldObj.getBlockState(master) != masterBlock))
+        if (!hasMaster || worldObj.getBlockState(master) != state || (worldObj.getBlockState(master).getBlock() != masterBlock))
         {
             overrideMaster(x, y, z);
             return true;
