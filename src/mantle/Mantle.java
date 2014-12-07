@@ -4,16 +4,16 @@ import static mantle.lib.CoreRepo.logger;
 import static mantle.lib.CoreRepo.modId;
 import static mantle.lib.CoreRepo.modName;
 import static mantle.lib.CoreRepo.modVersion;
+
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.IDDumps;
 import mantle.common.MProxyCommon;
-import mantle.debug.LogIdentifier;
 import mantle.items.Manual;
 import mantle.lib.CoreConfig;
 import mantle.lib.CoreRepo;
 import mantle.lib.environment.EnvironmentChecks;
-import mantle.module.ModuleController;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -23,6 +23,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import mantle.utils.CraftingHandler;
 
 import java.io.File;
 
@@ -44,7 +45,6 @@ public class Mantle
 
     public static MProxyCommon proxy;
     public static Manual mantleBook;
-    public static LogIdentifier logID;
     /**
      * Constructor
      *
@@ -69,10 +69,6 @@ public class Mantle
         logger.info("Entering preinitialization phase.");
         CoreConfig.loadConfiguration(evt.getModConfigurationDirectory());
 
-        if (CoreConfig.identifyLogs) {
-            logID = new LogIdentifier();
-            logID.preinit();
-        }
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
 
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
@@ -114,6 +110,11 @@ public class Mantle
         mantleBook.updateManual();
         CoreConfig.loadBookLocations();
         IDDumps.dump();
+    }
+    @EventHandler
+    public void serverStart(FMLServerStartedEvent evt)
+    {
+        CraftingHandler.logConflicts();
     }
 
 }
