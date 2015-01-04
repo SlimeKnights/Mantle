@@ -35,6 +35,8 @@ repositories {
 
 apply plugin: 'forge'
 group = 'mantle'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 // Define properties file
 ext.configFile = file "build.properties"

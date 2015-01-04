@@ -54,10 +54,10 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         return master;
     }
 
-    public void overrideMaster (int x, int y, int z)
+    public void overrideMaster (BlockPos pos)
     {
         hasMaster = true;
-        master = new BlockPos(x, y, z);
+        master = pos;
         state = worldObj.getBlockState(master);
         masterBlock = state.getBlock();
     }
@@ -91,7 +91,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
         }
         else
         {
-            overrideMaster(pos.getX(), pos.getY(), pos.getZ());
+            overrideMaster(pos);
             return true;
         }
     }
@@ -195,11 +195,11 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     }
 
     @Deprecated
-    public boolean setMaster (int x, int y, int z)
+    public boolean setMaster (BlockPos pos)
     {
         if (!hasMaster || worldObj.getBlockState(master) != state || (worldObj.getBlockState(master).getBlock() != masterBlock))
         {
-            overrideMaster(x, y, z);
+            overrideMaster(pos);
             return true;
         }
         else
