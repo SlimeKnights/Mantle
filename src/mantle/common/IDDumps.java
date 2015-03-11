@@ -32,7 +32,7 @@ public class IDDumps
         }
         if (CoreConfig.dumpEnchantIDs)
         {
-            for (Enchantment e : Enchantment.enchantmentsList)
+            for (Enchantment e : Enchantment.enchantmentsBookList)
             {
                 if (e != null && e.getName() != null)
                 {

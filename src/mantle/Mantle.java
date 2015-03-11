@@ -4,6 +4,8 @@ import static mantle.lib.CoreRepo.logger;
 import static mantle.lib.CoreRepo.modId;
 import static mantle.lib.CoreRepo.modName;
 import static mantle.lib.CoreRepo.modVersion;
+
+import LZMA.LzmaInputStream;
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.IDDumps;
@@ -67,7 +69,6 @@ public class Mantle
         CoreConfig.loadConfiguration(evt.getModConfigurationDirectory());
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
-
         mantleBook = (Manual) new Manual().setUnlocalizedName("mantle.manual");
         GameRegistry.registerItem(mantleBook, "mantleBook");
 

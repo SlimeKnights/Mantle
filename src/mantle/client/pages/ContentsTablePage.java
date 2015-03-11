@@ -48,7 +48,7 @@ public class ContentsTablePage extends BookPage
         manual.renderitem.zLevel = 100;
         for (int i = 0; i < icons.length; i++)
         {
-            manual.renderitem.func_175042_a(icons[i], localWidth + 16, localHeight + 18 * i + 18);
+            manual.renderitem.renderItemIntoGUI(icons[i], localWidth + 16, localHeight + 18 * i + 18);
             int yOffset = 18;
             if (isTranslatable)
                 iconText[i] = StatCollector.translateToLocal(iconText[i]);

@@ -56,25 +56,25 @@ public class CraftingPage extends BookPage
 
         if (recipeSize == 2)
         {
-            manual.renderitem.func_180450_b(icons[0], (localWidth + 126) / 2, (localHeight + 68) / 2);
+            manual.renderitem.renderItemAndEffectIntoGUI(icons[0], (localWidth + 126) / 2, (localHeight + 68) / 2);
             if (icons[0].stackSize > 1)
-                manual.renderitem.func_180453_a(manual.fonts, icons[0], (localWidth + 126) / 2, (localHeight + 68) / 2, String.valueOf(icons[0].stackSize));
+                manual.renderitem.renderItemOverlayIntoGUI(manual.fonts, icons[0], (localWidth + 126) / 2, (localHeight + 68) / 2, String.valueOf(icons[0].stackSize));
             for (int i = 0; i < icons.length - 1; i++)
             {
                 if (icons[i + 1] != null)
-                    manual.renderitem.func_180450_b(icons[i + 1], (localWidth + 14 + 36 * (i % 2)) / 2, (localHeight + 36 * (i / 2) + 52) / 2);
+                    manual.renderitem.renderItemAndEffectIntoGUI(icons[i + 1], (localWidth + 14 + 36 * (i % 2)) / 2, (localHeight + 36 * (i / 2) + 52) / 2);
             }
         }
 
         if (recipeSize == 3)
         {
-            manual.renderitem.func_180450_b(icons[0], (localWidth + 138) / 2, (localHeight + 70) / 2);
+            manual.renderitem.renderItemAndEffectIntoGUI(icons[0], (localWidth + 138) / 2, (localHeight + 70) / 2);
             if (icons[0].stackSize > 1)
-                manual.renderitem.func_180453_a(manual.fonts, icons[0], (localWidth + 126) / 2, (localHeight + 68) / 2, String.valueOf(icons[0].stackSize));
+                manual.renderitem.renderItemOverlayIntoGUI(manual.fonts, icons[0], (localWidth + 126) / 2, (localHeight + 68) / 2, String.valueOf(icons[0].stackSize));
             for (int i = 0; i < icons.length - 1; i++)
             {
                 if (icons[i + 1] != null)
-                    manual.renderitem.func_180450_b(icons[i + 1], (localWidth - 2 + 36 * (i % 3)) / 2, (localHeight + 36 * (i / 3) + 34) / 2);
+                    manual.renderitem.renderItemAndEffectIntoGUI(icons[i + 1], (localWidth - 2 + 36 * (i % 3)) / 2, (localHeight + 36 * (i / 3) + 34) / 2);
             }
         }
 

@@ -114,7 +114,7 @@ public class ZipLoader
                                                 {
                                                     try
                                                     {
-                                                        is.setTagCompound(JsonToNBT.func_180713_a(bis.tags));
+                                                        is.setTagCompound(JsonToNBT.getTagFromJson(bis.tags));
                                                     }
                                                     catch (Exception e1)
                                                     {
