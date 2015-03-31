@@ -50,7 +50,7 @@ public class Configuration implements IConfiguration {
     public boolean isModuleEnabled(PulseMeta meta) {
         ConfigEntry entry = modules.get(meta.getId());
         if (entry == null) {
-            modules.put(meta.getId(), new ConfigEntry(meta.isEnabled(), meta.getDescription()));
+            modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));
             return meta.isEnabled();
         } else {
             return entry.getEnabled();

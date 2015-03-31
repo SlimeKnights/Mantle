@@ -5,6 +5,9 @@ import java.lang.annotation.*;
 /**
  * Metadata annotation for IPulse implementations.
  *
+ * Pulses should use the standard Google Event Bus @Subscribe annotation to catch FML events, which are forwarded from
+ * the current mod container (including Pre/Init/Post events).
+ *
  * @author Arkan <arkan@drakon.io>
  */
 @Retention(RetentionPolicy.RUNTIME)
