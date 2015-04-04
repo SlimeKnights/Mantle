@@ -1,5 +1,9 @@
 package mantle.client;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import mantle.blocks.util.BlockVariant;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -7,7 +11,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import mantle.blocks.iface.IBlockVariant;
 
 @SideOnly(Side.CLIENT)
 public class ModelVariant
@@ -19,16 +22,17 @@ public class ModelVariant
 		this.modID = modId;
 	}
 
-	public void registerItemRenderer(Block block, IBlockVariant[] variants)
+	public void registerItemRenderer(Block block, Collection<BlockVariant> variants)
 	{
-		String[] names = new String[variants.length];
+		String[] names = new String[variants.size()];
 
-		for (int i = 0; i < variants.length; ++i)
+		Iterator<BlockVariant> iterator = variants.iterator();
+		for (int i = 0; iterator.hasNext(); i++)
 		{
-			IBlockVariant subtype = variants[i];
-			names[i] = (this.modID + ":") + subtype.getName();
+			BlockVariant variant = iterator.next();
+			names[i] = (this.modID + ":") + variant.getName();
 
-			this.registerItemRenderer(names[i], Item.getItemFromBlock(block), subtype.getMetadata());
+			this.registerItemRenderer(names[i], Item.getItemFromBlock(block), variant.getMeta());
 		}
 
 		ModelBakery.addVariantName(Item.getItemFromBlock(block), names);
@@ -51,7 +55,7 @@ public class ModelVariant
 		this.registerItemRenderer(name, Item.getItemFromBlock(block), meta);
 	}
 
-	public static void registerItemRenderer(String name, Item item, int meta)
+	public void registerItemRenderer(String name, Item item, int meta)
 	{
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(name, "inventory"));
 	}

@@ -1,4 +1,4 @@
-package mantle.blocks.iface;
+package mantle.blocks.util;
 
 import net.minecraft.item.ItemStack;
 

@@ -1,6 +1,6 @@
 package mantle.blocks.abstracts;
 
-import mantle.blocks.iface.IBlockWithVariants;
+import mantle.blocks.util.IBlockWithVariants;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
