@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public final class CoreRepo
 {
 
-    public static final String modId = "Mantle";
+    public static final String modId = "mantle";
     public static final String modName = "Mantle";
     public static final String modVersion = "${version}";
 

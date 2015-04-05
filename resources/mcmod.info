@@ -1,5 +1,5 @@
 [{
-  "modid": "Mantle",
+  "modid": "mantle",
   "name": "Mantle",
   "description": "Shared code for Slime Knights mods and others.",
   "version": "${version}",

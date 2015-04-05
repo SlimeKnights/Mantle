@@ -37,7 +37,7 @@ import java.io.File;
 public class Mantle
 {
     /* Instance of this mod, used for grabbing prototype fields */
-    @Instance("Mantle")
+    @Instance("mantle")
     public static Mantle instance;
     /* Proxies for sides, used for graphics processing */
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
