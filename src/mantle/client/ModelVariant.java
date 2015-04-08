@@ -53,7 +53,7 @@ public class ModelVariant
 
 	public void registerItemRenderer(Item item, int meta)
 	{
-		String name = (this.modID + ":") + item.getUnlocalizedName().substring(5).replace(this.modID + ".", "");
+		String name = (this.modID + ":") + item.getUnlocalizedName().substring(5).replace(this.modID.toLowerCase() + ".", "");
 
 		this.registerItemRenderer(name, item, meta);
 	}
