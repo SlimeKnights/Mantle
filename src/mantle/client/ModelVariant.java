@@ -38,31 +38,31 @@ public class ModelVariant
 		ModelBakery.addVariantName(Item.getItemFromBlock(block), names);
 	}
 
-	public void registerBlockRenderers(int meta, Block... blocks)
+	public void registerBlockRenderers(boolean addModId, int meta, Block... blocks)
 	{
 		for (Block block : blocks)
 		{
-			this.registerItemRenderer(block, meta);
+			this.registerItemRenderer(addModId, block, meta);
 		}
 	}
 
-	public void registerItemRenderer(Block block, int meta)
+	public void registerItemRenderer(boolean addModId, Block block, int meta)
 	{
-		this.registerItemRenderer(Item.getItemFromBlock(block), meta);
+		this.registerItemRenderer(addModId, Item.getItemFromBlock(block), meta);
 	}
 
-	public void registerItemRenderer(Item item, int meta)
+	public void registerItemRenderer(boolean addModId, Item item, int meta)
 	{
 		String name = (this.modID + ":") + item.getUnlocalizedName().substring(5);
 
 		this.registerItemRenderer(name, item, meta);
 	}
 
-	public void registerItemRenderers(int meta, Item... items)
+	public void registerItemRenderers(boolean addModId, int meta, Item... items)
 	{
 		for (Item item : items)
 		{
-			this.registerItemRenderer(item, meta);
+			this.registerItemRenderer(addModId, item, meta);
 		}
 	}
 
