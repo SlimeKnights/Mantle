@@ -50,6 +50,14 @@ public class ModelVariant
 		this.registerItemRenderer(name, item, meta);
 	}
 
+	public void registerItemRenderers(int meta, Item... items)
+	{
+		for (Item item : items)
+		{
+			this.registerItemRenderer(item, meta);
+		}
+	}
+
 	public void registerItemRenderer(String name, Block block, int meta)
 	{
 		this.registerItemRenderer(name, Item.getItemFromBlock(block), meta);
