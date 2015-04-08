@@ -38,6 +38,14 @@ public class ModelVariant
 		ModelBakery.addVariantName(Item.getItemFromBlock(block), names);
 	}
 
+	public void registerBlockRenderers(int meta, Block... blocks)
+	{
+		for (Block block : blocks)
+		{
+			this.registerItemRenderer(block, meta);
+		}
+	}
+
 	public void registerItemRenderer(Block block, int meta)
 	{
 		this.registerItemRenderer(Item.getItemFromBlock(block), meta);
