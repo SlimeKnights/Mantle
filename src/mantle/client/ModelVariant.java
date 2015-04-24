@@ -1,7 +1,6 @@
 package mantle.client;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import mantle.blocks.util.BlockVariant;
 import net.minecraft.block.Block;
@@ -15,64 +14,49 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelVariant
 {
-	private String modID;
+    private String MOD_ID;
 
-	public ModelVariant(String modId)
-	{
-		this.modID = modId;
-	}
+    private Minecraft mc;
 
-	public void registerItemRenderer(Block block, Collection<BlockVariant> variants)
-	{
-		String[] names = new String[variants.size()];
+    public ModelVariant(String modId, Minecraft mc)
+    {
+        this.MOD_ID = modId;
+        this.mc = mc;
+    }
 
-		Iterator<BlockVariant> iterator = variants.iterator();
-		for (int i = 0; iterator.hasNext(); i++)
-		{
-			BlockVariant variant = iterator.next();
-			names[i] = (this.modID + ":") + variant.getName();
+    public void registerBlockModelVariants(Block block, Collection<BlockVariant> variants)
+    {
+        for (BlockVariant variant : variants)
+        {
+            Item item = Item.getItemFromBlock(block);
 
-			this.registerItemRenderer(names[i], Item.getItemFromBlock(block), variant.getMeta());
-		}
+            this.registerItemModel(item, variant.getName(), variant.getMeta());
+            ModelBakery.addVariantName(item, (MOD_ID + ":") + variant.getName());
+        }
+    }
 
-		ModelBakery.addVariantName(Item.getItemFromBlock(block), names);
-	}
+    public void registerBlockModel(Block block)
+    {
+        this.registerBlockModel(block, block.getUnlocalizedName().substring(5), 0);
+    }
 
-	public void registerBlockRenderers(int meta, Block... blocks)
-	{
-		for (Block block : blocks)
-		{
-			this.registerItemRenderer(block, meta);
-		}
-	}
+    public void registerBlockModel(Block block, String name, int meta)
+    {
+        this.registerItemModel(Item.getItemFromBlock(block), name, meta);
+    }
 
-	public void registerItemRenderer(Block block, int meta)
-	{
-		this.registerItemRenderer(Item.getItemFromBlock(block), meta);
-	}
+    public void registerItemModel(Item item)
+    {
+        this.registerItemModel(item, item.getUnlocalizedName().substring(5), 0);
+    }
 
-	public void registerItemRenderer(Item item, int meta)
-	{
-		String name = (this.modID + ":") + item.getUnlocalizedName().substring(5).replace(this.modID.toLowerCase() + ".", "");
+    public void registerItemModel(Item item, String name, int meta)
+    {
+        this.mc.getRenderItem().getItemModelMesher().register(item, meta, this.getModelResource(name, "inventory"));
+    }
 
-		this.registerItemRenderer(name, item, meta);
-	}
-
-	public void registerItemRenderers(int meta, Item... items)
-	{
-		for (Item item : items)
-		{
-			this.registerItemRenderer(item, meta);
-		}
-	}
-
-	public void registerItemRenderer(String name, Block block, int meta)
-	{
-		this.registerItemRenderer(name, Item.getItemFromBlock(block), meta);
-	}
-
-	public void registerItemRenderer(String name, Item item, int meta)
-	{
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(name, "inventory"));
-	}
+    private ModelResourceLocation getModelResource(String name, String type)
+    {
+        return new ModelResourceLocation((MOD_ID + ":") + name, type);
+    }
 }
