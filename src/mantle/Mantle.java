@@ -4,8 +4,6 @@ import static mantle.lib.CoreRepo.logger;
 import static mantle.lib.CoreRepo.modId;
 import static mantle.lib.CoreRepo.modName;
 import static mantle.lib.CoreRepo.modVersion;
-
-import LZMA.LzmaInputStream;
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.common.IDDumps;
@@ -24,8 +22,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import java.io.File;
-
 /**
  * Mantle
  *
@@ -39,11 +35,13 @@ public class Mantle
     /* Instance of this mod, used for grabbing prototype fields */
     @Instance("mantle")
     public static Mantle instance;
+
     /* Proxies for sides, used for graphics processing */
     @SidedProxy(clientSide = "mantle.client.MProxyClient", serverSide = "mantle.common.MProxyCommon")
-
     public static MProxyCommon proxy;
+
     public static Manual mantleBook;
+
     /**
      * Constructor
      *
@@ -62,7 +60,7 @@ public class Mantle
      * @param evt The FMLPreInitializationEvent from FML
      */
     @EventHandler
-    public void preInit (FMLPreInitializationEvent evt)
+    public void preInit(FMLPreInitializationEvent evt)
     {
         logger.info("Mantle (" + modVersion + ") -- Preparing for launch.");
         logger.info("Entering preinitialization phase.");
@@ -82,7 +80,7 @@ public class Mantle
      * @param evt The FMLInitializationEvent from FML
      */
     @EventHandler
-    public void Init (FMLInitializationEvent evt)
+    public void Init(FMLInitializationEvent evt)
     {
         logger.info("Entering initialization phase.");
         proxy.registerRenderer();
@@ -96,7 +94,7 @@ public class Mantle
      * @param evt The FMLPostInitializationEvent from FML
      */
     @EventHandler
-    public void postInit (FMLPostInitializationEvent evt)
+    public void postInit(FMLPostInitializationEvent evt)
     {
         logger.info("Entering postinitialization phase.");
         proxy.readManuals();

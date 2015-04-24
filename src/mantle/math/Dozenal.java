@@ -8,32 +8,32 @@ package mantle.math;
  * @author mDiyo
  */
 
-import com.google.common.collect.Lists;
-
 import java.util.LinkedList;
+
+import com.google.common.collect.Lists;
 
 public class Dozenal
 {
 
     @SuppressWarnings("unused")
-    public static String convertToDozenal (byte i)
+    public static String convertToDozenal(byte i)
     {
         return convertDecimal(i);
     }
 
     @SuppressWarnings("unused")
-    public static String convertToDozenal (short i)
+    public static String convertToDozenal(short i)
     {
         return convertDecimal(i);
     }
 
     @SuppressWarnings("unused")
-    public static String convertToDozenal (int i)
+    public static String convertToDozenal(int i)
     {
         return convertDecimal(i);
     }
 
-    public static String convertDecimal (int i)
+    public static String convertDecimal(int i)
     {
         int num = i;
         LinkedList<Character> list = Lists.newLinkedList();
@@ -50,7 +50,7 @@ public class Dozenal
         return builder.toString();
     }
 
-    public static char getDozenalCharacter (int i)
+    public static char getDozenalCharacter(int i)
     {
         assert i < 12 : "Base 10 number should be less than 12";
 

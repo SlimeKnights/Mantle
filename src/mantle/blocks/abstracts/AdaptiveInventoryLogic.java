@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public abstract class AdaptiveInventoryLogic extends InventoryLogic implements IFacingLogic
 {
     Random random = new Random();
+
     protected int inventorySize;
 
     public AdaptiveInventoryLogic()
@@ -17,32 +18,32 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
         super(0);
     }
 
-    protected void adjustInventory (int size, boolean forceAdjust)
+    protected void adjustInventory(int size, boolean forceAdjust)
     {
-        if (size != inventorySize || forceAdjust)
+        if (size != this.inventorySize || forceAdjust)
         {
-            inventorySize = size;
+            this.inventorySize = size;
 
-            ItemStack[] tempInv = inventory;
-            inventory = new ItemStack[size];
-            int invLength = tempInv.length > inventory.length ? inventory.length : tempInv.length;
-            System.arraycopy(tempInv, 0, inventory, 0, invLength);
+            ItemStack[] tempInv = this.inventory;
+            this.inventory = new ItemStack[size];
+            int invLength = tempInv.length > this.inventory.length ? this.inventory.length : tempInv.length;
+            System.arraycopy(tempInv, 0, this.inventory, 0, invLength);
 
-            if (tempInv.length > inventory.length)
+            if (tempInv.length > this.inventory.length)
             {
-                for (int i = inventory.length; i < tempInv.length; i++)
+                for (int i = this.inventory.length; i < tempInv.length; i++)
                 {
                     ItemStack stack = tempInv[i];
                     if (stack != null)
                     {
-                        float jumpX = random.nextFloat() * 0.8F + 0.1F;
-                        float jumpY = random.nextFloat() * 0.8F + 0.1F;
-                        float jumpZ = random.nextFloat() * 0.8F + 0.1F;
+                        float jumpX = this.random.nextFloat() * 0.8F + 0.1F;
+                        float jumpY = this.random.nextFloat() * 0.8F + 0.1F;
+                        float jumpZ = this.random.nextFloat() * 0.8F + 0.1F;
 
                         int offsetX = 0;
                         int offsetY = 0;
                         int offsetZ = 0;
-                        switch (getTossDirection())
+                        switch (this.getTossDirection())
                         {
                         case 0: // -y
                             offsetY--;
@@ -66,7 +67,7 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
 
                         while (stack.stackSize > 0)
                         {
-                            int itemSize = random.nextInt(21) + 10;
+                            int itemSize = this.random.nextInt(21) + 10;
 
                             if (itemSize > stack.stackSize)
                             {
@@ -74,8 +75,8 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             }
 
                             stack.stackSize -= itemSize;
-                            EntityItem entityitem = new EntityItem(worldObj, (double) ((float) pos.getX() + jumpX + offsetX), (double) ((float) pos.getY() + jumpY),
-                                    (double) ((float) pos.getZ() + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
+                            EntityItem entityitem = new EntityItem(this.worldObj, (double) ((float) this.pos.getX() + jumpX + offsetX), (double) ((float) this.pos.getY() + jumpY),
+                                    (double) ((float) this.pos.getZ() + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
 
                             if (stack.hasTagCompound())
                             {
@@ -83,10 +84,10 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
                             }
 
                             float offset = 0.05F;
-                            entityitem.motionX = (double) ((float) random.nextGaussian() * offset);
-                            entityitem.motionY = (double) ((float) random.nextGaussian() * offset + 0.2F);
-                            entityitem.motionZ = (double) ((float) random.nextGaussian() * offset);
-                            worldObj.spawnEntityInWorld(entityitem);
+                            entityitem.motionX = (double) ((float) this.random.nextGaussian() * offset);
+                            entityitem.motionY = (double) ((float) this.random.nextGaussian() * offset + 0.2F);
+                            entityitem.motionZ = (double) ((float) this.random.nextGaussian() * offset);
+                            this.worldObj.spawnEntityInWorld(entityitem);
                         }
                     }
                 }
@@ -94,8 +95,8 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
         }
     }
 
-    public int getTossDirection ()
+    public int getTossDirection()
     {
-        return getRenderDirection();
+        return this.getRenderDirection();
     }
 }

@@ -7,7 +7,7 @@ package mantle.blocks.iface;
  */
 public interface IActiveLogic
 {
-    public boolean getActive ();
+    public boolean getActive();
 
-    public void setActive (boolean flag);
+    public void setActive(boolean flag);
 }

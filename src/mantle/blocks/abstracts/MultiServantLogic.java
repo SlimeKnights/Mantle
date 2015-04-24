@@ -19,187 +19,196 @@ import net.minecraft.world.World;
 public class MultiServantLogic extends TileEntity implements IServantLogic, IDebuggable
 {
     boolean hasMaster;
+
     BlockPos master;
+
     Block masterBlock;
+
     IBlockState state;
 
-    public boolean canUpdate ()
+    public boolean canUpdate()
     {
         return false;
     }
 
-    public boolean getHasMaster ()
+    public boolean getHasMaster()
     {
-        return hasMaster;
+        return this.hasMaster;
     }
 
-    public boolean hasValidMaster ()
+    public boolean hasValidMaster()
     {
-        if (!hasMaster)
+        if (!this.hasMaster)
+        {
             return false;
+        }
 
-        if (worldObj.getBlockState(master).getBlock() == masterBlock && worldObj.getBlockState(master) == state)
+        if (this.worldObj.getBlockState(this.master).getBlock() == this.masterBlock && this.worldObj.getBlockState(this.master) == this.state)
+        {
             return true;
-
+        }
         else
         {
-            hasMaster = false;
-            master = null;
+            this.hasMaster = false;
+            this.master = null;
             return false;
         }
     }
 
-    public BlockPos getMasterPosition ()
+    @Override
+    public BlockPos getMasterPosition()
     {
-        return master;
+        return this.master;
     }
 
-    public void overrideMaster (BlockPos pos)
+    public void overrideMaster(BlockPos pos)
     {
-        hasMaster = true;
-        master = pos;
-        state = worldObj.getBlockState(master);
-        masterBlock = state.getBlock();
+        this.hasMaster = true;
+        this.master = pos;
+        this.state = this.worldObj.getBlockState(this.master);
+        this.masterBlock = this.state.getBlock();
     }
 
-    public void removeMaster ()
+    public void removeMaster()
     {
-        hasMaster = false;
-        master = null;
-        masterBlock = null;
-        state = null;
+        this.hasMaster = false;
+        this.master = null;
+        this.masterBlock = null;
+        this.state = null;
     }
 
     @Override
-    public boolean setPotentialMaster (IMasterLogic master, World w, BlockPos pos)
+    public boolean setPotentialMaster(IMasterLogic master, World w, BlockPos pos)
     {
-        return !hasMaster;
+        return !this.hasMaster;
     }
 
     @Deprecated
-    public boolean verifyMaster (IMasterLogic logic, BlockPos pos)
+    public boolean verifyMaster(IMasterLogic logic, BlockPos pos)
     {
-        return master.equals(pos) && worldObj.getBlockState(pos) == state && worldObj.getBlockState(pos).getBlock() == masterBlock;
+        return this.master.equals(pos) && this.worldObj.getBlockState(pos) == this.state && this.worldObj.getBlockState(pos).getBlock() == this.masterBlock;
     }
 
     @Override
-    public boolean verifyMaster (IMasterLogic logic, World world, BlockPos pos)
+    public boolean verifyMaster(IMasterLogic logic, World world, BlockPos pos)
     {
-        if (hasMaster)
+        if (this.hasMaster)
         {
-            return hasValidMaster();
+            return this.hasValidMaster();
         }
         else
         {
-            overrideMaster(pos);
+            this.overrideMaster(pos);
             return true;
         }
     }
 
     @Override
-    public void invalidateMaster (IMasterLogic master, World w, BlockPos pos)
+    public void invalidateMaster(IMasterLogic master, World w, BlockPos pos)
     {
-        hasMaster = false;
+        this.hasMaster = false;
         master = null;
     }
 
-    public void notifyMasterOfChange ()
+    @Override
+    public void notifyMasterOfChange()
     {
-        if (hasValidMaster())
+        if (this.hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) worldObj.getTileEntity(pos);
-            logic.notifyChange(this, pos);
+            IMasterLogic logic = (IMasterLogic) this.worldObj.getTileEntity(this.pos);
+            logic.notifyChange(this, this.pos);
         }
     }
 
-    public void readCustomNBT (NBTTagCompound tags)
+    public void readCustomNBT(NBTTagCompound tags)
     {
-        hasMaster = tags.getBoolean("TiedToMaster");
-        if (hasMaster)
+        this.hasMaster = tags.getBoolean("TiedToMaster");
+        if (this.hasMaster)
         {
             int xCenter = tags.getInteger("xCenter");
             int yCenter = tags.getInteger("yCenter");
             int zCenter = tags.getInteger("zCenter");
-            master = new BlockPos(xCenter, yCenter, zCenter);
-            masterBlock = BlockUtils.getBlockFromUniqueName(tags.getString("MasterBlockName"));
+            this.master = new BlockPos(xCenter, yCenter, zCenter);
+            this.masterBlock = BlockUtils.getBlockFromUniqueName(tags.getString("MasterBlockName"));
             // TODO: Make this a byte.
-            state = Block.getStateById(tags.getInteger("masterState"));
+            this.state = Block.getStateById(tags.getInteger("masterState"));
         }
     }
 
-    public void writeCustomNBT (NBTTagCompound tags)
+    public void writeCustomNBT(NBTTagCompound tags)
     {
-        tags.setBoolean("TiedToMaster", hasMaster);
-        if (hasMaster)
+        tags.setBoolean("TiedToMaster", this.hasMaster);
+        if (this.hasMaster)
         {
-            tags.setInteger("xCenter", master.getX());
-            tags.setInteger("yCenter", master.getY());
-            tags.setInteger("zCenter", master.getZ());
-            tags.setString("MasterBlockName", BlockUtils.getUniqueName(masterBlock));
+            tags.setInteger("xCenter", this.master.getX());
+            tags.setInteger("yCenter", this.master.getY());
+            tags.setInteger("zCenter", this.master.getZ());
+            tags.setString("MasterBlockName", BlockUtils.getUniqueName(this.masterBlock));
             // TODO: Make this a byte.
-            tags.setInteger("masterState", Block.getStateId(state));
+            tags.setInteger("masterState", Block.getStateId(this.state));
         }
     }
 
     @Override
-    public void readFromNBT (NBTTagCompound tags)
+    public void readFromNBT(NBTTagCompound tags)
     {
         super.readFromNBT(tags);
-        readCustomNBT(tags);
+        this.readCustomNBT(tags);
     }
 
     @Override
-    public void writeToNBT (NBTTagCompound tags)
+    public void writeToNBT(NBTTagCompound tags)
     {
         super.writeToNBT(tags);
-        writeCustomNBT(tags);
+        this.writeCustomNBT(tags);
     }
 
     /* Packets */
     @Override
-    public Packet getDescriptionPacket ()
+    public Packet getDescriptionPacket()
     {
         NBTTagCompound tag = new NBTTagCompound();
-        writeCustomNBT(tag);
-        return new S35PacketUpdateTileEntity(pos, 1, tag);
+        this.writeCustomNBT(tag);
+        return new S35PacketUpdateTileEntity(this.pos, 1, tag);
     }
 
     @Override
-    public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
     {
-        readCustomNBT(packet.getNbtCompound());
-        worldObj.notifyLightSet(pos);
-        worldObj.markBlockForUpdate(pos);
+        this.readCustomNBT(packet.getNbtCompound());
+        this.worldObj.notifyLightSet(this.pos);
+        this.worldObj.markBlockForUpdate(this.pos);
     }
 
     /* IDebuggable */
     @Override
-    public DebugData getDebugInfo (EntityPlayer player)
+    public DebugData getDebugInfo(EntityPlayer player)
     {
         String[] strs = new String[2];
-        strs[0] = "Location: x" + pos.getX() + ", y" + pos.getY() + ", z" + pos.getZ();
-        if (hasMaster)
+        strs[0] = "Location: x" + this.pos.getX() + ", y" + this.pos.getY() + ", z" + this.pos.getZ();
+        if (this.hasMaster)
         {
-            strs[1] = "masterBlock: " + masterBlock.toString() + ", masterMeat: " + state.toString();
+            strs[1] = "masterBlock: " + this.masterBlock.toString() + ", masterMeat: " + this.state.toString();
         }
         else
         {
             strs[1] = "No active master.";
         }
-        return new DebugData(player, getClass(), strs);
+        return new DebugData(player, this.getClass(), strs);
     }
 
-    public World getWorld ()
+    @Override
+    public World getWorld()
     {
-        return worldObj;
+        return this.worldObj;
     }
 
     @Deprecated
-    public boolean setMaster (BlockPos pos)
+    public boolean setMaster(BlockPos pos)
     {
-        if (!hasMaster || worldObj.getBlockState(master) != state || (worldObj.getBlockState(master).getBlock() != masterBlock))
+        if (!this.hasMaster || this.worldObj.getBlockState(this.master) != this.state || (this.worldObj.getBlockState(this.master).getBlock() != this.masterBlock))
         {
-            overrideMaster(pos);
+            this.overrideMaster(pos);
             return true;
         }
         else

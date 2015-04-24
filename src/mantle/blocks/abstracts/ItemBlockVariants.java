@@ -7,27 +7,27 @@ import net.minecraft.item.ItemStack;
 
 public class ItemBlockVariants extends ItemBlock
 {
-	private final IBlockWithVariants variantBlock;
+    private final IBlockWithVariants variantBlock;
 
-	public ItemBlockVariants(Block block)
-	{
-		super(block);
+    public ItemBlockVariants(Block block)
+    {
+        super(block);
 
-		this.variantBlock = (IBlockWithVariants) block;
-		this.setMaxDamage(0);
-		this.setHasSubtypes(true);
-	}
+        this.variantBlock = (IBlockWithVariants) block;
+        this.setMaxDamage(0);
+        this.setHasSubtypes(true);
+    }
 
-	@Override
-	public int getMetadata(int damage)
-	{
-		return damage;
-	}
+    @Override
+    public int getMetadata(int damage)
+    {
+        return damage;
+    }
 
-	@Override
-	public String getUnlocalizedName(ItemStack stack)
-	{
-		return super.getUnlocalizedName() + "." + this.variantBlock.getVariantNameFromStack(stack);
-	}
+    @Override
+    public String getUnlocalizedName(ItemStack stack)
+    {
+        return super.getUnlocalizedName() + "." + this.variantBlock.getVariantNameFromStack(stack);
+    }
 
 }

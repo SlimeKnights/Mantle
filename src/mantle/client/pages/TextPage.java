@@ -10,18 +10,22 @@ public class TextPage extends BookPage
     String text;
 
     @Override
-    public void readPageFromXML (Element element)
+    public void readPageFromXML(Element element)
     {
         NodeList nodes = element.getElementsByTagName("text");
         if (nodes != null)
-            text = nodes.item(0).getTextContent();
+        {
+            this.text = nodes.item(0).getTextContent();
+        }
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight, boolean IsTranslatable)
+    public void renderContentLayer(int localWidth, int localHeight, boolean IsTranslatable)
     {
         if (IsTranslatable)
-            text = StatCollector.translateToLocal(text);
-        manual.fonts.drawSplitString(text, localWidth, localHeight, 178, 0);
+        {
+            this.text = StatCollector.translateToLocal(this.text);
+        }
+        this.manual.fonts.drawSplitString(this.text, localWidth, localHeight, 178, 0);
     }
 }

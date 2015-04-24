@@ -19,15 +19,19 @@ public class DebugHelper
         // No instantiation
     }
 
-    public static void handleDebugData (DebugData data)
+    public static void handleDebugData(DebugData data)
     {
         if (debug_enableChat)
+        {
             handleChatDebug(data);
+        }
         if (debug_enableConsole)
+        {
             handleConsoleDebug(data);
+        }
     }
 
-    private static void handleChatDebug (DebugData data)
+    private static void handleChatDebug(DebugData data)
     {
         EntityPlayer player = data.player;
         String prefix = "[" + data.cl.getSimpleName() + "] ";
@@ -37,7 +41,7 @@ public class DebugHelper
         }
     }
 
-    private static void handleConsoleDebug (DebugData data)
+    private static void handleConsoleDebug(DebugData data)
     {
         String player = data.player.getGameProfile().getName();
         String prefix = "[" + player + ":" + data.cl.getSimpleName() + "] ";

@@ -10,6 +10,7 @@ import net.minecraft.util.BlockPos;
 public class CoordTuplePair
 {
     public BlockPos a;
+
     public BlockPos b;
 
     public CoordTuplePair(BlockPos a, BlockPos b)

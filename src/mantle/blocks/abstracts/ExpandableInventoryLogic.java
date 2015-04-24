@@ -1,14 +1,18 @@
 package mantle.blocks.abstracts;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
-import net.minecraft.entity.player.*;
-import net.minecraft.inventory.*;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.World;
 
 public abstract class ExpandableInventoryLogic extends InventoryLogic implements IInventory
 {
@@ -19,82 +23,85 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     }
 
     protected ArrayList<ItemStack> inventory = Lists.newArrayList();
+
     protected String invName;
 
     @Override
-    public ItemStack getStackInSlot (int slot)
+    public ItemStack getStackInSlot(int slot)
     {
-        return slot < inventory.size() ? inventory.get(slot) : null;
-    }
-
-    public boolean isStackInSlot (int slot)
-    {
-        return slot < inventory.size() && inventory.get(slot) != null;
+        return slot < this.inventory.size() ? this.inventory.get(slot) : null;
     }
 
     @Override
-    public int getSizeInventory ()
+    public boolean isStackInSlot(int slot)
     {
-        return inventory.size();
+        return slot < this.inventory.size() && this.inventory.get(slot) != null;
     }
 
-    public int getMaxSize ()
+    @Override
+    public int getSizeInventory()
+    {
+        return this.inventory.size();
+    }
+
+    public int getMaxSize()
     {
         return 64;
     }
 
     @Override
-    public int getInventoryStackLimit ()
+    public int getInventoryStackLimit()
     {
         return 64;
     }
 
-    public boolean canDropInventorySlot (int slot)
+    @Override
+    public boolean canDropInventorySlot(int slot)
     {
         return true;
     }
 
     @Override
-    public void setInventorySlotContents (int slot, ItemStack itemstack)
+    public void setInventorySlotContents(int slot, ItemStack itemstack)
     {
-        if (slot < inventory.size())
+        if (slot < this.inventory.size())
         {
-            inventory.set(slot, itemstack);
+            this.inventory.set(slot, itemstack);
         }
-        else if (slot == inventory.size())
+        else if (slot == this.inventory.size())
         {
-            inventory.add(itemstack);
+            this.inventory.add(itemstack);
         }
-        else if (slot < getMaxSize())
+        else if (slot < this.getMaxSize())
         {
-            inventory.ensureCapacity(slot);
-            inventory.set(slot, itemstack);
+            this.inventory.ensureCapacity(slot);
+            this.inventory.set(slot, itemstack);
         }
         else
         {
             return;
         }
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit())
+        if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit())
         {
-            itemstack.stackSize = getInventoryStackLimit();
+            itemstack.stackSize = this.getInventoryStackLimit();
         }
     }
 
     @Override
-    public ItemStack decrStackSize (int slot, int quantity)
+    public ItemStack decrStackSize(int slot, int quantity)
     {
-        if (slot < inventory.size() && inventory.get(slot) != null)
+        if (slot < this.inventory.size() && this.inventory.get(slot) != null)
         {
-            if (inventory.get(slot).stackSize <= quantity)
+            if (this.inventory.get(slot).stackSize <= quantity)
             {
-                ItemStack stack = inventory.get(slot);
-                inventory.set(slot, null);
+                ItemStack stack = this.inventory.get(slot);
+                this.inventory.set(slot, null);
                 return stack;
             }
-            ItemStack split = inventory.get(slot).splitStack(quantity);
-            if (inventory.get(slot).stackSize == 0)
+            ItemStack split = this.inventory.get(slot).splitStack(quantity);
+            if (this.inventory.get(slot).stackSize == 0)
             {
-                inventory.set(slot, null);
+                this.inventory.set(slot, null);
             }
             return split;
         }
@@ -106,52 +113,58 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
 
     /* Supporting methods */
     @Override
-    public boolean isUseableByPlayer (EntityPlayer entityplayer)
+    public boolean isUseableByPlayer(EntityPlayer entityplayer)
     {
-        if (worldObj.getTileEntity(pos) != this)
+        if (this.worldObj.getTileEntity(this.pos) != this)
+        {
             return false;
-
+        }
         else
-            return entityplayer.getDistance((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64D;
+        {
+            return entityplayer.getDistance((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64D;
+        }
 
     }
 
-    public abstract Container getGuiContainer (InventoryPlayer inventoryplayer, World world, int x, int y, int z);
+    @Override
+    public abstract Container getGuiContainer(InventoryPlayer inventoryplayer, World world, int x, int y, int z);
 
     /* NBT */
     @Override
-    public void readFromNBT (NBTTagCompound tags)
+    public void readFromNBT(NBTTagCompound tags)
     {
         super.readFromNBT(tags);
         this.invName = tags.getString("InvName");
         NBTTagList nbttaglist = tags.getTagList("Items", 9);
-        inventory = new ArrayList<ItemStack>();
-        inventory.ensureCapacity(nbttaglist.tagCount() > getMaxSize() ? getMaxSize() : nbttaglist.tagCount());
+        this.inventory = new ArrayList<ItemStack>();
+        this.inventory.ensureCapacity(nbttaglist.tagCount() > this.getMaxSize() ? this.getMaxSize() : nbttaglist.tagCount());
         for (int iter = 0; iter < nbttaglist.tagCount(); iter++)
         {
             NBTTagCompound tagList = nbttaglist.getCompoundTagAt(iter);
             byte slotID = tagList.getByte("Slot");
-            if (slotID >= 0 && slotID < inventory.size())
+            if (slotID >= 0 && slotID < this.inventory.size())
             {
-                inventory.set(slotID, ItemStack.loadItemStackFromNBT(tagList));
+                this.inventory.set(slotID, ItemStack.loadItemStackFromNBT(tagList));
             }
         }
     }
 
     @Override
-    public void writeToNBT (NBTTagCompound tags)
+    public void writeToNBT(NBTTagCompound tags)
     {
         super.writeToNBT(tags);
-        if (invName != null)
-            tags.setString("InvName", invName);
-        NBTTagList nbttaglist = new NBTTagList();
-        for (int iter = 0; iter < inventory.size(); iter++)
+        if (this.invName != null)
         {
-            if (inventory.get(iter) != null)
+            tags.setString("InvName", this.invName);
+        }
+        NBTTagList nbttaglist = new NBTTagList();
+        for (int iter = 0; iter < this.inventory.size(); iter++)
+        {
+            if (this.inventory.get(iter) != null)
             {
                 NBTTagCompound tagList = new NBTTagCompound();
                 tagList.setByte("Slot", (byte) iter);
-                inventory.get(iter).writeToNBT(tagList);
+                this.inventory.get(iter).writeToNBT(tagList);
                 nbttaglist.appendTag(tagList);
             }
         }
@@ -160,39 +173,46 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     }
 
     /* Default implementations of hardly used methods */
-    public ItemStack getStackInSlotOnClosing (int slot)
+    @Override
+    public ItemStack getStackInSlotOnClosing(int slot)
     {
         return null;
     }
 
-    public void openChest ()
+    @Override
+    public void openChest()
     {
     }
 
-    public void closeChest ()
+    @Override
+    public void closeChest()
     {
     }
 
-    protected abstract String getDefaultName ();
+    @Override
+    protected abstract String getDefaultName();
 
-    public void setInvName (String name)
+    @Override
+    public void setInvName(String name)
     {
         this.invName = name;
     }
 
-    public String getInvName ()
+    @Override
+    public String getInvName()
     {
-        return this.isInvNameLocalized() ? this.invName : getDefaultName();
+        return this.isInvNameLocalized() ? this.invName : this.getDefaultName();
     }
 
-    public boolean isInvNameLocalized ()
+    @Override
+    public boolean isInvNameLocalized()
     {
         return this.invName != null && this.invName.length() > 0;
     }
 
-    public void cleanInventory ()
+    public void cleanInventory()
     {
-        Iterator<ItemStack> i1 = inventory.iterator();
+        Iterator<ItemStack> i1 = this.inventory.iterator();
         while (i1.hasNext())
         {
             if (i1.next() == null)
@@ -203,16 +223,18 @@ public abstract class ExpandableInventoryLogic extends InventoryLogic implements
     }
 
     @Override
-    public boolean isItemValidForSlot (int slot, ItemStack itemstack)
+    public boolean isItemValidForSlot(int slot, ItemStack itemstack)
     {
-        if (slot < getSizeInventory())
+        if (slot < this.getSizeInventory())
         {
-            if (inventory.get(slot) == null || itemstack.stackSize + inventory.get(slot).stackSize <= getInventoryStackLimit())
+            if (this.inventory.get(slot) == null || itemstack.stackSize + this.inventory.get(slot).stackSize <= this.getInventoryStackLimit())
+            {
                 return true;
+            }
         }
         else
         {
-            return slot < getMaxSize();
+            return slot < this.getMaxSize();
         }
         return false;
     }

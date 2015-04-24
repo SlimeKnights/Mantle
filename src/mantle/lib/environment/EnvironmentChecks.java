@@ -5,7 +5,6 @@ import static mantle.lib.CoreRepo.modId;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import mantle.crash.CallableSuppConfig;
 import mantle.crash.CallableUnsuppConfig;
 import mantle.lib.CoreConfig;
@@ -14,6 +13,8 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
+
+import com.google.common.collect.Lists;
 
 /**
  * Environment Checks
@@ -37,14 +38,16 @@ public class EnvironmentChecks
      * Note: This code adds additional data to crashlogs. It does not trigger any crashes.
      */
     @SuppressWarnings("rawtypes")
-    public static void verifyEnvironmentSanity ()
+    public static void verifyEnvironmentSanity()
     {
         List<String> modIds = Lists.newArrayList();
 
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && FMLClientHandler.instance().hasOptifine() || Loader.isModLoaded("optifine"))
         {
             if (!CoreConfig.silenceEnvChecks)
+            {
                 logger.error("[Environment Checks] Optifine detected. This may cause issues due to base edits or ASM usage.");
+            }
             hasOptifine = true;
             modIds.add("optifine");
         }
@@ -55,7 +58,9 @@ public class EnvironmentChecks
             if (cl != null)
             {
                 if (!CoreConfig.silenceEnvChecks)
+                {
                     logger.error("[Environment Checks] Bukkit implementation detected. This may cause issues. Bukkit implementations include Craftbukkit and spigot. Please try Sponge instead");
+                }
                 modIds.add("bukkit");
             }
         }

@@ -1,6 +1,5 @@
 package mantle.blocks.iface;
 
-
 import java.util.Collections;
 import java.util.List;
 
@@ -24,11 +23,11 @@ public interface ICrop
      * @param type
      * @return A list of items harvested. If no items are returned, NO_YIELD should be passed.
      */
-    public List<ItemStack> harvestCrop (IBlockAccess world, BlockPos pos, HarvestType type);
+    public List<ItemStack> harvestCrop(IBlockAccess world, BlockPos pos, HarvestType type);
 
-    public boolean isFullyGrown (IBlockAccess world, BlockPos pos);
+    public boolean isFullyGrown(IBlockAccess world, BlockPos pos);
 
-    public boolean hasYield (IBlockAccess world, BlockPos pos);
+    public boolean hasYield(IBlockAccess world, BlockPos pos);
 
-    public void growthTick (IBlockAccess world, BlockPos pos);
+    public void growthTick(IBlockAccess world, BlockPos pos);
 }

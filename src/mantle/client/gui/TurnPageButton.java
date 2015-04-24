@@ -4,11 +4,10 @@ import mantle.books.BookData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class TurnPageButton extends GuiButton
@@ -17,6 +16,7 @@ public class TurnPageButton extends GuiButton
      * True for pointing right (next page), false for pointing left (previous page).
      */
     private final boolean nextPage;
+
     private static ResourceLocation background;// = new ResourceLocation("tinker", "textures/gui/bookleft.png");
 
     public TurnPageButton(int par1, int par2, int par3, boolean par4, BookData data)
@@ -29,7 +29,8 @@ public class TurnPageButton extends GuiButton
     /**
      * Draws this button to the screen.
      */
-    public void drawButton (Minecraft par1Minecraft, int par2, int par3)
+    @Override
+    public void drawButton(Minecraft par1Minecraft, int par2, int par3)
     {
         if (this.visible)
         {

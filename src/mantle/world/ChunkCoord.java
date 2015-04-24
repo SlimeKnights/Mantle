@@ -9,12 +9,13 @@ import net.minecraft.world.chunk.Chunk;
  * Standardized implementation for representing and manipulating Chunk Coordinates. Provides standard Java Collection interaction.
  * From COFH LIB(modified to use mantle's coordtuple instead)
  * @author King Lemming
- * 
+ *
  */
 public final class ChunkCoord implements Comparable<ChunkCoord>, Serializable
 {
 
     public int chunkX;
+
     public int chunkZ;
 
     public ChunkCoord(Chunk chunk)
@@ -37,26 +38,26 @@ public final class ChunkCoord implements Comparable<ChunkCoord>, Serializable
         this.chunkZ = z;
     }
 
-    public int getCenterX ()
+    public int getCenterX()
     {
 
         return (this.chunkX << 4) + 8;
     }
 
-    public int getCenterZ ()
+    public int getCenterZ()
     {
 
         return (this.chunkZ << 4) + 8;
     }
 
-    public ChunkCoord copy ()
+    public ChunkCoord copy()
     {
 
-        return new ChunkCoord(chunkX, chunkZ);
+        return new ChunkCoord(this.chunkX, this.chunkZ);
     }
 
     @Override
-    public boolean equals (Object obj)
+    public boolean equals(Object obj)
     {
 
         if (!(obj instanceof ChunkCoord))
@@ -68,16 +69,16 @@ public final class ChunkCoord implements Comparable<ChunkCoord>, Serializable
     }
 
     @Override
-    public int hashCode ()
+    public int hashCode()
     {
 
-        int hash = chunkX;
+        int hash = this.chunkX;
         hash *= 31 + this.chunkZ;
         return hash;
     }
 
     @Override
-    public String toString ()
+    public String toString()
     {
 
         return "[" + this.chunkX + ", " + this.chunkZ + "]";
@@ -85,7 +86,7 @@ public final class ChunkCoord implements Comparable<ChunkCoord>, Serializable
 
     /* Comparable */
     @Override
-    public int compareTo (ChunkCoord other)
+    public int compareTo(ChunkCoord other)
     {
 
         return this.chunkX == other.chunkX ? this.chunkZ - other.chunkZ : this.chunkX - other.chunkX;

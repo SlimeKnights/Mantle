@@ -13,52 +13,58 @@ import org.w3c.dom.NodeList;
 public class SidebarPage extends BookPage
 {
     String text;
+
     String[] iconText;
+
     ItemStack[] icons;
 
     @Override
-    public void readPageFromXML (Element element)
+    public void readPageFromXML(Element element)
     {
         NodeList nodes = element.getElementsByTagName("text");
         if (nodes != null)
-            text = nodes.item(0).getTextContent();
+        {
+            this.text = nodes.item(0).getTextContent();
+        }
 
         nodes = element.getElementsByTagName("item");
-        iconText = new String[nodes.getLength()];
-        icons = new ItemStack[nodes.getLength()];
+        this.iconText = new String[nodes.getLength()];
+        this.icons = new ItemStack[nodes.getLength()];
         for (int i = 0; i < nodes.getLength(); i++)
         {
             NodeList children = nodes.item(i).getChildNodes();
-            iconText[i] = children.item(1).getTextContent();
-            icons[i] = MantleClientRegistry.getManualIcon(children.item(3).getTextContent());
+            this.iconText[i] = children.item(1).getTextContent();
+            this.icons[i] = MantleClientRegistry.getManualIcon(children.item(3).getTextContent());
         }
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
+    public void renderContentLayer(int localWidth, int localHeight, boolean isTranslatable)
     {
         if (isTranslatable)
         {
-            text = StatCollector.translateToLocal(text);
+            this.text = StatCollector.translateToLocal(this.text);
         }
-        manual.fonts.drawSplitString(text, localWidth, localHeight, 178, 0);
+        this.manual.fonts.drawSplitString(this.text, localWidth, localHeight, 178, 0);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.enableGUIStandardItemLighting();
-        manual.renderitem.zLevel = 100;
-        int offset = text.length() / 4 + 10;
-        for (int i = 0; i < icons.length; i++)
+        this.manual.renderitem.zLevel = 100;
+        int offset = this.text.length() / 4 + 10;
+        for (int i = 0; i < this.icons.length; i++)
         {
             if (isTranslatable)
             {
-                iconText[i] = StatCollector.translateToLocal(iconText[i]);
+                this.iconText[i] = StatCollector.translateToLocal(this.iconText[i]);
             }
-            manual.renderitem.renderItemIntoGUI(icons[i], localWidth + 8, localHeight + 18 * i + offset);
+            this.manual.renderitem.renderItemIntoGUI(this.icons[i], localWidth + 8, localHeight + 18 * i + offset);
             int yOffset = 39;
-            if (iconText[i].length() > 40)
+            if (this.iconText[i].length() > 40)
+            {
                 yOffset = 34;
-            manual.fonts.drawSplitString(iconText[i], localWidth + 30, localHeight + 18 * i + offset, 140, 0);
+            }
+            this.manual.fonts.drawSplitString(this.iconText[i], localWidth + 30, localHeight + 18 * i + offset, 140, 0);
         }
-        manual.renderitem.zLevel = 0;
+        this.manual.renderitem.zLevel = 0;
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
     }

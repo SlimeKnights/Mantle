@@ -10,6 +10,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Document;
@@ -17,28 +19,37 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 @SideOnly(Side.CLIENT)
 public class GuiManual extends GuiScreen
 {
     ItemStack itemstackBook;
+
     Document manual;
+
     public RenderItem renderitem = Minecraft.getMinecraft().getRenderItem();
+
     int bookImageWidth = 206;
+
     int bookImageHeight = 200;
+
     int bookTotalPages = 1;
+
     int currentPage;
+
     int maxPages;
+
     BookData bData;
 
     private TurnPageButton buttonNextPage;
+
     private TurnPageButton buttonPreviousPage;
+
     private static ResourceLocation bookRight;// = new ResourceLocation("mantle", "textures/gui/bookright.png");
+
     private static ResourceLocation bookLeft;// = new ResourceLocation("mantle", "textures/gui/bookleft.png");
 
     BookPage pageLeft;
+
     BookPage pageRight;
 
     public FontRenderer fonts = Minecraft.getMinecraft().fontRendererObj;
@@ -47,10 +58,12 @@ public class GuiManual extends GuiScreen
     {
         this.mc = Minecraft.getMinecraft();
         this.itemstackBook = stack;
-        currentPage = 0; //Stack page
-        manual = data.getDoc();
+        this.currentPage = 0; //Stack page
+        this.manual = data.getDoc();
         if (data.font != null)
+        {
             this.fonts = data.font;
+        }
         bookLeft = data.leftImage;
         bookRight = data.rightImage;
         this.bData = data;
@@ -69,50 +82,64 @@ public class GuiManual extends GuiScreen
         this.initGui();
     }*/
 
+    @Override
     @SuppressWarnings("unchecked")
-    public void initGui ()
+    public void initGui()
     {
-        maxPages = manual.getElementsByTagName("page").getLength();
-        updateText();
+        this.maxPages = this.manual.getElementsByTagName("page").getLength();
+        this.updateText();
         int xPos = (this.width) / 2; //TODO Width?
         //TODO buttonList
-        this.buttonList.add(this.buttonNextPage = new TurnPageButton(1, xPos + bookImageWidth - 50, 180, true, bData));
-        this.buttonList.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - bookImageWidth + 24, 180, false, bData));
+        this.buttonList.add(this.buttonNextPage = new TurnPageButton(1, xPos + this.bookImageWidth - 50, 180, true, this.bData));
+        this.buttonList.add(this.buttonPreviousPage = new TurnPageButton(2, xPos - this.bookImageWidth + 24, 180, false, this.bData));
     }
 
-    protected void actionPerformed (GuiButton button)
+    @Override
+    protected void actionPerformed(GuiButton button)
     {
         if (button.enabled)
         {
             if (button.id == 1)
-                currentPage += 2;
+            {
+                this.currentPage += 2;
+            }
             if (button.id == 2)
-                currentPage -= 2;
+            {
+                this.currentPage -= 2;
+            }
 
-            updateText();
+            this.updateText();
         }
     }
 
-    void updateText ()
+    void updateText()
     {
-        if (maxPages % 2 == 1)
+        if (this.maxPages % 2 == 1)
         {
-            if (currentPage > maxPages)
-                currentPage = maxPages;
+            if (this.currentPage > this.maxPages)
+            {
+                this.currentPage = this.maxPages;
+            }
         }
         else
         {
-            if (currentPage >= maxPages)
-                currentPage = maxPages - 2;
+            if (this.currentPage >= this.maxPages)
+            {
+                this.currentPage = this.maxPages - 2;
+            }
         }
-        if (currentPage % 2 == 1)
-            currentPage--;
-        if (currentPage < 0)
-            currentPage = 0;
+        if (this.currentPage % 2 == 1)
+        {
+            this.currentPage--;
+        }
+        if (this.currentPage < 0)
+        {
+            this.currentPage = 0;
+        }
 
-        NodeList nList = manual.getElementsByTagName("page");
+        NodeList nList = this.manual.getElementsByTagName("page");
 
-        Node node = nList.item(currentPage);
+        Node node = nList.item(this.currentPage);
         if (node.getNodeType() == Node.ELEMENT_NODE)
         {
             Element element = (Element) node;
@@ -121,9 +148,9 @@ public class GuiManual extends GuiScreen
             {
                 try
                 {
-                    pageLeft = clazz.newInstance();
-                    pageLeft.init(this, 0);
-                    pageLeft.readPageFromXML(element);
+                    this.pageLeft = clazz.newInstance();
+                    this.pageLeft.init(this, 0);
+                    this.pageLeft.readPageFromXML(element);
                 }
                 catch (Exception e)
                 {
@@ -131,11 +158,11 @@ public class GuiManual extends GuiScreen
             }
             else
             {
-                pageLeft = null;
+                this.pageLeft = null;
             }
         }
 
-        node = nList.item(currentPage + 1);
+        node = nList.item(this.currentPage + 1);
         if (node != null && node.getNodeType() == Node.ELEMENT_NODE)
         {
             Element element = (Element) node;
@@ -144,9 +171,9 @@ public class GuiManual extends GuiScreen
             {
                 try
                 {
-                    pageRight = clazz.newInstance();
-                    pageRight.init(this, 1);
-                    pageRight.readPageFromXML(element);
+                    this.pageRight = clazz.newInstance();
+                    this.pageRight.init(this, 1);
+                    this.pageRight.readPageFromXML(element);
                 }
                 catch (Exception e)
                 {
@@ -154,16 +181,17 @@ public class GuiManual extends GuiScreen
             }
             else
             {
-                pageLeft = null;
+                this.pageLeft = null;
             }
         }
         else
         {
-            pageRight = null;
+            this.pageRight = null;
         }
     }
 
-    public void drawScreen (int par1, int par2, float par3)
+    @Override
+    public void drawScreen(int par1, int par2, float par3)
     {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(bookRight);
@@ -178,23 +206,32 @@ public class GuiManual extends GuiScreen
 
         super.drawScreen(par1, par2, par3); //16, 12, 220, 12
 
-        if (pageLeft != null)
-            pageLeft.renderBackgroundLayer(localWidth + 16, localHeight + 12);
-        if (pageRight != null)
-            pageRight.renderBackgroundLayer(localWidth + 220, localHeight + 12);
-        if (pageLeft != null)
-            pageLeft.renderContentLayer(localWidth + 16, localHeight + 12, bData.isTranslatable);
-        if (pageRight != null)
-            pageRight.renderContentLayer(localWidth + 220, localHeight + 12, bData.isTranslatable);
+        if (this.pageLeft != null)
+        {
+            this.pageLeft.renderBackgroundLayer(localWidth + 16, localHeight + 12);
+        }
+        if (this.pageRight != null)
+        {
+            this.pageRight.renderBackgroundLayer(localWidth + 220, localHeight + 12);
+        }
+        if (this.pageLeft != null)
+        {
+            this.pageLeft.renderContentLayer(localWidth + 16, localHeight + 12, this.bData.isTranslatable);
+        }
+        if (this.pageRight != null)
+        {
+            this.pageRight.renderContentLayer(localWidth + 220, localHeight + 12, this.bData.isTranslatable);
+        }
 
     }
 
-    public Minecraft getMC ()
+    public Minecraft getMC()
     {
-        return mc;
+        return this.mc;
     }
 
-    public boolean doesGuiPauseGame ()
+    @Override
+    public boolean doesGuiPauseGame()
     {
         return false;
     }

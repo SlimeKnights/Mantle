@@ -31,7 +31,7 @@ public class ModelVariant
             Item item = Item.getItemFromBlock(block);
 
             this.registerItemModel(item, variant.getName(), variant.getMeta());
-            ModelBakery.addVariantName(item, (MOD_ID + ":") + variant.getName());
+            ModelBakery.addVariantName(item, (this.MOD_ID + ":") + variant.getName());
         }
     }
 
@@ -58,6 +58,6 @@ public class ModelVariant
 
     private ModelResourceLocation getModelResource(String name, String type)
     {
-        return new ModelResourceLocation((MOD_ID + ":") + name, type);
+        return new ModelResourceLocation((this.MOD_ID + ":") + name, type);
     }
 }

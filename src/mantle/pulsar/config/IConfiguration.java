@@ -7,7 +7,8 @@ import mantle.pulsar.pulse.PulseMeta;
  *
  * @author Arkan <arkan@drakon.io>
  */
-public interface IConfiguration {
+public interface IConfiguration
+{
 
     /**
      * Perform any configuration loading required.

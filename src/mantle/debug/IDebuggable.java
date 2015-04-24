@@ -12,6 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 public interface IDebuggable
 {
 
-    public DebugData getDebugInfo (EntityPlayer player);
+    public DebugData getDebugInfo(EntityPlayer player);
 
 }

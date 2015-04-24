@@ -16,12 +16,12 @@ public class DirectionUtils
         // No instantiation
     }
 
-    public static boolean isRightAngles (EnumFacing a, EnumFacing b)
+    public static boolean isRightAngles(EnumFacing a, EnumFacing b)
     {
         return a != b && a != b.getOpposite();
     }
 
-    public static boolean isHorizontal (EnumFacing a)
+    public static boolean isHorizontal(EnumFacing a)
     {
         return a == EnumFacing.EAST || a == EnumFacing.NORTH || a == EnumFacing.SOUTH || a == EnumFacing.WEST;
     }

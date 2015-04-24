@@ -11,11 +11,10 @@ import net.minecraft.util.EnumFacing;
 public interface IFacingLogic
 {
 
-    public byte getRenderDirection ();
+    public byte getRenderDirection();
 
-    public EnumFacing getForgeDirection ();
+    public EnumFacing getForgeDirection();
 
-
-     public void setDirection(EnumFacing facing, float yaw, float pitch, EntityLivingBase player);
+    public void setDirection(EnumFacing facing, float yaw, float pitch, EntityLivingBase player);
 
 }

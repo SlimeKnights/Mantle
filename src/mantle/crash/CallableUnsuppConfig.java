@@ -9,6 +9,7 @@ public class CallableUnsuppConfig implements ICrashCallable
 {
 
     private String modId;
+
     private List<String> modIds;
 
     public CallableUnsuppConfig(String modId, List<String> modIds)
@@ -18,17 +19,17 @@ public class CallableUnsuppConfig implements ICrashCallable
     }
 
     @Override
-    public String getLabel ()
+    public String getLabel()
     {
-        return modId + " Environment";
+        return this.modId + " Environment";
     }
 
     @Override
-    public String call () throws Exception
+    public String call() throws Exception
     {
         String str = "DO NOT REPORT THIS CRASH! Unsupported mods in environment: ";
         Boolean firstEntry = true;
-        for (String id : modIds)
+        for (String id : this.modIds)
         {
             str = str + (firstEntry ? id : ", " + id);
             firstEntry = false;

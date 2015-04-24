@@ -13,18 +13,20 @@ public class TabTools extends CreativeTabs
         super(label);
     }
 
-    public void init (ItemStack stack)
+    public void init(ItemStack stack)
     {
-        display = stack;
+        this.display = stack;
     }
 
-    public ItemStack getIconItemStack ()
+    @Override
+    public ItemStack getIconItemStack()
     {
-        return display;
+        return this.display;
     }
 
-    public Item getTabIconItem ()
+    @Override
+    public Item getTabIconItem()
     {
-        return display.getItem();
+        return this.display.getItem();
     }
 }

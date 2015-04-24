@@ -8,7 +8,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class IDDumps
 {
-    public static void dump(){
+    public static void dump()
+    {
         if (CoreConfig.dumpBiomeIDs)
         {
             for (BiomeGenBase b : BiomeGenBase.getBiomeGenArray())

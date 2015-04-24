@@ -20,10 +20,8 @@ import mantle.client.pages.SidebarPage;
 import mantle.client.pages.TextPage;
 import mantle.client.pages.TitlePage;
 import mantle.common.MProxyCommon;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class MProxyClient extends MProxyCommon
@@ -32,29 +30,31 @@ public class MProxyClient extends MProxyCommon
     public static final String MINECRAFT_ASCII_PATH = "minecraft:textures/font/ascii.png";
 
     /* Registers any rendering code. */
-    public void registerRenderer ()
+    @Override
+    public void registerRenderer()
     {
         ModelHelper.registerItem(Mantle.mantleBook, "mantleBook");
     }
 
     public static Map<String, Class<? extends BookPage>> pageClasses = new HashMap<String, Class<? extends BookPage>>();
 
-    public static void registerManualPage (String type, Class<? extends BookPage> clazz)
+    public static void registerManualPage(String type, Class<? extends BookPage> clazz)
     {
         pageClasses.put(type, clazz);
     }
 
-    public static Class<? extends BookPage> getPageClass (String type)
+    public static Class<? extends BookPage> getPageClass(String type)
     {
         return pageClasses.get(type);
     }
 
-    public void readManuals ()
+    @Override
+    public void readManuals()
     {
-        initManualPages();
+        this.initManualPages();
     }
 
-    void initManualPages ()
+    void initManualPages()
     {
         MProxyClient.registerManualPage("crafting", CraftingPage.class);
         MProxyClient.registerManualPage("picture", PicturePage.class);
@@ -69,17 +69,23 @@ public class MProxyClient extends MProxyCommon
     }
 
     @Override
-    public Object getClientGuiElement (int ID, EntityPlayer player, World world, int x, int y, int z)
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
         if (ID == manualGuiID)
         {
             ItemStack stack = player.getCurrentEquippedItem();
             if (stack == null)
+            {
                 logger.error("Null stack in book.");
+            }
             if (stack != null && stack.getItem() == null)
+            {
                 logger.error("Null item in book.");
+            }
             if (stack != null && stack.getItem() != null && stack.getItem().getUnlocalizedName() == null)
+            {
                 logger.error("Null unlocalized name in book.");
+            }
             else
             {
                 return new GuiManual(stack, MProxyClient.getBookDataFromStack(stack));
@@ -88,7 +94,7 @@ public class MProxyClient extends MProxyCommon
         return null;
     }
 
-    private static BookData getBookDataFromStack (ItemStack stack)
+    private static BookData getBookDataFromStack(ItemStack stack)
     {
         return BookDataStore.getBookFromName(stack.getItem().getUnlocalizedName(stack));
     }

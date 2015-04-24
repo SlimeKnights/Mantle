@@ -11,7 +11,10 @@ public class DebugData
 {
 
     public final EntityPlayer player;
-    @SuppressWarnings("rawtypes") public final Class cl;
+
+    @SuppressWarnings("rawtypes")
+    public final Class cl;
+
     public final String[] strings;
 
     @SuppressWarnings("rawtypes")

@@ -3,11 +3,14 @@ package mantle.utils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ItemMetaWrapper {
+public class ItemMetaWrapper
+{
     public final Item item;
+
     public final Integer meta;
 
-    public ItemMetaWrapper(Item item, Integer meta) {
+    public ItemMetaWrapper(Item item, Integer meta)
+    {
         this.item = item;
         this.meta = meta;
     }
@@ -19,21 +22,32 @@ public class ItemMetaWrapper {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass())
+        {
+            return false;
+        }
 
         ItemMetaWrapper itemMeta = (ItemMetaWrapper) o;
 
-        if (item != null ? !(item == itemMeta.item) : itemMeta.item != null) return false;
-        return !(meta != null ? !meta.equals(itemMeta.meta) : itemMeta.meta != null);
+        if (this.item != null ? !(this.item == itemMeta.item) : itemMeta.item != null)
+        {
+            return false;
+        }
+        return !(this.meta != null ? !this.meta.equals(itemMeta.meta) : itemMeta.meta != null);
 
     }
 
     @Override
-    public int hashCode() {
-        int result = item != null ? item.hashCode() : 0;
-        result = 31 * result + (meta != null ? meta.hashCode() : 0);
+    public int hashCode()
+    {
+        int result = this.item != null ? this.item.hashCode() : 0;
+        result = 31 * result + (this.meta != null ? this.meta.hashCode() : 0);
         return result;
     }
 }

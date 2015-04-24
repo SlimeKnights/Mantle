@@ -14,42 +14,51 @@ import org.w3c.dom.NodeList;
 public class FurnacePage extends BookPage
 {
     String text;
+
     ItemStack[] icons;
 
     @Override
-    public void readPageFromXML (Element element)
+    public void readPageFromXML(Element element)
     {
         NodeList nodes = element.getElementsByTagName("text");
         if (nodes != null)
-            text = nodes.item(0).getTextContent();
+        {
+            this.text = nodes.item(0).getTextContent();
+        }
 
         nodes = element.getElementsByTagName("recipe");
         if (nodes != null)
-            icons = MantleClientRegistry.getRecipeIcons(nodes.item(0).getTextContent());
+        {
+            this.icons = MantleClientRegistry.getRecipeIcons(nodes.item(0).getTextContent());
+        }
     }
 
     @Override
-    public void renderContentLayer (int localWidth, int localHeight, boolean isTranslatable)
+    public void renderContentLayer(int localWidth, int localHeight, boolean isTranslatable)
     {
-        if (text != null)
+        if (this.text != null)
         {
             if (isTranslatable)
-                text = StatCollector.translateToLocal(text);
-            manual.fonts.drawString("\u00a7n" + text, localWidth + 50, localHeight + 4, 0);
+            {
+                this.text = StatCollector.translateToLocal(this.text);
+            }
+            this.manual.fonts.drawString("\u00a7n" + this.text, localWidth + 50, localHeight + 4, 0);
         }
         GL11.glScalef(2f, 2f, 2f);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         RenderHelper.enableGUIStandardItemLighting();
-        manual.renderitem.zLevel = 100;
+        this.manual.renderitem.zLevel = 100;
 
-        manual.renderitem.renderItemAndEffectIntoGUI(MantleClientRegistry.getManualIcon("coal"), (localWidth + 38) / 2, (localHeight + 110) / 2);
-        manual.renderitem.renderItemAndEffectIntoGUI(icons[0], (localWidth + 106) / 2, (localHeight + 74) / 2);
-        manual.renderitem.renderItemAndEffectIntoGUI(icons[1], (localWidth + 38) / 2, (localHeight + 38) / 2);
+        this.manual.renderitem.renderItemAndEffectIntoGUI(MantleClientRegistry.getManualIcon("coal"), (localWidth + 38) / 2, (localHeight + 110) / 2);
+        this.manual.renderitem.renderItemAndEffectIntoGUI(this.icons[0], (localWidth + 106) / 2, (localHeight + 74) / 2);
+        this.manual.renderitem.renderItemAndEffectIntoGUI(this.icons[1], (localWidth + 38) / 2, (localHeight + 38) / 2);
 
-        if (icons[0].stackSize > 1)
-            manual.renderitem.renderItemOverlayIntoGUI(manual.fonts, icons[0], (localWidth + 106) / 2, (localHeight + 74) / 2, String.valueOf(icons[0].stackSize));
+        if (this.icons[0].stackSize > 1)
+        {
+            this.manual.renderitem.renderItemOverlayIntoGUI(this.manual.fonts, this.icons[0], (localWidth + 106) / 2, (localHeight + 74) / 2, String.valueOf(this.icons[0].stackSize));
+        }
 
-        manual.renderitem.zLevel = 0;
+        this.manual.renderitem.zLevel = 0;
         GL11.glScalef(0.5F, 0.5F, 0.5F);
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -57,9 +66,10 @@ public class FurnacePage extends BookPage
 
     private static final ResourceLocation background = new ResourceLocation("mantle", "textures/gui/bookfurnace.png");
 
-    public void renderBackgroundLayer (int localWidth, int localHeight)
+    @Override
+    public void renderBackgroundLayer(int localWidth, int localHeight)
     {
-        manual.getMC().getTextureManager().bindTexture(background);
-        manual.drawTexturedModalRect(localWidth + 32, localHeight + 32, 0, 0, 111, 114);
+        this.manual.getMC().getTextureManager().bindTexture(background);
+        this.manual.drawTexturedModalRect(localWidth + 32, localHeight + 32, 0, 0, 111, 114);
     }
 }

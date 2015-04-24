@@ -11,6 +11,7 @@ import net.minecraft.util.BlockPos;
 public class PacketUpdateTE extends AbstractPacket
 {
     private BlockPos pos;
+
     private NBTTagCompound data;
 
     public PacketUpdateTE()
@@ -25,15 +26,15 @@ public class PacketUpdateTE extends AbstractPacket
     }
 
     @Override
-    public void encodeInto (ChannelHandlerContext ctx, ByteBuf buffer)
+    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         PacketBuffer pbuff = new PacketBuffer(buffer);
-        pbuff.writeInt(pos.getX());
-        pbuff.writeShort(pos.getY());
-        pbuff.writeInt(pos.getZ());
+        pbuff.writeInt(this.pos.getX());
+        pbuff.writeShort(this.pos.getY());
+        pbuff.writeInt(this.pos.getZ());
         try
         {
-            pbuff.writeNBTTagCompoundToBuffer(data);
+            pbuff.writeNBTTagCompoundToBuffer(this.data);
         }
         catch (Exception e)
         {
@@ -42,13 +43,13 @@ public class PacketUpdateTE extends AbstractPacket
     }
 
     @Override
-    public void decodeInto (ChannelHandlerContext ctx, ByteBuf buffer)
+    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         PacketBuffer pbuff = new PacketBuffer(buffer);
-        pos = new BlockPos(pbuff.readInt(), pbuff.readShort(), pbuff.readInt());
+        this.pos = new BlockPos(pbuff.readInt(), pbuff.readShort(), pbuff.readInt());
         try
         {
-            data = pbuff.readNBTTagCompoundFromBuffer();
+            this.data = pbuff.readNBTTagCompoundFromBuffer();
         }
         catch (Exception e)
         {
@@ -57,18 +58,18 @@ public class PacketUpdateTE extends AbstractPacket
     }
 
     @Override
-    public void handleClientSide (EntityPlayer player)
+    public void handleClientSide(EntityPlayer player)
     {
-        TileEntity te = player.worldObj.getTileEntity(pos);
+        TileEntity te = player.worldObj.getTileEntity(this.pos);
 
         if (te != null)
         {
-            te.readFromNBT(data);
+            te.readFromNBT(this.data);
         }
     }
 
     @Override
-    public void handleServerSide (EntityPlayer player)
+    public void handleServerSide(EntityPlayer player)
     {
     }
 

@@ -18,15 +18,15 @@ public class CallableSuppConfig implements ICrashCallable
     }
 
     @Override
-    public String call () throws Exception
+    public String call() throws Exception
     {
         return "Environment healthy.";
     }
 
     @Override
-    public String getLabel ()
+    public String getLabel()
     {
-        return modId + " Environment";
+        return this.modId + " Environment";
     }
 
 }

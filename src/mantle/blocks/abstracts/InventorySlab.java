@@ -25,65 +25,75 @@ public abstract class InventorySlab extends InventoryBlock
 
     /* Rendering */
     @Override
-    public boolean isFullCube ()
+    public boolean isFullCube()
     {
         return false;
     }
 
     @Override
-    public boolean isOpaqueCube ()
+    public boolean isOpaqueCube()
     {
         return false;
     }
 
     @Override
-    public boolean shouldSideBeRendered (IBlockAccess world, BlockPos pos, EnumFacing side)
+    public boolean shouldSideBeRendered(IBlockAccess world, BlockPos pos, EnumFacing side)
     {
         if (side.getHorizontalIndex() > 1)
+        {
             return super.shouldSideBeRendered(world, pos, side);
+        }
 
         IBlockState iblockstate = world.getBlockState(pos);
         int meta = iblockstate.getBlock().getMetaFromState(iblockstate);
         boolean top = (meta | 8) == 1;
         if ((top && side == side.DOWN) || (!top && side == side.UP))
+        {
             return true;
+        }
 
         return super.shouldSideBeRendered(world, pos, side);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void addCollisionBoxesToList (World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity entity)
+    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity entity)
     {
-        setBlockBoundsBasedOnState(world, pos);
-        super.addCollisionBoxesToList(world,pos ,state,  axisalignedbb, arraylist, entity);
+        this.setBlockBoundsBasedOnState(world, pos);
+        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, entity);
     }
 
-    public void setBlockBoundsForItemRender ()
+    @Override
+    public void setBlockBoundsForItemRender()
     {
-        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
     }
 
-    public void setBlockBoundsBasedOnState (IBlockAccess world, BlockPos pos, IBlockState state)
+    public void setBlockBoundsBasedOnState(IBlockAccess world, BlockPos pos, IBlockState state)
     {
         IBlockState iblockstate = world.getBlockState(pos);
         int meta = iblockstate.getBlock().getMetaFromState(iblockstate) / 8;
         float minY = meta == 1 ? 0.5F : 0.0F;
         float maxY = meta == 1 ? 1.0F : 0.5F;
-        setBlockBounds(0.0F, minY, 0F, 1.0F, maxY, 1.0F);
+        this.setBlockBounds(0.0F, minY, 0F, 1.0F, maxY, 1.0F);
     }
 
-    public int onBlockPlaced (World par1World, int blockX, int blockY, int blockZ, int side, float clickX, float clickY, float clickZ, int metadata)
+    public int onBlockPlaced(World par1World, int blockX, int blockY, int blockZ, int side, float clickX, float clickY, float clickZ, int metadata)
     {
         if (side == 1)
+        {
             return metadata;
+        }
         if (side == 0 || clickY >= 0.5F)
+        {
             return metadata | 8;
+        }
 
         return metadata;
     }
 
-    public int damageDropped (int meta)
+    @Override
+    public int damageDropped(int meta)
     {
         return meta % 8;
     }

@@ -1,5 +1,7 @@
 package mantle.books.external;
 
+import static mantle.lib.CoreRepo.logger;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Enumeration;
@@ -9,7 +11,6 @@ import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
-import static mantle.lib.CoreRepo.logger;
 import mantle.books.BookData;
 import mantle.books.BookDataStore;
 import mantle.books.ManualReader;
@@ -21,8 +22,9 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -33,14 +35,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-
 public class ZipLoader
 {
     public static Map<String, ItemStack> loadedIS = Maps.newHashMap();
 
-    public static BookData loadZip (File f)
+    public static BookData loadZip(File f)
     {
         BookLoad bl;
         String flName = "";
@@ -187,9 +186,9 @@ public class ZipLoader
                                 b.isTranslatable = bl.translatable;
                                 b.leftImage = bl.LeftImage == null ? new ResourceLocation("mantle", "textures/gui/bookleft.png") : MantleClientRegistry.getBookImageFromCache(bl.LeftImage).resource;
                                 b.rightImage = bl.rightImage == null ? new ResourceLocation("mantle", "textures/gui/bookright.png")
-                                        : MantleClientRegistry.getBookImageFromCache(bl.rightImage).resource;
+                                : MantleClientRegistry.getBookImageFromCache(bl.rightImage).resource;
                                 b.itemImage = bl.BookIcon == null ? new ResourceLocation("mantle", "textures/items/mantlebook_blue.png")
-                                        : MantleClientRegistry.getBookImageFromCache(bl.BookIcon).resource;
+                                : MantleClientRegistry.getBookImageFromCache(bl.BookIcon).resource;
                                 b.isFromZip = true;
                                 BookDataStore.addBook(b);
                             }
@@ -226,12 +225,12 @@ public class ZipLoader
         return null;
     }
 
-    public static boolean isImage (String ext)
+    public static boolean isImage(String ext)
     {
         return ext.equalsIgnoreCase("png");
     }
 
-    public static ItemStack[] getISArray (JsonArray a)
+    public static ItemStack[] getISArray(JsonArray a)
     {
         ItemStack[] is = new ItemStack[a.size()];
         ItemStack loadedStack;

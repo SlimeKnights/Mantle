@@ -13,7 +13,7 @@ import org.w3c.dom.Document;
 
 public class ManualReader
 {
-    public static Document readManual (String location)
+    public static Document readManual(String location)
     {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
@@ -29,7 +29,8 @@ public class ManualReader
             return null;
         }
     }
-    public static Document readManual (InputStream is, String filenameOrLocation)
+
+    public static Document readManual(InputStream is, String filenameOrLocation)
     {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 

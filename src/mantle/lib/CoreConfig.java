@@ -6,10 +6,10 @@ import static mantle.lib.CoreRepo.modId;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FilenameUtils;
-
 import mantle.books.external.ZipLoader;
 import net.minecraftforge.common.config.Configuration;
+
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Mantle configuration handler
@@ -21,6 +21,7 @@ import net.minecraftforge.common.config.Configuration;
 public class CoreConfig
 {
     static Configuration config;
+
     public static File configFolder;
 
     /**
@@ -28,14 +29,16 @@ public class CoreConfig
      *
      * @param mainConfigFolder Configuration folder (as a Java File)
      */
-    public static void loadConfiguration (File mainConfigFolder)
+    public static void loadConfiguration(File mainConfigFolder)
     {
         logger.info("Loading configuration from disk.");
         try
         {
             configFolder = new File(mainConfigFolder.getCanonicalPath(), "SlimeKnights");
             if (!configFolder.exists())
+            {
                 configFolder.mkdirs();
+            }
         }
         catch (IOException e)
         {
@@ -63,7 +66,7 @@ public class CoreConfig
     /**
      * Checks for MANTLE_DBGCONSOLE/CHAT config overrides in system environment for compile time testing, and other dev work.
      **/
-    private static void checkSysOverrides ()
+    private static void checkSysOverrides()
     {
         if (System.getenv("MANTLE_DBGCONSOLE") != null)
         {
@@ -77,12 +80,14 @@ public class CoreConfig
         }
     }
 
-    public static void loadBookLocations ()
+    public static void loadBookLocations()
     {
         for (File f : configFolder.listFiles())
         {
-            if(f.isFile() && FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("zip"))
+            if (f.isFile() && FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("zip"))
+            {
                 ZipLoader.loadZip(f);
+            }
         }
     }
 
@@ -92,10 +97,13 @@ public class CoreConfig
 
     // Debug Helpers
     public static boolean debug_enableConsole = false;
-    public static boolean debug_enableChat = false;
-    public static boolean dumpBiomeIDs = false;
-    public static boolean dumpPotionIDs = false;
-    public static boolean dumpEnchantIDs = false;
 
+    public static boolean debug_enableChat = false;
+
+    public static boolean dumpBiomeIDs = false;
+
+    public static boolean dumpPotionIDs = false;
+
+    public static boolean dumpEnchantIDs = false;
 
 }

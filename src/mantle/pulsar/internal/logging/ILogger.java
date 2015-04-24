@@ -6,7 +6,8 @@ package mantle.pulsar.internal.logging;
  * @author Arkan <arkan@drakon.io>
  */
 @SuppressWarnings("unused")
-public interface ILogger {
+public interface ILogger
+{
 
     public void fatal(String msg);
 

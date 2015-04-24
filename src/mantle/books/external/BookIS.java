@@ -14,9 +14,9 @@ public class BookIS
 
     public int stackSize;
 
-    public int getStackSize ()
+    public int getStackSize()
     {
-        return stackSize >= 0 ? stackSize : 1;
+        return this.stackSize >= 0 ? this.stackSize : 1;
     }
 
 }
