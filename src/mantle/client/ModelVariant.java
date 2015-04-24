@@ -52,7 +52,8 @@ public class ModelVariant
 
     public void registerItemModel(Item item, String name, int meta)
     {
-        this.mc.getRenderItem().getItemModelMesher().register(item, meta, this.getModelResource(name, "inventory"));
+        String NAME = name.replace(this.MOD_ID + ".", "");
+        this.mc.getRenderItem().getItemModelMesher().register(item, meta, this.getModelResource(NAME, "inventory"));
     }
 
     private ModelResourceLocation getModelResource(String name, String type)
