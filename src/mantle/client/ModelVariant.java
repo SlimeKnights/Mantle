@@ -3,6 +3,7 @@ package mantle.client;
 import java.util.Collection;
 
 import mantle.blocks.util.BlockVariant;
+import mantle.items.util.IItemWithVariants;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -53,6 +54,16 @@ public class ModelVariant
     public void registerItemModel(Item item, String name, int meta)
     {
         this.mc.getRenderItem().getItemModelMesher().register(item, meta, this.getModelResource(name, "inventory"));
+    }
+
+    public void registerItemModelVariants(Item item)
+    {
+        for (int i = 0; i < ((IItemWithVariants) item).getVariantNames().length; i++)
+        {
+            String NAME = item.getUnlocalizedName().substring(5) + "_" + ((IItemWithVariants) item).getVariantNames()[i];
+            ModelBakery.addVariantName(item, (this.MOD_ID + ":") + NAME);
+            this.registerItemModel(item, NAME, i);
+        }
     }
 
     private ModelResourceLocation getModelResource(String name, String type)
