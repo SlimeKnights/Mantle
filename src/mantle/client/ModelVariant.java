@@ -1,5 +1,6 @@
 package mantle.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import mantle.blocks.util.BlockVariant;
@@ -8,7 +9,9 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -63,6 +66,16 @@ public class ModelVariant
             String NAME = item.getUnlocalizedName().substring(5) + "_" + ((IItemWithVariants) item).getVariantNames()[i];
             ModelBakery.addVariantName(item, (this.MOD_ID + ":") + NAME);
             this.registerItemModel(item, NAME, i);
+        }
+    }
+
+    public void registerItemSubTypesModel(Item item, CreativeTabs tab)
+    {
+        ArrayList<ItemStack> list = new ArrayList<ItemStack>();
+        item.getSubItems(item, tab, list);
+        for (ItemStack i : list)
+        {
+            this.registerItemModel(item, item.getUnlocalizedName().substring(5), i.getItemDamage());
         }
     }
 
