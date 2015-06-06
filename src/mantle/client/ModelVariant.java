@@ -22,33 +22,33 @@ public class ModelVariant
         this.mc = mc;
     }
 
-    private void registerBlockModel(Block block)
+    public void registerBlockModel(Block block)
     {
         ResourceLocation resourceLocation = (ResourceLocation) Block.blockRegistry.getNameForObject(block);
 
         registerBlockModel(block, 0, resourceLocation.getResourcePath());
     }
 
-    private void registerItemModel(Item item)
+    public void registerItemModel(Item item)
     {
         ResourceLocation resourceLocation = (ResourceLocation) Item.itemRegistry.getNameForObject(item);
 
         registerItemModel(item, 0, resourceLocation.getResourcePath());
     }
 
-    private void registerBlockModel(Block block, int meta, String modelName)
+    public void registerBlockModel(Block block, int meta, String modelName)
     {
         registerItemModel(Item.getItemFromBlock(block), meta, modelName);
     }
 
-    private void registerItemModel(Item item, int meta, String resourcePath)
+    public void registerItemModel(Item item, int meta, String resourcePath)
     {
         ModelResourceLocation modelResourceLocation = new ModelResourceLocation((this.MOD_ID + ":") + resourcePath, "inventory");
 
         this.mc.getRenderItem().getItemModelMesher().register(item, meta, modelResourceLocation);
     }
 
-    private void registerBlockModelVariant(Block block, int meta, String resourcePath)
+    public void registerBlockModelVariant(Block block, int meta, String resourcePath)
     {
         Item item = Item.getItemFromBlock(block);
 
