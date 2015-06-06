@@ -23,7 +23,7 @@ public class BlockVariant implements Comparable<BlockVariant>
     }
 
     @Override
-    public int compareTo(BlockVariant o)
+    public int compareTo(BlockVariant variant)
     {
         return this.meta;
     }

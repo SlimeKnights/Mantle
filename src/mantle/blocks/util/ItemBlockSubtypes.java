@@ -1,19 +1,19 @@
-package mantle.blocks.abstracts;
+package mantle.blocks.util;
 
-import mantle.blocks.util.IBlockWithVariants;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-public class ItemBlockVariants extends ItemBlock
+public class ItemBlockSubtypes extends ItemBlock
 {
-    private final IBlockWithVariants variantBlock;
+    private final IBlockWithSubtypes blockWithSubtypes;
 
-    public ItemBlockVariants(Block block)
+    public ItemBlockSubtypes(Block block)
     {
         super(block);
 
-        this.variantBlock = (IBlockWithVariants) block;
+        this.blockWithSubtypes = (IBlockWithSubtypes) block;
+
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
@@ -27,7 +27,7 @@ public class ItemBlockVariants extends ItemBlock
     @Override
     public String getUnlocalizedName(ItemStack stack)
     {
-        return super.getUnlocalizedName() + "." + this.variantBlock.getVariantNameFromStack(stack);
+        return super.getUnlocalizedName() + "." + this.blockWithSubtypes.getSubtypeUnlocalizedName(stack);
     }
 
 }

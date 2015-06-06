@@ -1,17 +1,11 @@
 package mantle.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import mantle.blocks.util.BlockVariant;
-import mantle.items.util.IItemWithVariants;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -28,59 +22,38 @@ public class ModelVariant
         this.mc = mc;
     }
 
-    public void registerBlockModelVariants(Block block, Collection<BlockVariant> variants)
+    private void registerBlockModel(Block block)
     {
-        for (BlockVariant variant : variants)
-        {
-            Item item = Item.getItemFromBlock(block);
+        ResourceLocation resourceLocation = (ResourceLocation) Block.blockRegistry.getNameForObject(block);
 
-            this.registerItemModel(item, variant.getName(), variant.getMeta());
-            ModelBakery.addVariantName(item, (this.MOD_ID + ":") + variant.getName());
-        }
+        registerBlockModel(block, 0, resourceLocation.getResourcePath());
     }
 
-    public void registerBlockModel(Block block)
+    private void registerItemModel(Item item)
     {
-        this.registerBlockModel(block, block.getUnlocalizedName().substring(5), 0);
+        ResourceLocation resourceLocation = (ResourceLocation) Item.itemRegistry.getNameForObject(item);
+
+        registerItemModel(item, 0, resourceLocation.getResourcePath());
     }
 
-    public void registerBlockModel(Block block, String name, int meta)
+    private void registerBlockModel(Block block, int meta, String modelName)
     {
-        this.registerItemModel(Item.getItemFromBlock(block), name, meta);
+        registerItemModel(Item.getItemFromBlock(block), meta, modelName);
     }
 
-    public void registerItemModel(Item item)
+    private void registerItemModel(Item item, int meta, String resourcePath)
     {
-        this.registerItemModel(item, item.getUnlocalizedName().substring(5), 0);
+        ModelResourceLocation modelResourceLocation = new ModelResourceLocation((this.MOD_ID + ":") + resourcePath, "inventory");
+
+        this.mc.getRenderItem().getItemModelMesher().register(item, meta, modelResourceLocation);
     }
 
-    public void registerItemModel(Item item, String name, int meta)
+    private void registerBlockModelVariant(Block block, int meta, String resourcePath)
     {
-        this.mc.getRenderItem().getItemModelMesher().register(item, meta, this.getModelResource(name, "inventory"));
-    }
+        Item item = Item.getItemFromBlock(block);
 
-    public void registerItemModelVariants(Item item)
-    {
-        for (int i = 0; i < ((IItemWithVariants) item).getVariantNames().length; i++)
-        {
-            String NAME = item.getUnlocalizedName().substring(5) + "_" + ((IItemWithVariants) item).getVariantNames()[i];
-            ModelBakery.addVariantName(item, (this.MOD_ID + ":") + NAME);
-            this.registerItemModel(item, NAME, i);
-        }
-    }
+        registerItemModel(item, meta, resourcePath);
 
-    public void registerItemSubTypesModel(Item item, CreativeTabs tab)
-    {
-        ArrayList<ItemStack> list = new ArrayList<ItemStack>();
-        item.getSubItems(item, tab, list);
-        for (ItemStack i : list)
-        {
-            this.registerItemModel(item, item.getUnlocalizedName().substring(5), i.getItemDamage());
-        }
-    }
-
-    private ModelResourceLocation getModelResource(String name, String type)
-    {
-        return new ModelResourceLocation((this.MOD_ID + ":") + name, type);
+        ModelBakery.addVariantName(item, (this.MOD_ID + ":") + resourcePath);
     }
 }

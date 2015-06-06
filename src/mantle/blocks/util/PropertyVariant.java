@@ -1,7 +1,5 @@
 package mantle.blocks.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -11,15 +9,16 @@ public class PropertyVariant implements IProperty
 {
     private String name;
 
-    private ArrayList<BlockVariant> values;
+    private BlockVariant defaultVariant;
 
     private HashMap<Integer, BlockVariant> metaMap;
 
     protected PropertyVariant(String name, BlockVariant... variants)
     {
         this.name = name;
-        this.values = new ArrayList<BlockVariant>(Arrays.asList(variants));
         this.metaMap = new HashMap<Integer, BlockVariant>();
+
+        this.defaultVariant = variants[0];
 
         for (BlockVariant variant : variants)
         {
@@ -41,7 +40,7 @@ public class PropertyVariant implements IProperty
     @Override
     public Collection<BlockVariant> getAllowedValues()
     {
-        return this.values;
+        return this.metaMap.values();
     }
 
     @Override
@@ -51,15 +50,16 @@ public class PropertyVariant implements IProperty
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public String getName(Comparable value)
     {
         return ((BlockVariant) value).getName();
     }
 
-    public BlockVariant getVariantFromMeta(int meta)
+    public BlockVariant fromMeta(int meta)
     {
-        return this.metaMap.get(meta);
+        BlockVariant variant = this.metaMap.get(meta);
+
+        return variant != null ? variant : this.defaultVariant;
     }
 
 }
