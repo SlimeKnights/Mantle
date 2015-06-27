@@ -657,10 +657,13 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             this.blue = (float) (par4 >> 8 & 255) / 255.0F;
             this.green = (float) (par4 & 255) / 255.0F;
             this.alpha = (float) (par4 >> 24 & 255) / 255.0F;
+            boolean gl_blend = GL11.glIsEnabled(GL11.GL_BLEND);
+            if (!gl_blend) GL11.glEnable(GL11.GL_BLEND);
             GL11.glColor4f(this.red, this.blue, this.green, this.alpha);
             this.posX = (float) par2;
             this.posY = (float) par3;
             this.renderStringAtPos(par1Str, par5);
+            if (!gl_blend) GL11.glDisable(GL11.GL_BLEND);
             return (int) this.posX;
         }
     }
