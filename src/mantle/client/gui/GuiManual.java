@@ -177,7 +177,6 @@ public class GuiManual extends GuiScreen
         this.drawTexturedModalRect(localWidth, localHeight, 256 - this.bookImageWidth, 0, this.bookImageWidth, this.bookImageHeight);
 
         super.drawScreen(par1, par2, par3); //16, 12, 220, 12
-        GL11.glEnable(GL11.GL_BLEND);
 
         if (pageLeft != null)
             pageLeft.renderBackgroundLayer(localWidth + 16, localHeight + 12);
