@@ -27,51 +27,50 @@ public class ModelVariant
         this.mc = mc;
     }
 
+    public String getResource(String resource)
+    {
+        return (MOD_ID + ":") + resource;
+    }
+
+    public void addVariantNames(Block block, String... names)
+    {
+        for (int i = 0; i < names.length; i++)
+        {
+            names[i] = getResource(names[i]);
+        }
+
+        ModelBakery.addVariantName(Item.getItemFromBlock(block), names);
+    }
+
     public void registerBlockModel(Block block)
     {
         ResourceLocation resourceLocation = (ResourceLocation) Block.blockRegistry.getNameForObject(block);
 
-        registerBlockModel(block, 0, resourceLocation.getResourcePath());
+        registerBlockModel(block, 0, resourceLocation.toString());
     }
 
     public void registerItemModel(Item item)
     {
         ResourceLocation resourceLocation = (ResourceLocation) Item.itemRegistry.getNameForObject(item);
 
-        registerItemModel(item, 0, resourceLocation.getResourcePath());
+        registerItemModel(item, 0, resourceLocation.toString());
     }
 
     public void registerBlockModel(Block block, int meta, String modelName)
     {
         registerItemModel(Item.getItemFromBlock(block), meta, modelName);
     }
-
-    public void registerItemModel(Item item, int meta, String resourcePath)
-    {
-        ModelResourceLocation modelResourceLocation = new ModelResourceLocation((this.MOD_ID + ":") + resourcePath, "inventory");
-
-        this.mc.getRenderItem().getItemModelMesher().register(item, meta, modelResourceLocation);
-    }
-
-    public void registerBlockModelVariant(Block block, int meta, String resourcePath)
-    {
-        Item item = Item.getItemFromBlock(block);
-
-        registerItemModel(item, meta, resourcePath);
-
-        ModelBakery.addVariantName(item, (this.MOD_ID + ":") + resourcePath);
-    }
-
-    public void registerItemModelVariant(Item item)
+    
+    public void registerItemModelVariants(Item item)
     {
         for (int i = 0; i < ((IItemWithVariants) item).getVariantNames().length; i++)
         {
             String NAME = item.getUnlocalizedName().substring(5) + "_" + ((IItemWithVariants) item).getVariantNames()[i];
-            ModelBakery.addVariantName(item, (this.MOD_ID + ":") + NAME);
-            this.registerItemModel(item, i, NAME);
+            ModelBakery.addVariantName(item, getResource(NAME));
+            this.registerItemModel(item, i, getResource(NAME));
         }
     }
-
+    
     public void registerItemSubTypesModel(Item item, CreativeTabs tab)
     {
         ArrayList<ItemStack> list = new ArrayList<ItemStack>();
@@ -80,5 +79,12 @@ public class ModelVariant
         {
             this.registerItemModel(item, i.getItemDamage(), item.getUnlocalizedName().substring(5));
         }
+    }
+
+    public void registerItemModel(Item item, int meta, String resourcePath)
+    {
+        ModelResourceLocation modelResourceLocation = new ModelResourceLocation(resourcePath, "inventory");
+
+        mc.getRenderItem().getItemModelMesher().register(item, meta, modelResourceLocation);
     }
 }

@@ -1,4 +1,4 @@
-package mantle.blocks.util;
+package mantle.blocks.util.blockstates;
 
 public class BlockVariant implements Comparable<BlockVariant>
 {

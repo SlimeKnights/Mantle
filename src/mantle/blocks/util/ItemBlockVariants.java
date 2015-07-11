@@ -4,15 +4,15 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-public class ItemBlockSubtypes extends ItemBlock
+public class ItemBlockVariants extends ItemBlock
 {
-    private final IBlockWithSubtypes blockWithSubtypes;
+    private final IBlockWithVariants blockWithVariants;
 
-    public ItemBlockSubtypes(Block block)
+    public ItemBlockVariants(Block block)
     {
         super(block);
 
-        this.blockWithSubtypes = (IBlockWithSubtypes) block;
+        this.blockWithVariants = (IBlockWithVariants) block;
 
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
@@ -27,7 +27,7 @@ public class ItemBlockSubtypes extends ItemBlock
     @Override
     public String getUnlocalizedName(ItemStack stack)
     {
-        return super.getUnlocalizedName() + "." + this.blockWithSubtypes.getSubtypeUnlocalizedName(stack);
+        return super.getUnlocalizedName() + "." + this.blockWithVariants.getVariantNameFromStack(stack);
     }
 
 }
