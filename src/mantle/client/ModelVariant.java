@@ -2,7 +2,6 @@ package mantle.client;
 
 import java.util.ArrayList;
 
-import mantle.items.util.IItemWithVariants;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -42,6 +41,16 @@ public class ModelVariant
         ModelBakery.addVariantName(Item.getItemFromBlock(block), names);
     }
 
+    public void addVariantNames(Item item, String... names)
+    {
+        for (int i = 0; i < names.length; i++)
+        {
+            names[i] = getResource(names[i]);
+        }
+
+        ModelBakery.addVariantName(item, names);
+    }
+
     public void registerBlockModel(Block block)
     {
         ResourceLocation resourceLocation = (ResourceLocation) Block.blockRegistry.getNameForObject(block);
@@ -60,17 +69,14 @@ public class ModelVariant
     {
         registerItemModel(Item.getItemFromBlock(block), meta, modelName);
     }
-    
-    public void registerItemModelVariants(Item item)
+
+    public void registerItemModel(Item item, int meta, String resourcePath)
     {
-        for (int i = 0; i < ((IItemWithVariants) item).getVariantNames().length; i++)
-        {
-            String NAME = item.getUnlocalizedName().substring(5) + "_" + ((IItemWithVariants) item).getVariantNames()[i];
-            ModelBakery.addVariantName(item, getResource(NAME));
-            this.registerItemModel(item, i, getResource(NAME));
-        }
+        ModelResourceLocation modelResourceLocation = new ModelResourceLocation(resourcePath, "inventory");
+
+        mc.getRenderItem().getItemModelMesher().register(item, meta, modelResourceLocation);
     }
-    
+
     public void registerItemSubTypesModel(Item item, CreativeTabs tab)
     {
         ArrayList<ItemStack> list = new ArrayList<ItemStack>();
@@ -79,12 +85,5 @@ public class ModelVariant
         {
             this.registerItemModel(item, i.getItemDamage(), item.getUnlocalizedName().substring(5));
         }
-    }
-
-    public void registerItemModel(Item item, int meta, String resourcePath)
-    {
-        ModelResourceLocation modelResourceLocation = new ModelResourceLocation(resourcePath, "inventory");
-
-        mc.getRenderItem().getItemModelMesher().register(item, meta, modelResourceLocation);
     }
 }
