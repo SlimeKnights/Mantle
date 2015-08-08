@@ -45,8 +45,8 @@ public class CraftingItem extends Item
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage (int meta)
     {
-        int arr = MathHelper.clamp_int(meta, 0, unlocalizedNames.length);
-        if(arr > icons.length)
+        int arr = MathHelper.clamp_int(meta, 0, unlocalizedNames.length - 1);
+        if(arr >= icons.length)
             return icons[0];
         return icons[arr];
     }
@@ -66,7 +66,7 @@ public class CraftingItem extends Item
 
     public String getUnlocalizedName (ItemStack stack)
     {
-        int arr = MathHelper.clamp_int(stack.getItemDamage(), 0, unlocalizedNames.length);
+        int arr = MathHelper.clamp_int(stack.getItemDamage(), 0, unlocalizedNames.length - 1);
         return getUnlocalizedName() + "." + unlocalizedNames[arr];
     }
 
