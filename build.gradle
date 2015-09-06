@@ -4,25 +4,27 @@
  * Based on TConstruct's master build file
  * Authors: Sunstrike, ProgWML6
  * Help from AbrarSyed
- */
+*/
 
 buildscript {
     repositories {
         mavenCentral()
-	mavenLocal()
+        mavenLocal()
+        jcenter()
         maven {
-            name = 'ForgeFS'
-            url = 'http://files.minecraftforge.net/maven'
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
         }
-	maven {
+        maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
     }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 repositories {
     mavenLocal()
@@ -32,8 +34,6 @@ repositories {
     }
 }
 
-
-apply plugin: 'forge'
 group = 'mantle'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -48,8 +48,7 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-// sets version to the slimeKnights default version format
-// Finds and sets version data
+// sets version to the slimeKnights version format
 task buildInfo {
     def cmd = "git rev-parse --short HEAD"
     def proc = cmd.execute()
@@ -83,30 +82,17 @@ minecraft {
     replace '${version}', project.version
 }
 
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'resources'
-        }
-        java {
-            srcDir 'src'
-        }
-    }
-}
 processResources
 {
     inputs.property "version", artifact_version
     inputs.property "MCversion", config.minecraft_version
-
-        // replace stuff in text files, not binary ones.
+    // replace stuff in text files, not binary ones.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
-                // replace version and MCVersion
+        // replace version and MCVersion
         expand 'version':artifact_version,'MCversion':config.minecraft_version
     }
-        
-        // copy everything else, thats not text
+    // copy everything else, thats not text
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.info'
     }
@@ -129,9 +115,7 @@ artifacts {
 }
 
 task("uploadJars", dependsOn:"build") {
-    
     description = "uploads JARs"
-
     if (project.hasProperty("local_maven")) {
 	    apply plugin: 'maven'
             uploadArchives {
