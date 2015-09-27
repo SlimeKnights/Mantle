@@ -28,3 +28,4 @@ version.properties
 /*.project
 /.settings/
 /*.launch
+/out
