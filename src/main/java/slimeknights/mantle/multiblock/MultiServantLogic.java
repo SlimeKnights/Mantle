@@ -1,4 +1,4 @@
-package slimeknights.mantle.block;
+package slimeknights.mantle.multiblock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

@@ -1,4 +1,4 @@
-package slimeknights.mantle.block;
+package slimeknights.mantle.multiblock;
 
 public interface IMasterNode extends IMasterLogic, IServantLogic
 {
