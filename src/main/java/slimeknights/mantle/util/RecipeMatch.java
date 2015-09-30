@@ -158,7 +158,7 @@ public abstract class RecipeMatch {
     }
 
     public Oredict(String oredictEntry, int amountNeeded, int amountMatched) {
-      super(amountNeeded, amountMatched);
+      super(amountMatched, amountNeeded);
       this.oredictEntry = OreDictionary.getOres(oredictEntry);
     }
 
