@@ -63,7 +63,10 @@ public class ItemMetaDynamic extends Item {
   @Override
   public String getUnlocalizedName(ItemStack stack) {
     int meta = stack.getMetadata(); // should call getMetadata below
-    return super.getUnlocalizedName(stack) + "." + LocUtils.makeLocString(names.get(meta));
+    if(isValid(meta))
+      return super.getUnlocalizedName(stack) + "." + LocUtils.makeLocString(names.get(meta));
+    else
+      return super.getUnlocalizedName(stack);
   }
 
   @Override
