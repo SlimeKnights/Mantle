@@ -138,42 +138,41 @@ public class ContainerMultiModule<T extends TileEntity> extends BaseContainer<T>
     ItemStack itemstack = slot.getStack().copy();
 
     Container container = getSlotContainer(index);
+    boolean nothingDone = true;
 
     // Is the slot from a module?
     if(container != this) {
       // Try moving module -> tile inventory
-      moveToTileInventory(itemstack);
+      nothingDone &= moveToTileInventory(itemstack);
 
       // Try moving module -> player inventory
-      if(moveToPlayerInventory(itemstack)) {
-        return null;
-      }
+      nothingDone &= moveToPlayerInventory(itemstack);
     }
     // Is the slot from the tile?
     else if(index < subContainerSlotStart || (index < playerInventoryStart && subContainerSlotStart < 0)) {
       // Try moving tile -> preferred modules
-      refillAnyContainer(itemstack, subContainers);
+      nothingDone &= refillAnyContainer(itemstack, subContainers);
 
       // Try moving module -> player inventory
-      moveToPlayerInventory(itemstack);
+      nothingDone &= moveToPlayerInventory(itemstack);
 
       // Try moving module -> all submodules
-      if(moveToAnyContainer(itemstack, subContainers)) {
-        return null;
-      }
+      nothingDone &= moveToAnyContainer(itemstack, subContainers);
     }
     // Slot is from the player inventory (if present)
     else if(index >= playerInventoryStart && playerInventoryStart >= 0) {
       // Try moving player -> tile inventory
-      moveToTileInventory(itemstack);
+      nothingDone &= moveToTileInventory(itemstack);
 
       // try moving player -> modules
-      if(moveToAnyContainer(itemstack, subContainers)) {
-        return null;
-      }
+      nothingDone &= moveToAnyContainer(itemstack, subContainers);
     }
     // you violated some assumption or something. Shame on you.
     else {
+      return null;
+    }
+
+    if(nothingDone) {
       return null;
     }
 
