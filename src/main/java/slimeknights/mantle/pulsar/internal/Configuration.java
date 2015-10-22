@@ -1,4 +1,4 @@
-package mantle.pulsar.internal;
+package slimeknights.mantle.pulsar.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,9 +9,9 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import mantle.pulsar.config.IConfiguration;
-import mantle.pulsar.internal.logging.ILogger;
-import mantle.pulsar.pulse.PulseMeta;
+import slimeknights.mantle.pulsar.config.IConfiguration;
+import slimeknights.mantle.pulsar.internal.logging.ILogger;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 import net.minecraftforge.fml.common.Loader;
 
 import com.google.gson.Gson;

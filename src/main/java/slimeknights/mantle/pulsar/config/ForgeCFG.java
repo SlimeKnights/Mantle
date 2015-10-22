@@ -1,8 +1,8 @@
-package mantle.pulsar.config;
+package slimeknights.mantle.pulsar.config;
 
 import java.io.File;
 
-import mantle.pulsar.pulse.PulseMeta;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 

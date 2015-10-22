@@ -1,7 +1,7 @@
-package mantle.pulsar.internal;
+package slimeknights.mantle.pulsar.internal;
 
-import mantle.pulsar.control.PulseManager;
-import mantle.pulsar.pulse.PulseMeta;
+import slimeknights.mantle.pulsar.control.PulseManager;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 import net.minecraftforge.fml.common.ICrashCallable;
 
 /**

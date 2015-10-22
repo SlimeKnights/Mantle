@@ -1,4 +1,4 @@
-package mantle.pulsar.pulse;
+package slimeknights.mantle.pulsar.pulse;
 
 /**
  * Metadata wrapper for parsed @Pulse metadata.

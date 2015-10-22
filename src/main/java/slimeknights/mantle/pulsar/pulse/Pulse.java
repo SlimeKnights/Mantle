@@ -1,10 +1,6 @@
-package mantle.pulsar.pulse;
+package slimeknights.mantle.pulsar.pulse;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Metadata annotation for IPulse implementations.
@@ -15,10 +11,9 @@ import java.lang.annotation.Target;
  * @author Arkan <arkan@drakon.io>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Documented
-public @interface Pulse
-{
+public @interface Pulse {
 
     /**
      * @return This Pulses UID - Much like FML mods have mod IDs.

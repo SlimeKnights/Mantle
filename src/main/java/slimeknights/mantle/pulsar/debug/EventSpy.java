@@ -1,8 +1,8 @@
-package mantle.pulsar.debug;
+package slimeknights.mantle.pulsar.debug;
 
-import mantle.pulsar.internal.logging.ILogger;
-import mantle.pulsar.internal.logging.LogManager;
-import mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.pulsar.internal.logging.ILogger;
+import slimeknights.mantle.pulsar.internal.logging.LogManager;
+import slimeknights.mantle.pulsar.pulse.Pulse;
 import net.minecraftforge.fml.common.Loader;
 
 import com.google.common.eventbus.Subscribe;

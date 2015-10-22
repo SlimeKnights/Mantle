@@ -1,4 +1,4 @@
-package mantle.pulsar.control;
+package slimeknights.mantle.pulsar.control;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

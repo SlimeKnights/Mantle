@@ -1,6 +1,6 @@
-package mantle.pulsar.config;
+package slimeknights.mantle.pulsar.config;
 
-import mantle.pulsar.pulse.PulseMeta;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 /**
  * Interface for config handlers.

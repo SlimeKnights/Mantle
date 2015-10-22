@@ -33,4 +33,4 @@
  *
  * @author Arkan <arkan@drakon.io>
  */
-package mantle.pulsar;
+package slimeknights.mantle.pulsar;

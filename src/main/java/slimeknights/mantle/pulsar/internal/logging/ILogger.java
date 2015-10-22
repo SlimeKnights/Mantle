@@ -1,4 +1,4 @@
-package mantle.pulsar.internal.logging;
+package slimeknights.mantle.pulsar.internal.logging;
 
 /**
  * Interface for log wrappers.
