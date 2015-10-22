@@ -1,17 +1,8 @@
 package slimeknights.mantle.pulsar.control;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
-import mantle.pulsar.config.IConfiguration;
-import mantle.pulsar.internal.Configuration;
-import mantle.pulsar.internal.CrashHandler;
-import mantle.pulsar.internal.logging.ILogger;
-import mantle.pulsar.internal.logging.LogManager;
-import mantle.pulsar.pulse.Pulse;
-import mantle.pulsar.pulse.PulseMeta;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -19,10 +10,19 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import slimeknights.mantle.pulsar.config.IConfiguration;
+import slimeknights.mantle.pulsar.internal.BusExceptionHandler;
+import slimeknights.mantle.pulsar.internal.Configuration;
+import slimeknights.mantle.pulsar.internal.CrashHandler;
+import slimeknights.mantle.pulsar.internal.logging.ILogger;
+import slimeknights.mantle.pulsar.internal.logging.LogManager;
+import slimeknights.mantle.pulsar.pulse.Pulse;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 /**
  * Manager class for a given mods Pulses.
@@ -73,7 +73,7 @@ public class PulseManager
      * Custom configuration-using constructor.
      *
      * Don't like JSON? Heathen. Lets you handle configuration, to whatever media you like - File, database, death star.
-     * Whatever really. See {@link mantle.pulsar.config.IConfiguration}.
+     * Whatever really. See {@link IConfiguration}.
      *
      * @param config Configuration handler.
      */
@@ -94,8 +94,8 @@ public class PulseManager
         this.log = LogManager.getLogger("Pulsar-" + modId);
         FMLCommonHandler.instance().registerCrashCallable(new CrashHandler(modId, this));
         // Attach us to the mods FML bus and setup our own bus
-        this.bus = new EventBus(new BusExceptionHandler(modId));
         this.attachToContainerEventBus(this);
+        bus = new EventBus(new BusExceptionHandler(modId, "<*pulsar*>"));
     }
 
     /**
@@ -163,8 +163,8 @@ public class PulseManager
         if (meta.isEnabled())
         {
             this.pulses.put(pulse, meta);
-            // Attach Pulse to internal event bus
-            this.bus.register(pulse);
+            // Attach Pulse to its own internal event bus
+            meta.bus.register(pulse);
         }
     }
 
@@ -211,13 +211,13 @@ public class PulseManager
      * @param evt An event object.
      */
     @Subscribe
-    public void propagateEvent(FMLEvent evt)
-    {
-        if (evt instanceof FMLPreInitializationEvent)
-        {
-            this.preInit((FMLPreInitializationEvent) evt);
+    public void propagateEvent(FMLEvent evt) {
+        if (evt instanceof FMLPreInitializationEvent) preInit((FMLPreInitializationEvent) evt);
+        // We use individual buses due to the EventBus class using a Set rather than a List, thus losing the ordering.
+        // This trick is shamelessly borrowed from FML.
+        for (PulseMeta pulse : pulses.values()) {
+            pulse.bus.post(evt);
         }
-        this.bus.post(evt);
     }
 
     private boolean getEnabledFromConfig(PulseMeta meta)
@@ -257,33 +257,8 @@ public class PulseManager
         return false;
     }
 
-    public Collection<PulseMeta> getAllPulseMetadata()
-    {
-        return this.pulses.values();
-    }
-
-    /**
-     * Needed because Google EventBus is a derp and by default swallows exceptions (dafuq guys?)
-     */
-    private class BusExceptionHandler implements SubscriberExceptionHandler
-    {
-        private final String id;
-
-        /**
-         * @param id Mod ID to include in exception raises.
-         */
-        public BusExceptionHandler(String id)
-        {
-            this.id = id;
-        }
-
-        @Override
-        public void handleException(Throwable exception, SubscriberExceptionContext ctx)
-        {
-            FMLCommonHandler.instance().raiseException(exception, "Pulsar/" + this.id + " >> Exception uncaught in ["
-                    + ctx.getSubscriber().getClass().getName() + ":" + ctx.getSubscriberMethod().getName()
-                    + "] for event [" + ctx.getEvent().getClass().getSimpleName() + "]", true);
-        }
+    public Collection<PulseMeta> getAllPulseMetadata() {
+        return pulses.values();
     }
 
     @Override
