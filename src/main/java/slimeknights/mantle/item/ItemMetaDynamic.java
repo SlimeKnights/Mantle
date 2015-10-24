@@ -117,6 +117,9 @@ public class ItemMetaDynamic extends Item {
       tooltip.add(EnumChatFormatting.GRAY.toString() +
                   LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip"));
     }
+    else if(StatCollector.canTranslate(super.getUnlocalizedName(stack) + ".tooltip")) {
+      tooltip.add(EnumChatFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip"));
+    }
     super.addInformation(stack, playerIn, tooltip, advanced);
   }
 }
