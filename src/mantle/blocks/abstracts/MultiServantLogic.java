@@ -168,8 +168,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
     @Override
     public void onDataPacket (NetworkManager net, S35PacketUpdateTileEntity packet)
     {
-        readCustomNBT(packet.func_148857_g());
-        worldObj.func_147479_m(xCoord, yCoord, zCoord);
+        readCustomNBT(packet.getNbtCompound());
+        worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
@@ -192,7 +192,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
 
     public World getWorld ()
     {
-        return this.getWorldObj();
+        return this.getWorld();
     }
 
     @Deprecated

@@ -526,7 +526,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
             else
             {
                 j = ' ';
-                for (char c : ChatAllowedCharacters.allowedCharacters)
+                for (char c : ChatAllowedCharacters.allowedCharactersArray)
                 {
                     if (c == c0)
                     {
@@ -539,7 +539,7 @@ public class SmallFontRenderer implements IResourceManagerReloadListener
                 {
                     do
                     {
-                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharacters.length);
+                        k = this.fontRandom.nextInt(ChatAllowedCharacters.allowedCharactersArray.length);
                     } while (this.charWidth[j + 32] != this.charWidth[k + 32]);
 
                     j = k;

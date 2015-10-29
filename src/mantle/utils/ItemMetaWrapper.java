@@ -15,7 +15,7 @@ public class ItemMetaWrapper {
     public ItemMetaWrapper(ItemStack stack)
     {
         this.item = stack.getItem();
-        this.meta = stack.getItemDamage();
+        this.meta = stack.getMetadata();
     }
 
     @Override

@@ -22,7 +22,7 @@ public class ItemStackNBTWrapper {
     @Override
     public int hashCode() {
         int result = stack.getItem() != null ? stack.getItem().hashCode() : 0;
-        result = 31 * result + stack.getItemDamage();
+        result = 31 * result + stack.getMetadata();
         result = 31 * result + (stack.getTagCompound() != null ? stack.getTagCompound().hashCode() : 0);
         result = 31 * result + stack.stackSize;
         return result;

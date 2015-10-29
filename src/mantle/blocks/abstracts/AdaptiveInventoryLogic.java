@@ -76,7 +76,7 @@ public abstract class AdaptiveInventoryLogic extends InventoryLogic implements I
 
                             stack.stackSize -= itemSize;
                             EntityItem entityitem = new EntityItem(worldObj, (double) ((float) xCoord + jumpX + offsetX), (double) ((float) yCoord + jumpY),
-                                    (double) ((float) zCoord + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getItemDamage()));
+                                    (double) ((float) zCoord + jumpZ + offsetZ), new ItemStack(stack.getItem(), itemSize, stack.getMetadata()));
 
                             if (stack.hasTagCompound())
                             {

@@ -97,7 +97,7 @@ public abstract class InventoryBlock extends BlockContainer
 
                         stack.stackSize -= itemSize;
                         EntityItem entityitem = new EntityItem(par1World, (double) ((float) x + jumpX), (double) ((float) y + jumpY), (double) ((float) z + jumpZ), new ItemStack(stack.getItem(),
-                                itemSize, stack.getItemDamage()));
+                                itemSize, stack.getMetadata()));
 
                         if (stack.hasTagCompound())
                         {
@@ -188,7 +188,7 @@ public abstract class InventoryBlock extends BlockContainer
     public abstract String getTextureDomain (int textureNameIndex);
 
     @Override
-    public void registerBlockIcons (IIconRegister iconRegister)
+    public void registerIcons (IIconRegister iconRegister)
     {
         String[] textureNames = getTextureNames();
         this.icons = new IIcon[textureNames.length];
