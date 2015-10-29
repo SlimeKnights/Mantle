@@ -27,7 +27,7 @@ public class CraftingItem extends Item
         {
             this.setCreativeTab(tab);
         }
-        this.setMaxDamage(0);
+        this.setMaxDurability(0);
         this.setHasSubtypes(true);
         this.textureNames = tex;
         this.unlocalizedNames = names;
@@ -66,7 +66,7 @@ public class CraftingItem extends Item
 
     public String getUnlocalizedName (ItemStack stack)
     {
-        int arr = MathHelper.clamp_int(stack.getItemDamage(), 0, unlocalizedNames.length);
+        int arr = MathHelper.clamp_int(stack.getMetadata(), 0, unlocalizedNames.length);
         return getUnlocalizedName() + "." + unlocalizedNames[arr];
     }
 

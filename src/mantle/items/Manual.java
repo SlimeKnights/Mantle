@@ -60,7 +60,7 @@ public class Manual extends CraftingItem
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void addInformation (ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
-        list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getItemDamage()).toolTip));
+        list.add("\u00a7o" + StatCollector.translateToLocal(BookDataStore.getBookfromID(stack.getMetadata()).toolTip));
     }
 
     @Override

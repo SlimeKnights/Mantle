@@ -324,6 +324,6 @@ public class CraftingHandler {
     }
 
     public static boolean compdamage (ItemStack a, ItemStack b) {
-        return a.getItemDamage() != b.getItemDamage() || a.getItemDamage() == OreDictionary.WILDCARD_VALUE || b.getItemDamage() == OreDictionary.WILDCARD_VALUE;
+        return a.getCurrentDurability() != b.getCurrentDurability() || a.getCurrentDurability() == OreDictionary.WILDCARD_VALUE || b.getCurrentDurability() == OreDictionary.WILDCARD_VALUE;
     }
 }

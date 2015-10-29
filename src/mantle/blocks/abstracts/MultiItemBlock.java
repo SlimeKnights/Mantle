@@ -52,7 +52,7 @@ public class MultiItemBlock extends ItemBlock
     public String getUnlocalizedName (ItemStack itemstack)
     {
 
-        int pos = MathHelper.clamp_int(itemstack.getItemDamage(), 0, (specialIndex[0] > -1) ? specialIndex[0] : (blockType.length - 1));
+        int pos = MathHelper.clamp_int(itemstack.getMetadata(), 0, (specialIndex[0] > -1) ? specialIndex[0] : (blockType.length - 1));
         int sbIndex = (specialIndex[1] > -1) ? pos : (specialIndex[1] - pos);
         if (sbIndex < 0)
             sbIndex = -1 * sbIndex;
