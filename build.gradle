@@ -42,7 +42,7 @@ repositories {
     }
 }
 
-group = 'mantle'
+group = 'slimeknights.mantle'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
@@ -90,10 +90,19 @@ minecraft {
     replace '${version}', project.version
 }
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
 dependencies {
     compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
     compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.ccc_version}:dev"
     compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
+    // Configuration
+    shade "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
+    shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"
+
 }
 
 processResources
@@ -112,6 +121,15 @@ processResources
     }
 }
 
+jar {
+    // Shading
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+
+}
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
     from sourceSets.main.output
