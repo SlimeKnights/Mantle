@@ -12,11 +12,14 @@ import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.IFlexibleBakedModel;
 import net.minecraftforge.client.model.TRSRTransformation;
+import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
+import net.minecraftforge.client.model.pipeline.VertexTransformer;
 
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
@@ -54,7 +57,9 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
     EnumMap<EnumFacing, ImmutableList<BakedQuad>> faces = Maps.newEnumMap(EnumFacing.class);
     for(EnumFacing face : EnumFacing.values()) {
       for(BakedQuad quad : original.getFaceQuads(face)) {
-        builder.add(transform(transform, quad, original.getFormat()));
+        Transformer transformer = new Transformer(transform, original.getFormat());
+        quad.pipe(transformer);
+        builder.add(transformer.build());
       }
       //faces.put(face, builder.build());
       faces.put(face, ImmutableList.<BakedQuad>of());
@@ -63,38 +68,13 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
     // general quads
     //builder = ImmutableList.builder();
     for(BakedQuad quad : original.getGeneralQuads()) {
-      builder.add(transform(transform, quad, original.getFormat()));
+      Transformer transformer = new Transformer(transform, original.getFormat());
+      quad.pipe(transformer);
+      builder.add(transformer.build());
     }
 
     this.general = builder.build();
     this.faces = Maps.immutableEnumMap(faces);
-  }
-
-  public static BakedQuad transform(TRSRTransformation transform, BakedQuad quad, VertexFormat format) {
-    for(VertexFormatElement e : (List<VertexFormatElement>) format.getElements()) {
-      if(e.getUsage() == VertexFormatElement.EnumUsage.POSITION) {
-        if(e.getType() != VertexFormatElement.EnumType.FLOAT) {
-          throw new IllegalArgumentException("can only transform float position");
-        }
-        int[] data = Arrays.copyOf(quad.getVertexData(), quad.getVertexData().length);
-        // once for each vertex
-        for(int j = 0; j < 4; j++) {
-          int v = j * format.getNextOffset() / 4;
-          float[] pos = new float[]{0f, 0f, 0f, 1f};
-          for(int i = 0; i < Math.min(4, e.getElementCount()); i++) {
-            pos[i] = Float.intBitsToFloat(data[v + e.getOffset() / 4 + i]);
-          }
-          Vector4f vec = new Vector4f(pos);
-          transform.getMatrix().transform(vec);
-          vec.get(pos);
-          for(int i = 0; i < Math.min(4, e.getElementCount()); i++) {
-            data[v + e.getOffset() / 4 + i] = Float.floatToRawIntBits(pos[i]);
-          }
-        }
-        return new BakedQuad(data, quad.getTintIndex(), quad.getFace());
-      }
-    }
-    return quad;
   }
 
   @Override
@@ -135,5 +115,48 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
   @Override
   public VertexFormat getFormat() {
     return original.getFormat();
+  }
+
+  public static class Transformer extends VertexTransformer {
+
+    protected Matrix4f transformation;
+    protected Matrix3f normalTransformation;
+
+    public Transformer(TRSRTransformation transformation, VertexFormat format) {
+      super(new UnpackedBakedQuad.Builder(format));
+      // position transform
+      this.transformation = transformation.getMatrix();
+      // normal transform
+      this.normalTransformation = new Matrix3f();
+      this.transformation.getRotationScale(this.normalTransformation);
+      this.normalTransformation.invert();
+      this.normalTransformation.transpose();
+    }
+
+    @Override
+    public void put(int element, float... data) {
+      VertexFormatElement.EnumUsage usage = parent.getVertexFormat().getElement(element).getUsage();
+
+      // transform normals and position
+      if(usage == VertexFormatElement.EnumUsage.POSITION) {
+        Vector4f vec = new Vector4f(data);
+        vec.setW(1.0f);
+        transformation.transform(vec);
+        data = new float[4];
+        vec.get(data);
+      }
+      else if(usage == VertexFormatElement.EnumUsage.NORMAL) {
+        Vector3f vec = new Vector3f(data);
+        normalTransformation.transform(vec);
+        vec.normalize();
+        data = new float[4];
+        vec.get(data);
+      }
+      super.put(element, data);
+    }
+
+    public UnpackedBakedQuad build() {
+      return ((UnpackedBakedQuad.Builder)parent).build();
+    }
   }
 }
