@@ -48,14 +48,14 @@ public class ItemMetaDynamic extends Item {
    * @return An itemstack representing the Item-Meta combination.
    */
   public ItemStack addMeta(int meta, String name) {
-    if(meta > MAX) {
+    if(meta > MAX || isValid(meta)) {
       throw new IllegalArgumentException(String
                                              .format("Metadata too high, highest supported value is %d. Meta was %d", MAX, meta));
     }
     if(meta > maxMeta) {
       maxMeta = meta;
-      setValid(meta);
     }
+    setValid(meta);
     names.put(meta, name);
     return new ItemStack(this, 1, meta);
   }
@@ -97,8 +97,12 @@ public class ItemMetaDynamic extends Item {
 
   @SideOnly(Side.CLIENT)
   public void registerItemModels(final String prefix) {
+    registerItemModels(prefix, this);
+  }
+
+  @SideOnly(Side.CLIENT)
+  protected void registerItemModels(final String prefix, final Item item) {
     final String resourceId = Loader.instance().activeModContainer().getModId().toLowerCase();
-    final Item item = this;
     names.forEachEntry(new TIntObjectProcedure<String>() {
       @Override
       public boolean execute(int meta, String name) {
