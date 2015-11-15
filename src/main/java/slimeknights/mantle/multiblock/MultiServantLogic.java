@@ -8,6 +8,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 
@@ -110,7 +111,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic
     {
         if (this.hasValidMaster())
         {
-            IMasterLogic logic = (IMasterLogic) this.worldObj.getTileEntity(this.pos);
+            IMasterLogic logic = (IMasterLogic) this.worldObj.getTileEntity(this.master);
             logic.notifyChange(this, this.pos);
         }
     }
@@ -124,7 +125,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic
             int yCenter = tags.getInteger("yCenter");
             int zCenter = tags.getInteger("zCenter");
             this.master = new BlockPos(xCenter, yCenter, zCenter);
-            this.masterBlock = GameData.getBlockRegistry().getObject(tags.getString("MasterBlockName"));
+            this.masterBlock = GameData.getBlockRegistry().getObject(new ResourceLocation(tags.getString("MasterBlockName")));
             this.state = Block.getStateById(tags.getInteger("masterState"));
         }
     }
@@ -137,7 +138,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic
             tags.setInteger("xCenter", this.master.getX());
             tags.setInteger("yCenter", this.master.getY());
             tags.setInteger("zCenter", this.master.getZ());
-            tags.setString("MasterBlockName", (String) GameData.getBlockRegistry().getNameForObject(this.masterBlock));
+            tags.setString("MasterBlockName", GameData.getBlockRegistry().getNameForObject(this.masterBlock).toString());
             tags.setInteger("masterState", Block.getStateId(this.state));
         }
     }
