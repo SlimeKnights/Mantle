@@ -48,10 +48,13 @@ public class ItemMetaDynamic extends Item {
    * @return An itemstack representing the Item-Meta combination.
    */
   public ItemStack addMeta(int meta, String name) {
-    if(meta > MAX || isValid(meta)) {
-      throw new IllegalArgumentException(String
-                                             .format("Metadata too high, highest supported value is %d. Meta was %d", MAX, meta));
+    if(meta > MAX) {
+      throw new IllegalArgumentException(String.format("Metadata for %s too high, highest supported value is %d. Meta was %d", name, MAX, meta));
     }
+    else if(isValid(meta)) {
+      throw new IllegalArgumentException(String.format("Metadata for %s is already taken. Meta %d is %s", name, meta, names.get(meta)));
+    }
+
     if(meta > maxMeta) {
       maxMeta = meta;
     }
