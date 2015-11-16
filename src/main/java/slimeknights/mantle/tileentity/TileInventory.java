@@ -179,6 +179,9 @@ public class TileInventory extends TileEntity implements IInventory {
 
   public void readInventoryFromNBT(NBTTagCompound tags) {
     super.readFromNBT(tags);
+
+    this.resize(tags.getInteger("InventorySize"));
+
     readInventoryFromNBT(this, tags);
 
     if(tags.hasKey("CustomName", 8)) {
@@ -189,6 +192,9 @@ public class TileInventory extends TileEntity implements IInventory {
   @Override
   public void writeToNBT(NBTTagCompound tags) {
     super.writeToNBT(tags);
+
+    tags.setInteger("InventorySize", inventory.length);
+
     writeInventoryToNBT(this, tags);
 
     if(this.hasCustomName()) {
