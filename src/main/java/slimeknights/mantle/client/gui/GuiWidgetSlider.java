@@ -135,6 +135,16 @@ public class GuiWidgetSlider extends GuiWidget {
     }
 
     boolean mouseDown = Mouse.isButtonDown(0); // left mouse button
+    int wheel = Mouse.getDWheel();
+
+    if(wheel > 0) {
+      decrement();
+      return;
+    }
+    else if(wheel < 0) {
+      increment();
+      return;
+    }
 
     // relative position inside the widget
     int x = mouseX - xPos;
