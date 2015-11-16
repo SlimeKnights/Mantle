@@ -11,6 +11,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 
+import java.util.Arrays;
+
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes
 public class TileInventory extends TileEntity implements IInventory {
 
@@ -48,6 +50,10 @@ public class TileInventory extends TileEntity implements IInventory {
 
   public boolean isStackInSlot(int slot) {
     return getStackInSlot(slot) != null;
+  }
+
+  public void resize(int size) {
+    inventory = Arrays.copyOf(inventory, size);
   }
 
   @Override
