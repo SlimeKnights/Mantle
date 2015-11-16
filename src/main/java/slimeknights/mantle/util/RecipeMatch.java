@@ -20,10 +20,8 @@ import slimeknights.mantle.Mantle;
  */
 public abstract class RecipeMatch {
 
-
-
-  protected final int amountNeeded;
-  protected final int amountMatched;
+  public final int amountNeeded;
+  public final int amountMatched;
 
   /**
    * @param amountNeeded  How many of the itemstack are needed for the match
