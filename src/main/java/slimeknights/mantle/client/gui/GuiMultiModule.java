@@ -9,6 +9,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -103,6 +104,12 @@ public class GuiMultiModule extends GuiContainer implements INEIGuiHandler {
 
     drawContainerName();
     drawPlayerInventoryName();
+  }
+
+  protected void drawBackground(ResourceLocation background) {
+    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    this.mc.getTextureManager().bindTexture(background);
+    this.drawTexturedModalRect(cornerX, cornerY, 0, 0, realWidth, realHeight);
   }
 
   protected void drawContainerName() {
