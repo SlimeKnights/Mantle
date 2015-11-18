@@ -7,6 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
+import java.util.List;
 
 // a sub-gui. Mostly the same as a separate GuiContainer, but doesn't do the calls that affect the game as if this were the only gui
 @SideOnly(Side.CLIENT)
@@ -65,6 +66,20 @@ public abstract class GuiModule extends GuiContainer {
 
   public boolean shouldDrawSlot(Slot slot) {
     return true;
+  }
+
+  public boolean isMouseInModule(int mouseX, int mouseY) {
+    return mouseX >= this.guiLeft && mouseX < this.guiRight() &&
+           mouseY >= this.guiTop && mouseY < this.guiBottom();
+  }
+
+  public boolean isMouseOverFullSlot(int mouseX, int mouseY) {
+    for(Slot slot : (List<Slot>)inventorySlots.inventorySlots) {
+      if(parent.isMouseOverSlot(slot, mouseX, mouseY) && slot.getHasStack()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /*
