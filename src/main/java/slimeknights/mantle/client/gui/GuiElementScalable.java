@@ -7,6 +7,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiElementScalable extends GuiElement {
 
+  public GuiElementScalable(int x, int y, int w, int h, int texW, int texH) {
+    super(x, y, w, h, texW, texH);
+  }
+
   public GuiElementScalable(int x, int y, int w, int h) {
     super(x, y, w, h);
   }
