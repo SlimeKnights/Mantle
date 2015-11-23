@@ -21,7 +21,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -75,7 +75,7 @@ task buildInfo {
 }
 ext.artifact_version = 'NFG'
 if (System.getenv().ARTIFACT_VERSION == null) {
-    artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
+    artifact_version = "${config.mod_version}"
 }
 if (System.getenv().ARTIFACT_VERSION != null) {
     artifact_version = "${system.getenv().ARTIFACT_VERSION}"
@@ -96,9 +96,9 @@ configurations {
 }
 
 dependencies {
-    compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
-    compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.ccc_version}:dev"
-    compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
+    //compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
+    //compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.ccc_version}:dev"
+    //compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
     // Configuration
     shade "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
     shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"

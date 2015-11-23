@@ -19,17 +19,14 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
-import codechicken.nei.LayoutManager;
-import codechicken.nei.VisiblityData;
-import codechicken.nei.api.INEIGuiHandler;
-import codechicken.nei.api.TaggedInventoryArea;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.inventory.ContainerMultiModule;
 import slimeknights.mantle.inventory.SlotWrapper;
 
 @SideOnly(Side.CLIENT)
 @Optional.Interface(iface = "codechicken.nei.api.INEIGuiHandler", modid = "NotEnoughItems")
-public class GuiMultiModule extends GuiContainer implements INEIGuiHandler {
+// todo: NEI
+public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   // NEI-stuff >:(
   private static Field NEI_Manager;
@@ -308,7 +305,8 @@ public class GuiMultiModule extends GuiContainer implements INEIGuiHandler {
   }
 
   /* NEI INTEGRATION */
-
+  // todo: NEI
+/*
   @Override
   @Optional.Method(modid = "NotEnoughItems")
   public VisiblityData modifyVisiblity(GuiContainer guiContainer, VisiblityData visiblityData) {
@@ -360,4 +358,5 @@ public class GuiMultiModule extends GuiContainer implements INEIGuiHandler {
 
     return false;
   }
+  */
 }
