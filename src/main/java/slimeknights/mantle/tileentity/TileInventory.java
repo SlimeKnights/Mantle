@@ -106,6 +106,13 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   @Override
+  public ItemStack removeStackFromSlot(int slot) {
+    ItemStack itemStack = getStackInSlot(slot);
+    setInventorySlotContents(slot, null);
+    return itemStack;
+  }
+
+  @Override
   public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
     if(slot < getSizeInventory()) {
       if(inventory[slot] == null || itemstack.stackSize + inventory[slot].stackSize <= getInventoryStackLimit()) {
@@ -123,7 +130,7 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   @Override
-  public String getCommandSenderName() {
+  public String getName() {
     return this.inventoryTitle;
   }
 
@@ -140,10 +147,10 @@ public class TileInventory extends TileEntity implements IInventory {
   @Override
   public IChatComponent getDisplayName() {
     if(hasCustomName()) {
-      return new ChatComponentText(getCommandSenderName());
+      return new ChatComponentText(getName());
     }
 
-    return new ChatComponentTranslation(getCommandSenderName());
+    return new ChatComponentTranslation(getName());
   }
 
 

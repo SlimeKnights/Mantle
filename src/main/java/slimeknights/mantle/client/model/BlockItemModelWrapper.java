@@ -76,8 +76,8 @@ public class BlockItemModelWrapper implements IPerspectiveAwareModel, IFlexibleB
   }
 
   @Override
-  public TextureAtlasSprite getTexture() {
-    return parent.getTexture();
+  public TextureAtlasSprite getParticleTexture() {
+    return parent.getParticleTexture();
   }
 
   @Override

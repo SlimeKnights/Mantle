@@ -103,8 +103,8 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
   }
 
   @Override
-  public TextureAtlasSprite getTexture() {
-    return original.getTexture();
+  public TextureAtlasSprite getParticleTexture() {
+    return original.getParticleTexture();
   }
 
   @Override
