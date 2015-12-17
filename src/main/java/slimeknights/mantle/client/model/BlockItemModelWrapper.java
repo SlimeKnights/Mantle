@@ -35,14 +35,14 @@ public class BlockItemModelWrapper implements IPerspectiveAwareModel, IFlexibleB
   }
 
   @Override
-  public Pair<IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+  public Pair<? extends IFlexibleBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
     Matrix4f matrix = null;
     // fix transformation in hand
     if(cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON) {
       matrix = THIRD_PERSON_BLOCK_TRANSFORM;
     }
 
-    return Pair.of((IBakedModel) this, matrix);
+    return Pair.of(this, matrix);
   }
 
   @Override
