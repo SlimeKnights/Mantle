@@ -56,10 +56,12 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
     // face quads
     EnumMap<EnumFacing, ImmutableList<BakedQuad>> faces = Maps.newEnumMap(EnumFacing.class);
     for(EnumFacing face : EnumFacing.values()) {
-      for(BakedQuad quad : original.getFaceQuads(face)) {
-        Transformer transformer = new Transformer(transform, original.getFormat());
-        quad.pipe(transformer);
-        builder.add(transformer.build());
+      if(!original.isBuiltInRenderer()) {
+        for(BakedQuad quad : original.getFaceQuads(face)) {
+          Transformer transformer = new Transformer(transform, original.getFormat());
+          quad.pipe(transformer);
+          builder.add(transformer.build());
+        }
       }
       //faces.put(face, builder.build());
       faces.put(face, ImmutableList.<BakedQuad>of());
@@ -67,10 +69,12 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
 
     // general quads
     //builder = ImmutableList.builder();
-    for(BakedQuad quad : original.getGeneralQuads()) {
-      Transformer transformer = new Transformer(transform, original.getFormat());
-      quad.pipe(transformer);
-      builder.add(transformer.build());
+    if(!original.isBuiltInRenderer()) {
+      for(BakedQuad quad : original.getGeneralQuads()) {
+        Transformer transformer = new Transformer(transform, original.getFormat());
+        quad.pipe(transformer);
+        builder.add(transformer.build());
+      }
     }
 
     this.general = builder.build();
