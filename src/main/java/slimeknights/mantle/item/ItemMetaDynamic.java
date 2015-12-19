@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,14 +29,13 @@ import slimeknights.mantle.util.LocUtils;
  */
 public class ItemMetaDynamic extends Item {
 
-  private static int MAX = Long.SIZE;
+  private static int MAX = (2 << 16) - 1;
 
-  protected int maxMeta;
-  protected long availabilityMask;
+  protected boolean[] availabilityMask; // boolean[] actually is much more performant for our case than BitSet
   protected TIntObjectHashMap<String> names;
 
   public ItemMetaDynamic() {
-    maxMeta = -1;
+    availabilityMask = new boolean[1];
     names = new TIntObjectHashMap<String>();
 
     this.setHasSubtypes(true);
@@ -55,8 +55,8 @@ public class ItemMetaDynamic extends Item {
       throw new IllegalArgumentException(String.format("Metadata for %s is already taken. Meta %d is %s", name, meta, names.get(meta)));
     }
 
-    if(meta > maxMeta) {
-      maxMeta = meta;
+    while(meta >= availabilityMask.length) {
+      availabilityMask = Arrays.copyOf(availabilityMask, availabilityMask.length*2);
     }
     setValid(meta);
     names.put(meta, name);
@@ -74,7 +74,7 @@ public class ItemMetaDynamic extends Item {
 
   @Override
   public void getSubItems(Item itemIn, CreativeTabs tab, List subItems) {
-    for(int i = 0; i <= maxMeta; i++) {
+    for(int i = 0; i <= availabilityMask.length; i++) {
       if(isValid(i)) {
         subItems.add(new ItemStack(itemIn, 1, i));
       }
@@ -88,14 +88,14 @@ public class ItemMetaDynamic extends Item {
   }
 
   protected void setValid(int meta) {
-    availabilityMask |= 1 << meta;
+    availabilityMask[meta] = true;
   }
 
   protected boolean isValid(int meta) {
-    if(meta > MAX) {
+    if(meta > MAX || meta >= availabilityMask.length) {
       return false;
     }
-    return ((availabilityMask >> meta) & 1) == 1;
+    return availabilityMask[meta];
   }
 
   @SideOnly(Side.CLIENT)
