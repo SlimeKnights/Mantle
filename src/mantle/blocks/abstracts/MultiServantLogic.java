@@ -192,7 +192,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic, IDeb
 
     public World getWorld ()
     {
-        return this.getWorld();
+        return super.getWorld();
     }
 
     @Deprecated
