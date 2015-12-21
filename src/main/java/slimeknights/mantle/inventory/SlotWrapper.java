@@ -24,6 +24,11 @@ public class SlotWrapper extends Slot {
   }
 
   @Override
+  public void onSlotChanged() {
+    parent.onSlotChanged();
+  }
+
+  @Override
   public boolean isItemValid(ItemStack stack) {
     return parent.isItemValid(stack);
   }
