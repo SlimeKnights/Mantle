@@ -59,6 +59,10 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     syncNewContainer(playerOpened);
   }
 
+  public T getTile() {
+    return tile;
+  }
+
   /**
    * Called when the container is opened and another player already has a container for this tile open
    * Sync to the same state here.
