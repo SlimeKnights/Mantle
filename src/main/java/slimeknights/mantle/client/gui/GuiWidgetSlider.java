@@ -78,6 +78,10 @@ public class GuiWidgetSlider extends GuiWidget {
     return currentValue;
   }
 
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+
   public void enable() {
     this.enabled = true;
   }
@@ -88,6 +92,10 @@ public class GuiWidgetSlider extends GuiWidget {
 
   public boolean isEnabled() {
     return this.enabled;
+  }
+
+  public void setHidden(boolean hidden) {
+    this.hidden = hidden;
   }
 
   public void hide() {
@@ -126,6 +134,9 @@ public class GuiWidgetSlider extends GuiWidget {
       else {
         slider.draw(x, y);
       }
+    }
+    else {
+      sliderDisabled.draw(x, y);
     }
   }
 
