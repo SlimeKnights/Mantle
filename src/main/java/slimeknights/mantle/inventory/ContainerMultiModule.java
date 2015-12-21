@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ContainerMultiModule<T extends TileEntity> extends BaseContainer<T> {
+public class ContainerMultiModule<T extends TileEntity & IInventory> extends BaseContainer<T> {
 
   public List<Container> subContainers = Lists.newArrayList();
 

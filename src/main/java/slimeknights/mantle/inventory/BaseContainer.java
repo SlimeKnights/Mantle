@@ -22,7 +22,7 @@ import java.util.List;
 import slimeknights.mantle.util.SlimeknightException;
 
 /** Same as Container but provides some extra functionality to simplify things */
-public abstract class BaseContainer<T extends TileEntity> extends Container {
+public abstract class BaseContainer<T extends TileEntity & IInventory> extends Container {
 
   protected double maxDist = 8 * 8; // 8 blocks
   protected T tile;
