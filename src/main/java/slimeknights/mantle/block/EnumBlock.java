@@ -8,31 +8,33 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta> extends Block {
-  public final PropertyEnum prop;
+public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> extends Block {
+  public final PropertyEnum<E> prop;
   private final E[] values;
 
-  private static PropertyEnum tmp;
+  private static PropertyEnum<?> tmp;
 
-  public EnumBlock(Material material, PropertyEnum prop, Class<E> clazz) {
+  public EnumBlock(Material material, PropertyEnum<E> prop, Class<E> clazz) {
     super(preInit(material, prop));
     this.prop = prop;
     values = clazz.getEnumConstants();
   }
 
-  private static Material preInit(Material material, PropertyEnum property) {
+  @SuppressWarnings("unchecked")
+  private static Material preInit(Material material, PropertyEnum<?> property) {
     tmp=property;
     return material;
   }
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubBlocks(Item itemIn, CreativeTabs tab, List list) {
+  public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
     for(E type : values) {
       list.add(new ItemStack(this, 1, type.getMeta()));
     }

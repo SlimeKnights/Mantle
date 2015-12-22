@@ -73,7 +73,7 @@ public class ItemMetaDynamic extends Item {
   }
 
   @Override
-  public void getSubItems(Item itemIn, CreativeTabs tab, List subItems) {
+  public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
     for(int i = 0; i <= availabilityMask.length; i++) {
       if(isValid(i)) {
         subItems.add(new ItemStack(itemIn, 1, i));
@@ -119,7 +119,7 @@ public class ItemMetaDynamic extends Item {
   }
 
   @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced) {
+  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
     if(StatCollector.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
       tooltip.add(EnumChatFormatting.GRAY.toString() +
                   LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip"));

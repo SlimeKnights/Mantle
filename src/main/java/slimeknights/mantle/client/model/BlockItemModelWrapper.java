@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.model;
 
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -46,12 +47,12 @@ public class BlockItemModelWrapper implements IPerspectiveAwareModel, IFlexibleB
   }
 
   @Override
-  public List getFaceQuads(EnumFacing p_177551_1_) {
+  public List<BakedQuad> getFaceQuads(EnumFacing p_177551_1_) {
     return parent.getFaceQuads(p_177551_1_);
   }
 
   @Override
-  public List getGeneralQuads() {
+  public List<BakedQuad> getGeneralQuads() {
     return parent.getGeneralQuads();
   }
 

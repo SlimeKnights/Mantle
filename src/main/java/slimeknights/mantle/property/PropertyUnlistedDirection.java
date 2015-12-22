@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public class PropertyUnlistedDirection extends PropertyDirection implements IUnlistedProperty<EnumFacing> {
 
-  public PropertyUnlistedDirection(String name, Collection values) {
+  public PropertyUnlistedDirection(String name, Collection<EnumFacing> values) {
     super(name, values);
   }
 

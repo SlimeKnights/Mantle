@@ -40,12 +40,12 @@ public class ItemBlockMeta extends ItemColored {
     return super.getUnlocalizedName(stack) + "." + name;
   }
 
-  public static void setMappingProperty(Block block, IProperty property) {
+  public static void setMappingProperty(Block block, IProperty<?> property) {
     ((ItemBlockMeta)Item.getItemFromBlock(block)).mappingProperty = property;
   }
 
   @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced) {
+  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
     if(StatCollector.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
       tooltip.add(EnumChatFormatting.GRAY.toString() +
                   LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip"));

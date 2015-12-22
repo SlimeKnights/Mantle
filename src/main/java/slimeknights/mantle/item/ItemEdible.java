@@ -93,13 +93,13 @@ public class ItemEdible extends ItemFood {
   }
 
   @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced) {
+  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
     dynamic.addInformation(stack, playerIn, tooltip, advanced);
   }
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubItems(Item itemIn, CreativeTabs tab, List subItems) {
+  public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
     dynamic.getSubItems(itemIn, tab, subItems);
   }
 
