@@ -1,9 +1,9 @@
 package slimeknights.mantle.network;
 
-import com.google.common.base.Throwables;
-
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -14,10 +14,12 @@ import net.minecraftforge.fml.relauncher.Side;
 public class NetworkWrapper {
 
   public final SimpleNetworkWrapper network;
+  protected final AbstactPacketHandler handler;
   private int id = 0;
 
   public NetworkWrapper(String channelName) {
     network = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
+    handler = new AbstactPacketHandler();
   }
 
   /**
@@ -43,13 +45,18 @@ public class NetworkWrapper {
   }
 
   private void registerPacketImpl(Class<? extends AbstractPacket> packetClazz, Side side) {
-    IMessageHandler<AbstractPacket, AbstractPacket> handler;
-    try {
-      handler = packetClazz.newInstance();
-    } catch(Exception e) {
-      throw Throwables.propagate(e);
-    }
-
     network.registerMessage(handler, packetClazz, id++, side);
+  }
+
+  public static class AbstactPacketHandler implements IMessageHandler<AbstractPacket, IMessage> {
+    @Override
+    public IMessage onMessage(AbstractPacket packet, MessageContext ctx) {
+      if(ctx.side == Side.SERVER) {
+        return packet.handleServer(ctx.getServerHandler());
+      }
+      else {
+        return packet.handleClient(ctx.getClientHandler());
+      }
+    }
   }
 }

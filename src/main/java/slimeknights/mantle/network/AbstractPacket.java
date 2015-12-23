@@ -10,23 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import io.netty.buffer.ByteBuf;
 
-public abstract class AbstractPacket implements IMessage, IMessageHandler {
-
-  @Override
-  public IMessage onMessage(IMessage message, MessageContext ctx) {
-    if(!(message instanceof AbstractPacket)) {
-      return null;
-    }
-
-    AbstractPacket packet = (AbstractPacket) message;
-
-    if(ctx.side == Side.SERVER) {
-      return packet.handleServer(ctx.getServerHandler());
-    }
-    else {
-      return packet.handleClient(ctx.getClientHandler());
-    }
-  }
+public abstract class AbstractPacket implements IMessage {
 
   public abstract IMessage handleClient(NetHandlerPlayClient netHandler);
 
