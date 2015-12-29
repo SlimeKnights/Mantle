@@ -5,12 +5,9 @@ package slimeknights.mantle.pulsar.internal.logging;
  *
  * @author Arkan <arkan@drakon.io>
  */
-public class LogManager
-{
+public class LogManager {
 
-    private LogManager()
-    {
-    } // Singleton.
+    private LogManager() {} // Singleton.
 
     private static final boolean useLog4j2;
 
@@ -19,33 +16,22 @@ public class LogManager
      *
      * If it's present, we can assume we should be using the damn thing.
      */
-    static
-    {
+    static {
         boolean l4j = false;
-        try
-        {
+        try {
             Class cl = Class.forName("org.apache.logging.log4j.LogManager");
-            if (cl == null)
-            {
-                throw new ClassNotFoundException("This should never happen...");
-            }
+            if (cl == null) throw new ClassNotFoundException("This should never happen...");
             l4j = true;
-        }
-        catch (ClassNotFoundException cnfe)
-        {
+        } catch (ClassNotFoundException cnfe) {
             // Ignore
         }
         useLog4j2 = l4j;
     }
 
-    public static ILogger getLogger(String name)
-    {
-        if (useLog4j2)
-        {
+    public static ILogger getLogger(String name) {
+        if (useLog4j2) {
             return new Log4jLogger(name);
-        }
-        else
-        {
+        } else {
             return new JULLogger(name);
         }
     }

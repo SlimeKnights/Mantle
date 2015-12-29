@@ -7,50 +7,42 @@ import java.util.logging.Logger;
  *
  * @author Arkan <arkan@drakon.io>
  */
-public class JULLogger implements ILogger
-{
+public class JULLogger implements ILogger {
 
     private final Logger log;
 
-    public JULLogger(String name)
-    {
-        this.log = Logger.getLogger(name);
+    public JULLogger(String name) {
+        log = Logger.getLogger(name);
     }
 
     @Override
-    public void fatal(String msg)
-    {
-        this.log.severe(msg); // JUL doesn't -have- fatal...
+    public void fatal(String msg) {
+        log.severe(msg); // JUL doesn't -have- fatal...
     }
 
     @Override
-    public void severe(String msg)
-    {
-        this.log.severe(msg);
+    public void severe(String msg) {
+        log.severe(msg);
     }
 
     @Override
-    public void warn(String msg)
-    {
-        this.log.warning(msg);
+    public void warn(String msg) {
+        log.warning(msg);
     }
 
     @Override
-    public void info(String msg)
-    {
-        this.log.info(msg);
+    public void info(String msg) {
+        log.info(msg);
     }
 
     @Override
-    public void debug(String msg)
-    {
-        this.log.fine(msg); // Good enough.
+    public void debug(String msg) {
+        log.fine(msg); // Good enough.
     }
 
     @Override
-    public void trace(String msg)
-    {
-        this.log.finest(msg); // Closest we'll get.
+    public void trace(String msg) {
+        log.finest(msg); // Closest we'll get.
     }
 
 }

@@ -1,60 +1,53 @@
 package slimeknights.mantle.pulsar.pulse;
 
-import com.google.common.eventbus.EventBus;
-import net.minecraftforge.fml.common.Loader;
-
-import slimeknights.mantle.pulsar.internal.BusExceptionHandler;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Metadata wrapper for parsed @Pulse metadata.
  *
  * @author Arkan <arkan@drakon.io>
  */
-public class PulseMeta
-{
+@ParametersAreNonnullByDefault
+public class PulseMeta {
 
     private String id, description;
-
     private boolean forced, enabled, defaultEnabled;
-    public final EventBus bus;
+    private boolean missingDeps = false;
 
-    public PulseMeta(String id, String description, boolean forced, boolean enabled, boolean defaultEnabled)
-    {
+    public PulseMeta(String id, @Nullable String description, boolean forced, boolean enabled, boolean defaultEnabled) {
         this.id = id;
         this.description = description;
         this.forced = forced;
         this.enabled = enabled;
         this.defaultEnabled = defaultEnabled;
-        this.bus = new EventBus(new BusExceptionHandler(Loader.instance().activeModContainer().getModId(), id));
     }
 
-    public String getId()
-    {
-        return this.id;
+    public String getId() {
+        return id;
     }
 
-    public String getDescription()
-    {
-        return this.description;
+    public String getDescription() {
+        return description;
     }
 
-    public boolean isForced()
-    {
-        return this.forced;
+    public boolean isForced() {
+        return !missingDeps && forced;
     }
 
-    public boolean isEnabled()
-    {
-        return this.enabled;
+    public boolean isEnabled() {
+        return !missingDeps && enabled;
     }
 
-    public void setEnabled(boolean enabled)
-    {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public boolean isDefaultEnabled()
-    {
-        return this.defaultEnabled;
+    public void setMissingDeps(boolean missing) {
+        missingDeps = missing;
+    }
+
+    public boolean isDefaultEnabled() {
+        return defaultEnabled;
     }
 }

@@ -1,28 +1,36 @@
 package slimeknights.mantle.pulsar.internal;
 
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
+import slimeknights.mantle.pulsar.internal.logging.ILogger;
+import slimeknights.mantle.pulsar.internal.logging.LogManager;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * Needed because Google EventBus is a derp and by default swallows exceptions (dafuq guys?)
+ * Custom exception catcher that logs events.
  */
-public final class BusExceptionHandler implements SubscriberExceptionHandler {
-    private final String id, pulseId;
+@ParametersAreNonnullByDefault
+public final class BusExceptionHandler implements IExceptionHandler {
+
+    private final String id;
+    private final ILogger logger;
 
     /**
      * @param id Mod ID to include in exception raises.
      */
-    public BusExceptionHandler(String id, String pulseId) {
+    public BusExceptionHandler(String id) {
         this.id = id;
-        this.pulseId = pulseId;
+        this.logger = LogManager.getLogger(id + "-Pulsar-Flightpath");
     }
 
     @Override
-    public void handleException(Throwable exception, SubscriberExceptionContext ctx) {
-        FMLCommonHandler.instance().raiseException(exception, "Pulsar/" + id + "/" + pulseId
-                + " >> Exception uncaught in [" + ctx.getSubscriber().getClass().getName() + ":"
-                + ctx.getSubscriberMethod().getName() + "] for event [" + ctx.getEvent().getClass().getSimpleName()
-                + "]", true);
+    public void handle(Exception ex) {
+        this.logger.severe("Exception caught from a pulse on flightpath for mod ID " + id + ": " + ex);
     }
+
+    @Override
+    public void flush() {
+        // NO-OP
+    }
+
 }

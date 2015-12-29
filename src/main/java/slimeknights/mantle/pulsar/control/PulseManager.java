@@ -1,8 +1,15 @@
 package slimeknights.mantle.pulsar.control;
 
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
+import slimeknights.mantle.pulsar.flightpath.Flightpath;
+import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
+import slimeknights.mantle.pulsar.flightpath.lib.AnnotationLocator;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -10,19 +17,16 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.internal.BusExceptionHandler;
 import slimeknights.mantle.pulsar.internal.Configuration;
 import slimeknights.mantle.pulsar.internal.CrashHandler;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 import slimeknights.mantle.pulsar.internal.logging.ILogger;
 import slimeknights.mantle.pulsar.internal.logging.LogManager;
 import slimeknights.mantle.pulsar.pulse.Pulse;
-import slimeknights.mantle.pulsar.pulse.PulseMeta;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Manager class for a given mods Pulses.
@@ -36,23 +40,19 @@ import slimeknights.mantle.pulsar.pulse.PulseMeta;
  * @author Arkan <arkan@drakon.io>
  */
 @SuppressWarnings("unused")
-public class PulseManager
-{
+@ParametersAreNonnullByDefault
+public class PulseManager {
 
     private ILogger log;
-
     private final boolean useConfig;
 
     private final LinkedHashMap<Object, PulseMeta> pulses = new LinkedHashMap<Object, PulseMeta>();
+    // Use the Google @Subscribe to avoid confusion/breaking changes.
+    private final Flightpath flightpath = new Flightpath(new AnnotationLocator(Subscribe.class));
 
     private boolean blockNewRegistrations = false;
-
     private boolean configLoaded = false;
-
     private IConfiguration conf;
-
-    private EventBus bus;
-
     private String id;
 
     /**
@@ -62,67 +62,67 @@ public class PulseManager
      *
      * @param configName The config file name.
      */
-    public PulseManager(String configName)
-    {
-        this.init();
-        this.useConfig = true;
-        this.conf = new Configuration(configName, this.log);
+    public PulseManager(String configName) {
+        init();
+        useConfig = true;
+        conf = new Configuration(configName, log);
     }
 
     /**
      * Custom configuration-using constructor.
      *
      * Don't like JSON? Heathen. Lets you handle configuration, to whatever media you like - File, database, death star.
-     * Whatever really. See {@link IConfiguration}.
+     * Whatever really. See {@link slimeknights.mantle.pulsar.config.IConfiguration}.
      *
      * @param config Configuration handler.
      */
-    public PulseManager(IConfiguration config)
-    {
-        this.init();
-        this.useConfig = true;
-        this.conf = config;
+    public PulseManager(IConfiguration config) {
+        init();
+        useConfig = true;
+        conf = config;
     }
 
     /**
      * Shared initialiser code between all the constructors.
      */
-    private void init()
-    {
+    private void init() {
         String modId = Loader.instance().activeModContainer().getModId();
         this.id = modId;
-        this.log = LogManager.getLogger("Pulsar-" + modId);
+        log = LogManager.getLogger("Pulsar-" + modId);
+        flightpath.setExceptionHandler(new BusExceptionHandler(modId));
         FMLCommonHandler.instance().registerCrashCallable(new CrashHandler(modId, this));
-        // Attach us to the mods FML bus and setup our own bus
-        this.attachToContainerEventBus(this);
-        bus = new EventBus(new BusExceptionHandler(modId, "<*pulsar*>"));
+        // Attach us to the mods FML bus
+        attachToContainerEventBus(this);
+    }
+
+    /**
+     * Overrides Pulsars default behaviour when a pulse emits an exception. See Flightpath's documentation.
+     *
+     * @param handler The Flightpath-compatible exception handler to use.
+     */
+    public void setPulseExceptionHandler(IExceptionHandler handler) {
+        flightpath.setExceptionHandler(handler);
     }
 
     /**
      * Register a new Pulse with the manager.
      *
-     * This CANNOT be done after preInit() has been invoked.
+     * This CANNOT be done after preinit has been invoked.
      *
      * @param pulse The Pulse to register.
      */
-    public void registerPulse(Object pulse)
-    {
-        if (this.blockNewRegistrations)
-        {
-            throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
-                    + pulse);
-        }
-        if (!this.configLoaded)
-        {
-            this.conf.load();
-            this.configLoaded = true;
+    public void registerPulse(Object pulse) {
+        if (blockNewRegistrations) throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
+                + pulse);
+        if (!configLoaded) {
+            conf.load();
+            configLoaded = true;
         }
 
         String id, description, deps;
         boolean forced, enabled, defaultEnabled, missingDeps = false;
 
-        try
-        {
+        try {
             Pulse p = pulse.getClass().getAnnotation(Pulse.class);
             id = p.id();
             description = p.description();
@@ -130,26 +130,18 @@ public class PulseManager
             forced = p.forced();
             enabled = p.defaultEnable();
             defaultEnabled = p.defaultEnable();
-        }
-        catch (NullPointerException ex)
-        {
+        } catch (NullPointerException ex) {
             throw new RuntimeException("Could not parse @Pulse annotation for Pulse: " + pulse);
         }
 
         // Work around Java not allowing default-null fields.
-        if (description.equals(""))
-        {
-            description = null;
-        }
+        if (description.equals("")) description = null;
 
-        if (!deps.equals(""))
-        {
+        if (!deps.equals("")) {
             String[] parsedDeps = deps.split(";");
-            for (String s : parsedDeps)
-            {
-                if (!Loader.isModLoaded(s))
-                {
-                    this.log.info("Skipping Pulse " + id + "; missing dependency: " + s);
+            for (String s : parsedDeps) {
+                if (!Loader.isModLoaded(s)) {
+                    log.info("Skipping Pulse " + id + "; missing dependency: " + s);
                     missingDeps = true;
                     enabled = false;
                     break;
@@ -158,47 +150,38 @@ public class PulseManager
         }
 
         PulseMeta meta = new PulseMeta(id, description, forced, enabled, defaultEnabled);
-        meta.setEnabled(!missingDeps && this.getEnabledFromConfig(meta));
+        meta.setMissingDeps(missingDeps);
+        meta.setEnabled(getEnabledFromConfig(meta));
 
-        if (meta.isEnabled())
-        {
-            this.pulses.put(pulse, meta);
-            // Attach Pulse to its own internal event bus
-            meta.bus.register(pulse);
+        if (meta.isEnabled()) {
+            pulses.put(pulse, meta);
+            flightpath.register(pulse);
         }
     }
 
     /**
-     * Helper to attach a given object to the modcontainer event bus.
+     * Helper to attach a given object to the mod container event bus.
      *
      * @param obj Object to register.
      */
-    private void attachToContainerEventBus(Object obj)
-    {
-        ModContainer cnt = Loader.instance().activeModContainer();
-        this.log.debug("Attaching [" + obj + "] to event bus for container [" + cnt + "]");
-        try
-        {
-            FMLModContainer mc = (FMLModContainer) cnt;
+    private void attachToContainerEventBus(Object obj) {
+        ModContainer cnt =  Loader.instance().activeModContainer();
+        log.debug("Attaching [" + obj + "] to event bus for container [" + cnt + "]");
+        try {
+            FMLModContainer mc = (FMLModContainer)cnt;
             Field ebf = mc.getClass().getDeclaredField("eventBus");
 
             boolean access = ebf.isAccessible();
             ebf.setAccessible(true);
-            EventBus eb = (EventBus) ebf.get(mc);
+            EventBus eb = (EventBus)ebf.get(mc);
             ebf.setAccessible(access);
 
             eb.register(obj);
-        }
-        catch (NoSuchFieldException nsfe)
-        {
+        } catch (NoSuchFieldException nsfe) {
             throw new RuntimeException("Pulsar >> Incompatible FML mod container (missing eventBus field) - wrong Forge version?");
-        }
-        catch (IllegalAccessException iae)
-        {
+        } catch (IllegalAccessException iae) {
             throw new RuntimeException("Pulsar >> Security Manager blocked access to eventBus on mod container. Cannot continue.");
-        }
-        catch (ClassCastException cce)
-        {
+        } catch (ClassCastException cce) {
             throw new RuntimeException("Pulsar >> Something in the mod container had the wrong type? " + cce.getMessage());
         }
     }
@@ -211,32 +194,36 @@ public class PulseManager
      * @param evt An event object.
      */
     @Subscribe
-    public void propagateEvent(FMLEvent evt) {
+    public void propagateEvent(Object evt) {
         if (evt instanceof FMLPreInitializationEvent) preInit((FMLPreInitializationEvent) evt);
         // We use individual buses due to the EventBus class using a Set rather than a List, thus losing the ordering.
         // This trick is shamelessly borrowed from FML.
-        for (PulseMeta pulse : pulses.values()) {
-            pulse.bus.post(evt);
-        }
+        flightpath.post(evt);
     }
 
-    private boolean getEnabledFromConfig(PulseMeta meta)
-    {
-        if (meta.isForced() || !this.useConfig)
-        {
-            return true; // Forced or no config set.
-        }
+    private boolean getEnabledFromConfig(PulseMeta meta) {
+        if (meta.isForced() || !useConfig) return true; // Forced or no config set.
 
-        return this.conf.isModuleEnabled(meta);
+        return conf.isModuleEnabled(meta);
     }
 
-    public void preInit(FMLPreInitializationEvent evt)
-    {
-        if (!this.blockNewRegistrations)
-        {
-            this.conf.flush(); // First preInit call, so flush config
+    private void preInit(FMLPreInitializationEvent evt) {
+        if (!blockNewRegistrations) conf.flush(); // First preInit call, so flush config
+        blockNewRegistrations = true;
+    }
+
+    private boolean hasRequiredPulses(Map.Entry<Object, PulseMeta> entry) {
+        String deps = entry.getKey().getClass().getAnnotation(Pulse.class).pulsesRequired();
+        if (!deps.equals("")) {
+            String[] parsedDeps = deps.split(";");
+            for (String s : parsedDeps) {
+                if (!isPulseLoaded(s)) {
+                    log.info("Skipping Pulse " + entry.getValue().getId() + "; missing pulse: " + s);
+                    return false;
+                }
+            }
         }
-        this.blockNewRegistrations = true;
+        return true;
     }
 
     /**
@@ -245,12 +232,9 @@ public class PulseManager
      * @param pulseId The ID to check.
      * @return Whether the ID was present.
      */
-    public boolean isPulseLoaded(String pulseId)
-    {
-        for (Map.Entry<Object, PulseMeta> entry : this.pulses.entrySet())
-        {
-            if (entry.getValue().getId().equals(pulseId))
-            {
+    public boolean isPulseLoaded(String pulseId) {
+        for(Map.Entry<Object, PulseMeta> entry : pulses.entrySet()) {
+            if (entry.getValue().getId().equals(pulseId)) {
                 return true;
             }
         }
@@ -262,8 +246,7 @@ public class PulseManager
     }
 
     @Override
-    public String toString()
-    {
-        return "PulseManager[" + this.id + "]";
+    public String toString() {
+        return "PulseManager[" + id + "]";
     }
 }

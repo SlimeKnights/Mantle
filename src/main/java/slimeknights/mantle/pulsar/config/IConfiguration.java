@@ -2,13 +2,15 @@ package slimeknights.mantle.pulsar.config;
 
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Interface for config handlers.
  *
  * @author Arkan <arkan@drakon.io>
  */
-public interface IConfiguration
-{
+@ParametersAreNonnullByDefault
+public interface IConfiguration {
 
     /**
      * Perform any configuration loading required.
