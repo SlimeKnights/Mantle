@@ -3,6 +3,8 @@ package slimeknights.mantle.util;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -33,6 +35,46 @@ public abstract class RecipeMatch {
   }
 
   public abstract Match matches(ItemStack[] stacks);
+
+  public static RecipeMatch of(String oredict) {
+    return of(oredict, 1);
+  }
+
+  public static RecipeMatch of(String oredict, int matched) {
+    return of(oredict, 1, matched);
+  }
+
+  public static RecipeMatch of(String oredict, int amount, int matched) {
+    return new RecipeMatch.Oredict(oredict, amount, matched);
+  }
+
+  public static RecipeMatch of(net.minecraft.item.Item item) {
+    return of(item, 1);
+  }
+
+  public static RecipeMatch of(net.minecraft.item.Item item, int matched) {
+    return of(item, 1, matched);
+  }
+
+  public static RecipeMatch of(net.minecraft.item.Item item, int amount, int matched) {
+    return new RecipeMatch.Item(new ItemStack(item), amount, matched);
+  }
+
+  public static RecipeMatch of(Block block) {
+    return of(block, 1);
+  }
+
+  public static RecipeMatch of(Block block, int matched) {
+    return of(block, 1, matched);
+  }
+
+  public static RecipeMatch of(Block block, int amount, int matched) {
+    return new RecipeMatch.Item(new ItemStack(block), amount, matched);
+  }
+
+  public static RecipeMatch ofNBT(ItemStack stack) {
+    return new RecipeMatch.ItemCombination(1, stack);
+  }
 
   /** Removes the match from the stacks */
   public static void removeMatch(ItemStack[] stacks, Match match) {
