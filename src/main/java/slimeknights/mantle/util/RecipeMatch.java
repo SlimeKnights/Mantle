@@ -73,7 +73,11 @@ public abstract class RecipeMatch {
   }
 
   public static RecipeMatch ofNBT(ItemStack stack) {
-    return new RecipeMatch.ItemCombination(1, stack);
+    return ofNBT(stack, 1);
+  }
+
+  public static RecipeMatch ofNBT(ItemStack stack, int matched) {
+    return new RecipeMatch.ItemCombination(matched, stack);
   }
 
   /** Removes the match from the stacks */
