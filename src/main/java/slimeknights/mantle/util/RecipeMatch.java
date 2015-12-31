@@ -1,5 +1,6 @@
 package slimeknights.mantle.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -33,6 +34,11 @@ public abstract class RecipeMatch {
     this.amountMatched = amountMatched;
     this.amountNeeded = amountNeeded;
   }
+
+  /**
+   * Return all possible inputs that are a single item, if applicable.
+   */
+  public abstract List<ItemStack> getInputs();
 
   public abstract Match matches(ItemStack[] stacks);
 
@@ -121,6 +127,11 @@ public abstract class RecipeMatch {
     }
 
     @Override
+    public List<ItemStack> getInputs() {
+      return ImmutableList.of(template);
+    }
+
+    @Override
     public Match matches(ItemStack[] stacks) {
       List<ItemStack> found = Lists.newLinkedList();
       int stillNeeded = amountNeeded;
@@ -156,6 +167,14 @@ public abstract class RecipeMatch {
       super(amountMatched, 0);
 
       this.itemStacks = stacks;
+    }
+
+    @Override
+    public List<ItemStack> getInputs() {
+      if(itemStacks.length == 0 || itemStacks.length > 1) {
+        return ImmutableList.of();
+      }
+      return ImmutableList.of(itemStacks[0]);
     }
 
     @Override
@@ -204,6 +223,11 @@ public abstract class RecipeMatch {
     public Oredict(String oredictEntry, int amountNeeded, int amountMatched) {
       super(amountMatched, amountNeeded);
       this.oredictEntry = OreDictionary.getOres(oredictEntry);
+    }
+
+    @Override
+    public List<ItemStack> getInputs() {
+      return oredictEntry;
     }
 
     @Override
