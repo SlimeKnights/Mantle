@@ -26,7 +26,7 @@ public class AnnotationLocator implements ISubscriberLocator {
     public @Nonnull Map<Class, Set<Method>> findSubscribers(Object obj) {
         Map<Class, Set<Method>> methods = new HashMap<Class, Set<Method>>();
         for (Method m : obj.getClass().getMethods()) {
-            if (m.isAnnotationPresent(annotation) && m.getParameterCount() == 1) {
+            if (m.isAnnotationPresent(annotation) && m.getParameterTypes().length == 1) {
                 Class param = m.getParameterTypes()[0];
                 if (!methods.containsKey(param)) methods.put(param, new HashSet<Method>());
                 methods.get(param).add(m);
