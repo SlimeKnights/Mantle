@@ -142,14 +142,14 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
       VertexFormatElement.EnumUsage usage = parent.getVertexFormat().getElement(element).getUsage();
 
       // transform normals and position
-      if(usage == VertexFormatElement.EnumUsage.POSITION) {
+      if(usage == VertexFormatElement.EnumUsage.POSITION && data.length >= 3) {
         Vector4f vec = new Vector4f(data);
         vec.setW(1.0f);
         transformation.transform(vec);
         data = new float[4];
         vec.get(data);
       }
-      else if(usage == VertexFormatElement.EnumUsage.NORMAL) {
+      else if(usage == VertexFormatElement.EnumUsage.NORMAL && data.length >= 3) {
         Vector3f vec = new Vector3f(data);
         normalTransformation.transform(vec);
         vec.normalize();
