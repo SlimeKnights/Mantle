@@ -1,32 +1,33 @@
 package slimeknights.mantle.pulsar.control;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLModContainer;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.flightpath.Flightpath;
 import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
 import slimeknights.mantle.pulsar.flightpath.lib.AnnotationLocator;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLModContainer;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.internal.BusExceptionHandler;
 import slimeknights.mantle.pulsar.internal.Configuration;
 import slimeknights.mantle.pulsar.internal.CrashHandler;
-import slimeknights.mantle.pulsar.pulse.PulseMeta;
-import slimeknights.mantle.pulsar.internal.logging.ILogger;
-import slimeknights.mantle.pulsar.internal.logging.LogManager;
 import slimeknights.mantle.pulsar.pulse.Pulse;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 /**
  * Manager class for a given mods Pulses.
@@ -43,7 +44,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class PulseManager {
 
-    private ILogger log;
+    private Logger log;
     private final boolean useConfig;
 
     private final LinkedHashMap<Object, PulseMeta> pulses = new LinkedHashMap<Object, PulseMeta>();

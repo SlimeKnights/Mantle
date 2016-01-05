@@ -9,8 +9,10 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraftforge.fml.common.Loader;
+
+import org.apache.logging.log4j.Logger;
+
 import slimeknights.mantle.pulsar.config.IConfiguration;
-import slimeknights.mantle.pulsar.internal.logging.ILogger;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -27,7 +29,7 @@ public class Configuration implements IConfiguration {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final String confPath;
-    private final ILogger logger;
+    private final Logger logger;
 
     private Map<String, ConfigEntry> modules;
 
@@ -39,7 +41,7 @@ public class Configuration implements IConfiguration {
      * @param confName The config file name (without path or .json suffix)
      * @param logger The logger to send debug info to.
      */
-    public Configuration(String confName, ILogger logger) {
+    public Configuration(String confName, Logger logger) {
         this.confPath = Loader.instance().getConfigDir().toString() + File.separator + confName + ".json";
         this.logger = logger;
     }

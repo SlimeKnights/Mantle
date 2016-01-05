@@ -1,8 +1,9 @@
 package slimeknights.mantle.pulsar.internal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
-import slimeknights.mantle.pulsar.internal.logging.ILogger;
-import slimeknights.mantle.pulsar.internal.logging.LogManager;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -13,7 +14,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public final class BusExceptionHandler implements IExceptionHandler {
 
     private final String id;
-    private final ILogger logger;
+    private final Logger logger;
 
     /**
      * @param id Mod ID to include in exception raises.
@@ -25,7 +26,7 @@ public final class BusExceptionHandler implements IExceptionHandler {
 
     @Override
     public void handle(Exception ex) {
-        this.logger.severe("Exception caught from a pulse on flightpath for mod ID " + id + ": " + ex);
+        this.logger.error("Exception caught from a pulse on flightpath for mod ID " + id + ": ", ex);
     }
 
     @Override
