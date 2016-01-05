@@ -27,6 +27,9 @@ public final class BusExceptionHandler implements IExceptionHandler {
     @Override
     public void handle(Exception ex) {
         this.logger.error("Exception caught from a pulse on flightpath for mod ID " + id + ": ", ex);
+        if(ex instanceof RuntimeException) {
+            throw (RuntimeException)ex;
+        }
     }
 
     @Override
