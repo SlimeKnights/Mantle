@@ -54,6 +54,18 @@ public abstract class RecipeMatch {
     return new RecipeMatch.Oredict(oredict, amount, matched);
   }
 
+  public static RecipeMatch of(List<ItemStack> oredict) {
+    return of(oredict, 1);
+  }
+
+  public static RecipeMatch of(List<ItemStack> oredict, int matched) {
+    return of(oredict, 1, matched);
+  }
+
+  public static RecipeMatch of(List<ItemStack> oredict, int amount, int matched) {
+    return new RecipeMatch.Oredict(oredict, amount, matched);
+  }
+
   public static RecipeMatch of(net.minecraft.item.Item item) {
     return of(item, 1);
   }
@@ -215,6 +227,15 @@ public abstract class RecipeMatch {
   public static class Oredict extends RecipeMatch {
 
     private final List<ItemStack> oredictEntry; // todo: change this to the actual list in the oredict
+
+    public Oredict(List<ItemStack> oredictEntry, int amountNeeded) {
+      this(oredictEntry, amountNeeded, 1);
+    }
+
+    public Oredict(List<ItemStack> oredictEntry, int amountNeeded, int amountMatched) {
+      super(amountMatched, amountNeeded);
+      this.oredictEntry = oredictEntry;
+    }
 
     public Oredict(String oredictEntry, int amountNeeded) {
       this(oredictEntry, amountNeeded, 1);
