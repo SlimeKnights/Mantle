@@ -27,3 +27,5 @@ version.properties
 /*.classpath
 /*.project
 /.settings/
+/*.launch
+/out

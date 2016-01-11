@@ -4,25 +4,27 @@
  * Based on TConstruct's master build file
  * Authors: Sunstrike, ProgWML6
  * Help from AbrarSyed
- */
+*/
 
 buildscript {
     repositories {
         mavenCentral()
-	mavenLocal()
+        mavenLocal()
+        jcenter()
         maven {
-            name = 'ForgeFS'
-            url = 'http://files.minecraftforge.net/maven'
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
         }
-	maven {
+        maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 repositories {
     mavenLocal()
@@ -30,11 +32,19 @@ repositories {
         name 'ForgeFS'
         url 'http://files.minecraftforge.net/maven'
     }
+        maven {
+        name 'CB Maven FS'
+        url "http://chickenbones.net/maven/"
+    }
+    maven {
+        name 'forge'
+        url 'http://files.minecraftforge.net/maven'
+    }
 }
 
-
-apply plugin: 'forge'
-group = 'mantle'
+group = 'slimeknights.mantle'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 // Define properties file
 ext.configFile = file "build.properties"
@@ -46,8 +56,7 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-// sets version to the slimeKnights default version format
-// Finds and sets version data
+// sets version to the slimeKnights version format
 task buildInfo {
     def cmd = "git rev-parse --short HEAD"
     def proc = cmd.execute()
@@ -75,41 +84,52 @@ if (System.getenv().ARTIFACT_VERSION != null) {
 version = "${config.minecraft_version}-${artifact_version}"
 
 minecraft {
-    version = config.forge_version + "-" + config.minecraft_version
+    version = config.minecraft_version + "-" + config.forge_version
+    mappings = config.mappings
     runDir = 'run'
     replace '${version}', project.version
-    mappings = "snapshot_${config.snapshot}"
 }
 
-
-sourceSets {
-    main {
-        resources {
-            srcDir 'resources'
-        }
-        java {
-            srcDir 'src'
-        }
-    }
+configurations {
+    shade
+    compile.extendsFrom shade
 }
+
+dependencies {
+    //compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
+    //compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.ccc_version}:dev"
+    //compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
+    // Configuration
+    shade "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
+    shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"
+
+}
+
 processResources
 {
     inputs.property "version", artifact_version
     inputs.property "MCversion", config.minecraft_version
-
-        // replace stuff in text files, not binary ones.
+    // replace stuff in text files, not binary ones.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
-                // replace version and MCVersion
+        // replace version and MCVersion
         expand 'version':artifact_version,'MCversion':config.minecraft_version
     }
-        
-        // copy everything else, thats not text
+    // copy everything else, thats not text
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.info'
     }
 }
 
+jar {
+    // Shading
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+
+}
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
     from sourceSets.main.output
@@ -127,9 +147,7 @@ artifacts {
 }
 
 task("uploadJars", dependsOn:"build") {
-    
     description = "uploads JARs"
-
     if (project.hasProperty("local_maven")) {
 	    apply plugin: 'maven'
             uploadArchives {
