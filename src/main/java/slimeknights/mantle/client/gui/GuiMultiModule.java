@@ -89,6 +89,9 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   @Override
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+    drawContainerName();
+    drawPlayerInventoryName();
+    
     for(GuiModule module : modules) {
       // set correct state for the module
       GlStateManager.pushMatrix();
@@ -98,9 +101,6 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
       module.handleDrawGuiContainerForegroundLayer(mouseX, mouseY);
       GlStateManager.popMatrix();
     }
-
-    drawContainerName();
-    drawPlayerInventoryName();
   }
 
   protected void drawBackground(ResourceLocation background) {
