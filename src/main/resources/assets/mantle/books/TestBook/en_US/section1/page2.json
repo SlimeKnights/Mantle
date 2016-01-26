@@ -1,0 +1,21 @@
+{
+  "text": [
+    {
+      "text": "Long ago in a galaxy far ",
+      "color": "gold"
+    },
+    {
+      "text": "far",
+      "underlined": true,
+      "tooltip": [
+        "You missed the joke",
+        "By Skyla"
+      ],
+      "color": "gold"
+    },
+    {
+      "text": " away",
+      "color": "gold"
+    }
+  ]
+}

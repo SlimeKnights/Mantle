@@ -209,7 +209,7 @@ public class PulseManager {
     }
 
     private void preInit(FMLPreInitializationEvent evt) {
-        if (!blockNewRegistrations) conf.flush(); // First preInit call, so flush config
+        if (!blockNewRegistrations) conf.flush(); // First init call, so flush config
         blockNewRegistrations = true;
     }
 

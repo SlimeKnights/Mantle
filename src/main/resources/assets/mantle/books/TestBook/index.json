@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Test Section 1",
+    "icon": {
+      "file": "images/testIcon.png"
+    },
+    "data": "sections/section1.json"
+  }
+]
