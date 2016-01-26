@@ -4,19 +4,19 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-/**
- * @author fuj1n
- */
+@SideOnly(Side.CLIENT)
 public class ElementItem extends BookElement {
 
   public ItemStack item;
 
-  public ElementItem(int x, int y, Item item){
+  public ElementItem(int x, int y, Item item) {
     this(x, y, new ItemStack(item));
   }
 
-  public ElementItem(int x, int y, Block item){
+  public ElementItem(int x, int y, Block item) {
     this(x, y, new ItemStack(item));
   }
 

@@ -4,9 +4,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class ImageData {
 
@@ -26,7 +23,7 @@ public class ImageData {
 
   public transient ResourceLocation location;
 
-  static{
+  static {
     MISSING.location = new ResourceLocation("mantle:textures/gui/missingno.png");
     MISSING.texWidth = 32;
     MISSING.texHeight = 32;

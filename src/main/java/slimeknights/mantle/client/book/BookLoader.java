@@ -10,15 +10,18 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.client.book.data.content.ContentBlank;
 import slimeknights.mantle.client.book.data.content.ContentError;
-import slimeknights.mantle.client.book.data.content.*;
+import slimeknights.mantle.client.book.data.content.ContentImage;
+import slimeknights.mantle.client.book.data.content.ContentImageText;
+import slimeknights.mantle.client.book.data.content.ContentText;
+import slimeknights.mantle.client.book.data.content.ContentTextImage;
+import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
+import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.gui.book.GuiBook;
 import static slimeknights.mantle.client.book.ResourceHelper.setBookRoot;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class BookLoader implements IResourceManagerReloadListener {
 

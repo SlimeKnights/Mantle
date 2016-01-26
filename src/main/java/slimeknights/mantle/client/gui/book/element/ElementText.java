@@ -5,9 +5,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.gui.book.TextDataRenderer;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class ElementText extends SizedBookElement {
 

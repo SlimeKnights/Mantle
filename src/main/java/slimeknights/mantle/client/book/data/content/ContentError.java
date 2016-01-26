@@ -1,19 +1,13 @@
 package slimeknights.mantle.client.book.data.content;
 
 import java.util.ArrayList;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.gui.book.GuiBook;
 import slimeknights.mantle.client.gui.book.element.BookElement;
-import slimeknights.mantle.client.gui.book.element.ElementItem;
 import slimeknights.mantle.client.gui.book.element.ElementText;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class ContentError extends PageContent {
 

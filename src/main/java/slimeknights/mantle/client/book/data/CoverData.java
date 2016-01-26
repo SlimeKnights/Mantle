@@ -1,8 +1,9 @@
 package slimeknights.mantle.client.book.data;
 
-/**
- * @author fuj1n
- */
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class CoverData implements IDataItem {
 
   public int color = 0x8B4631;

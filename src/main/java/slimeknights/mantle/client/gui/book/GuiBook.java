@@ -16,9 +16,6 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class GuiBook extends GuiScreen {
 

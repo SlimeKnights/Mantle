@@ -12,9 +12,6 @@ import static slimeknights.mantle.client.book.ResourceHelper.getResource;
 import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation;
 import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class PageData implements IDataItem {
 
@@ -40,11 +37,11 @@ public class PageData implements IDataItem {
         e.printStackTrace();
       }
 
-    for(Field f : content.getClass().getFields()){
-      if(f.getType().isAssignableFrom(ImageData.class))
+    for (Field f : content.getClass().getFields()) {
+      if (f.getType().isAssignableFrom(ImageData.class))
         try {
           f.setAccessible(true);
-          ImageData d = (ImageData)f.get(content);
+          ImageData d = (ImageData) f.get(content);
           d.location = getResourceLocation(d.file);
         } catch (IllegalAccessException e) {
           e.printStackTrace();

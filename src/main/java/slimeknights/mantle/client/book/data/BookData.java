@@ -12,9 +12,6 @@ import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation
 import static slimeknights.mantle.client.book.ResourceHelper.resourceExists;
 import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
 

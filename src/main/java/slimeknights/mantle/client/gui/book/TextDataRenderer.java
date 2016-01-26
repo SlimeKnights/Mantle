@@ -11,9 +11,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.data.element.TextData;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class TextDataRenderer {
 

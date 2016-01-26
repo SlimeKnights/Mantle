@@ -10,9 +10,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class ResourceHelper {
 

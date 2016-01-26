@@ -13,9 +13,6 @@ import static slimeknights.mantle.client.book.ResourceHelper.getResource;
 import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation;
 import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
 

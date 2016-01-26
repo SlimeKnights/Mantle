@@ -3,9 +3,6 @@ package slimeknights.mantle.client.gui.book.element;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-/**
- * @author fuj1n
- */
 @SideOnly(Side.CLIENT)
 public abstract class SizedBookElement extends BookElement {
 
