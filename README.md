@@ -1,4 +1,4 @@
-![Mantle logo](https://raw.github.com/SlimeKnights/Mantle/master/resources/Mantle.png)
+![Mantle logo](https://raw.github.com/SlimeKnights/Mantle/master/src/main/resources/Mantle.png)
 #Mantle
 **Shared code for Forge mods**
 
