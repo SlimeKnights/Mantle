@@ -18,6 +18,6 @@ public class ContentError extends PageContent {
     text[0].color = "dark_red";
     text[0].underlined = true;
 
-    list.add(new ElementText(15, 15, GuiBook.PAGE_WIDTH - 30, GuiBook.PAGE_HEIGHT - 30, text));
+    list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, text));
   }
 }

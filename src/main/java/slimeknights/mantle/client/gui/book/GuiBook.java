@@ -22,19 +22,30 @@ public class GuiBook extends GuiScreen {
   private static final ResourceLocation TEX_BOOK = new ResourceLocation("mantle:textures/gui/book.png");
   private static final ResourceLocation TEX_BOOKFRONT = new ResourceLocation("mantle:textures/gui/bookfront.png");
 
-  public static final int PAGE_WIDTH = 206;
-  public static final int PAGE_HEIGHT = 200;
+  public static final int PAGE_PADDING = 8;
+  public static final int PAGE_MARGIN = 18;
+
+  public static final float PAGE_SCALE = 0.5F;
+  public static final int PAGE_WIDTH_UNSCALED = 206;
+  public static final int PAGE_HEIGHT_UNSCALED = 200;
+
+  // For best results, make sure both PAGE_WIDTH_UNSCALED - (PAGE_PADDING + PAGE_MARGIN) * 2 and PAGE_HEIGHT_UNSCALED - (PAGE_PADDING + PAGE_MARGIN) * 2 divide evenly into PAGE_SCALE (without remainder)
+  public static final int PAGE_WIDTH = (int)((PAGE_WIDTH_UNSCALED - (PAGE_PADDING + PAGE_MARGIN) * 2) / PAGE_SCALE);
+  public static final int PAGE_HEIGHT = (int)((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING + PAGE_MARGIN) * 2) / PAGE_SCALE);
 
   public static boolean side = false;
 
-  private GuiArrow leftArrow, rightArrow;
+  private GuiArrow previousArrow, nextArrow, backArrow, indexArrow;
 
-  private final BookData book;
+  public final BookData book;
 
   private int page = -1;
+  private int oldPage = -2;
   private ArrayList<BookElement> leftElements = new ArrayList<>();
   private ArrayList<BookElement> rightElements = new ArrayList<>();
   //TODO page cache
+
+  private boolean halt = false;
 
   public GuiBook(BookData book) {
     this.book = book;
@@ -43,9 +54,9 @@ public class GuiBook extends GuiScreen {
   public void drawerTransform(boolean rightSide) {
     side = rightSide;
     if (rightSide)
-      GlStateManager.translate(width / 2, height / 2 - PAGE_HEIGHT / 2, 0);
+      GlStateManager.translate(width / 2 + PAGE_PADDING + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING + PAGE_MARGIN, 0);
     else
-      GlStateManager.translate(width / 2 - PAGE_WIDTH, height / 2 - PAGE_HEIGHT / 2, 0);
+      GlStateManager.translate(width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING + PAGE_MARGIN, 0);
 
   }
 
@@ -53,12 +64,20 @@ public class GuiBook extends GuiScreen {
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     FontRenderer font = mc.fontRendererObj;
 
+    // The books are unreadable at Gui Scale set to small, so we'll double the scale
+    if(mc.gameSettings.guiScale == 1){
+      GlStateManager.scale(2F, 2F, 2F);
+
+      mouseX /= 2;
+      mouseY /= 2;
+    }
+
     GlStateManager.pushMatrix();
     GlStateManager.color(1F, 1F, 1F);
 
-    float coverR = ((book.cover.color >> 16) & 0xff) / 255.F;
-    float coverG = ((book.cover.color >> 8) & 0xff) / 255.F;
-    float coverB = (book.cover.color & 0xff) / 255.F;
+    float coverR = ((book.appearance.coverColor >> 16) & 0xff) / 255.F;
+    float coverG = ((book.appearance.coverColor >> 8) & 0xff) / 255.F;
+    float coverB = (book.appearance.coverColor & 0xff) / 255.F;
 
     TextureManager render = this.mc.renderEngine;
 
@@ -66,44 +85,56 @@ public class GuiBook extends GuiScreen {
       render.bindTexture(TEX_BOOKFRONT);
 
       GlStateManager.color(coverR, coverG, coverB);
-      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH / 2, height / 2 - PAGE_HEIGHT / 2, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, 512, 512);
+      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
       GlStateManager.color(1F, 1F, 1F);
 
-      if (!book.cover.title.isEmpty()) {
-        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH / 2, height / 2 - PAGE_HEIGHT / 2, 0, PAGE_HEIGHT, PAGE_WIDTH, PAGE_HEIGHT, 512, 512);
+      if (!book.appearance.title.isEmpty()) {
+        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
 
         GlStateManager.pushMatrix();
 
-        float scale = font.getStringWidth(book.cover.title) <= 67 ? 2.5F : 2F;
+        float scale = font.getStringWidth(book.appearance.title) <= 67 ? 2.5F : 2F;
 
         GlStateManager.scale(scale, scale, 1F);
-        font.drawString(book.cover.title, (width / 2) / scale + 3 - font.getStringWidth(book.cover.title) / 2, (height / 2 - font.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
+        font.drawString(book.appearance.title, (width / 2) / scale + 3 - font.getStringWidth(book.appearance.title) / 2, (height / 2 - font.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
         GlStateManager.popMatrix();
       }
 
-      if (!book.cover.subtitle.isEmpty()) {
+      if (!book.appearance.subtitle.isEmpty()) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(1.5F, 1.5F, 1F);
-        font.drawString(book.cover.subtitle, (width / 2) / 1.5F + 7 - font.getStringWidth(book.cover.subtitle) / 2, (height / 2 + 100 - font.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
+        font.drawString(book.appearance.subtitle, (width / 2) / 1.5F + 7 - font.getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - font.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
         GlStateManager.popMatrix();
       }
     } else {
       render.bindTexture(TEX_BOOK);
 
       GlStateManager.color(coverR, coverG, coverB);
-      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH, height / 2 - PAGE_HEIGHT / 2, 0, 0, PAGE_WIDTH * 2, PAGE_HEIGHT, 512, 512);
+      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, 512, 512);
 
       GlStateManager.color(1F, 1F, 1F);
 
       if (page != 0) {
-        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH, height / 2 - PAGE_HEIGHT / 2, 0, PAGE_HEIGHT, PAGE_WIDTH, PAGE_HEIGHT, 512, 512);
+        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
 
         GlStateManager.pushMatrix();
         drawerTransform(false);
 
+        GlStateManager.scale(PAGE_SCALE, PAGE_SCALE, 1F);
+
+        if(book.appearance.drawPageNumbers) {
+          String pNum = (page - 1) * 2 + 2 + "";
+          font.drawString(pNum, PAGE_WIDTH / 2 - font.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
+        }
+
         for (BookElement element : leftElements) {
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.draw(Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH), this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT / 2), partialTicks);
+          element.draw((int)((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int)((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+
+          if(halt){
+            halt = false;
+            return;
+          }
         }
 
         GlStateManager.popMatrix();
@@ -114,15 +145,28 @@ public class GuiBook extends GuiScreen {
       // Set color back to white
       GlStateManager.color(1F, 1F, 1F, 1F);
 
-      if (!(page == book.fullPageCount - 1 && book.pageCount % 2 == 0)) {
-        drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT / 2, PAGE_WIDTH, PAGE_HEIGHT, PAGE_WIDTH, PAGE_HEIGHT, 512, 512);
+      if ((page < book.fullPageCount && book.pageCount % 2 != 0) && page != book.fullPageCount) {
+        drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
 
         GlStateManager.pushMatrix();
         drawerTransform(true);
 
+        GlStateManager.scale(PAGE_SCALE, PAGE_SCALE, 1F);
+
+        if(book.appearance.drawPageNumbers) {
+          String pNum = (page - 1) * 2 + 3 + "";
+          font.drawString(pNum, PAGE_WIDTH / 2 - font.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
+        }
+
         for (BookElement element : rightElements) {
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.draw(Mouse.getX() * this.width / this.mc.displayWidth - (width / 2), this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT / 2), partialTicks);
+          element.draw((int)((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2) + PAGE_PADDING + PAGE_MARGIN) / PAGE_SCALE), (int)((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+
+
+          if(halt){
+            halt = false;
+            return;
+          }
         }
 
         GlStateManager.popMatrix();
@@ -132,6 +176,30 @@ public class GuiBook extends GuiScreen {
     super.drawScreen(mouseX, mouseY, partialTicks);
 
     GlStateManager.popMatrix();
+  }
+
+  public void openPage(int page){
+    openPage(page, false);
+  }
+
+  public void openPage(int page, boolean returner) {
+    int bookPage = -1;
+
+    if(page % 2 == 0){
+      bookPage = (page - 1) / 2 + 1;
+    }else{
+      bookPage = (page - 2) / 2 + 1;
+    }
+
+    if(bookPage >= -1 && bookPage < book.fullPageCount){
+      if(returner)
+        oldPage = this.page;
+
+      this.page = bookPage;
+      buildPages();
+    }
+
+    halt = true;
   }
 
   private void buildPages() {
@@ -155,17 +223,30 @@ public class GuiBook extends GuiScreen {
       if (rightPage != null)
         rightPage.content.build(rightElements);
     }
+
+    for(BookElement element : leftElements)
+      element.parent = this;
+    for(BookElement element : rightElements)
+      element.parent = this;
   }
 
   @Override
   public void initGui() {
     super.initGui();
 
-    leftArrow = new GuiArrow(0, -50, -50, 1);
-    rightArrow = new GuiArrow(1, -50, -50, 0);
+    // The books are unreadable at Gui Scale set to small, so we'll double the scale, and of course half the size so that all our code still works as it should
+    if(mc.gameSettings.guiScale == 1){
+      width /= 2F;
+      height /= 2F;
+    }
 
-    buttonList.add(leftArrow);
-    buttonList.add(rightArrow);
+    previousArrow = new GuiArrow(0, -50, -50, 1, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    nextArrow = new GuiArrow(1, -50, -50, 0, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 - GuiArrow.HEIGHT / 2 + PAGE_HEIGHT / 3, 3, book.appearance.arrowColor, book.appearance.arrowColorHover);
+
+    buttonList.add(previousArrow);
+    buttonList.add(nextArrow);
+    buttonList.add(backArrow);
 
     buildPages();
   }
@@ -174,32 +255,37 @@ public class GuiBook extends GuiScreen {
   public void updateScreen() {
     super.updateScreen();
 
-    leftArrow.visible = page != -1;
-    rightArrow.visible = page != book.fullPageCount - 1;
+    previousArrow.visible = page != -1;
+    nextArrow.visible = page < book.fullPageCount - (book.pageCount % 2 != 0 ? 0 : 1);
+    backArrow.visible = oldPage >= -1;
 
     if (page == -1) {
-      rightArrow.xPosition = width / 2 + 80;
+      nextArrow.xPosition = width / 2 + 80;
     } else {
-      leftArrow.xPosition = width / 2 - 190;
-      rightArrow.xPosition = width / 2 + 170;
+      previousArrow.xPosition = width / 2 - 184;
+      nextArrow.xPosition = width / 2 + 165;
     }
 
-    leftArrow.yPosition = height / 2 + 89;
-    rightArrow.yPosition = height / 2 + 89;
+    previousArrow.yPosition = height / 2 + 75;
+    nextArrow.yPosition = height / 2 + 75;
   }
 
   @Override
   public void actionPerformed(GuiButton button) {
-    if (button == leftArrow) {
+    if (button == previousArrow) {
       page--;
       if (page < -1)
         page = -1;
-    } else if (button == rightArrow) {
+    } else if (button == nextArrow) {
       page++;
-      if (page > book.fullPageCount - 1)
+      if (page > book.fullPageCount - (book.pageCount % 2 != 0 ? 0 : 1))
         page = book.fullPageCount - 1;
+    } else if (button == backArrow) {
+      if(oldPage >= -2)
+        page = oldPage;
     }
 
+    oldPage = -2;
     buildPages();
   }
 
@@ -208,8 +294,28 @@ public class GuiBook extends GuiScreen {
     super.keyTyped(typedChar, keyCode);
 
     if (keyCode == Keyboard.KEY_LEFT || keyCode == Keyboard.KEY_A)
-      actionPerformed(leftArrow);
+      actionPerformed(previousArrow);
     else if (keyCode == Keyboard.KEY_RIGHT || keyCode == Keyboard.KEY_D)
-      actionPerformed(rightArrow);
+      actionPerformed(nextArrow);
+  }
+
+  @Override
+  protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+  {
+    super.mouseClicked(mouseX, mouseY, mouseButton);
+
+    boolean right = false;
+
+    mouseX = (int)((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE);
+    mouseY = (int)((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE);
+
+    if(mouseX > PAGE_WIDTH) {
+      mouseX -= PAGE_WIDTH;
+      right = true;
+    }
+
+    for(BookElement element : right ? rightElements : leftElements){
+      element.mouseClicked(mouseX, mouseY, mouseButton);
+    }
   }
 }

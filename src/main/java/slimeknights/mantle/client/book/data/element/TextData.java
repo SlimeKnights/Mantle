@@ -14,6 +14,8 @@ public class TextData {
   public boolean underlined = false;
   public boolean strikethrough = false;
   public boolean obfuscated = false;
+  public boolean paragraph = false;
+  public float scale = 1.F;
   public String onClick = "";
   public String[] tooltip = null;
 

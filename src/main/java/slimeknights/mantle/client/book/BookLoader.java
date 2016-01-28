@@ -9,6 +9,8 @@ import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import slimeknights.mantle.client.book.action.StringActionProcessor;
+import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.content.ContentBlank;
 import slimeknights.mantle.client.book.data.content.ContentError;
@@ -37,6 +39,7 @@ public class BookLoader implements IResourceManagerReloadListener {
   public BookLoader() {
     ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
 
+    // Register page types
     registerPageType("blank", ContentBlank.class);
     registerPageType("text", ContentText.class);
     registerPageType("image", ContentImage.class);
@@ -44,6 +47,10 @@ public class BookLoader implements IResourceManagerReloadListener {
     registerPageType("text with image below", ContentTextImage.class);
     registerPageType("text with left image etch", ContentTextLeftImage.class);
     registerPageType("text with right image etch", ContentTextRightImage.class);
+
+    // Register action protocols
+    StringActionProcessor.registerProtocol(new ProtocolGoToPage());
+    StringActionProcessor.registerProtocol(new ProtocolGoToPage(true, "-rtn"));
   }
 
   /**

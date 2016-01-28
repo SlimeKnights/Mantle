@@ -15,8 +15,8 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
 
-  public transient List<SectionData> sections = new ArrayList<SectionData>();
-  public transient CoverData cover = new CoverData();
+  public transient List<SectionData> sections = new ArrayList<>();
+  public transient AppearanceData appearance = new AppearanceData();
   public transient int pageCount;
   public transient int fullPageCount;
 
@@ -32,20 +32,20 @@ public class BookData implements IDataItem {
 
     sections = Arrays.asList(BookLoader.GSON.fromJson(resourceToString(getResource(getResourceLocation("index.json"))), SectionData[].class));
 
-    ResourceLocation coverLocation = getResourceLocation("cover.json");
+    ResourceLocation coverLocation = getResourceLocation("appearance.json");
 
     if (resourceExists(coverLocation))
-      cover = BookLoader.GSON.fromJson(resourceToString(getResource(getResourceLocation("cover.json"))), CoverData.class);
+      appearance = BookLoader.GSON.fromJson(resourceToString(getResource(coverLocation)), AppearanceData.class);
     else
-      cover = new CoverData();
+      appearance = new AppearanceData();
 
-    cover.cascadeLoad();
+    appearance.cascadeLoad();
 
     for (SectionData section : sections) {
       pages += section.cascadeLoad();
     }
 
-    cover.cascadeLoad();
+    appearance.cascadeLoad();
 
     return pages;
   }
@@ -60,5 +60,35 @@ public class BookData implements IDataItem {
     }
 
     return null;
+  }
+
+  public int findPageNumber(String location){
+    location = location.toLowerCase();
+
+    int pages = 0;
+
+    if(!location.contains("."))
+      return -1;
+
+    String sectionName = location.substring(0, location.indexOf('.'));
+    String pageName = location.substring(location.indexOf('.') + 1);
+
+    for (SectionData section : sections) {
+      if(!sectionName.equals(section.name)) {
+        pages += section.pageCount;
+        continue;
+      }
+
+      for (PageData page : section.pages){
+        if(!pageName.equals(page.name)){
+          pages++;
+          continue;
+        }
+
+        return pages + 1;
+      }
+    }
+
+    return -1;
   }
 }

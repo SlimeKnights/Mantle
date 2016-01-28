@@ -19,11 +19,11 @@ public class ContentImageText extends PageContent {
   @Override
   public void build(ArrayList<BookElement> list) {
     if (image != null && image.location != null)
-      list.add(new ElementImage(15, 15, GuiBook.PAGE_WIDTH - 30, 70, image));
+      list.add(new ElementImage(0, 0, GuiBook.PAGE_WIDTH, 100, image));
     else
-      list.add(new ElementImage(15, 15, 32, 32, ImageData.MISSING));
+      list.add(new ElementImage(0, 0, 32, 32, ImageData.MISSING));
 
     if (text != null && text.length > 0)
-      list.add(new ElementText(15, 90, GuiBook.PAGE_WIDTH - 30, GuiBook.PAGE_HEIGHT - 90, text));
+      list.add(new ElementText(0, 105, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - 105, text));
   }
 }

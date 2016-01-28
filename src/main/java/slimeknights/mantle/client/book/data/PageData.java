@@ -15,7 +15,7 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 @SideOnly(Side.CLIENT)
 public class PageData implements IDataItem {
 
-  public String title;
+  public String name;
   public String type;
   public String data;
 
@@ -23,6 +23,8 @@ public class PageData implements IDataItem {
 
   @Override
   public int cascadeLoad() {
+    name = name.toLowerCase();
+
     IResource pageInfo = getResource(getResourceLocation(data));
     if (pageInfo != null) {
       String data = resourceToString(pageInfo);

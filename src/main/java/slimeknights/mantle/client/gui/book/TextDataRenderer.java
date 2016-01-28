@@ -26,6 +26,8 @@ public class TextDataRenderer {
     int atX = x;
     int atY = y;
 
+    float prevScale = 1.F;
+
     for (TextData item : data) {
       int box1X = 9999, box1Y = 9999, box1W = 9999, box1H = y + fr.FONT_HEIGHT;
       int box2X = 9999, box2Y = 9999, box2W = 9999, box2H = 9999;
@@ -33,6 +35,13 @@ public class TextDataRenderer {
 
       if (item.text == null || item.text.isEmpty())
         continue;
+
+      if (item.paragraph){
+        atX = x;
+        atY += fr.FONT_HEIGHT * 2 * prevScale;
+      }
+
+      prevScale = item.scale;
 
       String modifiers = "";
 
@@ -49,7 +58,7 @@ public class TextDataRenderer {
       if (item.obfuscated)
         modifiers += EnumChatFormatting.OBFUSCATED;
 
-      String[] split = cropStringBySize(item.text, modifiers, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr);
+      String[] split = cropStringBySize(item.text, modifiers, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
 
       box1X = atX;
       box1Y = atY;
@@ -63,7 +72,7 @@ public class TextDataRenderer {
         }
 
         String s = split[i];
-        fr.drawString(modifiers + s, atX, atY, 0, false);
+        drawScaledString(fr, modifiers + s, atX, atY, 0, false, item.scale);
 
         if (i < split.length - 1) {
           atY += fr.FONT_HEIGHT;
@@ -82,21 +91,31 @@ public class TextDataRenderer {
 
       box2H = atY;
 
-      atX += fr.getStringWidth(split[split.length - 1]);
+      atX += fr.getStringWidth(split[split.length - 1]) * item.scale;
       if (atX - x >= boxWidth) {
         atX = x;
-        atY += fr.FONT_HEIGHT;
+        atY += fr.FONT_HEIGHT * item.scale;
       }
 
       box3W = atX;
-      box3H = atY + fr.FONT_HEIGHT;
+      box3H = (int)(atY + fr.FONT_HEIGHT * item.scale);
 
       if (item.tooltip != null && item.tooltip.length > 0) {
-        if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H)) {
+        // Uncomment to render bounding boxes for event handling
+        /*drawGradientRect(box1X, box1Y, box1W, box1H, 0xFF00FF00, 0xFF00FF00);
+        drawGradientRect(box2X, box2Y, box2W, box2H, 0xFFFF0000, 0xFFFF0000);
+        drawGradientRect(box3X, box3Y, box3W, box3H, 0xFF0000FF, 0xFF0000FF);
+        drawGradientRect(mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);*/
+
+        if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
           drawLabel = item.tooltip;
-          action = item.onClick;
         }
       }
+
+      if(item.onClick != null && !item.onClick.isEmpty())
+        if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
+          action = item.onClick;
+        }
 
       if (atY >= boxHeight) {
         fr.drawString("...", atX, atY, 0, false);
@@ -111,32 +130,32 @@ public class TextDataRenderer {
     return action;
   }
 
-  public static String[] cropStringBySize(String s, String modifiers, int width, int height, FontRenderer fr) {
-    return cropStringBySize(s, modifiers, width, height, width, fr);
+  public static String[] cropStringBySize(String s, String modifiers, int width, int height, FontRenderer fr, float scale) {
+    return cropStringBySize(s, modifiers, width, height, width, fr, scale);
   }
 
-  public static String[] cropStringBySize(String s, String modifiers, int width, int height, int firstWidth, FontRenderer fr) {
+  public static String[] cropStringBySize(String s, String modifiers, int width, int height, int firstWidth, FontRenderer fr, float scale) {
     int curWidth = 0;
-    int curHeight = fr.FONT_HEIGHT;
+    int curHeight = (int)(fr.FONT_HEIGHT * scale);
 
     for (int i = 0; i < s.length(); i++) {
-      curWidth += fr.getStringWidth(modifiers + Character.toString(s.charAt(i)));
+      curWidth += fr.getStringWidth(modifiers + Character.toString(s.charAt(i))) * scale;
 
-      if ((curHeight == fr.FONT_HEIGHT && curWidth > firstWidth) || (curHeight != fr.FONT_HEIGHT && curWidth > width)) {
+      if ((curHeight == (int)(fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int)(fr.FONT_HEIGHT * scale) && curWidth > width)) {
         int oldI = i;
         while (i >= 0 && s.charAt(i) != ' ')
           i--;
         if (i <= 0)
           i = oldI;
 
-        s = s.substring(0, i) + "\r" + s.substring(i + 1);
+        s = s.substring(0, i) + "\r" + s.substring(i + (i == oldI ? 0 : 1));
 
         i++;
         curWidth = 0;
-        curHeight += fr.FONT_HEIGHT;
+        curHeight += fr.FONT_HEIGHT * scale;
 
         if (curHeight >= height)
-          return s.substring(0, i - 1).split("\r");
+          return s.substring(0, i).split("\r");
       }
     }
 
@@ -204,6 +223,14 @@ public class TextDataRenderer {
       GlStateManager.enableDepth();
       GlStateManager.popAttrib();
     }
+  }
+
+  public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale){
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(x, y, 0);
+      GlStateManager.scale(scale, scale, 1F);
+    font.drawString(text, 0, 0, color, dropShadow);
+    GlStateManager.popMatrix();
   }
 
   private static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {

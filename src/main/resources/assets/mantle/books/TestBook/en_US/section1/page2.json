@@ -11,11 +11,24 @@
         "You missed the joke",
         "By Skyla"
       ],
+      "onClick": "go-to-page:Test Section.Page5",
       "color": "gold"
     },
     {
-      "text": " away",
+      "text": " away. ",
+      "onClick": "go-to-page:Test Section.Page4",
       "color": "gold"
+    },
+    {
+      "text": "Use the force, "
+    },
+    {
+      "text": "Harry!",
+      "scale": 2
+    },
+    {
+      "text": "For I am the wizard that you seek!",
+      "paragraph": true
     }
   ]
 }

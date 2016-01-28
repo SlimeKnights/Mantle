@@ -16,7 +16,7 @@ public class ContentImage extends PageContent {
   @Override
   public void build(ArrayList<BookElement> list) {
     if (image != null && image.location != null)
-      list.add(new ElementImage(15, 15, GuiBook.PAGE_WIDTH - 30, GuiBook.PAGE_HEIGHT - 30, image));
+      list.add(new ElementImage(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, image));
     else
       list.add(new ElementImage(image));
   }

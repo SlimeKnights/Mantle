@@ -1,35 +1,35 @@
 [
   {
-    "title": "Page1",
+    "name": "Page1",
     "type": "blank"
   },
   {
-    "title": "Page2",
+    "name": "Page2",
     "type": "text",
     "data": "section1/page2.json"
   },
   {
-    "title": "Page3",
+    "name": "Page3",
     "type": "image",
     "data": "section1/page3.json"
   },
   {
-    "title": "Page4",
+    "name": "Page4",
     "type": "image with text below",
     "data": "section1/page4_5.json"
   },
   {
-    "title": "Page5",
+    "name": "Page5",
     "type": "text with image below",
     "data": "section1/page4_5.json"
   },
   {
-    "title": "Page6",
+    "name": "Page6",
     "type": "text with left image etch",
     "data": "section1/page6_7.json"
   },
   {
-    "title": "Page7",
+    "name": "Page7",
     "type": "text with right image etch",
     "data": "section1/page6_7.json"
   }

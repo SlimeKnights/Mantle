@@ -27,6 +27,8 @@ public class SectionData implements IDataItem {
 
   @Override
   public int cascadeLoad() {
+    name = name.toLowerCase();
+
     IResource pagesInfo = getResource(getResourceLocation(data));
     if (pagesInfo != null) {
       String data = resourceToString(pagesInfo);

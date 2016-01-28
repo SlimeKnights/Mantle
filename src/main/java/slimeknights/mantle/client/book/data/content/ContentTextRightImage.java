@@ -20,14 +20,14 @@ public class ContentTextRightImage extends PageContent {
   @Override
   public void build(ArrayList<BookElement> list) {
     if (text1 != null && text1.length > 0)
-      list.add(new ElementText(15, 15, GuiBook.PAGE_WIDTH - 82, 50, text1));
+      list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH - 55, 50, text1));
 
     if (image != null && image.location != null)
-      list.add(new ElementImage(15 + GuiBook.PAGE_WIDTH - 85, 15, 50, 50, image));
+      list.add(new ElementImage(GuiBook.PAGE_WIDTH - 50, 0, 50, 50, image));
     else
-      list.add(new ElementImage(15 + GuiBook.PAGE_WIDTH - 85, 15, 50, 50, ImageData.MISSING));
+      list.add(new ElementImage(GuiBook.PAGE_WIDTH - 50, 0, 50, 50, ImageData.MISSING));
 
     if (text2 != null && text2.length > 0)
-      list.add(new ElementText(15, 70, GuiBook.PAGE_WIDTH - 30, GuiBook.PAGE_HEIGHT - 70, text2));
+      list.add(new ElementText(0, 55, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - 55, text2));
   }
 }

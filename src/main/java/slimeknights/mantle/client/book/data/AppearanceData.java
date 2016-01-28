@@ -4,11 +4,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class CoverData implements IDataItem {
+public class AppearanceData implements IDataItem {
 
-  public int color = 0x8B4631;
+  public int coverColor = 0x8B4631;
+  public int arrowColor = 0xFFFFD3;
+  public int arrowColorHover = 0xFF541C;
   public String title = "";
   public String subtitle = "";
+  public boolean drawPageNumbers = true;
 
   @Override
   public int cascadeLoad() {
