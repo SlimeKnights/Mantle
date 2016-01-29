@@ -6,6 +6,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,6 +38,10 @@ public abstract class GuiModule extends GuiContainer {
 
   public int guiBottom() {
     return guiTop + ySize;
+  }
+
+  public Rectangle getArea() {
+    return new Rectangle(guiLeft, guiTop, xSize, ySize);
   }
 
   @Override
