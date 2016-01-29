@@ -19,7 +19,7 @@ public abstract class BookElement extends Gui {
 
   public abstract void draw(int mouseX, int mouseY, float partialTicks);
 
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton){
+  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
 
   }
 }

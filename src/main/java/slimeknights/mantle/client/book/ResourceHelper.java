@@ -19,8 +19,12 @@ public class ResourceHelper {
   }
 
   public static ResourceLocation getResourceLocation(String path) {
+    return getResourceLocation(path, false);
+  }
+
+  public static ResourceLocation getResourceLocation(String path, boolean safe) {
     if (path == null)
-      return null;
+      return safe ? new ResourceLocation("") : null;
     if (!path.contains(":")) {
       String langPath = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
       String defaultLangPath = "en_US";
@@ -34,12 +38,12 @@ public class ResourceHelper {
       res = new ResourceLocation(bookRoot + "/" + path);
       if (resourceExists(res))
         return res;
-      return null;
+      return safe ? new ResourceLocation("") : null;
     } else {
       ResourceLocation res = new ResourceLocation(path);
       if (resourceExists(res))
         return res;
-      return null;
+      return safe ? new ResourceLocation("") : null;
     }
   }
 
@@ -103,9 +107,7 @@ public class ResourceHelper {
         builder.append(s);
       }
 
-      String data = builder.toString().trim();
-
-      return data;
+      return builder.toString().trim();
     } catch (IOException e) {
       e.printStackTrace();
     }

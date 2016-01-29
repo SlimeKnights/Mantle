@@ -2,10 +2,13 @@ package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
 import java.util.HashMap;
+import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -21,7 +24,8 @@ import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
 import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
-import slimeknights.mantle.client.gui.book.GuiBook;
+import slimeknights.mantle.network.NetworkWrapper;
+import slimeknights.mantle.network.book.PacketUpdateSavedPage;
 import static slimeknights.mantle.client.book.ResourceHelper.setBookRoot;
 
 @SideOnly(Side.CLIENT)
@@ -36,8 +40,15 @@ public class BookLoader implements IResourceManagerReloadListener {
   /** Internal registry of all books for the purposes of the reloader, maps books to name */
   private static final HashMap<String, BookData> books = new HashMap<>();
 
+  private static final NetworkWrapper wrapper = new NetworkWrapper("mantle:books");
+
+  private static final Random random = new Random();
+  private static char[] randAlphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+
   public BookLoader() {
     ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
+
+    wrapper.registerPacketServer(PacketUpdateSavedPage.class);
 
     // Register page types
     registerPageType("blank", ContentBlank.class);
@@ -90,17 +101,39 @@ public class BookLoader implements IResourceManagerReloadListener {
 
     books.put(name.contains(":") ? name : Loader.instance().activeModContainer().getModId() + ":" + name, info);
 
+    info.addTransformer(new BookTransformer.IndexTranformer());
+
     return info;
   }
 
   /**
-   * Returns the GuiScreen for the book
+   * Returns a book by its name
    *
    * @param name The name of the book, prefixed with modid:
-   * @return The GuiScreen to open for the book
+   * @return The instance of the book data, or null if the book is not registered
    */
-  public static GuiBook getBookGui(String name) {
+  public static BookData getBook(String name) {
     return null;
+  }
+
+  public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
+    if (player.getHeldItem() == null)
+      return;
+
+    BookHelper.writeSavedPage(item, page);
+    wrapper.network.sendToServer(new PacketUpdateSavedPage(page));
+  }
+
+  public static String randomName() {
+    int length = random.nextInt(10);
+
+    String s = "";
+
+    for (int i = 0; i < length; i++) {
+      s += randAlphabet[random.nextInt(randAlphabet.length)];
+    }
+
+    return s;
   }
 
   /**

@@ -20,7 +20,7 @@ public class ProtocolGoToPage extends ActionProtocol {
   public void processCommand(GuiBook book, String param) {
     int pageNum = book.book.findPageNumber(param);
 
-    if(pageNum >= 0)
+    if (pageNum >= 0)
       book.openPage(pageNum, returner);
   }
 }

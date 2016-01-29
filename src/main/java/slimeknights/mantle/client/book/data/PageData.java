@@ -15,21 +15,33 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 @SideOnly(Side.CLIENT)
 public class PageData implements IDataItem {
 
-  public String name;
-  public String type;
-  public String data;
+  public String name = BookLoader.randomName();
+  public String type = "";
+  public String data = "";
 
+  public transient SectionData parent;
   public transient PageContent content;
+
+  public PageData() {
+    this(false);
+  }
+
+  public PageData(boolean custom) {
+    if (custom)
+      data = "no-load";
+  }
 
   @Override
   public int cascadeLoad() {
     name = name.toLowerCase();
 
-    IResource pageInfo = getResource(getResourceLocation(data));
-    if (pageInfo != null) {
-      String data = resourceToString(pageInfo);
-      if (!data.isEmpty())
-        content = BookLoader.GSON.fromJson(data, BookLoader.getPageType(type));
+    if (!data.equals("no-load")) {
+      IResource pageInfo = getResource(getResourceLocation(data));
+      if (pageInfo != null) {
+        String data = resourceToString(pageInfo);
+        if (!data.isEmpty())
+          content = BookLoader.GSON.fromJson(data, BookLoader.getPageType(type));
+      }
     }
 
     if (content == null)
@@ -44,7 +56,7 @@ public class PageData implements IDataItem {
         try {
           f.setAccessible(true);
           ImageData d = (ImageData) f.get(content);
-          d.location = getResourceLocation(d.file);
+          d.location = getResourceLocation(d.file, true);
         } catch (IllegalAccessException e) {
           e.printStackTrace();
         }

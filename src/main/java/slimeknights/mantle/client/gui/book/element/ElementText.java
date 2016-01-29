@@ -27,14 +27,14 @@ public class ElementText extends SizedBookElement {
   public void draw(int mouseX, int mouseY, float partialTicks) {
     String action = TextDataRenderer.drawText(x, y, width, height, text, mouseX, mouseY);
 
-    if(doAction){
+    if (doAction) {
       doAction = false;
       StringActionProcessor.process(action, parent);
     }
   }
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton){
+  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
     doAction = true;
   }
 }

@@ -36,7 +36,7 @@ public class TextDataRenderer {
       if (item.text == null || item.text.isEmpty())
         continue;
 
-      if (item.paragraph){
+      if (item.paragraph) {
         atX = x;
         atY += fr.FONT_HEIGHT * 2 * prevScale;
       }
@@ -98,7 +98,7 @@ public class TextDataRenderer {
       }
 
       box3W = atX;
-      box3H = (int)(atY + fr.FONT_HEIGHT * item.scale);
+      box3H = (int) (atY + fr.FONT_HEIGHT * item.scale);
 
       if (item.tooltip != null && item.tooltip.length > 0) {
         // Uncomment to render bounding boxes for event handling
@@ -112,7 +112,7 @@ public class TextDataRenderer {
         }
       }
 
-      if(item.onClick != null && !item.onClick.isEmpty())
+      if (item.onClick != null && !item.onClick.isEmpty())
         if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
           action = item.onClick;
         }
@@ -136,12 +136,12 @@ public class TextDataRenderer {
 
   public static String[] cropStringBySize(String s, String modifiers, int width, int height, int firstWidth, FontRenderer fr, float scale) {
     int curWidth = 0;
-    int curHeight = (int)(fr.FONT_HEIGHT * scale);
+    int curHeight = (int) (fr.FONT_HEIGHT * scale);
 
     for (int i = 0; i < s.length(); i++) {
       curWidth += fr.getStringWidth(modifiers + Character.toString(s.charAt(i))) * scale;
 
-      if ((curHeight == (int)(fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int)(fr.FONT_HEIGHT * scale) && curWidth > width)) {
+      if ((curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
         int oldI = i;
         while (i >= 0 && s.charAt(i) != ' ')
           i--;
@@ -225,10 +225,10 @@ public class TextDataRenderer {
     }
   }
 
-  public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale){
+  public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
     GlStateManager.pushMatrix();
     GlStateManager.translate(x, y, 0);
-      GlStateManager.scale(scale, scale, 1F);
+    GlStateManager.scale(scale, scale, 1F);
     font.drawString(text, 0, 0, color, dropShadow);
     GlStateManager.popMatrix();
   }

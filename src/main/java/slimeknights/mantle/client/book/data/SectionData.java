@@ -2,7 +2,6 @@ package slimeknights.mantle.client.book.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import net.minecraft.client.resources.IResource;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -16,31 +15,45 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
 
-  public String name;
-  public ImageData icon;
-  public CriteriaData[] unlockCriteria;
-  public String data;
+  public String name = BookLoader.randomName();
+  public String title = "";
+  public ImageData icon = new ImageData();
+  public CriteriaData[] unlockCriteria = new CriteriaData[0];
+  public String data = "";
 
   public int pageCount;
 
-  public transient List<PageData> pages = new ArrayList<PageData>();
+  public transient BookData parent;
+  public transient ArrayList<PageData> pages = new ArrayList<>();
+
+  public SectionData() {
+    this(false);
+  }
+
+  public SectionData(boolean custom) {
+    if (custom)
+      data = "no-load";
+  }
 
   @Override
   public int cascadeLoad() {
     name = name.toLowerCase();
 
-    IResource pagesInfo = getResource(getResourceLocation(data));
-    if (pagesInfo != null) {
-      String data = resourceToString(pagesInfo);
-      if (!data.isEmpty())
-        pages = Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class));
+    if (!data.equals("no-load")) {
+      IResource pagesInfo = getResource(getResourceLocation(data));
+      if (pagesInfo != null) {
+        String data = resourceToString(pagesInfo);
+        if (!data.isEmpty())
+          pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
+      }
     }
 
     for (PageData page : pages) {
+      page.parent = this;
       page.cascadeLoad();
     }
 
-    icon.location = getResourceLocation(icon.file);
+    icon.location = getResourceLocation(icon.file, true);
 
     pageCount = pages.size();
 
