@@ -14,7 +14,7 @@ public class AppearanceData implements IDataItem {
   public boolean drawPageNumbers = true;
 
   @Override
-  public int cascadeLoad() {
-    return 0;
+  public void load() {
+
   }
 }

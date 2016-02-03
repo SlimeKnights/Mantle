@@ -24,9 +24,9 @@ import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
 import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
+import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.book.PacketUpdateSavedPage;
-import static slimeknights.mantle.client.book.ResourceHelper.setBookRoot;
 
 @SideOnly(Side.CLIENT)
 public class BookLoader implements IResourceManagerReloadListener {
@@ -41,9 +41,6 @@ public class BookLoader implements IResourceManagerReloadListener {
   private static final HashMap<String, BookData> books = new HashMap<>();
 
   private static final NetworkWrapper wrapper = new NetworkWrapper("mantle:books");
-
-  private static final Random random = new Random();
-  private static char[] randAlphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
   public BookLoader() {
     ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
@@ -93,11 +90,11 @@ public class BookLoader implements IResourceManagerReloadListener {
    * Be warned that the returned BookData object is not immediately populated, and is instead populated when the resources are loaded/reloaded
    *
    * @param name     The name of the book, modid: will be automatically appended to the front of the name unless that is already added
-   * @param location The location of the book folder, prefixed with the resource domain
+   * @param repositories All the repositories the book will load the sections from
    * @return The book object, not immediately populated
    */
-  public static BookData registerBook(String name, String location) {
-    BookData info = new BookData(location);
+  public static BookData registerBook(String name, BookRepository... repositories) {
+    BookData info = new BookData(repositories);
 
     books.put(name.contains(":") ? name : Loader.instance().activeModContainer().getModId() + ":" + name, info);
 
@@ -124,28 +121,13 @@ public class BookLoader implements IResourceManagerReloadListener {
     wrapper.network.sendToServer(new PacketUpdateSavedPage(page));
   }
 
-  public static String randomName() {
-    int length = random.nextInt(10);
-
-    String s = "";
-
-    for (int i = 0; i < length; i++) {
-      s += randAlphabet[random.nextInt(randAlphabet.length)];
-    }
-
-    return s;
-  }
-
   /**
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
   public void onResourceManagerReload(IResourceManager resourceManager) {
     for (BookData book : books.values()) {
-      setBookRoot(book.bookLocation);
-
-      book.pageCount = book.cascadeLoad();
-      book.fullPageCount = (int) Math.ceil((book.pageCount - 1) / 2F) + 1;
+      book.load();
     }
   }
 }

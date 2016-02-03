@@ -150,7 +150,7 @@ public class GuiBook extends GuiScreen {
       // Set color back to white
       GlStateManager.color(1F, 1F, 1F, 1F);
 
-      if ((page < book.fullPageCount - 1 || book.pageCount % 2 != 0) && page < book.fullPageCount) {
+      if ((page < book.getFullPageCount() - 1 || book.getPageCount() % 2 != 0) && page < book.getFullPageCount()) {
         drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
 
         GlStateManager.pushMatrix();
@@ -196,7 +196,7 @@ public class GuiBook extends GuiScreen {
     else
       bookPage = (page - 2) / 2 + 1;
 
-    if (bookPage >= -1 && bookPage < book.fullPageCount) {
+    if (bookPage >= -1 && bookPage < book.getFullPageCount()) {
       if (returner)
         oldPage = this.page;
 
@@ -261,16 +261,17 @@ public class GuiBook extends GuiScreen {
     super.updateScreen();
 
     previousArrow.visible = page != -1;
-    nextArrow.visible = page < book.fullPageCount - (book.pageCount % 2 != 0 ? 0 : 1);
+    nextArrow.visible = page < book.getFullPageCount() - (book.getPageCount() % 2 != 0 ? 0 : 1);
     backArrow.visible = oldPage >= -1;
 
     if (page == -1) {
       nextArrow.xPosition = width / 2 + 80;
+      indexArrow.visible = false;
     } else {
       previousArrow.xPosition = width / 2 - 184;
       nextArrow.xPosition = width / 2 + 165;
 
-      indexArrow.visible = (page - 1) * 2 + 2 > book.findSection("index").pageCount;
+      indexArrow.visible = (page - 1) * 2 + 2 > book.findSection("index").getPageCount();
     }
 
     previousArrow.yPosition = height / 2 + 75;
@@ -291,8 +292,8 @@ public class GuiBook extends GuiScreen {
         page = -1;
     } else if (button == nextArrow) {
       page++;
-      if (page > book.fullPageCount - (book.pageCount % 2 != 0 ? 0 : 1))
-        page = book.fullPageCount - 1;
+      if (page > book.getFullPageCount() - (book.getPageCount() % 2 != 0 ? 0 : 1))
+        page = book.getFullPageCount() - 1;
     } else if (button == backArrow) {
       if (oldPage >= -1)
         page = oldPage;
@@ -343,8 +344,10 @@ public class GuiBook extends GuiScreen {
     if (page == null)
       page = book.findPage((this.page - 1) * 2 + 2);
 
-    if (page != null || this.page == -1)
-      BookLoader.updateSavedPage(mc.thePlayer, item, this.page == -1 ? "" : (page.parent.name + "." + page.name));
+    if(this.page == -1)
+      BookLoader.updateSavedPage(mc.thePlayer, item, "");
+    else if (page != null)
+      BookLoader.updateSavedPage(mc.thePlayer, item, page.parent.name + "." + page.name);
   }
 
   @Override

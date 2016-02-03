@@ -115,7 +115,7 @@ public class ResourceHelper {
     return "";
   }
 
-  public static void setBookRoot(String location) {
+  public static void setRoot(String location) {
     bookRoot = location;
   }
 }

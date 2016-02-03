@@ -5,6 +5,5 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public interface IDataItem {
-
-  int cascadeLoad();
+  void load();
 }

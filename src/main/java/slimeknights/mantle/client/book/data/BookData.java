@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
+import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.gui.book.GuiBook;
 import static slimeknights.mantle.client.book.ResourceHelper.getResource;
 import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation;
@@ -18,44 +20,43 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
-
+  public transient int unnamedSectionCounter = 0;
   public transient ArrayList<SectionData> sections = new ArrayList<>();
   public transient AppearanceData appearance = new AppearanceData();
-  public transient int pageCount;
-  public transient int fullPageCount;
-
-  public final transient String bookLocation;
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
 
-  public BookData(String bookLocation) {
-    this.bookLocation = bookLocation;
+  private ArrayList<BookRepository> repositories;
+
+  public BookData(BookRepository... repositories) {
+    this.repositories = new ArrayList<>(Arrays.asList(repositories));
   }
 
   @Override
-  public int cascadeLoad() {
-    int pages = 0;
+  public void load() {
+    for(BookRepository repo : repositories) {
+      List<SectionData> repoContents = repo.getSections();
+      sections.addAll(repoContents);
 
-    sections = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(resourceToString(getResource(getResourceLocation("index.json"))), SectionData[].class)));
+      if(repo.hasAppearanceData){
+        ResourceLocation appearanceLocation = getResourceLocation("appearance.json");
 
-    ResourceLocation coverLocation = getResourceLocation("appearance.json");
+        if (resourceExists(appearanceLocation))
+          appearance = BookLoader.GSON.fromJson(resourceToString(getResource(appearanceLocation)), AppearanceData.class);
+        else
+          appearance = new AppearanceData();
 
-    if (resourceExists(coverLocation))
-      appearance = BookLoader.GSON.fromJson(resourceToString(getResource(coverLocation)), AppearanceData.class);
-    else
-      appearance = new AppearanceData();
-
-    appearance.cascadeLoad();
+        appearance.load();
+      }
+    }
 
     for (BookTransformer transformer : transformers)
       transformer.transform(this);
 
     for (SectionData section : sections) {
       section.parent = this;
-      pages += section.cascadeLoad();
+      section.load();
     }
-
-    return pages;
   }
 
   public SectionData findSection(String name) {
@@ -72,7 +73,7 @@ public class BookData implements IDataItem {
       if (section == sect)
         return pages + 1;
 
-      pages += sect.pageCount;
+      pages += sect.getPageCount();
     }
 
     return -1;
@@ -84,10 +85,10 @@ public class BookData implements IDataItem {
 
     int pages = 0;
     for (SectionData section : sections) {
-      if (pages + section.pageCount > number)
+      if (pages + section.getPageCount() > number)
         return section.pages.get(number - pages);
       else
-        pages += section.pageCount;
+        pages += section.getPageCount();
     }
 
     return null;
@@ -110,7 +111,7 @@ public class BookData implements IDataItem {
 
     for (SectionData section : sections) {
       if (!sectionName.equals(section.name)) {
-        pages += section.pageCount;
+        pages += section.getPageCount();
         continue;
       }
 
@@ -127,12 +128,30 @@ public class BookData implements IDataItem {
     return -1;
   }
 
+  public int getPageCount() {
+    int pages = 0;
+    for(SectionData section : sections){
+      pages += section.getPageCount();
+    }
+    return pages;
+  }
+
+  public int getFullPageCount() {
+    return (int) Math.ceil((getPageCount() - 1) / 2F) + 1;
+  }
+
   public void openGui(@Nullable ItemStack item) {
-    Minecraft.getMinecraft().displayGuiScreen(new GuiBook(this, item));
+    if(Minecraft.getMinecraft().currentScreen == null)
+      Minecraft.getMinecraft().displayGuiScreen(new GuiBook(this, item));
+  }
+
+  public void addRepository(BookRepository repository) {
+    if(repository != null && !this.repositories.contains(repository))
+      this.repositories.add(repository);
   }
 
   public void addTransformer(BookTransformer transformer) {
-    if (!transformers.contains(transformer))
+    if (transformer != null && !transformers.contains(transformer))
       transformers.add(transformer);
   }
 }

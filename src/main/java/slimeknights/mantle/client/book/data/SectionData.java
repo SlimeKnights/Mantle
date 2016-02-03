@@ -14,15 +14,13 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
-
-  public String name = BookLoader.randomName();
+  public String name = null;
   public String title = "";
   public ImageData icon = new ImageData();
   public CriteriaData[] unlockCriteria = new CriteriaData[0];
   public String data = "";
 
-  public int pageCount;
-
+  public transient int unnamedPageCounter = 0;
   public transient BookData parent;
   public transient ArrayList<PageData> pages = new ArrayList<>();
 
@@ -36,7 +34,10 @@ public class SectionData implements IDataItem {
   }
 
   @Override
-  public int cascadeLoad() {
+  public void load() {
+    if(name == null)
+      name = "section" + parent.unnamedSectionCounter++;
+
     name = name.toLowerCase();
 
     if (!data.equals("no-load")) {
@@ -50,13 +51,13 @@ public class SectionData implements IDataItem {
 
     for (PageData page : pages) {
       page.parent = this;
-      page.cascadeLoad();
+      page.load();
     }
 
     icon.location = getResourceLocation(icon.file, true);
+  }
 
-    pageCount = pages.size();
-
-    return pageCount;
+  public int getPageCount() {
+    return pages.size();
   }
 }

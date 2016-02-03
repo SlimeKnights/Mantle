@@ -15,7 +15,7 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 @SideOnly(Side.CLIENT)
 public class PageData implements IDataItem {
 
-  public String name = BookLoader.randomName();
+  public String name = null;
   public String type = "";
   public String data = "";
 
@@ -32,7 +32,10 @@ public class PageData implements IDataItem {
   }
 
   @Override
-  public int cascadeLoad() {
+  public void load() {
+    if(name == null)
+      name = "page" + parent.unnamedPageCounter++;
+
     name = name.toLowerCase();
 
     if (!data.equals("no-load")) {
@@ -60,10 +63,6 @@ public class PageData implements IDataItem {
         } catch (IllegalAccessException e) {
           e.printStackTrace();
         }
-
-      System.out.println(f.isAccessible());
     }
-
-    return 0;
   }
 }
