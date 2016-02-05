@@ -7,11 +7,11 @@ public abstract class BookRepository {
 
   public final boolean hasAppearanceData;
 
-  public BookRepository () {
+  public BookRepository() {
     this(false);
   }
 
-  public BookRepository (boolean hasAppearanceData) {
+  public BookRepository(boolean hasAppearanceData) {
     this.hasAppearanceData = hasAppearanceData;
   }
 

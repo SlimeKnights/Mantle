@@ -16,8 +16,10 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
+import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
+import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
 
 @SideOnly(Side.CLIENT)
@@ -205,6 +207,10 @@ public class GuiBook extends GuiScreen {
     }
   }
 
+  public void itemClicked(ItemStack item) {
+    StringActionProcessor.process(book.getItemAction(ItemStackData.getItemStackData(item, true)), this);
+  }
+
   private void buildPages() {
     leftElements.clear();
     rightElements.clear();
@@ -344,7 +350,7 @@ public class GuiBook extends GuiScreen {
     if (page == null)
       page = book.findPage((this.page - 1) * 2 + 2);
 
-    if(this.page == -1)
+    if (this.page == -1)
       BookLoader.updateSavedPage(mc.thePlayer, item, "");
     else if (page != null)
       BookLoader.updateSavedPage(mc.thePlayer, item, page.parent.name + "." + page.name);

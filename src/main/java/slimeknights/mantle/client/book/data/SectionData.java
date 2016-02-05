@@ -14,6 +14,7 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
+
   public String name = null;
   public String title = "";
   public ImageData icon = new ImageData();
@@ -35,7 +36,7 @@ public class SectionData implements IDataItem {
 
   @Override
   public void load() {
-    if(name == null)
+    if (name == null)
       name = "section" + parent.unnamedSectionCounter++;
 
     name = name.toLowerCase();

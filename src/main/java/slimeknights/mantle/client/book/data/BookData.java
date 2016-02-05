@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
+import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.gui.book.GuiBook;
 import static slimeknights.mantle.client.book.ResourceHelper.getResource;
@@ -20,9 +21,11 @@ import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
+
   public transient int unnamedSectionCounter = 0;
   public transient ArrayList<SectionData> sections = new ArrayList<>();
   public transient AppearanceData appearance = new AppearanceData();
+  public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
 
@@ -34,11 +37,11 @@ public class BookData implements IDataItem {
 
   @Override
   public void load() {
-    for(BookRepository repo : repositories) {
+    for (BookRepository repo : repositories) {
       List<SectionData> repoContents = repo.getSections();
       sections.addAll(repoContents);
 
-      if(repo.hasAppearanceData){
+      if (repo.hasAppearanceData) {
         ResourceLocation appearanceLocation = getResourceLocation("appearance.json");
 
         if (resourceExists(appearanceLocation))
@@ -47,6 +50,12 @@ public class BookData implements IDataItem {
           appearance = new AppearanceData();
 
         appearance.load();
+
+        ResourceLocation itemLinkLocation = getResourceLocation("items.json");
+
+        if (resourceExists(itemLinkLocation)) {
+          itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(resourceToString(getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
+        }
       }
     }
 
@@ -130,7 +139,7 @@ public class BookData implements IDataItem {
 
   public int getPageCount() {
     int pages = 0;
-    for(SectionData section : sections){
+    for (SectionData section : sections) {
       pages += section.getPageCount();
     }
     return pages;
@@ -140,13 +149,22 @@ public class BookData implements IDataItem {
     return (int) Math.ceil((getPageCount() - 1) / 2F) + 1;
   }
 
+  public String getItemAction(ItemStackData item) {
+    for (ItemStackData.ItemLink link : itemLinks) {
+      if (item.id.equals(link.item.id) && (!link.damageSensitive || item.damage == link.item.damage))
+        return link.action;
+    }
+
+    return "";
+  }
+
   public void openGui(@Nullable ItemStack item) {
-    if(Minecraft.getMinecraft().currentScreen == null)
+    if (Minecraft.getMinecraft().currentScreen == null)
       Minecraft.getMinecraft().displayGuiScreen(new GuiBook(this, item));
   }
 
   public void addRepository(BookRepository repository) {
-    if(repository != null && !this.repositories.contains(repository))
+    if (repository != null && !this.repositories.contains(repository))
       this.repositories.add(repository);
   }
 

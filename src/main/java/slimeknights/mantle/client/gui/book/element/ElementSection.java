@@ -35,7 +35,7 @@ public class ElementSection extends BookElement {
   }
 
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    if (section != null && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT)
+    if (mouseButton == 0 && section != null && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT)
       parent.openPage(parent.book.getFirstPageNumber(section));
   }
 }

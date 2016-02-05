@@ -29,9 +29,9 @@ public class TextDataRenderer {
     float prevScale = 1.F;
 
     for (TextData item : data) {
-      int box1X = 9999, box1Y = 9999, box1W = 9999, box1H = y + fr.FONT_HEIGHT;
-      int box2X = 9999, box2Y = 9999, box2W = 9999, box2H = 9999;
-      int box3X = 9999, box3Y = 9999, box3W = 9999, box3H = 9999;
+      int box1X, box1Y, box1W = 9999, box1H = y + fr.FONT_HEIGHT;
+      int box2X, box2Y = 9999, box2W, box2H;
+      int box3X = 9999, box3Y = 9999, box3W, box3H;
 
       if (item.text == null || item.text.isEmpty())
         continue;
@@ -165,9 +165,6 @@ public class TextDataRenderer {
   //BEGIN METHODS FROM GUI
   private static void drawHoveringText(String[] textLines, int x, int y, FontRenderer font) {
     if (textLines.length > 0) {
-      GlStateManager.pushAttrib();
-      GlStateManager.disableRescaleNormal();
-      GlStateManager.disableLighting();
       GlStateManager.disableDepth();
       int i = 0;
 
@@ -219,9 +216,7 @@ public class TextDataRenderer {
         i2 += 10;
       }
 
-      GlStateManager.enableLighting();
       GlStateManager.enableDepth();
-      GlStateManager.popAttrib();
     }
   }
 

@@ -2,7 +2,6 @@ package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
 import java.util.HashMap;
-import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -89,7 +88,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * Adds a book to the loader, and returns a reference object
    * Be warned that the returned BookData object is not immediately populated, and is instead populated when the resources are loaded/reloaded
    *
-   * @param name     The name of the book, modid: will be automatically appended to the front of the name unless that is already added
+   * @param name         The name of the book, modid: will be automatically appended to the front of the name unless that is already added
    * @param repositories All the repositories the book will load the sections from
    * @return The book object, not immediately populated
    */

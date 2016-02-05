@@ -33,7 +33,7 @@ public class PageData implements IDataItem {
 
   @Override
   public void load() {
-    if(name == null)
+    if (name == null)
       name = "page" + parent.unnamedPageCounter++;
 
     name = name.toLowerCase();
