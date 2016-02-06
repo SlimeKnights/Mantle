@@ -14,12 +14,10 @@ import slimeknights.mantle.client.book.data.element.TextData;
 @SideOnly(Side.CLIENT)
 public class TextDataRenderer {
 
-  private static String[] drawLabel;
-
   public static String drawText(int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY) {
     String action = "";
 
-    drawLabel = null;
+    String[] drawLabel = null;
 
     FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 

@@ -144,6 +144,14 @@ public class GuiBook extends GuiScreen {
           element.draw((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
         }
 
+        // Not foreach to prevent conmodification crashes
+        for (int i = 0; i < leftElements.size(); i++) {
+          BookElement element = leftElements.get(i);
+
+          GlStateManager.color(1F, 1F, 1F, 1F);
+          element.drawOverlay((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+        }
+
         GlStateManager.popMatrix();
       }
 
@@ -171,6 +179,14 @@ public class GuiBook extends GuiScreen {
 
           GlStateManager.color(1F, 1F, 1F, 1F);
           element.draw((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+        }
+
+        // Not foreach to prevent conmodification crashes
+        for (int i = 0; i < rightElements.size(); i++) {
+          BookElement element = rightElements.get(i);
+
+          GlStateManager.color(1F, 1F, 1F, 1F);
+          element.drawOverlay((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
         }
 
         GlStateManager.popMatrix();
@@ -222,15 +238,15 @@ public class GuiBook extends GuiScreen {
       PageData page = book.findPage(0);
 
       if (page != null)
-        page.content.build(rightElements);
+        page.content.build(book, rightElements);
     } else {
       PageData leftPage = book.findPage((page - 1) * 2 + 1);
       PageData rightPage = book.findPage((page - 1) * 2 + 2);
 
       if (leftPage != null)
-        leftPage.content.build(leftElements);
+        leftPage.content.build(book, leftElements);
       if (rightPage != null)
-        rightPage.content.build(rightElements);
+        rightPage.content.build(book, rightElements);
     }
 
     for (BookElement element : leftElements)
@@ -277,7 +293,7 @@ public class GuiBook extends GuiScreen {
       previousArrow.xPosition = width / 2 - 184;
       nextArrow.xPosition = width / 2 + 165;
 
-      indexArrow.visible = (page - 1) * 2 + 2 > book.findSection("index").getPageCount();
+      indexArrow.visible = book.findSection("index") != null && (page - 1) * 2 + 2 > book.findSection("index").getPageCount();
     }
 
     previousArrow.yPosition = height / 2 + 75;
@@ -352,7 +368,7 @@ public class GuiBook extends GuiScreen {
 
     if (this.page == -1)
       BookLoader.updateSavedPage(mc.thePlayer, item, "");
-    else if (page != null)
+    else if (page != null && page.parent != null)
       BookLoader.updateSavedPage(mc.thePlayer, item, page.parent.name + "." + page.name);
   }
 

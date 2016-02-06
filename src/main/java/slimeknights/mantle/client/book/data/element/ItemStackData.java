@@ -9,25 +9,31 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import slimeknights.mantle.client.book.BookLoader;
 
 public class ItemStackData {
 
-  public String id = "minecraft:barrier";
+  public String id = "";
   public byte amount = 1;
   public short damage = 0;
   public JsonObject nbt;
 
   public ItemStack getItemStack() {
     Item item;
+    boolean isMissingItem = false;
     try {
       item = CommandGive.getItemByText(null, id);
     } catch (NumberInvalidException e) {
       item = Item.getItemFromBlock(Blocks.barrier);
+      isMissingItem = true;
     }
 
-    if (item == null)
+    if (item == null) {
       item = Item.getItemFromBlock(Blocks.barrier);
+      isMissingItem = true;
+    }
 
     ItemStack itemStack = new ItemStack(item, amount, damage);
 
@@ -36,6 +42,15 @@ public class ItemStackData {
         itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbt.toString()));
       } catch (NBTException ignored) {
       }
+    }
+
+    if (isMissingItem) {
+      NBTTagCompound display = itemStack.getSubCompound("display", true);
+      display.setString("Name", "\u00A7rUnknown Item");
+      NBTTagList lore = new NBTTagList();
+      lore.appendTag(new NBTTagString("\u00A7r\u00A7eItem Name:"));
+      lore.appendTag(new NBTTagString("\u00A7r\u00A7e" + id));
+      display.setTag("Lore", lore);
     }
 
     return itemStack;

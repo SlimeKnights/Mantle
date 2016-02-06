@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
+import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.gui.book.GuiBook;
@@ -37,15 +38,32 @@ public class BookData implements IDataItem {
 
   @Override
   public void load() {
+    sections.clear();
+    appearance = new AppearanceData();
+    itemLinks.clear();
+
     for (BookRepository repo : repositories) {
-      List<SectionData> repoContents = repo.getSections();
-      sections.addAll(repoContents);
+      try {
+        List<SectionData> repoContents = repo.getSections();
+        sections.addAll(repoContents);
+      } catch (Exception e) {
+        SectionData error = new SectionData();
+        error.name = "errorenous";
+        PageData page = new PageData(true);
+        page.name = "errorenous";
+        page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
+        error.pages.add(page);
+        sections.add(error);
+      }
 
       if (repo.hasAppearanceData) {
         ResourceLocation appearanceLocation = getResourceLocation("appearance.json");
 
         if (resourceExists(appearanceLocation))
-          appearance = BookLoader.GSON.fromJson(resourceToString(getResource(appearanceLocation)), AppearanceData.class);
+          try {
+            appearance = BookLoader.GSON.fromJson(resourceToString(getResource(appearanceLocation)), AppearanceData.class);
+          } catch (Exception ignored) {
+          }
         else
           appearance = new AppearanceData();
 
@@ -54,7 +72,10 @@ public class BookData implements IDataItem {
         ResourceLocation itemLinkLocation = getResourceLocation("items.json");
 
         if (resourceExists(itemLinkLocation)) {
-          itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(resourceToString(getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
+          try {
+            itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(resourceToString(getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
+          } catch (Exception ignored) {
+          }
         }
       }
     }

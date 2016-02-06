@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import java.util.ArrayList;
+import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
 import slimeknights.mantle.client.gui.book.element.ElementSection;
@@ -10,15 +11,11 @@ public class ContentSectionList extends PageContent {
   protected ArrayList<SectionData> sections = new ArrayList<>();
 
   public boolean addSection(SectionData data) {
-    if (sections.size() >= 9) {
-      return false;
-    }
-
-    return sections.add(data);
+    return sections.size() < 9 && sections.add(data);
   }
 
   @Override
-  public void build(ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list) {
     int width = (ElementSection.WIDTH + 5) * 3 - 5;
     int height = (ElementSection.HEIGHT + 5) * 3 - 5;
 

@@ -86,7 +86,7 @@ public class ResourceHelper {
       boolean isLongComment = false;
 
       while (iterator.hasNext()) {
-        String s = ((String) iterator.next()).trim();
+        String s = ((String) iterator.next()).trim() + "\n";
 
         // Comment skipper
         if (skipCommments) {

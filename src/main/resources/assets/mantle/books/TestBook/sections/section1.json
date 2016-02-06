@@ -4,6 +4,21 @@
     "type": "blank"
   },
   {
+    "name": "PageCrafter",
+    "type": "crafting",
+    "data": "section1/pagecrafting.json"
+  },
+  {
+    "name": "PageSmallCrafter",
+    "type": "crafting",
+    "data": "section1/pagecraftingsmall.json"
+  },
+  {
+    "name": "PageSmelting",
+    "type": "smelting",
+    "data": "section1/pagesmelting.json"
+  },
+  {
     "name": "Page2",
     "type": "text",
     "data": "section1/page2.json"

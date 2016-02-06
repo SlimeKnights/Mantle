@@ -4,7 +4,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -25,6 +24,9 @@ public abstract class BookElement extends Gui {
   }
 
   public abstract void draw(int mouseX, int mouseY, float partialTicks);
+
+  public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
+  }
 
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
 
@@ -47,7 +49,6 @@ public abstract class BookElement extends Gui {
 
   public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
     if (!textLines.isEmpty()) {
-      ScaledResolution res = new ScaledResolution(Minecraft.getMinecraft());
       GlStateManager.disableDepth();
       int i = 0;
 
@@ -67,12 +68,12 @@ public abstract class BookElement extends Gui {
         k += 2 + (textLines.size() - 1) * 10;
       }
 
-      if (l1 + i > res.getScaledWidth()) {
+      if (l1 + i > GuiBook.PAGE_WIDTH) {
         l1 -= 28 + i;
       }
 
-      if (i2 + k + 6 > res.getScaledHeight()) {
-        i2 = res.getScaledHeight() - k - 6;
+      if (i2 + k + 6 > GuiBook.PAGE_HEIGHT) {
+        i2 = GuiBook.PAGE_HEIGHT - k - 6;
       }
 
       int l = -267386864;

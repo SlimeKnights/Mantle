@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import java.util.ArrayList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.gui.book.GuiBook;
@@ -17,7 +18,7 @@ public class ContentImageText extends PageContent {
   public TextData[] text;
 
   @Override
-  public void build(ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list) {
     if (image != null && image.location != null)
       list.add(new ElementImage(0, 0, GuiBook.PAGE_WIDTH, 100, image));
     else

@@ -14,10 +14,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.client.book.data.PageData;
+import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentBlank;
+import slimeknights.mantle.client.book.data.content.ContentCrafting;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.ContentImage;
 import slimeknights.mantle.client.book.data.content.ContentImageText;
+import slimeknights.mantle.client.book.data.content.ContentSmelting;
 import slimeknights.mantle.client.book.data.content.ContentText;
 import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
@@ -54,6 +58,8 @@ public class BookLoader implements IResourceManagerReloadListener {
     registerPageType("text with image below", ContentTextImage.class);
     registerPageType("text with left image etch", ContentTextLeftImage.class);
     registerPageType("text with right image etch", ContentTextRightImage.class);
+    registerPageType("crafting", ContentCrafting.class);
+    registerPageType("smelting", ContentSmelting.class);
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());
@@ -126,7 +132,20 @@ public class BookLoader implements IResourceManagerReloadListener {
   @Override
   public void onResourceManagerReload(IResourceManager resourceManager) {
     for (BookData book : books.values()) {
-      book.load();
+      try {
+        book.load();
+      } catch (Exception e) {
+        book.sections.clear();
+        SectionData section = new SectionData(true);
+        section.name = "errorenous";
+        PageData page = new PageData(true);
+        page.name = "errorenous";
+        page.content = new ContentError("Failed to load the book due to an unexpected error.", e);
+        section.pages.add(page);
+        book.sections.add(section);
+
+        e.printStackTrace();
+      }
     }
   }
 }

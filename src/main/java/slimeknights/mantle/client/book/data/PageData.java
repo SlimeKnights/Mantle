@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import net.minecraft.client.resources.IResource;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,19 +44,24 @@ public class PageData implements IDataItem {
       if (pageInfo != null) {
         String data = resourceToString(pageInfo);
         if (!data.isEmpty())
-          content = BookLoader.GSON.fromJson(data, BookLoader.getPageType(type));
+          try {
+            content = BookLoader.GSON.fromJson(data, BookLoader.getPageType(type));
+          } catch (Exception e) {
+            content = new ContentError("Failed to create a page of type \"" + type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
+          }
       }
     }
 
-    if (content == null)
+    if (content == null) {
       try {
-        content = BookLoader.getPageType(type) != null ? BookLoader.getPageType(type).newInstance() : new ContentError();
+        content = BookLoader.getPageType(type).newInstance();
       } catch (InstantiationException | IllegalAccessException e) {
-        e.printStackTrace();
+        content = new ContentError("Failed to create a page of type \"" + type + "\", perhaps the type is not registered?");
       }
+    }
 
     for (Field f : content.getClass().getFields()) {
-      if (f.getType().isAssignableFrom(ImageData.class))
+      if (f.getType().isAssignableFrom(ImageData.class) && !Modifier.isTransient(f.getModifiers()))
         try {
           f.setAccessible(true);
           ImageData d = (ImageData) f.get(content);

@@ -6,6 +6,7 @@ import net.minecraft.client.resources.IResource;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.BookLoader;
+import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.CriteriaData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import static slimeknights.mantle.client.book.ResourceHelper.getResource;
@@ -46,7 +47,15 @@ public class SectionData implements IDataItem {
       if (pagesInfo != null) {
         String data = resourceToString(pagesInfo);
         if (!data.isEmpty())
-          pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
+          try {
+            pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
+          } catch (Exception e) {
+            pages = new ArrayList<>();
+            PageData pdError = new PageData(true);
+            pdError.name = "errorrenous";
+            pdError.content = new ContentError("Failed to load section " + name + ".", e);
+            pages.add(pdError);
+          }
       }
     }
 
