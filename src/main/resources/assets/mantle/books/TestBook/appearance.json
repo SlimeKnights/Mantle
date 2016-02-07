@@ -1,9 +1,9 @@
 {
-  //"coverColor": "0x0DED67",
-  //"arrowColor": "0xF9EFD3",
-  //"arrowColorHover": "0xEC763E",
+  //"coverColor": "0x8B4631",
+  //"arrowColor": "0xFFFFD3",
+  //"arrowColorHover": "0xFF541C",
   //"indexBookmark": true,
-  //"indexBookmarkColor": "0xCE0000",
+  //"lockedSectionColor": "0xFFFFFF",
   "title": "Materials and You",
   "subtitle": "By Skyla",
   "drawPageNumbers": true

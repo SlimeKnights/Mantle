@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
@@ -133,6 +134,9 @@ public class BookLoader implements IResourceManagerReloadListener {
    */
   @Override
   public void onResourceManagerReload(IResourceManager resourceManager) {
+    Mantle.logger.info("Started loading books...");
+    long time = System.nanoTime();
+
     for (BookData book : books.values()) {
       try {
         book.load();
@@ -149,5 +153,7 @@ public class BookLoader implements IResourceManagerReloadListener {
         e.printStackTrace();
       }
     }
+
+    Mantle.logger.info("Book loading completed in " + ((System.nanoTime() - time) / 1000000000D) + " seconds.");
   }
 }

@@ -18,5 +18,17 @@
       "achievement.buildHoe",
       "achievement.makeBread"
     ]
+  },
+  {
+    "name": "section 3",
+    "title": "Hidden Section",
+    "icon": {
+      "file": "images/test.png"
+    },
+    "data": "sections/section1.json",
+    "requirements": [
+      "achievement.mineWood"
+    ],
+    "hideWhenLocked": true
   }
 ]

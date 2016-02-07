@@ -2,6 +2,8 @@ package slimeknights.mantle.client.book;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import net.minecraft.stats.StatFileWriter;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -20,25 +22,38 @@ public abstract class BookTransformer {
 
     @Override
     public void transform(BookData book) {
-      SectionData index = new SectionData(true);
-      index.name = "index";
+      SectionData index = new SectionData(true) {
+        @Override
+        public void update(StatFileWriter writer) {
+          pages.clear();
 
-      PageData[] pages = new PageData[(int) Math.ceil(book.sections.size() / 9F)];
+          List<SectionData> visibleSections = parent.getVisibleSections(writer);
 
-      for (int i = 0; i < pages.length; i++) {
-        pages[i] = new PageData(true);
+          if (visibleSections.isEmpty())
+            return;
 
-        pages[i].name = "page" + (i + 1);
+          visibleSections.remove(0);
 
-        ContentSectionList content = new ContentSectionList();
-        pages[i].content = content;
+          PageData[] pages = new PageData[(int) Math.ceil(visibleSections.size() / 9F)];
 
-        for (int j = i * 9; j - i * 9 < 9 && j < book.sections.size(); j++) {
-          content.addSection(book.sections.get(j));
+          for (int i = 0; i < pages.length; i++) {
+            pages[i] = new PageData(true);
+
+            pages[i].name = "page" + (i + 1);
+
+            ContentSectionList content = new ContentSectionList();
+            pages[i].content = content;
+
+            for (int j = i * 9; j - i * 9 < 9 && j < visibleSections.size(); j++) {
+              content.addSection(visibleSections.get(j));
+            }
+          }
+
+          this.pages = new ArrayList<>(Arrays.asList(pages));
         }
-      }
+      };
 
-      index.pages = new ArrayList<>(Arrays.asList(pages));
+      index.name = "index";
       book.sections.add(0, index);
     }
   }

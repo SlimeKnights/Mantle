@@ -1,5 +1,9 @@
 package slimeknights.mantle.client.book.data.element;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -58,5 +62,17 @@ public class ImageData {
     MISSING.texHeight = 32;
     MISSING.uw = 32;
     MISSING.vh = 32;
+  }
+
+  public static ImageData from(Block block, int meta, EnumFacing face) {
+    return null;
+  }
+
+  public static ImageData from(Item item, int damage) {
+    return null;
+  }
+
+  public static ImageData from(ItemStack stack) {
+    return null;
   }
 }

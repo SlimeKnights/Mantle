@@ -33,8 +33,12 @@ public class ElementSection extends BookElement {
 
       if (unlocked)
         GlStateManager.color(1F, 1F, 1F, hover ? 1F : 0.5F);
-      else
-        GlStateManager.color(0.5F, 0.5F, 0.5F, 1F);
+      else {
+        float r = ((parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
+        float g = ((parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
+        float b = (parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
+        GlStateManager.color(r, g, b, 0.75F);
+      }
 
       drawScaledCustomSizeModalRect(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
     }
@@ -45,7 +49,7 @@ public class ElementSection extends BookElement {
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
     if (section != null && !section.isUnlocked(parent.statFile) && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT) {
-      List<String> l = new ArrayList<String>();
+      List<String> l = new ArrayList<>();
       l.add(EnumChatFormatting.RED + "Locked");
       l.add("Requirements:");
 
@@ -61,6 +65,6 @@ public class ElementSection extends BookElement {
 
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
     if (mouseButton == 0 && section != null && section.isUnlocked(parent.statFile) && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT)
-      parent.openPage(parent.book.getFirstPageNumber(section));
+      parent.openPage(parent.book.getFirstPageNumber(section, parent.statFile));
   }
 }

@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.AchievementList;
@@ -22,6 +23,7 @@ public class SectionData implements IDataItem {
   public String title = "";
   public ImageData icon = new ImageData();
   public String[] requirements = new String[0];
+  public boolean hideWhenLocked = false;
   public String data = "";
 
   public transient int unnamedPageCounter = 0;
@@ -67,6 +69,9 @@ public class SectionData implements IDataItem {
     }
 
     icon.location = getResourceLocation(icon.file, true);
+  }
+
+  public void update(@Nullable StatFileWriter writer) {
   }
 
   public int getPageCount() {

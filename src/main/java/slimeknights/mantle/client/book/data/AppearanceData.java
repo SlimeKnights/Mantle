@@ -9,6 +9,7 @@ public class AppearanceData implements IDataItem {
   public int coverColor = 0x8B4631;
   public int arrowColor = 0xFFFFD3;
   public int arrowColorHover = 0xFF541C;
+  public int lockedSectionColor = 0x000000;
   public String title = "";
   public String subtitle = "";
   public boolean drawPageNumbers = true;

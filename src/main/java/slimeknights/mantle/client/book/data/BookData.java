@@ -95,9 +95,12 @@ public class BookData implements IDataItem {
   }
 
   public SectionData findSection(String name, @Nullable StatFileWriter writer) {
-    for (SectionData section : sections)
+    for (SectionData section : sections) {
+      section.update(writer);
+
       if (section.name.equals(name.toLowerCase()))
         return section.isUnlocked(writer) ? section : null;
+    }
 
     return null;
   }
@@ -109,8 +112,13 @@ public class BookData implements IDataItem {
   public int getFirstPageNumber(SectionData section, @Nullable StatFileWriter writer) {
     int pages = 0;
     for (SectionData sect : sections) {
+      sect.update(writer);
+
       if (section == sect)
         return section.isUnlocked(writer) ? pages + 1 : -1;
+
+      if (!sect.isUnlocked(writer))
+        continue;
 
       pages += sect.getPageCount();
     }
@@ -128,6 +136,8 @@ public class BookData implements IDataItem {
 
     int pages = 0;
     for (SectionData section : sections) {
+      section.update(writer);
+
       if (!section.isUnlocked(writer))
         continue;
 
@@ -164,6 +174,8 @@ public class BookData implements IDataItem {
     String pageName = location.substring(location.indexOf('.') + 1);
 
     for (SectionData section : sections) {
+      section.update(writer);
+
       if (!section.isUnlocked(writer))
         continue;
 
@@ -192,6 +204,8 @@ public class BookData implements IDataItem {
   public int getPageCount(@Nullable StatFileWriter writer) {
     int pages = 0;
     for (SectionData section : sections) {
+      section.update(writer);
+
       pages += section.isUnlocked(writer) ? section.getPageCount() : 0;
     }
     return pages;
@@ -212,6 +226,17 @@ public class BookData implements IDataItem {
     }
 
     return "";
+  }
+
+  public List<SectionData> getVisibleSections(StatFileWriter writer) {
+    List<SectionData> visible = new ArrayList<>();
+
+    for (SectionData section : sections) {
+      if (section.isUnlocked(writer) || !section.hideWhenLocked)
+        visible.add(section);
+    }
+
+    return visible;
   }
 
   public void openGui(@Nullable ItemStack item) {
