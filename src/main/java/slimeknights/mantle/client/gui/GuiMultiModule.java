@@ -14,8 +14,10 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +57,14 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   protected void addModule(GuiModule module) {
     modules.add(module);
+  }
+
+  public List<Rectangle> getModuleAreas() {
+    List<Rectangle> areas = new ArrayList<>(modules.size());
+    for (GuiModule module : modules) {
+      areas.add(module.getArea());
+    }
+    return areas;
   }
 
   @Override

@@ -37,6 +37,10 @@ repositories {
         url "http://chickenbones.net/maven/"
     }
     maven {
+        name 'DVS1 Maven FS'
+        url 'http://dvs1.progwml6.com/files/maven'
+    }
+    maven {
         name 'forge'
         url 'http://files.minecraftforge.net/maven'
     }
@@ -87,6 +91,7 @@ minecraft {
     version = config.minecraft_version + "-" + config.forge_version
     mappings = config.mappings
     runDir = 'run'
+    useDepAts = true
     replace '${version}', project.version
 }
 
@@ -99,6 +104,7 @@ dependencies {
     //compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
     //compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.ccc_version}:dev"
     //compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
+    deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
     // Configuration
     shade "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
     shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"
