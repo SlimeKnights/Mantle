@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -27,6 +28,7 @@ import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
 import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
+import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.book.PacketUpdateSavedPage;
@@ -35,7 +37,7 @@ import slimeknights.mantle.network.book.PacketUpdateSavedPage;
 public class BookLoader implements IResourceManagerReloadListener {
 
   /** GSON object to be used for book loading purposes */
-  public static final Gson GSON = new Gson();
+  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer()).create();
 
   /** Maps page content presets to names */
   private static final HashMap<String, Class<? extends PageContent>> typeToContentMap = new HashMap<>();

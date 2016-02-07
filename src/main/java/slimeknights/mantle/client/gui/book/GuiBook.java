@@ -3,12 +3,17 @@ package slimeknights.mantle.client.gui.book;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.IProgressMeter;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C16PacketClientStatus;
+import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -23,7 +28,7 @@ import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
 
 @SideOnly(Side.CLIENT)
-public class GuiBook extends GuiScreen {
+public class GuiBook extends GuiScreen implements IProgressMeter {
 
   private static final ResourceLocation TEX_BOOK = new ResourceLocation("mantle:textures/gui/book.png");
   private static final ResourceLocation TEX_BOOKFRONT = new ResourceLocation("mantle:textures/gui/bookfront.png");
@@ -39,8 +44,7 @@ public class GuiBook extends GuiScreen {
   public static final int PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING + PAGE_MARGIN) * 2) / PAGE_SCALE);
   public static final int PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING + PAGE_MARGIN) * 2) / PAGE_SCALE);
 
-  public static boolean side = false;
-
+  private boolean loadingAchievements = true;
   private GuiArrow previousArrow, nextArrow, backArrow, indexArrow;
 
   public final BookData book;
@@ -51,15 +55,16 @@ public class GuiBook extends GuiScreen {
   private ArrayList<BookElement> leftElements = new ArrayList<>();
   private ArrayList<BookElement> rightElements = new ArrayList<>();
 
-  public GuiBook(BookData book, @Nullable ItemStack item) {
+  public StatFileWriter statFile;
+
+  public GuiBook(BookData book, StatFileWriter statFile, @Nullable ItemStack item) {
     this.book = book;
     this.item = item;
 
-    openPage(book.findPageNumber(BookHelper.getSavedPage(item)));
+    this.statFile = statFile;
   }
 
   public void drawerTransform(boolean rightSide) {
-    side = rightSide;
     if (rightSide)
       GlStateManager.translate(width / 2 + PAGE_PADDING + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING + PAGE_MARGIN, 0);
     else
@@ -70,6 +75,16 @@ public class GuiBook extends GuiScreen {
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     FontRenderer font = mc.fontRendererObj;
+
+    if (loadingAchievements) {
+      this.drawDefaultBackground();
+
+      this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
+      this.drawCenteredString(this.fontRendererObj, lanSearchStates[(int) (Minecraft.getSystemTime() / 150L % (long) lanSearchStates.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
+
+      return;
+    }
+
     GlStateManager.enableAlpha();
     GlStateManager.enableBlend();
 
@@ -160,7 +175,7 @@ public class GuiBook extends GuiScreen {
       // Set color back to white
       GlStateManager.color(1F, 1F, 1F, 1F);
 
-      if ((page < book.getFullPageCount() - 1 || book.getPageCount() % 2 != 0) && page < book.getFullPageCount()) {
+      if ((page < book.getFullPageCount(statFile) - 1 || book.getPageCount(statFile) % 2 != 0) && page < book.getFullPageCount(statFile)) {
         drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
 
         GlStateManager.pushMatrix();
@@ -203,6 +218,9 @@ public class GuiBook extends GuiScreen {
   }
 
   public void openPage(int page, boolean returner) {
+    if (loadingAchievements)
+      return;
+
     if (page < 0)
       return;
 
@@ -214,7 +232,7 @@ public class GuiBook extends GuiScreen {
     else
       bookPage = (page - 2) / 2 + 1;
 
-    if (bookPage >= -1 && bookPage < book.getFullPageCount()) {
+    if (bookPage >= -1 && bookPage < book.getFullPageCount(statFile)) {
       if (returner)
         oldPage = this.page;
 
@@ -228,6 +246,9 @@ public class GuiBook extends GuiScreen {
   }
 
   private void buildPages() {
+    if (loadingAchievements)
+      return;
+
     leftElements.clear();
     rightElements.clear();
 
@@ -235,13 +256,13 @@ public class GuiBook extends GuiScreen {
       return;
 
     if (page == 0) {
-      PageData page = book.findPage(0);
+      PageData page = book.findPage(0, statFile);
 
       if (page != null)
         page.content.build(book, rightElements);
     } else {
-      PageData leftPage = book.findPage((page - 1) * 2 + 1);
-      PageData rightPage = book.findPage((page - 1) * 2 + 2);
+      PageData leftPage = book.findPage((page - 1) * 2 + 1, statFile);
+      PageData rightPage = book.findPage((page - 1) * 2 + 2, statFile);
 
       if (leftPage != null)
         leftPage.content.build(book, leftElements);
@@ -258,6 +279,11 @@ public class GuiBook extends GuiScreen {
   @Override
   public void initGui() {
     super.initGui();
+
+    if (loadingAchievements) {
+      this.mc.getNetHandler().addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS));
+      return;
+    }
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale, and of course half the size so that all our code still works as it should
     if (mc.gameSettings.guiScale == 1) {
@@ -282,8 +308,11 @@ public class GuiBook extends GuiScreen {
   public void updateScreen() {
     super.updateScreen();
 
+    if (loadingAchievements)
+      return;
+
     previousArrow.visible = page != -1;
-    nextArrow.visible = page < book.getFullPageCount() - (book.getPageCount() % 2 != 0 ? 0 : 1);
+    nextArrow.visible = page < book.getFullPageCount(statFile) - (book.getPageCount(statFile) % 2 != 0 ? 0 : 1);
     backArrow.visible = oldPage >= -1;
 
     if (page == -1) {
@@ -301,9 +330,20 @@ public class GuiBook extends GuiScreen {
   }
 
   @Override
+  public void doneLoading() {
+    loadingAchievements = false;
+
+    initGui();
+    openPage(book.findPageNumber(BookHelper.getSavedPage(item), statFile));
+  }
+
+  @Override
   public void actionPerformed(GuiButton button) {
+    if (loadingAchievements)
+      return;
+
     if (button instanceof GuiBookmark) {
-      openPage(book.findPageNumber(((GuiBookmark) button).data.page));
+      openPage(book.findPageNumber(((GuiBookmark) button).data.page, statFile));
 
       return;
     }
@@ -314,8 +354,8 @@ public class GuiBook extends GuiScreen {
         page = -1;
     } else if (button == nextArrow) {
       page++;
-      if (page > book.getFullPageCount() - (book.getPageCount() % 2 != 0 ? 0 : 1))
-        page = book.getFullPageCount() - 1;
+      if (page > book.getFullPageCount(statFile) - (book.getPageCount(statFile) % 2 != 0 ? 0 : 1))
+        page = book.getFullPageCount(statFile) - 1;
     } else if (button == backArrow) {
       if (oldPage >= -1)
         page = oldPage;
@@ -331,6 +371,9 @@ public class GuiBook extends GuiScreen {
   protected void keyTyped(char typedChar, int keyCode) throws IOException {
     super.keyTyped(typedChar, keyCode);
 
+    if (loadingAchievements)
+      return;
+
     if (keyCode == Keyboard.KEY_LEFT || keyCode == Keyboard.KEY_A)
       actionPerformed(previousArrow);
     else if (keyCode == Keyboard.KEY_RIGHT || keyCode == Keyboard.KEY_D)
@@ -339,6 +382,9 @@ public class GuiBook extends GuiScreen {
 
   @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    if (loadingAchievements)
+      return;
+
     super.mouseClicked(mouseX, mouseY, mouseButton);
 
     boolean right = false;
@@ -361,10 +407,13 @@ public class GuiBook extends GuiScreen {
 
   @Override
   public void onGuiClosed() {
-    PageData page = this.page == 0 ? book.findPage(0) : book.findPage((this.page - 1) * 2 + 1);
+    if (loadingAchievements)
+      return;
+
+    PageData page = this.page == 0 ? book.findPage(0, statFile) : book.findPage((this.page - 1) * 2 + 1, statFile);
 
     if (page == null)
-      page = book.findPage((this.page - 1) * 2 + 2);
+      page = book.findPage((this.page - 1) * 2 + 2, statFile);
 
     if (this.page == -1)
       BookLoader.updateSavedPage(mc.thePlayer, item, "");

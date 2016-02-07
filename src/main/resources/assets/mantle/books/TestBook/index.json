@@ -6,68 +6,17 @@
       "file": "images/test.png"
     },
     "data": "sections/section1.json"
-  },  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
   },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-},  {
-  "name": "test section",
-  "title": "Test Section",
-  "icon": {
-    "file": "images/test.png"
-  },
-  "data": "sections/section1.json"
-}
+  {
+    "name": "section 2",
+    "title": "Locked Section",
+    "icon": {
+      "file": "images/test.png"
+    },
+    "data": "sections/section1.json",
+    "requirements": [
+      "achievement.buildHoe",
+      "achievement.makeBread"
+    ]
+  }
 ]

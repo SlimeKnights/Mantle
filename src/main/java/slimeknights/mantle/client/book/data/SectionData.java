@@ -3,11 +3,13 @@ package slimeknights.mantle.client.book.data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import net.minecraft.client.resources.IResource;
+import net.minecraft.stats.Achievement;
+import net.minecraft.stats.AchievementList;
+import net.minecraft.stats.StatFileWriter;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
-import slimeknights.mantle.client.book.data.element.CriteriaData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import static slimeknights.mantle.client.book.ResourceHelper.getResource;
 import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation;
@@ -19,7 +21,7 @@ public class SectionData implements IDataItem {
   public String name = null;
   public String title = "";
   public ImageData icon = new ImageData();
-  public CriteriaData[] unlockCriteria = new CriteriaData[0];
+  public String[] requirements = new String[0];
   public String data = "";
 
   public transient int unnamedPageCounter = 0;
@@ -69,5 +71,39 @@ public class SectionData implements IDataItem {
 
   public int getPageCount() {
     return pages.size();
+  }
+
+  public boolean isUnlocked(StatFileWriter writer) {
+    if (writer == null || requirements == null || requirements.length == 0)
+      return true;
+
+    for (String achievement : requirements) {
+      if (!requirementSatisfied(achievement, writer))
+        return false;
+    }
+
+    return true;
+  }
+
+  public static boolean requirementSatisfied(String requirement, StatFileWriter writer) {
+    if (writer == null)
+      return true;
+
+    Achievement achievement = findAchievement(requirement);
+
+    return achievement == null || writer.hasAchievementUnlocked(achievement);
+
+  }
+
+  public static Achievement findAchievement(String name) {
+    if (name == null || name.isEmpty())
+      return null;
+
+    for (Achievement achievement : AchievementList.achievementList) {
+      if (achievement.statId.equals(name))
+        return achievement;
+    }
+
+    return null;
   }
 }
