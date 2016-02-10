@@ -14,21 +14,29 @@ import slimeknights.mantle.client.gui.book.element.ElementText;
 @SideOnly(Side.CLIENT)
 public class ContentTextLeftImage extends PageContent {
 
+  public String title = null;
   public ImageData image;
   public TextData[] text1;
   public TextData[] text2;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list) {
-    if (image != null && image.location != null)
-      list.add(new ElementImage(0, 0, 50, 50, image));
+    int y = TITLE_HEIGHT;
+
+    if (title == null || title.isEmpty())
+      y = 0;
     else
-      list.add(new ElementImage(0, 0, 50, 50, ImageData.MISSING));
+      addTitle(list, title);
+
+    if (image != null && image.location != null)
+      list.add(new ElementImage(0, y, 50, 50, image));
+    else
+      list.add(new ElementImage(0, y, 50, 50, ImageData.MISSING));
 
     if (text1 != null && text1.length > 0)
-      list.add(new ElementText(55, 0, GuiBook.PAGE_WIDTH - 55, 50, text1));
+      list.add(new ElementText(55, y, GuiBook.PAGE_WIDTH - 55, 50, text1));
 
     if (text2 != null && text2.length > 0)
-      list.add(new ElementText(0, 55, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - 55, text2));
+      list.add(new ElementText(0, y + 55, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - 55 - y, text2));
   }
 }

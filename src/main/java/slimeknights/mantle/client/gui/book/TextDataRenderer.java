@@ -110,9 +110,9 @@ public class TextDataRenderer {
         }
       }
 
-      if (item.onClick != null && !item.onClick.isEmpty())
+      if (item.action != null && !item.action.isEmpty())
         if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
-          action = item.onClick;
+          action = item.action;
         }
 
       if (atY >= boxHeight) {

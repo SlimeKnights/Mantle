@@ -19,6 +19,16 @@
     "data": "section1/pagesmelting.json"
   },
   {
+    "name": "PageSmithing",
+    "type": "smithing",
+    "data": "section1/pagesmithing.json"
+  },
+  {
+    "name": "PageBlockInteraction",
+    "type": "block interaction",
+    "data": "section1/pageblkinteraction.json"
+  },
+  {
     "name": "Page2",
     "type": "text",
     "data": "section1/page2.json"

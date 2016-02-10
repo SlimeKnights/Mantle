@@ -26,6 +26,8 @@ public class ContentError extends PageContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list) {
+    addTitle(list, "Error");
+
     TextData[] text = new TextData[1 + (exception != null ? 2 : 0)];
     text[0] = new TextData(errorStage);
     text[0].color = "dark_red";
@@ -41,6 +43,6 @@ public class ContentError extends PageContent {
       text[2].paragraph = true;
     }
 
-    list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, text));
+    list.add(new ElementText(0, TITLE_HEIGHT, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - TITLE_HEIGHT, text));
   }
 }

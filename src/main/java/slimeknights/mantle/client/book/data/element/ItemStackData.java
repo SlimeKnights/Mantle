@@ -11,16 +11,44 @@ import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.client.book.BookLoader;
+import static slimeknights.mantle.client.book.ResourceHelper.getResource;
+import static slimeknights.mantle.client.book.ResourceHelper.resourceExists;
+import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
 public class ItemStackData {
+
+  public String itemList = null;
+  public transient ResourceLocation itemListLocation = null;
+  public transient String action;
 
   public String id = "";
   public byte amount = 1;
   public short damage = 0;
   public JsonObject nbt;
 
-  public ItemStack getItemStack() {
+  public ItemStack[] getItems() {
+    if (itemListLocation != null && resourceExists(itemListLocation)) {
+      try {
+        ItemsList itemsList = BookLoader.GSON.fromJson(resourceToString(getResource(itemListLocation)), ItemsList.class);
+        ItemStack[] items = new ItemStack[itemsList.items.length];
+
+        for (int i = 0; i < itemsList.items.length; i++) {
+          items[i] = itemsList.items[i].getItem();
+        }
+
+        this.action = itemsList.action;
+
+        return items;
+      } catch (Exception ignored) {
+      }
+    }
+
+    return new ItemStack[]{getItem()};
+  }
+
+  private ItemStack getItem() {
     Item item;
     boolean isMissingItem = false;
     try {
@@ -39,7 +67,7 @@ public class ItemStackData {
 
     if (nbt != null) {
       try {
-        itemStack.setTagCompound(JsonToNBT.getTagFromJson(nbt.toString()));
+        itemStack.setTagCompound(JsonToNBT.getTagFromJson(filterJsonQuotes(nbt.toString())));
       } catch (NBTException ignored) {
       }
     }
@@ -70,6 +98,16 @@ public class ItemStackData {
     }
 
     return data;
+  }
+
+  public static String filterJsonQuotes(String s) {
+    return s.replaceAll("\"(\\w+)\"\\s*:", "$1: ");
+  }
+
+  private static class ItemsList {
+
+    public ItemStackData[] items = new ItemStackData[0];
+    public String action;
   }
 
   public static class ItemLink {

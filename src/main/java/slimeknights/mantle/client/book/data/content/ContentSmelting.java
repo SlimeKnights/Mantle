@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
@@ -14,10 +13,10 @@ import slimeknights.mantle.client.gui.book.element.BookElement;
 import slimeknights.mantle.client.gui.book.element.ElementImage;
 import slimeknights.mantle.client.gui.book.element.ElementItem;
 import slimeknights.mantle.client.gui.book.element.ElementText;
+import static slimeknights.mantle.client.gui.book.Textures.TEX_SMELTING;
 
 public class ContentSmelting extends PageContent {
 
-  public static final transient ResourceLocation TEX_SMELTING = new ResourceLocation("mantle:textures/gui/book/smelting.png");
   public static final transient int TEX_SIZE = 128;
   public static final transient ImageData IMG_SMELTING = new ImageData(TEX_SMELTING, 0, 0, 110, 114, TEX_SIZE, TEX_SIZE);
 
@@ -38,19 +37,19 @@ public class ContentSmelting extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list) {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMELTING.width / 2;
-    int y = 16;
+    int y = TITLE_HEIGHT;
 
     TextData tdTitle = new TextData(title);
     tdTitle.underlined = true;
     list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, new TextData[]{tdTitle}));
     list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.coverColor));
 
-    if (input != null) {
-      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItemStack()));
+    if (input != null && !input.id.equals("")) {
+      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
     }
 
-    if (result != null) {
-      list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, result.getItemStack()));
+    if (result != null && !result.id.equals("")) {
+      list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, result.getItems(), result.action));
     }
 
     list.add(new ElementItem(x + FUEL_X, y + FUEL_Y, ITEM_SCALE, getFuelsList()));

@@ -11,6 +11,5 @@ public class ContentBlank extends PageContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list) {
-
   }
 }

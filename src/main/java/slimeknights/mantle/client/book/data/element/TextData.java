@@ -16,7 +16,7 @@ public class TextData {
   public boolean obfuscated = false;
   public boolean paragraph = false;
   public float scale = 1.F;
-  public String onClick = "";
+  public String action = "";
   public String[] tooltip = null;
 
   public TextData() {

@@ -19,11 +19,13 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentBlank;
+import slimeknights.mantle.client.book.data.content.ContentBlockInteraction;
 import slimeknights.mantle.client.book.data.content.ContentCrafting;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.ContentImage;
 import slimeknights.mantle.client.book.data.content.ContentImageText;
 import slimeknights.mantle.client.book.data.content.ContentSmelting;
+import slimeknights.mantle.client.book.data.content.ContentSmithing;
 import slimeknights.mantle.client.book.data.content.ContentText;
 import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
@@ -63,6 +65,8 @@ public class BookLoader implements IResourceManagerReloadListener {
     registerPageType("text with right image etch", ContentTextRightImage.class);
     registerPageType("crafting", ContentCrafting.class);
     registerPageType("smelting", ContentSmelting.class);
+    registerPageType("smithing", ContentSmithing.class);
+    registerPageType("block interaction", ContentBlockInteraction.class);
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());

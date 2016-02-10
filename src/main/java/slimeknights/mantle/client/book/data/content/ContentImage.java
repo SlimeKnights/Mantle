@@ -12,13 +12,21 @@ import slimeknights.mantle.client.gui.book.element.ElementImage;
 @SideOnly(Side.CLIENT)
 public class ContentImage extends PageContent {
 
+  public String title = null;
   public ImageData image;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list) {
-    if (image != null && image.location != null)
-      list.add(new ElementImage(0, 0, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, image));
+    int y = TITLE_HEIGHT;
+
+    if (title == null || title.isEmpty())
+      y = 0;
     else
-      list.add(new ElementImage(image));
+      addTitle(list, title);
+
+    if (image != null && image.location != null)
+      list.add(new ElementImage(0, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y, image));
+    else
+      list.add(new ElementImage(ImageData.MISSING));
   }
 }

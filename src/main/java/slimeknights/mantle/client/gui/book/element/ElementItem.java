@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import slimeknights.mantle.client.book.action.StringActionProcessor;
 
 @SideOnly(Side.CLIENT)
 public class ElementItem extends BookElement {
@@ -17,6 +18,7 @@ public class ElementItem extends BookElement {
 
   public ItemStack[] itemCycle;
   public float scale;
+  public String action;
 
   public int renderTick = 0;
   public int currentItem = 0;
@@ -34,10 +36,15 @@ public class ElementItem extends BookElement {
   }
 
   public ElementItem(int x, int y, float scale, ItemStack[] itemCycle) {
+    this(x, y, scale, itemCycle, null);
+  }
+
+  public ElementItem(int x, int y, float scale, ItemStack[] itemCycle, String action) {
     super(x, y);
 
     this.itemCycle = itemCycle;
     this.scale = scale;
+    this.action = action;
   }
 
   @Override
@@ -73,7 +80,10 @@ public class ElementItem extends BookElement {
   @Override
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
     if (mouseButton == 0 && mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
-      parent.itemClicked(itemCycle[currentItem]);
+      if (action != null)
+        StringActionProcessor.process(action, parent);
+      else
+        parent.itemClicked(itemCycle[currentItem]);
     }
   }
 }

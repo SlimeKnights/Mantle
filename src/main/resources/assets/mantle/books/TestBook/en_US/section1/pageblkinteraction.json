@@ -1,0 +1,14 @@
+{
+  "title": "Interacting with Blocks",
+  "input": {
+    "itemList": "items/records.json"
+  },
+  "block": {
+    "id": "minecraft:jukebox"
+  },
+  "description": [
+    {
+      "text": "That's my jam!"
+    }
+  ]
+}

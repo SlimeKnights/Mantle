@@ -11,12 +11,12 @@
         "You missed the joke",
         "By Skyla"
       ],
-      "onClick": "go-to-page:Test Section.Page5",
+      "action": "go-to-page:Test Section.Page5",
       "color": "gold"
     },
     {
       "text": " away. ",
-      "onClick": "go-to-page:Test Section.Page4",
+      "action": "go-to-page:Test Section.Page4",
       "color": "gold"
     },
     {

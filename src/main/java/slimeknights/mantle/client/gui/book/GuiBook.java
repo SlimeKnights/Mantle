@@ -14,7 +14,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.stats.StatFileWriter;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -26,12 +25,11 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
+import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
+import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOKFRONT;
 
 @SideOnly(Side.CLIENT)
 public class GuiBook extends GuiScreen implements IProgressMeter {
-
-  private static final ResourceLocation TEX_BOOK = new ResourceLocation("mantle:textures/gui/book.png");
-  private static final ResourceLocation TEX_BOOKFRONT = new ResourceLocation("mantle:textures/gui/bookfront.png");
 
   public static final int PAGE_PADDING = 8;
   public static final int PAGE_MARGIN = 18;
