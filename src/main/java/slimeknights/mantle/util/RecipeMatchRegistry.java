@@ -1,13 +1,16 @@
 package slimeknights.mantle.util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * Contains a set of matches. Allows you to easily find if a set of itemstacks matches one of them.
@@ -15,7 +18,7 @@ import java.util.List;
 // MANTLE
 public class RecipeMatchRegistry {
 
-  protected final List<RecipeMatch> items = Lists.newArrayList();
+  protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<RecipeMatch>(RecipeComparator.INSTANCE);
 
   public RecipeMatch.Match matches(Collection<ItemStack> stacks) {
     return matches(stacks.toArray(new ItemStack[stacks.size()]));
@@ -129,5 +132,17 @@ public class RecipeMatchRegistry {
     }
 
     return stacksCopy;
+  }
+
+  private static class RecipeComparator implements Comparator<RecipeMatch> {
+
+    public static RecipeComparator INSTANCE = new RecipeComparator();
+
+    private RecipeComparator() {}
+
+    @Override
+    public int compare(RecipeMatch o1, RecipeMatch o2) {
+      return o2.amountMatched - o1.amountMatched;
+    }
   }
 }
