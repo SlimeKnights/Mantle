@@ -75,7 +75,10 @@ public class GuiWidgetSlider extends GuiWidget {
   }
 
   public int getValue() {
-    return currentValue;
+    if(isHidden()) {
+      return 0;
+    }
+    return Math.min(maxValue, Math.max(minValue, currentValue));
   }
 
   public void setEnabled(boolean enabled) {
