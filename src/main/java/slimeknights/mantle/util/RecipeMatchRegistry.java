@@ -17,7 +17,7 @@ import java.util.PriorityQueue;
  */
 public class RecipeMatchRegistry {
 
-  protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<RecipeMatch>(0, RecipeComparator.INSTANCE);
+  protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<RecipeMatch>(1, RecipeComparator.INSTANCE);
 
   public RecipeMatch.Match matches(Collection<ItemStack> stacks) {
     return matches(stacks.toArray(new ItemStack[stacks.size()]));
