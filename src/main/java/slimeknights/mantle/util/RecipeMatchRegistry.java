@@ -15,10 +15,9 @@ import java.util.PriorityQueue;
 /**
  * Contains a set of matches. Allows you to easily find if a set of itemstacks matches one of them.
  */
-// MANTLE
 public class RecipeMatchRegistry {
 
-  protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<RecipeMatch>(RecipeComparator.INSTANCE);
+  protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<RecipeMatch>(0, RecipeComparator.INSTANCE);
 
   public RecipeMatch.Match matches(Collection<ItemStack> stacks) {
     return matches(stacks.toArray(new ItemStack[stacks.size()]));
