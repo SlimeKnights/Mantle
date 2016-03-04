@@ -190,8 +190,11 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
 
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
   protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
-    return mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex)
-           || mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
+    boolean ret = mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
+    if(stack != null && stack.stackSize > 0) {
+      ret |= mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
+    }
+    return ret;
   }
 
   // only refills items that are already present
