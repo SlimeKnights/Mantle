@@ -104,7 +104,7 @@ public class ItemEdible extends ItemFood {
   }
 
   @SideOnly(Side.CLIENT)
-  public void registerItemModels(final String prefix) {
-    dynamic.registerItemModels(prefix, this);
+  public void registerItemModels() {
+    dynamic.registerItemModels(this);
   }
 }

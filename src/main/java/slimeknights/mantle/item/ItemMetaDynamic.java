@@ -99,20 +99,18 @@ public class ItemMetaDynamic extends Item {
   }
 
   @SideOnly(Side.CLIENT)
-  public void registerItemModels(final String prefix) {
-    registerItemModels(prefix, this);
+  public void registerItemModels() {
+    registerItemModels(this);
   }
 
   @SideOnly(Side.CLIENT)
-  protected void registerItemModels(final String prefix, final Item item) {
+  protected void registerItemModels(final Item item) {
     final String resourceId = Loader.instance().activeModContainer().getModId().toLowerCase();
     names.forEachEntry(new TIntObjectProcedure<String>() {
       @Override
       public boolean execute(int meta, String name) {
-        name = String.format("%s:%s%s", resourceId, prefix, name);
-        ModelBakery.addVariantName(item, name);
         // tell the game which model to use for this item-meta combination
-        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(name, "inventory"));
+        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName(), name));
         return true;
       }
     });
