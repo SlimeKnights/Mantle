@@ -49,6 +49,7 @@ public class NetworkWrapper {
   }
 
   public static class AbstactPacketHandler implements IMessageHandler<AbstractPacket, IMessage> {
+
     @Override
     public IMessage onMessage(AbstractPacket packet, MessageContext ctx) {
       if(ctx.side == Side.SERVER) {

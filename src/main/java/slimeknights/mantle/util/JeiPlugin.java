@@ -1,16 +1,14 @@
 package slimeknights.mantle.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.List;
 
-import mezz.jei.api.IItemRegistry;
-import mezz.jei.api.IJeiHelpers;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import slimeknights.mantle.client.gui.GuiMultiModule;
@@ -36,5 +34,6 @@ public class JeiPlugin implements IModPlugin {
   }
 
   @Override
-  public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {}
+  public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+  }
 }

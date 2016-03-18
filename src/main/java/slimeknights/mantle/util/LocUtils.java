@@ -6,7 +6,9 @@ import java.util.Locale;
 
 // localization utils
 public abstract class LocUtils {
-  private LocUtils() {}
+
+  private LocUtils() {
+  }
 
   /**
    * Removes all whitespaces from the string and makes it lowercase.

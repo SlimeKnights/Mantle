@@ -73,7 +73,8 @@ public class ModelHelper {
       data[i * 7 + 3] = c;
     }
 
-    return new BakedQuad(data, quad.getTintIndex(), quad.getFace(), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat());
+    return new BakedQuad(data, quad.getTintIndex(), quad.getFace(), quad.getSprite(), quad
+        .shouldApplyDiffuseLighting(), quad.getFormat());
   }
 
   public static Map<String, String> loadTexturesFromJson(ResourceLocation location) throws IOException {
@@ -100,8 +101,7 @@ public class ModelHelper {
     return new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json");
   }
 
-  private static TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s)
-  {
+  private static TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
     return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
         new Vector3f(tx / 16, ty / 16, tz / 16),
         TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
@@ -128,7 +128,7 @@ public class ModelHelper {
     }
     {
       BLOCK_THIRD_PERSON_RIGHT = get(0, 2.5f, 0, 75, 45, 0, 0.375f);
-      BLOCK_THIRD_PERSON_LEFT  = get(0, 0, 0, 0, 255, 0, 0.4f);
+      BLOCK_THIRD_PERSON_LEFT = get(0, 0, 0, 0, 255, 0, 0.4f);
     }
   }
 

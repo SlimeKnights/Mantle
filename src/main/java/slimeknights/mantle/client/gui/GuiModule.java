@@ -6,9 +6,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 
 // a sub-gui. Mostly the same as a separate GuiContainer, but doesn't do the calls that affect the game as if this were the only gui
 @SideOnly(Side.CLIENT)

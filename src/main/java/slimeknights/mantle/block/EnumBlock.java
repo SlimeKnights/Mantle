@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> extends Block {
+
   public final PropertyEnum<E> prop;
   private final E[] values;
 
@@ -28,7 +29,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
 
   @SuppressWarnings("unchecked")
   private static Material preInit(Material material, PropertyEnum<?> property) {
-    tmp=property;
+    tmp = property;
     return material;
   }
 
@@ -72,6 +73,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
   }
 
   public interface IEnumMeta {
+
     int getMeta();
   }
 }

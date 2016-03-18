@@ -41,20 +41,24 @@ public class ItemMetaDynamic extends Item {
 
   /**
    * Add a valid metadata.
-   * @param meta  The metadata value
-   * @param name  The name used for registering the itemmodel as well as the unlocalized name of the meta. The unlocalized name will be lowercased and stripped of whitespaces.
+   *
+   * @param meta The metadata value
+   * @param name The name used for registering the itemmodel as well as the unlocalized name of the meta. The unlocalized name will be lowercased and stripped of whitespaces.
    * @return An itemstack representing the Item-Meta combination.
    */
   public ItemStack addMeta(int meta, String name) {
     if(meta > MAX) {
-      throw new IllegalArgumentException(String.format("Metadata for %s too high, highest supported value is %d. Meta was %d", name, MAX, meta));
+      throw new IllegalArgumentException(String
+                                             .format("Metadata for %s too high, highest supported value is %d. Meta was %d", name, MAX, meta));
     }
     else if(isValid(meta)) {
-      throw new IllegalArgumentException(String.format("Metadata for %s is already taken. Meta %d is %s", name, meta, names.get(meta)));
+      throw new IllegalArgumentException(String
+                                             .format("Metadata for %s is already taken. Meta %d is %s", name, meta, names
+                                                 .get(meta)));
     }
 
     while(meta >= availabilityMask.length) {
-      availabilityMask = Arrays.copyOf(availabilityMask, availabilityMask.length*2);
+      availabilityMask = Arrays.copyOf(availabilityMask, availabilityMask.length * 2);
     }
     setValid(meta);
     names.put(meta, name);
@@ -64,10 +68,12 @@ public class ItemMetaDynamic extends Item {
   @Override
   public String getUnlocalizedName(ItemStack stack) {
     int meta = stack.getMetadata(); // should call getMetadata below
-    if(isValid(meta))
+    if(isValid(meta)) {
       return super.getUnlocalizedName(stack) + "." + LocUtils.makeLocString(names.get(meta));
-    else
+    }
+    else {
       return super.getUnlocalizedName(stack);
+    }
   }
 
   @Override

@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
 public class TagHelper {
+
   public static int TAG_TYPE_STRING = (new NBTTagString()).getId();
   public static int TAG_TYPE_COMPOUND = (new NBTTagCompound()).getId();
 

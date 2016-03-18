@@ -58,7 +58,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   public List<Rectangle> getModuleAreas() {
     List<Rectangle> areas = new ArrayList<Rectangle>(modules.size());
-    for (GuiModule module : modules) {
+    for(GuiModule module : modules) {
       areas.add(module.getArea());
     }
     return areas;
@@ -98,7 +98,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
     drawContainerName();
     drawPlayerInventoryName();
-    
+
     for(GuiModule module : modules) {
       // set correct state for the module
       GlStateManager.pushMatrix();

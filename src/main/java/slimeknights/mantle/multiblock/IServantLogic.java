@@ -3,39 +3,37 @@ package slimeknights.mantle.multiblock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface IServantLogic
-{
-    BlockPos getMasterPosition();
+public interface IServantLogic {
 
-    /** The block should already have a valid master */
-    void notifyMasterOfChange();
+  BlockPos getMasterPosition();
 
-    /** Checks if this block can be tied to this master
-     *
-     * @param master
-     * @param world the world of master
-     * @param pos position of master
-     * @return whether the servant can be tied to this master
-     */
+  /** The block should already have a valid master */
+  void notifyMasterOfChange();
 
-    boolean setPotentialMaster(IMasterLogic master, World world, BlockPos pos);
+  /**
+   * Checks if this block can be tied to this master
+   *
+   * @param world the world of master
+   * @param pos   position of master
+   * @return whether the servant can be tied to this master
+   */
 
-    /** Used to set and verify that this is the block's master
-     *
-     * @param master
-     * @param world
-     * @param pos position of master
-     * @return Is this block tied to this master?
-     */
+  boolean setPotentialMaster(IMasterLogic master, World world, BlockPos pos);
 
-    boolean verifyMaster(IMasterLogic master, World world, BlockPos pos);
+  /**
+   * Used to set and verify that this is the block's master
+   *
+   * @param pos position of master
+   * @return Is this block tied to this master?
+   */
 
-    /** Exactly what it says on the tin
-     *
-     * @param master
-     * @param world
-     * @param pos position of master
-     */
+  boolean verifyMaster(IMasterLogic master, World world, BlockPos pos);
 
-    void invalidateMaster(IMasterLogic master, World world, BlockPos pos);
+  /**
+   * Exactly what it says on the tin
+   *
+   * @param pos position of master
+   */
+
+  void invalidateMaster(IMasterLogic master, World world, BlockPos pos);
 }

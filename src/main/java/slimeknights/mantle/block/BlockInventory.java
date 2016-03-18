@@ -10,9 +10,9 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 import slimeknights.mantle.tileentity.TileInventory;
@@ -86,8 +86,7 @@ public abstract class BlockInventory extends BlockContainer {
   // BlockContainer sets this to invisible
   // we need model for standard forge rendering
   @Override
-  public EnumBlockRenderType getRenderType(IBlockState state)
-  {
+  public EnumBlockRenderType getRenderType(IBlockState state) {
     return EnumBlockRenderType.MODEL;
   }
 }
