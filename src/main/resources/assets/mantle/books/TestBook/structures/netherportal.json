@@ -1,0 +1,31 @@
+{
+  "size": [4, 5, 1],
+  "structure": [
+    {
+      "pos": [0, 0, 0],
+      "endPos": [3, 0, 0],
+      "block": "minecraft:obsidian"
+    },
+    {
+      "pos": [0, 0, 0],
+      "endPos": [0, 4, 0],
+      "block": "minecraft:obsidian"
+    },
+    {
+      "pos": [3, 0, 0],
+      "endPos": [3, 4, 0],
+      "block": "minecraft:obsidian"
+    },
+    {
+      "pos": [0, 4, 0],
+      "endPos": [3, 4, 0],
+      "block": "minecraft:obsidian"
+    },
+    {
+      "pos": [1, 1, 0],
+      "endPos": [2, 3, 0],
+      "block": "minecraft:portal",
+      "meta": 2
+    }
+  ]
+}

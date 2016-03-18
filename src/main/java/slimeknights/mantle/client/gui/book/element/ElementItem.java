@@ -1,7 +1,6 @@
 package slimeknights.mantle.client.gui.book.element;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
@@ -65,7 +64,7 @@ public class ElementItem extends BookElement {
     GlStateManager.scale(scale, scale, 1.0F);
 
     if (currentItem < itemCycle.length)
-      Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(itemCycle[currentItem], 0, 0);
+      mc.getRenderItem().renderItemAndEffectIntoGUI(itemCycle[currentItem], 0, 0);
 
     GlStateManager.popMatrix();
   }
@@ -73,7 +72,7 @@ public class ElementItem extends BookElement {
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
     if (mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
-      renderToolTip(Minecraft.getMinecraft().fontRendererObj, itemCycle[currentItem], mouseX, mouseY);
+      renderToolTip(fontRenderer, itemCycle[currentItem], mouseX, mouseY);
     }
   }
 

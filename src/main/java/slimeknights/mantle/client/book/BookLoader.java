@@ -26,6 +26,7 @@ import slimeknights.mantle.client.book.data.content.ContentImage;
 import slimeknights.mantle.client.book.data.content.ContentImageText;
 import slimeknights.mantle.client.book.data.content.ContentSmelting;
 import slimeknights.mantle.client.book.data.content.ContentSmithing;
+import slimeknights.mantle.client.book.data.content.ContentStructure;
 import slimeknights.mantle.client.book.data.content.ContentText;
 import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
@@ -67,6 +68,7 @@ public class BookLoader implements IResourceManagerReloadListener {
     registerPageType("smelting", ContentSmelting.class);
     registerPageType("smithing", ContentSmithing.class);
     registerPageType("block interaction", ContentBlockInteraction.class);
+    registerPageType("structure", ContentStructure.class);
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());
@@ -94,7 +96,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * @return The class of the page type, ContentError.class if page type not registered
    */
   public static Class<? extends PageContent> getPageType(String name) {
-    return typeToContentMap.getOrDefault(name, ContentError.class);
+    return typeToContentMap.get(name);
   }
 
   /**
@@ -106,11 +108,28 @@ public class BookLoader implements IResourceManagerReloadListener {
    * @return The book object, not immediately populated
    */
   public static BookData registerBook(String name, BookRepository... repositories) {
+    return registerBook(name, true, true, repositories);
+  }
+
+  /**
+   * Adds a book to the loader, and returns a reference object
+   * Be warned that the returned BookData object is not immediately populated, and is instead populated when the resources are loaded/reloaded
+   *
+   * @param name               The name of the book, modid: will be automatically appended to the front of the name unless that is already added
+   * @param appendIndex        Whether an index should be added to the front of the book using a BookTransformer
+   * @param appendContentTable Whether a table of contents should be added to the front of each section using a BookTransformer
+   * @param repositories       All the repositories the book will load the sections from
+   * @return The book object, not immediately populated
+   */
+  public static BookData registerBook(String name, boolean appendIndex, boolean appendContentTable, BookRepository... repositories) {
     BookData info = new BookData(repositories);
 
     books.put(name.contains(":") ? name : Loader.instance().activeModContainer().getModId() + ":" + name, info);
 
-    info.addTransformer(new BookTransformer.IndexTranformer());
+    if (appendIndex)
+      info.addTransformer(new BookTransformer.IndexTranformer());
+    if (appendContentTable)
+      info.addTransformer(new BookTransformer.ContentTableTransformer());
 
     return info;
   }

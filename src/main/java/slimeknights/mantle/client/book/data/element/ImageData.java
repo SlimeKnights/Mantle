@@ -1,19 +1,14 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ImageData {
+public class ImageData extends DataLocation {
 
   public static final ImageData MISSING = new ImageData();
 
-  public String file = "";
   public int u = 0;
   public int v = 0;
   public int uw = 256;
@@ -25,8 +20,6 @@ public class ImageData {
   public int width = -1;
   public int height = -1;
   public int colorMultiplier = 0xFFFFFF;
-
-  public transient ResourceLocation location;
 
   public ImageData() {
   }
@@ -62,17 +55,5 @@ public class ImageData {
     MISSING.texHeight = 32;
     MISSING.uw = 32;
     MISSING.vh = 32;
-  }
-
-  public static ImageData from(Block block, int meta, EnumFacing face) {
-    return null;
-  }
-
-  public static ImageData from(Item item, int damage) {
-    return null;
-  }
-
-  public static ImageData from(ItemStack stack) {
-    return null;
   }
 }

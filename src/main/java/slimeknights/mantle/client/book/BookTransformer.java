@@ -8,13 +8,15 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentSectionList;
+import slimeknights.mantle.client.book.data.content.ContentTableOfContents;
+import slimeknights.mantle.client.book.data.element.TextData;
 
 public abstract class BookTransformer {
 
   /**
-   * Called when all the sections within the book are loaded, but before their contents are, as the pages are counted when the contents of the sections are loaded.
+   * Called when all the sections within the book are loaded.
    *
-   * @param book The object to the book to transform
+   * @param book The object to the book to be transformed
    */
   public abstract void transform(BookData book);
 
@@ -55,6 +57,42 @@ public abstract class BookTransformer {
 
       index.name = "index";
       book.sections.add(0, index);
+    }
+  }
+
+  protected static class ContentTableTransformer extends BookTransformer {
+
+    @Override
+    public void transform(BookData book) {
+      final int ENTRIES_PER_PAGE = 24;
+
+      for (SectionData section : book.sections) {
+        if (section.name.equals("index"))
+          continue;
+
+        int genPages = (int) Math.ceil(section.getPageCount() * 1.F / ENTRIES_PER_PAGE);
+
+        if (genPages == 0)
+          continue;
+
+        PageData[] pages = new PageData[genPages];
+
+        for (int i = 0; i < pages.length; i++) {
+          pages[i] = new PageData(true);
+          pages[i].name = "tableofcontents" + i;
+          TextData[] text = new TextData[i > pages.length - 1 ? ENTRIES_PER_PAGE : section.getPageCount() - (genPages - 1) * ENTRIES_PER_PAGE];
+          for (int j = 0; j < text.length; j++) {
+            text[j] = new TextData((i * ENTRIES_PER_PAGE + j + 1) + ". " + section.pages.get(i * ENTRIES_PER_PAGE + j).getTitle());
+            text[j].action = "go-to-page-rtn:" + section.name + "." + section.pages.get(i * ENTRIES_PER_PAGE + j).name;
+          }
+
+          pages[i].content = new ContentTableOfContents(i == 0 ? section.getTitle() : "", text);
+        }
+
+        for (int i = pages.length - 1; i >= 0; i--) {
+          section.pages.add(0, pages[i]);
+        }
+      }
     }
   }
 }

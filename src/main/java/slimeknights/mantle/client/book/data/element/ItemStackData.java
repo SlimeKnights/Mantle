@@ -13,13 +13,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.client.book.BookLoader;
-import static slimeknights.mantle.client.book.ResourceHelper.getResource;
-import static slimeknights.mantle.client.book.ResourceHelper.resourceExists;
-import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
+import slimeknights.mantle.client.book.repository.BookRepository;
 
 public class ItemStackData {
 
   public String itemList = null;
+  public transient BookRepository source;
   public transient ResourceLocation itemListLocation = null;
   public transient String action;
 
@@ -29,9 +28,9 @@ public class ItemStackData {
   public JsonObject nbt;
 
   public ItemStack[] getItems() {
-    if (itemListLocation != null && resourceExists(itemListLocation)) {
+    if (itemListLocation != null && source.resourceExists(itemListLocation)) {
       try {
-        ItemsList itemsList = BookLoader.GSON.fromJson(resourceToString(getResource(itemListLocation)), ItemsList.class);
+        ItemsList itemsList = BookLoader.GSON.fromJson(source.resourceToString(source.getResource(itemListLocation)), ItemsList.class);
         ItemStack[] items = new ItemStack[itemsList.items.length];
 
         for (int i = 0; i < itemsList.items.length; i++) {

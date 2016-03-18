@@ -31,6 +31,10 @@ import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOKFRONT;
 @SideOnly(Side.CLIENT)
 public class GuiBook extends GuiScreen implements IProgressMeter {
 
+  public static boolean debug = false;
+
+  public static final int TEX_SIZE = 512;
+
   public static final int PAGE_PADDING = 8;
   public static final int PAGE_MARGIN = 18;
 
@@ -71,6 +75,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   }
 
   @Override
+  @SuppressWarnings("ForLoopReplaceableByForEach")
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     FontRenderer font = mc.fontRendererObj;
 
@@ -81,6 +86,11 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       this.drawCenteredString(this.fontRendererObj, lanSearchStates[(int) (Minecraft.getSystemTime() / 150L % (long) lanSearchStates.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
 
       return;
+    }
+
+    if (debug) {
+      drawRect(0, 0, font.getStringWidth("DEBUG") + 4, font.FONT_HEIGHT + 4, 0x55000000);
+      font.drawString("DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
     GlStateManager.enableAlpha();
@@ -107,11 +117,11 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       render.bindTexture(TEX_BOOKFRONT);
 
       GlStateManager.color(coverR, coverG, coverB);
-      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
+      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
       GlStateManager.color(1F, 1F, 1F);
 
       if (!book.appearance.title.isEmpty()) {
-        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
+        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
 
@@ -132,12 +142,12 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       render.bindTexture(TEX_BOOK);
 
       GlStateManager.color(coverR, coverG, coverB);
-      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, 512, 512);
+      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
       GlStateManager.color(1F, 1F, 1F);
 
       if (page != 0) {
-        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
+        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
         drawerTransform(false);
@@ -149,12 +159,15 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           font.drawString(pNum, PAGE_WIDTH / 2 - font.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
         }
 
+        int mX = (int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE);
+        int mY = (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE);
+
         // Not foreach to prevent conmodification crashes
         for (int i = 0; i < leftElements.size(); i++) {
           BookElement element = leftElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.draw((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+          element.draw(mX, mY, partialTicks);
         }
 
         // Not foreach to prevent conmodification crashes
@@ -162,7 +175,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           BookElement element = leftElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawOverlay((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2 - PAGE_WIDTH_UNSCALED) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+          element.drawOverlay(mX, mY, partialTicks);
         }
 
         GlStateManager.popMatrix();
@@ -174,7 +187,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       GlStateManager.color(1F, 1F, 1F, 1F);
 
       if ((page < book.getFullPageCount(statFile) - 1 || book.getPageCount(statFile) % 2 != 0) && page < book.getFullPageCount(statFile)) {
-        drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, 512, 512);
+        drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
         drawerTransform(true);
@@ -186,12 +199,15 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           font.drawString(pNum, PAGE_WIDTH / 2 - font.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
         }
 
+        int mX = (int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE);
+        int mY = (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE);
+
         // Not foreach to prevent conmodification crashes
         for (int i = 0; i < rightElements.size(); i++) {
           BookElement element = rightElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.draw((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+          element.draw(mX, mY, partialTicks);
         }
 
         // Not foreach to prevent conmodification crashes
@@ -199,7 +215,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           BookElement element = rightElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawOverlay((int) ((Mouse.getX() * this.width / this.mc.displayWidth - (width / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - (height / 2 - PAGE_HEIGHT_UNSCALED / 2) - PAGE_PADDING - PAGE_MARGIN) / PAGE_SCALE), partialTicks);
+          element.drawOverlay(mX, mY, partialTicks);
         }
 
         GlStateManager.popMatrix();
@@ -211,16 +227,16 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     GlStateManager.popMatrix();
   }
 
-  public void openPage(int page) {
-    openPage(page, false);
+  public int openPage(int page) {
+    return openPage(page, false);
   }
 
-  public void openPage(int page, boolean returner) {
+  public int openPage(int page, boolean returner) {
     if (loadingAchievements)
-      return;
+      return -1;
 
     if (page < 0)
-      return;
+      return -1;
 
     int bookPage;
     if (page == 1)
@@ -234,9 +250,47 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       if (returner)
         oldPage = this.page;
 
-      this.page = bookPage;
-      buildPages();
+      _setPage(bookPage);
     }
+
+    return page % 2 == 0 ? 0 : 1;
+  }
+
+  public void _setPage(int page) {
+    this.page = page;
+    buildPages();
+  }
+
+  public int getPage(int side) {
+    if (page == 0 && side == 0)
+      return -1;
+    else if (page == 0 && side == 1)
+      return 0;
+    else if (side == 0)
+      return (page - 1) * 2 + 1;
+    else if (side == 1)
+      return (page - 2) * 2 + 2;
+    else
+      return -1;
+  }
+
+  public int getPage_() {
+    return page;
+  }
+
+  public ArrayList<BookElement> getElements(int side) {
+    return side == 0 ? leftElements : side == 1 ? rightElements : null;
+  }
+
+  public void openCover() {
+    if (loadingAchievements)
+      return;
+
+    _setPage(-1);
+
+    this.leftElements.clear();
+    this.rightElements.clear();
+    buildPages();
   }
 
   public void itemClicked(ItemStack item) {
@@ -372,10 +426,19 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     if (loadingAchievements)
       return;
 
-    if (keyCode == Keyboard.KEY_LEFT || keyCode == Keyboard.KEY_A)
-      actionPerformed(previousArrow);
-    else if (keyCode == Keyboard.KEY_RIGHT || keyCode == Keyboard.KEY_D)
-      actionPerformed(nextArrow);
+    switch (keyCode) {
+      case Keyboard.KEY_LEFT:
+      case Keyboard.KEY_A:
+        actionPerformed(previousArrow);
+        break;
+      case Keyboard.KEY_RIGHT:
+      case Keyboard.KEY_D:
+        actionPerformed(nextArrow);
+        break;
+      case Keyboard.KEY_F3:
+        debug = !debug;
+        break;
+    }
   }
 
   @Override

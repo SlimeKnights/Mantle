@@ -4,14 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 
 @SideOnly(Side.CLIENT)
 public class GuiArrow extends GuiButton {
-
-  private static final ResourceLocation TEX_BOOK = new ResourceLocation("mantle:textures/gui/book.png");
 
   private static final int X = 412;
 

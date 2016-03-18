@@ -1,7 +1,10 @@
 package slimeknights.mantle.client.book.data;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
@@ -16,10 +19,6 @@ import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.gui.book.GuiBook;
-import static slimeknights.mantle.client.book.ResourceHelper.getResource;
-import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation;
-import static slimeknights.mantle.client.book.ResourceHelper.resourceExists;
-import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
 
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
@@ -28,6 +27,7 @@ public class BookData implements IDataItem {
   public transient ArrayList<SectionData> sections = new ArrayList<>();
   public transient AppearanceData appearance = new AppearanceData();
   public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
+  public transient HashMap<String, String> strings = new HashMap<>();
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
 
@@ -47,6 +47,10 @@ public class BookData implements IDataItem {
       try {
         List<SectionData> repoContents = repo.getSections();
         sections.addAll(repoContents);
+
+        for (SectionData section : repoContents) {
+          section.source = repo;
+        }
       } catch (Exception e) {
         SectionData error = new SectionData();
         error.name = "errorenous";
@@ -57,36 +61,68 @@ public class BookData implements IDataItem {
         sections.add(error);
       }
 
-      if (repo.hasAppearanceData) {
-        ResourceLocation appearanceLocation = getResourceLocation("appearance.json");
+      ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");
 
-        if (resourceExists(appearanceLocation))
-          try {
-            appearance = BookLoader.GSON.fromJson(resourceToString(getResource(appearanceLocation)), AppearanceData.class);
-          } catch (Exception ignored) {
-          }
-        else
-          appearance = new AppearanceData();
+      if (repo.resourceExists(appearanceLocation))
+        try {
+          appearance = BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
+        } catch (Exception ignored) {
+        }
 
-        appearance.load();
+      appearance.load();
 
-        ResourceLocation itemLinkLocation = getResourceLocation("items.json");
+      ResourceLocation itemLinkLocation = repo.getResourceLocation("items.json");
 
-        if (resourceExists(itemLinkLocation)) {
-          try {
-            itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(resourceToString(getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
-          } catch (Exception ignored) {
-          }
+      if (repo.resourceExists(itemLinkLocation)) {
+        try {
+          itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
+        } catch (Exception ignored) {
         }
       }
+
+      ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
+
+      if (repo.resourceExists(languageLocation)) {
+        try {
+          BufferedReader br = new BufferedReader(new InputStreamReader(repo.getResource(languageLocation).getInputStream()));
+
+          String next = br.readLine();
+
+          while (next != null) {
+            if (!next.startsWith("//") && next.contains("=")) {
+              String key = next.substring(0, next.indexOf('='));
+              String value = next.substring(next.indexOf('=') + 1);
+
+              strings.put(key, value);
+            }
+
+            next = br.readLine();
+          }
+        } catch (Exception ignored) {
+        }
+      }
+    }
+
+    for (SectionData section : sections) {
+      if (section.source == null)
+        section.source = BookRepository.DUMMY;
+
+      section.parent = this;
+      section.load();
     }
 
     for (BookTransformer transformer : transformers)
       transformer.transform(this);
 
+    // Loads orphaned sections, unless something went wrong, that would only be sections added by a transformer
     for (SectionData section : sections) {
-      section.parent = this;
-      section.load();
+      if (section.source == null)
+        section.source = BookRepository.DUMMY;
+
+      if (section.parent == null) {
+        section.parent = this;
+        section.load();
+      }
     }
   }
 

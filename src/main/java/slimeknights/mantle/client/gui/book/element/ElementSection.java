@@ -29,7 +29,7 @@ public class ElementSection extends BookElement {
     boolean hover = mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT;
 
     if (section.icon != null) {
-      Minecraft.getMinecraft().renderEngine.bindTexture(section.icon.location);
+      renderEngine.bindTexture(section.icon.location);
 
       if (unlocked)
         GlStateManager.color(1F, 1F, 1F, hover ? 1F : 0.5F);
@@ -43,7 +43,7 @@ public class ElementSection extends BookElement {
       drawScaledCustomSizeModalRect(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
     }
 
-    Minecraft.getMinecraft().fontRendererObj.drawString(section.title, x + WIDTH / 2 - Minecraft.getMinecraft().fontRendererObj.getStringWidth(section.title) / 2, y + HEIGHT - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, hover ? 0xFF000000 : 0x7F000000);
+    fontRenderer.drawString(section.getTitle(), x + WIDTH / 2 - fontRenderer.getStringWidth(section.getTitle()) / 2, y + HEIGHT - fontRenderer.FONT_HEIGHT, hover ? 0xFF000000 : 0x7F000000);
   }
 
   @Override

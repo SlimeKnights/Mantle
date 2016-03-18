@@ -12,15 +12,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
-import static slimeknights.mantle.client.book.ResourceHelper.getResource;
-import static slimeknights.mantle.client.book.ResourceHelper.getResourceLocation;
-import static slimeknights.mantle.client.book.ResourceHelper.resourceToString;
+import slimeknights.mantle.client.book.repository.BookRepository;
 
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
 
   public String name = null;
-  public String title = "";
   public ImageData icon = new ImageData();
   public String[] requirements = new String[0];
   public boolean hideWhenLocked = false;
@@ -28,6 +25,7 @@ public class SectionData implements IDataItem {
 
   public transient int unnamedPageCounter = 0;
   public transient BookData parent;
+  public transient BookRepository source;
   public transient ArrayList<PageData> pages = new ArrayList<>();
 
   public SectionData() {
@@ -47,9 +45,9 @@ public class SectionData implements IDataItem {
     name = name.toLowerCase();
 
     if (!data.equals("no-load")) {
-      IResource pagesInfo = getResource(getResourceLocation(data));
+      IResource pagesInfo = source.getResource(source.getResourceLocation(data));
       if (pagesInfo != null) {
-        String data = resourceToString(pagesInfo);
+        String data = source.resourceToString(pagesInfo);
         if (!data.isEmpty())
           try {
             pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
@@ -65,13 +63,19 @@ public class SectionData implements IDataItem {
 
     for (PageData page : pages) {
       page.parent = this;
+      page.source = source;
       page.load();
     }
 
-    icon.location = getResourceLocation(icon.file, true);
+    icon.location = source.getResourceLocation(icon.file, true);
   }
 
   public void update(@Nullable StatFileWriter writer) {
+  }
+
+  public String getTitle() {
+    String title = parent.strings.get(name);
+    return title == null ? name : title;
   }
 
   public int getPageCount() {

@@ -115,15 +115,28 @@ public class TextDataRenderer {
           action = item.action;
         }
 
-      if (atY >= boxHeight) {
+      if (atY >= y + boxHeight) {
         fr.drawString("...", atX, atY, 0, false);
         break;
       }
       y = atY;
     }
 
-    if (drawLabel != null)
+    if (GuiBook.debug && action != null && !action.isEmpty()) {
+      String[] label = drawLabel;
+      drawLabel = new String[label != null ? label.length + 2 : 1];
+
+      if (label != null)
+        for (int i = 0; i < label.length; i++)
+          drawLabel[i] = label[i];
+
+      drawLabel[drawLabel.length > 1 ? drawLabel.length - 2 : 0] = "";
+      drawLabel[drawLabel.length - 1] = EnumChatFormatting.GRAY + "Action: " + action;
+    }
+
+    if (drawLabel != null) {
       drawHoveringText(drawLabel, mouseX, mouseY, fr);
+    }
 
     return action;
   }

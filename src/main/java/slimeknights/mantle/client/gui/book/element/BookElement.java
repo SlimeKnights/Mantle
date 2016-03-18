@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,6 +16,10 @@ import slimeknights.mantle.client.gui.book.GuiBook;
 public abstract class BookElement extends Gui {
 
   public GuiBook parent;
+
+  protected Minecraft mc = Minecraft.getMinecraft();
+  protected FontRenderer fontRenderer = mc.fontRendererObj;
+  protected TextureManager renderEngine = mc.renderEngine;
 
   public int x, y;
 
@@ -33,7 +38,7 @@ public abstract class BookElement extends Gui {
   }
 
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
-    List<String> list = stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
+    List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
 
     for (int i = 0; i < list.size(); ++i) {
       if (i == 0) {

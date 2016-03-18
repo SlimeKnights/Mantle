@@ -1,7 +1,6 @@
 [
   {
     "name": "test section",
-    "title": "Test Section",
     "icon": {
       "file": "images/test.png"
     },
@@ -9,7 +8,6 @@
   },
   {
     "name": "section 2",
-    "title": "Locked Section",
     "icon": {
       "file": "images/test.png"
     },

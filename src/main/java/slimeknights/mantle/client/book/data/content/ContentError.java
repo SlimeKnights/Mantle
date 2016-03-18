@@ -38,7 +38,7 @@ public class ContentError extends PageContent {
       text[1].color = "dark_red";
       text[1].paragraph = true;
 
-      text[2] = new TextData(exception.getMessage());
+      text[2] = new TextData(exception.getMessage() != null ? exception.getMessage() : exception.getClass().getSimpleName());
       text[2].color = "dark_red";
       text[2].paragraph = true;
     }

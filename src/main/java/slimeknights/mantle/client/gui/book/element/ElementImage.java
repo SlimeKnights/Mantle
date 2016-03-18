@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -49,7 +48,7 @@ public class ElementImage extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks) {
-    Minecraft.getMinecraft().renderEngine.bindTexture(image.location);
+    renderEngine.bindTexture(image.location);
 
     float r = ((colorMultiplier >> 16) & 0xff) / 255.F;
     float g = ((colorMultiplier >> 8) & 0xff) / 255.F;
