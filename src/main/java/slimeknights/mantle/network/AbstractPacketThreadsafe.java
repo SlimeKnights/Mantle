@@ -27,7 +27,7 @@ public abstract class AbstractPacketThreadsafe extends AbstractPacket {
 
   @Override
   public final IMessage handleServer(final NetHandlerPlayServer netHandler) {
-    MinecraftServer.getServer().addScheduledTask(new Runnable() {
+    Minecraft.getMinecraft().addScheduledTask(new Runnable() {
       @Override
       public void run() {
         handleServerSafe(netHandler);

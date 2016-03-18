@@ -1,6 +1,6 @@
 package slimeknights.mantle.multiblock;
 
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public interface IMasterLogic
 {
@@ -8,5 +8,5 @@ public interface IMasterLogic
      *
      * @param pos servant position
      */
-    public void notifyChange(IServantLogic servant, BlockPos pos);
+    void notifyChange(IServantLogic servant, BlockPos pos);
 }

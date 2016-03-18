@@ -1,14 +1,14 @@
 package slimeknights.mantle.multiblock;
 
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface IServantLogic
 {
-    public BlockPos getMasterPosition();
+    BlockPos getMasterPosition();
 
     /** The block should already have a valid master */
-    public void notifyMasterOfChange();
+    void notifyMasterOfChange();
 
     /** Checks if this block can be tied to this master
      *
@@ -18,7 +18,7 @@ public interface IServantLogic
      * @return whether the servant can be tied to this master
      */
 
-    public boolean setPotentialMaster(IMasterLogic master, World world, BlockPos pos);
+    boolean setPotentialMaster(IMasterLogic master, World world, BlockPos pos);
 
     /** Used to set and verify that this is the block's master
      *
@@ -28,7 +28,7 @@ public interface IServantLogic
      * @return Is this block tied to this master?
      */
 
-    public boolean verifyMaster(IMasterLogic master, World world, BlockPos pos);
+    boolean verifyMaster(IMasterLogic master, World world, BlockPos pos);
 
     /** Exactly what it says on the tin
      *
@@ -37,5 +37,5 @@ public interface IServantLogic
      * @param pos position of master
      */
 
-    public void invalidateMaster(IMasterLogic master, World world, BlockPos pos);
+    void invalidateMaster(IMasterLogic master, World world, BlockPos pos);
 }

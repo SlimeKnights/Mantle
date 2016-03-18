@@ -79,7 +79,7 @@ public abstract class GuiModule extends GuiContainer {
   }
 
   public boolean isMouseOverFullSlot(int mouseX, int mouseY) {
-    for(Slot slot : (List<Slot>)inventorySlots.inventorySlots) {
+    for(Slot slot : inventorySlots.inventorySlots) {
       if(parent.isMouseOverSlot(slot, mouseX, mouseY) && slot.getHasStack()) {
         return true;
       }

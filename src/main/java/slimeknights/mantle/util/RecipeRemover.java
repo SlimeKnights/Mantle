@@ -1,8 +1,5 @@
 package slimeknights.mantle.util;
 
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -10,7 +7,9 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraftforge.common.ChestGenHooks;
+
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class RecipeRemover
@@ -90,7 +89,8 @@ public class RecipeRemover
     {
         removeFurnaceRecipe(new ItemStack(i, 1, 32767));
     }
-
+/*
+    // todo: 1.9
     //removes from all vanilla worldgen chests :D
     public static void removeFromChests(ItemStack resultItem)
     {
@@ -105,5 +105,5 @@ public class RecipeRemover
         ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_CROSSING).removeItem(resultItem);
         ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).removeItem(resultItem);
 
-    }
+    }*/
 }

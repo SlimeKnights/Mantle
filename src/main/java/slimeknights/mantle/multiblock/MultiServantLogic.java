@@ -5,9 +5,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
@@ -163,15 +163,15 @@ public class MultiServantLogic extends TileEntity implements IServantLogic
     {
         NBTTagCompound tag = new NBTTagCompound();
         this.writeCustomNBT(tag);
-        return new S35PacketUpdateTileEntity(this.pos, 1, tag);
+        return new SPacketUpdateTileEntity(this.pos, 1, tag);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
     {
         this.readCustomNBT(packet.getNbtCompound());
         this.worldObj.notifyLightSet(this.pos);
-        this.worldObj.markBlockForUpdate(this.pos);
+        this.worldObj.notifyBlockUpdate(this.pos, state, state, 3);
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -22,8 +21,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.IColoredBakedQuad;
-import net.minecraftforge.client.model.IModelPart;
 import net.minecraftforge.client.model.IModelState;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.TRSRTransformation;
@@ -45,6 +42,8 @@ public class ModelHelper {
 
   public static final Optional<IModelState> DEFAULT_ITEM_STATE;
   public static final Optional<IModelState> DEFAULT_TOOL_STATE;
+  public static final TRSRTransformation BLOCK_THIRD_PERSON_RIGHT;
+  public static final TRSRTransformation BLOCK_THIRD_PERSON_LEFT;
 
   public static TextureAtlasSprite getTextureFromBlock(Block block, int meta) {
     IBlockState state = block.getStateFromMeta(meta);
@@ -74,7 +73,7 @@ public class ModelHelper {
       data[i * 7 + 3] = c;
     }
 
-    return new IColoredBakedQuad.ColoredBakedQuad(data, -1, quad.getFace());
+    return new BakedQuad(data, quad.getTintIndex(), quad.getFace(), quad.getSprite(), quad.shouldApplyDiffuseLighting(), quad.getFormat());
   }
 
   public static Map<String, String> loadTexturesFromJson(ResourceLocation location) throws IOException {
@@ -101,34 +100,35 @@ public class ModelHelper {
     return new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json");
   }
 
+  private static TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s)
+  {
+    return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
+        new Vector3f(tx / 16, ty / 16, tz / 16),
+        TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
+        new Vector3f(s, s, s),
+        null));
+  }
+
   static {
     {
       // equals forge:default-item
-      TRSRTransformation thirdperson = TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
-          new Vector3f(0, 1f / 16, -3f / 16),
-          TRSRTransformation.quatFromYXZDegrees(new Vector3f(-90, 0, 0)),
-          new Vector3f(0.55f, 0.55f, 0.55f),
-          null));
-      TRSRTransformation firstperson = TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
-          new Vector3f(0, 4f / 16, 2f / 16),
-          TRSRTransformation.quatFromYXZDegrees(new Vector3f(0, -135, 25)),
-          new Vector3f(1.7f, 1.7f, 1.7f),
-          null));
-      DEFAULT_ITEM_STATE = Optional.<IModelState>of(new SimpleModelState(ImmutableMap.of(ItemCameraTransforms.TransformType.THIRD_PERSON, thirdperson, ItemCameraTransforms.TransformType.FIRST_PERSON, firstperson)));
+      DEFAULT_ITEM_STATE = Optional.<IModelState>of(new SimpleModelState(ImmutableMap.of(
+          ItemCameraTransforms.TransformType.GROUND, get(0, 2, 0, 0, 0, 0, 0.5f),
+          ItemCameraTransforms.TransformType.HEAD, get(0, 13, 7, 0, 180, 0, 1),
+          ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, get(0, 3, 1, 0, 0, 0, 0.55f),
+          ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND, get(1.13f, 3.2f, 1.13f, 0, -90, 25, 0.68f))));
     }
     {
-      TRSRTransformation thirdperson = TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
-          new Vector3f(0, 1.25f / 16, -3.5f / 16),
-          TRSRTransformation.quatFromYXZDegrees(new Vector3f(0, 90, -35)),
-          new Vector3f(0.85f, 0.85f, 0.85f),
-          null));
-      TRSRTransformation firstperson = TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
-          new Vector3f(0, 4f / 16, 2f / 16),
-          TRSRTransformation.quatFromYXZDegrees(new Vector3f(0, -135, 25)),
-          new Vector3f(1.7f, 1.7f, 1.7f),
-          null));
-      DEFAULT_TOOL_STATE = Optional.<IModelState>of(new SimpleModelState(ImmutableMap
-                                                                             .of(ItemCameraTransforms.TransformType.THIRD_PERSON, thirdperson, ItemCameraTransforms.TransformType.FIRST_PERSON, firstperson)));
+      // equals forge:default-tool
+      DEFAULT_TOOL_STATE = Optional.<IModelState>of(new SimpleModelState(ImmutableMap.of(
+          ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, get(0, 4, 0.5f, 0, -90, 55, 0.85f),
+          ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, get(0, 4, 0.5f, 0, 90, -55, 0.85f),
+          ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND, get(1.13f, 3.2f, 1.13f, 0, -90, 25, 0.68f),
+          ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, get(1.13f, 3.2f, 1.13f, 0, 90, -25, 0.68f))));
+    }
+    {
+      BLOCK_THIRD_PERSON_RIGHT = get(0, 2.5f, 0, 75, 45, 0, 0.375f);
+      BLOCK_THIRD_PERSON_LEFT  = get(0, 0, 0, 0, 255, 0, 0.4f);
     }
   }
 

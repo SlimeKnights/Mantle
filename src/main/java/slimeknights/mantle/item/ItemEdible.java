@@ -70,7 +70,7 @@ public class ItemEdible extends ItemFood {
     if (!worldIn.isRemote)
     {
       for(PotionEffect potion : potionEffects.get(stack.getMetadata())) {
-        player.addPotionEffect(new PotionEffect(potion.getPotionID(), potion.getDuration(), potion.getAmplifier(), potion.getIsAmbient(), potion.getIsShowParticles()));
+        player.addPotionEffect(new PotionEffect(potion.getPotion(), potion.getDuration(), potion.getAmplifier(), potion.getIsAmbient(), potion.doesShowParticles()));
       }
     }
   }
