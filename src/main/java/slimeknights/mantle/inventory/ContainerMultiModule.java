@@ -108,18 +108,14 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   @Override
-  public ItemStack func_184996_a(int slotId, int dragType, ClickType type, EntityPlayer player) {
+  public ItemStack slotClick(int slotId, int dragType, ClickType type, EntityPlayer player) {
     if(slotId == -999 && type == ClickType.QUICK_CRAFT) {
       for(Container container : subContainers) {
-        container.func_184996_a(slotId, dragType, type, player);
+        container.slotClick(slotId, dragType, type, player);
       }
     }
 
-    return super.func_184996_a(slotId, dragType, type, player);
-  }
-
-  public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
-    return func_184996_a(slotId, dragType, clickTypeIn, player);
+    return super.slotClick(slotId, dragType, type, player);
   }
 
   // More sophisticated version of the one in BaseContainer
