@@ -50,7 +50,7 @@ public class BakedSimple implements IPerspectiveAwareModel {
 
   @Override
   public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-    return null;
+    return quads;
   }
 
   @Override
@@ -86,5 +86,22 @@ public class BakedSimple implements IPerspectiveAwareModel {
   @Override
   public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
     return IPerspectiveAwareModel.MapWrapper.handlePerspective(this, transforms, cameraTransformType);
+  }
+
+  public static class Wrapper extends BakedSimple {
+
+    private final IPerspectiveAwareModel parent;
+
+    public Wrapper(ImmutableList<BakedQuad> quads, IPerspectiveAwareModel base) {
+      super(quads, null, base);
+
+      parent = base;
+    }
+
+    @Override
+    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+      Pair<? extends IBakedModel, Matrix4f> pair = parent.handlePerspective(cameraTransformType);
+      return Pair.of(this, pair.getRight());
+    }
   }
 }
