@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.model;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -32,6 +33,7 @@ public class TRSRBakedModel implements IBakedModel {
   protected final IBakedModel original;
   protected final TRSRTransformation transformation;
   private final TRSROverride override;
+  private final int faceOffset;
 
   public TRSRBakedModel(IBakedModel original, float x, float y, float z, float scale) {
     this(original, x, y, z, 0, 0, 0, scale, scale, scale);
@@ -45,13 +47,26 @@ public class TRSRBakedModel implements IBakedModel {
     this(original, new TRSRTransformation(new Vector3f(x, y, z),
                                           null,
                                           new Vector3f(scaleX, scaleY, scaleZ),
-                                          TRSRTransformation.quatFromYXZ(rotY, rotX, rotZ)));
+                                          TRSRTransformation.quatFromXYZ(rotX, rotY, rotZ)));
   }
 
   public TRSRBakedModel(IBakedModel original, TRSRTransformation transform) {
     this.original = original;
     this.transformation = TRSRTransformation.blockCenterToCorner(transform);
     this.override = new TRSROverride(this);
+    this.faceOffset = 0;
+  }
+
+  /** Rotates around the Y axis and adjusts culling appropriately. South is default. */
+  public TRSRBakedModel(IBakedModel original, EnumFacing facing) {
+    this.original = original;
+    this.override = new TRSROverride(this);
+
+    this.faceOffset = 4 + EnumFacing.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
+
+    double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90)/180d;
+    TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float)r, 0));
+    this.transformation = TRSRTransformation.blockCenterToCorner(t);
   }
 
   @Override
@@ -61,6 +76,10 @@ public class TRSRBakedModel implements IBakedModel {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
     if(!original.isBuiltInRenderer()) {
+      // adjust side to facing-rotation
+      if(side != null && side.getHorizontalIndex() > -1) {
+        side = EnumFacing.getHorizontal((side.getHorizontalIndex() + faceOffset) % 4);
+      }
       for(BakedQuad quad : original.getQuads(state, side, rand)) {
         Transformer transformer = new Transformer(transformation, quad.getFormat());
         quad.pipe(transformer);

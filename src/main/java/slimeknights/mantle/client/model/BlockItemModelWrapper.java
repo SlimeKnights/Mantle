@@ -44,7 +44,7 @@ public class BlockItemModelWrapper implements IPerspectiveAwareModel, IBakedMode
 
   @Override
   public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-    return null;
+    return parent.getQuads(state, side, rand);
   }
 
   @Override
