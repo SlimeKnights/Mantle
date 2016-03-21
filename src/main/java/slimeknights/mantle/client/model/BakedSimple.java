@@ -21,7 +21,7 @@ import javax.vecmath.Matrix4f;
 
 public class BakedSimple implements IPerspectiveAwareModel {
 
-  private final ImmutableList<BakedQuad> quads;
+  private final List<BakedQuad> quads;
   private final ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms;
   private final TextureAtlasSprite particle;
   private final boolean ambientOcclusion;
@@ -29,6 +29,17 @@ public class BakedSimple implements IPerspectiveAwareModel {
   private final ItemOverrideList overrides;
 
   public BakedSimple(ImmutableList<BakedQuad> quads, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, IBakedModel base) {
+    this(
+        (List<BakedQuad>)quads,
+        transforms,
+        base.getParticleTexture(),
+        base.isAmbientOcclusion(),
+        base.isGui3d(),
+        base.getOverrides()
+    );
+  }
+
+  public BakedSimple(List<BakedQuad> quads, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, IBakedModel base) {
     this(
         quads,
         transforms,
@@ -39,7 +50,7 @@ public class BakedSimple implements IPerspectiveAwareModel {
     );
   }
 
-  public BakedSimple(ImmutableList<BakedQuad> quads, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, TextureAtlasSprite particle, boolean ambientOcclusion, boolean isGui3d, ItemOverrideList overrides) {
+  public BakedSimple(List<BakedQuad> quads, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, TextureAtlasSprite particle, boolean ambientOcclusion, boolean isGui3d, ItemOverrideList overrides) {
     this.quads = quads;
     this.particle = particle;
     this.transforms = transforms;
