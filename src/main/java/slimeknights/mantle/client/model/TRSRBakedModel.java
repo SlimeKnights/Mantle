@@ -143,8 +143,7 @@ public class TRSRBakedModel implements IFlexibleBakedModel {
 
       // transform normals and position
       if(usage == VertexFormatElement.EnumUsage.POSITION && data.length >= 3) {
-        Vector4f vec = new Vector4f(data);
-        vec.setW(1.0f);
+        Vector4f vec = new Vector4f(data[0], data[1], data[2], 1f);
         transformation.transform(vec);
         data = new float[4];
         vec.get(data);
