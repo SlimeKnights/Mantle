@@ -148,6 +148,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
   public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
     this.readCustomNBT(packet.getNbtCompound());
     this.worldObj.notifyLightSet(this.pos);
+    IBlockState state = worldObj.getBlockState(this.pos);
     this.worldObj.notifyBlockUpdate(this.pos, state, state, 3);
   }
 
