@@ -15,7 +15,7 @@ public interface IConfiguration {
     /**
      * Perform any configuration loading required.
      */
-    public void load();
+    void load();
 
     /**
      * Gets whether the given module is enabled in the config.
@@ -23,11 +23,11 @@ public interface IConfiguration {
      * @param meta The pulse metadata.
      * @return Whether the module is enabled.
      */
-    public boolean isModuleEnabled(PulseMeta meta);
+    boolean isModuleEnabled(PulseMeta meta);
 
     /**
      * Flush configuration to disk/database/whatever.
      */
-    public void flush();
+    void flush();
 
 }

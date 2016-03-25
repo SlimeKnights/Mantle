@@ -37,11 +37,12 @@ public class ItemEdible extends ItemFood {
 
   /**
    * Add a new food type!
-   * @param meta        Metadata to use, has to be free
-   * @param food        How much food it restores on eating
-   * @param saturation  Saturation multiplier on the  food
-   * @param name        Unlocalized postfix
-   * @param effects     PotionEffects that will be applied on eating. The PotionEffect passed will be directly applied
+   *
+   * @param meta       Metadata to use, has to be free
+   * @param food       How much food it restores on eating
+   * @param saturation Saturation multiplier on the  food
+   * @param name       Unlocalized postfix
+   * @param effects    PotionEffects that will be applied on eating. The PotionEffect passed will be directly applied
    * @return Itemstack containing the registered item
    */
   public ItemStack addFood(int meta, int food, float saturation, String name, PotionEffect... effects) {
@@ -67,10 +68,10 @@ public class ItemEdible extends ItemFood {
 
   @Override
   protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
-    if (!worldIn.isRemote)
-    {
+    if(!worldIn.isRemote) {
       for(PotionEffect potion : potionEffects.get(stack.getMetadata())) {
-        player.addPotionEffect(new PotionEffect(potion.getPotionID(), potion.getDuration(), potion.getAmplifier(), potion.getIsAmbient(), potion.getIsShowParticles()));
+        player.addPotionEffect(new PotionEffect(potion.getPotion(), potion.getDuration(), potion.getAmplifier(), potion
+            .getIsAmbient(), potion.doesShowParticles()));
       }
     }
   }

@@ -3,16 +3,15 @@ package slimeknights.mantle.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemColored;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,7 +32,9 @@ public class ItemBlockMeta extends ItemColored {
 
   @Override
   public String getUnlocalizedName(ItemStack stack) {
-    if(mappingProperty == null) return super.getUnlocalizedName(stack);
+    if(mappingProperty == null) {
+      return super.getUnlocalizedName(stack);
+    }
 
     IBlockState state = block.getStateFromMeta(stack.getMetadata());
     String name = state.getValue(mappingProperty).toString().toLowerCase(Locale.US);
@@ -41,17 +42,18 @@ public class ItemBlockMeta extends ItemColored {
   }
 
   public static void setMappingProperty(Block block, IProperty<?> property) {
-    ((ItemBlockMeta)Item.getItemFromBlock(block)).mappingProperty = property;
+    ((ItemBlockMeta) Item.getItemFromBlock(block)).mappingProperty = property;
   }
 
   @Override
   public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-    if(StatCollector.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.add(EnumChatFormatting.GRAY.toString() +
+    if(I18n.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
+      tooltip.add(TextFormatting.GRAY.toString() +
                   LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip"));
     }
-    else if(StatCollector.canTranslate(super.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.add(EnumChatFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip"));
+    else if(I18n.canTranslate(super.getUnlocalizedName(stack) + ".tooltip")) {
+      tooltip.add(
+          TextFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip"));
     }
     super.addInformation(stack, playerIn, tooltip, advanced);
   }
@@ -59,14 +61,15 @@ public class ItemBlockMeta extends ItemColored {
   @SideOnly(Side.CLIENT)
   public void registerItemModels() {
     final Item item = this;
-    final ResourceLocation loc = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(block);
+    final ResourceLocation loc = GameData.getBlockRegistry().getNameForObject(block);
 
 
-    for(Comparable o : (Collection<Comparable>)mappingProperty.getAllowedValues()) {
+    for(Comparable o : (Collection<Comparable>) mappingProperty.getAllowedValues()) {
       int meta = block.getMetaFromState(block.getDefaultState().withProperty(mappingProperty, o));
       String name = mappingProperty.getName(o);
 
-      ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(loc, mappingProperty.getName() + "=" + name));
+      ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(loc, mappingProperty
+                                                                                                .getName() + "=" + name));
     }
   }
 }

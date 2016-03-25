@@ -1,0 +1,11 @@
+// Sections
+test section=Test Section
+section 2=Locked Section
+section 3=Hidden Section
+// Test Section Pages
+test section.page1=Blank Page
+test section.pagecrafter=Crafting Page
+test section.pagesmallcrafting=Small Crafting Page
+test section.pagesmelting=Smelting Page
+test section.pageblockinteraction=Block Interaction Page
+test section.pagestructure=3D Model Page

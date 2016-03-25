@@ -23,7 +23,7 @@ public class NetworkWrapper {
   }
 
   /**
-   * Packet will be received on both cliend and server side.
+   * Packet will be received on both client and server side.
    */
   public void registerPacket(Class<? extends AbstractPacket> packetClazz) {
     registerPacketClient(packetClazz);
@@ -49,6 +49,7 @@ public class NetworkWrapper {
   }
 
   public static class AbstactPacketHandler implements IMessageHandler<AbstractPacket, IMessage> {
+
     @Override
     public IMessage onMessage(AbstractPacket packet, MessageContext ctx) {
       if(ctx.side == Side.SERVER) {

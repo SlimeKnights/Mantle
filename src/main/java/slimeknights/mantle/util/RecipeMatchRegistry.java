@@ -1,7 +1,6 @@
 package slimeknights.mantle.util;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -137,7 +136,8 @@ public class RecipeMatchRegistry {
 
     public static RecipeComparator INSTANCE = new RecipeComparator();
 
-    private RecipeComparator() {}
+    private RecipeComparator() {
+    }
 
     @Override
     public int compare(RecipeMatch o1, RecipeMatch o2) {

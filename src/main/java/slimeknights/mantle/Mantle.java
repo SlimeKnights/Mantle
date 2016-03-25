@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,7 +17,7 @@ import slimeknights.mantle.common.CommonProxy;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-@Mod(modid = Mantle.modId, name = Mantle.modName, version = Mantle.modVersion, dependencies = "required-after:Forge@[11.15,)", acceptedMinecraftVersions="[1.8.8,1.8.9]")
+@Mod(modid = Mantle.modId, name = Mantle.modName, version = Mantle.modVersion, dependencies = "required-after:Forge@[12.16.0.1804,)", acceptedMinecraftVersions = "[1.9,]")
 public class Mantle {
 
   public static final String modId = "mantle";
@@ -31,4 +32,9 @@ public class Mantle {
   /* Proxies for sides, used for graphics processing */
   @SidedProxy(clientSide = "slimeknights.mantle.client.ClientProxy", serverSide = "slimeknights.mantle.common.CommonProxy")
   public static CommonProxy proxy;
+
+  @Mod.EventHandler
+  public void preInit(FMLPreInitializationEvent event){
+    proxy.preInit();
+  }
 }

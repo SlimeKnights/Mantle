@@ -1,0 +1,10 @@
+[
+  {
+    "item": {
+      "id": "minecraft:golden_apple",
+      "damage": 1
+    },
+    "damageSensitive": true,
+    "action": "go-to-page-rtn:test section.page5"
+  }
+]

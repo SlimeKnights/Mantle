@@ -1,0 +1,32 @@
+[
+  {
+    "name": "test section",
+    "icon": {
+      "file": "images/test.png"
+    },
+    "data": "sections/section1.json"
+  },
+  {
+    "name": "section 2",
+    "icon": {
+      "file": "images/test.png"
+    },
+    "data": "sections/section1.json",
+    "requirements": [
+      "achievement.buildHoe",
+      "achievement.makeBread"
+    ]
+  },
+  {
+    "name": "section 3",
+    "title": "Hidden Section",
+    "icon": {
+      "file": "images/test.png"
+    },
+    "data": "sections/section1.json",
+    "requirements": [
+      "achievement.mineWood"
+    ],
+    "hideWhenLocked": true
+  }
+]

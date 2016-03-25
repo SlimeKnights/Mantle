@@ -7,18 +7,15 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import slimeknights.mantle.Mantle;
@@ -61,7 +58,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   public List<Rectangle> getModuleAreas() {
     List<Rectangle> areas = new ArrayList<Rectangle>(modules.size());
-    for (GuiModule module : modules) {
+    for(GuiModule module : modules) {
       areas.add(module.getArea());
     }
     return areas;
@@ -101,7 +98,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
     drawContainerName();
     drawPlayerInventoryName();
-    
+
     for(GuiModule module : modules) {
       // set correct state for the module
       GlStateManager.pushMatrix();
@@ -121,9 +118,9 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   protected void drawContainerName() {
     ContainerMultiModule multiContainer = (ContainerMultiModule) this.inventorySlots;
-    IChatComponent localizedName = multiContainer.getInventoryDisplayName();
+    String localizedName = multiContainer.getInventoryDisplayName();
     if(localizedName != null) {
-      this.fontRendererObj.drawString(localizedName.getUnformattedText(), 8, 6, 0x404040);
+      this.fontRendererObj.drawString(localizedName, 8, 6, 0x404040);
     }
   }
 

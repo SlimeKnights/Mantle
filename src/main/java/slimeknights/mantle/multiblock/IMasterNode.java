@@ -1,8 +1,8 @@
 package slimeknights.mantle.multiblock;
 
-public interface IMasterNode extends IMasterLogic, IServantLogic
-{
-    public boolean isCurrentlyMaster();
+public interface IMasterNode extends IMasterLogic, IServantLogic {
 
-    public boolean isEquivalentMaster(IMasterLogic master);
+  boolean isCurrentlyMaster();
+
+  boolean isEquivalentMaster(IMasterLogic master);
 }

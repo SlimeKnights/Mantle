@@ -3,7 +3,7 @@ package slimeknights.mantle.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> extends Block {
+
   public final PropertyEnum<E> prop;
   private final E[] values;
 
@@ -28,7 +29,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
 
   @SuppressWarnings("unchecked")
   private static Material preInit(Material material, PropertyEnum<?> property) {
-    tmp=property;
+    tmp = property;
     return material;
   }
 
@@ -41,11 +42,11 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
   }
 
   @Override
-  protected BlockState createBlockState() {
+  protected BlockStateContainer createBlockState() {
     if(prop == null) {
-      return new BlockState(this, tmp);
+      return new BlockStateContainer(this, tmp);
     }
-    return new BlockState(this, prop);
+    return new BlockStateContainer(this, prop);
   }
 
   @Override
@@ -55,7 +56,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
 
   @Override
   public int getMetaFromState(IBlockState state) {
-    return ((E) state.getValue(prop)).getMeta();
+    return state.getValue(prop).getMeta();
   }
 
   @Override
@@ -72,6 +73,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
   }
 
   public interface IEnumMeta {
+
     int getMeta();
   }
 }

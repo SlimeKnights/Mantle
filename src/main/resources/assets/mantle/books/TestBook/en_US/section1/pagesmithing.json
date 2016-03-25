@@ -1,0 +1,33 @@
+{
+  "title": "Smithing a Thing",
+  "input": {
+    "id": "minecraft:diamond_sword"
+  },
+  "modifier": {
+    "id": "minecraft:enchanted_book",
+    "nbt": {
+      "ench": [
+        {
+          "id": 16,
+          "lvl": 5
+        }
+      ]
+    }
+  },
+  "result": {
+    "id": "minecraft:diamond_sword",
+    "nbt": {
+      "ench": [
+        {
+          "id": 16,
+          "lvl": 5
+        }
+      ]
+    }
+  },
+  "description": [
+    {
+      "text": "Ow, that's sharp."
+    }
+  ]
+}

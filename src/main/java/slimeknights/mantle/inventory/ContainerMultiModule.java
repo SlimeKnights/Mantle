@@ -5,12 +5,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -107,29 +108,21 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   @Override
-  public ItemStack slotClick(int slotId, int clickedButton, int mode, EntityPlayer playerIn) {
-    if(slotId == -999 && mode == 5) {
+  public ItemStack slotClick(int slotId, int dragType, ClickType type, EntityPlayer player) {
+    if(slotId == -999 && type == ClickType.QUICK_CRAFT) {
       for(Container container : subContainers) {
-        container.slotClick(slotId, clickedButton, mode, playerIn);
+        container.slotClick(slotId, dragType, type, player);
       }
     }
-/*
-    if(slotContainerMap.containsKey(slotId)) {
-      int actualId = slotId;
-      if(this.inventorySlots.get(slotId) instanceof SlotWrapper) {
-        actualId = ((SlotWrapper) this.inventorySlots.get(slotId)).parent.slotNumber;
-      }
-      return slotContainerMap.get(slotId).slotClick(actualId, clickedButton, mode, playerIn);
-    }*/
 
-    return super.slotClick(slotId, clickedButton, mode, playerIn);
+    return super.slotClick(slotId, dragType, type, player);
   }
 
   // More sophisticated version of the one in BaseContainer
   // Takes submodules into account when shiftclicking!
   @Override
   public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-    Slot slot = (Slot) this.inventorySlots.get(index);
+    Slot slot = this.inventorySlots.get(index);
 
     if(slot == null || !slot.getHasStack()) {
       return null;
@@ -236,10 +229,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
 
   protected boolean moveToContainer(ItemStack itemstack, Container container) {
     Pair<Integer, Integer> range = subContainerSlotRanges.get(container);
-    if(!this.mergeItemStack(itemstack, range.getLeft(), range.getRight(), false)) {
-      return true;
-    }
-    return false;
+    return !this.mergeItemStack(itemstack, range.getLeft(), range.getRight(), false);
   }
 
 
@@ -259,10 +249,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
 
   protected boolean refillContainer(ItemStack itemstack, Container container) {
     Pair<Integer, Integer> range = subContainerSlotRanges.get(container);
-    if(!this.mergeItemStackRefill(itemstack, range.getLeft(), range.getRight(), false)) {
-      return true;
-    }
-    return false;
+    return !this.mergeItemStackRefill(itemstack, range.getLeft(), range.getRight(), false);
   }
 
   /** Searches for a sidechest to display in the UI */

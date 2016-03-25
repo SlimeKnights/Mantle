@@ -9,8 +9,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import slimeknights.mantle.tileentity.TileInventory;
@@ -37,7 +39,7 @@ public abstract class BlockInventory extends BlockContainer {
   protected abstract boolean openGui(EntityPlayer player, World world, BlockPos pos);
 
   @Override
-  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side,
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side,
                                   float clickX, float clickY, float clickZ) {
     if(player.isSneaking()) {
       return false;
@@ -49,7 +51,6 @@ public abstract class BlockInventory extends BlockContainer {
 
     return true;
   }
-
 
   @Override
   public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer,
@@ -82,10 +83,10 @@ public abstract class BlockInventory extends BlockContainer {
     return getMetaFromState(state);
   }
 
-  // BlockContainer sets this to -1, which equals invisible
-  // we need 3 for standard forge rendering
+  // BlockContainer sets this to invisible
+  // we need model for standard forge rendering
   @Override
-  public int getRenderType() {
-    return 3;
+  public EnumBlockRenderType getRenderType(IBlockState state) {
+    return EnumBlockRenderType.MODEL;
   }
 }

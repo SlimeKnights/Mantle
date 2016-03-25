@@ -12,8 +12,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -43,7 +42,7 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
   public void syncOnOpen(EntityPlayerMP playerOpened) {
     // find another player that already has the gui for this tile open
     WorldServer server = playerOpened.getServerForPlayer();
-    for(EntityPlayer player : (List<EntityPlayer>) server.playerEntities) {
+    for(EntityPlayer player : server.playerEntities) {
       if(player == playerOpened) {
         continue;
       }
@@ -97,12 +96,12 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
 
   @SuppressWarnings("unchecked")
   public List<ItemStack> getInventory() {
-    return (List<ItemStack>) super.getInventory();
+    return super.getInventory();
   }
 
-  public IChatComponent getInventoryDisplayName() {
+  public String getInventoryDisplayName() {
     if(tile instanceof IInventory) {
-      return ((IInventory) tile).getDisplayName();
+      return tile.getName();
     }
     return null;
   }
@@ -157,7 +156,7 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
     }
 
     ItemStack itemstack = null;
-    Slot slot = (Slot) this.inventorySlots.get(index);
+    Slot slot = this.inventorySlots.get(index);
 
     // slot that was clicked on not empty?
     if(slot != null && slot.getHasStack()) {
@@ -215,7 +214,7 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
 
     if(stack.isStackable()) {
       while(stack.stackSize > 0 && (!useEndIndex && k < endIndex || useEndIndex && k >= startIndex)) {
-        slot = (Slot) this.inventorySlots.get(k);
+        slot = this.inventorySlots.get(k);
         itemstack1 = slot.getStack();
 
         if(itemstack1 != null && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes()
@@ -267,7 +266,7 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
     }
 
     while(!useEndIndex && k < endIndex || useEndIndex && k >= startIndex) {
-      Slot slot = (Slot) this.inventorySlots.get(k);
+      Slot slot = this.inventorySlots.get(k);
       ItemStack itemstack1 = slot.getStack();
 
       if(itemstack1 == null && slot.isItemValid(stack)) // Forge: Make sure to respect isItemValid in the slot.
