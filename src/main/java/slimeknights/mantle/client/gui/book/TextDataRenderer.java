@@ -4,9 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -43,18 +43,18 @@ public class TextDataRenderer {
 
       String modifiers = "";
 
-      modifiers += EnumChatFormatting.getValueByName(item.color);
+      modifiers += TextFormatting.getValueByName(item.color);
 
       if (item.bold)
-        modifiers += EnumChatFormatting.BOLD;
+        modifiers += TextFormatting.BOLD;
       if (item.italic)
-        modifiers += EnumChatFormatting.ITALIC;
+        modifiers += TextFormatting.ITALIC;
       if (item.underlined)
-        modifiers += EnumChatFormatting.UNDERLINE;
+        modifiers += TextFormatting.UNDERLINE;
       if (item.strikethrough)
-        modifiers += EnumChatFormatting.STRIKETHROUGH;
+        modifiers += TextFormatting.STRIKETHROUGH;
       if (item.obfuscated)
-        modifiers += EnumChatFormatting.OBFUSCATED;
+        modifiers += TextFormatting.OBFUSCATED;
 
       String[] split = cropStringBySize(item.text, modifiers, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
 
@@ -131,7 +131,7 @@ public class TextDataRenderer {
           drawLabel[i] = label[i];
 
       drawLabel[drawLabel.length > 1 ? drawLabel.length - 2 : 0] = "";
-      drawLabel[drawLabel.length - 1] = EnumChatFormatting.GRAY + "Action: " + action;
+      drawLabel[drawLabel.length - 1] = TextFormatting.GRAY + "Action: " + action;
     }
 
     if (drawLabel != null) {
@@ -253,12 +253,12 @@ public class TextDataRenderer {
     GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
     GlStateManager.shadeModel(7425);
     Tessellator tessellator = Tessellator.getInstance();
-    WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-    worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-    worldrenderer.pos((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    worldrenderer.pos((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    worldrenderer.pos((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    worldrenderer.pos((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
+    VertexBuffer vertexBuffer = tessellator.getBuffer();
+    vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+    vertexBuffer.pos((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
+    vertexBuffer.pos((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
+    vertexBuffer.pos((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
+    vertexBuffer.pos((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
     tessellator.draw();
     GlStateManager.shadeModel(7424);
     GlStateManager.enableAlpha();

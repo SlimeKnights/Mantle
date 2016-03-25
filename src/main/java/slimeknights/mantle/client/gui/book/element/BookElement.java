@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.client.gui.book.GuiBook;
@@ -44,7 +44,7 @@ public abstract class BookElement extends Gui {
       if (i == 0) {
         list.set(i, stack.getRarity().rarityColor + list.get(i));
       } else {
-        list.set(i, EnumChatFormatting.GRAY + list.get(i));
+        list.set(i, TextFormatting.GRAY + list.get(i));
       }
     }
 

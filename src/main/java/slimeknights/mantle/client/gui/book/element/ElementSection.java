@@ -5,7 +5,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.stats.Achievement;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
+
 import slimeknights.mantle.client.book.data.SectionData;
 
 public class ElementSection extends BookElement {
@@ -50,13 +51,14 @@ public class ElementSection extends BookElement {
   public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
     if (section != null && !section.isUnlocked(parent.statFile) && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT) {
       List<String> l = new ArrayList<>();
-      l.add(EnumChatFormatting.RED + "Locked");
+      l.add(TextFormatting.RED + "Locked");
       l.add("Requirements:");
 
       for (String requirement : section.requirements) {
         Achievement achievement = SectionData.findAchievement(requirement);
         if (achievement != null)
-          l.add((SectionData.requirementSatisfied(requirement, parent.statFile) ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + EnumChatFormatting.getTextWithoutFormattingCodes(achievement.getStatName().getFormattedText()));
+          l.add((SectionData.requirementSatisfied(requirement, parent.statFile) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
+              .getTextWithoutFormattingCodes(achievement.getStatName().getFormattedText()));
       }
 
       drawHoveringText(l, mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);

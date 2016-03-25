@@ -9,6 +9,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -145,7 +146,7 @@ public class BookLoader implements IResourceManagerReloadListener {
   }
 
   public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
-    if (player.getHeldItem() == null)
+    if (player.getHeldItem(EnumHand.MAIN_HAND) == null)
       return;
 
     BookHelper.writeSavedPage(item, page);

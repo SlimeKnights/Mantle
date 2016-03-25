@@ -8,26 +8,35 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
 import org.lwjgl.opengl.GL11;
 import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 
 public class ElementStructure extends SizedBookElement {
 
+  private BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+  private ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
   private BlockAccess world;
   private float scale = 50.0F;
   private float xTranslate = 0F;
@@ -64,7 +73,7 @@ public class ElementStructure extends SizedBookElement {
 
     GlStateManager.translate(xTranslate, yTranslate, 500F);
 
-    GlStateManager.cullFace(GL11.GL_FRONT);
+    GlStateManager.cullFace(GlStateManager.CullFace.FRONT);
 
     // Prepare stencil
     GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -107,7 +116,7 @@ public class ElementStructure extends SizedBookElement {
         for (int z = 0; z < world.getDepth(); z++) {
           BlockPos pos = new BlockPos(x, y, z);
           IBlockState state = world.getBlockState(pos);
-          IBakedModel model = mc.getBlockRendererDispatcher().getModelFromBlockState(world.getBlockState(pos), world, pos);
+          IBakedModel model = mc.getBlockRendererDispatcher().getModelForState(state);
 
           Block block = state.getBlock();
 
@@ -122,7 +131,7 @@ public class ElementStructure extends SizedBookElement {
           if (block == null)
             return;
 
-          int color = block.colorMultiplier(world, pos, 0);
+          int color = blockColors.colorMultiplier(state, world, pos, 0);
           float red = (color >> 16 & 255) / 255.0F;
           float green = (color >> 8 & 255) / 255.0F;
           float blue = (color & 255) / 255.0F;
@@ -133,9 +142,9 @@ public class ElementStructure extends SizedBookElement {
           GlStateManager.translate(x, world.getHeight() - y, z);
           BlockModelRenderer render = mc.getBlockRendererDispatcher().getBlockModelRenderer();
 
-          int i = block.getRenderColor(block.getStateForEntityRender(state));
-          block.setBlockBoundsBasedOnState(world, pos);
-
+          // 1.9 remove this?
+          //block.setBlockBoundsBasedOnState(world, pos);
+          int i = blockColors.colorMultiplier(state, world, pos, 0);
           GlStateManager.rotate(90F, 0, 1, 0);
 
           if (EntityRenderer.anaglyphEnable) {
@@ -146,7 +155,7 @@ public class ElementStructure extends SizedBookElement {
           float g = (float) (i >> 8 & 255) / 255.0F;
           float b = (float) (i & 255) / 255.0F;
 
-          render.renderModelBrightnessColor(model, block.colorMultiplier(world, pos, 0), r, g, b);
+          render.renderModelBrightnessColor(model, blockColors.colorMultiplier(state, world, pos, 0), r, g, b);
 
           GlStateManager.color(1F, 1F, 1F);
           GlStateManager.popMatrix();
@@ -156,7 +165,7 @@ public class ElementStructure extends SizedBookElement {
     }
 
     GlStateManager.disableLighting();
-    GlStateManager.cullFace(GL11.GL_BACK);
+    GlStateManager.cullFace(GlStateManager.CullFace.BACK);
     GL11.glDisable(GL11.GL_STENCIL_TEST);
     GlStateManager.popMatrix();
   }
@@ -173,7 +182,7 @@ public class ElementStructure extends SizedBookElement {
     GlStateManager.enableLighting();
   }
 
-  private void renderQuads(WorldRenderer renderer, List<BakedQuad> quads, int color, BlockPos pos) {
+  private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, BlockPos pos) {
     boolean flag = color == -1;
     int i = 0;
 
@@ -183,7 +192,7 @@ public class ElementStructure extends SizedBookElement {
 
       if (flag && bakedquad.hasTintIndex()) {
         Block block = world.getBlockState(pos).getBlock();
-        k = block.colorMultiplier(world, pos, 0);
+        k = blockColors.colorMultiplier(world.getBlockState(pos), world, pos, 0);
 
         if (EntityRenderer.anaglyphEnable) {
           k = TextureUtil.anaglyphColor(k);
@@ -275,7 +284,7 @@ public class ElementStructure extends SizedBookElement {
 
     @Override
     public BiomeGenBase getBiomeGenForCoords(BlockPos pos) {
-      return BiomeGenBase.jungle;
+      return Biomes.jungle;
     }
 
     @Override
@@ -289,7 +298,7 @@ public class ElementStructure extends SizedBookElement {
         return 0;
 
       IBlockState iblockstate = this.getBlockState(pos);
-      return iblockstate.getBlock().getStrongPower(this, pos, iblockstate, direction);
+      return iblockstate.getBlock().getStrongPower(iblockstate, this, pos, direction);
     }
 
     @Override
@@ -302,7 +311,7 @@ public class ElementStructure extends SizedBookElement {
       if (!this.isValid(pos))
         return _default;
 
-      return getBlockState(pos).getBlock().isSideSolid(this, pos, side);
+      return getBlockState(pos).getBlock().isSideSolid(this.getBlockState(pos), this, pos, side);
     }
 
     public boolean isValid(BlockPos pos) {

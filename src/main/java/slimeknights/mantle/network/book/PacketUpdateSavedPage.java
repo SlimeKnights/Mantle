@@ -5,6 +5,7 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import slimeknights.mantle.client.book.BookHelper;
@@ -32,7 +33,7 @@ public class PacketUpdateSavedPage extends AbstractPacket {
     if (netHandler.playerEntity != null && pageName != null) {
       EntityPlayer player = netHandler.playerEntity;
 
-      ItemStack is = player.getHeldItem();
+      ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
 
       BookHelper.writeSavedPage(is, pageName);
     }

@@ -108,7 +108,7 @@ public class SectionData implements IDataItem {
     if (name == null || name.isEmpty())
       return null;
 
-    for (Achievement achievement : AchievementList.achievementList) {
+    for (Achievement achievement : AchievementList.ACHIEVEMENTS) {
       if (achievement.statId.equals(name))
         return achievement;
     }

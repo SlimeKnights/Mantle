@@ -2,7 +2,8 @@ package slimeknights.mantle.client.gui.book;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
+
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOX;
 
 public class BoxRenderer {
@@ -45,7 +46,8 @@ public class BoxRenderer {
     int totalWidth = segW * 3 + segGW * 2;
     int totalHeight = segH * 3 + segGH * 2;
 
-    return getTextureMatrixCoords((index % (256 / sprW) * sprW) + (sprW / 2 - totalWidth / 2), (MathHelper.floor_float(index / (256F / sprH)) * sprH) + (sprH / 2 - totalHeight / 2), segW, segH, segGW, segGH, segId);
+    return getTextureMatrixCoords((index % (256 / sprW) * sprW) + (sprW / 2 - totalWidth / 2), (MathHelper
+                                                                                                    .floor_float(index / (256F / sprH)) * sprH) + (sprH / 2 - totalHeight / 2), segW, segH, segGW, segGH, segId);
   }
 
   public static int[] getTextureMatrixCoords(int u, int v, int segW, int segH, int segGW, int segGH, int segId) {
