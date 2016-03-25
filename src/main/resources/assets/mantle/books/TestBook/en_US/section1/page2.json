@@ -1,0 +1,34 @@
+{
+  "text": [
+    {
+      "text": "Long ago in a galaxy far ",
+      "color": "gold"
+    },
+    {
+      "text": "far",
+      "underlined": true,
+      "tooltip": [
+        "You missed the joke",
+        "By Skyla"
+      ],
+      "action": "go-to-page:Test Section.Page5",
+      "color": "gold"
+    },
+    {
+      "text": " away. ",
+      "action": "go-to-page:Test Section.Page4",
+      "color": "gold"
+    },
+    {
+      "text": "Use the force, "
+    },
+    {
+      "text": "Harry!",
+      "scale": 2
+    },
+    {
+      "text": "For I am the wizard that you seek!",
+      "paragraph": true
+    }
+  ]
+}

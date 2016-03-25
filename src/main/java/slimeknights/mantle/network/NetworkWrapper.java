@@ -23,7 +23,7 @@ public class NetworkWrapper {
   }
 
   /**
-   * Packet will be received on both cliend and server side.
+   * Packet will be received on both client and server side.
    */
   public void registerPacket(Class<? extends AbstractPacket> packetClazz) {
     registerPacketClient(packetClazz);

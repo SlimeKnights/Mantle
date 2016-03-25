@@ -1,0 +1,34 @@
+{
+  "title": "Crafting a Thing",
+  "grid_size": "small",
+  "grid": [
+    [
+      {
+        "id": "minecraft:stick"
+      },
+      {
+        "id": "minecraft:planks"
+      }
+    ],
+    [
+      {
+        "id": "minecraft:planks"
+      },
+      {
+        "id": "minecraft:stick"
+      }
+    ]
+  ],
+  "result": {
+    "id": "tconstruct:stencil"
+  },
+  "description": [
+    {
+      "text": "This item does stuff and, of course, "
+    },
+    {
+      "text": "things.",
+      "underlined": true
+    }
+  ]
+}
