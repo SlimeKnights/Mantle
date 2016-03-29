@@ -101,7 +101,7 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
 
   public String getInventoryDisplayName() {
     if(tile instanceof IInventory) {
-      return tile.getName();
+      return tile.getDisplayName().getFormattedText();
     }
     return null;
   }
