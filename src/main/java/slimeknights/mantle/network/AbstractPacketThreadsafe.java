@@ -1,8 +1,8 @@
 package slimeknights.mantle.network;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
@@ -14,7 +14,7 @@ public abstract class AbstractPacketThreadsafe extends AbstractPacket {
 
   @Override
   public final IMessage handleClient(final NetHandlerPlayClient netHandler) {
-    Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+    FMLCommonHandler.instance().getWorldThread(netHandler).addScheduledTask(new Runnable() {
       @Override
       public void run() {
         handleClientSafe(netHandler);
@@ -25,7 +25,7 @@ public abstract class AbstractPacketThreadsafe extends AbstractPacket {
 
   @Override
   public final IMessage handleServer(final NetHandlerPlayServer netHandler) {
-    Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+    FMLCommonHandler.instance().getWorldThread(netHandler).addScheduledTask(new Runnable() {
       @Override
       public void run() {
         handleServerSafe(netHandler);
