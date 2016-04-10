@@ -85,7 +85,10 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   @Override
   @SuppressWarnings("ForLoopReplaceableByForEach")
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-    FontRenderer font = mc.fontRendererObj;
+    FontRenderer fontRenderer = book.fontRenderer;
+    if(fontRenderer == null) {
+      fontRenderer = mc.fontRendererObj;
+    }
 
     if(loadingAchievements) {
       this.drawDefaultBackground();
@@ -99,8 +102,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     if(debug) {
-      drawRect(0, 0, font.getStringWidth("DEBUG") + 4, font.FONT_HEIGHT + 4, 0x55000000);
-      font.drawString("DEBUG", 2, 2, 0xFFFFFFFF);
+      drawRect(0, 0, fontRenderer.getStringWidth("DEBUG") + 4, fontRenderer.FONT_HEIGHT + 4, 0x55000000);
+      fontRenderer.drawString("DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
     GlStateManager.enableAlpha();
@@ -135,17 +138,17 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
         GlStateManager.pushMatrix();
 
-        float scale = font.getStringWidth(book.appearance.title) <= 67 ? 2.5F : 2F;
+        float scale = fontRenderer.getStringWidth(book.appearance.title) <= 67 ? 2.5F : 2F;
 
         GlStateManager.scale(scale, scale, 1F);
-        font.drawString(book.appearance.title, (width / 2) / scale + 3 - font.getStringWidth(book.appearance.title) / 2, (height / 2 - font.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
+        fontRenderer.drawString(book.appearance.title, (width / 2) / scale + 3 - fontRenderer.getStringWidth(book.appearance.title) / 2, (height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
         GlStateManager.popMatrix();
       }
 
       if(!book.appearance.subtitle.isEmpty()) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(1.5F, 1.5F, 1F);
-        font.drawString(book.appearance.subtitle, (width / 2) / 1.5F + 7 - font.getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - font.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
+        fontRenderer.drawString(book.appearance.subtitle, (width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
         GlStateManager.popMatrix();
       }
     } else {
@@ -166,7 +169,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
         if(book.appearance.drawPageNumbers) {
           String pNum = (page - 1) * 2 + 2 + "";
-          font.drawString(pNum, PAGE_WIDTH / 2 - font.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
+          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
         }
 
         int mX = (int) ((Mouse
@@ -179,7 +182,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           BookElement element = leftElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.draw(mX, mY, partialTicks);
+          element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
         // Not foreach to prevent conmodification crashes
@@ -187,7 +190,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           BookElement element = leftElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawOverlay(mX, mY, partialTicks);
+          element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
         GlStateManager.popMatrix();
@@ -209,7 +212,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
         if(book.appearance.drawPageNumbers) {
           String pNum = (page - 1) * 2 + 3 + "";
-          font.drawString(pNum, PAGE_WIDTH / 2 - font.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
+          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
         }
 
         int mX = (int) ((Mouse
@@ -222,7 +225,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           BookElement element = rightElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.draw(mX, mY, partialTicks);
+          element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
         // Not foreach to prevent conmodification crashes
@@ -230,7 +233,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           BookElement element = rightElements.get(i);
 
           GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawOverlay(mX, mY, partialTicks);
+          element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
         GlStateManager.popMatrix();

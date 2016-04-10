@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.util.ResourceLocation;
@@ -31,6 +32,7 @@ public class BookData implements IDataItem {
   public transient AppearanceData appearance = new AppearanceData();
   public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
   public transient HashMap<String, String> strings = new HashMap<>();
+  public transient FontRenderer fontRenderer;
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
 

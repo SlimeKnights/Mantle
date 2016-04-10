@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.gui.book.element;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -25,7 +26,7 @@ public class ElementText extends SizedBookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks) {
+  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     String action = TextDataRenderer.drawText(x, y, width, height, text, mouseX, mouseY, fontRenderer);
 
     if(doAction) {

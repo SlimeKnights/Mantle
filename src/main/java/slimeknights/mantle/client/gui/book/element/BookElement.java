@@ -20,7 +20,6 @@ public abstract class BookElement extends Gui {
   public GuiBook parent;
 
   protected Minecraft mc = Minecraft.getMinecraft();
-  protected FontRenderer fontRenderer = mc.fontRendererObj;
   protected TextureManager renderEngine = mc.renderEngine;
 
   public int x, y;
@@ -30,9 +29,9 @@ public abstract class BookElement extends Gui {
     this.y = y;
   }
 
-  public abstract void draw(int mouseX, int mouseY, float partialTicks);
+  public abstract void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer);
 
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
+  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
   }
 
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {

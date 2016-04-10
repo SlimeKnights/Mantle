@@ -3,6 +3,7 @@ package slimeknights.mantle.client.gui.book.element;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -68,7 +69,7 @@ public class ElementStructure extends SizedBookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks) {
+  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     GlStateManager.pushMatrix();
 
     GlStateManager.translate(xTranslate, yTranslate, 500F);

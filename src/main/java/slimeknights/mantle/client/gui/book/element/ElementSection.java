@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.gui.book.element;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.stats.Achievement;
 import net.minecraft.util.text.TextFormatting;
@@ -26,7 +27,7 @@ public class ElementSection extends BookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks) {
+  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     boolean unlocked = section.isUnlocked(parent.statFile);
     boolean hover = mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT;
 
@@ -50,7 +51,7 @@ public class ElementSection extends BookElement {
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
+  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(section != null && !section
         .isUnlocked(parent.statFile) && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT) {
       List<String> l = new ArrayList<>();
