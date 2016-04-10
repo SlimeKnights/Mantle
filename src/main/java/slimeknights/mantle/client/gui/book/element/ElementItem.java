@@ -1,12 +1,15 @@
 package slimeknights.mantle.client.gui.book.element;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Collection;
 
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 
@@ -35,7 +38,15 @@ public class ElementItem extends BookElement {
     this(x, y, scale, new ItemStack[]{item});
   }
 
-  public ElementItem(int x, int y, float scale, ItemStack[] itemCycle) {
+  public ElementItem(int x, int y, float scale, Collection<ItemStack> itemCycle) {
+    this(x, y, scale, itemCycle.toArray(new ItemStack[itemCycle.size()]));
+  }
+
+  public ElementItem(int x, int y, float scale, Collection<ItemStack> itemCycle, String action) {
+    this(x, y, scale, itemCycle.toArray(new ItemStack[itemCycle.size()]), action);
+  }
+
+  public ElementItem(int x, int y, float scale, ItemStack... itemCycle) {
     this(x, y, scale, itemCycle, null);
   }
 
@@ -48,7 +59,7 @@ public class ElementItem extends BookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks) {
+  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     renderTick++;
 
     if(renderTick > ITEM_SWITCH_TICKS) {
@@ -73,7 +84,7 @@ public class ElementItem extends BookElement {
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
+  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
       renderToolTip(fontRenderer, itemCycle[currentItem], mouseX, mouseY);
     }

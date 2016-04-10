@@ -4,6 +4,8 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collection;
+
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.gui.book.TextDataRenderer;
@@ -16,10 +18,14 @@ public class ElementText extends SizedBookElement {
   private boolean doAction = false;
 
   public ElementText(int x, int y, int width, int height, String text) {
-    this(x, y, width, height, new TextData[]{new TextData(text)});
+    this(x, y, width, height, new TextData(text));
   }
 
-  public ElementText(int x, int y, int width, int height, TextData[] text) {
+  public ElementText(int x, int y, int width, int height, Collection<TextData> text) {
+    this(x, y, width, height, text.toArray(new TextData[text.size()]));
+  }
+
+  public ElementText(int x, int y, int width, int height, TextData... text) {
     super(x, y, width, height);
 
     this.text = text;
