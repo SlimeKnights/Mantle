@@ -1,14 +1,17 @@
 package slimeknights.mantle.client.book.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import javax.annotation.Nullable;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.annotation.Nullable;
+
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -33,35 +36,38 @@ public class SectionData implements IDataItem {
   }
 
   public SectionData(boolean custom) {
-    if (custom)
+    if(custom) {
       data = "no-load";
+    }
   }
 
   @Override
   public void load() {
-    if (name == null)
+    if(name == null) {
       name = "section" + parent.unnamedSectionCounter++;
+    }
 
     name = name.toLowerCase();
 
-    if (!data.equals("no-load")) {
+    if(!data.equals("no-load")) {
       IResource pagesInfo = source.getResource(source.getResourceLocation(data));
-      if (pagesInfo != null) {
+      if(pagesInfo != null) {
         String data = source.resourceToString(pagesInfo);
-        if (!data.isEmpty())
+        if(!data.isEmpty()) {
           try {
             pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
-          } catch (Exception e) {
+          } catch(Exception e) {
             pages = new ArrayList<>();
             PageData pdError = new PageData(true);
             pdError.name = "errorrenous";
             pdError.content = new ContentError("Failed to load section " + name + ".", e);
             pages.add(pdError);
           }
+        }
       }
     }
 
-    for (PageData page : pages) {
+    for(PageData page : pages) {
       page.parent = this;
       page.source = source;
       page.load();
@@ -83,20 +89,23 @@ public class SectionData implements IDataItem {
   }
 
   public boolean isUnlocked(StatFileWriter writer) {
-    if (writer == null || requirements == null || requirements.length == 0)
+    if(writer == null || requirements == null || requirements.length == 0) {
       return true;
+    }
 
-    for (String achievement : requirements) {
-      if (!requirementSatisfied(achievement, writer))
+    for(String achievement : requirements) {
+      if(!requirementSatisfied(achievement, writer)) {
         return false;
+      }
     }
 
     return true;
   }
 
   public static boolean requirementSatisfied(String requirement, StatFileWriter writer) {
-    if (writer == null)
+    if(writer == null) {
       return true;
+    }
 
     Achievement achievement = findAchievement(requirement);
 
@@ -105,12 +114,14 @@ public class SectionData implements IDataItem {
   }
 
   public static Achievement findAchievement(String name) {
-    if (name == null || name.isEmpty())
+    if(name == null || name.isEmpty()) {
       return null;
+    }
 
-    for (Achievement achievement : AchievementList.ACHIEVEMENTS) {
-      if (achievement.statId.equals(name))
+    for(Achievement achievement : AchievementList.ACHIEVEMENTS) {
+      if(achievement.statId.equals(name)) {
         return achievement;
+      }
     }
 
     return null;
