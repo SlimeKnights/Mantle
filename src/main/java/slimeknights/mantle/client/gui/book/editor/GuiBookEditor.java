@@ -1,11 +1,13 @@
 package slimeknights.mantle.client.gui.book.editor;
 
-import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureManager;
+
+import javax.annotation.Nullable;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.gui.book.BoxRenderer;
 import slimeknights.mantle.client.gui.book.GuiBook;
@@ -19,8 +21,9 @@ public class GuiBookEditor extends GuiScreen {
   private int side;
 
   public GuiBookEditor(@Nullable BookData book) {
-    if (book == null)
+    if(book == null) {
       book = new BookData();
+    }
 
     innerUi = new GuiBook(book, null, null);
     innerUi.mc = Minecraft.getMinecraft();
@@ -35,21 +38,24 @@ public class GuiBookEditor extends GuiScreen {
 
     TextureManager render = this.mc.renderEngine;
 
-    if (mc.gameSettings.guiScale == 1) {
+    if(mc.gameSettings.guiScale == 1) {
       GlStateManager.scale(2F, 2F, 2F);
 
       mouseX /= 2;
       mouseY /= 2;
     }
 
-    BoxRenderer.drawBox(width / 2 - (GuiBook.PAGE_WIDTH_UNSCALED + SIDEBAR_WIDTH) / 2, height / 2 - (GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING) / 2, SIDEBAR_WIDTH + GuiBook.PAGE_PADDING + GuiBook.PAGE_MARGIN, GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING, 0);
+    BoxRenderer
+        .drawBox(width / 2 - (GuiBook.PAGE_WIDTH_UNSCALED + SIDEBAR_WIDTH) / 2, height / 2 - (GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING) / 2, SIDEBAR_WIDTH + GuiBook.PAGE_PADDING + GuiBook.PAGE_MARGIN, GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING, 0);
 
-    if (innerUi.getPage_() == -1) {
+    if(innerUi.getPage_() == -1) {
       GlStateManager.pushMatrix();
-      if (mc.gameSettings.guiScale == 1)
+      if(mc.gameSettings.guiScale == 1) {
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
+      }
       innerUi.openCover();
-      innerUi.drawScreen(mouseX * (mc.gameSettings.guiScale == 1 ? 2 : 1), mouseY * (mc.gameSettings.guiScale == 1 ? 2 : 1), partialTicks);
+      innerUi
+          .drawScreen(mouseX * (mc.gameSettings.guiScale == 1 ? 2 : 1), mouseY * (mc.gameSettings.guiScale == 1 ? 2 : 1), partialTicks);
       GlStateManager.popMatrix();
     } else {
       render.bindTexture(Textures.TEX_BOOK);
@@ -70,7 +76,7 @@ public class GuiBookEditor extends GuiScreen {
     innerUi.width = width + SIDEBAR_WIDTH * (mc.gameSettings.guiScale == 1 ? 2 : 1);
     innerUi.height = height;
 
-    if (mc.gameSettings.guiScale == 1) {
+    if(mc.gameSettings.guiScale == 1) {
       width /= 2F;
       height /= 2F;
     }

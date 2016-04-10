@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import java.util.ArrayList;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
@@ -10,6 +11,7 @@ import slimeknights.mantle.client.gui.book.element.BookElement;
 import slimeknights.mantle.client.gui.book.element.ElementImage;
 import slimeknights.mantle.client.gui.book.element.ElementItem;
 import slimeknights.mantle.client.gui.book.element.ElementText;
+
 import static slimeknights.mantle.client.gui.book.Textures.TEX_CRAFTING;
 
 public class ContentCrafting extends PageContent {
@@ -45,13 +47,13 @@ public class ContentCrafting extends PageContent {
     tdTitle.underlined = true;
     list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, new TextData[]{tdTitle}));
 
-    if (grid_size.equalsIgnoreCase("small")) {
+    if(grid_size.equalsIgnoreCase("small")) {
       x = GuiBook.PAGE_WIDTH / 2 - IMG_CRAFTING_SMALL.width / 2;
       height = y + IMG_CRAFTING_SMALL.height;
       list.add(new ElementImage(x, y, IMG_CRAFTING_SMALL.width, IMG_CRAFTING_SMALL.height, IMG_CRAFTING_SMALL, book.appearance.coverColor));
       resultX = x + X_RESULT_SMALL;
       resultY = y + Y_RESULT_SMALL;
-    } else if (grid_size.equalsIgnoreCase("large")) {
+    } else if(grid_size.equalsIgnoreCase("large")) {
       x = GuiBook.PAGE_WIDTH / 2 - IMG_CRAFTING_LARGE.width / 2;
       height = y + IMG_CRAFTING_LARGE.height;
       list.add(new ElementImage(x, y, IMG_CRAFTING_LARGE.width, IMG_CRAFTING_LARGE.height, IMG_CRAFTING_LARGE, book.appearance.coverColor));
@@ -59,20 +61,25 @@ public class ContentCrafting extends PageContent {
       resultY = y + Y_RESULT_LARGE;
     }
 
-    if (grid != null)
-      for (int i = 0; i < grid.length; i++) {
-        for (int j = 0; j < grid[i].length; j++) {
-          if (grid[i][j].id.equals(""))
+    if(grid != null) {
+      for(int i = 0; i < grid.length; i++) {
+        for(int j = 0; j < grid[i].length; j++) {
+          if(grid[i][j].id.equals("")) {
             continue;
-          list.add(new ElementItem(x + SLOT_MARGIN + (SLOT_PADDING + Math.round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * j, y + SLOT_MARGIN + (SLOT_PADDING + Math.round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, grid[i][j].getItems(), grid[i][j].action));
+          }
+          list.add(new ElementItem(x + SLOT_MARGIN + (SLOT_PADDING + Math
+              .round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * j, y + SLOT_MARGIN + (SLOT_PADDING + Math
+              .round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, grid[i][j]
+                                       .getItems(), grid[i][j].action));
         }
       }
+    }
 
-    if (result != null) {
+    if(result != null) {
       list.add(new ElementItem(resultX, resultY, ITEM_SCALE, result.getItems(), result.action));
     }
 
-    if (description != null && description.length > 0) {
+    if(description != null && description.length > 0) {
       list.add(new ElementText(0, height + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - height - 5, description));
     }
   }

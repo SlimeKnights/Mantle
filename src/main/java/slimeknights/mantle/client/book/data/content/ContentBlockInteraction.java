@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import java.util.ArrayList;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
@@ -10,6 +11,7 @@ import slimeknights.mantle.client.gui.book.element.BookElement;
 import slimeknights.mantle.client.gui.book.element.ElementImage;
 import slimeknights.mantle.client.gui.book.element.ElementItem;
 import slimeknights.mantle.client.gui.book.element.ElementText;
+
 import static slimeknights.mantle.client.gui.book.Textures.TEX_MISC;
 
 public class ContentBlockInteraction extends PageContent {
@@ -35,22 +37,23 @@ public class ContentBlockInteraction extends PageContent {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2 - 10;
     int y = TITLE_HEIGHT;
 
-    if (title == null || title.isEmpty())
+    if(title == null || title.isEmpty()) {
       y = 0;
-    else
+    } else {
       addTitle(list, title);
+    }
 
     list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.coverColor));
 
-    if (input != null && !input.id.equals("")) {
+    if(input != null && !input.id.equals("")) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
     }
 
-    if (block != null && !block.id.equals("")) {
+    if(block != null && !block.id.equals("")) {
       list.add(new ElementItem(x + BLOCK_X, y + BLOCK_Y, BLOCK_SCALE, block.getItems(), block.action));
     }
 
-    if (description != null && description.length > 0) {
+    if(description != null && description.length > 0) {
       list.add(new ElementText(0, IMG_SMITHING.height + y + 50, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - IMG_SMITHING.height - y - 50, description));
     }
   }

@@ -3,6 +3,7 @@ package slimeknights.mantle.client.gui.book.element;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import slimeknights.mantle.client.book.data.element.ImageData;
 
 @SideOnly(Side.CLIENT)
@@ -28,16 +29,21 @@ public class ElementImage extends SizedBookElement {
 
     this.image = image;
 
-    if (image.x != -1)
+    if(image.x != -1) {
       x = image.x;
-    if (image.y != -1)
+    }
+    if(image.y != -1) {
       y = image.y;
-    if (image.width != -1)
+    }
+    if(image.width != -1) {
       width = image.width;
-    if (image.height != -1)
+    }
+    if(image.height != -1) {
       height = image.height;
-    if (image.colorMultiplier != 0xFFFFFF)
+    }
+    if(image.colorMultiplier != 0xFFFFFF) {
       colorMultiplier = image.colorMultiplier;
+    }
 
     this.x = x == -1 ? 0 : x;
     this.y = y == -1 ? 0 : y;

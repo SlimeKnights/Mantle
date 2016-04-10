@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -10,6 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
+
 import slimeknights.mantle.client.gui.book.GuiBook;
 
 @SideOnly(Side.CLIENT)
@@ -40,8 +42,8 @@ public abstract class BookElement extends Gui {
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
 
-    for (int i = 0; i < list.size(); ++i) {
-      if (i == 0) {
+    for(int i = 0; i < list.size(); ++i) {
+      if(i == 0) {
         list.set(i, stack.getRarity().rarityColor + list.get(i));
       } else {
         list.set(i, TextFormatting.GRAY + list.get(i));
@@ -53,14 +55,14 @@ public abstract class BookElement extends Gui {
   }
 
   public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-    if (!textLines.isEmpty()) {
+    if(!textLines.isEmpty()) {
       GlStateManager.disableDepth();
       int i = 0;
 
-      for (String s : textLines) {
+      for(String s : textLines) {
         int j = font.getStringWidth(s);
 
-        if (j > i) {
+        if(j > i) {
           i = j;
         }
       }
@@ -69,15 +71,15 @@ public abstract class BookElement extends Gui {
       int i2 = y - 12;
       int k = 8;
 
-      if (textLines.size() > 1) {
+      if(textLines.size() > 1) {
         k += 2 + (textLines.size() - 1) * 10;
       }
 
-      if (l1 + i > GuiBook.PAGE_WIDTH) {
+      if(l1 + i > GuiBook.PAGE_WIDTH) {
         l1 -= 28 + i;
       }
 
-      if (i2 + k + 6 > GuiBook.PAGE_HEIGHT) {
+      if(i2 + k + 6 > GuiBook.PAGE_HEIGHT) {
         i2 = GuiBook.PAGE_HEIGHT - k - 6;
       }
 
@@ -94,11 +96,11 @@ public abstract class BookElement extends Gui {
       this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, i1, i1);
       this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, j1, j1);
 
-      for (int k1 = 0; k1 < textLines.size(); ++k1) {
+      for(int k1 = 0; k1 < textLines.size(); ++k1) {
         String s1 = textLines.get(k1);
         font.drawStringWithShadow(s1, (float) l1, (float) i2, -1);
 
-        if (k1 == 0) {
+        if(k1 == 0) {
           i2 += 2;
         }
 

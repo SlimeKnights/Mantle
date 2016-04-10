@@ -19,17 +19,19 @@ public class BoxRenderer {
 
     int sx = x, sy = y;
 
-    for (int i = 0; i < 3; i++) {
+    for(int i = 0; i < 3; i++) {
       int sgW = width - segW * 2;
 
-      if (i % 2 == 0)
+      if(i % 2 == 0) {
         sgW = segW;
+      }
 
-      for (int j = 0; j < 3; j++) {
+      for(int j = 0; j < 3; j++) {
         int sgH = height - segH * 2;
 
-        if (j % 2 == 0)
+        if(j % 2 == 0) {
           sgH = segH;
+        }
 
         int[] matrix = getTextureMatrixCoords(index, sprW, sprH, segW, segH, segGW, segGH, i + j * 3);
         Gui.drawScaledCustomSizeModalRect(sx, sy, matrix[0], matrix[1], segW, segH, sgW, sgH, TEX_SIZE, TEX_SIZE);

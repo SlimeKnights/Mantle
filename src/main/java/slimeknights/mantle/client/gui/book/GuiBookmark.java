@@ -5,6 +5,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+
 import slimeknights.mantle.client.book.data.BookmarkData;
 
 public class GuiBookmark extends GuiButton {
@@ -30,7 +31,7 @@ public class GuiBookmark extends GuiButton {
 
   @Override
   public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-    if (visible) {
+    if(visible) {
       int tex_y = TEX_Y + HEIGHT * type;
 
       mc.renderEngine.bindTexture(TEX_BOOK);
@@ -42,13 +43,14 @@ public class GuiBookmark extends GuiButton {
       GlStateManager.color(r, g, b);
       Gui.drawScaledCustomSizeModalRect(xPosition, yPosition, TEX_X, tex_y, WIDTH, HEIGHT, width, height, 512, 512);
 
-      if (data.text != null && !data.text.isEmpty()) {
-        TextDataRenderer.drawScaledString(mc.fontRendererObj, data.text, xPosition + 1, yPosition + height / 2 - mc.fontRendererObj.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
+      if(data.text != null && !data.text.isEmpty()) {
+        TextDataRenderer
+            .drawScaledString(mc.fontRendererObj, data.text, xPosition + 1, yPosition + height / 2 - mc.fontRendererObj.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
       }
 
       GlStateManager.color(1F, 1F, 1F);
 
-      if (data.page.equals("ADD")) {
+      if(data.page.equals("ADD")) {
         Gui.drawModalRectWithCustomSizedTexture(xPosition + width / 2 - ADD_W / 2, yPosition + height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
       }
     }

@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.book.data.content;
 
-import java.util.ArrayList;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.ArrayList;
+
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.BlockData;
@@ -23,13 +25,15 @@ public class ContentStructure extends PageContent {
   public void load() {
     BookRepository repo = parent.source;
 
-    if (data == null || data.isEmpty())
+    if(data == null || data.isEmpty()) {
       return;
+    }
 
     ResourceLocation location = repo.getResourceLocation(data);
 
-    if (location != null && repo.resourceExists(location)) {
-      ContentStructure structure = BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(location)), ContentStructure.class);
+    if(location != null && repo.resourceExists(location)) {
+      ContentStructure structure = BookLoader.GSON
+          .fromJson(repo.resourceToString(repo.getResource(location)), ContentStructure.class);
       structure.parent = parent;
       structure.load();
       size = structure.size;
@@ -40,13 +44,15 @@ public class ContentStructure extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list) {
     int y = TITLE_HEIGHT;
-    if (title == null || title.isEmpty())
+    if(title == null || title.isEmpty()) {
       y = 0;
-    else
+    } else {
       addTitle(list, title);
+    }
 
-    if (size != null && size.length == 3 && structure != null && structure.length > 0)
+    if(size != null && size.length == 3 && structure != null && structure.length > 0) {
       list.add(new ElementStructure(0, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y - 10, size, structure));
+    }
 
     list.add(new ElementText(0, GuiBook.PAGE_HEIGHT - 10, GuiBook.PAGE_WIDTH, 10, "WIP - Not Yet Implemented"));
   }

@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.book.data.content;
 
-import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
+
+import java.util.ArrayList;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.gui.book.GuiBook;
@@ -22,14 +24,16 @@ public class ContentTableOfContents extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list) {
     int y = 0;
 
-    if (title != null && !title.trim().isEmpty()) {
+    if(title != null && !title.trim().isEmpty()) {
       addTitle(list, title);
       y += TITLE_HEIGHT;
     }
 
-    for (int i = 0; i < data.length; i++) {
+    for(int i = 0; i < data.length; i++) {
       TextData text = data[i];
-      list.add(new ElementText(0, y + i * (int) (Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * text.scale), GuiBook.PAGE_WIDTH, Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, new TextData[]{text}));
+      list.add(new ElementText(0, y + i * (int) (Minecraft
+                                                     .getMinecraft().fontRendererObj.FONT_HEIGHT * text.scale), GuiBook.PAGE_WIDTH, Minecraft
+                                   .getMinecraft().fontRendererObj.FONT_HEIGHT, new TextData[]{text}));
     }
   }
 }

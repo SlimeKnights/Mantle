@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.book.data.content;
 
-import java.util.ArrayList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.ArrayList;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.gui.book.GuiBook;
@@ -33,12 +35,13 @@ public class ContentError extends PageContent {
     text[0].color = "dark_red";
     text[0].underlined = true;
 
-    if (exception != null) {
+    if(exception != null) {
       text[1] = new TextData("The following error has occured: ");
       text[1].color = "dark_red";
       text[1].paragraph = true;
 
-      text[2] = new TextData(exception.getMessage() != null ? exception.getMessage() : exception.getClass().getSimpleName());
+      text[2] = new TextData(exception.getMessage() != null ? exception.getMessage() : exception.getClass()
+                                                                                                .getSimpleName());
       text[2].color = "dark_red";
       text[2].paragraph = true;
     }

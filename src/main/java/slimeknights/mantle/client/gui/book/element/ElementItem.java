@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 
 @SideOnly(Side.CLIENT)
@@ -50,12 +51,13 @@ public class ElementItem extends BookElement {
   public void draw(int mouseX, int mouseY, float partialTicks) {
     renderTick++;
 
-    if (renderTick > ITEM_SWITCH_TICKS) {
+    if(renderTick > ITEM_SWITCH_TICKS) {
       renderTick = 0;
       currentItem++;
 
-      if (currentItem >= itemCycle.length)
+      if(currentItem >= itemCycle.length) {
         currentItem = 0;
+      }
     }
 
     RenderHelper.enableGUIStandardItemLighting();
@@ -63,26 +65,28 @@ public class ElementItem extends BookElement {
     GlStateManager.translate(x, y, 0);
     GlStateManager.scale(scale, scale, 1.0F);
 
-    if (currentItem < itemCycle.length)
+    if(currentItem < itemCycle.length) {
       mc.getRenderItem().renderItemAndEffectIntoGUI(itemCycle[currentItem], 0, 0);
+    }
 
     GlStateManager.popMatrix();
   }
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks) {
-    if (mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
+    if(mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
       renderToolTip(fontRenderer, itemCycle[currentItem], mouseX, mouseY);
     }
   }
 
   @Override
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    if (mouseButton == 0 && mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
-      if (action != null)
+    if(mouseButton == 0 && mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
+      if(action != null) {
         StringActionProcessor.process(action, parent);
-      else
+      } else {
         parent.itemClicked(itemCycle[currentItem]);
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 
 @SideOnly(Side.CLIENT)
@@ -31,7 +32,7 @@ public class GuiArrow extends GuiButton {
 
   @Override
   public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-    if (this.visible) {
+    if(this.visible) {
       mc.getTextureManager().bindTexture(TEX_BOOK);
 
       this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;

@@ -2,7 +2,7 @@ package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.util.HashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -13,6 +13,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.HashMap;
+
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
@@ -42,7 +45,8 @@ import slimeknights.mantle.network.book.PacketUpdateSavedPage;
 public class BookLoader implements IResourceManagerReloadListener {
 
   /** GSON object to be used for book loading purposes */
-  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer()).create();
+  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer())
+                                                   .create();
 
   /** Maps page content presets to names */
   private static final HashMap<String, Class<? extends PageContent>> typeToContentMap = new HashMap<>();
@@ -84,8 +88,9 @@ public class BookLoader implements IResourceManagerReloadListener {
    * @RecommendedInvoke init
    */
   public static void registerPageType(String name, Class<? extends PageContent> clazz) {
-    if (typeToContentMap.containsKey(name))
+    if(typeToContentMap.containsKey(name)) {
       throw new IllegalArgumentException("Page type " + name + " already in use.");
+    }
 
     typeToContentMap.put(name, clazz);
   }
@@ -127,10 +132,12 @@ public class BookLoader implements IResourceManagerReloadListener {
 
     books.put(name.contains(":") ? name : Loader.instance().activeModContainer().getModId() + ":" + name, info);
 
-    if (appendIndex)
+    if(appendIndex) {
       info.addTransformer(new BookTransformer.IndexTranformer());
-    if (appendContentTable)
+    }
+    if(appendContentTable) {
       info.addTransformer(new BookTransformer.ContentTableTransformer());
+    }
 
     return info;
   }
@@ -146,8 +153,9 @@ public class BookLoader implements IResourceManagerReloadListener {
   }
 
   public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
-    if (player.getHeldItem(EnumHand.MAIN_HAND) == null)
+    if(player.getHeldItem(EnumHand.MAIN_HAND) == null) {
       return;
+    }
 
     BookHelper.writeSavedPage(item, page);
     wrapper.network.sendToServer(new PacketUpdateSavedPage(page));
@@ -161,10 +169,10 @@ public class BookLoader implements IResourceManagerReloadListener {
     Mantle.logger.info("Started loading books...");
     long time = System.nanoTime();
 
-    for (BookData book : books.values()) {
+    for(BookData book : books.values()) {
       try {
         book.load();
-      } catch (Exception e) {
+      } catch(Exception e) {
         book.sections.clear();
         SectionData section = new SectionData(true);
         section.name = "errorenous";

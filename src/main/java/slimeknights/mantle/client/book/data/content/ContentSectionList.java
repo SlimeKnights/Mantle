@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import java.util.ArrayList;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
@@ -19,7 +20,7 @@ public class ContentSectionList extends PageContent {
     int width = (ElementSection.WIDTH + 5) * 3 - 5;
     int height = (ElementSection.HEIGHT + 5) * 3 - 5;
 
-    for (int i = 0; i < sections.size(); i++) {
+    for(int i = 0; i < sections.size(); i++) {
       int ix = i % 3;
       int iy = (int) Math.floor(i / 3F);
 

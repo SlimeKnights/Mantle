@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.book.repository;
 
-import java.util.List;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.List;
+
 import slimeknights.mantle.client.book.data.SectionData;
 
 public abstract class BookRepository {

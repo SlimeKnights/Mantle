@@ -1,9 +1,11 @@
 package slimeknights.mantle.client.book;
 
+import net.minecraft.stats.StatFileWriter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.stats.StatFileWriter;
+
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -31,14 +33,15 @@ public abstract class BookTransformer {
 
           List<SectionData> visibleSections = parent.getVisibleSections(writer);
 
-          if (visibleSections.isEmpty())
+          if(visibleSections.isEmpty()) {
             return;
+          }
 
           visibleSections.remove(0);
 
           PageData[] pages = new PageData[(int) Math.ceil(visibleSections.size() / 9F)];
 
-          for (int i = 0; i < pages.length; i++) {
+          for(int i = 0; i < pages.length; i++) {
             pages[i] = new PageData(true);
 
             pages[i].name = "page" + (i + 1);
@@ -46,7 +49,7 @@ public abstract class BookTransformer {
             ContentSectionList content = new ContentSectionList();
             pages[i].content = content;
 
-            for (int j = i * 9; j - i * 9 < 9 && j < visibleSections.size(); j++) {
+            for(int j = i * 9; j - i * 9 < 9 && j < visibleSections.size(); j++) {
               content.addSection(visibleSections.get(j));
             }
           }
@@ -66,30 +69,34 @@ public abstract class BookTransformer {
     public void transform(BookData book) {
       final int ENTRIES_PER_PAGE = 24;
 
-      for (SectionData section : book.sections) {
-        if (section.name.equals("index"))
+      for(SectionData section : book.sections) {
+        if(section.name.equals("index")) {
           continue;
+        }
 
         int genPages = (int) Math.ceil(section.getPageCount() * 1.F / ENTRIES_PER_PAGE);
 
-        if (genPages == 0)
+        if(genPages == 0) {
           continue;
+        }
 
         PageData[] pages = new PageData[genPages];
 
-        for (int i = 0; i < pages.length; i++) {
+        for(int i = 0; i < pages.length; i++) {
           pages[i] = new PageData(true);
           pages[i].name = "tableofcontents" + i;
-          TextData[] text = new TextData[i > pages.length - 1 ? ENTRIES_PER_PAGE : section.getPageCount() - (genPages - 1) * ENTRIES_PER_PAGE];
-          for (int j = 0; j < text.length; j++) {
-            text[j] = new TextData((i * ENTRIES_PER_PAGE + j + 1) + ". " + section.pages.get(i * ENTRIES_PER_PAGE + j).getTitle());
+          TextData[] text = new TextData[i > pages.length - 1 ? ENTRIES_PER_PAGE : section
+                                                                                       .getPageCount() - (genPages - 1) * ENTRIES_PER_PAGE];
+          for(int j = 0; j < text.length; j++) {
+            text[j] = new TextData((i * ENTRIES_PER_PAGE + j + 1) + ". " + section.pages.get(i * ENTRIES_PER_PAGE + j)
+                                                                                        .getTitle());
             text[j].action = "go-to-page-rtn:" + section.name + "." + section.pages.get(i * ENTRIES_PER_PAGE + j).name;
           }
 
           pages[i].content = new ContentTableOfContents(i == 0 ? section.getTitle() : "", text);
         }
 
-        for (int i = pages.length - 1; i >= 0; i--) {
+        for(int i = pages.length - 1; i >= 0; i--) {
           section.pages.add(0, pages[i]);
         }
       }

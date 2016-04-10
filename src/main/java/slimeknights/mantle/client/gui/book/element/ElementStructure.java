@@ -1,7 +1,5 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import java.util.HashMap;
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -17,19 +15,20 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import org.lwjgl.opengl.GL11;
+
+import java.util.HashMap;
+import java.util.List;
+
 import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 
@@ -53,11 +52,12 @@ public class ElementStructure extends SizedBookElement {
     super(x, y, width, height);
     world = new BlockAccess(size, structure);
 
-    if (size.length == 3) {
+    if(size.length == 3) {
       scale = size[0] > size[1] ? width / size[0] - 10F : height / size[1] - 10F;
 
-      if (scale * size[0] > width)
+      if(scale * size[0] > width) {
         scale = width / size[0] - 10F;
+      }
 
       xTranslate = x + width / 2 - (size[0] * scale) / 2;
       yTranslate = y + height / 2 - (size[1] * scale) / 2;
@@ -111,25 +111,27 @@ public class ElementStructure extends SizedBookElement {
     GlStateManager.rotate(rotZ, 0F, 0F, 1F);
     GlStateManager.translate(-w / 2, -h / 2, 0);
 
-    for (int x = 0; x < world.getWidth(); x++) {
-      for (int y = 0; y < world.getHeight(); y++) {
-        for (int z = 0; z < world.getDepth(); z++) {
+    for(int x = 0; x < world.getWidth(); x++) {
+      for(int y = 0; y < world.getHeight(); y++) {
+        for(int z = 0; z < world.getDepth(); z++) {
           BlockPos pos = new BlockPos(x, y, z);
           IBlockState state = world.getBlockState(pos);
           IBakedModel model = mc.getBlockRendererDispatcher().getModelForState(state);
 
           Block block = state.getBlock();
 
-          if (block == Blocks.air)
+          if(block == Blocks.air) {
             continue;
+          }
 
           GlStateManager.pushMatrix();
 
           GlStateManager.enableDepth();
           mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 
-          if (block == null)
+          if(block == null) {
             return;
+          }
 
           int color = blockColors.colorMultiplier(state, world, pos, 0);
           float red = (color >> 16 & 255) / 255.0F;
@@ -147,7 +149,7 @@ public class ElementStructure extends SizedBookElement {
           int i = blockColors.colorMultiplier(state, world, pos, 0);
           GlStateManager.rotate(90F, 0, 1, 0);
 
-          if (EntityRenderer.anaglyphEnable) {
+          if(EntityRenderer.anaglyphEnable) {
             i = TextureUtil.anaglyphColor(i);
           }
 
@@ -186,15 +188,15 @@ public class ElementStructure extends SizedBookElement {
     boolean flag = color == -1;
     int i = 0;
 
-    for (int j = quads.size(); i < j; ++i) {
+    for(int j = quads.size(); i < j; ++i) {
       BakedQuad bakedquad = quads.get(i);
       int k = color;
 
-      if (flag && bakedquad.hasTintIndex()) {
+      if(flag && bakedquad.hasTintIndex()) {
         Block block = world.getBlockState(pos).getBlock();
         k = blockColors.colorMultiplier(world.getBlockState(pos), world, pos, 0);
 
-        if (EntityRenderer.anaglyphEnable) {
+        if(EntityRenderer.anaglyphEnable) {
           k = TextureUtil.anaglyphColor(k);
         }
 
@@ -218,31 +220,34 @@ public class ElementStructure extends SizedBookElement {
       blocks = new int[size[0]][size[1]][size[2]];
       meta = new byte[size[0]][size[1]][size[2]];
 
-      for (BlockData block : structure) {
+      for(BlockData block : structure) {
         Block tile = Block.getBlockFromName(block.block);
-        if (tile == null)
+        if(tile == null) {
           continue;
+        }
         byte metadata = block.meta >= 0 && block.meta < 16 ? block.meta : 0;
 
-        if (block.pos != null && block.pos.length == 3 && block.endPos != null && block.endPos.length == 3) {
-          for (int x = block.pos[0]; x <= block.endPos[0]; x++) {
-            for (int y = block.pos[1]; y <= block.endPos[1]; y++) {
-              for (int z = block.pos[2]; z <= block.endPos[2]; z++) {
-                if (x >= size[0] || y >= size[1] || z >= size[2])
+        if(block.pos != null && block.pos.length == 3 && block.endPos != null && block.endPos.length == 3) {
+          for(int x = block.pos[0]; x <= block.endPos[0]; x++) {
+            for(int y = block.pos[1]; y <= block.endPos[1]; y++) {
+              for(int z = block.pos[2]; z <= block.endPos[2]; z++) {
+                if(x >= size[0] || y >= size[1] || z >= size[2]) {
                   continue;
+                }
 
                 blocks[x][y][z] = Block.getIdFromBlock(tile);
                 meta[x][y][z] = metadata;
 
-                TileEntity te = tile.hasTileEntity(tile.getStateFromMeta(metadata)) ? tile.createTileEntity(Minecraft.getMinecraft().theWorld, tile.getStateFromMeta(metadata)) : null;
-                if (te != null) {
+                TileEntity te = tile.hasTileEntity(tile.getStateFromMeta(metadata)) ? tile
+                    .createTileEntity(Minecraft.getMinecraft().theWorld, tile.getStateFromMeta(metadata)) : null;
+                if(te != null) {
                   te.setPos(new BlockPos(x, y, z));
                   tileEntityMap.put(new Integer[]{x, y, z}, te);
 
-                  if (block.nbt != null) {
+                  if(block.nbt != null) {
                     try {
                       te.readFromNBT(JsonToNBT.getTagFromJson(ItemStackData.filterJsonQuotes(block.nbt.toString())));
-                    } catch (NBTException e) {
+                    } catch(NBTException e) {
                       e.printStackTrace();
                     }
                   }
@@ -256,8 +261,9 @@ public class ElementStructure extends SizedBookElement {
 
     @Override
     public TileEntity getTileEntity(BlockPos pos) {
-      if (!isValid(pos))
+      if(!isValid(pos)) {
         return null;
+      }
       return tileEntityMap.get(new Integer[]{pos.getX(), pos.getY(), pos.getZ()});
     }
 
@@ -268,11 +274,13 @@ public class ElementStructure extends SizedBookElement {
 
     @Override
     public IBlockState getBlockState(BlockPos pos) {
-      if (!isValid(pos))
+      if(!isValid(pos)) {
         return Blocks.air.getDefaultState();
+      }
       Block block = Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]);
-      if (block == null)
+      if(block == null) {
         return Blocks.air.getDefaultState();
+      }
 
       return block.getActualState(block.getStateFromMeta(meta[pos.getX()][pos.getY()][pos.getZ()]), this, pos);
     }
@@ -294,8 +302,9 @@ public class ElementStructure extends SizedBookElement {
 
     @Override
     public int getStrongPower(BlockPos pos, EnumFacing direction) {
-      if (!isValid(pos))
+      if(!isValid(pos)) {
         return 0;
+      }
 
       IBlockState iblockstate = this.getBlockState(pos);
       return iblockstate.getBlock().getStrongPower(iblockstate, this, pos, direction);
@@ -308,8 +317,9 @@ public class ElementStructure extends SizedBookElement {
 
     @Override
     public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-      if (!this.isValid(pos))
+      if(!this.isValid(pos)) {
         return _default;
+      }
 
       return getBlockState(pos).getBlock().isSideSolid(this.getBlockState(pos), this, pos, side);
     }
