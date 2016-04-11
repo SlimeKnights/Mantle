@@ -1,16 +1,16 @@
 package slimeknights.mantle.client.gui.book;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javafx.scene.effect.DropShadow;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
 
 @SideOnly(Side.CLIENT)
@@ -62,7 +62,9 @@ public class TextDataRenderer {
         modifiers += TextFormatting.OBFUSCATED;
       }
 
-      String[] split = cropStringBySize(item.text, modifiers, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
+      String text = translateString(item.text);
+
+      String[] split = cropStringBySize(text, modifiers, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
 
       box1X = atX;
       box1Y = atY;
@@ -151,6 +153,22 @@ public class TextDataRenderer {
     return action;
   }
 
+  public static String translateString(String s) {
+    s = s.replace("$$(", "$\0(").replace(")$$", ")\0$");
+
+    while(s.contains("$(") && s.contains(")$") && s.indexOf("$(") < s.indexOf(")$")) {
+      String loc = s.substring(s.indexOf("$(") + 2, s.indexOf(")$"));
+      s = s.replace("$(" + loc + ")$", I18n.translateToLocal(loc));
+    }
+
+    if(s.indexOf("$(") > s.indexOf(")$") || s.contains(")$")) {
+      Mantle.logger
+          .error("[Books] [TextDataRenderer] Detected unbalanced localization symbols \"$(\" and \")$\" in string: \"" + s + "\".");
+    }
+
+    return s.replace("$\0(", "$(").replace(")\0$", ")$");
+  }
+
   public static String[] cropStringBySize(String s, String modifiers, int width, int height, FontRenderer fr, float scale) {
     return cropStringBySize(s, modifiers, width, height, width, fr, scale);
   }
@@ -171,19 +189,19 @@ public class TextDataRenderer {
           i = oldI;
         }
 
-        s = s.substring(0, i) + "\r" + s.substring(i + (i == oldI ? 0 : 1));
+        s = s.substring(0, i).trim() + "\r" + s.substring(i + (i == oldI ? 0 : 1)).trim();
 
         i++;
         curWidth = 0;
         curHeight += fr.FONT_HEIGHT * scale;
 
         if(curHeight >= height) {
-          return s.substring(0, i).split("\r");
+          return s.substring(0, i).trim().split("\r");
         }
       }
     }
 
-    return s.split("\r");
+    return s.trim().split("\r");
   }
 
   //BEGIN METHODS FROM GUI

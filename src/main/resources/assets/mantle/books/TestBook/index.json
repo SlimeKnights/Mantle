@@ -9,7 +9,9 @@
   {
     "name": "section 2",
     "icon": {
-      "file": "images/test.png"
+      "item": {
+        "id": "minecraft:command_block"
+      }
     },
     "data": "sections/section1.json",
     "requirements": [

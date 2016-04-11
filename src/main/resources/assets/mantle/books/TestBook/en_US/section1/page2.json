@@ -27,7 +27,7 @@
       "scale": 2
     },
     {
-      "text": "For I am the wizard that you seek!",
+      "text": "For I am the wizard that you seek! $(language.name)$",
       "paragraph": true
     }
   ]

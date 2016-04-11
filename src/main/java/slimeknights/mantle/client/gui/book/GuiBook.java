@@ -141,14 +141,16 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
         float scale = fontRenderer.getStringWidth(book.appearance.title) <= 67 ? 2.5F : 2F;
 
         GlStateManager.scale(scale, scale, 1F);
-        fontRenderer.drawString(book.appearance.title, (width / 2) / scale + 3 - fontRenderer.getStringWidth(book.appearance.title) / 2, (height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
+        fontRenderer.drawString(book.appearance.title, (width / 2) / scale + 3 - fontRenderer
+                                                                                     .getStringWidth(book.appearance.title) / 2, (height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
         GlStateManager.popMatrix();
       }
 
       if(!book.appearance.subtitle.isEmpty()) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(1.5F, 1.5F, 1F);
-        fontRenderer.drawString(book.appearance.subtitle, (width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
+        fontRenderer.drawString(book.appearance.subtitle, (width / 2) / 1.5F + 7 - fontRenderer
+                                                                                       .getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
         GlStateManager.popMatrix();
       }
     } else {
@@ -169,7 +171,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
         if(book.appearance.drawPageNumbers) {
           String pNum = (page - 1) * 2 + 2 + "";
-          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
+          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer
+                                                             .getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
         }
 
         int mX = (int) ((Mouse
@@ -212,7 +215,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
         if(book.appearance.drawPageNumbers) {
           String pNum = (page - 1) * 2 + 3 + "";
-          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
+          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer
+                                                             .getStringWidth(pNum) / 2, PAGE_HEIGHT + 15, 0xFFAAAAAA, false);
         }
 
         int mX = (int) ((Mouse

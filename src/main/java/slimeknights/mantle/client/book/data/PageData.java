@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data;
 
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResource;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,6 +25,7 @@ public class PageData implements IDataItem {
   public String name = null;
   public String type = "";
   public String data = "";
+  public float scale = 1.0F;
 
   public transient SectionData parent;
   public transient BookRepository source;
@@ -144,7 +146,8 @@ public class PageData implements IDataItem {
     addSwap(DataLocation.class, new ValueHotswap<DataLocation>() {
       @Override
       public void swap(BookRepository source, DataLocation object) {
-        object.location = source.getResourceLocation(object.file, true);
+        object.location = object.file == "$BLOCK_ATLAS" ? TextureMap.locationBlocksTexture : source
+            .getResourceLocation(object.file, true);
       }
     }.getClass());
     addSwap(ItemStackData.class, new ValueHotswap<ItemStackData>() {

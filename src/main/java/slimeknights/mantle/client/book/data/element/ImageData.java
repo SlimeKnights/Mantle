@@ -9,6 +9,7 @@ public class ImageData extends DataLocation {
 
   public static final ImageData MISSING = new ImageData();
 
+  public ItemStackData item = null;
   public int u = 0;
   public int v = 0;
   public int uw = 256;

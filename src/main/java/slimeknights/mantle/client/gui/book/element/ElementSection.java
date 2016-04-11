@@ -3,6 +3,7 @@ package slimeknights.mantle.client.gui.book.element;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.stats.Achievement;
 import net.minecraft.util.text.TextFormatting;
 
@@ -32,8 +33,6 @@ public class ElementSection extends BookElement {
     boolean hover = mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT;
 
     if(section.icon != null) {
-      renderEngine.bindTexture(section.icon.location);
-
       if(unlocked) {
         GlStateManager.color(1F, 1F, 1F, hover ? 1F : 0.5F);
       } else {
@@ -43,7 +42,21 @@ public class ElementSection extends BookElement {
         GlStateManager.color(r, g, b, 0.75F);
       }
 
-      drawScaledCustomSizeModalRect(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
+      if(section.icon.item == null) {
+        if(section.icon.location != null) {
+          renderEngine.bindTexture(section.icon.location);
+
+          drawScaledCustomSizeModalRect(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
+        }
+      } else {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, 0);
+        GlStateManager.scale(4F, 4F, 1F);
+        RenderHelper.enableGUIStandardItemLighting();
+        mc.getRenderItem().renderItemAndEffectIntoGUI(section.icon.item.getItems()[0], 0, 0);
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.popMatrix();
+      }
     }
 
     fontRenderer.drawString(section.getTitle(), x + WIDTH / 2 - fontRenderer.getStringWidth(section
