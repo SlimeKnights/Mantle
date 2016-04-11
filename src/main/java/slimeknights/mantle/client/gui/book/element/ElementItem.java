@@ -6,15 +6,17 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collection;
+import java.util.List;
 
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 
 @SideOnly(Side.CLIENT)
-public class ElementItem extends BookElement {
+public class ElementItem extends SizedBookElement {
 
   public static final int ITEM_SIZE_HARDCODED = 16;
   public static final int ITEM_SWITCH_TICKS = 90;
@@ -22,6 +24,7 @@ public class ElementItem extends BookElement {
   public ItemStack[] itemCycle;
   public float scale;
   public String action;
+  public List<String> tooltip;
 
   public int renderTick = 0;
   public int currentItem = 0;
@@ -51,7 +54,7 @@ public class ElementItem extends BookElement {
   }
 
   public ElementItem(int x, int y, float scale, ItemStack[] itemCycle, String action) {
-    super(x, y);
+    super(x, y, MathHelper.floor_float(ITEM_SIZE_HARDCODED * scale), MathHelper.floor_float(ITEM_SIZE_HARDCODED * scale));
 
     this.itemCycle = itemCycle;
     this.scale = scale;
@@ -85,14 +88,19 @@ public class ElementItem extends BookElement {
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
-      renderToolTip(fontRenderer, itemCycle[currentItem], mouseX, mouseY);
+    if(isHovered(mouseX, mouseY) && currentItem < itemCycle.length) {
+      if(tooltip != null) {
+        drawHoveringText(tooltip, mouseX, mouseY, fontRenderer);
+      }
+      else {
+        renderToolTip(fontRenderer, itemCycle[currentItem], mouseX, mouseY);
+      }
     }
   }
 
   @Override
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    if(mouseButton == 0 && mouseX >= x && mouseY >= y && mouseX <= x + ITEM_SIZE_HARDCODED * scale && mouseY <= y + ITEM_SIZE_HARDCODED * scale && currentItem < itemCycle.length) {
+    if(mouseButton == 0 && isHovered(mouseX, mouseY) && currentItem < itemCycle.length) {
       if(action != null) {
         StringActionProcessor.process(action, parent);
       } else {

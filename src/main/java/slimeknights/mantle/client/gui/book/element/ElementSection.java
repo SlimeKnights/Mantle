@@ -12,7 +12,7 @@ import java.util.List;
 
 import slimeknights.mantle.client.book.data.SectionData;
 
-public class ElementSection extends BookElement {
+public class ElementSection extends SizedBookElement {
 
   public static final int IMG_SIZE = 64;
 
@@ -22,7 +22,7 @@ public class ElementSection extends BookElement {
   private SectionData section;
 
   public ElementSection(int x, int y, SectionData section) {
-    super(x, y);
+    super(x, y, WIDTH, HEIGHT);
 
     this.section = section;
   }
@@ -30,7 +30,7 @@ public class ElementSection extends BookElement {
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     boolean unlocked = section.isUnlocked(parent.statFile);
-    boolean hover = mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT;
+    boolean hover = isHovered(mouseX, mouseY);
 
     if(section.icon != null) {
       if(unlocked) {
@@ -65,8 +65,7 @@ public class ElementSection extends BookElement {
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(section != null && !section
-        .isUnlocked(parent.statFile) && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT) {
+    if(section != null && !section.isUnlocked(parent.statFile) && isHovered(mouseX, mouseY)) {
       List<String> l = new ArrayList<>();
       l.add(TextFormatting.RED + "Locked");
       l.add("Requirements:");
@@ -85,8 +84,7 @@ public class ElementSection extends BookElement {
   }
 
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    if(mouseButton == 0 && section != null && section
-        .isUnlocked(parent.statFile) && mouseX > x && mouseY > y && mouseX < x + WIDTH && mouseY < y + HEIGHT) {
+    if(mouseButton == 0 && section != null && section.isUnlocked(parent.statFile) && isHovered(mouseX, mouseY)) {
       parent.openPage(parent.book.getFirstPageNumber(section, parent.statFile));
     }
   }
