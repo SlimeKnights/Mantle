@@ -41,7 +41,7 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
 
   public void syncOnOpen(EntityPlayerMP playerOpened) {
     // find another player that already has the gui for this tile open
-    WorldServer server = playerOpened.getServerForPlayer();
+    WorldServer server = playerOpened.getServerWorld();
     for(EntityPlayer player : server.playerEntities) {
       if(player == playerOpened) {
         continue;
