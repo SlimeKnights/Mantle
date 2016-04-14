@@ -8,31 +8,42 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import java.util.List;
 
 import slimeknights.mantle.util.SlimeknightException;
 
 /** Same as Container but provides some extra functionality to simplify things */
-public abstract class BaseContainer<T extends TileEntity & IInventory> extends Container {
+public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   protected double maxDist = 8 * 8; // 8 blocks
   protected T tile;
   protected final Block originalBlock; // used to check if the block we interacted with got broken
   protected final BlockPos pos;
   protected final World world;
+  protected final IItemHandler itemHandler;
 
   public List<Container> subContainers = Lists.newArrayList();
 
   public BaseContainer(T tile) {
     this.tile = tile;
+
+    if(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+      itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    }
+    else {
+      itemHandler = new EmptyHandler();
+    }
 
     this.world = tile.getWorld();
     this.pos = tile.getPos();
@@ -60,6 +71,10 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
 
   public T getTile() {
     return tile;
+  }
+
+  public IItemHandler getItemHandler() {
+    return itemHandler;
   }
 
   /**
@@ -100,8 +115,8 @@ public abstract class BaseContainer<T extends TileEntity & IInventory> extends C
   }
 
   public String getInventoryDisplayName() {
-    if(tile instanceof IInventory) {
-      return tile.getDisplayName().getFormattedText();
+    if(tile instanceof IWorldNameable) {
+      return ((IWorldNameable) tile).getDisplayName().getFormattedText();
     }
     return null;
   }

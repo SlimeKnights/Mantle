@@ -7,9 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.Arrays;
 
@@ -20,6 +26,7 @@ public class TileInventory extends TileEntity implements IInventory {
   protected String inventoryTitle;
   protected boolean hasCustomName;
   protected int stackSizeLimit;
+  protected IItemHandlerModifiable itemHandler;
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
@@ -35,9 +42,27 @@ public class TileInventory extends TileEntity implements IInventory {
     this.inventory = new ItemStack[inventorySize];
     this.stackSizeLimit = maxStackSize;
     this.inventoryTitle = name;
+    this.itemHandler = new InvWrapper(this);
   }
 
-    /* Inventory management */
+  @Override
+  public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+    return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+  }
+
+  @Override
+  public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+      return (T) itemHandler;
+    }
+    return super.getCapability(capability, facing);
+  }
+
+  public IItemHandlerModifiable getItemHandler() {
+    return itemHandler;
+  }
+
+  /* Inventory management */
 
   @Override
   public ItemStack getStackInSlot(int slot) {
