@@ -89,6 +89,18 @@ public abstract class RecipeMatch {
     return new RecipeMatch.Item(new ItemStack(block), amount, matched);
   }
 
+  public static RecipeMatch of(ItemStack stack) {
+    return of(stack, 1);
+  }
+
+  public static RecipeMatch of(ItemStack stack, int matched) {
+    return of(stack, 1, matched);
+  }
+
+  public static RecipeMatch of(ItemStack stack, int amount, int matched) {
+    return new RecipeMatch.Item(stack.copy(), amount, matched);
+  }
+
   public static RecipeMatch ofNBT(ItemStack stack) {
     return ofNBT(stack, 1);
   }
