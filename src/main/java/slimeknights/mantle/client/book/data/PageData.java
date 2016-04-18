@@ -146,7 +146,7 @@ public class PageData implements IDataItem {
     addSwap(DataLocation.class, new ValueHotswap<DataLocation>() {
       @Override
       public void swap(BookRepository source, DataLocation object) {
-        object.location = object.file == "$BLOCK_ATLAS" ? TextureMap.locationBlocksTexture : source
+        object.location = object.file == "$BLOCK_ATLAS" ? TextureMap.LOCATION_BLOCKS_TEXTURE : source
             .getResourceLocation(object.file, true);
       }
     }.getClass());

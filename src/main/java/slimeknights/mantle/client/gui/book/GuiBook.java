@@ -95,8 +95,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
       this.drawCenteredString(this.fontRendererObj, I18n
           .format("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
-      this.drawCenteredString(this.fontRendererObj, lanSearchStates[(int) (Minecraft
-                                                                               .getSystemTime() / 150L % (long) lanSearchStates.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
+      this.drawCenteredString(this.fontRendererObj, LOADING_STRINGS[(int) (Minecraft
+                                                                               .getSystemTime() / 150L % (long) LOADING_STRINGS.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
 
       return;
     }

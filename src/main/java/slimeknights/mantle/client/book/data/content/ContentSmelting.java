@@ -66,19 +66,19 @@ public class ContentSmelting extends PageContent {
     //TODO ask JEI for fuel list if it is present
 
     ItemStack[] fuels = new ItemStack[13];
-    fuels[0] = new ItemStack(Blocks.wooden_slab);
-    fuels[1] = new ItemStack(Blocks.planks);
-    fuels[2] = new ItemStack(Blocks.coal_block);
-    fuels[3] = new ItemStack(Items.wooden_pickaxe);
-    fuels[4] = new ItemStack(Items.wooden_sword);
-    fuels[5] = new ItemStack(Items.wooden_hoe);
-    fuels[6] = new ItemStack(Items.stick);
-    fuels[7] = new ItemStack(Items.coal);
-    fuels[8] = new ItemStack(Items.lava_bucket);
-    fuels[9] = new ItemStack(Blocks.sapling);
-    fuels[10] = new ItemStack(Items.blaze_rod);
-    fuels[11] = new ItemStack(Items.wooden_shovel);
-    fuels[12] = new ItemStack(Items.wooden_axe);
+    fuels[0] = new ItemStack(Blocks.WOODEN_SLAB);
+    fuels[1] = new ItemStack(Blocks.PLANKS);
+    fuels[2] = new ItemStack(Blocks.COAL_BLOCK);
+    fuels[3] = new ItemStack(Items.WOODEN_PICKAXE);
+    fuels[4] = new ItemStack(Items.WOODEN_SWORD);
+    fuels[5] = new ItemStack(Items.WOODEN_HOE);
+    fuels[6] = new ItemStack(Items.STICK);
+    fuels[7] = new ItemStack(Items.COAL);
+    fuels[8] = new ItemStack(Items.LAVA_BUCKET);
+    fuels[9] = new ItemStack(Blocks.SAPLING);
+    fuels[10] = new ItemStack(Items.BLAZE_ROD);
+    fuels[11] = new ItemStack(Items.WOODEN_SHOVEL);
+    fuels[12] = new ItemStack(Items.WOODEN_AXE);
 
     return fuels;
   }

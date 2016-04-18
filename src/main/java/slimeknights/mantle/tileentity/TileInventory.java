@@ -183,7 +183,7 @@ public class TileInventory extends TileEntity implements IInventory {
   @Override
   public boolean isUseableByPlayer(EntityPlayer entityplayer) {
     // block changed/got broken?
-    if(worldObj.getTileEntity(pos) != this || worldObj.getBlockState(pos).getBlock() == Blocks.air) {
+    if(worldObj.getTileEntity(pos) != this || worldObj.getBlockState(pos).getBlock() == Blocks.AIR) {
       return false;
     }
 

@@ -99,7 +99,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   public boolean canInteractWith(EntityPlayer playerIn) {
     Block block = world.getBlockState(pos).getBlock();
     // does the block we interacted with still exist?
-    if(block == Blocks.air || block != originalBlock) {
+    if(block == Blocks.AIR || block != originalBlock) {
       return false;
     }
 

@@ -121,14 +121,14 @@ public class ElementStructure extends SizedBookElement {
 
           Block block = state.getBlock();
 
-          if(block == Blocks.air) {
+          if(block == Blocks.AIR) {
             continue;
           }
 
           GlStateManager.pushMatrix();
 
           GlStateManager.enableDepth();
-          mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+          mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
           if(block == null) {
             return;
@@ -162,7 +162,7 @@ public class ElementStructure extends SizedBookElement {
 
           GlStateManager.color(1F, 1F, 1F);
           GlStateManager.popMatrix();
-          renderEngine.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+          renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
         }
       }
     }
@@ -276,11 +276,11 @@ public class ElementStructure extends SizedBookElement {
     @Override
     public IBlockState getBlockState(BlockPos pos) {
       if(!isValid(pos)) {
-        return Blocks.air.getDefaultState();
+        return Blocks.AIR.getDefaultState();
       }
       Block block = Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]);
       if(block == null) {
-        return Blocks.air.getDefaultState();
+        return Blocks.AIR.getDefaultState();
       }
 
       return block.getActualState(block.getStateFromMeta(meta[pos.getX()][pos.getY()][pos.getZ()]), this, pos);
@@ -288,12 +288,12 @@ public class ElementStructure extends SizedBookElement {
 
     @Override
     public boolean isAirBlock(BlockPos pos) {
-      return !isValid(pos) || Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]) == Blocks.air;
+      return !isValid(pos) || Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]) == Blocks.AIR;
     }
 
     @Override
     public BiomeGenBase getBiomeGenForCoords(BlockPos pos) {
-      return Biomes.jungle;
+      return Biomes.JUNGLE;
     }
 
     @Override

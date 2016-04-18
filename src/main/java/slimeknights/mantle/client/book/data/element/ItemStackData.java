@@ -56,12 +56,12 @@ public class ItemStackData {
     try {
       item = CommandGive.getItemByText(null, id);
     } catch(NumberInvalidException e) {
-      item = Item.getItemFromBlock(Blocks.barrier);
+      item = Item.getItemFromBlock(Blocks.BARRIER);
       isMissingItem = true;
     }
 
     if(item == null) {
-      item = Item.getItemFromBlock(Blocks.barrier);
+      item = Item.getItemFromBlock(Blocks.BARRIER);
       isMissingItem = true;
     }
 
@@ -92,7 +92,7 @@ public class ItemStackData {
 
   public static ItemStackData getItemStackData(ItemStack stack, boolean ignoreNbt) {
     ItemStackData data = new ItemStackData();
-    data.id = Item.itemRegistry.getNameForObject(stack.getItem()).toString();
+    data.id = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
     data.amount = (byte) stack.stackSize;
     data.damage = (short) stack.getItemDamage();
     if(!ignoreNbt && stack.getTagCompound() != null) {
