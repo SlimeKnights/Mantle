@@ -4,17 +4,12 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.IntData;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.util.EnumFacing;
 
 import java.util.List;
-import java.util.Map;
-
-import slimeknights.mantle.util.ImmutableConcatList;
 
 /**
  * Groups multiple baked models into a single one. Does not respect state etc. when getting quads.
@@ -40,7 +35,6 @@ public class BakedCompositeModel extends BakedWrapper {
     IBakedModel parent;
 
     public Builder() {
-      this.parent = parent;
       builders = new ImmutableList.Builder[7];
       for(int i = 0; i < 7; i++) {
         builders[i] = ImmutableList.builder();
