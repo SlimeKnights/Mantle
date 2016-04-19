@@ -206,15 +206,9 @@ public class TileInventory extends TileEntity implements IInventory {
   @Override
   public void readFromNBT(NBTTagCompound tags) {
     super.readFromNBT(tags);
-    readInventoryFromNBT(tags);
-  }
-
-  public void readInventoryFromNBT(NBTTagCompound tags) {
-    super.readFromNBT(tags);
-
     this.resize(tags.getInteger("InventorySize"));
 
-    readInventoryFromNBT(this, tags);
+    readInventoryFromNBT(tags);
 
     if(tags.hasKey("CustomName", 8)) {
       this.inventoryTitle = tags.getString("CustomName");
@@ -227,7 +221,7 @@ public class TileInventory extends TileEntity implements IInventory {
 
     tags.setInteger("InventorySize", inventory.length);
 
-    writeInventoryToNBT(this, tags);
+    writeInventoryToNBT(tags);
 
     if(this.hasCustomName()) {
       tags.setString("CustomName", this.inventoryTitle);
@@ -235,7 +229,8 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   /** Writes the contents of the inventory to the tag */
-  public static void writeInventoryToNBT(IInventory inventory, NBTTagCompound tag) {
+  public void writeInventoryToNBT(NBTTagCompound tag) {
+    IInventory inventory = this;
     NBTTagList nbttaglist = new NBTTagList();
 
     for(int i = 0; i < inventory.getSizeInventory(); i++) {
@@ -251,7 +246,8 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   /** Reads a an inventory from the tag. Overwrites current content */
-  public static void readInventoryFromNBT(IInventory inventory, NBTTagCompound tag) {
+  public void readInventoryFromNBT(NBTTagCompound tag) {
+    IInventory inventory = this;
     NBTTagList nbttaglist = tag.getTagList("Items", 10);
 
     for(int i = 0; i < nbttaglist.tagCount(); ++i) {
