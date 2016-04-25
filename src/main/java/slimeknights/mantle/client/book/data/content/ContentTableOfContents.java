@@ -21,7 +21,7 @@ public class ContentTableOfContents extends PageContent {
   }
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = 0;
 
     if(title != null && !title.trim().isEmpty()) {

@@ -12,7 +12,7 @@ import slimeknights.mantle.client.gui.book.element.BookElement;
 public class ContentDummy extends PageContent {
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     //TODO load from JSON
   }
 }

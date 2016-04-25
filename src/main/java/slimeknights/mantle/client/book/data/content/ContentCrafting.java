@@ -36,7 +36,7 @@ public class ContentCrafting extends PageContent {
   public TextData[] description;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = 0;
     int y = 16;
     int height = 100;

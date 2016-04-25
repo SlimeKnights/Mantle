@@ -18,7 +18,7 @@ public class ContentText extends PageContent {
   public TextData[] text;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
     if(title == null || title.isEmpty()) {

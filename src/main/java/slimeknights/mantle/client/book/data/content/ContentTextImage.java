@@ -21,7 +21,7 @@ public class ContentTextImage extends PageContent {
   public ImageData image;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
     if(title == null || title.isEmpty()) {

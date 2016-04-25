@@ -341,17 +341,17 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       PageData page = book.findPage(0, statFile);
 
       if(page != null) {
-        page.content.build(book, rightElements);
+        page.content.build(book, rightElements, false);
       }
     } else {
       PageData leftPage = book.findPage((page - 1) * 2 + 1, statFile);
       PageData rightPage = book.findPage((page - 1) * 2 + 2, statFile);
 
       if(leftPage != null) {
-        leftPage.content.build(book, leftElements);
+        leftPage.content.build(book, leftElements, false);
       }
       if(rightPage != null) {
-        rightPage.content.build(book, rightElements);
+        rightPage.content.build(book, rightElements, true);
       }
     }
 

@@ -35,7 +35,7 @@ public class ContentSmithing extends PageContent {
   public TextData[] description;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2;
     int y = TITLE_HEIGHT;
 

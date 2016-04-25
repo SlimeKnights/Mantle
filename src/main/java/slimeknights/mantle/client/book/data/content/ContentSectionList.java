@@ -16,7 +16,7 @@ public class ContentSectionList extends PageContent {
   }
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int width = (ElementSection.WIDTH + 5) * 3 - 5;
     int height = (ElementSection.HEIGHT + 5) * 3 - 5;
 
