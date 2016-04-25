@@ -201,7 +201,7 @@ public class TextDataRenderer {
       }
     }
 
-    return s.trim().split("\r");
+    return s.split("\r");
   }
 
   //BEGIN METHODS FROM GUI
