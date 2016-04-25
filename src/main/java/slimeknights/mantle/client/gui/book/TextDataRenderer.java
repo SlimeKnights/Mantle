@@ -34,6 +34,11 @@ public class TextDataRenderer {
       if(item.text == null || item.text.isEmpty()) {
         continue;
       }
+      if(item.text.equals("\n")) {
+        atX = x;
+        atY += fr.FONT_HEIGHT;
+        continue;
+      }
 
       if(item.paragraph) {
         atX = x;
@@ -180,7 +185,7 @@ public class TextDataRenderer {
     for(int i = 0; i < s.length(); i++) {
       curWidth += fr.getStringWidth(modifiers + Character.toString(s.charAt(i))) * scale;
 
-      if((curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
+      if(s.charAt(i) == '\n' || (curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
         int oldI = i;
         while(i >= 0 && s.charAt(i) != ' ') {
           i--;
