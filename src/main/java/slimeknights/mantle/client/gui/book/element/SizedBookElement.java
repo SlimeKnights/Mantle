@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public abstract class SizedBookElement extends BookElement {
 
-  protected int width, height;
+  public int width, height;
 
   public SizedBookElement(int x, int y, int width, int height) {
     super(x, y);
