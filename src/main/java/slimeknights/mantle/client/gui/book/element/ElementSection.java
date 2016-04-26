@@ -14,10 +14,10 @@ import slimeknights.mantle.client.book.data.SectionData;
 
 public class ElementSection extends SizedBookElement {
 
-  public static final int IMG_SIZE = 64;
+  public static final int IMG_SIZE = 32;
 
-  public static final int WIDTH = 85;
-  public static final int HEIGHT = 85;
+  public static final int WIDTH = 42;
+  public static final int HEIGHT = 42;
 
   private SectionData section;
 
@@ -51,7 +51,7 @@ public class ElementSection extends SizedBookElement {
       } else {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, 0);
-        GlStateManager.scale(4F, 4F, 1F);
+        GlStateManager.scale(2F, 2F, 1F);
         RenderHelper.enableGUIStandardItemLighting();
         mc.getRenderItem().renderItemAndEffectIntoGUI(section.icon.item.getItems()[0], 0, 0);
         RenderHelper.disableStandardItemLighting();
@@ -59,27 +59,33 @@ public class ElementSection extends SizedBookElement {
       }
     }
 
-    fontRenderer.drawString(section.getTitle(), x + WIDTH / 2 - fontRenderer.getStringWidth(section
-                                                                                                .getTitle()) / 2, y + HEIGHT - fontRenderer.FONT_HEIGHT, hover ? 0xFF000000 : 0x7F000000);
+    if(section.parent.appearance.drawSectionListText) {
+      fontRenderer.drawString(section.getTitle(),
+                              x + WIDTH / 2 - fontRenderer.getStringWidth(section.getTitle()) / 2,
+                              y + HEIGHT - fontRenderer.FONT_HEIGHT/2,
+                              hover ? 0xFF000000 : 0x7F000000);
+    }
   }
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(section != null && !section.isUnlocked(parent.statFile) && isHovered(mouseX, mouseY)) {
-      List<String> l = new ArrayList<>();
-      l.add(TextFormatting.RED + "Locked");
-      l.add("Requirements:");
+    if(section != null && isHovered(mouseX, mouseY)) {
+      List<String> text = new ArrayList<>();
+      text.add(section.getTitle());
+      if(!section.isUnlocked(parent.statFile)) {
+        text.add(TextFormatting.RED + "Locked");
+        text.add("Requirements:");
 
-      for(String requirement : section.requirements) {
-        Achievement achievement = SectionData.findAchievement(requirement);
-        if(achievement != null) {
-          l.add((SectionData
-                     .requirementSatisfied(requirement, parent.statFile) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
-                    .getTextWithoutFormattingCodes(achievement.getStatName().getFormattedText()));
+        for(String requirement : section.requirements) {
+          Achievement achievement = SectionData.findAchievement(requirement);
+          if(achievement != null) {
+            text.add((SectionData
+                          .requirementSatisfied(requirement, parent.statFile) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
+                         .getTextWithoutFormattingCodes(achievement.getStatName().getFormattedText()));
+          }
         }
       }
-
-      drawHoveringText(l, mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
+      drawHoveringText(text, mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
     }
   }
 

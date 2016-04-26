@@ -14,6 +14,7 @@ public class AppearanceData implements IDataItem {
   public String title = "";
   public String subtitle = "";
   public boolean drawPageNumbers = true;
+  public boolean drawSectionListText = false;
 
   @Override
   public void load() {
