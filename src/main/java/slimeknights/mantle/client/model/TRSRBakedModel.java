@@ -80,9 +80,11 @@ public class TRSRBakedModel implements IBakedModel {
         side = EnumFacing.getHorizontal((side.getHorizontalIndex() + faceOffset) % 4);
       }
       for(BakedQuad quad : original.getQuads(state, side, rand)) {
-        Transformer transformer = new Transformer(transformation, quad.getFormat());
-        quad.pipe(transformer);
-        builder.add(transformer.build());
+        if(quad.getFormat() != null) {
+          Transformer transformer = new Transformer(transformation, quad.getFormat());
+          quad.pipe(transformer);
+          builder.add(transformer.build());
+        }
       }
     }
 
