@@ -423,14 +423,15 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale, and of course half the size so that all our code still works as it should
+    /*
     if(mc.gameSettings.guiScale == 1) {
       width /= 2F;
       height /= 2F;
-    }
+    }*/
 
     previousArrow = new GuiArrow(0, -50, -50, 1, book.appearance.arrowColor, book.appearance.arrowColorHover);
     nextArrow = new GuiArrow(1, -50, -50, 0, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 - GuiArrow.HEIGHT / 2 + PAGE_HEIGHT / 3, 3, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, 3, book.appearance.arrowColor, book.appearance.arrowColorHover);
     indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2 - 3, 3, book.appearance.arrowColor, book.appearance.arrowColorHover);
 
     buttonList.add(previousArrow);
