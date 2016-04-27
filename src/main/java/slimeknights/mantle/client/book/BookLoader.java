@@ -133,10 +133,10 @@ public class BookLoader implements IResourceManagerReloadListener {
     books.put(name.contains(":") ? name : Loader.instance().activeModContainer().getModId() + ":" + name, info);
 
     if(appendIndex) {
-      info.addTransformer(new BookTransformer.IndexTranformer());
+      info.addTransformer(BookTransformer.IndexTranformer());
     }
     if(appendContentTable) {
-      info.addTransformer(new BookTransformer.ContentTableTransformer());
+      info.addTransformer(BookTransformer.contentTableTransformer());
     }
 
     return info;
