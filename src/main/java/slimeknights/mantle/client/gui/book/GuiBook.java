@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.IProgressMeter;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -184,6 +185,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
     if(page == -1) {
       render.bindTexture(TEX_BOOKFRONT);
+      RenderHelper.disableStandardItemLighting();
 
       GlStateManager.color(coverR, coverG, coverB);
       drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
@@ -211,6 +213,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       }
     } else {
       render.bindTexture(TEX_BOOK);
+      RenderHelper.disableStandardItemLighting();
 
       GlStateManager.color(coverR, coverG, coverB);
       drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
@@ -256,6 +259,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       render.bindTexture(TEX_BOOK);
       // Set color back to white
       GlStateManager.color(1F, 1F, 1F, 1F);
+      RenderHelper.disableStandardItemLighting();
 
       if((page < book.getFullPageCount(statFile) - 1 || book.getPageCount(statFile) % 2 != 0) && page < book
           .getFullPageCount(statFile)) {
