@@ -299,6 +299,12 @@ public class BookData implements IDataItem {
     return visible;
   }
 
+
+  public String translate(String string) {
+    String out = strings.get(string);
+    return out != null ? out : string;
+  }
+
   public void openGui(@Nullable ItemStack item) {
     if(Minecraft.getMinecraft().thePlayer != null) {
       Minecraft.getMinecraft()
