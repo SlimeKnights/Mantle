@@ -194,9 +194,6 @@ public abstract class RecipeMatch {
 
     @Override
     public List<ItemStack> getInputs() {
-      if(itemStacks.length == 0 || itemStacks.length > 1) {
-        return ImmutableList.of();
-      }
       return ImmutableList.copyOf(itemStacks);
     }
 
