@@ -85,6 +85,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
     this.statFile = statFile;
     this.mc = Minecraft.getMinecraft();
+    this.fontRendererObj = mc.fontRendererObj;
     init();
   }
 

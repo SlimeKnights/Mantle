@@ -43,7 +43,7 @@ public class ContentBlockInteraction extends PageContent {
       addTitle(list, title);
     }
 
-    list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.coverColor));
+    list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
     if(input != null && !input.id.equals("")) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
