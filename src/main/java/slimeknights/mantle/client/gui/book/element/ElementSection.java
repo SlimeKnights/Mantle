@@ -33,6 +33,11 @@ public class ElementSection extends SizedBookElement {
     boolean hover = isHovered(mouseX, mouseY);
 
     if(section.icon != null) {
+      int iconX = x + WIDTH / 2 - IMG_SIZE / 2;
+      int iconY = y + HEIGHT / 2 - IMG_SIZE / 2;
+      if(hover) {
+        drawRect(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, parent.book.appearance.hoverColor);
+      }
       if(unlocked) {
         GlStateManager.color(1F, 1F, 1F, hover ? 1F : 0.5F);
       } else {
@@ -46,11 +51,11 @@ public class ElementSection extends SizedBookElement {
         if(section.icon.location != null) {
           renderEngine.bindTexture(section.icon.location);
 
-          drawScaledCustomSizeModalRect(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
+          drawScaledCustomSizeModalRect(iconX, iconY, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
         }
       } else {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + WIDTH / 2 - IMG_SIZE / 2, y + HEIGHT / 2 - IMG_SIZE / 2, 0);
+        GlStateManager.translate(iconX, iconY, 0);
         GlStateManager.scale(2F, 2F, 1F);
         RenderHelper.enableGUIStandardItemLighting();
         mc.getRenderItem().renderItemAndEffectIntoGUI(section.icon.item.getItems()[0], 0, 0);
@@ -60,9 +65,12 @@ public class ElementSection extends SizedBookElement {
     }
 
     if(section.parent.appearance.drawSectionListText) {
+      int textW = fontRenderer.getStringWidth(section.getTitle());
+      int textX = x + WIDTH / 2 - textW / 2;
+      int textY = y + HEIGHT - fontRenderer.FONT_HEIGHT/2;
       fontRenderer.drawString(section.getTitle(),
-                              x + WIDTH / 2 - fontRenderer.getStringWidth(section.getTitle()) / 2,
-                              y + HEIGHT - fontRenderer.FONT_HEIGHT/2,
+                              textX,
+                              textY,
                               hover ? 0xFF000000 : 0x7F000000);
     }
   }
@@ -85,7 +93,7 @@ public class ElementSection extends SizedBookElement {
           }
         }
       }
-      drawHoveringText(text, mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
+      drawHoveringText(text, mouseX, mouseY, fontRenderer);
     }
   }
 

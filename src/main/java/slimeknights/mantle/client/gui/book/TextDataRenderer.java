@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -215,6 +216,7 @@ public class TextDataRenderer {
   //BEGIN METHODS FROM GUI
   private static void drawHoveringText(String[] textLines, int x, int y, FontRenderer font) {
     GuiUtils.drawHoveringText(ImmutableList.copyOf(textLines), x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, GuiBook.PAGE_WIDTH, font);
+    RenderHelper.disableStandardItemLighting();
   }
 
   public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
