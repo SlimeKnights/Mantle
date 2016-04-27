@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.gui.book.GuiBook;
 import slimeknights.mantle.client.gui.book.element.BookElement;
 import slimeknights.mantle.client.gui.book.element.ElementSection;
 
@@ -20,12 +21,15 @@ public class ContentSectionList extends PageContent {
     int width = (ElementSection.WIDTH + 5) * 3 - 5;
     int height = (ElementSection.HEIGHT + 5) * 3 - 5;
 
+    int ox = (GuiBook.PAGE_WIDTH - width) / 2;
+    int oy = (GuiBook.PAGE_HEIGHT - height) / 2;
+
     for(int i = 0; i < sections.size(); i++) {
       int ix = i % 3;
       int iy = (int) Math.floor(i / 3F);
 
-      int x = ix * (ElementSection.WIDTH + 5);
-      int y = iy * (ElementSection.HEIGHT + 5);
+      int x = ox + ix * (ElementSection.WIDTH + 5);
+      int y = oy + iy * (ElementSection.HEIGHT + 5);
 
       list.add(new ElementSection(x, y, sections.get(i)));
     }
