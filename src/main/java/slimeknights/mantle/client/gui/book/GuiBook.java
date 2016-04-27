@@ -429,10 +429,10 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       height /= 2F;
     }*/
 
-    previousArrow = new GuiArrow(0, -50, -50, 1, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    nextArrow = new GuiArrow(1, -50, -50, 0, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, 3, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2 - 3, 3, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    previousArrow = new GuiArrow(0, -50, -50, GuiArrow.ArrowType.PREV, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    nextArrow = new GuiArrow(1, -50, -50, GuiArrow.ArrowType.NEXT, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, book.appearance.arrowColor, book.appearance.arrowColorHover);
 
     buttonList.add(previousArrow);
     buttonList.add(nextArrow);
