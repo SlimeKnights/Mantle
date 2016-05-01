@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -121,7 +122,9 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   public String getInventoryDisplayName() {
     if(tile instanceof IWorldNameable) {
-      return ((IWorldNameable) tile).getDisplayName().getFormattedText();
+      IWorldNameable nameable = (IWorldNameable) tile;
+      ITextComponent textName = ((IWorldNameable) tile).getDisplayName();
+      return textName != null ? textName.getFormattedText() : nameable.getName();
     }
     return null;
   }
