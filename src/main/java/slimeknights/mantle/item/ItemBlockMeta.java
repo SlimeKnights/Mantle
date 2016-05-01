@@ -48,12 +48,12 @@ public class ItemBlockMeta extends ItemColored {
   @Override
   public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
     if(I18n.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.add(TextFormatting.GRAY.toString() +
-                  LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip"));
+      tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() +
+                  LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip")));
     }
     else if(I18n.canTranslate(super.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.add(
-          TextFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip"));
+      tooltip.addAll(LocUtils.getTooltips(
+          TextFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip")));
     }
     super.addInformation(stack, playerIn, tooltip, advanced);
   }
