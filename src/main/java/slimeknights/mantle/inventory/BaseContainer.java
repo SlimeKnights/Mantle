@@ -11,6 +11,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
@@ -36,10 +37,14 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   public List<Container> subContainers = Lists.newArrayList();
 
   public BaseContainer(T tile) {
+    this(tile, null);
+  }
+
+  public BaseContainer(T tile, EnumFacing invDir) {
     this.tile = tile;
 
-    if(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-      itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    if(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir)) {
+      itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir);
     }
     else {
       itemHandler = new EmptyHandler();
