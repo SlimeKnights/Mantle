@@ -41,6 +41,10 @@ public class SectionData implements IDataItem {
     }
   }
 
+  public String translate(String string) {
+    return parent.translate(string);
+  }
+
   @Override
   public void load() {
     if(name == null) {

@@ -36,7 +36,7 @@ public class ContentCrafting extends PageContent {
   public TextData[] description;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = 0;
     int y = 16;
     int height = 100;
@@ -50,13 +50,13 @@ public class ContentCrafting extends PageContent {
     if(grid_size.equalsIgnoreCase("small")) {
       x = GuiBook.PAGE_WIDTH / 2 - IMG_CRAFTING_SMALL.width / 2;
       height = y + IMG_CRAFTING_SMALL.height;
-      list.add(new ElementImage(x, y, IMG_CRAFTING_SMALL.width, IMG_CRAFTING_SMALL.height, IMG_CRAFTING_SMALL, book.appearance.coverColor));
+      list.add(new ElementImage(x, y, IMG_CRAFTING_SMALL.width, IMG_CRAFTING_SMALL.height, IMG_CRAFTING_SMALL, book.appearance.slotColor));
       resultX = x + X_RESULT_SMALL;
       resultY = y + Y_RESULT_SMALL;
     } else if(grid_size.equalsIgnoreCase("large")) {
       x = GuiBook.PAGE_WIDTH / 2 - IMG_CRAFTING_LARGE.width / 2;
       height = y + IMG_CRAFTING_LARGE.height;
-      list.add(new ElementImage(x, y, IMG_CRAFTING_LARGE.width, IMG_CRAFTING_LARGE.height, IMG_CRAFTING_LARGE, book.appearance.coverColor));
+      list.add(new ElementImage(x, y, IMG_CRAFTING_LARGE.width, IMG_CRAFTING_LARGE.height, IMG_CRAFTING_LARGE, book.appearance.slotColor));
       resultX = x + X_RESULT_LARGE;
       resultY = y + Y_RESULT_LARGE;
     }

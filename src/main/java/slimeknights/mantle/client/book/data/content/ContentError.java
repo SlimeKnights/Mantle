@@ -27,7 +27,7 @@ public class ContentError extends PageContent {
   }
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     addTitle(list, "Error");
 
     TextData[] text = new TextData[1 + (exception != null ? 2 : 0)];

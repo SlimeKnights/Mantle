@@ -84,6 +84,7 @@ public class ElementItem extends SizedBookElement {
     }
 
     GlStateManager.popMatrix();
+    RenderHelper.disableStandardItemLighting();
   }
 
   @Override

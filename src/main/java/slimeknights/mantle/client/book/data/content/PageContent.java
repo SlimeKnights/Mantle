@@ -24,7 +24,7 @@ public abstract class PageContent {
   public void load() {
   }
 
-  public abstract void build(BookData book, ArrayList<BookElement> list);
+  public abstract void build(BookData book, ArrayList<BookElement> list, boolean rightSide);
 
   public void addTitle(ArrayList<BookElement> list, String title) {
     TextData tdTitle = new TextData(title);

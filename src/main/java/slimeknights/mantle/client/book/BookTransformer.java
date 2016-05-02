@@ -15,6 +15,9 @@ import slimeknights.mantle.client.book.data.element.TextData;
 
 public abstract class BookTransformer {
 
+  public static BookTransformer IndexTranformer() { return IndexTranformer.INSTANCE; }
+  public static BookTransformer contentTableTransformer() { return ContentTableTransformer.INSTANCE; }
+
   /**
    * Called when all the sections within the book are loaded.
    *
@@ -23,6 +26,8 @@ public abstract class BookTransformer {
   public abstract void transform(BookData book);
 
   protected static class IndexTranformer extends BookTransformer {
+
+    public static final IndexTranformer INSTANCE = new IndexTranformer();
 
     @Override
     public void transform(BookData book) {
@@ -64,6 +69,8 @@ public abstract class BookTransformer {
   }
 
   protected static class ContentTableTransformer extends BookTransformer {
+
+    public static final ContentTableTransformer INSTANCE = new ContentTableTransformer();
 
     @Override
     public void transform(BookData book) {

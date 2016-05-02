@@ -22,7 +22,7 @@ public class ContentTextLeftImage extends PageContent {
   public TextData[] text2;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
     if(title == null || title.isEmpty()) {

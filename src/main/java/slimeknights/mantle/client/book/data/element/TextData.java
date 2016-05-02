@@ -7,6 +7,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class TextData {
 
+  public static final TextData LINEBREAK = new TextData("\n");
+
   public String text;
   public String color = "black";
   public boolean bold = false;

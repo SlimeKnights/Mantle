@@ -41,6 +41,10 @@ public class PageData implements IDataItem {
     }
   }
 
+  public String translate(String string) {
+    return parent.translate(string);
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   public void load() {

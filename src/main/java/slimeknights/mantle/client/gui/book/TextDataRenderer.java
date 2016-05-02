@@ -1,12 +1,16 @@
 package slimeknights.mantle.client.gui.book;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -32,6 +36,11 @@ public class TextDataRenderer {
       int box3X = 9999, box3Y = 9999, box3W, box3H;
 
       if(item.text == null || item.text.isEmpty()) {
+        continue;
+      }
+      if(item.text.equals("\n")) {
+        atX = x;
+        atY += fr.FONT_HEIGHT;
         continue;
       }
 
@@ -180,7 +189,7 @@ public class TextDataRenderer {
     for(int i = 0; i < s.length(); i++) {
       curWidth += fr.getStringWidth(modifiers + Character.toString(s.charAt(i))) * scale;
 
-      if((curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
+      if(s.charAt(i) == '\n' || (curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
         int oldI = i;
         while(i >= 0 && s.charAt(i) != ' ') {
           i--;
@@ -201,65 +210,13 @@ public class TextDataRenderer {
       }
     }
 
-    return s.trim().split("\r");
+    return s.split("\r");
   }
 
   //BEGIN METHODS FROM GUI
   private static void drawHoveringText(String[] textLines, int x, int y, FontRenderer font) {
-    if(textLines.length > 0) {
-      GlStateManager.disableDepth();
-      int i = 0;
-
-      for(String s : textLines) {
-        int j = font.getStringWidth(s);
-
-        if(j > i) {
-          i = j;
-        }
-      }
-
-      int l1 = x + 12;
-      int i2 = y - 12;
-      int k = 8;
-
-      if(textLines.length > 1) {
-        k += 2 + (textLines.length - 1) * 10;
-      }
-
-      if(l1 + i > GuiBook.PAGE_WIDTH) {
-        l1 -= 28 + i;
-      }
-
-      if(i2 + k + 6 > GuiBook.PAGE_HEIGHT) {
-        i2 = GuiBook.PAGE_HEIGHT - k - 6;
-      }
-
-      int l = -267386864;
-      drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, l, l);
-      drawGradientRect(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, l, l);
-      drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, l, l);
-      drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, l, l);
-      drawGradientRect(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, l, l);
-      int i1 = 1347420415;
-      int j1 = (i1 & 16711422) >> 1 | i1 & -16777216;
-      drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, i1, j1);
-      drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, i1, j1);
-      drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, i1, i1);
-      drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, j1, j1);
-
-      for(int k1 = 0; k1 < textLines.length; ++k1) {
-        String s1 = textLines[k1];
-        font.drawStringWithShadow(s1, (float) l1, (float) i2, -1);
-
-        if(k1 == 0) {
-          i2 += 2;
-        }
-
-        i2 += 10;
-      }
-
-      GlStateManager.enableDepth();
-    }
+    GuiUtils.drawHoveringText(ImmutableList.copyOf(textLines), x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, GuiBook.PAGE_WIDTH, font);
+    RenderHelper.disableStandardItemLighting();
   }
 
   public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {

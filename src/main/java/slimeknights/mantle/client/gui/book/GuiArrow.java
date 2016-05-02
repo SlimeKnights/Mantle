@@ -18,12 +18,12 @@ public class GuiArrow extends GuiButton {
   public static final int HEIGHT = 10;
 
   // Appearance
-  public int arrowType;
+  public ArrowType arrowType;
   public int color;
   public int hoverColor;
 
-  public GuiArrow(int buttonId, int x, int y, int arrowType, int color, int hoverColor) {
-    super(buttonId, x, y, WIDTH, HEIGHT, "");
+  public GuiArrow(int buttonId, int x, int y, ArrowType arrowType, int color, int hoverColor) {
+    super(buttonId, x, y, arrowType.w, arrowType.h, "");
 
     this.arrowType = arrowType;
     this.color = color;
@@ -44,8 +44,29 @@ public class GuiArrow extends GuiButton {
       float b = (color & 0xff) / 255.F;
 
       GlStateManager.color(r, g, b);
-      Gui.drawScaledCustomSizeModalRect(xPosition, yPosition, X, HEIGHT * arrowType, WIDTH, HEIGHT, width, height, 512, 512);
+      Gui.drawScaledCustomSizeModalRect(xPosition, yPosition, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
       this.mouseDragged(mc, mouseX, mouseY);
+    }
+  }
+
+  public enum ArrowType {
+    NEXT(412, 0),
+    PREV(412, 10),
+    RIGHT(412, 20),
+    LEFT(412, 30),
+    BACK_UP(412, 40, 18, 18);
+
+    final int x, y, w, h;
+
+    ArrowType(int x, int y) {
+      this(x, y, WIDTH, HEIGHT);
+    }
+
+    ArrowType(int x, int y, int w, int h) {
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
     }
   }
 }

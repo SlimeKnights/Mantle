@@ -45,8 +45,10 @@ public class GuiBookEditor extends GuiScreen {
       mouseY /= 2;
     }
 
-    BoxRenderer
-        .drawBox(width / 2 - (GuiBook.PAGE_WIDTH_UNSCALED + SIDEBAR_WIDTH) / 2, height / 2 - (GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING) / 2, SIDEBAR_WIDTH + GuiBook.PAGE_PADDING + GuiBook.PAGE_MARGIN, GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING, 0);
+    BoxRenderer.drawBox(width / 2 - (GuiBook.PAGE_WIDTH_UNSCALED + SIDEBAR_WIDTH) / 2,
+                        height / 2 - (GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING_TOP) / 2,
+                        SIDEBAR_WIDTH + GuiBook.PAGE_PADDING_RIGHT + GuiBook.PAGE_MARGIN,
+                        GuiBook.PAGE_HEIGHT_UNSCALED - GuiBook.PAGE_PADDING_BOT, 0);
 
     if(innerUi.getPage_() == -1) {
       GlStateManager.pushMatrix();
@@ -61,8 +63,19 @@ public class GuiBookEditor extends GuiScreen {
       render.bindTexture(Textures.TEX_BOOK);
 
       GlStateManager.color(1F, 1F, 1F);
-      drawModalRectWithCustomSizedTexture(width / 2 - GuiBook.PAGE_WIDTH_UNSCALED / 2, height / 2 - GuiBook.PAGE_HEIGHT_UNSCALED / 2, 0, GuiBook.PAGE_HEIGHT_UNSCALED, GuiBook.PAGE_WIDTH_UNSCALED - GuiBook.PAGE_MARGIN - GuiBook.PAGE_PADDING, GuiBook.PAGE_HEIGHT_UNSCALED, GuiBook.TEX_SIZE, GuiBook.TEX_SIZE);
-      drawModalRectWithCustomSizedTexture(width / 2 - GuiBook.PAGE_WIDTH_UNSCALED / 2 + GuiBook.PAGE_MARGIN + GuiBook.PAGE_PADDING, height / 2 - GuiBook.PAGE_HEIGHT_UNSCALED / 2, GuiBook.PAGE_WIDTH_UNSCALED + GuiBook.PAGE_MARGIN + GuiBook.PAGE_PADDING, GuiBook.PAGE_HEIGHT_UNSCALED, GuiBook.PAGE_WIDTH_UNSCALED - GuiBook.PAGE_MARGIN - GuiBook.PAGE_PADDING, GuiBook.PAGE_HEIGHT_UNSCALED, GuiBook.TEX_SIZE, GuiBook.TEX_SIZE);
+      drawModalRectWithCustomSizedTexture(width / 2 - GuiBook.PAGE_WIDTH_UNSCALED / 2,
+                                          height / 2 - GuiBook.PAGE_HEIGHT_UNSCALED / 2,
+                                          0, GuiBook.PAGE_HEIGHT_UNSCALED,
+                                          GuiBook.PAGE_WIDTH_UNSCALED - GuiBook.PAGE_MARGIN - GuiBook.PAGE_PADDING_LEFT,
+                                          GuiBook.PAGE_HEIGHT_UNSCALED,
+                                          GuiBook.TEX_SIZE, GuiBook.TEX_SIZE);
+      drawModalRectWithCustomSizedTexture(width / 2 - GuiBook.PAGE_WIDTH_UNSCALED / 2 + GuiBook.PAGE_MARGIN + GuiBook.PAGE_PADDING_LEFT,
+                                          height / 2 - GuiBook.PAGE_HEIGHT_UNSCALED / 2,
+                                          GuiBook.PAGE_WIDTH_UNSCALED + GuiBook.PAGE_MARGIN + GuiBook.PAGE_PADDING_LEFT,
+                                          GuiBook.PAGE_HEIGHT_UNSCALED,
+                                          GuiBook.PAGE_WIDTH_UNSCALED - GuiBook.PAGE_MARGIN - GuiBook.PAGE_PADDING_RIGHT,
+                                          GuiBook.PAGE_HEIGHT_UNSCALED,
+                                          GuiBook.TEX_SIZE, GuiBook.TEX_SIZE);
     }
 
     super.drawScreen(mouseX, mouseY, partialTicks);

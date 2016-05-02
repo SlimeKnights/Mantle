@@ -38,14 +38,14 @@ public class ContentSmelting extends PageContent {
   public TextData[] description;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMELTING.width / 2;
     int y = TITLE_HEIGHT;
 
     TextData tdTitle = new TextData(title);
     tdTitle.underlined = true;
     list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, new TextData[]{tdTitle}));
-    list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.coverColor));
+    list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
 
     if(input != null && !input.id.equals("")) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));

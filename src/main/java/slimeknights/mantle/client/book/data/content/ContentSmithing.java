@@ -35,7 +35,7 @@ public class ContentSmithing extends PageContent {
   public TextData[] description;
 
   @Override
-  public void build(BookData book, ArrayList<BookElement> list) {
+  public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2;
     int y = TITLE_HEIGHT;
 
@@ -45,7 +45,7 @@ public class ContentSmithing extends PageContent {
       addTitle(list, title);
     }
 
-    list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.coverColor));
+    list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
     if(input != null && !input.id.equals("")) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
