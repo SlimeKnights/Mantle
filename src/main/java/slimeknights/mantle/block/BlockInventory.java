@@ -67,6 +67,7 @@ public abstract class BlockInventory extends BlockContainer {
     }
   }
 
+  @Override
   public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
     TileEntity tileentity = worldIn.getTileEntity(pos);
 

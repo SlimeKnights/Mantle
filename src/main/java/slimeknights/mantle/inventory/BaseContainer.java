@@ -115,6 +115,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
                                   (double) pos.getZ() + 0.5d) <= maxDist;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public List<ItemStack> getInventory() {
     return super.getInventory();
@@ -211,6 +212,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
+  @Override
   protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     boolean ret = mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
     if(stack != null && stack.stackSize > 0) {

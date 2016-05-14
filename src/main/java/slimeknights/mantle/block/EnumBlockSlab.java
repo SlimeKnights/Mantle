@@ -55,6 +55,7 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
   /**
    * Convert the given metadata into a BlockState for this Block
    */
+  @Override
   public IBlockState getStateFromMeta(int meta) {
     return this.getDefaultState().withProperty(prop, fromMeta(meta & 7))
                                  .withProperty(HALF, (meta & 8) == 0 ? BlockSlab.EnumBlockHalf.BOTTOM : BlockSlab.EnumBlockHalf.TOP);
@@ -63,6 +64,7 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
   /**
    * Convert the BlockState into the correct metadata value
    */
+  @Override
   public int getMetaFromState(IBlockState state)
   {
       int i = 0;
@@ -94,6 +96,7 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
     return prop;
   }
   
+  @Override
   public Comparable<?> getTypeForItem(ItemStack stack) {
       return fromMeta(stack.getItemDamage() & 7);
   }

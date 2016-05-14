@@ -36,6 +36,7 @@ public class ItemBlockSlab extends ItemBlockMeta {
   /**
    * Called when a Block is right-clicked with this Item
    */
+  @Override
   public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
     // don't place the slab if unable to edit
     if (stack.stackSize != 0 && player.canPlayerEdit(pos.offset(facing), facing, stack)) {
@@ -111,6 +112,7 @@ public class ItemBlockSlab extends ItemBlockMeta {
   }
   
   // adds the "half=bottom" to the item model, so it does not error
+  @Override
   @SuppressWarnings("unchecked")
   @SideOnly(Side.CLIENT)
   public void registerItemModels() {
