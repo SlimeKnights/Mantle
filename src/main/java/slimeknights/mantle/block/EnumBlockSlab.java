@@ -1,7 +1,5 @@
 package slimeknights.mantle.block;
 
-import java.util.List;
-
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -14,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> extends BlockSlab {
 
@@ -57,25 +57,24 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
    */
   @Override
   public IBlockState getStateFromMeta(int meta) {
-    return this.getDefaultState().withProperty(prop, fromMeta(meta & 7))
-                                 .withProperty(HALF, (meta & 8) == 0 ? BlockSlab.EnumBlockHalf.BOTTOM : BlockSlab.EnumBlockHalf.TOP);
+    return this.getDefaultState()
+               .withProperty(prop, fromMeta(meta & 7))
+               .withProperty(HALF, (meta & 8) == 0 ? BlockSlab.EnumBlockHalf.BOTTOM : BlockSlab.EnumBlockHalf.TOP);
   }
 
   /**
    * Convert the BlockState into the correct metadata value
    */
   @Override
-  public int getMetaFromState(IBlockState state)
-  {
-      int i = 0;
-      i = i | state.getValue(prop).getMeta();
+  public int getMetaFromState(IBlockState state) {
+    int i = 0;
+    i = i | state.getValue(prop).getMeta();
 
-      if (state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP)
-      {
-          i |= 8;
-      }
+    if(state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP) {
+      i |= 8;
+    }
 
-      return i;
+    return i;
   }
 
   @Override
@@ -90,29 +89,30 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
 
     return values[meta];
   }
-  
+
   @Override
   public IProperty<?> getVariantProperty() {
     return prop;
   }
-  
+
   @Override
   public Comparable<?> getTypeForItem(ItemStack stack) {
-      return fromMeta(stack.getItemDamage() & 7);
+    return fromMeta(stack.getItemDamage() & 7);
   }
 
   @Override
   public String getUnlocalizedName(int meta) {
     return super.getUnlocalizedName() + "." + fromMeta(meta & 7).getName();
   }
-  
+
   /**
    * Gets the full variant of the slab, as double slabs are not used here
+   *
    * @param state Input slab state, in most cases state.getValue() with a switch is all you need
    * @return An IBlockState of the full block
    */
   public abstract IBlockState getFullBlock(IBlockState state);
-  
+
   // all our slabs are single
   @Override
   public boolean isDouble() {
