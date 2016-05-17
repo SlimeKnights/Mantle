@@ -77,7 +77,7 @@ public class BookLoader implements IResourceManagerReloadListener {
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());
-    StringActionProcessor.registerProtocol(new ProtocolGoToPage(true, "-rtn"));
+    StringActionProcessor.registerProtocol(new ProtocolGoToPage(true, ProtocolGoToPage.GO_TO_RTN));
   }
 
   /**

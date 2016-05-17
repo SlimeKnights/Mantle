@@ -4,14 +4,17 @@ import slimeknights.mantle.client.gui.book.GuiBook;
 
 public class ProtocolGoToPage extends ActionProtocol {
 
+  public static final String GO_TO = "go-to-page";
+  public static final String GO_TO_RTN = GO_TO + "-rtn";
+
   private final boolean returner;
 
   public ProtocolGoToPage() {
-    this(false, "");
+    this(false, GO_TO);
   }
 
-  public ProtocolGoToPage(boolean returner, String suffix) {
-    super("go-to-page" + suffix);
+  public ProtocolGoToPage(boolean returner, String string) {
+    super(string);
 
     this.returner = returner;
   }

@@ -17,6 +17,7 @@ public abstract class BookTransformer {
 
   public static BookTransformer IndexTranformer() { return IndexTranformer.INSTANCE; }
   public static BookTransformer contentTableTransformer() { return ContentTableTransformer.INSTANCE; }
+  public static BookTransformer contentTableTransformerForSection(String sectionName) { return new ContentTableTransformer(sectionName); }
 
   /**
    * Called when all the sections within the book are loaded.
@@ -72,12 +73,25 @@ public abstract class BookTransformer {
 
     public static final ContentTableTransformer INSTANCE = new ContentTableTransformer();
 
+    private final String sectionToTransform;
+
+    public ContentTableTransformer(String sectionToTransform) {
+      this.sectionToTransform = sectionToTransform;
+    }
+
+    public ContentTableTransformer() {
+      this.sectionToTransform = null;
+    }
+
     @Override
     public void transform(BookData book) {
       final int ENTRIES_PER_PAGE = 24;
 
       for(SectionData section : book.sections) {
         if(section.name.equals("index")) {
+          continue;
+        }
+        if(sectionToTransform != null && !section.name.equals(sectionToTransform)) {
           continue;
         }
 
