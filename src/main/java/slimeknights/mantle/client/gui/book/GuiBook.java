@@ -439,6 +439,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, book.appearance.arrowColor, book.appearance.arrowColorHover);
     indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, book.appearance.arrowColor, book.appearance.arrowColorHover);
 
+    buttonList.clear();
     buttonList.add(previousArrow);
     buttonList.add(nextArrow);
     buttonList.add(backArrow);
