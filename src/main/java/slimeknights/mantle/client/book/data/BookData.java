@@ -3,7 +3,7 @@ package slimeknights.mantle.client.book.data;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatFileWriter;
+import net.minecraft.stats.StatisticsManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -144,12 +144,12 @@ public class BookData implements IDataItem {
     return findSection(name, null);
   }
 
-  public SectionData findSection(String name, @Nullable StatFileWriter writer) {
+  public SectionData findSection(String name, @Nullable StatisticsManager statisticsManager) {
     for(SectionData section : sections) {
-      section.update(writer);
+      section.update(statisticsManager);
 
       if(section.name.equals(name.toLowerCase())) {
-        return section.isUnlocked(writer) ? section : null;
+        return section.isUnlocked(statisticsManager) ? section : null;
       }
     }
 
@@ -160,16 +160,16 @@ public class BookData implements IDataItem {
     return getFirstPageNumber(section, null);
   }
 
-  public int getFirstPageNumber(SectionData section, @Nullable StatFileWriter writer) {
+  public int getFirstPageNumber(SectionData section, @Nullable StatisticsManager statisticsManager) {
     int pages = 0;
     for(SectionData sect : sections) {
-      sect.update(writer);
+      sect.update(statisticsManager);
 
       if(section == sect) {
-        return section.isUnlocked(writer) ? pages + 1 : -1;
+        return section.isUnlocked(statisticsManager) ? pages + 1 : -1;
       }
 
-      if(!sect.isUnlocked(writer)) {
+      if(!sect.isUnlocked(statisticsManager)) {
         continue;
       }
 
@@ -183,16 +183,16 @@ public class BookData implements IDataItem {
     return findPage(number, null);
   }
 
-  public PageData findPage(int number, @Nullable StatFileWriter writer) {
+  public PageData findPage(int number, @Nullable StatisticsManager statisticsManager) {
     if(number < 0) {
       return null;
     }
 
     int pages = 0;
     for(SectionData section : sections) {
-      section.update(writer);
+      section.update(statisticsManager);
 
-      if(!section.isUnlocked(writer)) {
+      if(!section.isUnlocked(statisticsManager)) {
         continue;
       }
 
@@ -210,15 +210,15 @@ public class BookData implements IDataItem {
     return findPage(location, null);
   }
 
-  public PageData findPage(String location, @Nullable StatFileWriter writer) {
-    return findPage(findPageNumber(location, writer));
+  public PageData findPage(String location, @Nullable StatisticsManager statisticsManager) {
+    return findPage(findPageNumber(location, statisticsManager));
   }
 
   public int findPageNumber(String location) {
     return findPageNumber(location, null);
   }
 
-  public int findPageNumber(String location, @Nullable StatFileWriter writer) {
+  public int findPageNumber(String location, @Nullable StatisticsManager statisticsManager) {
     location = location.toLowerCase();
 
     int pages = 0;
@@ -231,9 +231,9 @@ public class BookData implements IDataItem {
     String pageName = location.substring(location.indexOf('.') + 1);
 
     for(SectionData section : sections) {
-      section.update(writer);
+      section.update(statisticsManager);
 
-      if(!section.isUnlocked(writer)) {
+      if(!section.isUnlocked(statisticsManager)) {
         continue;
       }
 
@@ -259,12 +259,12 @@ public class BookData implements IDataItem {
     return getPageCount(null);
   }
 
-  public int getPageCount(@Nullable StatFileWriter writer) {
+  public int getPageCount(@Nullable StatisticsManager statisticsManager) {
     int pages = 0;
     for(SectionData section : sections) {
-      section.update(writer);
+      section.update(statisticsManager);
 
-      pages += section.isUnlocked(writer) ? section.getPageCount() : 0;
+      pages += section.isUnlocked(statisticsManager) ? section.getPageCount() : 0;
     }
     return pages;
   }
@@ -273,8 +273,8 @@ public class BookData implements IDataItem {
     return getFullPageCount(null);
   }
 
-  public int getFullPageCount(@Nullable StatFileWriter writer) {
-    return (int) Math.ceil((getPageCount(writer) - 1) / 2F) + 1;
+  public int getFullPageCount(@Nullable StatisticsManager statisticsManager) {
+    return (int) Math.ceil((getPageCount(statisticsManager) - 1) / 2F) + 1;
   }
 
   public String getItemAction(ItemStackData item) {
@@ -287,11 +287,11 @@ public class BookData implements IDataItem {
     return "";
   }
 
-  public List<SectionData> getVisibleSections(StatFileWriter writer) {
+  public List<SectionData> getVisibleSections(StatisticsManager statisticsManager) {
     List<SectionData> visible = new ArrayList<>();
 
     for(SectionData section : sections) {
-      if(section.isUnlocked(writer) || !section.hideWhenLocked) {
+      if(section.isUnlocked(statisticsManager) || !section.hideWhenLocked) {
         visible.add(section);
       }
     }

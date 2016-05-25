@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book;
 
-import net.minecraft.stats.StatFileWriter;
+import net.minecraft.stats.StatisticsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +34,10 @@ public abstract class BookTransformer {
     public void transform(BookData book) {
       SectionData index = new SectionData(true) {
         @Override
-        public void update(StatFileWriter writer) {
+        public void update(StatisticsManager statisticsManager) {
           pages.clear();
 
-          List<SectionData> visibleSections = parent.getVisibleSections(writer);
+          List<SectionData> visibleSections = parent.getVisibleSections(statisticsManager);
 
           if(visibleSections.isEmpty()) {
             return;
