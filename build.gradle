@@ -135,11 +135,18 @@ jar {
         }
     }
 
+    manifest {
+        attributes 'FMLAT': 'mantle_at.cfg'
+    }
 }
+
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'deobf'
+    manifest {
+        attributes 'FMLAT': 'mantle_deobf_at.cfg'
+    }
 }
 
 task sourcesJar(type: Jar) {
