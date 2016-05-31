@@ -1,12 +1,16 @@
 package slimeknights.mantle.pulsar.flightpath.lib;
 
-import slimeknights.mantle.pulsar.flightpath.ISubscriberLocator;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.*;
+
+import slimeknights.mantle.pulsar.flightpath.ISubscriberLocator;
 
 /**
  * Default implementation of ISubscriberLocator

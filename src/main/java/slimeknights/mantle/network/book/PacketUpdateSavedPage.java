@@ -1,6 +1,5 @@
 package slimeknights.mantle.network.book;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -8,6 +7,8 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+
+import io.netty.buffer.ByteBuf;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.network.AbstractPacket;
 

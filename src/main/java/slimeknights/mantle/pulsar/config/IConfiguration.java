@@ -1,8 +1,8 @@
 package slimeknights.mantle.pulsar.config;
 
-import slimeknights.mantle.pulsar.pulse.PulseMeta;
-
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 /**
  * Interface for config handlers.

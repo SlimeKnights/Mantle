@@ -3,9 +3,9 @@ package slimeknights.mantle.pulsar.internal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
-
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
 
 /**
  * Custom exception catcher that logs events.

@@ -1,16 +1,16 @@
 package slimeknights.mantle.pulsar.config;
 
-import java.io.File;
-import java.util.Locale;
-
-import slimeknights.mantle.pulsar.pulse.PulseMeta;
-
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
 
+import java.io.File;
+import java.util.Locale;
+
 import javax.annotation.Nonnull;
+
+import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
 /**
  * Mantle specific pulsar addon class to support using the forge CFG format for configurations
