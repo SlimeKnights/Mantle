@@ -3,7 +3,7 @@ package slimeknights.mantle.client.book.data;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.AchievementList;
-import net.minecraft.stats.StatFileWriter;
+import net.minecraft.stats.StatisticsManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -80,7 +80,7 @@ public class SectionData implements IDataItem {
     icon.location = source.getResourceLocation(icon.file, true);
   }
 
-  public void update(@Nullable StatFileWriter writer) {
+  public void update(@Nullable StatisticsManager statisticsManager) {
   }
 
   public String getTitle() {
@@ -92,13 +92,13 @@ public class SectionData implements IDataItem {
     return pages.size();
   }
 
-  public boolean isUnlocked(StatFileWriter writer) {
-    if(writer == null || requirements == null || requirements.length == 0) {
+  public boolean isUnlocked(StatisticsManager statisticsManager) {
+    if(statisticsManager == null || requirements == null || requirements.length == 0) {
       return true;
     }
 
     for(String achievement : requirements) {
-      if(!requirementSatisfied(achievement, writer)) {
+      if(!requirementSatisfied(achievement, statisticsManager)) {
         return false;
       }
     }
@@ -106,7 +106,7 @@ public class SectionData implements IDataItem {
     return true;
   }
 
-  public static boolean requirementSatisfied(String requirement, StatFileWriter writer) {
+  public static boolean requirementSatisfied(String requirement, StatisticsManager writer) {
     if(writer == null) {
       return true;
     }

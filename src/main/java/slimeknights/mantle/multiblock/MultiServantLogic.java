@@ -113,7 +113,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     }
   }
 
-  public void writeCustomNBT(NBTTagCompound tags) {
+  public NBTTagCompound writeCustomNBT(NBTTagCompound tags) {
     tags.setBoolean("hasMaster", this.hasMaster);
     if(this.hasMaster) {
       tags.setInteger("xCenter", this.master.getX());
@@ -122,6 +122,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
       tags.setString("MasterBlockName", GameData.getBlockRegistry().getNameForObject(this.masterBlock).toString());
       tags.setInteger("masterState", Block.getStateId(this.state));
     }
+    return tags;
   }
 
   @Override
@@ -131,17 +132,17 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
   }
 
   @Override
-  public void writeToNBT(NBTTagCompound tags) {
-    super.writeToNBT(tags);
-    this.writeCustomNBT(tags);
+  public NBTTagCompound writeToNBT(NBTTagCompound tags) {
+    tags = super.writeToNBT(tags);
+    return this.writeCustomNBT(tags);
   }
 
   /* Packets */
   @Override
-  public Packet getDescriptionPacket() {
+  public NBTTagCompound getUpdateTag() {
     NBTTagCompound tag = new NBTTagCompound();
     this.writeCustomNBT(tag);
-    return new SPacketUpdateTileEntity(this.pos, 1, tag);
+    return tag;
   }
 
   @Override
