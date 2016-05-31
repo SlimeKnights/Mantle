@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 public class ContainerMultiModule<T extends TileEntity & IInventory> extends BaseContainer<T> {
 
   public List<Container> subContainers = Lists.newArrayList();
@@ -86,7 +88,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   @Override
-  public boolean canInteractWith(EntityPlayer playerIn) {
+  public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
     // check if subcontainers are valid
     for(Container sub : subContainers) {
       if(!sub.canInteractWith(playerIn)) {

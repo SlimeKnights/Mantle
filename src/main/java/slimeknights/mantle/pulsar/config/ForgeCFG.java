@@ -10,6 +10,8 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
 
+import javax.annotation.Nonnull;
+
 /**
  * Mantle specific pulsar addon class to support using the forge CFG format for configurations
  * @author progwml6
@@ -45,7 +47,7 @@ public class ForgeCFG implements IConfiguration
     }
 
     @Override
-    public boolean isModuleEnabled(PulseMeta meta)
+    public boolean isModuleEnabled(@Nonnull PulseMeta meta)
     {
         Property prop = config.get(this.description, meta.getId(), meta.isEnabled(), meta.getDescription());
         prop.setRequiresMcRestart(true);

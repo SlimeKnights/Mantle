@@ -12,6 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 
+import javax.annotation.Nonnull;
+
 public class MultiServantLogic extends TileEntity implements IServantLogic {
 
   boolean hasMaster;
@@ -131,6 +133,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     this.readCustomNBT(tags);
   }
 
+  @Nonnull
   @Override
   public NBTTagCompound writeToNBT(NBTTagCompound tags) {
     tags = super.writeToNBT(tags);
@@ -138,6 +141,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
   }
 
   /* Packets */
+  @Nonnull
   @Override
   public NBTTagCompound getUpdateTag() {
     NBTTagCompound tag = new NBTTagCompound();
@@ -153,6 +157,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     this.worldObj.notifyBlockUpdate(this.pos, state, state, 3);
   }
 
+  @Nonnull
   @Override
   public World getWorld() {
     return this.worldObj;

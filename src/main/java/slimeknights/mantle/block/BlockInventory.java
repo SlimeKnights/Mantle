@@ -15,6 +15,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.tileentity.TileInventory;
 
 // Updated Version of InventoryBlock in Mantle
@@ -30,8 +32,9 @@ public abstract class BlockInventory extends BlockContainer {
     return true;
   }
 
+  @Nonnull
   @Override
-  public abstract TileEntity createNewTileEntity(World worldIn, int meta);
+  public abstract TileEntity createNewTileEntity(@Nonnull World worldIn, int meta);
 
   /**
    * Called when the block is activated. Return true if a GUI is opened, false if the block has no GUI.
@@ -68,7 +71,7 @@ public abstract class BlockInventory extends BlockContainer {
   }
 
   @Override
-  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+  public void breakBlock(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
     TileEntity tileentity = worldIn.getTileEntity(pos);
 
     if(tileentity instanceof TileInventory) {
@@ -86,6 +89,7 @@ public abstract class BlockInventory extends BlockContainer {
 
   // BlockContainer sets this to invisible
   // we need model for standard forge rendering
+  @Nonnull
   @Override
   public EnumBlockRenderType getRenderType(IBlockState state) {
     return EnumBlockRenderType.MODEL;

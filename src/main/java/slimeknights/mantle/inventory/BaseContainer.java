@@ -23,6 +23,8 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.util.SlimeknightException;
 
 /** Same as Container but provides some extra functionality to simplify things */
@@ -102,7 +104,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   @Override
-  public boolean canInteractWith(EntityPlayer playerIn) {
+  public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
     Block block = world.getBlockState(pos).getBlock();
     // does the block we interacted with still exist?
     if(block == Blocks.AIR || block != originalBlock) {
@@ -115,6 +117,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
                                   (double) pos.getZ() + 0.5d) <= maxDist;
   }
 
+  @Nonnull
   @Override
   @SuppressWarnings("unchecked")
   public List<ItemStack> getInventory() {
@@ -163,6 +166,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     playerInventoryStart = start;
   }
 
+  @Nonnull
   @Override
   protected Slot addSlotToContainer(Slot slotIn) {
     if(playerInventoryStart >= 0) {

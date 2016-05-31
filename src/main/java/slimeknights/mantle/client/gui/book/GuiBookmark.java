@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.client.book.data.BookmarkData;
 
 public class GuiBookmark extends GuiButton {
@@ -30,7 +32,7 @@ public class GuiBookmark extends GuiButton {
   }
 
   @Override
-  public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+  public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY) {
     if(visible) {
       int tex_y = TEX_Y + HEIGHT * type;
 

@@ -18,6 +18,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.util.LocUtils;
 
 /**
@@ -65,6 +67,7 @@ public class ItemMetaDynamic extends Item {
     return new ItemStack(this, 1, meta);
   }
 
+  @Nonnull
   @Override
   public String getUnlocalizedName(ItemStack stack) {
     int meta = stack.getMetadata(); // should call getMetadata below
@@ -77,7 +80,7 @@ public class ItemMetaDynamic extends Item {
   }
 
   @Override
-  public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+  public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
     for(int i = 0; i <= availabilityMask.length; i++) {
       if(isValid(i)) {
         subItems.add(new ItemStack(itemIn, 1, i));

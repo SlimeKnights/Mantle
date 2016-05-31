@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -52,7 +53,7 @@ public class Configuration implements IConfiguration {
     }
 
     @Override
-    public boolean isModuleEnabled(PulseMeta meta) {
+    public boolean isModuleEnabled(@Nonnull PulseMeta meta) {
         ConfigEntry entry = modules.get(meta.getId());
         if (entry == null) {
             modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));

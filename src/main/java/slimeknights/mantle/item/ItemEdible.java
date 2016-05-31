@@ -16,6 +16,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class ItemEdible extends ItemFood {
 
   // we use this so we don't have to copy all the logic
@@ -67,7 +69,7 @@ public class ItemEdible extends ItemFood {
   }
 
   @Override
-  protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+  protected void onFoodEaten(ItemStack stack, World worldIn, @Nonnull EntityPlayer player) {
     if(!worldIn.isRemote) {
       for(PotionEffect potion : potionEffects.get(stack.getMetadata())) {
         player.addPotionEffect(new PotionEffect(potion.getPotion(), potion.getDuration(), potion.getAmplifier(), potion
@@ -77,12 +79,14 @@ public class ItemEdible extends ItemFood {
   }
 
   /* ItemMetaDynamic Functionality */
+  @Nonnull
   @Override
-  public Item setUnlocalizedName(String unlocalizedName) {
+  public Item setUnlocalizedName(@Nonnull String unlocalizedName) {
     dynamic.setUnlocalizedName(unlocalizedName);
     return super.setUnlocalizedName(unlocalizedName);
   }
 
+  @Nonnull
   @Override
   public String getUnlocalizedName(ItemStack stack) {
     return dynamic.getUnlocalizedName(stack);
@@ -100,7 +104,7 @@ public class ItemEdible extends ItemFood {
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+  public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
     dynamic.getSubItems(itemIn, tab, subItems);
   }
 

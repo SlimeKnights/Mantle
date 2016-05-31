@@ -15,6 +15,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> extends BlockSlab {
 
   public final PropertyEnum<E> prop;
@@ -37,12 +39,13 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+  public void getSubBlocks(@Nonnull Item itemIn, CreativeTabs tab, List<ItemStack> list) {
     for(E type : values) {
       list.add(new ItemStack(this, 1, type.getMeta()));
     }
   }
 
+  @Nonnull
   @Override
   protected BlockStateContainer createBlockState() {
     if(prop == null) {
@@ -55,6 +58,7 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
   /**
    * Convert the given metadata into a BlockState for this Block
    */
+  @Nonnull
   @Override
   public IBlockState getStateFromMeta(int meta) {
     return this.getDefaultState()
@@ -90,16 +94,19 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
     return values[meta];
   }
 
+  @Nonnull
   @Override
   public IProperty<?> getVariantProperty() {
     return prop;
   }
 
+  @Nonnull
   @Override
-  public Comparable<?> getTypeForItem(ItemStack stack) {
+  public Comparable<?> getTypeForItem(@Nonnull ItemStack stack) {
     return fromMeta(stack.getItemDamage() & 7);
   }
 
+  @Nonnull
   @Override
   public String getUnlocalizedName(int meta) {
     return super.getUnlocalizedName() + "." + fromMeta(meta & 7).getName();

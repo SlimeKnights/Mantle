@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.util.LocUtils;
 
 public class ItemBlockMeta extends ItemColored {
@@ -30,8 +32,9 @@ public class ItemBlockMeta extends ItemColored {
     super(block, true);
   }
 
+  @Nonnull
   @Override
-  public String getUnlocalizedName(ItemStack stack) {
+  public String getUnlocalizedName(@Nonnull ItemStack stack) {
     if(mappingProperty == null) {
       return super.getUnlocalizedName(stack);
     }
@@ -46,7 +49,7 @@ public class ItemBlockMeta extends ItemColored {
   }
 
   @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+  public void addInformation(@Nonnull ItemStack stack, @Nonnull EntityPlayer playerIn, @Nonnull List<String> tooltip, boolean advanced) {
     if(I18n.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
       tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() +
                   LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip")));
