@@ -27,7 +27,7 @@ import slimeknights.mantle.util.LocUtils;
  * Only returns valid metadatas. The validity is determined by a bitmask.
  * Current maximum is 64 metas - that should suffice for most applications.
  */
-public class ItemMetaDynamic extends Item {
+public class ItemMetaDynamic extends ItemTooltip {
 
   private static int MAX = (2 << 16) - 1;
 
@@ -121,18 +121,5 @@ public class ItemMetaDynamic extends Item {
         return true;
       }
     });
-  }
-
-  @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-    if(I18n.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() +
-                  LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip")));
-    }
-    else if(I18n.canTranslate(super.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.addAll(LocUtils.getTooltips(
-          TextFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip")));
-    }
-    super.addInformation(stack, playerIn, tooltip, advanced);
   }
 }
