@@ -63,6 +63,29 @@ public class RecipeMatchRegistry {
     return new RecipeMatch.Match(foundStacks, sum);
   }
 
+  public RecipeMatch.Match matchesRecursively(ItemStack[] stacks) {
+    stacks = copyItemStackArray(stacks); // copy so we don't modify original
+
+    List<RecipeMatch.Match> matches = Lists.newLinkedList();
+
+    RecipeMatch.Match match;
+    int sum = 0;
+    while((match = matches(stacks)) != null) {
+      matches.add(match);
+      RecipeMatch.removeMatch(stacks, match);
+
+      sum += match.amount;
+    }
+
+    // merge all found matches into one match
+    List<ItemStack> foundStacks = Lists.newLinkedList();
+    for(RecipeMatch.Match m : matches) {
+      foundStacks.addAll(m.stacks);
+    }
+
+    return new RecipeMatch.Match(foundStacks, sum);
+  }
+
   /**
    * Associates an oredict entry with this material. Used for repairing and other.
    *
