@@ -21,7 +21,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
   public final PropertyEnum<E> prop;
   private final E[] values;
 
-  private static PropertyEnum<?> tmp;
+  protected static PropertyEnum<?> tmp;
 
   public EnumBlock(Material material, PropertyEnum<E> prop, Class<E> clazz) {
     super(preInit(material, prop));
@@ -29,7 +29,6 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
     values = clazz.getEnumConstants();
   }
 
-  @SuppressWarnings("unchecked")
   private static Material preInit(Material material, PropertyEnum<?> property) {
     tmp = property;
     return material;

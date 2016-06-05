@@ -41,22 +41,24 @@ public abstract class BookElement extends Gui {
   }
 
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
-    List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-
-    for(int i = 0; i < list.size(); ++i) {
-      if(i == 0) {
-        list.set(i, stack.getRarity().rarityColor + list.get(i));
-      } else {
-        list.set(i, TextFormatting.GRAY + list.get(i));
+    if(stack != null) {
+      List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+      
+      for(int i = 0; i < list.size(); ++i) {
+        if(i == 0) {
+          list.set(i, stack.getRarity().rarityColor + list.get(i));
+        } else {
+          list.set(i, TextFormatting.GRAY + list.get(i));
+        }
       }
+	
+      FontRenderer font = stack.getItem().getFontRenderer(stack);
+      if(font == null) {
+        font = fontRenderer;
+      }
+      GuiUtils.drawHoveringText(list, x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, -1, font);
+      RenderHelper.disableStandardItemLighting();
     }
-
-    FontRenderer font = stack.getItem().getFontRenderer(stack);
-    if(font == null) {
-      font = fontRenderer;
-    }
-    GuiUtils.drawHoveringText(list, x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, -1, font);
-    RenderHelper.disableStandardItemLighting();
   }
 
   @Deprecated

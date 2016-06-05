@@ -1,0 +1,13 @@
+{
+    "__comment": "Model for when only one side is connected.",
+	"parent": "mantle:block/tinted_cube",
+    "textures": {
+		"particle": "#normal",
+        "down": "#normal",
+		"up": "#udlr",
+		"north": "#u",
+		"south": "#u",
+		"west": "#u",
+		"east": "#u"
+    }
+}
