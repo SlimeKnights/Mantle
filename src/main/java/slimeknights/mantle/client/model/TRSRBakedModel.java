@@ -77,16 +77,18 @@ public class TRSRBakedModel implements IBakedModel {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
     if(!original.isBuiltInRenderer()) {
-      // adjust side to facing-rotation
-      if(side != null && side.getHorizontalIndex() > -1) {
-        side = EnumFacing.getHorizontal((side.getHorizontalIndex() + faceOffset) % 4);
-      }
-      for(BakedQuad quad : original.getQuads(state, side, rand)) {
-        if(quad.getFormat() != null) {
+      try {
+        // adjust side to facing-rotation
+        if(side != null && side.getHorizontalIndex() > -1) {
+          side = EnumFacing.getHorizontal((side.getHorizontalIndex() + faceOffset) % 4);
+        }
+        for(BakedQuad quad : original.getQuads(state, side, rand)) {
           Transformer transformer = new Transformer(transformation, quad.getFormat());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
+      } catch(Exception e) {
+        // do nothing. Seriously, why are you using immutable lists?!
       }
     }
 
