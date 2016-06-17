@@ -155,6 +155,9 @@ public class BookLoader implements IResourceManagerReloadListener {
   }
 
   public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
+    if(player == null) {
+      return;
+    }
     if(player.getHeldItem(EnumHand.MAIN_HAND) == null) {
       return;
     }

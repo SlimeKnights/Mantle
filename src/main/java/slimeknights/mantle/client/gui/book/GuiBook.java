@@ -570,6 +570,9 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     if(loadingAchievements) {
       return;
     }
+    if(mc.thePlayer == null) {
+      return;
+    }
 
     PageData page = this.page == 0 ? book.findPage(0, statisticsManager) : book.findPage((this.page - 1) * 2 + 1, statisticsManager);
 
