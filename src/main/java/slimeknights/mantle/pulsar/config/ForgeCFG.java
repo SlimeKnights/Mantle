@@ -49,7 +49,7 @@ public class ForgeCFG implements IConfiguration
     @Override
     public boolean isModuleEnabled(@Nonnull PulseMeta meta)
     {
-        Property prop = config.get(this.description, meta.getId(), meta.isEnabled(), meta.getDescription());
+        Property prop = config.get(this.description, meta.getId(), meta.isDefaultEnabled(), meta.getDescription());
         prop.setRequiresMcRestart(true);
         return prop.getBoolean(meta.isEnabled());
     }
