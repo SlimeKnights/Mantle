@@ -246,9 +246,11 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
         slot = this.inventorySlots.get(k);
         itemstack1 = slot.getStack();
 
-        if(itemstack1 != null && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes()
-                                                                             || stack.getMetadata() == itemstack1
-            .getMetadata()) && ItemStack.areItemStackTagsEqual(stack, itemstack1)) {
+        if(itemstack1 != null
+           && itemstack1.getItem() == stack.getItem()
+           && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack1.getMetadata())
+           && ItemStack.areItemStackTagsEqual(stack, itemstack1)
+           && this.canMergeSlot(stack, slot)) {
           int l = itemstack1.stackSize + stack.stackSize;
           int limit = Math.min(stack.getMaxStackSize(), slot.getItemStackLimit(stack));
 
@@ -298,7 +300,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       Slot slot = this.inventorySlots.get(k);
       ItemStack itemstack1 = slot.getStack();
 
-      if(itemstack1 == null && slot.isItemValid(stack)) // Forge: Make sure to respect isItemValid in the slot.
+      if(itemstack1 == null && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) // Forge: Make sure to respect isItemValid in the slot.
       {
         int limit = slot.getItemStackLimit(stack);
         ItemStack stack2 = stack.copy();
