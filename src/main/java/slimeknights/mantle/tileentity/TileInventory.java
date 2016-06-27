@@ -13,11 +13,12 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.Arrays;
+
+import javax.annotation.Nonnull;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes
 public class TileInventory extends TileEntity implements IInventory {
@@ -46,12 +47,13 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   @Override
-  public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+  public boolean hasCapability(@Nonnull Capability<?> capability, @Nonnull EnumFacing facing) {
     return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
   }
 
+  @Nonnull
   @Override
-  public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+  public <T> T getCapability(@Nonnull Capability<T> capability, @Nonnull EnumFacing facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       return (T) itemHandler;
     }
@@ -138,7 +140,7 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   @Override
-  public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
+  public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemstack) {
     if(slot < getSizeInventory()) {
       if(inventory[slot] == null || itemstack.stackSize + inventory[slot].stackSize <= getInventoryStackLimit()) {
         return true;
@@ -154,6 +156,7 @@ public class TileInventory extends TileEntity implements IInventory {
     }
   }
 
+  @Nonnull
   @Override
   public String getName() {
     return this.inventoryTitle;
@@ -169,6 +172,7 @@ public class TileInventory extends TileEntity implements IInventory {
     this.inventoryTitle = customName;
   }
 
+  @Nonnull
   @Override
   public ITextComponent getDisplayName() {
     if(hasCustomName()) {
@@ -181,7 +185,7 @@ public class TileInventory extends TileEntity implements IInventory {
 
   /* Supporting methods */
   @Override
-  public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+  public boolean isUseableByPlayer(@Nonnull EntityPlayer entityplayer) {
     // block changed/got broken?
     if(worldObj.getTileEntity(pos) != this || worldObj.getBlockState(pos).getBlock() == Blocks.AIR) {
       return false;
@@ -193,12 +197,12 @@ public class TileInventory extends TileEntity implements IInventory {
   }
 
   @Override
-  public void openInventory(EntityPlayer player) {
+  public void openInventory(@Nonnull EntityPlayer player) {
 
   }
 
   @Override
-  public void closeInventory(EntityPlayer player) {
+  public void closeInventory(@Nonnull EntityPlayer player) {
 
   }
 
@@ -215,8 +219,9 @@ public class TileInventory extends TileEntity implements IInventory {
     }
   }
 
+  @Nonnull
   @Override
-  public void writeToNBT(NBTTagCompound tags) {
+  public NBTTagCompound writeToNBT(NBTTagCompound tags) {
     super.writeToNBT(tags);
 
     tags.setInteger("InventorySize", inventory.length);
@@ -226,6 +231,7 @@ public class TileInventory extends TileEntity implements IInventory {
     if(this.hasCustomName()) {
       tags.setString("CustomName", this.inventoryTitle);
     }
+    return tags;
   }
 
   /** Writes the contents of the inventory to the tag */

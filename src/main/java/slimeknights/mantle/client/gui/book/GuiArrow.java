@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 
 @SideOnly(Side.CLIENT)
@@ -31,7 +33,7 @@ public class GuiArrow extends GuiButton {
   }
 
   @Override
-  public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+  public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY) {
     if(this.visible) {
       mc.getTextureManager().bindTexture(TEX_BOOK);
 

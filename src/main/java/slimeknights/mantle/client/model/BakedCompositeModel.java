@@ -11,6 +11,8 @@ import net.minecraft.util.EnumFacing;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * Groups multiple baked models into a single one. Does not respect state etc. when getting quads.
  * Best use the Builder to create a BakedCompositeModel.
@@ -25,6 +27,7 @@ public class BakedCompositeModel extends BakedWrapper {
     this.parts = parts;
   }
 
+  @Nonnull
   @Override
   public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
     return parts.get(Optional.fromNullable(side));

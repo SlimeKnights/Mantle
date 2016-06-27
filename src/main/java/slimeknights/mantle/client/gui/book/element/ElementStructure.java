@@ -23,12 +23,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
@@ -261,7 +263,7 @@ public class ElementStructure extends SizedBookElement {
     }
 
     @Override
-    public TileEntity getTileEntity(BlockPos pos) {
+    public TileEntity getTileEntity(@Nonnull BlockPos pos) {
       if(!isValid(pos)) {
         return null;
       }
@@ -269,12 +271,13 @@ public class ElementStructure extends SizedBookElement {
     }
 
     @Override
-    public int getCombinedLight(BlockPos pos, int lightValue) {
+    public int getCombinedLight(@Nonnull BlockPos pos, int lightValue) {
       return 15;
     }
 
+    @Nonnull
     @Override
-    public IBlockState getBlockState(BlockPos pos) {
+    public IBlockState getBlockState(@Nonnull BlockPos pos) {
       if(!isValid(pos)) {
         return Blocks.AIR.getDefaultState();
       }
@@ -287,12 +290,13 @@ public class ElementStructure extends SizedBookElement {
     }
 
     @Override
-    public boolean isAirBlock(BlockPos pos) {
+    public boolean isAirBlock(@Nonnull BlockPos pos) {
       return !isValid(pos) || Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]) == Blocks.AIR;
     }
 
+    @Nonnull
     @Override
-    public BiomeGenBase getBiomeGenForCoords(BlockPos pos) {
+    public Biome getBiome(@Nonnull BlockPos blockPos) {
       return Biomes.JUNGLE;
     }
 
@@ -302,7 +306,7 @@ public class ElementStructure extends SizedBookElement {
     }
 
     @Override
-    public int getStrongPower(BlockPos pos, EnumFacing direction) {
+    public int getStrongPower(@Nonnull BlockPos pos, @Nonnull EnumFacing direction) {
       if(!isValid(pos)) {
         return 0;
       }
@@ -311,13 +315,14 @@ public class ElementStructure extends SizedBookElement {
       return iblockstate.getBlock().getStrongPower(iblockstate, this, pos, direction);
     }
 
+    @Nonnull
     @Override
     public WorldType getWorldType() {
       return WorldType.DEFAULT;
     }
 
     @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+    public boolean isSideSolid(@Nonnull BlockPos pos, @Nonnull EnumFacing side, boolean _default) {
       if(!this.isValid(pos)) {
         return _default;
       }

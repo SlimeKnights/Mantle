@@ -21,7 +21,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -135,11 +135,18 @@ jar {
         }
     }
 
+    manifest {
+        attributes 'FMLAT': 'mantle_at.cfg'
+    }
 }
+
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'deobf'
+    manifest {
+        attributes 'FMLAT': 'mantle_deobf_at.cfg'
+    }
 }
 
 task sourcesJar(type: Jar) {

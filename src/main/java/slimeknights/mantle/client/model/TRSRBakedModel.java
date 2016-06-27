@@ -15,12 +15,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
+import net.minecraftforge.common.model.TRSRTransformation;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
@@ -68,6 +69,7 @@ public class TRSRBakedModel implements IBakedModel {
     this.transformation = TRSRTransformation.blockCenterToCorner(t);
   }
 
+  @Nonnull
   @Override
   public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
     // transform quads obtained from parent
@@ -75,16 +77,18 @@ public class TRSRBakedModel implements IBakedModel {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
     if(!original.isBuiltInRenderer()) {
-      // adjust side to facing-rotation
-      if(side != null && side.getHorizontalIndex() > -1) {
-        side = EnumFacing.getHorizontal((side.getHorizontalIndex() + faceOffset) % 4);
-      }
-      for(BakedQuad quad : original.getQuads(state, side, rand)) {
-        if(quad.getFormat() != null) {
+      try {
+        // adjust side to facing-rotation
+        if(side != null && side.getHorizontalIndex() > -1) {
+          side = EnumFacing.getHorizontal((side.getHorizontalIndex() + faceOffset) % 4);
+        }
+        for(BakedQuad quad : original.getQuads(state, side, rand)) {
           Transformer transformer = new Transformer(transformation, quad.getFormat());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
+      } catch(Exception e) {
+        // do nothing. Seriously, why are you using immutable lists?!
       }
     }
 
@@ -106,16 +110,19 @@ public class TRSRBakedModel implements IBakedModel {
     return original.isBuiltInRenderer();
   }
 
+  @Nonnull
   @Override
   public TextureAtlasSprite getParticleTexture() {
     return original.getParticleTexture();
   }
 
+  @Nonnull
   @Override
   public ItemCameraTransforms getItemCameraTransforms() {
     return original.getItemCameraTransforms();
   }
 
+  @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
     return override;
@@ -131,8 +138,9 @@ public class TRSRBakedModel implements IBakedModel {
       this.model = model;
     }
 
+    @Nonnull
     @Override
-    public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+    public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entity) {
       IBakedModel baked = model.original.getOverrides().handleItemState(originalModel, stack, world, entity);
 
       return new TRSRBakedModel(baked, model.transformation);

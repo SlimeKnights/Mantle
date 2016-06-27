@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -29,7 +28,7 @@ public class ElementSection extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    boolean unlocked = section.isUnlocked(parent.statFile);
+    boolean unlocked = section.isUnlocked(parent.statisticsManager);
     boolean hover = isHovered(mouseX, mouseY);
 
     if(section.icon != null) {
@@ -80,7 +79,7 @@ public class ElementSection extends SizedBookElement {
     if(section != null && isHovered(mouseX, mouseY)) {
       List<String> text = new ArrayList<>();
       text.add(section.getTitle());
-      if(!section.isUnlocked(parent.statFile)) {
+      if(!section.isUnlocked(parent.statisticsManager)) {
         text.add(TextFormatting.RED + "Locked");
         text.add("Requirements:");
 
@@ -88,7 +87,7 @@ public class ElementSection extends SizedBookElement {
           Achievement achievement = SectionData.findAchievement(requirement);
           if(achievement != null) {
             text.add((SectionData
-                          .requirementSatisfied(requirement, parent.statFile) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
+                          .requirementSatisfied(requirement, parent.statisticsManager) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
                          .getTextWithoutFormattingCodes(achievement.getStatName().getFormattedText()));
           }
         }
@@ -99,8 +98,8 @@ public class ElementSection extends SizedBookElement {
 
   @Override
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    if(mouseButton == 0 && section != null && section.isUnlocked(parent.statFile) && isHovered(mouseX, mouseY)) {
-      parent.openPage(parent.book.getFirstPageNumber(section, parent.statFile));
+    if(mouseButton == 0 && section != null && section.isUnlocked(parent.statisticsManager) && isHovered(mouseX, mouseY)) {
+      parent.openPage(parent.book.getFirstPageNumber(section, parent.statisticsManager));
     }
   }
 }

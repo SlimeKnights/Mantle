@@ -6,6 +6,8 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 public class SlotCraftingCustom extends SlotCrafting {
 
   private final InventoryCrafting craftMatrix;
@@ -25,7 +27,7 @@ public class SlotCraftingCustom extends SlotCrafting {
   }
 
   @Override
-  public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack) {
+  public void onPickupFromSlot(EntityPlayer playerIn, @Nonnull ItemStack stack) {
     net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(playerIn, stack, craftMatrix);
     this.onCrafting(stack);
 

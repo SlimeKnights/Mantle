@@ -14,12 +14,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializable> extends Block {
 
   public final PropertyEnum<E> prop;
   private final E[] values;
 
-  private static PropertyEnum<?> tmp;
+  protected static PropertyEnum<?> tmp;
 
   public EnumBlock(Material material, PropertyEnum<E> prop, Class<E> clazz) {
     super(preInit(material, prop));
@@ -27,7 +29,6 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
     values = clazz.getEnumConstants();
   }
 
-  @SuppressWarnings("unchecked")
   private static Material preInit(Material material, PropertyEnum<?> property) {
     tmp = property;
     return material;
@@ -35,12 +36,13 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+  public void getSubBlocks(@Nonnull Item itemIn, CreativeTabs tab, List<ItemStack> list) {
     for(E type : values) {
       list.add(new ItemStack(this, 1, type.getMeta()));
     }
   }
 
+  @Nonnull
   @Override
   protected BlockStateContainer createBlockState() {
     if(prop == null) {
@@ -49,6 +51,7 @@ public class EnumBlock<E extends Enum<E> & EnumBlock.IEnumMeta & IStringSerializ
     return new BlockStateContainer(this, prop);
   }
 
+  @Nonnull
   @Override
   public IBlockState getStateFromMeta(int meta) {
     return this.getDefaultState().withProperty(prop, fromMeta(meta));

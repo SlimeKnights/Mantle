@@ -1,0 +1,13 @@
+{
+    "__comment": "Model for when three adjacent connected sides are a T shape.",
+	"parent": "mantle:block/tinted_cube",
+    "textures": {
+		"particle": "#normal",
+        "down": "#udlr",
+		"up": "#udlr",
+		"north": "#udr",
+		"south": "#udl",
+		"west": "#udlr",
+		"east": "#ud"
+    }
+}

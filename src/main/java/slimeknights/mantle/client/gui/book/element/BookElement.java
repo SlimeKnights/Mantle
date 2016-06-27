@@ -4,9 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -39,20 +41,27 @@ public abstract class BookElement extends Gui {
   }
 
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
-    List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-
-    for(int i = 0; i < list.size(); ++i) {
-      if(i == 0) {
-        list.set(i, stack.getRarity().rarityColor + list.get(i));
-      } else {
-        list.set(i, TextFormatting.GRAY + list.get(i));
+    if(stack != null) {
+      List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+      
+      for(int i = 0; i < list.size(); ++i) {
+        if(i == 0) {
+          list.set(i, stack.getRarity().rarityColor + list.get(i));
+        } else {
+          list.set(i, TextFormatting.GRAY + list.get(i));
+        }
       }
+	
+      FontRenderer font = stack.getItem().getFontRenderer(stack);
+      if(font == null) {
+        font = fontRenderer;
+      }
+      GuiUtils.drawHoveringText(list, x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, -1, font);
+      RenderHelper.disableStandardItemLighting();
     }
-
-    FontRenderer font = stack.getItem().getFontRenderer(stack);
-    drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
   }
 
+  @Deprecated
   public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
     if(!textLines.isEmpty()) {
       GlStateManager.disableDepth();

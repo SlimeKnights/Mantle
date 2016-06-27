@@ -17,7 +17,7 @@ import slimeknights.mantle.client.gui.GuiMultiModule;
 public class JeiPlugin implements IModPlugin {
 
   @Override
-  public void register(IModRegistry registry) {
+  public void register(@Nonnull IModRegistry registry) {
     registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiMultiModule>() {
       @Nonnull
       @Override
@@ -34,6 +34,6 @@ public class JeiPlugin implements IModPlugin {
   }
 
   @Override
-  public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+  public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
   }
 }

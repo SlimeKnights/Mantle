@@ -18,6 +18,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.inventory.ContainerMultiModule;
 import slimeknights.mantle.inventory.SlotWrapper;
@@ -148,7 +150,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   }
 
   @Override
-  public void onResize(Minecraft mc, int width, int height) {
+  public void onResize(@Nonnull Minecraft mc, int width, int height) {
     super.onResize(mc, width, height);
 
     for(GuiModule module : modules) {

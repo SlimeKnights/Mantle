@@ -1,14 +1,14 @@
 package slimeknights.mantle.pulsar.flightpath;
 
-import slimeknights.mantle.pulsar.flightpath.lib.AnnotationLocator;
-import slimeknights.mantle.pulsar.flightpath.lib.BlackholeExceptionHandler;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import slimeknights.mantle.pulsar.flightpath.lib.AnnotationLocator;
+import slimeknights.mantle.pulsar.flightpath.lib.BlackholeExceptionHandler;
 
 /**
  * Flightpath - an ordered event bus implementation.

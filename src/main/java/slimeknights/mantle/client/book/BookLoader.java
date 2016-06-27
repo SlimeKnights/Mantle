@@ -16,6 +16,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashMap;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
@@ -77,7 +79,7 @@ public class BookLoader implements IResourceManagerReloadListener {
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());
-    StringActionProcessor.registerProtocol(new ProtocolGoToPage(true, "-rtn"));
+    StringActionProcessor.registerProtocol(new ProtocolGoToPage(true, ProtocolGoToPage.GO_TO_RTN));
   }
 
   /**
@@ -153,6 +155,9 @@ public class BookLoader implements IResourceManagerReloadListener {
   }
 
   public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
+    if(player == null) {
+      return;
+    }
     if(player.getHeldItem(EnumHand.MAIN_HAND) == null) {
       return;
     }
@@ -165,7 +170,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
-  public void onResourceManagerReload(IResourceManager resourceManager) {
+  public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
     Mantle.logger.info("Started loading books...");
     long time = System.nanoTime();
 

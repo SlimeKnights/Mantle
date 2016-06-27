@@ -4,13 +4,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
+
+import javax.annotation.Nonnull;
 
 public class MultiServantLogic extends TileEntity implements IServantLogic {
 
@@ -113,7 +114,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     }
   }
 
-  public void writeCustomNBT(NBTTagCompound tags) {
+  public NBTTagCompound writeCustomNBT(NBTTagCompound tags) {
     tags.setBoolean("hasMaster", this.hasMaster);
     if(this.hasMaster) {
       tags.setInteger("xCenter", this.master.getX());
@@ -122,6 +123,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
       tags.setString("MasterBlockName", GameData.getBlockRegistry().getNameForObject(this.masterBlock).toString());
       tags.setInteger("masterState", Block.getStateId(this.state));
     }
+    return tags;
   }
 
   @Override
@@ -130,18 +132,20 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     this.readCustomNBT(tags);
   }
 
+  @Nonnull
   @Override
-  public void writeToNBT(NBTTagCompound tags) {
-    super.writeToNBT(tags);
-    this.writeCustomNBT(tags);
+  public NBTTagCompound writeToNBT(NBTTagCompound tags) {
+    tags = super.writeToNBT(tags);
+    return this.writeCustomNBT(tags);
   }
 
   /* Packets */
+  @Nonnull
   @Override
-  public Packet getDescriptionPacket() {
+  public NBTTagCompound getUpdateTag() {
     NBTTagCompound tag = new NBTTagCompound();
     this.writeCustomNBT(tag);
-    return new SPacketUpdateTileEntity(this.pos, 1, tag);
+    return tag;
   }
 
   @Override
@@ -152,6 +156,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     this.worldObj.notifyBlockUpdate(this.pos, state, state, 3);
   }
 
+  @Nonnull
   @Override
   public World getWorld() {
     return this.worldObj;

@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.vecmath.Matrix4f;
 
 public class BakedWrapper implements IBakedModel {
@@ -26,6 +27,7 @@ public class BakedWrapper implements IBakedModel {
     this.parent = parent;
   }
 
+  @Nonnull
   @Override
   public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
     return parent.getQuads(state, side, rand);
@@ -46,16 +48,19 @@ public class BakedWrapper implements IBakedModel {
     return parent.isBuiltInRenderer();
   }
 
+  @Nonnull
   @Override
   public TextureAtlasSprite getParticleTexture() {
     return parent.getParticleTexture();
   }
 
+  @Nonnull
   @Override
   public ItemCameraTransforms getItemCameraTransforms() {
     return parent.getItemCameraTransforms();
   }
 
+  @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
     return parent.getOverrides();

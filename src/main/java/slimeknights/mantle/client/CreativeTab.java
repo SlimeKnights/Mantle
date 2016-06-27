@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public class CreativeTab extends CreativeTabs {
 
   private ItemStack icon;
@@ -23,6 +25,7 @@ public class CreativeTab extends CreativeTabs {
     }
   }
 
+  @Nonnull
   @SideOnly(Side.CLIENT)
   @Override
   public ItemStack getIconItemStack() {
@@ -35,6 +38,7 @@ public class CreativeTab extends CreativeTabs {
     return icon.getItemDamage();
   }
 
+  @Nonnull
   @SideOnly(Side.CLIENT)
   @Override
   public Item getTabIconItem() {

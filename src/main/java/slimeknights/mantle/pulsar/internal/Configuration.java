@@ -1,21 +1,29 @@
 package slimeknights.mantle.pulsar.internal;
 
-import java.io.*;
-import java.util.*;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+
 import net.minecraftforge.fml.common.Loader;
 
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Default Gson Configuration helper.
@@ -52,7 +60,7 @@ public class Configuration implements IConfiguration {
     }
 
     @Override
-    public boolean isModuleEnabled(PulseMeta meta) {
+    public boolean isModuleEnabled(@Nonnull PulseMeta meta) {
         ConfigEntry entry = modules.get(meta.getId());
         if (entry == null) {
             modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));

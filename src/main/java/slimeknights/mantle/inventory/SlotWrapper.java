@@ -1,7 +1,6 @@
 package slimeknights.mantle.inventory;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -9,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 /**
  * Used to wrap the slots inside Modules/Subcontainers
@@ -78,6 +79,7 @@ public class SlotWrapper extends Slot {
     return parent.getSlotTexture();
   }
 
+  @Nonnull
   @Override
   public ItemStack decrStackSize(int amount) {
     return parent.decrStackSize(amount);
@@ -88,23 +90,25 @@ public class SlotWrapper extends Slot {
     return parent.isHere(inv, slotIn);
   }
 
+  @Nonnull
   @Override
   public ResourceLocation getBackgroundLocation() {
     return parent.getBackgroundLocation();
   }
 
   @Override
-  public void setBackgroundName(String name) {
+  public void setBackgroundName(@Nonnull String name) {
     parent.setBackgroundName(name);
   }
 
+  @Nonnull
   @Override
   public TextureAtlasSprite getBackgroundSprite() {
     return parent.getBackgroundSprite();
   }
 
   @Override
-  public void setBackgroundLocation(ResourceLocation texture) {
+  public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
     parent.setBackgroundLocation(texture);
   }
 

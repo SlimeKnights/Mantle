@@ -1,6 +1,7 @@
 package slimeknights.mantle.pulsar.internal;
 
 import net.minecraftforge.fml.common.ICrashCallable;
+
 import slimeknights.mantle.pulsar.control.PulseManager;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
 

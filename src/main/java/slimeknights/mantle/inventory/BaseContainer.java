@@ -23,6 +23,8 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.util.SlimeknightException;
 
 /** Same as Container but provides some extra functionality to simplify things */
@@ -102,7 +104,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   @Override
-  public boolean canInteractWith(EntityPlayer playerIn) {
+  public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
     Block block = world.getBlockState(pos).getBlock();
     // does the block we interacted with still exist?
     if(block == Blocks.AIR || block != originalBlock) {
@@ -115,6 +117,8 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
                                   (double) pos.getZ() + 0.5d) <= maxDist;
   }
 
+  @Nonnull
+  @Override
   @SuppressWarnings("unchecked")
   public List<ItemStack> getInventory() {
     return super.getInventory();
@@ -162,6 +166,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     playerInventoryStart = start;
   }
 
+  @Nonnull
   @Override
   protected Slot addSlotToContainer(Slot slotIn) {
     if(playerInventoryStart >= 0) {
@@ -211,6 +216,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
+  @Override
   protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     boolean ret = mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
     if(stack != null && stack.stackSize > 0) {
@@ -240,9 +246,11 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
         slot = this.inventorySlots.get(k);
         itemstack1 = slot.getStack();
 
-        if(itemstack1 != null && itemstack1.getItem() == stack.getItem() && (!stack.getHasSubtypes()
-                                                                             || stack.getMetadata() == itemstack1
-            .getMetadata()) && ItemStack.areItemStackTagsEqual(stack, itemstack1)) {
+        if(itemstack1 != null
+           && itemstack1.getItem() == stack.getItem()
+           && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack1.getMetadata())
+           && ItemStack.areItemStackTagsEqual(stack, itemstack1)
+           && this.canMergeSlot(stack, slot)) {
           int l = itemstack1.stackSize + stack.stackSize;
           int limit = Math.min(stack.getMaxStackSize(), slot.getItemStackLimit(stack));
 
@@ -292,7 +300,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       Slot slot = this.inventorySlots.get(k);
       ItemStack itemstack1 = slot.getStack();
 
-      if(itemstack1 == null && slot.isItemValid(stack)) // Forge: Make sure to respect isItemValid in the slot.
+      if(itemstack1 == null && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) // Forge: Make sure to respect isItemValid in the slot.
       {
         int limit = slot.getItemStackLimit(stack);
         ItemStack stack2 = stack.copy();

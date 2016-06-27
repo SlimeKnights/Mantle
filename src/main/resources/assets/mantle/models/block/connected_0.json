@@ -1,0 +1,13 @@
+{
+    "__comment": "The model for a block that is not being connected to on any angle.",
+    "parent": "mantle:block/tinted_cube",
+    "textures": {
+		"particle": "#normal",
+        "down": "#normal",
+		"up": "#normal",
+		"north": "#normal",
+		"south": "#normal",
+		"west": "#normal",
+		"east": "#normal"
+    }
+}

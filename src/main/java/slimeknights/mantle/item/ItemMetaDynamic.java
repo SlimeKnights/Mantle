@@ -18,6 +18,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import slimeknights.mantle.util.LocUtils;
 
 /**
@@ -25,7 +27,7 @@ import slimeknights.mantle.util.LocUtils;
  * Only returns valid metadatas. The validity is determined by a bitmask.
  * Current maximum is 64 metas - that should suffice for most applications.
  */
-public class ItemMetaDynamic extends Item {
+public class ItemMetaDynamic extends ItemTooltip {
 
   private static int MAX = (2 << 16) - 1;
 
@@ -65,6 +67,7 @@ public class ItemMetaDynamic extends Item {
     return new ItemStack(this, 1, meta);
   }
 
+  @Nonnull
   @Override
   public String getUnlocalizedName(ItemStack stack) {
     int meta = stack.getMetadata(); // should call getMetadata below
@@ -77,7 +80,7 @@ public class ItemMetaDynamic extends Item {
   }
 
   @Override
-  public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+  public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
     for(int i = 0; i <= availabilityMask.length; i++) {
       if(isValid(i)) {
         subItems.add(new ItemStack(itemIn, 1, i));
@@ -118,18 +121,5 @@ public class ItemMetaDynamic extends Item {
         return true;
       }
     });
-  }
-
-  @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-    if(I18n.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() +
-                  LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip")));
-    }
-    else if(I18n.canTranslate(super.getUnlocalizedName(stack) + ".tooltip")) {
-      tooltip.addAll(LocUtils.getTooltips(
-          TextFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip")));
-    }
-    super.addInformation(stack, playerIn, tooltip, advanced);
   }
 }

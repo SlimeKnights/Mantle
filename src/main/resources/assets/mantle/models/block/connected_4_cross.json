@@ -1,0 +1,13 @@
+{
+    "__comment": "Model file for four or more connected sides in a cross shape.",
+	"parent": "mantle:block/tinted_cube",
+    "textures": {
+		"particle": "#normal",
+        "down": "#udlr",
+		"up": "#udlr",
+		"north": "#udlr",
+		"south": "#udlr",
+		"west": "#udlr",
+		"east": "#udlr"
+    }
+}

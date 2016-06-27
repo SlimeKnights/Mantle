@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketClientStatus;
-import net.minecraft.stats.StatFileWriter;
+import net.minecraft.stats.StatisticsManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,7 +30,6 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.gui.book.element.BookElement;
-import slimeknights.mantle.client.gui.book.element.SizedBookElement;
 
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOKFRONT;
@@ -72,18 +71,18 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   private ArrayList<BookElement> leftElements = new ArrayList<>();
   private ArrayList<BookElement> rightElements = new ArrayList<>();
 
-  public StatFileWriter statFile;
+  public StatisticsManager statisticsManager;
 
   public static void init() {
     PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public GuiBook(BookData book, StatFileWriter statFile, @Nullable ItemStack item) {
+  public GuiBook(BookData book, StatisticsManager statisticsManager, @Nullable ItemStack item) {
     this.book = book;
     this.item = item;
 
-    this.statFile = statFile;
+    this.statisticsManager = statisticsManager;
     this.mc = Minecraft.getMinecraft();
     this.fontRendererObj = mc.fontRendererObj;
     init();
@@ -262,8 +261,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       GlStateManager.color(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
 
-      if((page < book.getFullPageCount(statFile) - 1 || book.getPageCount(statFile) % 2 != 0) && page < book
-          .getFullPageCount(statFile)) {
+      if((page < book.getFullPageCount(statisticsManager) - 1 || book.getPageCount(statisticsManager) % 2 != 0) && page < book
+          .getFullPageCount(statisticsManager)) {
         drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
@@ -326,7 +325,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       bookPage = (page - 2) / 2 + 1;
     }
 
-    if(bookPage >= -1 && bookPage < book.getFullPageCount(statFile)) {
+    if(bookPage >= -1 && bookPage < book.getFullPageCount(statisticsManager)) {
       if(returner) {
         oldPage = this.page;
       }
@@ -393,14 +392,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     if(page == 0) {
-      PageData page = book.findPage(0, statFile);
+      PageData page = book.findPage(0, statisticsManager);
 
       if(page != null) {
         page.content.build(book, rightElements, false);
       }
     } else {
-      PageData leftPage = book.findPage((page - 1) * 2 + 1, statFile);
-      PageData rightPage = book.findPage((page - 1) * 2 + 2, statFile);
+      PageData leftPage = book.findPage((page - 1) * 2 + 1, statisticsManager);
+      PageData rightPage = book.findPage((page - 1) * 2 + 2, statisticsManager);
 
       if(leftPage != null) {
         leftPage.content.build(book, leftElements, false);
@@ -423,7 +422,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     super.initGui();
 
     if(loadingAchievements) {
-      this.mc.getNetHandler().addToSendQueue(new CPacketClientStatus(CPacketClientStatus.State.REQUEST_STATS));
+      this.mc.getConnection().sendPacket(new CPacketClientStatus((CPacketClientStatus.State.REQUEST_STATS)));
       return;
     }
 
@@ -439,6 +438,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, book.appearance.arrowColor, book.appearance.arrowColorHover);
     indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, book.appearance.arrowColor, book.appearance.arrowColorHover);
 
+    buttonList.clear();
     buttonList.add(previousArrow);
     buttonList.add(nextArrow);
     buttonList.add(backArrow);
@@ -456,7 +456,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     previousArrow.visible = page != -1;
-    nextArrow.visible = page < book.getFullPageCount(statFile) - (book.getPageCount(statFile) % 2 != 0 ? 0 : 1);
+    nextArrow.visible = page < book.getFullPageCount(statisticsManager) - (book.getPageCount(statisticsManager) % 2 != 0 ? 0 : 1);
     backArrow.visible = oldPage >= -1;
 
     if(page == -1) {
@@ -479,7 +479,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     loadingAchievements = false;
 
     initGui();
-    openPage(book.findPageNumber(BookHelper.getSavedPage(item), statFile));
+    openPage(book.findPageNumber(BookHelper.getSavedPage(item), statisticsManager));
   }
 
   @Override
@@ -489,7 +489,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     if(button instanceof GuiBookmark) {
-      openPage(book.findPageNumber(((GuiBookmark) button).data.page, statFile));
+      openPage(book.findPageNumber(((GuiBookmark) button).data.page, statisticsManager));
 
       return;
     }
@@ -501,8 +501,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       }
     } else if(button == nextArrow) {
       page++;
-      if(page > book.getFullPageCount(statFile) - (book.getPageCount(statFile) % 2 != 0 ? 0 : 1)) {
-        page = book.getFullPageCount(statFile) - 1;
+      if(page > book.getFullPageCount(statisticsManager) - (book.getPageCount(statisticsManager) % 2 != 0 ? 0 : 1)) {
+        page = book.getFullPageCount(statisticsManager) - 1;
       }
     } else if(button == backArrow) {
       if(oldPage >= -1) {
@@ -570,11 +570,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     if(loadingAchievements) {
       return;
     }
+    if(mc.thePlayer == null) {
+      return;
+    }
 
-    PageData page = this.page == 0 ? book.findPage(0, statFile) : book.findPage((this.page - 1) * 2 + 1, statFile);
+    PageData page = this.page == 0 ? book.findPage(0, statisticsManager) : book.findPage((this.page - 1) * 2 + 1, statisticsManager);
 
     if(page == null) {
-      page = book.findPage((this.page - 1) * 2 + 2, statFile);
+      page = book.findPage((this.page - 1) * 2 + 2, statisticsManager);
     }
 
     if(this.page == -1) {

@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.vecmath.Matrix4f;
 
 public class BakedSimple implements IPerspectiveAwareModel {
@@ -59,6 +60,7 @@ public class BakedSimple implements IPerspectiveAwareModel {
     this.overrides = overrides;
   }
 
+  @Nonnull
   @Override
   public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
     return quads;
@@ -79,16 +81,19 @@ public class BakedSimple implements IPerspectiveAwareModel {
     return false;
   }
 
+  @Nonnull
   @Override
   public TextureAtlasSprite getParticleTexture() {
     return particle;
   }
 
+  @Nonnull
   @Override
   public ItemCameraTransforms getItemCameraTransforms() {
     return ItemCameraTransforms.DEFAULT;
   }
 
+  @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
     return overrides;

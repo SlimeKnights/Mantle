@@ -113,6 +113,7 @@ public class GuiWidgetSlider extends GuiWidget {
     return this.hidden;
   }
 
+  @Override
   public void draw() {
     if(hidden) {
       return;
