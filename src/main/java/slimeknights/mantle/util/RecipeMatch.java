@@ -111,8 +111,10 @@ public abstract class RecipeMatch {
 
   /** Removes the match from the stacks */
   public static void removeMatch(ItemStack[] stacks, Match match) {
+    // ensure that the order is the same, so that even if multiple of the same type are contained it has the expected result
+    int i = 0;
     for(ItemStack stack : match.stacks) {
-      for(int i = 0; i < stacks.length; i++) {
+      for(; i < stacks.length; i++) {
         // nbt sensitive since toolparts etc. use nbt
         if(ItemStack.areItemsEqual(stack, stacks[i]) && ItemStack.areItemStackTagsEqual(stack, stacks[i])) {
           if(stacks[i].stackSize < stack.stackSize) {
@@ -124,6 +126,7 @@ public abstract class RecipeMatch {
               stacks[i] = null;
             }
           }
+          i++;
           break;
         }
       }
