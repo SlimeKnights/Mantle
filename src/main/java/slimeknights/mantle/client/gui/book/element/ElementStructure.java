@@ -301,11 +301,6 @@ public class ElementStructure extends SizedBookElement {
     }
 
     @Override
-    public boolean extendedLevelsInChunkCache() {
-      return false;
-    }
-
-    @Override
     public int getStrongPower(@Nonnull BlockPos pos, @Nonnull EnumFacing direction) {
       if(!isValid(pos)) {
         return 0;
