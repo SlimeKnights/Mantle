@@ -20,8 +20,8 @@ import slimeknights.mantle.common.CommonProxy;
 @Mod(modid = Mantle.modId,
     name = Mantle.modName,
     version = Mantle.modVersion,
-    dependencies = "required-after:Forge@[12.17.0.1937,)",
-    acceptedMinecraftVersions = "[1.9.4,1.10)")
+    dependencies = "required-after:Forge@[12.18.1.2011,)",
+    acceptedMinecraftVersions = "[1.10.2,1.11)")
 public class Mantle {
 
   public static final String modId = "mantle";
