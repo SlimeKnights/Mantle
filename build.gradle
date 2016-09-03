@@ -22,9 +22,12 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
+
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     mavenLocal()
@@ -39,10 +42,6 @@ repositories {
     maven {
         name 'DVS1 Maven FS'
         url 'http://dvs1.progwml6.com/files/maven'
-    }
-    maven {
-        name 'forge'
-        url 'http://files.minecraftforge.net/maven'
     }
 }
 
@@ -79,7 +78,7 @@ task buildInfo {
 }
 ext.artifact_version = 'NFG'
 if (System.getenv().ARTIFACT_VERSION == null) {
-    artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
+    artifact_version = "${config.mod_version}"
 }
 if (System.getenv().ARTIFACT_VERSION != null) {
     artifact_version = "${system.getenv().ARTIFACT_VERSION}"
@@ -96,8 +95,8 @@ minecraft {
 }
 
 configurations {
-    shade
-    compile.extendsFrom shade
+    shadow
+    compile.extendsFrom shadow
 }
 
 dependencies {
@@ -106,9 +105,8 @@ dependencies {
     //compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
     deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
     // Configuration
-    shade "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
-    shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"
-
+    shadow "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
+    //shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"
 }
 
 processResources
@@ -128,15 +126,20 @@ processResources
 }
 
 jar {
-    // Shading
-    configurations.shade.each { dep ->
-        from(project.zipTree(dep)){
-            exclude 'META-INF', 'META-INF/**'
-        }
-    }
-
     manifest {
         attributes 'FMLAT': 'mantle_at.cfg'
+    }
+}
+
+jar.dependsOn shadowJar
+jar.enabled = false
+
+shadowJar {
+    archiveName = tasks.jar.archiveName
+    configurations = [project.configurations.shadow]
+    relocate 'ninja.leaping.configurate', 'slimeknights.mantle.configurate'
+    dependencies {
+        exclude(dependency('com.google.guava:guava:'))
     }
 }
 
