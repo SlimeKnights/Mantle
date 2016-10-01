@@ -96,7 +96,7 @@ public abstract class EnumBlockSlab<E extends Enum<E> & EnumBlock.IEnumMeta & IS
 
   @Nonnull
   @Override
-  public IProperty<?> getVariantProperty() {
+  public IProperty<E> getVariantProperty() {
     return prop;
   }
 
