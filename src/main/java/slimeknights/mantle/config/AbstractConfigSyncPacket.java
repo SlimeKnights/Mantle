@@ -21,7 +21,7 @@ public abstract class AbstractConfigSyncPacket extends AbstractPacket {
 
   @Override
   public IMessage handleClient(NetHandlerPlayClient netHandler) {
-    AbstractConfig.syncConfig(getConfig(), config);
+    sync();
     return null;
   }
 
@@ -30,6 +30,11 @@ public abstract class AbstractConfigSyncPacket extends AbstractPacket {
     // We sync from server to client, not vice versa
     throw new UnsupportedOperationException("Trying to sync client configs to the server. You registered the packet for the wrong side.");
   }
+
+  protected boolean sync() {
+    return AbstractConfig.syncConfig(getConfig(), config);
+  }
+
 
   @Override
   public void fromBytes(ByteBuf buf) {

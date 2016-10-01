@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -20,10 +21,12 @@ import slimeknights.mantle.network.NetworkWrapper;
 class ExampleSync {
 
   static NetworkWrapper networkWrapper;
+  static ExampleSync INSTANCE;
 
   static void setup() {
     networkWrapper = new NetworkWrapper("mantle:example");
     networkWrapper.registerPacketClient(ExampleSyncPacketImpl.class);
+    INSTANCE = new ExampleSync();
   }
 
   @SideOnly(Side.CLIENT)
@@ -59,6 +62,11 @@ class ExampleSync {
     // call from preinit or something
     public void onPreInit(FMLPreInitializationEvent event) {
       exampleConfigFile = this.load(new ExampleConfigFile(event.getModConfigurationDirectory()), ExampleConfigFile.class);
+
+      // register this serverside to sync
+      if(event.getSide().isServer()) {
+        MinecraftForge.EVENT_BUS.register(INSTANCE);
+      }
     }
   }
 
@@ -79,6 +87,16 @@ class ExampleSync {
     @Override
     protected AbstractConfig getConfig() {
       return ExampleConfig.INSTANCE;
+    }
+
+    @Override
+    protected boolean sync() {
+      if(super.sync()) {
+        // clientside register only
+        MinecraftForge.EVENT_BUS.register(INSTANCE);
+        return true;
+      }
+      return false;
     }
   }
 }
