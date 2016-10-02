@@ -36,8 +36,8 @@ public abstract class AbstractConfigFile implements Serializable {
 
   private static boolean initialized = false;
 
-  private final File file;
-  private final ConfigurationLoader<CommentedConfigurationNode> loader;
+  File file;
+  ConfigurationLoader<CommentedConfigurationNode> loader;
   // default value is TRUE since most people will forget to set it to true when it needs saving anyway
   // if you want to use it, set it to false in your constructor or something ;o
   private boolean needsSaving = true;

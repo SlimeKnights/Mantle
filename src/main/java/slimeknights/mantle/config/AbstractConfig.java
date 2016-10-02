@@ -27,6 +27,8 @@ public abstract class AbstractConfig {
       CommentedConfigurationNode node = configFile.load();
 
       T val = node.getValue(TypeToken.of(clazz), configFile);
+      val.loader = configFile.loader;
+      val.file = configFile.file;
       val.insertDefaults();
 
       configFileList.add(val);
