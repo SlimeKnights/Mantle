@@ -7,34 +7,29 @@
       "block": "minecraft:stone"
     },
     {
-      "pos": [1, 1, 4],
-      "endPos": [4, 2, 4],
-      "block": "minecraft:stone"
-    },
-    {
       "pos": [0, 1, 1],
-      "endPos": [0, 2, 4],
+      "endPos": [0, 2, 3],
       "block": "minecraft:stone"
     },
     {
       "pos": [4, 1, 1],
-      "endPos": [4, 2, 4],
+      "endPos": [4, 2, 3],
       "block": "minecraft:stone"
     },
     {
       "pos": [1, 1, 0],
-      "endPos": [4, 2, 0],
+      "endPos": [3, 2, 0],
       "block": "minecraft:stone"
     },
     {
-      "pos": [0, 2, 0],
-      "block": "minecraft:stone",
-      "meta": 6
+      "pos": [1, 1, 4],
+      "endPos": [3, 2, 4],
+      "block": "minecraft:stone"
     },
     {
-      "pos": [0, 3, 0],
-      "block": "minecraft:stone",
-      "meta": 4
+      "pos": [2, 2, 2],
+      "endPos": [2, 2, 2],
+      "block": "minecraft:glowstone"
     }
   ]
 }

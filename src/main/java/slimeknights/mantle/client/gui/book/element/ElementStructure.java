@@ -4,42 +4,27 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BlockModelRenderer;
-import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.init.Biomes;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
 
 import org.lwjgl.opengl.GL11;
 
-import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
+import slimeknights.mantle.client.book.StructureBlockAccess;
+import slimeknights.mantle.client.book.StructureInfo;
 import slimeknights.mantle.client.book.data.element.BlockData;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
 
 public class ElementStructure extends SizedBookElement {
 
-  private BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-  private ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-  private BlockAccess world;
   private float scale = 50.0F;
   private float xTranslate = 0F;
   private float yTranslate = 0F;
@@ -47,13 +32,8 @@ public class ElementStructure extends SizedBookElement {
   private float w = 0F;
   private float h = 0F;
 
-  private float rotX = -11.25F;
-  private float rotY = 45F;
-  private float rotZ = 0F;
-
   public ElementStructure(int x, int y, int width, int height, int[] size, BlockData[] structure) {
     super(x, y, width, height);
-    world = new BlockAccess(size, structure);
 
     if(size.length == 3) {
       scale = size[0] > size[1] ? width / size[0] - 10F : height / size[1] - 10F;
@@ -68,277 +48,249 @@ public class ElementStructure extends SizedBookElement {
       w = size[0] * scale;
       h = size[1] * scale;
     }
+
+    init(size, structure);
   }
 
-  @Override
-  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    GlStateManager.pushMatrix();
+  boolean canTick = true;
+  boolean showCompleted = false;
+  int tick = 0;
 
-    GlStateManager.translate(xTranslate, yTranslate, 500F);
+  float rotX = 0;
+  float rotY = 0;
+  float rotZ = 0;
+  List<String> componentTooltip;
 
-    GlStateManager.cullFace(GlStateManager.CullFace.FRONT);
+  //ItemStack[][][] structureData;
+  StructureInfo structureData;
+  StructureBlockAccess blockAccess;
 
-    // Prepare stencil
-    GL11.glEnable(GL11.GL_STENCIL_TEST);
-    GL11.glColorMask(false, false, false, false);
-    GL11.glDepthMask(false);
-    GL11.glStencilFunc(GL11.GL_NEVER, 1, 0xFF);
-    GL11.glStencilOp(GL11.GL_REPLACE, GL11.GL_KEEP, GL11.GL_KEEP);
-
-    GL11.glStencilMask(0xFF);
-    GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-
-    GL11.glBegin(GL11.GL_QUADS);
-    GL11.glVertex2i(0, 0);
-    GL11.glVertex2i(0, height);
-    GL11.glVertex2i(width, height);
-    GL11.glVertex2i(width, 0);
-    GL11.glEnd();
-
-    GL11.glColorMask(true, true, true, true);
-    GL11.glDepthMask(true);
-    GL11.glStencilMask(0x00);
-    GL11.glStencilFunc(GL11.GL_EQUAL, 0, 0xFF);
-
-    GlStateManager.color(0F, 1F, 0F, 1F);
-    GL11.glBegin(GL11.GL_QUADS);
-    GL11.glVertex2i(0, 0);
-    GL11.glVertex2i(0, height);
-    GL11.glVertex2i(width, height);
-    GL11.glVertex2i(width, 0);
-    GL11.glEnd();
-
-    GlStateManager.translate(w / 2, h / 2, 0);
-    GlStateManager.rotate(rotX, 1F, 0F, 0F);
-    GlStateManager.rotate(rotY, 0F, 1F, 0F);
-    GlStateManager.rotate(rotZ, 0F, 0F, 1F);
-    GlStateManager.translate(-w / 2, -h / 2, 0);
-
-    for(int x = 0; x < world.getWidth(); x++) {
-      for(int y = 0; y < world.getHeight(); y++) {
-        for(int z = 0; z < world.getDepth(); z++) {
-          BlockPos pos = new BlockPos(x, y, z);
-          IBlockState state = world.getBlockState(pos);
-          IBakedModel model = mc.getBlockRendererDispatcher().getModelForState(state);
-
-          Block block = state.getBlock();
-
-          if(block == Blocks.AIR) {
-            continue;
-          }
-
-          GlStateManager.pushMatrix();
-
-          GlStateManager.enableDepth();
-          mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-
-          if(block == null) {
-            return;
-          }
-
-          int color = blockColors.colorMultiplier(state, world, pos, 0);
-          float red = (color >> 16 & 255) / 255.0F;
-          float green = (color >> 8 & 255) / 255.0F;
-          float blue = (color & 255) / 255.0F;
-          GlStateManager.color(red, green, blue);
-
-          GlStateManager.scale(scale, scale, scale);
-
-          GlStateManager.translate(x, world.getHeight() - y, z);
-          BlockModelRenderer render = mc.getBlockRendererDispatcher().getBlockModelRenderer();
-
-          // 1.9 remove this?
-          //block.setBlockBoundsBasedOnState(world, pos);
-          int i = blockColors.colorMultiplier(state, world, pos, 0);
-          GlStateManager.rotate(90F, 0, 1, 0);
-
-          if(EntityRenderer.anaglyphEnable) {
-            i = TextureUtil.anaglyphColor(i);
-          }
-
-          float r = (float) (i >> 16 & 255) / 255.0F;
-          float g = (float) (i >> 8 & 255) / 255.0F;
-          float b = (float) (i & 255) / 255.0F;
-
-          render.renderModelBrightnessColor(model, blockColors.colorMultiplier(state, world, pos, 0), r, g, b);
-
-          GlStateManager.color(1F, 1F, 1F);
-          GlStateManager.popMatrix();
-          renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+  private boolean inside(int x, int y, int z, int[] rangeStart, int[] rangeEnd) {
+    if(x >= rangeStart[0] && x <= rangeEnd[0]) {
+      if(y >= rangeStart[1] && y <= rangeEnd[1]) {
+        if(z >= rangeStart[2] && z <= rangeEnd[2]) {
+          return true;
         }
       }
     }
 
-    GlStateManager.disableLighting();
-    GlStateManager.cullFace(GlStateManager.CullFace.BACK);
-    GL11.glDisable(GL11.GL_STENCIL_TEST);
-    GlStateManager.popMatrix();
+    return false;
   }
 
-  private void setupGuiTransform(int xPosition, int yPosition) {
-    GlStateManager.translate((float) xPosition, (float) yPosition, 100.0F + this.zLevel);
-    GlStateManager.translate(8.0F, 8.0F, 0.0F);
-    GlStateManager.scale(1.0F, 1.0F, -1.0F);
-    GlStateManager.scale(0.5F, 0.5F, 0.5F);
+  public void init(int[] size, BlockData[] data) {
+    int yOff = 0;
 
-    GlStateManager.scale(40.0F, 40.0F, 40.0F);
-    GlStateManager.rotate(210.0F, 1.0F, 0.0F, 0.0F);
-    GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-    GlStateManager.enableLighting();
-  }
+    ItemStack[][][] structure = new ItemStack[size[1]][size[0]][size[2]];
 
-  private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, BlockPos pos) {
-    boolean flag = color == -1;
-    int i = 0;
-
-    for(int j = quads.size(); i < j; ++i) {
-      BakedQuad bakedquad = quads.get(i);
-      int k = color;
-
-      if(flag && bakedquad.hasTintIndex()) {
-        Block block = world.getBlockState(pos).getBlock();
-        k = blockColors.colorMultiplier(world.getBlockState(pos), world, pos, 0);
-
-        if(EntityRenderer.anaglyphEnable) {
-          k = TextureUtil.anaglyphColor(k);
-        }
-
-        k = k | -16777216;
-      }
-
-      net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
-    }
-  }
-
-  private class BlockAccess implements IBlockAccess {
-
-    private final int[][][] blocks;
-    private final byte[][][] meta;
-    private final int[] size;
-    private HashMap<Integer[], TileEntity> tileEntityMap = new HashMap<>();
-
-    public BlockAccess(int[] size, BlockData[] structure) {
-      this.size = size;
-
-      blocks = new int[size[0]][size[1]][size[2]];
-      meta = new byte[size[0]][size[1]][size[2]];
-
-      for(BlockData block : structure) {
-        Block tile = Block.getBlockFromName(block.block);
-        if(tile == null) {
-          continue;
-        }
-        byte metadata = block.meta >= 0 && block.meta < 16 ? block.meta : 0;
-
-        if(block.pos != null && block.pos.length == 3 && block.endPos != null && block.endPos.length == 3) {
-          for(int x = block.pos[0]; x <= block.endPos[0]; x++) {
-            for(int y = block.pos[1]; y <= block.endPos[1]; y++) {
-              for(int z = block.pos[2]; z <= block.endPos[2]; z++) {
-                if(x >= size[0] || y >= size[1] || z >= size[2]) {
-                  continue;
-                }
-
-                blocks[x][y][z] = Block.getIdFromBlock(tile);
-                meta[x][y][z] = metadata;
-
-                TileEntity te = tile.hasTileEntity(tile.getStateFromMeta(metadata)) ? tile
-                    .createTileEntity(Minecraft.getMinecraft().theWorld, tile.getStateFromMeta(metadata)) : null;
-                if(te != null) {
-                  te.setPos(new BlockPos(x, y, z));
-                  tileEntityMap.put(new Integer[]{x, y, z}, te);
-
-                  if(block.nbt != null) {
-                    try {
-                      te.readFromNBT(JsonToNBT.getTagFromJson(ItemStackData.filterJsonQuotes(block.nbt.toString())));
-                    } catch(NBTException e) {
-                      e.printStackTrace();
-                    }
-                  }
-                }
-              }
+    for(int sy = 0; sy < size[1]; sy++) {
+      for(int sx = 0; sx < size[0]; sx++) {
+        for(int sz = 0; sz < size[2]; sz++) {
+          for(BlockData blockData : data) {
+            if(inside(sx, sy, sz, blockData.pos, blockData.endPos)) {
+              structure[sy][sx][sz] = new ItemStack(Block.getBlockFromName(blockData.block));
             }
           }
         }
       }
     }
 
-    @Override
-    public TileEntity getTileEntity(@Nonnull BlockPos pos) {
-      if(!isValid(pos)) {
-        return null;
+    structureData = new StructureInfo(structure);
+    blockAccess = new StructureBlockAccess(structure, structureData);
+
+
+    rotX = 25;
+    rotY = -45;
+
+    /*boolean canRenderFormed = multiblock.canRenderFormedStructure();
+    //			yOff = (structureHeight-1)*12+structureWidth*5+structureLength*5+16;
+    //			yOff = Math.max(48, yOff);
+    float f = (float)Math.sqrt(structureHeight*structureHeight + structureWidth*structureWidth + structureLength*structureLength);
+    float scale = multiblock.getManualScale();
+    yOff = (int)(multiblock.getManualScale()*Math.sqrt(structureHeight*structureHeight + structureWidth*structureWidth + structureLength*structureLength));
+    yOff = Math.max(10+(canRenderFormed?12:0)+(structureHeight>1?36:0), yOff);
+    yOff = 10+Math.max(10+(multiblock.canRenderFormedStructure()?12:0)+(structureHeight>1?36:0), (int) (f*scale));
+    pageButtons.add(new GuiButtonManualNavigation(gui, 100, x+4,y+yOff/2-(canRenderFormed?11:5), 10,10, 4));
+    if(canRenderFormed)
+      pageButtons.add(new GuiButtonManualNavigation(gui, 103, x+4,y+yOff/2+1, 10,10, 6));
+    if(structureHeight>1)
+    {
+      pageButtons.add(new GuiButtonManualNavigation(gui, 101, x+4,y+yOff/2-(canRenderFormed?14:8)-16, 10,16, 3));
+      pageButtons.add(new GuiButtonManualNavigation(gui, 102, x+4,y+yOff/2+(canRenderFormed?14:8), 10,16, 2));
+    }*/
+/*
+    IngredientStack[] totalMaterials = this.multiblock.getTotalMaterials();
+    if(false && false)
+    {
+      componentTooltip = new ArrayList();
+      componentTooltip.add(I18n.format("desc.immersiveengineering.info.reqMaterial"));
+      int maxOff = 1;
+      boolean hasAnyItems = false;
+      boolean[] hasItems = new boolean[totalMaterials.length];
+      for(int ss = 0; ss < totalMaterials.length; ss++)
+        if(totalMaterials[ss] != null)
+        {
+          IngredientStack req = totalMaterials[ss];
+          int reqSize = req.inputSize;
+          for(int slot = 0; slot < ManualUtils.mc().thePlayer.inventory.getSizeInventory(); slot++)
+          {
+            ItemStack inSlot = ManualUtils.mc().thePlayer.inventory.getStackInSlot(slot);
+            if(inSlot != null && req.matchesItemStackIgnoringSize(inSlot))
+              if((reqSize -= inSlot.stackSize) <= 0)
+                break;
+          }
+          if(reqSize <= 0)
+          {
+            hasItems[ss] = true;
+            if(!hasAnyItems)
+              hasAnyItems = true;
+          }
+          maxOff = Math.max(maxOff, ("" + req.inputSize).length());
+        }
+      for(int ss = 0; ss < totalMaterials.length; ss++)
+        if(totalMaterials[ss] != null)
+        {
+          IngredientStack req = totalMaterials[ss];
+          int indent = maxOff - ("" + req.inputSize).length();
+          String sIndent = "";
+          if(indent > 0)
+            for(int ii = 0; ii < indent; ii++)
+              sIndent += "0";
+          String s = hasItems[ss] ? (TextFormatting.GREEN + TextFormatting.BOLD.toString() + "\u2713" + TextFormatting.RESET + " ") : hasAnyItems ? ("   ") : "";
+          s += TextFormatting.GRAY + sIndent + req.inputSize + "x " + TextFormatting.RESET;
+          ItemStack example = req.getExampleStack();
+          if(example != null)
+            s += example.getRarity().rarityColor + example.getDisplayName();
+          else
+            s += "???";
+          componentTooltip.add(s);
+        }
+    }*/
+//    super.initPage(gui, x, y+yOff, pageButtons);
+  }
+
+  @Override
+  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+    canTick = false;
+    if(canTick) {
+      if(++tick % 20 == 0) {
+        structureData.step();
       }
-      return tileEntityMap.get(new Integer[]{pos.getX(), pos.getY(), pos.getZ()});
+    }
+    else {
+      structureData.reset();
+      structureData.setShowLayer(1);
     }
 
-    @Override
-    public int getCombinedLight(@Nonnull BlockPos pos, int lightValue) {
-      return 15;
+    int structureLength = structureData.structureLength;
+    int structureWidth = structureData.structureWidth;
+    int structureHeight = structureData.structureHeight;
+
+    int xHalf = (structureWidth * 5 - structureLength * 5);
+    int yOffPartial = (structureHeight - 1) * 16 + structureWidth * 8 + structureLength * 8;
+    int yOffTotal = Math.max(52, yOffPartial + 16);
+
+    GlStateManager.enableRescaleNormal();
+    GlStateManager.pushMatrix();
+    RenderHelper.disableStandardItemLighting();
+    //			GL11.glEnable(GL11.GL_DEPTH_TEST);
+    //			GL11.glDepthFunc(GL11.GL_ALWAYS);
+    //			GL11.glDisable(GL11.GL_CULL_FACE);
+    int i = 0;
+    ItemStack highlighted = null;
+
+    final BlockRendererDispatcher blockRender = Minecraft.getMinecraft().getBlockRendererDispatcher();
+
+    float f = (float) Math.sqrt(structureHeight * structureHeight + structureWidth * structureWidth + structureLength * structureLength);
+    yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * scale));
+    GlStateManager.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    // todo: translate where it actually needs to be and to counter z-layer of the book
+    GlStateManager.scale(scale, -scale, 1);
+    GlStateManager.rotate(rotX, 1, 0, 0);
+    GlStateManager.rotate(rotY, 0, 1, 0);
+
+    GlStateManager.disableLighting();
+
+    if(Minecraft.isAmbientOcclusionEnabled()) {
+      GlStateManager.shadeModel(GL11.GL_SMOOTH);
+    }
+    else {
+      GlStateManager.shadeModel(GL11.GL_FLAT);
     }
 
-    @Nonnull
-    @Override
-    public IBlockState getBlockState(@Nonnull BlockPos pos) {
-      if(!isValid(pos)) {
-        return Blocks.AIR.getDefaultState();
+    if(structureWidth % 2 == 1) {
+      GlStateManager.translate(-.5f, 0, 0);
+    }
+    int iterator = 0;
+
+    mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+    for(int h = 0; h < structureData.structureHeight; h++) {
+      for(int l = 0; l < structureData.structureLength; l++) {
+        for(int w = 0; w < structureData.structureWidth; w++) {
+          BlockPos pos = new BlockPos(l, h, w);
+          if(!blockAccess.isAirBlock(pos)) {
+            IBlockState state = blockAccess.getBlockState(pos);
+            Tessellator tessellator = Tessellator.getInstance();
+            VertexBuffer buffer = tessellator.getBuffer();
+            buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+            blockRender.renderBlock(state, pos, blockAccess, buffer);
+            tessellator.draw();
+          }
+        }
       }
-      Block block = Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]);
-      if(block == null) {
-        return Blocks.AIR.getDefaultState();
+    }
+    //			GL11.glTranslated(0, 0, -i);
+    GlStateManager.popMatrix();
+
+    RenderHelper.disableStandardItemLighting();
+    GlStateManager.disableRescaleNormal();
+
+    GlStateManager.enableBlend();
+    RenderHelper.disableStandardItemLighting();
+
+    fontRenderer.setUnicodeFlag(true);
+    //if(localizedText!=null&&!localizedText.isEmpty())
+    //fontRenderer.drawSplitString(localizedText, x,y+yOffTotal, 120, manual.getTextColour());
+
+    fontRenderer.setUnicodeFlag(false);
+    if(componentTooltip != null) {
+      //fontRenderer.drawString("?", x + 116, y + yOffTotal / 2 - 4, manual.getTextColour(), false);
+      fontRenderer.drawString("?", x + 116, y + yOffTotal / 2 - 4, 0x000000, false);
+      if(mouseX >= x + 116 && mouseX < x + 122 && mouseY >= y + yOffTotal / 2 - 4 && mouseY < y + yOffTotal / 2 + 4) {
+        this.drawHoveringText(componentTooltip, mouseX, mouseY, fontRenderer);
       }
-
-      return block.getActualState(block.getStateFromMeta(meta[pos.getX()][pos.getY()][pos.getZ()]), this, pos);
-    }
-
-    @Override
-    public boolean isAirBlock(@Nonnull BlockPos pos) {
-      return !isValid(pos) || Block.getBlockById(blocks[pos.getX()][pos.getY()][pos.getZ()]) == Blocks.AIR;
-    }
-
-    @Nonnull
-    @Override
-    public Biome getBiome(@Nonnull BlockPos blockPos) {
-      return Biomes.JUNGLE;
-    }
-
-    @Override
-    public int getStrongPower(@Nonnull BlockPos pos, @Nonnull EnumFacing direction) {
-      if(!isValid(pos)) {
-        return 0;
-      }
-
-      IBlockState iblockstate = this.getBlockState(pos);
-      return iblockstate.getBlock().getStrongPower(iblockstate, this, pos, direction);
-    }
-
-    @Nonnull
-    @Override
-    public WorldType getWorldType() {
-      return WorldType.DEFAULT;
-    }
-
-    @Override
-    public boolean isSideSolid(@Nonnull BlockPos pos, @Nonnull EnumFacing side, boolean _default) {
-      if(!this.isValid(pos)) {
-        return _default;
-      }
-
-      return getBlockState(pos).getBlock().isSideSolid(this.getBlockState(pos), this, pos, side);
-    }
-
-    public boolean isValid(BlockPos pos) {
-      return pos != null && pos.getX() < size[0] && pos.getY() < size[1] && pos.getZ() < size[2] && pos.getX() >= 0 && pos.getY() >= 0 && pos.getZ() >= 0;
-    }
-
-    public int getWidth() {
-      return size[0];
-    }
-
-    public int getHeight() {
-      return size[1];
-    }
-
-    public int getDepth() {
-      return size[2];
     }
   }
+
+  public void mouseDragged(int x, int y, int clickX, int clickY, int mx, int my, int lastX, int lastY, int button) {
+    if((clickX >= 40 && clickX < 144 && mx >= 20 && mx < 164) && (clickY >= 30 && clickY < 130 && my >= 30 && my < 180)) {
+      int dx = mx - lastX;
+      int dy = my - lastY;
+      rotY = rotY + (dx / 104f) * 80;
+      rotX = rotX + (dy / 100f) * 80;
+    }
+  }
+/*
+  @Override
+  public void buttonPressed(GuiManual gui, GuiButton button)
+  {
+    if(button.id==100)
+    {
+      canTick = !canTick;
+      ((GuiButtonManualNavigation)button).type = ((GuiButtonManualNavigation)button).type == 4 ? 5 : 4;
+    }
+    else if(button.id==101)
+    {
+      showLayer = Math.min(showLayer+1, structureHeight-1);
+      tick= (countPerLevel[showLayer])*40;
+    }
+    else if(button.id==102)
+    {
+      showLayer = Math.max(showLayer-1, -1);
+      tick= (showLayer==-1?blockCount:countPerLevel[showLayer])*40;
+    }
+    else if(button.id==103)
+      showCompleted = !showCompleted;
+    super.buttonPressed(gui, button);
+  }
+*/
 }
