@@ -38,7 +38,15 @@ public abstract class AbstractConfigFile implements Serializable {
 
   private final File file;
   private final ConfigurationLoader<CommentedConfigurationNode> loader;
-  private boolean needsSaving = false;
+  // default value is TRUE since most people will forget to set it to true when it needs saving anyway
+  // if you want to use it, set it to false in your constructor or something ;o
+  private boolean needsSaving = true;
+
+  // required constructor for deserialization
+  public AbstractConfigFile() {
+    file = null;
+    loader = null;
+  }
 
   public AbstractConfigFile(File configFolder, String name) {
     this(new File(configFolder, name + ".cfg"));
