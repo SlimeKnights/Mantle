@@ -151,11 +151,23 @@ task deobfJar(type: Jar) {
     manifest {
         attributes 'FMLAT': 'mantle_deobf_at.cfg'
     }
+    configurations = [project.configurations.shadow]
+    relocate 'ninja.leaping.configurate', 'slimeknights.mantle.configurate'
+    relocate 'com.typesafe', 'slimeknights.mantle.typesafe'
+    dependencies {
+        exclude(dependency('com.google.guava:guava:'))
+    }
 }
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
     classifier = 'sources'
+    configurations = [project.configurations.shadow]
+    relocate 'ninja.leaping.configurate', 'slimeknights.mantle.configurate'
+    relocate 'com.typesafe', 'slimeknights.mantle.typesafe'
+    dependencies {
+        exclude(dependency('com.google.guava:guava:'))
+    }
 }
 
 artifacts {
