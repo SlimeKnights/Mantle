@@ -560,8 +560,53 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     // Not foreach to prevent conmodification crashes
     for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
       BookElement element = right ? rightElements.get(i) : leftElements.get(i);
-
       element.mouseClicked(mouseX, mouseY, mouseButton);
+    }
+  }
+
+  @Override
+  protected void mouseReleased(int mouseX, int mouseY, int state) {
+    super.mouseReleased(mouseX, mouseY, state);
+
+    if(loadingAchievements) {
+      return;
+    }
+
+    boolean right = false;
+    mouseX = getMouseX(false);
+    mouseY = getMouseY();
+
+    if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
+      mouseX = getMouseX(true);
+      right = true;
+    }
+
+    // Not foreach to prevent conmodification crashes
+    for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
+      BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+      element.mouseReleased(mouseX, mouseY, state);
+    }
+  }
+
+  @Override
+  protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    if(loadingAchievements) {
+      return;
+    }
+
+    boolean right = false;
+    mouseX = getMouseX(false);
+    mouseY = getMouseY();
+
+    if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
+      mouseX = getMouseX(true);
+      right = true;
+    }
+
+    // Not foreach to prevent conmodification crashes
+    for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
+      BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+      element.mouseClickMove(mouseX, mouseY, clickedMouseButton);
     }
   }
 

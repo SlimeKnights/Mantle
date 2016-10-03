@@ -15,6 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -42,8 +43,8 @@ public class ElementStructure extends SizedBookElement {
         scale = width / size[0] - 10F;
       }
 
-      xTranslate = x + width / 2 - (size[0] * scale) / 2;
-      yTranslate = y + height / 2 - (size[1] * scale) / 2;
+      xTranslate = x + width / 2;// - (size[0] * scale) / 2;
+      yTranslate = y + height / 2;// - (size[1] * scale) / 2;
 
       w = size[0] * scale;
       h = size[1] * scale;
@@ -168,8 +169,26 @@ public class ElementStructure extends SizedBookElement {
 //    super.initPage(gui, x, y+yOff, pageButtons);
   }
 
+  int[] lastClick = null;
+
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+    if(lastClick != null) {
+      if(Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
+        int dx = mouseX - lastClick[0];
+        int dy = mouseY - lastClick[1];
+        float maxSpeed = 10f;
+        float changeX = Math.min(maxSpeed, dx / 10f);
+        float changeY = Math.min(maxSpeed, dy / 10f);
+
+        rotY += changeX;
+        rotX += changeY;
+      }
+      else {
+        lastClick = null;
+      }
+    }
+
     canTick = false;
     if(canTick) {
       if(++tick % 20 == 0) {
@@ -178,7 +197,7 @@ public class ElementStructure extends SizedBookElement {
     }
     else {
       structureData.reset();
-      structureData.setShowLayer(1);
+      structureData.setShowLayer(9);
     }
 
     int structureLength = structureData.structureLength;
@@ -202,11 +221,14 @@ public class ElementStructure extends SizedBookElement {
 
     float f = (float) Math.sqrt(structureHeight * structureHeight + structureWidth * structureWidth + structureLength * structureLength);
     yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * scale));
-    GlStateManager.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    //GlStateManager.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    GlStateManager.translate(xTranslate, yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
     // todo: translate where it actually needs to be and to counter z-layer of the book
     GlStateManager.scale(scale, -scale, 1);
     GlStateManager.rotate(rotX, 1, 0, 0);
     GlStateManager.rotate(rotY, 0, 1, 0);
+
+    GlStateManager.translate((float)structureLength/-2f, (float)structureHeight/-2f, (float)structureWidth/-2f);
 
     GlStateManager.disableLighting();
 
@@ -218,7 +240,7 @@ public class ElementStructure extends SizedBookElement {
     }
 
     if(structureWidth % 2 == 1) {
-      GlStateManager.translate(-.5f, 0, 0);
+      //GlStateManager.translate(-.5f, 0, 0);
     }
     int iterator = 0;
 
@@ -261,13 +283,51 @@ public class ElementStructure extends SizedBookElement {
     }
   }
 
-  public void mouseDragged(int x, int y, int clickX, int clickY, int mx, int my, int lastX, int lastY, int button) {
-    if((clickX >= 40 && clickX < 144 && mx >= 20 && mx < 164) && (clickY >= 30 && clickY < 130 && my >= 30 && my < 180)) {
+  private int lastX;
+  private int lastY;
+
+  @Override
+  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    super.mouseClicked(mouseX, mouseY, mouseButton);
+
+    //lastX = mouseX;
+    //lastY = mouseY;
+    lastClick = new int[] {mouseX, mouseY};
+  }
+
+  @Override
+  public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton) {
+    int dx = mouseX - lastX;
+    int dy = mouseX - lastY;
+
+    float maxSpeed = 1f;
+    float changeX = Math.min(maxSpeed, dx/100f);
+    float changeY = Math.min(maxSpeed, dy/100f);
+
+    //rotX += changeX;
+    //rotY += changeX;
+
+    //rotY = rotY + (dx / 104f) * 10;
+    //rotX = rotX + (dy / 100f) * 10;
+
+    //lastX = mouseX;
+    //lastY = mouseY;
+  }
+
+  @Override
+  public void mouseReleased(int mouseX, int mouseY, int clickedMouseButton) {
+    super.mouseReleased(mouseX, mouseY, clickedMouseButton);
+    lastClick = null;
+  }
+
+  @Override
+  public void mouseDragged(int clickX, int clickY, int mx, int my, int lastX, int lastY, int button) {
+    //if((clickX >= 40 && clickX < 144 && mx >= 20 && mx < 164) && (clickY >= 30 && clickY < 130 && my >= 30 && my < 180)) {
       int dx = mx - lastX;
       int dy = my - lastY;
-      rotY = rotY + (dx / 104f) * 80;
-      rotX = rotX + (dy / 100f) * 80;
-    }
+      rotY = rotY + (dx / 104f);// * 80;
+      rotX = rotX + (dy / 100f);// * 80;
+    //}
   }
 /*
   @Override

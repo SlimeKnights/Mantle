@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class ContentStructure extends PageContent {
 
   public int[] size;
   public BlockData[] structure;
+  public String text;
 
   @Override
   public void load() {
@@ -36,8 +38,9 @@ public class ContentStructure extends PageContent {
           .fromJson(repo.resourceToString(repo.getResource(location)), ContentStructure.class);
       structure.parent = parent;
       structure.load();
-      size = structure.size;
+      this.size = structure.size;
       this.structure = structure.structure;
+      this.text = structure.text;
     }
   }
 
@@ -50,10 +53,20 @@ public class ContentStructure extends PageContent {
       addTitle(list, title);
     }
 
-    if(size != null && size.length == 3 && structure != null && structure.length > 0) {
-      list.add(new ElementStructure(0, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y - 10, size, structure));
+    int offset = 0;
+    int structureSizeX = GuiBook.PAGE_WIDTH;
+    int structureSizeY = GuiBook.PAGE_HEIGHT - y - 10;
+
+    if(!StringUtils.isNullOrEmpty(text)) {
+      offset = 15;
+      structureSizeX -= 2*offset;
+      structureSizeY -= 2*offset;
+
+      list.add(new ElementText(0, GuiBook.PAGE_HEIGHT - 10 - 2*offset, GuiBook.PAGE_WIDTH, 2*offset, text));
     }
 
-    list.add(new ElementText(0, GuiBook.PAGE_HEIGHT - 10, GuiBook.PAGE_WIDTH, 10, "WIP - Not Yet Implemented"));
+    if(size != null && size.length == 3 && structure != null && structure.length > 0) {
+      list.add(new ElementStructure(offset, y, structureSizeX, structureSizeY, size, structure));
+    }
   }
 }
