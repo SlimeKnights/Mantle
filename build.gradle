@@ -71,14 +71,14 @@ task buildInfo {
     }
 
     if (System.getenv().BUILD_NUMBER != null) {
-        ext.buildNum = "jenkins${System.getenv().BUILD_NUMBER}"
+        ext.buildNum = "${System.getenv().BUILD_NUMBER}"
     } else {
         ext.buildNum = "DEV.${project.buildInfo.revision}"
     }
 }
 ext.artifact_version = 'NFG'
 if (System.getenv().ARTIFACT_VERSION == null) {
-    artifact_version = "${config.mod_version}"
+    artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
 }
 if (System.getenv().ARTIFACT_VERSION != null) {
     artifact_version = "${system.getenv().ARTIFACT_VERSION}"
