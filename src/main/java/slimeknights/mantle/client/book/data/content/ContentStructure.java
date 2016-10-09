@@ -9,8 +9,11 @@ import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.repository.BookRepository;
+import slimeknights.mantle.client.gui.book.GuiArrow;
 import slimeknights.mantle.client.gui.book.GuiBook;
 import slimeknights.mantle.client.gui.book.element.BookElement;
+import slimeknights.mantle.client.gui.book.element.ElementAnimationToggle;
+import slimeknights.mantle.client.gui.book.element.ElementArrow;
 import slimeknights.mantle.client.gui.book.element.ElementStructure;
 import slimeknights.mantle.client.gui.book.element.ElementText;
 
@@ -66,7 +69,28 @@ public class ContentStructure extends PageContent {
     }
 
     if(size != null && size.length == 3 && structure != null && structure.length > 0) {
-      list.add(new ElementStructure(offset, y, structureSizeX, structureSizeY, size, structure));
+      boolean showButtons = size[1] > 1;
+      if(showButtons) {
+        structureSizeX -= GuiArrow.ArrowType.REFRESH.w;
+      }
+      ElementStructure elementStructure = new ElementStructure(offset, y, structureSizeX, structureSizeY, size, structure);
+      list.add(elementStructure);
+
+      if(showButtons) {
+        int col = book.appearance.structureButtonColor;
+        int colHover = book.appearance.structureButtonColorHovered;
+        int colToggled = book.appearance.structureButtonColorToggled;
+
+        int midY = y + structureSizeY / 2 - (GuiArrow.ArrowType.UP.h + GuiArrow.ArrowType.DOWN.h) / 2;
+
+        int dx = (GuiArrow.ArrowType.REFRESH.w - GuiArrow.ArrowType.UP.w) / 2;
+
+        list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_UP, elementStructure, structureSizeX + offset + dx, midY, GuiArrow.ArrowType.UP, col, colHover));
+        midY += GuiArrow.ArrowType.UP.h + 2;
+        list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_DOWN, elementStructure, structureSizeX + offset + dx, midY, GuiArrow.ArrowType.DOWN, col, colHover));
+
+        list.add(new ElementAnimationToggle(ElementStructure.BUTTON_ID_ANIMATE, elementStructure, structureSizeX + offset, 0, GuiArrow.ArrowType.REFRESH, col, colHover, colToggled));
+      }
     }
   }
 }

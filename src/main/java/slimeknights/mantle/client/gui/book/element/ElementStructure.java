@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -11,7 +10,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
@@ -24,7 +22,11 @@ import slimeknights.mantle.client.book.StructureBlockAccess;
 import slimeknights.mantle.client.book.StructureInfo;
 import slimeknights.mantle.client.book.data.element.BlockData;
 
-public class ElementStructure extends SizedBookElement {
+public class ElementStructure extends SizedBookElement implements IButtonClickHandler {
+
+  public static final int BUTTON_ID_LAYER_UP = 0;
+  public static final int BUTTON_ID_LAYER_DOWN = 1;
+  public static final int BUTTON_ID_ANIMATE = 2;
 
   private float scale = 50.0F;
   private float xTranslate = 0F;
@@ -53,7 +55,7 @@ public class ElementStructure extends SizedBookElement {
     init(size, structure);
   }
 
-  boolean canTick = true;
+  boolean canTick = false;
   int tick = 0;
 
   float rotX = 0;
@@ -61,37 +63,11 @@ public class ElementStructure extends SizedBookElement {
   float rotZ = 0;
   List<String> componentTooltip;
 
-  StructureInfo structureData;
+  public StructureInfo structureData;
   StructureBlockAccess blockAccess;
-
-  private boolean inside(int x, int y, int z, int[] rangeStart, int[] rangeEnd) {
-    if(x >= rangeStart[0] && x <= rangeEnd[0]) {
-      if(y >= rangeStart[1] && y <= rangeEnd[1]) {
-        if(z >= rangeStart[2] && z <= rangeEnd[2]) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
 
   public void init(int[] size, BlockData[] data) {
     int yOff = 0;
-/*
-    ItemStack[][][] structure = new ItemStack[size[1]][size[0]][size[2]];
-
-    for(int sy = 0; sy < size[1]; sy++) {
-      for(int sx = 0; sx < size[0]; sx++) {
-        for(int sz = 0; sz < size[2]; sz++) {
-          for(BlockData blockData : data) {
-            if(inside(sx, sy, sz, blockData.pos, blockData.endPos)) {
-              structure[sy][sx][sz] = new ItemStack(Block.getBlockFromName(blockData.block), 1, blockData.meta);
-            }
-          }
-        }
-      }
-    }*/
 
     structureData = new StructureInfo(size[0], size[1], size[2], data);
     blockAccess = new StructureBlockAccess(structureData);
@@ -168,6 +144,7 @@ public class ElementStructure extends SizedBookElement {
   }
 
   int[] lastClick = null;
+  private int fullStructureSteps = 5;
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
@@ -187,10 +164,12 @@ public class ElementStructure extends SizedBookElement {
       }
     }
 
-    canTick = false;
     if(canTick) {
       if(++tick % 20 == 0) {
-        structureData.step();
+        if(structureData.canStep() || ++fullStructureSteps >= 5) {
+          structureData.step();
+          fullStructureSteps = 0;
+        }
       }
     }
     else {
@@ -351,4 +330,18 @@ public class ElementStructure extends SizedBookElement {
     super.buttonPressed(gui, button);
   }
 */
+
+  public boolean isAnimating() {
+    return canTick;
+  }
+
+  @Override
+  public boolean onButtonClick(int buttonId, ElementButton button) {
+    switch(buttonId) {
+      case BUTTON_ID_ANIMATE:
+        this.canTick = !this.canTick;
+        return true;
+    }
+    return false;
+  }
 }

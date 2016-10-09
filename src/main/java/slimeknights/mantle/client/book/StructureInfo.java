@@ -102,6 +102,16 @@ public class StructureInfo {
     blockIndex = maxBlockIndex;
   }
 
+  public boolean canStep() {
+    int index = blockIndex;
+    do {
+      if(++index >= maxBlockIndex) {
+        return false;
+      }
+    } while(isEmpty(index));
+    return true;
+  }
+
   public void step() {
     int start = blockIndex;
     do {
