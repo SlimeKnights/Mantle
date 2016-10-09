@@ -78,7 +78,7 @@ public class ElementStructure extends SizedBookElement {
 
   public void init(int[] size, BlockData[] data) {
     int yOff = 0;
-
+/*
     ItemStack[][][] structure = new ItemStack[size[1]][size[0]][size[2]];
 
     for(int sy = 0; sy < size[1]; sy++) {
@@ -91,10 +91,10 @@ public class ElementStructure extends SizedBookElement {
           }
         }
       }
-    }
+    }*/
 
-    structureData = new StructureInfo(structure);
-    blockAccess = new StructureBlockAccess(structure, structureData);
+    structureData = new StructureInfo(size[0], size[1], size[2], data);
+    blockAccess = new StructureBlockAccess(structureData);
 
 
     rotX = 25;
@@ -187,6 +187,7 @@ public class ElementStructure extends SizedBookElement {
       }
     }
 
+    canTick = false;
     if(canTick) {
       if(++tick % 20 == 0) {
         structureData.step();

@@ -1,9 +1,21 @@
 package slimeknights.mantle.client.book;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+import slimeknights.mantle.client.book.data.element.BlockData;
 
 public class StructureInfo {
-  public ItemStack[][][] data;
+  public IBlockState[][][] data;
   public int blockCount = 0;
   public int[] countPerLevel;
   public int structureHeight = 0;
@@ -11,40 +23,74 @@ public class StructureInfo {
   public int structureWidth = 0;
   public int showLayer = -1;
 
-  private int blockIndex = -1;
+  private int blockIndex = 0;
   private int maxBlockIndex;
 
-  public StructureInfo(ItemStack[][][] structure) {
-    init(structure);
-    maxBlockIndex = blockIndex = structureHeight * structureLength * structureWidth;
-  }
+  public StructureInfo(int length, int height, int width, BlockData[] blockData) {
+    this.structureWidth = width;
+    this.structureHeight = height;
+    this.structureLength = length;
+    IBlockState[][][] states = new IBlockState[height][length][width];
 
-  public void init(ItemStack[][][] structure) {
-    data = structure;
-    structureHeight = structure.length;
-    structureWidth = 0;
-    structureLength = 0;
-
-    countPerLevel = new int[structureHeight];
-    blockCount = 0;
-    for(int h = 0; h < structure.length; h++) {
-      if(structure[h].length > structureLength) {
-        structureLength = structure[h].length;
-      }
-      int perLvl = 0;
-      for(int l = 0; l < structure[h].length; l++) {
-        if(structure[h][l].length > structureWidth) {
-          structureWidth = structure[h][l].length;
-        }
-        for(ItemStack ss : structure[h][l]) {
-          if(ss != null) {
-            perLvl++;
+    for(int y = 0; y < height; y++) {
+      for(int x = 0; x < length; x++) {
+        for(int z = 0; z < width; z++) {
+          for(BlockData data : blockData) {
+            if(inside(x, y, z, data.pos, data.endPos)) {
+              states[y][x][z] = convert(data);
+              break;
+            }
           }
         }
       }
-      countPerLevel[h] = perLvl;
-      blockCount += perLvl;
     }
+
+    data = states;
+    maxBlockIndex = blockIndex = structureHeight * structureLength * structureWidth;
+  }
+
+  private IBlockState convert(BlockData data) {
+    Block block = Block.getBlockFromName(data.block);
+    if(block == null) {
+      return Blocks.AIR.getDefaultState();
+    }
+    IBlockState state;
+    if(data.state == null || data.state.isEmpty()) {
+      state = block.getStateFromMeta(data.meta);
+    }
+    else {
+      state = block.getDefaultState();
+
+      for(Map.Entry<String, String> entry : data.state.entrySet()) {
+        Optional<IProperty<?>> property = state.getPropertyNames().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
+
+        if(property.isPresent()) {
+          state = setProperty(state, property.get(), entry.getValue());
+        }
+      }
+    }
+    return state;
+  }
+
+  private <T extends Comparable<T>> IBlockState setProperty(IBlockState state, IProperty<T> prop, String valueString) {
+    com.google.common.base.Optional<T> value = prop.parseValue(valueString);
+    if(value.isPresent()) {
+      state = state.withProperty(prop, value.get());
+    }
+    return state;
+  }
+
+
+  private boolean inside(int x, int y, int z, int[] rangeStart, int[] rangeEnd) {
+    if(x >= rangeStart[0] && x <= rangeEnd[0]) {
+      if(y >= rangeStart[1] && y <= rangeEnd[1]) {
+        if(z >= rangeStart[2] && z <= rangeEnd[2]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   public void setShowLayer(int layer) {
@@ -71,7 +117,7 @@ public class StructureInfo {
     int x = r / structureWidth;
     int z = r % structureWidth;
 
-    return data[y][x][z] == null;
+    return data[y][x][z] == null || data[y][x][z].getBlock() == Blocks.AIR;
   }
 
   public int getLimiter() {

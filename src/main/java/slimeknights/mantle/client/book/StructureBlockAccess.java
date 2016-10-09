@@ -22,24 +22,9 @@ public class StructureBlockAccess implements IBlockAccess {
   private final StructureInfo data;
   private final IBlockState[][][] structure;
 
-  public StructureBlockAccess(ItemStack[][][] structure, StructureInfo data) {
+  public StructureBlockAccess(StructureInfo data) {
     this.data = data;
-    this.structure = Arrays.stream(structure).map(layer -> {
-      return Arrays.stream(layer).map(row -> {
-        return Arrays.stream(row).map(itemstack -> {
-          return convert(itemstack);
-        }).collect(Collectors.toList()).toArray(new IBlockState[0]);
-      }).collect(Collectors.toList()).toArray(new IBlockState[0][]);
-    }).collect(Collectors.toList()).toArray(new IBlockState[0][][]);
-  }
-
-  private IBlockState convert(ItemStack itemstack) {
-    if(itemstack != null && itemstack.getItem() instanceof ItemBlock) {
-      return ((ItemBlock) itemstack.getItem()).getBlock().getStateFromMeta(itemstack.getItemDamage());
-    }
-    else {
-      return Blocks.AIR.getDefaultState();
-    }
+    this.structure = data.data;
   }
 
   @Nullable
@@ -65,7 +50,7 @@ public class StructureBlockAccess implements IBlockAccess {
         if(z >= 0 && z < structure[y][x].length) {
           int index = y * (data.structureLength * data.structureWidth) + x * data.structureWidth + z;
           if(index <= data.getLimiter()) {
-            return structure[y][x][z];
+            return structure[y][x][z] != null ? structure[y][x][z] : Blocks.AIR.getDefaultState();
           }
         }
       }
