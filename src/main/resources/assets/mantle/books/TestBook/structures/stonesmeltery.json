@@ -4,27 +4,31 @@
     {
       "pos": [1, 0, 1],
       "endPos": [3, 0, 3],
-      "block": "minecraft:stone"
+      "block": "minecraft:stonebrick"
     },
     {
       "pos": [0, 1, 1],
       "endPos": [0, 2, 3],
-      "block": "minecraft:stone"
+      "block": "minecraft:stonebrick",
+      "meta": 0
     },
     {
       "pos": [4, 1, 1],
       "endPos": [4, 2, 3],
-      "block": "minecraft:stone"
+      "block": "minecraft:stonebrick",
+      "meta": 1
     },
     {
       "pos": [1, 1, 0],
       "endPos": [3, 2, 0],
-      "block": "minecraft:stone"
+      "block": "minecraft:stonebrick",
+      "meta": 2
     },
     {
       "pos": [1, 1, 4],
       "endPos": [3, 2, 4],
-      "block": "minecraft:stone"
+      "block": "minecraft:stonebrick",
+      "meta": 3
     },
     {
       "pos": [2, 2, 2],

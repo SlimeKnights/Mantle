@@ -54,7 +54,6 @@ public class ElementStructure extends SizedBookElement {
   }
 
   boolean canTick = true;
-  boolean showCompleted = false;
   int tick = 0;
 
   float rotX = 0;
@@ -62,7 +61,6 @@ public class ElementStructure extends SizedBookElement {
   float rotZ = 0;
   List<String> componentTooltip;
 
-  //ItemStack[][][] structureData;
   StructureInfo structureData;
   StructureBlockAccess blockAccess;
 
@@ -88,7 +86,7 @@ public class ElementStructure extends SizedBookElement {
         for(int sz = 0; sz < size[2]; sz++) {
           for(BlockData blockData : data) {
             if(inside(sx, sy, sz, blockData.pos, blockData.endPos)) {
-              structure[sy][sx][sz] = new ItemStack(Block.getBlockFromName(blockData.block));
+              structure[sy][sx][sz] = new ItemStack(Block.getBlockFromName(blockData.block), 1, blockData.meta);
             }
           }
         }
@@ -101,8 +99,8 @@ public class ElementStructure extends SizedBookElement {
 
     rotX = 25;
     rotY = -45;
-
-    /*boolean canRenderFormed = multiblock.canRenderFormedStructure();
+/*
+    boolean canRenderFormed = multiblock.canRenderFormedStructure();
     //			yOff = (structureHeight-1)*12+structureWidth*5+structureLength*5+16;
     //			yOff = Math.max(48, yOff);
     float f = (float)Math.sqrt(structureHeight*structureHeight + structureWidth*structureWidth + structureLength*structureLength);
@@ -117,7 +115,7 @@ public class ElementStructure extends SizedBookElement {
     {
       pageButtons.add(new GuiButtonManualNavigation(gui, 101, x+4,y+yOff/2-(canRenderFormed?14:8)-16, 10,16, 3));
       pageButtons.add(new GuiButtonManualNavigation(gui, 102, x+4,y+yOff/2+(canRenderFormed?14:8), 10,16, 2));
-    }*/
+    }
 /*
     IngredientStack[] totalMaterials = this.multiblock.getTotalMaterials();
     if(false && false)
@@ -189,7 +187,6 @@ public class ElementStructure extends SizedBookElement {
       }
     }
 
-    canTick = false;
     if(canTick) {
       if(++tick % 20 == 0) {
         structureData.step();
