@@ -71,7 +71,7 @@ public class ContentStructure extends PageContent {
     if(size != null && size.length == 3 && structure != null && structure.length > 0) {
       boolean showButtons = size[1] > 1;
       if(showButtons) {
-        structureSizeX -= GuiArrow.ArrowType.REFRESH.w;
+        //structureSizeX -= GuiArrow.ArrowType.REFRESH.w;
       }
       ElementStructure elementStructure = new ElementStructure(offset, y, structureSizeX, structureSizeY, size, structure);
       list.add(elementStructure);
@@ -85,11 +85,11 @@ public class ContentStructure extends PageContent {
 
         int dx = (GuiArrow.ArrowType.REFRESH.w - GuiArrow.ArrowType.UP.w) / 2;
 
-        list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_UP, elementStructure, structureSizeX + offset + dx, midY, GuiArrow.ArrowType.UP, col, colHover));
-        midY += GuiArrow.ArrowType.UP.h + 2;
-        list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_DOWN, elementStructure, structureSizeX + offset + dx, midY, GuiArrow.ArrowType.DOWN, col, colHover));
+        //list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_UP, elementStructure, structureSizeX + offset + dx, midY, GuiArrow.ArrowType.UP, col, colHover));
+        //midY += GuiArrow.ArrowType.UP.h + 2;
+        //list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_DOWN, elementStructure, structureSizeX + offset + dx, midY, GuiArrow.ArrowType.DOWN, col, colHover));
 
-        list.add(new ElementAnimationToggle(ElementStructure.BUTTON_ID_ANIMATE, elementStructure, structureSizeX + offset, 0, GuiArrow.ArrowType.REFRESH, col, colHover, colToggled));
+        list.add(new ElementAnimationToggle(ElementStructure.BUTTON_ID_ANIMATE, elementStructure, GuiBook.PAGE_WIDTH - GuiArrow.ArrowType.REFRESH.w, 0, GuiArrow.ArrowType.REFRESH, col, colHover, colToggled));
       }
     }
   }

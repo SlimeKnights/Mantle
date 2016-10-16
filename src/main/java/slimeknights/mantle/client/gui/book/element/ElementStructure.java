@@ -331,8 +331,8 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   }
 */
 
-  public boolean isAnimating() {
-    return canTick;
+  public void changeActiveLayer(int direction) {
+
   }
 
   @Override
