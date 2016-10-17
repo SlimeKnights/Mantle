@@ -242,10 +242,10 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
 
     RenderHelper.disableStandardItemLighting();
     GlStateManager.disableRescaleNormal();
-
+    GlStateManager.shadeModel(GL11.GL_FLAT);
     GlStateManager.enableBlend();
     RenderHelper.disableStandardItemLighting();
-
+/*
     fontRenderer.setUnicodeFlag(true);
     //if(localizedText!=null&&!localizedText.isEmpty())
     //fontRenderer.drawSplitString(localizedText, x,y+yOffTotal, 120, manual.getTextColour());
@@ -257,7 +257,7 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
       if(mouseX >= x + 116 && mouseX < x + 122 && mouseY >= y + yOffTotal / 2 - 4 && mouseY < y + yOffTotal / 2 + 4) {
         this.drawHoveringText(componentTooltip, mouseX, mouseY, fontRenderer);
       }
-    }
+    }*/
   }
 
   private int lastX;
