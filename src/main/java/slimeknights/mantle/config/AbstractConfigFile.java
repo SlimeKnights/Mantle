@@ -29,6 +29,7 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.AtomicFiles;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
@@ -41,6 +42,9 @@ public abstract class AbstractConfigFile implements Serializable {
   // default value is TRUE since most people will forget to set it to true when it needs saving anyway
   // if you want to use it, set it to false in your constructor or something ;o
   private boolean needsSaving = true;
+
+  @Setting("_VERSION")
+  private int configVersion;
 
   // required constructor for deserialization
   public AbstractConfigFile() {
@@ -71,6 +75,20 @@ public abstract class AbstractConfigFile implements Serializable {
   }
 
   public abstract void insertDefaults();
+
+  /**
+   * Return a number for the config version.
+   * If the version number differs from the one in the file the file will be updated.
+   * So if you add new fields etc. update the number
+   */
+  protected abstract int getConfigVersion();
+
+  void setConfigVersion() {
+    if(configVersion != getConfigVersion()) {
+      configVersion = getConfigVersion();
+      setNeedsSaving();
+    }
+  }
 
 
   public AbstractConfigFile loadFromPacket(byte[] packetData) {

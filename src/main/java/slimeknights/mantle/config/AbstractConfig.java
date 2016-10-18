@@ -30,6 +30,7 @@ public abstract class AbstractConfig {
       val.loader = configFile.loader;
       val.file = configFile.file;
       val.insertDefaults();
+      val.setConfigVersion();
 
       configFileList.add(val);
       // note: this is a workaround for generics because the generic info has to match the same class
