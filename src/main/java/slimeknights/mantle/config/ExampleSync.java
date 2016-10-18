@@ -79,6 +79,11 @@ class ExampleSync {
     public void insertDefaults() {
       // no default values that need to initialized dynamically
     }
+
+    @Override
+    protected int getConfigVersion() {
+      return 1;
+    }
   }
 
   static class ExampleSyncPacketImpl extends AbstractConfigSyncPacket {
