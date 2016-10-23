@@ -171,7 +171,7 @@ public abstract class AbstractConfigFile implements Serializable {
       Object remote = field.get(other);
 
       // is this a subclass that contains entries itself?
-      if(field.getClass().isAnnotationPresent(ConfigSerializable.class)) {
+      if(field.getType().isAnnotationPresent(ConfigSerializable.class)) {
         sync(remote, original);
       }
       else {
