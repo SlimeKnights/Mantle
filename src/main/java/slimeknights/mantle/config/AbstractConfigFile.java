@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -113,10 +114,12 @@ public abstract class AbstractConfigFile implements Serializable {
   }
 
   public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-    fields.addAll(Arrays.asList(type.getDeclaredFields()));
+    if(type != AbstractConfigFile.class) {
+      fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
-    if(type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass()) && type != AbstractConfigFile.class) {
-      fields = getAllFields(fields, type.getSuperclass());
+      if(type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass())) {
+        fields = getAllFields(fields, type.getSuperclass());
+      }
     }
 
     return fields;
@@ -141,6 +144,10 @@ public abstract class AbstractConfigFile implements Serializable {
 
     for(Field field : fieldsToProcess) {
       try {
+        // don't sync transient fields
+        if(Modifier.isTransient(field.getModifiers())) {
+          continue;
+        }
         if(!field.isAccessible()) {
           field.setAccessible(true);
         }
