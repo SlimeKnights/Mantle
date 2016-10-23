@@ -115,7 +115,7 @@ public abstract class AbstractConfigFile implements Serializable {
   public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
     fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
-    if(type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass())) {
+    if(type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass()) && type != AbstractConfigFile.class) {
       fields = getAllFields(fields, type.getSuperclass());
     }
 
