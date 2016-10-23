@@ -31,6 +31,7 @@ import ninja.leaping.configurate.loader.AtomicFiles;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
@@ -135,35 +136,53 @@ public abstract class AbstractConfigFile implements Serializable {
   }
 
   public boolean sync(AbstractConfigFile other) {
-    if(other.getClass() != this.getClass()) {
+    return sync(other, this);
+  }
+
+  public boolean sync(Object other, Object that) {
+    if(other.getClass() != that.getClass()) {
       return false;
     }
 
     List<Field> fieldsToProcess = new ArrayList<>();
-    getAllFields(fieldsToProcess, this.getClass());
+    getAllFields(fieldsToProcess, that.getClass());
 
     for(Field field : fieldsToProcess) {
-      try {
-        // don't sync transient fields
-        if(Modifier.isTransient(field.getModifiers())) {
-          continue;
-        }
-        if(!field.isAccessible()) {
-          field.setAccessible(true);
-        }
-        Object original = field.get(this);
-        Object remote = field.get(other);
+      syncField(other, field);
+    }
 
+    return needsSaving();
+  }
+
+  private void syncField(Object other, Field field) {
+    try {
+      // don't sync transient fields
+      if(Modifier.isTransient(field.getModifiers())) {
+        return;
+      }
+      if(Modifier.isStatic(field.getModifiers())) {
+        return;
+      }
+      if(!field.isAccessible()) {
+        field.setAccessible(true);
+      }
+
+      Object original = field.get(this);
+      Object remote = field.get(other);
+
+      // is this a subclass that contains entries itself?
+      if(field.getClass().isAnnotationPresent(ConfigSerializable.class)) {
+        sync(remote, original);
+      }
+      else {
         if(!original.equals(remote)) {
           field.set(this, remote);
           setNeedsSaving();
         }
-      } catch(IllegalAccessException e) {
-        e.printStackTrace();
       }
+    } catch(IllegalAccessException e) {
+      e.printStackTrace();
     }
-
-    return needsSaving();
   }
 
   public void setNeedsSaving() {
