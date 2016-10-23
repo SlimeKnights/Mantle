@@ -148,13 +148,13 @@ public abstract class AbstractConfigFile implements Serializable {
     getAllFields(fieldsToProcess, that.getClass());
 
     for(Field field : fieldsToProcess) {
-      syncField(other, field);
+      syncField(other, that, field);
     }
 
     return needsSaving();
   }
 
-  private void syncField(Object other, Field field) {
+  private void syncField(Object other, Object that, Field field) {
     try {
       // don't sync transient fields
       if(Modifier.isTransient(field.getModifiers())) {
@@ -167,7 +167,7 @@ public abstract class AbstractConfigFile implements Serializable {
         field.setAccessible(true);
       }
 
-      Object original = field.get(this);
+      Object original = field.get(that);
       Object remote = field.get(other);
 
       // is this a subclass that contains entries itself?
@@ -176,7 +176,7 @@ public abstract class AbstractConfigFile implements Serializable {
       }
       else {
         if(!original.equals(remote)) {
-          field.set(this, remote);
+          field.set(that, remote);
           setNeedsSaving();
         }
       }
