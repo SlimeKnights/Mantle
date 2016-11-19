@@ -28,6 +28,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 repositories {
@@ -159,8 +160,8 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact jar
-            archives deobfJar
-            archives sourcesJar
+            artifact deobfJar
+            artifact sourcesJar
         }
     }
 
