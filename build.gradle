@@ -49,15 +49,6 @@ group = 'slimeknights.mantle'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-// Define properties file
-ext.configFile = file "build.properties"
-
-configFile.withReader {
-    // Load config.  It shall from now be referenced as simply config or project.config
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
 
 // sets version to the slimeKnights version format
 task buildInfo {
@@ -78,17 +69,17 @@ task buildInfo {
 }
 ext.artifact_version = 'NFG'
 if (System.getenv().ARTIFACT_VERSION == null) {
-    artifact_version = "${config.mod_version}.${project.buildInfo.buildNum}"
+    artifact_version = "${mod_version}.${project.buildInfo.buildNum}"
 }
 if (System.getenv().ARTIFACT_VERSION != null) {
     artifact_version = "${system.getenv().ARTIFACT_VERSION}"
 }
 
-version = "${config.minecraft_version}-${artifact_version}"
+version = "${minecraft_version}-${artifact_version}"
 
 minecraft {
-    version = config.minecraft_version + "-" + config.forge_version
-    mappings = config.mappings
+    version = minecraft_version + "-" + forge_version
+    mappings = mappings_version
     runDir = 'run'
     useDepAts = true
     replace '${version}', project.version
@@ -100,24 +91,24 @@ configurations {
 }
 
 dependencies {
-    //compile "codechicken:CodeChickenLib:${config.minecraft_version}-${config.CCLIB_version}:dev"
-    //compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.ccc_version}:dev"
-    //compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
-    deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
+    //compile "codechicken:CodeChickenLib:${minecraft_version}-${CCLIB_version}:dev"
+    //compile "codechicken:CodeChickenCore:${minecraft_version}-${ccc_version}:dev"
+    //compile "codechicken:NotEnoughItems:${minecraft_version}-${NEI_version}:dev"
+    deobfCompile "mezz.jei:jei_${minecraft_version}:${jei_version}"
     // Configuration
-    shadow "ninja.leaping.configurate:configurate-hocon:${config.configurate_version}"
-    //shade "ninja.leaping.configurate:configurate-gson:${config.configurate_version}"
+    shadow "ninja.leaping.configurate:configurate-hocon:${configurate_version}"
+    //shade "ninja.leaping.configurate:configurate-gson:${configurate_version}"
 }
 
 processResources
 {
     inputs.property "version", artifact_version
-    inputs.property "MCversion", config.minecraft_version
+    inputs.property "MCversion", minecraft_version
     // replace stuff in text files, not binary ones.
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         // replace version and MCVersion
-        expand 'version':artifact_version,'MCversion':config.minecraft_version
+        expand 'version':artifact_version,'MCversion':minecraft_version
     }
     // copy everything else, thats not text
     from(sourceSets.main.resources.srcDirs) {
@@ -163,16 +154,18 @@ artifacts {
     archives sourcesJar
 }
 
-task("uploadJars", dependsOn:"build") {
-    description = "uploads JARs"
-    if (project.hasProperty("local_maven")) {
-	    apply plugin: 'maven'
-            uploadArchives {
-                repositories {
-                    mavenDeployer {
-                        repository(url: "file://${local_maven}")
-                }
-            }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+            archives deobfJar
+            archives sourcesJar
+        }
+    }
+
+    repositories {
+        if (project.hasProperty('DEPLOY_DIR')) {
+            maven { url DEPLOY_DIR }
         }
     }
 }
