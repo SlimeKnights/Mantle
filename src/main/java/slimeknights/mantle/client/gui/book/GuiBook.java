@@ -615,7 +615,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     if(loadingAchievements) {
       return;
     }
-    if(mc.thePlayer == null) {
+    if(mc.player == null) {
       return;
     }
 
@@ -626,9 +626,9 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     if(this.page == -1) {
-      BookLoader.updateSavedPage(mc.thePlayer, item, "");
+      BookLoader.updateSavedPage(mc.player, item, "");
     } else if(page != null && page.parent != null) {
-      BookLoader.updateSavedPage(mc.thePlayer, item, page.parent.name + "." + page.name);
+      BookLoader.updateSavedPage(mc.player, item, page.parent.name + "." + page.name);
     }
   }
 

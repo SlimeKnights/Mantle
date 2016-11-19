@@ -57,7 +57,7 @@ public class ElementSection extends SizedBookElement {
         GlStateManager.translate(iconX, iconY, 0);
         GlStateManager.scale(2F, 2F, 1F);
         RenderHelper.enableGUIStandardItemLighting();
-        mc.getRenderItem().renderItemAndEffectIntoGUI(section.icon.item.getItems()[0], 0, 0);
+        mc.getRenderItem().renderItemAndEffectIntoGUI(section.icon.item.getItems().get(0), 0, 0);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.popMatrix();
       }

@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import slimeknights.mantle.client.book.BookLoader;
@@ -29,15 +30,15 @@ public class ItemStackData {
   public short damage = 0;
   public JsonObject nbt;
 
-  public ItemStack[] getItems() {
+  public NonNullList<ItemStack> getItems() {
     if(itemListLocation != null && source.resourceExists(itemListLocation)) {
       try {
         ItemsList itemsList = BookLoader.GSON
             .fromJson(source.resourceToString(source.getResource(itemListLocation)), ItemsList.class);
-        ItemStack[] items = new ItemStack[itemsList.items.length];
+        NonNullList<ItemStack> items = NonNullList.<ItemStack> withSize(itemsList.items.length, ItemStack.EMPTY);
 
         for(int i = 0; i < itemsList.items.length; i++) {
-          items[i] = itemsList.items[i].getItem();
+          items.set(i,itemsList.items[i].getItem());
         }
 
         this.action = itemsList.action;
@@ -47,7 +48,7 @@ public class ItemStackData {
       }
     }
 
-    return new ItemStack[]{getItem()};
+    return NonNullList.<ItemStack> withSize(1, getItem());
   }
 
   private ItemStack getItem() {
@@ -75,7 +76,7 @@ public class ItemStackData {
     }
 
     if(isMissingItem) {
-      NBTTagCompound display = itemStack.getSubCompound("display", true);
+      NBTTagCompound display = itemStack.getOrCreateSubCompound("display");
       display.setString("Name", "\u00A7rUnknown Item");
       NBTTagList lore = new NBTTagList();
       lore.appendTag(new NBTTagString("\u00A7r\u00A7eItem Name:"));
@@ -93,7 +94,7 @@ public class ItemStackData {
   public static ItemStackData getItemStackData(ItemStack stack, boolean ignoreNbt) {
     ItemStackData data = new ItemStackData();
     data.id = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
-    data.amount = (byte) stack.stackSize;
+    data.amount = (byte) stack.getCount();
     data.damage = (short) stack.getItemDamage();
     if(!ignoreNbt && stack.getTagCompound() != null) {
       data.nbt = BookLoader.GSON.toJsonTree(stack.getTagCompound(), NBTTagCompound.class).getAsJsonObject();

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -24,8 +25,14 @@ public class RecipeMatchRegistry {
 
   // looks for a match in the given itemstacks
   public RecipeMatch.Match matches(ItemStack... stacks) {
+    NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(stacks.length, ItemStack.EMPTY);
+    for(int i = 0; i < stacks.length; i++) {
+      if(stacks[i] != ItemStack.EMPTY) {
+          nonNullStacks.set(i, stacks[i].copy());
+      }
+    }
     for(RecipeMatch recipe : items) {
-      RecipeMatch.Match match = recipe.matches(stacks);
+      RecipeMatch.Match match = recipe.matches(nonNullStacks);
       if(match != null) {
         return match;
       }
@@ -35,7 +42,7 @@ public class RecipeMatchRegistry {
   }
 
   // looks for a match with at least the given amount in the given itemstacks
-  public RecipeMatch.Match matches(ItemStack[] stacks, int minAmount) {
+  public RecipeMatch.Match matches(NonNullList<ItemStack> stacks, int minAmount) {
     stacks = copyItemStackArray(stacks); // copy so we don't modify original
 
     List<RecipeMatch.Match> matches = Lists.newLinkedList();
@@ -63,7 +70,7 @@ public class RecipeMatchRegistry {
     return new RecipeMatch.Match(foundStacks, sum);
   }
 
-  public RecipeMatch.Match matchesRecursively(ItemStack[] stacks) {
+  public RecipeMatch.Match matchesRecursively(NonNullList<ItemStack> stacks) {
     stacks = copyItemStackArray(stacks); // copy so we don't modify original
 
     List<RecipeMatch.Match> matches = Lists.newLinkedList();
@@ -144,11 +151,11 @@ public class RecipeMatchRegistry {
   }
 
 
-  public static ItemStack[] copyItemStackArray(ItemStack[] in) {
-    ItemStack[] stacksCopy = new ItemStack[in.length];
-    for(int i = 0; i < in.length; i++) {
-      if(in[i] != null) {
-        stacksCopy[i] = in[i].copy();
+  public static NonNullList<ItemStack> copyItemStackArray(NonNullList<ItemStack> in) {
+    NonNullList<ItemStack> stacksCopy = NonNullList.<ItemStack> withSize(in.size(), ItemStack.EMPTY);
+    for(int i = 0; i < in.size(); i++) {
+      if(in.get(i) != ItemStack.EMPTY) {
+        stacksCopy.set(i, in.get(i).copy());
       }
     }
 

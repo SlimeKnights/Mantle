@@ -15,7 +15,7 @@ public class TagHelper {
 
   /* Generic Tag Operations */
   public static NBTTagCompound getTagSafe(ItemStack stack) {
-    if(stack == null || stack.getItem() == null || !stack.hasTagCompound()) {
+    if(stack == ItemStack.EMPTY || stack.getItem() == null || !stack.hasTagCompound()) {
       return new NBTTagCompound();
     }
 

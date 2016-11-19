@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import java.util.ArrayList;
 
@@ -62,23 +63,23 @@ public class ContentSmelting extends PageContent {
     }
   }
 
-  public ItemStack[] getFuelsList() {
+  public NonNullList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
 
-    ItemStack[] fuels = new ItemStack[13];
-    fuels[0] = new ItemStack(Blocks.WOODEN_SLAB);
-    fuels[1] = new ItemStack(Blocks.PLANKS);
-    fuels[2] = new ItemStack(Blocks.COAL_BLOCK);
-    fuels[3] = new ItemStack(Items.WOODEN_PICKAXE);
-    fuels[4] = new ItemStack(Items.WOODEN_SWORD);
-    fuels[5] = new ItemStack(Items.WOODEN_HOE);
-    fuels[6] = new ItemStack(Items.STICK);
-    fuels[7] = new ItemStack(Items.COAL);
-    fuels[8] = new ItemStack(Items.LAVA_BUCKET);
-    fuels[9] = new ItemStack(Blocks.SAPLING);
-    fuels[10] = new ItemStack(Items.BLAZE_ROD);
-    fuels[11] = new ItemStack(Items.WOODEN_SHOVEL);
-    fuels[12] = new ItemStack(Items.WOODEN_AXE);
+    NonNullList<ItemStack> fuels = NonNullList.<ItemStack> withSize(13, ItemStack.EMPTY);
+    fuels.set(0, new ItemStack(Blocks.WOODEN_SLAB));
+    fuels.set(1, new ItemStack(Blocks.PLANKS));
+    fuels.set(2, new ItemStack(Blocks.COAL_BLOCK));
+    fuels.set(3, new ItemStack(Items.WOODEN_PICKAXE));
+    fuels.set(4, new ItemStack(Items.WOODEN_SWORD));
+    fuels.set(5, new ItemStack(Items.WOODEN_HOE));
+    fuels.set(6, new ItemStack(Items.STICK));
+    fuels.set(7, new ItemStack(Items.COAL));
+    fuels.set(8, new ItemStack(Items.LAVA_BUCKET));
+    fuels.set(9, new ItemStack(Blocks.SAPLING));
+    fuels.set(10, new ItemStack(Items.BLAZE_ROD));
+    fuels.set(11, new ItemStack(Items.WOODEN_SHOVEL));
+    fuels.set(12, new ItemStack(Items.WOODEN_AXE));
 
     return fuels;
   }

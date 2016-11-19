@@ -70,7 +70,7 @@ public class ElementImage extends SizedBookElement {
       GlStateManager.pushMatrix();
       GlStateManager.scale(width, height, 1F);
       RenderHelper.enableGUIStandardItemLighting();
-      mc.getRenderItem().renderItemAndEffectIntoGUI(image.item.getItems()[0], x, y);
+      mc.getRenderItem().renderItemAndEffectIntoGUI(image.item.getItems().get(0), x, y);
       RenderHelper.disableStandardItemLighting();
       GlStateManager.popMatrix();
     }

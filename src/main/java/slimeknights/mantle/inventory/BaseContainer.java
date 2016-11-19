@@ -12,6 +12,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorldNameable;
@@ -121,7 +122,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   @Nonnull
   @Override
   @SuppressWarnings("unchecked")
-  public List<ItemStack> getInventory() {
+  public NonNullList<ItemStack> getInventory() {
     return super.getInventory();
   }
 
@@ -191,10 +192,10 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     // we can only support inventory <-> playerInventory
     if(playerInventoryStart < 0) {
       // so we don't do anything if no player inventory is present because we don't know what to do
-      return null;
+      return ItemStack.EMPTY;
     }
 
-    ItemStack itemstack = null;
+    ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.inventorySlots.get(index);
 
     // slot that was clicked on not empty?
@@ -207,16 +208,16 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       if(index < playerInventoryStart) {
         // try to put it into the player inventory (if we have a player inventory)
         if(!this.mergeItemStack(itemstack1, playerInventoryStart, end, true)) {
-          return null;
+          return ItemStack.EMPTY;
         }
       }
       // Slot is in the player inventory (if it exists), transfer to main inventory
       else if(!this.mergeItemStack(itemstack1, 0, playerInventoryStart, false)) {
-        return null;
+        return ItemStack.EMPTY;
       }
 
-      if(itemstack1.stackSize == 0) {
-        slot.putStack(null);
+      if(itemstack1.getCount() == 0) {
+        slot.putStack(ItemStack.EMPTY);
       }
       else {
         slot.onSlotChanged();
@@ -230,7 +231,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   @Override
   protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     boolean ret = mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
-    if(stack != null && stack.stackSize > 0) {
+    if(stack != ItemStack.EMPTY && stack.getCount() > 0) {
       ret |= mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
     }
     return ret;
@@ -238,7 +239,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   // only refills items that are already present
   protected boolean mergeItemStackRefill(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
-    if(stack.stackSize <= 0) {
+    if(stack.getCount() <= 0) {
       return false;
     }
 
@@ -253,27 +254,27 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     ItemStack itemstack1;
 
     if(stack.isStackable()) {
-      while(stack.stackSize > 0 && (!useEndIndex && k < endIndex || useEndIndex && k >= startIndex)) {
+      while(stack.getCount() > 0 && (!useEndIndex && k < endIndex || useEndIndex && k >= startIndex)) {
         slot = this.inventorySlots.get(k);
         itemstack1 = slot.getStack();
 
-        if(itemstack1 != null
+        if(itemstack1 != ItemStack.EMPTY
            && itemstack1.getItem() == stack.getItem()
            && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack1.getMetadata())
            && ItemStack.areItemStackTagsEqual(stack, itemstack1)
            && this.canMergeSlot(stack, slot)) {
-          int l = itemstack1.stackSize + stack.stackSize;
+          int l = itemstack1.getCount() + stack.getCount();
           int limit = Math.min(stack.getMaxStackSize(), slot.getItemStackLimit(stack));
 
           if(l <= limit) {
-            stack.stackSize = 0;
-            itemstack1.stackSize = l;
+            stack.setCount(0);
+            itemstack1.setCount(l);
             slot.onSlotChanged();
             flag1 = true;
           }
-          else if(itemstack1.stackSize < limit) {
-            stack.stackSize -= limit - itemstack1.stackSize;
-            itemstack1.stackSize = limit;
+          else if(itemstack1.getCount() < limit) {
+            stack.shrink(limit - itemstack1.getCount());
+            itemstack1.setCount(limit);
             slot.onSlotChanged();
             flag1 = true;
           }
@@ -293,7 +294,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   // only moves items into empty slots
   protected boolean mergeItemStackMove(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
-    if(stack.stackSize <= 0) {
+    if(stack.getCount() <= 0) {
       return false;
     }
 
@@ -311,22 +312,22 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       Slot slot = this.inventorySlots.get(k);
       ItemStack itemstack1 = slot.getStack();
 
-      if(itemstack1 == null && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) // Forge: Make sure to respect isItemValid in the slot.
+      if(itemstack1 == ItemStack.EMPTY && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) // Forge: Make sure to respect isItemValid in the slot.
       {
         int limit = slot.getItemStackLimit(stack);
         ItemStack stack2 = stack.copy();
-        if(stack2.stackSize > limit) {
-          stack2.stackSize = limit;
-          stack.stackSize -= limit;
+        if(stack2.getCount() > limit) {
+          stack2.setCount(limit);
+          stack.shrink(limit);
         }
         else {
-          stack.stackSize = 0;
+          stack.setCount(0);
         }
         slot.putStack(stack2);
         slot.onSlotChanged();
         flag1 = true;
 
-        if(stack.stackSize == 0) {
+        if(stack.getCount() == 0) {
           break;
         }
       }

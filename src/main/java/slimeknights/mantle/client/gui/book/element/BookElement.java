@@ -54,7 +54,7 @@ public abstract class BookElement extends Gui {
 
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     if(stack != null) {
-      List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+      List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips);
       
       for(int i = 0; i < list.size(); ++i) {
         if(i == 0) {

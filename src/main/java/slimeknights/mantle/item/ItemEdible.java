@@ -16,6 +16,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -131,7 +132,7 @@ public class ItemEdible extends ItemFood {
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+  public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
     dynamic.getSubItems(itemIn, tab, subItems);
   }
 
@@ -142,17 +143,18 @@ public class ItemEdible extends ItemFood {
 
   @Nonnull
   @Override
-  public ActionResult<ItemStack> onItemRightClick(@Nonnull ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, @Nonnull EnumHand hand)
+  public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand hand)
   {
-    int meta = itemStackIn.getMetadata();
-    if(dynamic.isValid(meta) && playerIn.canEat(this.alwaysEdible.get(itemStackIn.getMetadata())))
+    ItemStack stack = playerIn.getHeldItem(hand);
+    int meta = stack.getMetadata();
+    if(dynamic.isValid(meta) && playerIn.canEat(this.alwaysEdible.get(stack.getMetadata())))
     {
       playerIn.setActiveHand(hand);
-      return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+      return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
     else
     {
-      return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemStackIn);
+      return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
     }
   }
 

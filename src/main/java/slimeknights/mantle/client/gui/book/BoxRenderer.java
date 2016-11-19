@@ -49,14 +49,14 @@ public class BoxRenderer {
     int totalHeight = segH * 3 + segGH * 2;
 
     return getTextureMatrixCoords((index % (256 / sprW) * sprW) + (sprW / 2 - totalWidth / 2), (MathHelper
-                                                                                                    .floor_float(index / (256F / sprH)) * sprH) + (sprH / 2 - totalHeight / 2), segW, segH, segGW, segGH, segId);
+                                                                                                    .floor(index / (256F / sprH)) * sprH) + (sprH / 2 - totalHeight / 2), segW, segH, segGW, segGH, segId);
   }
 
   public static int[] getTextureMatrixCoords(int u, int v, int segW, int segH, int segGW, int segGH, int segId) {
     int[] coords = new int[4];
 
     int col = segId % 3;
-    int row = MathHelper.floor_float(segId / 3F);
+    int row = MathHelper.floor(segId / 3F);
 
     coords[0] = u + col * segW + col * segGW;
     coords[1] = v + row * segH + row * segGH;

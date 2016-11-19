@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -17,13 +18,14 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.annotation.Nonnull;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes
 public class TileInventory extends TileEntity implements IInventory {
 
-  private ItemStack[] inventory;
+  private NonNullList<ItemStack> inventory;
   protected String inventoryTitle;
   protected boolean hasCustomName;
   protected int stackSizeLimit;
@@ -40,7 +42,7 @@ public class TileInventory extends TileEntity implements IInventory {
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
   public TileInventory(String name, int inventorySize, int maxStackSize) {
-    this.inventory = new ItemStack[inventorySize];
+    this.inventory = NonNullList.<ItemStack> withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.inventoryTitle = name;
     this.itemHandler = new InvWrapper(this);
@@ -68,24 +70,25 @@ public class TileInventory extends TileEntity implements IInventory {
 
   @Override
   public ItemStack getStackInSlot(int slot) {
-    if(slot < 0 || slot >= inventory.length) {
-      return null;
+    if(slot < 0 || slot >= inventory.size()) {
+      return ItemStack.EMPTY;
     }
 
-    return inventory[slot];
+    return inventory.get(slot);
   }
 
   public boolean isStackInSlot(int slot) {
-    return getStackInSlot(slot) != null;
+    return getStackInSlot(slot) != ItemStack.EMPTY;
   }
 
   public void resize(int size) {
-    inventory = Arrays.copyOf(inventory, size);
+    //TODO: Make sure this didn't break inventory contents.
+    inventory = NonNullList.<ItemStack> withSize(size, ItemStack.EMPTY);
   }
 
   @Override
   public int getSizeInventory() {
-    return inventory.length;
+    return inventory.size();
   }
 
   @Override
@@ -95,13 +98,13 @@ public class TileInventory extends TileEntity implements IInventory {
 
   @Override
   public void setInventorySlotContents(int slot, ItemStack itemstack) {
-    if(slot < 0 || slot >= inventory.length) {
+    if(slot < 0 || slot >= inventory.size()) {
       return;
     }
 
-    inventory[slot] = itemstack;
-    if(itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-      itemstack.stackSize = getInventoryStackLimit();
+    inventory.set(slot, itemstack);
+    if(itemstack != ItemStack.EMPTY && itemstack.getCount() > getInventoryStackLimit()) {
+      itemstack.setCount(getInventoryStackLimit());
     }
   }
 
@@ -109,22 +112,22 @@ public class TileInventory extends TileEntity implements IInventory {
   public ItemStack decrStackSize(int slot, int quantity) {
     ItemStack itemStack = getStackInSlot(slot);
 
-    if(itemStack == null) {
-      return null;
+    if(itemStack == ItemStack.EMPTY) {
+      return ItemStack.EMPTY;
     }
 
     // whole itemstack taken out
-    if(itemStack.stackSize <= quantity) {
-      setInventorySlotContents(slot, null);
+    if(itemStack.getCount() <= quantity) {
+      setInventorySlotContents(slot, ItemStack.EMPTY);
       this.markDirty();
       return itemStack;
     }
 
     // split itemstack
     itemStack = itemStack.splitStack(quantity);
-    // slot is empty, set to null
-    if(getStackInSlot(slot).stackSize == 0) {
-      setInventorySlotContents(slot, null);
+    // slot is empty, set to ItemStack.EMPTY
+    if(getStackInSlot(slot).getCount() == 0) {
+      setInventorySlotContents(slot, ItemStack.EMPTY);
     }
 
     this.markDirty();
@@ -135,14 +138,14 @@ public class TileInventory extends TileEntity implements IInventory {
   @Override
   public ItemStack removeStackFromSlot(int slot) {
     ItemStack itemStack = getStackInSlot(slot);
-    setInventorySlotContents(slot, null);
+    setInventorySlotContents(slot, ItemStack.EMPTY);
     return itemStack;
   }
 
   @Override
   public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemstack) {
     if(slot < getSizeInventory()) {
-      if(inventory[slot] == null || itemstack.stackSize + inventory[slot].stackSize <= getInventoryStackLimit()) {
+      if(inventory.get(slot) == ItemStack.EMPTY || itemstack.getCount() + inventory.get(slot).getCount() <= getInventoryStackLimit()) {
         return true;
       }
     }
@@ -151,8 +154,8 @@ public class TileInventory extends TileEntity implements IInventory {
 
   @Override
   public void clear() {
-    for(int i = 0; i < inventory.length; i++) {
-      inventory[i] = null;
+    for(int i = 0; i < inventory.size(); i++) {
+      inventory.set(i, ItemStack.EMPTY);
     }
   }
 
@@ -185,9 +188,9 @@ public class TileInventory extends TileEntity implements IInventory {
 
   /* Supporting methods */
   @Override
-  public boolean isUseableByPlayer(@Nonnull EntityPlayer entityplayer) {
+  public boolean isUsableByPlayer(@Nonnull EntityPlayer entityplayer) {
     // block changed/got broken?
-    if(worldObj.getTileEntity(pos) != this || worldObj.getBlockState(pos).getBlock() == Blocks.AIR) {
+    if(world.getTileEntity(pos) != this || world.getBlockState(pos).getBlock() == Blocks.AIR) {
       return false;
     }
 
@@ -224,7 +227,7 @@ public class TileInventory extends TileEntity implements IInventory {
   public NBTTagCompound writeToNBT(NBTTagCompound tags) {
     super.writeToNBT(tags);
 
-    tags.setInteger("InventorySize", inventory.length);
+    tags.setInteger("InventorySize", inventory.size());
 
     writeInventoryToNBT(tags);
 
@@ -240,7 +243,7 @@ public class TileInventory extends TileEntity implements IInventory {
     NBTTagList nbttaglist = new NBTTagList();
 
     for(int i = 0; i < inventory.getSizeInventory(); i++) {
-      if(inventory.getStackInSlot(i) != null) {
+      if(inventory.getStackInSlot(i) != ItemStack.EMPTY) {
         NBTTagCompound itemTag = new NBTTagCompound();
         itemTag.setByte("Slot", (byte) i);
         inventory.getStackInSlot(i).writeToNBT(itemTag);
@@ -261,14 +264,14 @@ public class TileInventory extends TileEntity implements IInventory {
       int slot = itemTag.getByte("Slot") & 255;
 
       if(slot >= 0 && slot < inventory.getSizeInventory()) {
-        inventory.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(itemTag));
+        inventory.setInventorySlotContents(slot, new ItemStack(itemTag));
       }
     }
   }
 
   /* Default implementations of hardly used methods */
   public ItemStack getStackInSlotOnClosing(int slot) {
-    return null;
+    return ItemStack.EMPTY;
   }
 
   @Override
@@ -284,5 +287,19 @@ public class TileInventory extends TileEntity implements IInventory {
   @Override
   public int getFieldCount() {
     return 0;
+  }
+
+  @Override
+  public boolean isEmpty()
+  {
+    for (ItemStack itemstack : this.inventory)
+    {
+      if (!itemstack.isEmpty())
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

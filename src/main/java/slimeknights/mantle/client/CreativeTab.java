@@ -32,16 +32,10 @@ public class CreativeTab extends CreativeTabs {
     return icon;
   }
 
-  @SideOnly(Side.CLIENT)
-  @Override
-  public int getIconItemDamage() {
-    return icon.getItemDamage();
-  }
-
   @Nonnull
   @SideOnly(Side.CLIENT)
   @Override
-  public Item getTabIconItem() {
-    return icon.getItem();
+  public ItemStack getTabIconItem() {
+    return icon;
   }
 }

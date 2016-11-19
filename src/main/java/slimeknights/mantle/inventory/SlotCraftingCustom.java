@@ -27,10 +27,12 @@ public class SlotCraftingCustom extends SlotCrafting {
   }
 
   @Override
-  public void onPickupFromSlot(EntityPlayer playerIn, @Nonnull ItemStack stack) {
+  public ItemStack onTake(EntityPlayer playerIn, @Nonnull ItemStack stack) {
     net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(playerIn, stack, craftMatrix);
     this.onCrafting(stack);
 
     callback.onCrafting(playerIn, stack, craftMatrix);
+
+    return stack;
   }
 }

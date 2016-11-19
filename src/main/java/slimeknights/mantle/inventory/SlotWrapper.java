@@ -19,7 +19,7 @@ public class SlotWrapper extends Slot {
   public final Slot parent;
 
   public SlotWrapper(Slot slot) {
-    super(slot.inventory, slot.getSlotIndex(), slot.xDisplayPosition, slot.yDisplayPosition);
+    super(slot.inventory, slot.getSlotIndex(), slot.xPos, slot.yPos);
     this.parent = slot;
   }
 
@@ -49,8 +49,9 @@ public class SlotWrapper extends Slot {
   }
 
   @Override
-  public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack) {
-    parent.onPickupFromSlot(playerIn, stack);
+  public ItemStack onTake(EntityPlayer playerIn, ItemStack stack) {
+    parent.onTake(playerIn, stack);
+    return stack;
   }
 
   @Override

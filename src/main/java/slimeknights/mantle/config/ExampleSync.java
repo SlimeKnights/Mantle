@@ -43,12 +43,12 @@ class ExampleSync {
   @SubscribeEvent
   @SideOnly(Side.CLIENT)
   public void playerJoinedWorld(TickEvent.ClientTickEvent event) {
-    EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+    EntityPlayerSP player = Minecraft.getMinecraft().player;
     if(needsRestart) {
-      player.addChatMessage(new TextComponentString("Configs synced with server. Configs require a restart"));
+      player.sendMessage(new TextComponentString("Configs synced with server. Configs require a restart"));
     }
     else {
-      player.addChatMessage(new TextComponentString("Configs synced with server."));
+      player.sendMessage(new TextComponentString("Configs synced with server."));
     }
     MinecraftForge.EVENT_BUS.unregister(this);
   }

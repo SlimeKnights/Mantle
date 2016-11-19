@@ -44,9 +44,10 @@ public class ItemBlockSlab<T extends Enum<T> &EnumBlock.IEnumMeta & IStringSeria
    */
   @Nonnull
   @Override
-  public EnumActionResult onItemUse(ItemStack stack, @Nonnull EntityPlayer player, World world, @Nonnull BlockPos pos, EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+  public EnumActionResult onItemUse(@Nonnull EntityPlayer player, World world, @Nonnull BlockPos pos, EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+    ItemStack stack = player.getHeldItem(hand);
     // don't place the slab if unable to edit
-    if(stack.stackSize != 0 && player.canPlayerEdit(pos.offset(facing), facing, stack)) {
+    if(stack.getCount() != 0 && player.canPlayerEdit(pos.offset(facing), facing, stack)) {
 
       // try placing the slab at the current position
       // note that this requires the slab to be extended on the side the block was clicked
@@ -58,7 +59,7 @@ public class ItemBlockSlab<T extends Enum<T> &EnumBlock.IEnumMeta & IStringSeria
         return EnumActionResult.SUCCESS;
       }
 
-      return super.onItemUse(stack, player, world, pos, hand, facing, hitX, hitY, hitZ);
+      return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
     }
     else {
       return EnumActionResult.FAIL;
@@ -106,7 +107,7 @@ public class ItemBlockSlab<T extends Enum<T> &EnumBlock.IEnumMeta & IStringSeria
           if(axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos)) && worldIn.setBlockState(pos, fullBlock, 11)) {
             SoundType soundtype = fullBlock.getBlock().getSoundType();
             worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-            --stack.stackSize;
+            stack.shrink(1);
           }
 
           return true;

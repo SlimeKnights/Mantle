@@ -127,7 +127,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   }
 
   protected void drawPlayerInventoryName() {
-    String localizedName = Minecraft.getMinecraft().thePlayer.inventory.getDisplayName().getUnformattedText();
+    String localizedName = Minecraft.getMinecraft().player.inventory.getDisplayName().getUnformattedText();
     this.fontRendererObj.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
   }
 
@@ -222,8 +222,8 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
     // update slot positions
     if(slotIn instanceof SlotWrapper) {
-      slotIn.xDisplayPosition = ((SlotWrapper) slotIn).parent.xDisplayPosition;
-      slotIn.yDisplayPosition = ((SlotWrapper) slotIn).parent.yDisplayPosition;
+      slotIn.xPos = ((SlotWrapper) slotIn).parent.xPos;
+      slotIn.yPos = ((SlotWrapper) slotIn).parent.yPos;
     }
 
     super.drawSlot(slotIn);

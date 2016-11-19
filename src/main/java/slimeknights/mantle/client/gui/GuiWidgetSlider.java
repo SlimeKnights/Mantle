@@ -50,7 +50,7 @@ public class GuiWidgetSlider extends GuiWidget {
     maxValue = slideBar.h;
     increment = 1;
 
-    sliderOffset = MathHelper.abs_int(slideBar.w - slider.w) / 2;
+    sliderOffset = MathHelper.abs(slideBar.w - slider.w) / 2;
 
     isScrolling = false;
     isHighlighted = false;

@@ -306,9 +306,9 @@ public class BookData implements IDataItem {
   }
 
   public void openGui(@Nullable ItemStack item) {
-    if(Minecraft.getMinecraft().thePlayer != null) {
+    if(Minecraft.getMinecraft().player != null) {
       Minecraft.getMinecraft()
-               .displayGuiScreen(new GuiBook(this, Minecraft.getMinecraft().thePlayer.getStatFileWriter(), item));
+               .displayGuiScreen(new GuiBook(this, Minecraft.getMinecraft().player.getStatFileWriter(), item));
     }
   }
 
