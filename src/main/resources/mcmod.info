@@ -14,5 +14,5 @@
   "requiredMods": [],
   "dependencies": [],
   "dependants": [],
-  "useDependencyInformation": "false"
+  "useDependencyInformation": false
 }]
