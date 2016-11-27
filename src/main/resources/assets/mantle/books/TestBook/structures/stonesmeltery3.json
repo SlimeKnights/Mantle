@@ -1,0 +1,10 @@
+{
+  "size": [9, 9, 9],
+  "structure": [
+    {
+      "pos": [0, 0, 0],
+      "endPos": [8, 8, 8],
+      "block": "minecraft:stonebrick"
+    }
+  ]
+}

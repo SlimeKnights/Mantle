@@ -17,10 +17,13 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import slimeknights.mantle.client.book.StructureBlockAccess;
 import slimeknights.mantle.client.book.StructureInfo;
 import slimeknights.mantle.client.book.data.element.BlockData;
+import slimeknights.mantle.client.gui.book.GuiBook;
 
 public class ElementStructure extends SizedBookElement implements IButtonClickHandler {
 
@@ -37,13 +40,13 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
 
   public ElementStructure(int x, int y, int width, int height, int[] size, BlockData[] structure) {
     super(x, y, width, height);
-
     if(size.length == 3) {
-      scale = size[0] > size[1] ? width / size[0] - 10F : height / size[1] - 10F;
+      scale = 100f / (float)IntStream.of(size).max().getAsInt();
 
-      if(scale * size[0] > width) {
-        scale = width / size[0] - 10F;
-      }
+      float sx = (float)width / (float)GuiBook.PAGE_WIDTH;
+      float sy = (float)height / (float)GuiBook.PAGE_HEIGHT;
+
+      scale *= Math.min(sx, sy);
 
       xTranslate = x + width / 2;// - (size[0] * scale) / 2;
       yTranslate = y + height / 2;// - (size[1] * scale) / 2;
@@ -51,7 +54,6 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
       w = size[0] * scale;
       h = size[1] * scale;
     }
-
     init(size, structure);
   }
 
@@ -61,7 +63,6 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   float rotX = 0;
   float rotY = 0;
   float rotZ = 0;
-  List<String> componentTooltip;
 
   public StructureInfo structureData;
   StructureBlockAccess blockAccess;
