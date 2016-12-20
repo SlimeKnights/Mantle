@@ -54,7 +54,7 @@ public class ElementItem extends SizedBookElement {
   }
 
   public ElementItem(int x, int y, float scale, ItemStack[] itemCycle, String action) {
-    super(x, y, MathHelper.floor_float(ITEM_SIZE_HARDCODED * scale), MathHelper.floor_float(ITEM_SIZE_HARDCODED * scale));
+    super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
     this.itemCycle = itemCycle;
     this.scale = scale;

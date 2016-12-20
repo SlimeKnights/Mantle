@@ -67,7 +67,7 @@ public class ExtraHeartRenderHandler {
     GlStateManager.enableBlend();
 
     EntityPlayer player = (EntityPlayer)this.mc.getRenderViewEntity();
-    int health = MathHelper.ceiling_float_int(player.getHealth());
+    int health = MathHelper.ceil(player.getHealth());
     boolean highlight = healthUpdateCounter > (long)updateCounter && (healthUpdateCounter - (long)updateCounter) / 3L %2L == 1L;
 
     if (health < this.playerHealth && player.hurtResistantTime > 0)
@@ -93,14 +93,14 @@ public class ExtraHeartRenderHandler {
 
     IAttributeInstance attrMaxHealth = player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
     float healthMax = (float)attrMaxHealth.getAttributeValue();
-    float absorb = MathHelper.ceiling_float_int(player.getAbsorptionAmount());
+    float absorb = MathHelper.ceil(player.getAbsorptionAmount());
 
     // CHANGE: simulate 10 hearts max if there's more, so vanilla only renders one row max
     healthMax = Math.min(healthMax, 20f);
     health = Math.min(health, 20);
     absorb = Math.min(absorb, 20);
 
-    int healthRows = MathHelper.ceiling_float_int((healthMax + absorb) / 2.0F / 10.0F);
+    int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
     int rowHeight = Math.max(10 - (healthRows - 2), 3);
 
     this.rand.setSeed((long)(updateCounter * 312871));
@@ -116,17 +116,17 @@ public class ExtraHeartRenderHandler {
       regen = updateCounter % 25;
     }
 
-    final int TOP =  9 * (mc.theWorld.getWorldInfo().isHardcoreModeEnabled() ? 5 : 0);
+    final int TOP =  9 * (mc.world.getWorldInfo().isHardcoreModeEnabled() ? 5 : 0);
     final int BACKGROUND = (highlight ? 25 : 16);
     int MARGIN = 16;
     if (player.isPotionActive(MobEffects.POISON))      MARGIN += 36;
     else if (player.isPotionActive(MobEffects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
-    for (int i = MathHelper.ceiling_float_int((healthMax + absorb) / 2.0F) - 1; i >= 0; --i)
+    for (int i = MathHelper.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i)
     {
       //int b0 = (highlight ? 1 : 0);
-      int row = MathHelper.ceiling_float_int((float)(i + 1) / 10.0F) - 1;
+      int row = MathHelper.ceil((float)(i + 1) / 10.0F) - 1;
       int x = left + i % 10 * 8;
       int y = top - row * rowHeight;
 
@@ -188,7 +188,7 @@ public class ExtraHeartRenderHandler {
     // Extra hearts
     this.mc.getTextureManager().bindTexture(ICON_HEARTS);
 
-    int hp = MathHelper.ceiling_float_int(player.getHealth());
+    int hp = MathHelper.ceil(player.getHealth());
     renderCustomHearts(xBasePos, yBasePos, potionOffset, hp, false);
   }
 
@@ -228,7 +228,7 @@ public class ExtraHeartRenderHandler {
     if(potion != null) {
       potionOffset = 9;
     }
-    if(mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
+    if(mc.world.getWorldInfo().isHardcoreModeEnabled()) {
       potionOffset += 27;
     }
     return potionOffset;
@@ -240,7 +240,7 @@ public class ExtraHeartRenderHandler {
     // Extra hearts
     this.mc.getTextureManager().bindTexture(ICON_ABSORB);
 
-    int absorb = MathHelper.ceiling_float_int(player.getAbsorptionAmount());
+    int absorb = MathHelper.ceil(player.getAbsorptionAmount());
     renderCustomHearts(xBasePos, yBasePos, potionOffset, absorb, true);
   }
 }
