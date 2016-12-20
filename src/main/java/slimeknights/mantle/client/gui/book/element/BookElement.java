@@ -40,6 +40,18 @@ public abstract class BookElement extends Gui {
 
   }
 
+  public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton) {
+
+  }
+
+  public void mouseReleased(int mouseX, int mouseY, int clickedMouseButton) {
+
+  }
+
+  public void mouseDragged(int clickX, int clickY, int mx, int my, int lastX, int lastY, int button) {
+
+  }
+
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     if(stack != null) {
       List<String> list = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);

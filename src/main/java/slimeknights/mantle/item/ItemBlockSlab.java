@@ -3,6 +3,7 @@ package slimeknights.mantle.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -25,13 +27,14 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import slimeknights.mantle.block.EnumBlock;
 import slimeknights.mantle.block.EnumBlockSlab;
 
-public class ItemBlockSlab extends ItemBlockMeta {
+public class ItemBlockSlab<T extends Enum<T> &EnumBlock.IEnumMeta & IStringSerializable> extends ItemBlockMeta {
 
-  public EnumBlockSlab<?> slab;
+  public EnumBlockSlab<T> slab;
 
-  public ItemBlockSlab(EnumBlockSlab<?> block) {
+  public ItemBlockSlab(EnumBlockSlab<T> block) {
     super(block);
     this.slab = block;
   }
@@ -122,7 +125,7 @@ public class ItemBlockSlab extends ItemBlockMeta {
     final Item item = this;
     final ResourceLocation loc = GameData.getBlockRegistry().getNameForObject(block);
 
-    for(Comparable<?> o : (Collection<Comparable<?>>) mappingProperty.getAllowedValues()) {
+    for(T o : (Collection<T>) mappingProperty.getAllowedValues()) {
       int meta = block.getMetaFromState(block.getDefaultState().withProperty(mappingProperty, o));
       String name = mappingProperty.getName(o);
 

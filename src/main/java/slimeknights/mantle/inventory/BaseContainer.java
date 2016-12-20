@@ -20,6 +20,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.List;
 
@@ -125,9 +126,19 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   public String getInventoryDisplayName() {
-    if(tile instanceof IWorldNameable) {
-      IWorldNameable nameable = (IWorldNameable) tile;
-      ITextComponent textName = ((IWorldNameable) tile).getDisplayName();
+    IWorldNameable nameable = null;
+    if (itemHandler instanceof InvWrapper) {
+      nameable = ((InvWrapper) itemHandler).getInv();
+      // if the inventory doesn't have a name fall back to checking the tileentity
+      if (nameable.getDisplayName() == null) {
+        nameable = null;
+      }
+    }
+    if(nameable == null && tile instanceof IWorldNameable) {
+      nameable = (IWorldNameable) tile;
+    }
+    if (nameable != null) {
+      ITextComponent textName = nameable.getDisplayName();
       return textName != null ? textName.getFormattedText() : nameable.getName();
     }
     return null;

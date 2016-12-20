@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.gui.book;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -20,6 +22,7 @@ import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -558,10 +561,60 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     // Not foreach to prevent conmodification crashes
+    int oldPage = page;
+    List<BookElement> elementList = ImmutableList.copyOf(right ? rightElements: leftElements);
+    for(BookElement element : elementList) {
+      element.mouseClicked(mouseX, mouseY, mouseButton);
+      // if we changed page stop so we don't act on the new page
+      if(page != oldPage) {
+        break;
+      }
+    }
+  }
+
+  @Override
+  protected void mouseReleased(int mouseX, int mouseY, int state) {
+    super.mouseReleased(mouseX, mouseY, state);
+
+    if(loadingAchievements) {
+      return;
+    }
+
+    boolean right = false;
+    mouseX = getMouseX(false);
+    mouseY = getMouseY();
+
+    if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
+      mouseX = getMouseX(true);
+      right = true;
+    }
+
+    // Not foreach to prevent conmodification crashes
     for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
       BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+      element.mouseReleased(mouseX, mouseY, state);
+    }
+  }
 
-      element.mouseClicked(mouseX, mouseY, mouseButton);
+  @Override
+  protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    if(loadingAchievements) {
+      return;
+    }
+
+    boolean right = false;
+    mouseX = getMouseX(false);
+    mouseY = getMouseY();
+
+    if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
+      mouseX = getMouseX(true);
+      right = true;
+    }
+
+    // Not foreach to prevent conmodification crashes
+    for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
+      BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+      element.mouseClickMove(mouseX, mouseY, clickedMouseButton);
     }
   }
 

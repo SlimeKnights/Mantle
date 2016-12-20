@@ -95,7 +95,7 @@ public class BookData implements IDataItem {
       if(repo.resourceExists(languageLocation)) {
         try {
           BufferedReader br = new BufferedReader(new InputStreamReader(repo.getResource(languageLocation)
-                                                                           .getInputStream()));
+                                                                           .getInputStream(), "UTF-8"));
 
           String next = br.readLine();
 

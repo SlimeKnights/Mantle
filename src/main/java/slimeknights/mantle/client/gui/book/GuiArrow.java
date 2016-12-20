@@ -56,9 +56,12 @@ public class GuiArrow extends GuiButton {
     PREV(412, 10),
     RIGHT(412, 20),
     LEFT(412, 30),
-    BACK_UP(412, 40, 18, 18);
+    BACK_UP(412, 40, 18, 18),
+    UP(412, 58, 10, 18),
+    DOWN(412+10, 58, 10, 18),
+    REFRESH(412, 76, 18, 18);
 
-    final int x, y, w, h;
+    public final int x, y, w, h;
 
     ArrowType(int x, int y) {
       this(x, y, WIDTH, HEIGHT);

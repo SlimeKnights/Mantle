@@ -109,25 +109,47 @@ public abstract class RecipeMatch {
     return new RecipeMatch.ItemCombination(matched, stack);
   }
 
-  /** Removes the match from the stacks */
+  /** Removes the match from the stacks. Has to be ensured that the match is contained in the stacks. */
   public static void removeMatch(ItemStack[] stacks, Match match) {
-    // ensure that the order is the same, so that even if multiple of the same type are contained it has the expected result
+    int[] amountsRemoved = new int[match.stacks.size()];
+
+    removeOrder(stacks, match.stacks, amountsRemoved);
+    removeRemaining(stacks, match.stacks, amountsRemoved);
+  }
+
+  private static void removeOrder(ItemStack[] stacks, List<ItemStack> toRemove, int[] amountsRemoved) {
     int i = 0;
-    for(ItemStack stack : match.stacks) {
+    for(int j = 0; j < amountsRemoved.length; j++) {
+      ItemStack stack = toRemove.get(j);
       for(; i < stacks.length; i++) {
         // nbt sensitive since toolparts etc. use nbt
         if(ItemStack.areItemsEqual(stack, stacks[i]) && ItemStack.areItemStackTagsEqual(stack, stacks[i])) {
-          if(stacks[i].stackSize < stack.stackSize) {
-            Mantle.logger.error("RecipeMatch has incorrect stacksize! {}", stacks[i].toString());
-          }
-          else {
+          if(stacks[i].stackSize >= stack.stackSize) {
             stacks[i].stackSize -= stack.stackSize;
             if(stacks[i].stackSize == 0) {
               stacks[i] = null;
             }
+            amountsRemoved[j] += stack.stackSize;
           }
           i++;
           break;
+        }
+      }
+    }
+  }
+
+  private static void removeRemaining(ItemStack[] stacks, List<ItemStack> toRemove, int[] amountsRemoved) {
+    for(int j = 0; j < amountsRemoved.length; j++) {
+      ItemStack stack = toRemove.get(j);
+      int needed = stack.stackSize - amountsRemoved[j];
+      for(int i = 0; i < stacks.length && needed > 0; i++) {
+        if(ItemStack.areItemsEqual(stack, stacks[i]) && ItemStack.areItemStackTagsEqual(stack, stacks[i])) {
+          int change = Math.min(stacks[i].stackSize, needed);
+          stacks[i].stackSize -= change;
+          if(stacks[i].stackSize == 0) {
+            stacks[i] = null;
+          }
+          needed -= change;
         }
       }
     }

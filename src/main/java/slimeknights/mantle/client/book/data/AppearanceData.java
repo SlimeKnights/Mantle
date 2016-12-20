@@ -17,6 +17,9 @@ public class AppearanceData implements IDataItem {
   public String subtitle = "";
   public boolean drawPageNumbers = true;
   public boolean drawSectionListText = false;
+  public int structureButtonColor = 0xe3E3BC;
+  public int structureButtonColorHovered = 0x76D1E8;
+  public int structureButtonColorToggled = 0x67C768;
 
   @Override
   public void load() {
