@@ -36,7 +36,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
       return false;
     }
 
-    if(this.worldObj.getBlockState(this.master).getBlock() == this.masterBlock && this.worldObj
+    if(this.world.getBlockState(this.master).getBlock() == this.masterBlock && this.world
                                                                                       .getBlockState(this.master) == this.state) {
       return true;
     }
@@ -55,7 +55,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
   public void overrideMaster(BlockPos pos) {
     this.hasMaster = true;
     this.master = pos;
-    this.state = this.worldObj.getBlockState(this.master);
+    this.state = this.world.getBlockState(this.master);
     this.masterBlock = this.state.getBlock();
   }
 
@@ -73,7 +73,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
 
   @Deprecated
   public boolean verifyMaster(IMasterLogic logic, BlockPos pos) {
-    return this.master.equals(pos) && this.worldObj.getBlockState(pos) == this.state && this.worldObj.getBlockState(pos)
+    return this.master.equals(pos) && this.world.getBlockState(pos) == this.state && this.world.getBlockState(pos)
                                                                                                      .getBlock() == this.masterBlock;
   }
 
@@ -97,7 +97,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
   @Override
   public void notifyMasterOfChange() {
     if(this.hasValidMaster()) {
-      IMasterLogic logic = (IMasterLogic) this.worldObj.getTileEntity(this.master);
+      IMasterLogic logic = (IMasterLogic) this.world.getTileEntity(this.master);
       logic.notifyChange(this, this.pos);
     }
   }
@@ -151,20 +151,20 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
   @Override
   public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
     this.readCustomNBT(packet.getNbtCompound());
-    this.worldObj.notifyLightSet(this.pos);
-    IBlockState state = worldObj.getBlockState(this.pos);
-    this.worldObj.notifyBlockUpdate(this.pos, state, state, 3);
+    this.world.notifyLightSet(this.pos);
+    IBlockState state = world.getBlockState(this.pos);
+    this.world.notifyBlockUpdate(this.pos, state, state, 3);
   }
 
   @Nonnull
   @Override
   public World getWorld() {
-    return this.worldObj;
+    return this.world;
   }
 
   @Deprecated
   public boolean setMaster(BlockPos pos) {
-    if(!this.hasMaster || this.worldObj.getBlockState(this.master) != this.state || (this.worldObj
+    if(!this.hasMaster || this.world.getBlockState(this.master) != this.state || (this.world
                                                                                          .getBlockState(this.master)
                                                                                          .getBlock() != this.masterBlock)) {
       this.overrideMaster(pos);

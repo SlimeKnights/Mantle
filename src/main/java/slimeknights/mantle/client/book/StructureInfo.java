@@ -62,7 +62,7 @@ public class StructureInfo {
       state = block.getDefaultState();
 
       for(Map.Entry<String, String> entry : data.state.entrySet()) {
-        Optional<IProperty<?>> property = state.getPropertyNames().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
+        Optional<IProperty<?>> property = state.getPropertyKeys().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
 
         if(property.isPresent()) {
           state = setProperty(state, property.get(), entry.getValue());

@@ -19,7 +19,7 @@ public class SlotWrapper extends Slot {
   public final Slot parent;
 
   public SlotWrapper(Slot slot) {
-    super(slot.inventory, slot.getSlotIndex(), slot.xDisplayPosition, slot.yDisplayPosition);
+    super(slot.inventory, slot.getSlotIndex(), slot.xPos, slot.yPos);
     this.parent = slot;
   }
 
