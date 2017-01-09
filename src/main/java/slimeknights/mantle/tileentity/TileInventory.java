@@ -21,7 +21,7 @@ import java.util.Arrays;
 import javax.annotation.Nonnull;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes
-public class TileInventory extends TileEntity implements IInventory {
+public class TileInventory extends MantleTileEntity implements IInventory {
 
   private ItemStack[] inventory;
   protected String inventoryTitle;
