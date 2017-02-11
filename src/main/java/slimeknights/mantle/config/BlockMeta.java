@@ -14,6 +14,8 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
 public class BlockMeta {
 
+  private static final BlockMeta MISSING = new BlockMeta(Blocks.AIR, 0);
+
   public transient static final TypeSerializer<BlockMeta> SERIALIZER = new TypeSerializer<BlockMeta>() {
     @Override
     public BlockMeta deserialize(TypeToken<?> typeToken, ConfigurationNode configurationNode)
@@ -23,7 +25,7 @@ public class BlockMeta {
 
       Block block = Block.REGISTRY.getObject(new ResourceLocation(parts[0], parts[1]));
       if(block == Blocks.AIR) {
-        throw new ObjectMappingException("Block not found: " + val);
+        return MISSING;
       }
       int meta = -1;
       if(parts.length > 2) {
