@@ -27,10 +27,11 @@ public class RecipeMatchRegistry {
   public RecipeMatch.Match matches(ItemStack... stacks) {
     NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(stacks.length, ItemStack.EMPTY);
     for(int i = 0; i < stacks.length; i++) {
-      if(stacks[i] != ItemStack.EMPTY) {
+      if(!stacks[i].isEmpty()) {
           nonNullStacks.set(i, stacks[i].copy());
       }
     }
+
     for(RecipeMatch recipe : items) {
       RecipeMatch.Match match = recipe.matches(nonNullStacks);
       if(match != null) {
@@ -154,7 +155,7 @@ public class RecipeMatchRegistry {
   public static NonNullList<ItemStack> copyItemStackArray(NonNullList<ItemStack> in) {
     NonNullList<ItemStack> stacksCopy = NonNullList.<ItemStack> withSize(in.size(), ItemStack.EMPTY);
     for(int i = 0; i < in.size(); i++) {
-      if(in.get(i) != ItemStack.EMPTY) {
+      if(!in.get(i).isEmpty()) {
         stacksCopy.set(i, in.get(i).copy());
       }
     }

@@ -45,8 +45,8 @@ public class ItemBlockSlab<T extends Enum<T> &EnumBlock.IEnumMeta & IStringSeria
   @Nonnull
   @Override
   public EnumActionResult onItemUse(@Nonnull EntityPlayer player, World world, @Nonnull BlockPos pos, EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
-    ItemStack stack = player.getHeldItem(hand);
     // don't place the slab if unable to edit
+    ItemStack stack = player.getHeldItem(hand);
     if(stack.getCount() != 0 && player.canPlayerEdit(pos.offset(facing), facing, stack)) {
 
       // try placing the slab at the current position

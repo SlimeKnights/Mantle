@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.gui.book;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -20,6 +22,7 @@ import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -84,7 +87,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
     this.statisticsManager = statisticsManager;
     this.mc = Minecraft.getMinecraft();
-    this.fontRendererObj = mc.fontRendererObj;
+    this.fontRenderer = mc.fontRenderer;
     init();
   }
 
@@ -125,16 +128,16 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     init();
     FontRenderer fontRenderer = book.fontRenderer;
     if(fontRenderer == null) {
-      fontRenderer = mc.fontRendererObj;
+      fontRenderer = mc.fontRenderer;
     }
 
     if(loadingAchievements) {
       this.drawDefaultBackground();
 
-      this.drawCenteredString(this.fontRendererObj, I18n
+      this.drawCenteredString(this.fontRenderer, I18n
           .format("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
-      this.drawCenteredString(this.fontRendererObj, LOADING_STRINGS[(int) (Minecraft
-                                                                               .getSystemTime() / 150L % (long) LOADING_STRINGS.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
+      this.drawCenteredString(this.fontRenderer, LOADING_STRINGS[(int) (Minecraft
+                                                                               .getSystemTime() / 150L % (long) LOADING_STRINGS.length)], this.width / 2, this.height / 2 + this.fontRenderer.FONT_HEIGHT * 2, 16777215);
 
       return;
     }
@@ -558,9 +561,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     // Not foreach to prevent conmodification crashes
-    for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
-      BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+    int oldPage = page;
+    List<BookElement> elementList = ImmutableList.copyOf(right ? rightElements: leftElements);
+    for(BookElement element : elementList) {
       element.mouseClicked(mouseX, mouseY, mouseButton);
+      // if we changed page stop so we don't act on the new page
+      if(page != oldPage) {
+        break;
+      }
     }
   }
 

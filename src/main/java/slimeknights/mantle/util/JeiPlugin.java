@@ -46,12 +46,11 @@ public class JeiPlugin implements IModPlugin {
   }
 
   @Override
-  public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry)
-  {
+  public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry){
   }
 
   @Override
-  public void registerIngredients(IModIngredientRegistration registry)
-  {
+  public void registerIngredients(IModIngredientRegistration registry){
   }
+
 }

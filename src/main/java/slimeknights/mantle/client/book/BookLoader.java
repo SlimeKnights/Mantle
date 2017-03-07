@@ -158,7 +158,7 @@ public class BookLoader implements IResourceManagerReloadListener {
     if(player == null) {
       return;
     }
-    if(player.getHeldItem(EnumHand.MAIN_HAND) == ItemStack.EMPTY) {
+    if(player.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
       return;
     }
 

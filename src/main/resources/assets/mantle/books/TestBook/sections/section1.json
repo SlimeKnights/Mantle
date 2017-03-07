@@ -36,6 +36,16 @@
   {
     "name": "PageStructure",
     "type": "structure",
+    "data": "section1/pagestructure3.json"
+  },
+  {
+    "name": "PageStructure",
+    "type": "structure",
+    "data": "section1/pagestructure4.json"
+  },
+  {
+    "name": "PageStructure",
+    "type": "structure",
     "data": "section1/pagestructure.json"
   },
   {

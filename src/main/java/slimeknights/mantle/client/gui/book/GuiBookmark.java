@@ -47,7 +47,7 @@ public class GuiBookmark extends GuiButton {
 
       if(data.text != null && !data.text.isEmpty()) {
         TextDataRenderer
-            .drawScaledString(mc.fontRendererObj, data.text, xPosition + 1, yPosition + height / 2 - mc.fontRendererObj.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
+            .drawScaledString(mc.fontRenderer, data.text, xPosition + 1, yPosition + height / 2 - mc.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
       }
 
       GlStateManager.color(1F, 1F, 1F);

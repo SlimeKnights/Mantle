@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class BookHelper {
 
   public static String getSavedPage(ItemStack item) {
-    if(item != ItemStack.EMPTY && item.hasTagCompound()) {
+    if(!item.isEmpty() && item.hasTagCompound()) {
       NBTTagCompound mantleBook = item.getTagCompound().getCompoundTag("mantle").getCompoundTag("book");
 
       if(mantleBook.hasKey("page", Arrays.asList(NBTBase.NBT_TYPES).indexOf("STRING"))) {

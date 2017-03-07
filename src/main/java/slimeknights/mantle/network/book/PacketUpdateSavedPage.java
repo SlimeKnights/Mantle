@@ -31,8 +31,8 @@ public class PacketUpdateSavedPage extends AbstractPacket {
 
   @Override
   public IMessage handleServer(NetHandlerPlayServer netHandler) {
-    if (netHandler.playerEntity != null && pageName != null) {
-      EntityPlayer player = netHandler.playerEntity;
+    if (netHandler.player != null && pageName != null) {
+      EntityPlayer player = netHandler.player;
 
       ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
 

@@ -1,7 +1,6 @@
 package slimeknights.mantle.client;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -20,7 +19,7 @@ public class CreativeTab extends CreativeTabs {
   }
 
   public void setDisplayIcon(ItemStack displayIcon) {
-    if(displayIcon != null && displayIcon.getItem() != null) {
+    if(!displayIcon.isEmpty() && displayIcon.getItem() != null) {
       this.icon = displayIcon;
     }
   }

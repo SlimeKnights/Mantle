@@ -122,13 +122,13 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
     ContainerMultiModule multiContainer = (ContainerMultiModule) this.inventorySlots;
     String localizedName = multiContainer.getInventoryDisplayName();
     if(localizedName != null) {
-      this.fontRendererObj.drawString(localizedName, 8, 6, 0x404040);
+      this.fontRenderer.drawString(localizedName, 8, 6, 0x404040);
     }
   }
 
   protected void drawPlayerInventoryName() {
     String localizedName = Minecraft.getMinecraft().player.inventory.getDisplayName().getUnformattedText();
-    this.fontRendererObj.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
+    this.fontRenderer.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
   }
 
   @Override

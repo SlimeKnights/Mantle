@@ -51,6 +51,7 @@ public class SlotWrapper extends Slot {
   @Override
   public ItemStack onTake(EntityPlayer playerIn, ItemStack stack) {
     parent.onTake(playerIn, stack);
+
     return stack;
   }
 

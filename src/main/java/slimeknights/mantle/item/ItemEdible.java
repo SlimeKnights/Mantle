@@ -145,16 +145,16 @@ public class ItemEdible extends ItemFood {
   @Override
   public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand hand)
   {
-    ItemStack stack = playerIn.getHeldItem(hand);
-    int meta = stack.getMetadata();
-    if(dynamic.isValid(meta) && playerIn.canEat(this.alwaysEdible.get(stack.getMetadata())))
+    @Nonnull ItemStack itemStackIn = playerIn.getHeldItem(hand);
+    int meta = itemStackIn.getMetadata();
+    if(dynamic.isValid(meta) && playerIn.canEat(this.alwaysEdible.get(itemStackIn.getMetadata())))
     {
       playerIn.setActiveHand(hand);
-      return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+      return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
     }
     else
     {
-      return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
+      return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemStackIn);
     }
   }
 

@@ -59,7 +59,7 @@ public class ElementItem extends SizedBookElement {
 
     NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(itemCycle.length, ItemStack.EMPTY);
     for(int i = 0; i < itemCycle.length; i++) {
-      if(itemCycle[i] != ItemStack.EMPTY) {
+      if(!itemCycle[i].isEmpty()) {
           nonNullStacks.set(i, itemCycle[i].copy());
       }
     }

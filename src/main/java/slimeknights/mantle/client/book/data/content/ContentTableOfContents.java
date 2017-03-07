@@ -32,8 +32,8 @@ public class ContentTableOfContents extends PageContent {
     for(int i = 0; i < data.length; i++) {
       TextData text = data[i];
       list.add(new ElementText(0, y + i * (int) (Minecraft
-                                                     .getMinecraft().fontRendererObj.FONT_HEIGHT * text.scale), GuiBook.PAGE_WIDTH, Minecraft
-                                   .getMinecraft().fontRendererObj.FONT_HEIGHT, new TextData[]{text}));
+                                                     .getMinecraft().fontRenderer.FONT_HEIGHT * text.scale), GuiBook.PAGE_WIDTH, Minecraft
+                                   .getMinecraft().fontRenderer.FONT_HEIGHT, new TextData[]{text}));
     }
   }
 }

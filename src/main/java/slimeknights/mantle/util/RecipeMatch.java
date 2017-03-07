@@ -12,6 +12,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import slimeknights.mantle.Mantle;
 
@@ -217,11 +218,11 @@ public abstract class RecipeMatch {
 
       NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(stacks.length, ItemStack.EMPTY);
       for(int i = 0; i < stacks.length; i++) {
-        if(stacks[i] != ItemStack.EMPTY) {
+        if(!stacks[i].isEmpty()) {
             nonNullStacks.set(i, stacks[i].copy());
         }
       }
-      
+
       this.itemStacks = nonNullStacks;
     }
 
@@ -236,7 +237,7 @@ public abstract class RecipeMatch {
       Set<Integer> needed = Sets.newHashSet();
 
       for(int i = 0; i < itemStacks.size(); i++) {
-        if(itemStacks.get(i) != ItemStack.EMPTY) {
+        if(!itemStacks.get(i).isEmpty()) {
           needed.add(i);
         }
       }
@@ -289,7 +290,10 @@ public abstract class RecipeMatch {
 
     @Override
     public List<ItemStack> getInputs() {
-      return oredictEntry;
+      // transform "Requires 2 Cobblestone" into "2x require 1 Cobblestone" since the oredictEntry only contains stacksize 1 usually
+      ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
+      oredictEntry.forEach(stack -> IntStream.range(0, amountNeeded).forEach(i -> builder.add(stack)));
+      return builder.build();
     }
 
     @Override

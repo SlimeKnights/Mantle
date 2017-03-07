@@ -38,7 +38,7 @@ public class ItemStackData {
         NonNullList<ItemStack> items = NonNullList.<ItemStack> withSize(itemsList.items.length, ItemStack.EMPTY);
 
         for(int i = 0; i < itemsList.items.length; i++) {
-          items.set(i,itemsList.items[i].getItem());
+          items.set(i, itemsList.items[i].getItem());
         }
 
         this.action = itemsList.action;
@@ -76,7 +76,7 @@ public class ItemStackData {
     }
 
     if(isMissingItem) {
-      NBTTagCompound display = itemStack.getOrCreateSubCompound("display");
+      NBTTagCompound display = itemStack.getSubCompound("display");
       display.setString("Name", "\u00A7rUnknown Item");
       NBTTagList lore = new NBTTagList();
       lore.appendTag(new NBTTagString("\u00A7r\u00A7eItem Name:"));
