@@ -16,4 +16,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'Mantle-1.11'
+rootProject.name = 'Mantle'
