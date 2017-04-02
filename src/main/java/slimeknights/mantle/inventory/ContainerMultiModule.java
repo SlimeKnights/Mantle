@@ -187,7 +187,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
     slot.putStack(stack);
     slot.onTake(player, stack);
 
-    if(slot.getHasStack() && slot.getStack().getCount() == 0) {
+    if(slot.getHasStack() && slot.getStack().isEmpty()) {
       slot.putStack(ItemStack.EMPTY);
     }
 
@@ -195,7 +195,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   protected boolean moveToTileInventory(ItemStack itemstack) {
-    if(itemstack.isEmpty() || itemstack.getCount() == 0) {
+    if(itemstack.isEmpty()) {
       return false;
     }
 
@@ -207,7 +207,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   protected boolean moveToPlayerInventory(ItemStack itemstack) {
-    if(itemstack.isEmpty() || itemstack.getCount() == 0) {
+    if(itemstack.isEmpty()) {
       return false;
     }
 
@@ -216,7 +216,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   protected boolean moveToAnyContainer(ItemStack itemstack, Collection<Container> containers) {
-    if(itemstack.isEmpty() || itemstack.getCount() == 0) {
+    if(itemstack.isEmpty()) {
       return false;
     }
 
@@ -236,7 +236,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
 
 
   protected boolean refillAnyContainer(ItemStack itemstack, Collection<Container> containers) {
-    if(itemstack.isEmpty() || itemstack.getCount() == 0) {
+    if(itemstack.isEmpty()) {
       return false;
     }
 

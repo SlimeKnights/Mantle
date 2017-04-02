@@ -216,7 +216,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
         return ItemStack.EMPTY;
       }
 
-      if(itemstack1.getCount() == 0) {
+      if(itemstack1.isEmpty()) {
         slot.putStack(ItemStack.EMPTY);
       }
       else {
@@ -327,7 +327,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
         slot.onSlotChanged();
         flag1 = true;
 
-        if(stack.getCount() == 0) {
+        if(stack.isEmpty()) {
           break;
         }
       }
