@@ -1,14 +1,14 @@
-![Mantle logo](https://raw.github.com/SlimeKnights/Mantle/master/src/main/resources/Mantle.png)
-#Mantle
+![Mantle logo](https://raw.github.com/SlimeKnights/Mantle/master/src/main/resources/Mantle.png)  
+# Mantle  
 **Shared code for Forge mods**
 
-##Compile from Source
+## Compile from Source
 Note: Git MUST be installed and in the system path to use our scripts.
 * setup: Run [gradle]in the repository root: `gradlew[.bat] [setupDevWorkspace|setupDecompWorkspace] [eclipse|idea]`
 * build: Run [gradle]in the repository root: `gradlew[.bat] build'
 * if obscure gradle issues are found try running 'gradlew clean' or/and 'gradlew cleanCache'
 
-##Issue reporting
+## Issue reporting  
 Please include the following:
 
 * Minecraft version
@@ -21,7 +21,7 @@ Please include the following:
 	* Steps to reproduce
 	* ForgeModLoader-client-0.log (the FML log) from the root folder of the client
 
-##Licenses
+## Licenses  
 The MIT License (MIT)
 Copyright (c) 2013-2014 Slime Knights (mDiyo, fuj1n, Sunstrike, progwml6, pillbox, alexbegt)
 
