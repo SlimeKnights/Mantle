@@ -25,15 +25,20 @@ public class RecipeMatchRegistry {
 
   // looks for a match in the given itemstacks
   public RecipeMatch.Match matches(ItemStack... stacks) {
-    NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(stacks.length, ItemStack.EMPTY);
+    NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(stacks.length, ItemStack.EMPTY);
     for(int i = 0; i < stacks.length; i++) {
       if(!stacks[i].isEmpty()) {
-          nonNullStacks.set(i, stacks[i].copy());
+        nonNullStacks.set(i, stacks[i].copy());
       }
     }
+    
+    return matches(nonNullStacks);
+  }
 
+  // looks for a match in the given itemstacks
+  public RecipeMatch.Match matches(NonNullList<ItemStack> stacks) {
     for(RecipeMatch recipe : items) {
-      RecipeMatch.Match match = recipe.matches(nonNullStacks);
+      RecipeMatch.Match match = recipe.matches(stacks);
       if(match != null) {
         return match;
       }
