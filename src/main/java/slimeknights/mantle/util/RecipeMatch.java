@@ -11,6 +11,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -41,7 +42,7 @@ public abstract class RecipeMatch {
    */
   public abstract List<ItemStack> getInputs();
 
-  public abstract Match matches(NonNullList<ItemStack> stacks);
+  public abstract Optional<Match> matches(NonNullList<ItemStack> stacks);
 
   public static RecipeMatch of(String oredict) {
     return of(oredict, 1);
@@ -182,7 +183,7 @@ public abstract class RecipeMatch {
     }
 
     @Override
-    public Match matches(NonNullList<ItemStack> stacks) {
+    public Optional<Match> matches(NonNullList<ItemStack> stacks) {
       List<ItemStack> found = Lists.newLinkedList();
       int stillNeeded = amountNeeded;
 
@@ -196,12 +197,12 @@ public abstract class RecipeMatch {
 
           // we found enough
           if(stillNeeded <= 0) {
-            return new Match(found, amountMatched);
+            return Optional.of(new Match(found, amountMatched));
           }
         }
       }
 
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -232,7 +233,7 @@ public abstract class RecipeMatch {
     }
 
     @Override
-    public Match matches(NonNullList<ItemStack> stacks) {
+    public Optional<Match> matches(NonNullList<ItemStack> stacks) {
       List<ItemStack> found = Lists.newLinkedList();
       Set<Integer> needed = Sets.newHashSet();
 
@@ -259,9 +260,9 @@ public abstract class RecipeMatch {
       }
 
       if(needed.isEmpty()) {
-        return new Match(found, amountMatched);
+        return Optional.of(new Match(found, amountMatched));
       }
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -297,7 +298,7 @@ public abstract class RecipeMatch {
     }
 
     @Override
-    public Match matches(NonNullList<ItemStack> stacks) {
+    public Optional<Match> matches(NonNullList<ItemStack> stacks) {
       List<ItemStack> found = Lists.newLinkedList();
       int stillNeeded = amountNeeded;
 
@@ -312,13 +313,13 @@ public abstract class RecipeMatch {
 
             // we found enough
             if(stillNeeded <= 0) {
-              return new Match(found, amountMatched);
+              return Optional.of(new Match(found, amountMatched));
             }
           }
         }
       }
 
-      return null;
+      return Optional.empty();
     }
   }
 
