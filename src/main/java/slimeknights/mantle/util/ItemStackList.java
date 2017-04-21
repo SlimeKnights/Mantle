@@ -3,6 +3,8 @@ package slimeknights.mantle.util;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +29,9 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * Create an empty ItemStackList with the given size
    */
   public static ItemStackList withSize(int size) {
-    return new ItemStackList(IntStream.range(0, size).mapToObj(i -> ItemStack.EMPTY).collect(Collectors.toList()));
+    ItemStack[] aobject = new ItemStack[size];
+    Arrays.fill(aobject, ItemStack.EMPTY);
+    return new ItemStackList(Arrays.asList(aobject));
   }
 
   /**
