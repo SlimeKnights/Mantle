@@ -10,6 +10,7 @@ import net.minecraft.util.NonNullList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.PriorityQueue;
 
 /**
@@ -19,12 +20,8 @@ public class RecipeMatchRegistry {
 
   protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<>(1, RecipeComparator.INSTANCE);
 
-  public RecipeMatch.Match matches(Collection<ItemStack> stacks) {
-    return matches(stacks.toArray(new ItemStack[stacks.size()]));
-  }
-
   // looks for a match in the given itemstacks
-  public RecipeMatch.Match matches(ItemStack... stacks) {
+  public Optional<RecipeMatch.Match> matches(ItemStack... stacks) {
     NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(stacks.length, ItemStack.EMPTY);
     for(int i = 0; i < stacks.length; i++) {
       if(!stacks[i].isEmpty()) {
@@ -36,26 +33,27 @@ public class RecipeMatchRegistry {
   }
 
   // looks for a match in the given itemstacks
-  public RecipeMatch.Match matches(NonNullList<ItemStack> stacks) {
+  public Optional<RecipeMatch.Match> matches(NonNullList<ItemStack> stacks) {
     for(RecipeMatch recipe : items) {
-      RecipeMatch.Match match = recipe.matches(stacks);
-      if(match != null) {
+      Optional<RecipeMatch.Match> match = recipe.matches(stacks);
+      if(match.isPresent()) {
         return match;
       }
     }
 
-    return null;
+    return Optional.empty();
   }
 
   // looks for a match with at least the given amount in the given itemstacks
-  public RecipeMatch.Match matches(NonNullList<ItemStack> stacks, int minAmount) {
+  public Optional<RecipeMatch.Match> matches(NonNullList<ItemStack> stacks, int minAmount) {
     stacks = copyItemStackArray(stacks); // copy so we don't modify original
 
     List<RecipeMatch.Match> matches = Lists.newLinkedList();
 
-    RecipeMatch.Match match;
+    Optional<RecipeMatch.Match> matchOptional;
     int sum = 0;
-    while(sum < minAmount && (match = matches(stacks)) != null) {
+    while(sum < minAmount && (matchOptional = matches(stacks)).isPresent()) {
+      RecipeMatch.Match match = matchOptional.get();
       matches.add(match);
       RecipeMatch.removeMatch(stacks, match);
 
@@ -64,7 +62,7 @@ public class RecipeMatchRegistry {
 
     // not enough found
     if(sum < minAmount) {
-      return null;
+      return Optional.empty();
     }
 
     // merge all found matches into one match
@@ -73,17 +71,18 @@ public class RecipeMatchRegistry {
       foundStacks.addAll(m.stacks);
     }
 
-    return new RecipeMatch.Match(foundStacks, sum);
+    return Optional.of(new RecipeMatch.Match(foundStacks, sum));
   }
 
-  public RecipeMatch.Match matchesRecursively(NonNullList<ItemStack> stacks) {
+  public Optional<RecipeMatch.Match> matchesRecursively(NonNullList<ItemStack> stacks) {
     stacks = copyItemStackArray(stacks); // copy so we don't modify original
 
     List<RecipeMatch.Match> matches = Lists.newLinkedList();
 
-    RecipeMatch.Match match;
+    Optional<RecipeMatch.Match> matchOptional;
     int sum = 0;
-    while((match = matches(stacks)) != null) {
+    while((matchOptional = matches(stacks)).isPresent()) {
+      RecipeMatch.Match match = matchOptional.get();
       matches.add(match);
       RecipeMatch.removeMatch(stacks, match);
 
@@ -96,7 +95,7 @@ public class RecipeMatchRegistry {
       foundStacks.addAll(m.stacks);
     }
 
-    return new RecipeMatch.Match(foundStacks, sum);
+    return Optional.of(new RecipeMatch.Match(foundStacks, sum));
   }
 
   /**
@@ -158,7 +157,7 @@ public class RecipeMatchRegistry {
 
 
   public static NonNullList<ItemStack> copyItemStackArray(NonNullList<ItemStack> in) {
-    NonNullList<ItemStack> stacksCopy = NonNullList.<ItemStack> withSize(in.size(), ItemStack.EMPTY);
+    NonNullList<ItemStack> stacksCopy = NonNullList.withSize(in.size(), ItemStack.EMPTY);
     for(int i = 0; i < in.size(); i++) {
       if(!in.get(i).isEmpty()) {
         stacksCopy.set(i, in.get(i).copy());

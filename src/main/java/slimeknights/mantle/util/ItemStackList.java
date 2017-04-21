@@ -3,13 +3,9 @@ package slimeknights.mantle.util;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import org.apache.commons.lang3.Validate;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ItemStackList extends NonNullList<ItemStack> {
 
@@ -44,6 +40,15 @@ public class ItemStackList extends NonNullList<ItemStack> {
   }
 
   /**
+   * Create an ItemStackList from the given elements.
+   */
+  public static ItemStackList of(NonNullList<ItemStack> boringList) {
+    ItemStackList itemStackList = create();
+    itemStackList.addAll(boringList);
+    return itemStackList;
+  }
+
+  /**
    * Checks if an Itemstack at a specific index is not empty
    *
    * @param index The index to check
@@ -63,5 +68,30 @@ public class ItemStackList extends NonNullList<ItemStack> {
     if(index >= 0 && index < size()) {
       set(index, ItemStack.EMPTY);
     }
+  }
+
+  /**
+   * Creates a new list with the same content. ItemStacks are shared between lists!
+   * @param fixed If true the list will have fixed size
+   */
+  public ItemStackList copy(boolean fixed) {
+    ItemStackList copy = fixed ? withSize(this.size()) : create();
+    for(int i = 0; i < size(); i++) {
+      copy.set(i, get(i));
+    }
+    return copy;
+  }
+
+  /**
+   * Creates a new list with the same content, but Itemstacks are copied too,
+   * meaning changes to the copy will not affect the itemstacks in the original list.
+   * @param fixed If true the list will have fixed size
+   */
+  public ItemStackList deepCopy(boolean fixed) {
+    ItemStackList copy = fixed ? withSize(this.size()) : create();
+    for(int i = 0; i < size(); i++) {
+      copy.set(i, get(i).copy());
+    }
+    return copy;
   }
 }
