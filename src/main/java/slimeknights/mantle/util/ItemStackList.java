@@ -14,7 +14,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
   }
 
   protected ItemStackList(List<ItemStack> delegate) {
-    super(new ArrayList<>(), ItemStack.EMPTY);
+    super(delegate, ItemStack.EMPTY);
   }
 
   public static ItemStackList create() {
