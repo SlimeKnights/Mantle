@@ -21,6 +21,8 @@ import java.util.Arrays;
 
 import javax.annotation.Nonnull;
 
+import slimeknights.mantle.util.ItemStackList;
+
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes
 public class TileInventory extends MantleTileEntity implements IInventory {
 
@@ -81,17 +83,12 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   public void resize(int size) {
-    //TODO: Make sure this didn't break inventory contents.
-    NonNullList<ItemStack> oldInventory = inventory;
-    
-    inventory = NonNullList.<ItemStack> withSize(size, ItemStack.EMPTY);
-    
-    for (int i = 0; i < size; i++) {
-        ItemStack itemStack = oldInventory.get(i);
-        if (!itemStack.isEmpty()) {
-            inventory.set(i, itemStack);
-        }
+    ItemStackList newInventory = ItemStackList.withSize(size);
+
+    for (int i = 0; i < size && i < inventory.size(); i++) {
+      newInventory.set(i, inventory.get(i));
     }
+    inventory = newInventory;
   }
 
   @Override
