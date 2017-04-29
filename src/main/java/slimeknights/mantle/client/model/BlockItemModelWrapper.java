@@ -79,6 +79,6 @@ public class BlockItemModelWrapper implements IPerspectiveAwareModel, IBakedMode
   @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
-    return null;
+    return ItemOverrideList.NONE;
   }
 }

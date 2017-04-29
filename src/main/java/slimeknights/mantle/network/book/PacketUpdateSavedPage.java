@@ -36,7 +36,7 @@ public class PacketUpdateSavedPage extends AbstractPacket {
 
       ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
 
-      if(is != null) {
+      if(!is.isEmpty()) {
         BookHelper.writeSavedPage(is, pageName);
       }
     }

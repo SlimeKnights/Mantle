@@ -50,13 +50,12 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   @Override
-  public boolean hasCapability(@Nonnull Capability<?> capability, @Nonnull EnumFacing facing) {
+  public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
     return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
   }
 
-  @Nonnull
   @Override
-  public <T> T getCapability(@Nonnull Capability<T> capability, @Nonnull EnumFacing facing) {
+  public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       return (T) itemHandler;
     }

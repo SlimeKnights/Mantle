@@ -19,7 +19,7 @@ public class CreativeTab extends CreativeTabs {
   }
 
   public void setDisplayIcon(ItemStack displayIcon) {
-    if(!displayIcon.isEmpty() && displayIcon.getItem() != null) {
+    if(!displayIcon.isEmpty()) {
       this.icon = displayIcon;
     }
   }

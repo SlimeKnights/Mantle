@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.command.CommandGive;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
@@ -61,7 +62,7 @@ public class ItemStackData {
       isMissingItem = true;
     }
 
-    if(item == null) {
+    if(item == Items.AIR) {
       item = Item.getItemFromBlock(Blocks.BARRIER);
       isMissingItem = true;
     }
