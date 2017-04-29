@@ -5,6 +5,7 @@ import net.minecraft.util.NonNullList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class ItemStackList extends NonNullList<ItemStack> {
@@ -42,7 +43,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
   /**
    * Create an ItemStackList from the given elements.
    */
-  public static ItemStackList of(NonNullList<ItemStack> boringList) {
+  public static ItemStackList of(Collection<ItemStack> boringList) {
     ItemStackList itemStackList = create();
     itemStackList.addAll(boringList);
     return itemStackList;
