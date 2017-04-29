@@ -68,6 +68,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   /* Inventory management */
 
+  @Nonnull
   @Override
   public ItemStack getStackInSlot(int slot) {
     if(slot < 0 || slot >= inventory.size()) {
@@ -101,7 +102,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   @Override
-  public void setInventorySlotContents(int slot, ItemStack itemstack) {
+  public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
     if(slot < 0 || slot >= inventory.size()) {
       return;
     }
@@ -113,6 +114,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     }
   }
 
+  @Nonnull
   @Override
   public ItemStack decrStackSize(int slot, int quantity) {
     ItemStack itemStack = getStackInSlot(slot);
@@ -140,6 +142,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     return itemStack;
   }
 
+  @Nonnull
   @Override
   public ItemStack removeStackFromSlot(int slot) {
     ItemStack itemStack = getStackInSlot(slot);
@@ -275,6 +278,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   /* Default implementations of hardly used methods */
+  @Nonnull
   public ItemStack getStackInSlotOnClosing(int slot) {
     return ItemStack.EMPTY;
   }

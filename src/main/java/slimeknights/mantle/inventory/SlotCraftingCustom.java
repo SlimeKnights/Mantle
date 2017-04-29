@@ -27,6 +27,7 @@ public class SlotCraftingCustom extends SlotCrafting {
   }
 
   @Override
+  @Nonnull
   public ItemStack onTake(EntityPlayer playerIn, @Nonnull ItemStack stack) {
     net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(playerIn, stack, craftMatrix);
     this.onCrafting(stack);

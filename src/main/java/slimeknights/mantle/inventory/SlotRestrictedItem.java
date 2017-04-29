@@ -5,6 +5,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 public class SlotRestrictedItem extends Slot {
 
   private final Item allowedItem;
@@ -15,7 +17,7 @@ public class SlotRestrictedItem extends Slot {
   }
 
   @Override
-  public boolean isItemValid(ItemStack stack) {
+  public boolean isItemValid(@Nonnull ItemStack stack) {
     return !stack.isEmpty() && stack.getItem() == allowedItem;
   }
 }

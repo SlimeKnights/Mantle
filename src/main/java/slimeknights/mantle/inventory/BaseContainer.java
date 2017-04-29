@@ -187,6 +187,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     return super.addSlotToContainer(slotIn);
   }
 
+  @Nonnull
   @Override
   public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
     // we can only support inventory <-> playerInventory
@@ -229,7 +230,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
   @Override
-  protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean mergeItemStack(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     boolean ret = mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
     if(!stack.isEmpty() && stack.getCount() > 0) {
       ret |= mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
@@ -238,7 +239,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   // only refills items that are already present
-  protected boolean mergeItemStackRefill(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean mergeItemStackRefill(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     if(stack.getCount() <= 0) {
       return false;
     }
@@ -293,7 +294,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   // only moves items into empty slots
-  protected boolean mergeItemStackMove(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean mergeItemStackMove(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     if(stack.getCount() <= 0) {
       return false;
     }
