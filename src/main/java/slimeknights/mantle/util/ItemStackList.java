@@ -1,5 +1,6 @@
 package slimeknights.mantle.util;
 
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -46,6 +47,17 @@ public class ItemStackList extends NonNullList<ItemStack> {
   public static ItemStackList of(Collection<ItemStack> boringList) {
     ItemStackList itemStackList = create();
     itemStackList.addAll(boringList);
+    return itemStackList;
+  }
+
+  /**
+   * Create an ItemStackList from the given elements.
+   */
+  public static ItemStackList of(IInventory inventory) {
+    ItemStackList itemStackList = withSize(inventory.getSizeInventory());
+    for(int i = 0; i < inventory.getSizeInventory(); i++) {
+      itemStackList.add(inventory.getStackInSlot(i));
+    }
     return itemStackList;
   }
 
