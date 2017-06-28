@@ -463,22 +463,22 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     backArrow.visible = oldPage >= -1;
 
     if(page == -1) {
-      nextArrow.xPosition = width / 2 + 80;
+      nextArrow.x = width / 2 + 80;
       indexArrow.visible = false;
     } else {
-      previousArrow.xPosition = width / 2 - 184;
-      nextArrow.xPosition = width / 2 + 165;
+      previousArrow.x = width / 2 - 184;
+      nextArrow.x = width / 2 + 165;
 
       indexArrow.visible = book.findSection("index") != null && (page - 1) * 2 + 2 > book.findSection("index")
                                                                                          .getPageCount();
     }
 
-    previousArrow.yPosition = height / 2 + 75;
-    nextArrow.yPosition = height / 2 + 75;
+    previousArrow.y = height / 2 + 75;
+    nextArrow.y = height / 2 + 75;
   }
 
   @Override
-  public void doneLoading() {
+  public void onStatsUpdated() {
     loadingAchievements = false;
 
     initGui();

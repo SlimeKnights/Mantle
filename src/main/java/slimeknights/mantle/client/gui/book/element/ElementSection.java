@@ -1,9 +1,9 @@
 package slimeknights.mantle.client.gui.book.element;
 
+import net.minecraft.advancements.Advancement;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.stats.Achievement;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -84,11 +84,11 @@ public class ElementSection extends SizedBookElement {
         text.add("Requirements:");
 
         for(String requirement : section.requirements) {
-          Achievement achievement = SectionData.findAchievement(requirement);
-          if(achievement != null) {
+          Advancement advancement = SectionData.findAdvancement(requirement);
+          if(advancement != null) {
             text.add((SectionData
                           .requirementSatisfied(requirement, parent.statisticsManager) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
-                         .getTextWithoutFormattingCodes(achievement.getStatName().getFormattedText()));
+                         .getTextWithoutFormattingCodes(advancement.getDisplay().getTitle().getFormattedText()));
           }
         }
       }

@@ -1,10 +1,11 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -17,9 +18,9 @@ public class ItemTooltip extends Item {
 
   @Override
   @SideOnly(Side.CLIENT)
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+  public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag advanced) {
     addOptionalTooltip(stack, tooltip);
-    super.addInformation(stack, playerIn, tooltip, advanced);
+    super.addInformation(stack, worldIn, tooltip, advanced);
   }
 
   public static void addOptionalTooltip(ItemStack stack, List<String> tooltip) {

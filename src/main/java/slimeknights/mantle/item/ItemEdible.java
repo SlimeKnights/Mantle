@@ -1,18 +1,16 @@
 package slimeknights.mantle.item;
 
-import com.google.common.collect.ImmutableList;
-
 import gnu.trove.map.hash.TIntFloatHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -119,8 +117,8 @@ public class ItemEdible extends ItemFood {
   }
 
   @Override
-  public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-    dynamic.addInformation(stack, playerIn, tooltip, advanced);
+  public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag advanced) {
+    dynamic.addInformation(stack, worldIn, tooltip, advanced);
 
     // effect info
     if(displayEffectsTooltip) {
@@ -132,8 +130,14 @@ public class ItemEdible extends ItemFood {
 
   @SideOnly(Side.CLIENT)
   @Override
-  public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-    dynamic.getSubItems(itemIn, tab, subItems);
+  public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    if(this.isInCreativeTab(tab)) {
+      for(int i = 0; i <= dynamic.availabilityMask.length; i++) {
+        if(dynamic.isValid(i)) {
+          subItems.add(new ItemStack(this, 1, i));
+        }
+      }
+    }
   }
 
   @SideOnly(Side.CLIENT)

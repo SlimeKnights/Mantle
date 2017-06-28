@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiUtils;
@@ -54,7 +55,7 @@ public abstract class BookElement extends Gui {
 
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     if(stack != null) {
-      List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips);
+      List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
       
       for(int i = 0; i < list.size(); ++i) {
         if(i == 0) {

@@ -16,7 +16,7 @@ public class ElementArrow extends ElementButton {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    button.drawButton(mc, mouseX, mouseY);
+    button.drawButton(mc, mouseX, mouseY, partialTicks);
   }
 
 }

@@ -118,7 +118,7 @@ public class SlotWrapper extends Slot {
 
   @SideOnly(Side.CLIENT)
   @Override
-  public boolean canBeHovered() {
-    return parent.canBeHovered();
+  public boolean isEnabled() {
+    return parent.isEnabled();
   }
 }

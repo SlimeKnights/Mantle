@@ -1,9 +1,11 @@
 package slimeknights.mantle.client.book.data;
 
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
-import net.minecraft.stats.Achievement;
-import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatisticsManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -111,20 +113,20 @@ public class SectionData implements IDataItem {
       return true;
     }
 
-    Achievement achievement = findAchievement(requirement);
+    Advancement advancement = findAdvancement(requirement);
 
-    return achievement == null || writer.hasAchievementUnlocked(achievement);
+    return advancement == null;//TODO: Readd || writer.hasAchievementUnlocked(advancement);
 
   }
 
-  public static Achievement findAchievement(String name) {
+  public static Advancement findAdvancement(String name) {
     if(name == null || name.isEmpty()) {
       return null;
     }
 
-    for(Achievement achievement : AchievementList.ACHIEVEMENTS) {
-      if(achievement.statId.equals(name)) {
-        return achievement;
+    for(Advancement advancement : Minecraft.getMinecraft().player.connection.getAdvancementManager().getAdvancementList().getAdvancements()) {
+      if(advancement.getId().equals(new ResourceLocation(name))) {
+        return advancement;
       }
     }
 

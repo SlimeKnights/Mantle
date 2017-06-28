@@ -27,7 +27,7 @@ public class GuiBookEditor extends GuiScreen {
 
     innerUi = new GuiBook(book, null, null);
     innerUi.mc = Minecraft.getMinecraft();
-    innerUi.doneLoading();
+    innerUi.onStatsUpdated();
 
     innerUi._setPage(-1);
   }

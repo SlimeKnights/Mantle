@@ -4,15 +4,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemColored;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -49,7 +50,7 @@ public class ItemBlockMeta extends ItemColored {
   }
 
   @Override
-  public void addInformation(@Nonnull ItemStack stack, @Nonnull EntityPlayer playerIn, @Nonnull List<String> tooltip, boolean advanced) {
+  public void addInformation(@Nonnull ItemStack stack, @Nonnull World worldIn, @Nonnull List<String> tooltip, ITooltipFlag advanced) {
     if(I18n.canTranslate(this.getUnlocalizedName(stack) + ".tooltip")) {
       tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() +
                   LocUtils.translateRecursive(this.getUnlocalizedName(stack) + ".tooltip")));
@@ -58,13 +59,13 @@ public class ItemBlockMeta extends ItemColored {
       tooltip.addAll(LocUtils.getTooltips(
           TextFormatting.GRAY.toString() + LocUtils.translateRecursive(super.getUnlocalizedName(stack) + ".tooltip")));
     }
-    super.addInformation(stack, playerIn, tooltip, advanced);
+    super.addInformation(stack, worldIn, tooltip, advanced);
   }
 
   @SideOnly(Side.CLIENT)
   public void registerItemModels() {
     final Item item = this;
-    final ResourceLocation loc = GameData.getBlockRegistry().getNameForObject(block);
+    final ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(block);
 
 
     for(Comparable o : (Collection<Comparable>) mappingProperty.getAllowedValues()) {

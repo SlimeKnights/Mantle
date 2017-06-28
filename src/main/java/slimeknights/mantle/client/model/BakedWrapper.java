@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
+import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.common.model.TRSRTransformation;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -66,7 +66,7 @@ public class BakedWrapper implements IBakedModel {
     return parent.getOverrides();
   }
 
-  public static class Perspective extends BakedWrapper implements IPerspectiveAwareModel {
+  public static class Perspective extends BakedWrapper implements IBakedModel {
     protected final ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms;
 
     public Perspective(IBakedModel parent, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms) {
@@ -76,7 +76,7 @@ public class BakedWrapper implements IBakedModel {
 
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-      return IPerspectiveAwareModel.MapWrapper.handlePerspective(this, transforms, cameraTransformType);
+      return PerspectiveMapWrapper.handlePerspective(this, transforms, cameraTransformType);
     }
   }
 }

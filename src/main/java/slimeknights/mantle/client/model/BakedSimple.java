@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
+import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.common.model.TRSRTransformation;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,7 +20,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.vecmath.Matrix4f;
 
-public class BakedSimple implements IPerspectiveAwareModel {
+public class BakedSimple implements IBakedModel {
 
   private final List<BakedQuad> quads;
   private final ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms;
@@ -101,14 +101,14 @@ public class BakedSimple implements IPerspectiveAwareModel {
 
   @Override
   public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-    return IPerspectiveAwareModel.MapWrapper.handlePerspective(this, transforms, cameraTransformType);
+    return PerspectiveMapWrapper.handlePerspective(this, transforms, cameraTransformType);
   }
 
   public static class Wrapper extends BakedSimple {
 
-    private final IPerspectiveAwareModel parent;
+    private final IBakedModel parent;
 
-    public Wrapper(ImmutableList<BakedQuad> quads, IPerspectiveAwareModel base) {
+    public Wrapper(ImmutableList<BakedQuad> quads, IBakedModel base) {
       super(quads, null, base);
 
       parent = base;

@@ -33,11 +33,11 @@ public class GuiArrow extends GuiButton {
   }
 
   @Override
-  public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY) {
+  public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
     if(this.visible) {
       mc.getTextureManager().bindTexture(TEX_BOOK);
 
-      this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+      this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
       int color = this.hovered ? this.hoverColor : this.color;
 
@@ -46,7 +46,7 @@ public class GuiArrow extends GuiButton {
       float b = (color & 0xff) / 255.F;
 
       GlStateManager.color(r, g, b);
-      Gui.drawScaledCustomSizeModalRect(xPosition, yPosition, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
+      Gui.drawScaledCustomSizeModalRect(x, y, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
       this.mouseDragged(mc, mouseX, mouseY);
     }
   }

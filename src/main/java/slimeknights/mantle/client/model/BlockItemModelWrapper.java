@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -21,7 +20,7 @@ import slimeknights.mantle.client.ModelHelper;
 /**
  * Takes a blockmodel and applies the standard-block-perspective for third_person to it
  */
-public class BlockItemModelWrapper implements IPerspectiveAwareModel, IBakedModel {
+public class BlockItemModelWrapper implements IBakedModel {
 
   private final IBakedModel parent;
 

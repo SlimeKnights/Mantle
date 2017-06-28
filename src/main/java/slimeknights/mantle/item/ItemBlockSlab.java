@@ -3,7 +3,6 @@ package slimeknights.mantle.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +18,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -124,7 +123,7 @@ public class ItemBlockSlab<T extends Enum<T> &EnumBlock.IEnumMeta & IStringSeria
   @SideOnly(Side.CLIENT)
   public void registerItemModels() {
     final Item item = this;
-    final ResourceLocation loc = GameData.getBlockRegistry().getNameForObject(block);
+    final ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(block);
 
     for(T o : (Collection<T>) mappingProperty.getAllowedValues()) {
       int meta = block.getMetaFromState(block.getDefaultState().withProperty(mappingProperty, o));

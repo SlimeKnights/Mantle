@@ -5,9 +5,9 @@ import com.google.common.reflect.TypeToken;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.fml.common.registry.IForgeRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -206,14 +206,14 @@ public abstract class AbstractConfigFile implements Serializable {
     TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(Block.class), new RegistrySerializer<Block>() {
       @Override
       IForgeRegistry<Block> getRegistry() {
-        return GameData.getBlockRegistry();
+        return ForgeRegistries.BLOCKS;
       }
     });
 
     TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(Item.class), new RegistrySerializer<Item>() {
       @Override
       IForgeRegistry<Item> getRegistry() {
-        return GameData.getItemRegistry();
+        return ForgeRegistries.ITEMS;
       }
     });
 

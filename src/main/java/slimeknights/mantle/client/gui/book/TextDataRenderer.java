@@ -6,7 +6,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
@@ -241,7 +241,7 @@ public class TextDataRenderer {
     GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
     GlStateManager.shadeModel(7425);
     Tessellator tessellator = Tessellator.getInstance();
-    VertexBuffer vertexBuffer = tessellator.getBuffer();
+    BufferBuilder vertexBuffer = tessellator.getBuffer();
     vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
     vertexBuffer.pos((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
     vertexBuffer.pos((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();

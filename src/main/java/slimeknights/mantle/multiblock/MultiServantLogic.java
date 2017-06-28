@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 
@@ -109,7 +109,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
       int yCenter = tags.getInteger("yCenter");
       int zCenter = tags.getInteger("zCenter");
       this.master = new BlockPos(xCenter, yCenter, zCenter);
-      this.masterBlock = GameData.getBlockRegistry().getObject(new ResourceLocation(tags.getString("MasterBlockName")));
+      this.masterBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tags.getString("MasterBlockName")));
       this.state = Block.getStateById(tags.getInteger("masterState"));
     }
   }
@@ -120,7 +120,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
       tags.setInteger("xCenter", this.master.getX());
       tags.setInteger("yCenter", this.master.getY());
       tags.setInteger("zCenter", this.master.getZ());
-      tags.setString("MasterBlockName", GameData.getBlockRegistry().getNameForObject(this.masterBlock).toString());
+      tags.setString("MasterBlockName", ForgeRegistries.BLOCKS.getKey(this.masterBlock).toString());
       tags.setInteger("masterState", Block.getStateId(this.state));
     }
     return tags;
