@@ -3,6 +3,7 @@ package slimeknights.mantle.pulsar.control;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
@@ -158,6 +159,8 @@ public class PulseManager {
         if (meta.isEnabled()) {
             pulses.put(pulse, meta);
             flightpath.register(pulse);
+            // Work around to catch the new registry events added from the registry rewrite.
+            MinecraftForge.EVENT_BUS.register(pulse);
         }
     }
 
