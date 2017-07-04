@@ -24,6 +24,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ItemEdible extends ItemFood {
 
@@ -117,8 +118,8 @@ public class ItemEdible extends ItemFood {
   }
 
   @Override
-  public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag advanced) {
-    dynamic.addInformation(stack, worldIn, tooltip, advanced);
+  public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+    dynamic.addInformation(stack, worldIn, tooltip, flagIn);
 
     // effect info
     if(displayEffectsTooltip) {

@@ -11,6 +11,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import slimeknights.mantle.util.LocUtils;
 
 // Item with automatic tooltip support
@@ -18,9 +20,9 @@ public class ItemTooltip extends Item {
 
   @Override
   @SideOnly(Side.CLIENT)
-  public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag advanced) {
+  public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
     addOptionalTooltip(stack, tooltip);
-    super.addInformation(stack, worldIn, tooltip, advanced);
+    super.addInformation(stack, worldIn, tooltip, flagIn);
   }
 
   public static void addOptionalTooltip(ItemStack stack, List<String> tooltip) {

@@ -8,6 +8,8 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public class ItemArmorTooltip extends ItemArmor {
 
   public ItemArmorTooltip(ArmorMaterial armorMaterial, int renderIndex, EntityEquipmentSlot equipmentSlot) {
@@ -15,8 +17,8 @@ public class ItemArmorTooltip extends ItemArmor {
   }
 
   @Override
-  public void addInformation(ItemStack p_addInformation_1_, World p_addInformation_2_, List<String> p_addInformation_3_, ITooltipFlag p_addInformation_4_) {
-    ItemTooltip.addOptionalTooltip(p_addInformation_1_, p_addInformation_3_);
-    super.addInformation(p_addInformation_1_, p_addInformation_2_, p_addInformation_3_, p_addInformation_4_);
+  public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+    ItemTooltip.addOptionalTooltip(stack, tooltip);
+    super.addInformation(stack, worldIn, tooltip, flagIn);
   }
 }
