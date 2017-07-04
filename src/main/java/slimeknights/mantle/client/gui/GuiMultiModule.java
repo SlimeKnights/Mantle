@@ -161,7 +161,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-	this.drawDefaultBackground();
+    this.drawDefaultBackground();
     int oldX = guiLeft;
     int oldY = guiTop;
     int oldW = xSize;
