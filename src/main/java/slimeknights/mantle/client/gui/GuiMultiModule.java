@@ -172,6 +172,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
     xSize = realWidth;
     ySize = realHeight;
     super.drawScreen(mouseX, mouseY, partialTicks);
+    this.renderHoveredToolTip(mouseX, mouseY);
     guiLeft = oldX;
     guiTop = oldY;
     xSize = oldW;
