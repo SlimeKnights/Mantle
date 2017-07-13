@@ -5,6 +5,8 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class ItemArmorTooltip extends ItemArmor {
   }
 
   @Override
+  @SideOnly(Side.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
     ItemTooltip.addOptionalTooltip(stack, tooltip);
     super.addInformation(stack, worldIn, tooltip, flagIn);
