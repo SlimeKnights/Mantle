@@ -59,8 +59,6 @@ public class BookLoader implements IResourceManagerReloadListener {
   private static final NetworkWrapper wrapper = new NetworkWrapper("mantle:books");
 
   public BookLoader() {
-    ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
-
     wrapper.registerPacketServer(PacketUpdateSavedPage.class);
 
     // Register page types

@@ -47,8 +47,6 @@ public class Mantle {
 
   @Mod.EventHandler
   public void postInit(FMLPostInitializationEvent event) {
-    if(event.getSide().isClient()) {
-      MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-    }
+    proxy.postInit();
   }
 }
