@@ -1,6 +1,5 @@
 package slimeknights.mantle;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -10,7 +9,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import slimeknights.mantle.client.ExtraHeartRenderHandler;
 import slimeknights.mantle.common.CommonProxy;
 
 /**
@@ -23,7 +21,7 @@ import slimeknights.mantle.common.CommonProxy;
 @Mod(modid = Mantle.modId,
     name = Mantle.modName,
     version = Mantle.modVersion,
-    dependencies = "required-after:forge@[14.21.0.2363,)",
+     dependencies = "required-after:forge@[14.21.1.2387,)",
     acceptedMinecraftVersions = "[1.12,1.13)")
 public class Mantle {
 
