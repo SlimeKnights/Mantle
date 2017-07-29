@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentError;
@@ -33,6 +34,7 @@ public class BookData implements IDataItem {
   public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
   public transient HashMap<String, String> strings = new HashMap<>();
   public transient FontRenderer fontRenderer;
+  private transient boolean initialized = false;
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
 
@@ -42,102 +44,125 @@ public class BookData implements IDataItem {
     this.repositories = new ArrayList<>(Arrays.asList(repositories));
   }
 
+  public void reset() {
+    initialized = false;
+  }
+
   @Override
   public void load() {
-    sections.clear();
-    appearance = new AppearanceData();
-    itemLinks.clear();
+    if(initialized) {
+      return;
+    }
+    Mantle.logger.info("Started loading book...");
+    try {
+      initialized = true;
+      sections.clear();
+      appearance = new AppearanceData();
+      itemLinks.clear();
 
-    for(BookRepository repo : repositories) {
-      try {
-        List<SectionData> repoContents = repo.getSections();
-        sections.addAll(repoContents);
-
-        for(SectionData section : repoContents) {
-          section.source = repo;
-        }
-      } catch(Exception e) {
-        SectionData error = new SectionData();
-        error.name = "errorenous";
-        PageData page = new PageData(true);
-        page.name = "errorenous";
-        page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
-        error.pages.add(page);
-        sections.add(error);
-      }
-
-      ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");
-
-      if(repo.resourceExists(appearanceLocation)) {
+      for(BookRepository repo : repositories) {
         try {
-          appearance = BookLoader.GSON
-              .fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
-        } catch(Exception e) {
-          e.printStackTrace();
-        }
-      }
+          List<SectionData> repoContents = repo.getSections();
+          sections.addAll(repoContents);
 
-      appearance.load();
-
-      ResourceLocation itemLinkLocation = repo.getResourceLocation("items.json");
-
-      if(repo.resourceExists(itemLinkLocation)) {
-        try {
-          itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON
-                                                        .fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
-        } catch(Exception e) {
-          e.printStackTrace();
-        }
-      }
-
-      ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
-
-      if(repo.resourceExists(languageLocation)) {
-        try {
-          BufferedReader br = new BufferedReader(new InputStreamReader(repo.getResource(languageLocation)
-                                                                           .getInputStream(), "UTF-8"));
-
-          String next = br.readLine();
-
-          while(next != null) {
-            if(!next.startsWith("//") && next.contains("=")) {
-              String key = next.substring(0, next.indexOf('='));
-              String value = next.substring(next.indexOf('=') + 1);
-
-              strings.put(key, value);
-            }
-
-            next = br.readLine();
+          for(SectionData section : repoContents) {
+            section.source = repo;
           }
-        } catch(Exception ignored) {
+        } catch(Exception e) {
+          SectionData error = new SectionData();
+          error.name = "errorenous";
+          PageData page = new PageData(true);
+          page.name = "errorenous";
+          page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
+          error.pages.add(page);
+          sections.add(error);
+        }
+
+        ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");
+
+        if(repo.resourceExists(appearanceLocation)) {
+          try {
+            appearance = BookLoader.GSON
+                .fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
+          } catch(Exception e) {
+            e.printStackTrace();
+          }
+        }
+
+        appearance.load();
+
+        ResourceLocation itemLinkLocation = repo.getResourceLocation("items.json");
+
+        if(repo.resourceExists(itemLinkLocation)) {
+          try {
+            itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON
+                                                          .fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
+          } catch(Exception e) {
+            e.printStackTrace();
+          }
+        }
+
+        ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
+
+        if(repo.resourceExists(languageLocation)) {
+          try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(repo.getResource(languageLocation)
+                                                                             .getInputStream(), "UTF-8"));
+
+            String next = br.readLine();
+
+            while(next != null) {
+              if(!next.startsWith("//") && next.contains("=")) {
+                String key = next.substring(0, next.indexOf('='));
+                String value = next.substring(next.indexOf('=') + 1);
+
+                strings.put(key, value);
+              }
+
+              next = br.readLine();
+            }
+          } catch(Exception ignored) {
+          }
         }
       }
-    }
 
-    for(SectionData section : sections) {
-      if(section.source == null) {
-        section.source = BookRepository.DUMMY;
-      }
+      for(SectionData section : sections) {
+        if(section.source == null) {
+          section.source = BookRepository.DUMMY;
+        }
 
-      section.parent = this;
-      section.load();
-    }
-
-    for(BookTransformer transformer : transformers) {
-      transformer.transform(this);
-    }
-
-    // Loads orphaned sections, unless something went wrong, that would only be sections added by a transformer
-    for(SectionData section : sections) {
-      if(section.source == null) {
-        section.source = BookRepository.DUMMY;
-      }
-
-      if(section.parent == null) {
         section.parent = this;
         section.load();
       }
+
+      for(BookTransformer transformer : transformers) {
+        transformer.transform(this);
+      }
+
+      // Loads orphaned sections, unless something went wrong, that would only be sections added by a transformer
+      for(SectionData section : sections) {
+        if(section.source == null) {
+          section.source = BookRepository.DUMMY;
+        }
+
+        if(section.parent == null) {
+          section.parent = this;
+          section.load();
+        }
+      }
+    } catch(Exception e) {
+      this.sections.clear();
+      SectionData section = new SectionData(true);
+      section.name = "errorenous";
+      PageData page = new PageData(true);
+      page.name = "errorenous";
+      page.content = new ContentError("Failed to load the book due to an unexpected error.", e);
+      section.pages.add(page);
+      this.sections.add(section);
+
+      e.printStackTrace();
     }
+    Mantle.logger.info("Finished loading book");
   }
 
   public SectionData findSection(String name) {
@@ -198,7 +223,8 @@ public class BookData implements IDataItem {
 
       if(pages + section.getPageCount() > number) {
         return section.pages.get(number - pages);
-      } else {
+      }
+      else {
         pages += section.getPageCount();
       }
     }
@@ -306,6 +332,9 @@ public class BookData implements IDataItem {
   }
 
   public void openGui(@Nullable ItemStack item) {
+    if(!initialized) {
+      load();
+    }
     if(Minecraft.getMinecraft().player != null) {
       Minecraft.getMinecraft()
                .displayGuiScreen(new GuiBook(this, Minecraft.getMinecraft().player.getStatFileWriter(), item));

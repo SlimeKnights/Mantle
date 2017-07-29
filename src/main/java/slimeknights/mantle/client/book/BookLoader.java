@@ -142,16 +142,6 @@ public class BookLoader implements IResourceManagerReloadListener {
     return info;
   }
 
-  /**
-   * Returns a book by its name
-   *
-   * @param name The name of the book, prefixed with modid:
-   * @return The instance of the book data, or null if the book is not registered
-   */
-  public static BookData getBook(String name) {
-    return null;
-  }
-
   public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
     if(player == null) {
       return;
@@ -169,26 +159,6 @@ public class BookLoader implements IResourceManagerReloadListener {
    */
   @Override
   public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
-    Mantle.logger.info("Started loading books...");
-    long time = System.nanoTime();
-
-    for(BookData book : books.values()) {
-      try {
-        book.load();
-      } catch(Exception e) {
-        book.sections.clear();
-        SectionData section = new SectionData(true);
-        section.name = "errorenous";
-        PageData page = new PageData(true);
-        page.name = "errorenous";
-        page.content = new ContentError("Failed to load the book due to an unexpected error.", e);
-        section.pages.add(page);
-        book.sections.add(section);
-
-        e.printStackTrace();
-      }
-    }
-
-    Mantle.logger.info("Book loading completed in " + ((System.nanoTime() - time) / 1000000000D) + " seconds.");
+    books.forEach((s, bookData) -> bookData.reset());
   }
 }
