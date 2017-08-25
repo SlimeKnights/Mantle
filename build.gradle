@@ -122,10 +122,11 @@ jar {
     manifest {
         attributes 'FMLAT': 'mantle_at.cfg'
     }
+    
+    dependsOn shadowJar
+    enabled = false
+    finalizedBy reobfJar
 }
-
-jar.dependsOn shadowJar
-jar.enabled = false
 
 shadowJar {
     archiveName = tasks.jar.archiveName
