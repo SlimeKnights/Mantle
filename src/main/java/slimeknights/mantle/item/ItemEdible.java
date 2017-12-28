@@ -122,8 +122,9 @@ public class ItemEdible extends ItemFood {
     dynamic.addInformation(stack, worldIn, tooltip, flagIn);
 
     // effect info
-    if(displayEffectsTooltip) {
-      for(PotionEffect potionEffect : potionEffects.get(stack.getMetadata())) {
+    int meta = stack.getMetadata();
+    if(dynamic.isValid(meta) && displayEffectsTooltip) {
+      for(PotionEffect potionEffect : potionEffects.get(meta)) {
         tooltip.add(I18n.translateToLocal(potionEffect.getEffectName()).trim());
       }
     }
