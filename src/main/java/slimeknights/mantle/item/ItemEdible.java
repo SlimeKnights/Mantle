@@ -129,7 +129,6 @@ public class ItemEdible extends ItemFood {
     }
   }
 
-  @SideOnly(Side.CLIENT)
   @Override
   public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
     if(this.isInCreativeTab(tab)) {
