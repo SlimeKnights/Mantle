@@ -196,6 +196,7 @@ public class ExtraHeartRenderHandler {
     int regenOffset = absorb ? 10 : 0;
     for(int iter = 0; iter < count / 20; iter++) {
       int renderHearts = (count - 20 * (iter + 1)) / 2;
+      int heartIndex = iter % 11;
       if(renderHearts > 10) {
         renderHearts = 10;
       }
@@ -207,13 +208,13 @@ public class ExtraHeartRenderHandler {
         if(absorb) {
           this.drawTexturedModalRect(xBasePos + 8 * i, yBasePos + y, 0, 54, 9, 9);
         }
-        this.drawTexturedModalRect(xBasePos + 8 * i, yBasePos + y, 0 + 18 * iter, potionOffset, 9, 9);
+        this.drawTexturedModalRect(xBasePos + 8 * i, yBasePos + y, 0 + 18 * heartIndex, potionOffset, 9, 9);
       }
       if(count % 2 == 1 && renderHearts < 10) {
         if(absorb) {
           this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos, 0, 54, 9, 9);
         }
-        this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos, 9 + 18 * iter, potionOffset, 9, 9);
+        this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos, 9 + 18 * heartIndex, potionOffset, 9, 9);
       }
     }
   }
