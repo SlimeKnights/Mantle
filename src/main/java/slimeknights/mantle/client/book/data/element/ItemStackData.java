@@ -77,7 +77,7 @@ public class ItemStackData {
     }
 
     if(isMissingItem) {
-      NBTTagCompound display = itemStack.getSubCompound("display");
+      NBTTagCompound display = itemStack.getOrCreateSubCompound("display");
       display.setString("Name", "\u00A7rUnknown Item");
       NBTTagList lore = new NBTTagList();
       lore.appendTag(new NBTTagString("\u00A7r\u00A7eItem Name:"));
