@@ -1,5 +1,6 @@
 package slimeknights.mantle.pulsar.flightpath;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -88,7 +89,15 @@ public class Flightpath {
                             m.setAccessible(true);
                             m.invoke(ent.getKey(), evt);
                             m.setAccessible(access);
+                        } catch(InvocationTargetException ex) {
+                            // thrown when a method throws an exception, so use that exception instead of the wrapper for a better stacktrace
+                            if(ex.getTargetException() instanceof Exception) {
+                                exceptionHandler.handle((Exception)ex.getTargetException());
+                            } else {
+                                exceptionHandler.handle(ex);
+                            }
                         } catch (Exception ex) {
+                            // all other exceptions, this means something when wrong with the reflection
                             exceptionHandler.handle(ex);
                         }
                     }
