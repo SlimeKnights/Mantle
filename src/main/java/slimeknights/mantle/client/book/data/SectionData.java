@@ -1,23 +1,18 @@
 package slimeknights.mantle.client.book.data;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementManager;
-import net.minecraft.client.Minecraft;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.resources.IResource;
-import net.minecraft.stats.StatisticsManager;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.annotation.Nullable;
-
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.repository.BookRepository;
+import slimeknights.mantle.client.gui.book.GuiBook;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
@@ -82,7 +77,7 @@ public class SectionData implements IDataItem {
     icon.location = source.getResourceLocation(icon.file, true);
   }
 
-  public void update(@Nullable StatisticsManager statisticsManager) {
+  public void update(@Nullable GuiBook.AdvancementCache advancementCache) {
   }
 
   public String getTitle() {
@@ -94,13 +89,13 @@ public class SectionData implements IDataItem {
     return pages.size();
   }
 
-  public boolean isUnlocked(StatisticsManager statisticsManager) {
-    if(statisticsManager == null || requirements == null || requirements.length == 0) {
+  public boolean isUnlocked(GuiBook.AdvancementCache advancementCache) {
+    if(advancementCache == null || requirements == null || requirements.length == 0) {
       return true;
     }
 
     for(String achievement : requirements) {
-      if(!requirementSatisfied(achievement, statisticsManager)) {
+      if(!requirementSatisfied(achievement, advancementCache)) {
         return false;
       }
     }
@@ -108,28 +103,14 @@ public class SectionData implements IDataItem {
     return true;
   }
 
-  public static boolean requirementSatisfied(String requirement, StatisticsManager writer) {
-    if(writer == null) {
+  public static boolean requirementSatisfied(String requirement, GuiBook.AdvancementCache advancementCache) {
+    if(advancementCache == null) {
       return true;
     }
 
-    Advancement advancement = findAdvancement(requirement);
+    AdvancementProgress progress = advancementCache.getProgress(requirement);
 
-    return advancement == null;//TODO: Readd || writer.hasAchievementUnlocked(advancement);
+    return progress != null && progress.isDone();
 
-  }
-
-  public static Advancement findAdvancement(String name) {
-    if(name == null || name.isEmpty()) {
-      return null;
-    }
-
-    for(Advancement advancement : Minecraft.getMinecraft().player.connection.getAdvancementManager().getAdvancementList().getAdvancements()) {
-      if(advancement.getId().equals(new ResourceLocation(name))) {
-        return advancement;
-      }
-    }
-
-    return null;
   }
 }

@@ -1,17 +1,16 @@
 package slimeknights.mantle.client.book;
 
-import net.minecraft.stats.StatisticsManager;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentSectionList;
 import slimeknights.mantle.client.book.data.content.ContentTableOfContents;
 import slimeknights.mantle.client.book.data.element.TextData;
+import slimeknights.mantle.client.gui.book.GuiBook;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class BookTransformer {
 
@@ -34,10 +33,10 @@ public abstract class BookTransformer {
     public void transform(BookData book) {
       SectionData index = new SectionData(true) {
         @Override
-        public void update(StatisticsManager statisticsManager) {
+        public void update(GuiBook.AdvancementCache advancementCache) {
           pages.clear();
 
-          List<SectionData> visibleSections = parent.getVisibleSections(statisticsManager);
+          List<SectionData> visibleSections = parent.getVisibleSections(advancementCache);
 
           if(visibleSections.isEmpty()) {
             return;

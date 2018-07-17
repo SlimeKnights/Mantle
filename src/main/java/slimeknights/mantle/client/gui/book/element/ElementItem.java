@@ -96,7 +96,7 @@ public class ElementItem extends SizedBookElement {
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawTooltips(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(isHovered(mouseX, mouseY) && currentItem < itemCycle.size()) {
       if(tooltip != null) {
         drawHoveringText(tooltip, mouseX, mouseY, fontRenderer);

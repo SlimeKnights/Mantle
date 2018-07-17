@@ -1,15 +1,14 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import net.minecraft.advancements.Advancement;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.text.TextFormatting;
+import slimeknights.mantle.client.book.data.SectionData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import slimeknights.mantle.client.book.data.SectionData;
 
 public class ElementSection extends SizedBookElement {
 
@@ -28,7 +27,7 @@ public class ElementSection extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    boolean unlocked = section.isUnlocked(parent.statisticsManager);
+    boolean unlocked = section.isUnlocked(parent.advancementCache);
     boolean hover = isHovered(mouseX, mouseY);
 
     if(section.icon != null) {
@@ -75,22 +74,15 @@ public class ElementSection extends SizedBookElement {
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawTooltips(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(section != null && isHovered(mouseX, mouseY)) {
       List<String> text = new ArrayList<>();
       text.add(section.getTitle());
-      if(!section.isUnlocked(parent.statisticsManager)) {
+      if(!section.isUnlocked(parent.advancementCache)) {
         text.add(TextFormatting.RED + "Locked");
         text.add("Requirements:");
 
-        for(String requirement : section.requirements) {
-          Advancement advancement = SectionData.findAdvancement(requirement);
-          if(advancement != null) {
-            text.add((SectionData
-                          .requirementSatisfied(requirement, parent.statisticsManager) ? TextFormatting.GREEN : TextFormatting.RED) + TextFormatting
-                         .getTextWithoutFormattingCodes(advancement.getDisplay().getTitle().getFormattedText()));
-          }
-        }
+        text.addAll(Arrays.asList(section.requirements));
       }
       drawHoveringText(text, mouseX, mouseY, fontRenderer);
     }
@@ -98,8 +90,8 @@ public class ElementSection extends SizedBookElement {
 
   @Override
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    if(mouseButton == 0 && section != null && section.isUnlocked(parent.statisticsManager) && isHovered(mouseX, mouseY)) {
-      parent.openPage(parent.book.getFirstPageNumber(section, parent.statisticsManager));
+    if(mouseButton == 0 && section != null && section.isUnlocked(parent.advancementCache) && isHovered(mouseX, mouseY)) {
+      parent.openPage(parent.book.getFirstPageNumber(section, parent.advancementCache));
     }
   }
 }
