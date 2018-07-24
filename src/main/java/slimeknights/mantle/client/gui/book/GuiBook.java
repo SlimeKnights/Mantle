@@ -2,11 +2,15 @@ package slimeknights.mantle.client.gui.book;
 
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementList;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.IProgressMeter;
+import net.minecraft.client.multiplayer.ClientAdvancementManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -14,6 +18,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.stats.StatisticsManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -22,6 +27,7 @@ import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -38,7 +44,7 @@ import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOKFRONT;
 
 @SideOnly(Side.CLIENT)
-public class GuiBook extends GuiScreen implements IProgressMeter {
+public class GuiBook extends GuiScreen {
 
   public static boolean debug = false;
 
@@ -63,7 +69,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     init(); // initializes page width and height
   }
 
-  private boolean loadingAchievements = true;
   private GuiArrow previousArrow, nextArrow, backArrow, indexArrow;
 
   public final BookData book;
@@ -74,21 +79,25 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   private ArrayList<BookElement> leftElements = new ArrayList<>();
   private ArrayList<BookElement> rightElements = new ArrayList<>();
 
-  public StatisticsManager statisticsManager;
+  public AdvancementCache advancementCache;
 
   public static void init() {
     PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public GuiBook(BookData book, StatisticsManager statisticsManager, @Nullable ItemStack item) {
+  public GuiBook(BookData book, @Nullable ItemStack item) {
     this.book = book;
     this.item = item;
 
-    this.statisticsManager = statisticsManager;
     this.mc = Minecraft.getMinecraft();
     this.fontRenderer = mc.fontRenderer;
     init();
+
+    advancementCache = new AdvancementCache();
+    this.mc.player.connection.getAdvancementManager().setListener(advancementCache);
+
+    openPage(book.findPageNumber(BookHelper.getSavedPage(item), advancementCache));
   }
 
   public void drawerTransform(boolean rightSide) {
@@ -129,17 +138,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     FontRenderer fontRenderer = book.fontRenderer;
     if(fontRenderer == null) {
       fontRenderer = mc.fontRenderer;
-    }
-
-    if(loadingAchievements) {
-      this.drawDefaultBackground();
-
-      this.drawCenteredString(this.fontRenderer, I18n
-          .format("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
-      this.drawCenteredString(this.fontRenderer, LOADING_STRINGS[(int) (Minecraft
-                                                                               .getSystemTime() / 150L % (long) LOADING_STRINGS.length)], this.width / 2, this.height / 2 + this.fontRenderer.FONT_HEIGHT * 2, 16777215);
-
-      return;
     }
 
     if(debug) {
@@ -255,6 +253,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
+        // Not foreach to prevent conmodification crashes
+        for(int i = 0; i < leftElements.size(); i++) {
+          BookElement element = leftElements.get(i);
+
+          GlStateManager.color(1F, 1F, 1F, 1F);
+          element.drawTooltips(mX, mY, partialTicks, fontRenderer);
+        }
+
         GlStateManager.popMatrix();
       }
 
@@ -264,8 +270,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       GlStateManager.color(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
 
-      if((page < book.getFullPageCount(statisticsManager) - 1 || book.getPageCount(statisticsManager) % 2 != 0) && page < book
-          .getFullPageCount(statisticsManager)) {
+      int fullPageCount = book.getFullPageCount(advancementCache);
+      if((page < fullPageCount - 1 || fullPageCount % 2 != 0) && page < fullPageCount) {
         drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
@@ -297,6 +303,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
+        // Not foreach to prevent conmodification crashes
+        for(int i = 0; i < rightElements.size(); i++) {
+          BookElement element = rightElements.get(i);
+
+          GlStateManager.color(1F, 1F, 1F, 1F);
+          element.drawTooltips(mX, mY, partialTicks, fontRenderer);
+        }
+
         GlStateManager.popMatrix();
       }
     }
@@ -311,10 +325,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   }
 
   public int openPage(int page, boolean returner) {
-    if(loadingAchievements) {
-      return -1;
-    }
-
     if(page < 0) {
       return -1;
     }
@@ -328,7 +338,7 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       bookPage = (page - 2) / 2 + 1;
     }
 
-    if(bookPage >= -1 && bookPage < book.getFullPageCount(statisticsManager)) {
+    if(bookPage >= -1 && bookPage < book.getFullPageCount(advancementCache)) {
       if(returner) {
         oldPage = this.page;
       }
@@ -367,10 +377,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   }
 
   public void openCover() {
-    if(loadingAchievements) {
-      return;
-    }
-
     _setPage(-1);
 
     this.leftElements.clear();
@@ -383,10 +389,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   }
 
   private void buildPages() {
-    if(loadingAchievements) {
-      return;
-    }
-
     leftElements.clear();
     rightElements.clear();
 
@@ -395,14 +397,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
     }
 
     if(page == 0) {
-      PageData page = book.findPage(0, statisticsManager);
+      PageData page = book.findPage(0, advancementCache);
 
       if(page != null) {
         page.content.build(book, rightElements, false);
       }
     } else {
-      PageData leftPage = book.findPage((page - 1) * 2 + 1, statisticsManager);
-      PageData rightPage = book.findPage((page - 1) * 2 + 2, statisticsManager);
+      PageData leftPage = book.findPage((page - 1) * 2 + 1, advancementCache);
+      PageData rightPage = book.findPage((page - 1) * 2 + 2, advancementCache);
 
       if(leftPage != null) {
         leftPage.content.build(book, leftElements, false);
@@ -423,11 +425,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   @Override
   public void initGui() {
     super.initGui();
-
-    if(loadingAchievements) {
-      this.mc.getConnection().sendPacket(new CPacketClientStatus((CPacketClientStatus.State.REQUEST_STATS)));
-      return;
-    }
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale, and of course half the size so that all our code still works as it should
     /*
@@ -454,12 +451,8 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   public void updateScreen() {
     super.updateScreen();
 
-    if(loadingAchievements) {
-      return;
-    }
-
     previousArrow.visible = page != -1;
-    nextArrow.visible = page < book.getFullPageCount(statisticsManager) - (book.getPageCount(statisticsManager) % 2 != 0 ? 0 : 1);
+    nextArrow.visible = page < book.getFullPageCount(advancementCache) - (book.getPageCount(advancementCache) % 2 != 0 ? 0 : 1);
     backArrow.visible = oldPage >= -1;
 
     if(page == -1) {
@@ -478,21 +471,9 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   }
 
   @Override
-  public void onStatsUpdated() {
-    loadingAchievements = false;
-
-    initGui();
-    openPage(book.findPageNumber(BookHelper.getSavedPage(item), statisticsManager));
-  }
-
-  @Override
   public void actionPerformed(GuiButton button) {
-    if(loadingAchievements) {
-      return;
-    }
-
     if(button instanceof GuiBookmark) {
-      openPage(book.findPageNumber(((GuiBookmark) button).data.page, statisticsManager));
+      openPage(book.findPageNumber(((GuiBookmark) button).data.page, advancementCache));
 
       return;
     }
@@ -504,8 +485,9 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
       }
     } else if(button == nextArrow) {
       page++;
-      if(page > book.getFullPageCount(statisticsManager) - (book.getPageCount(statisticsManager) % 2 != 0 ? 0 : 1)) {
-        page = book.getFullPageCount(statisticsManager) - 1;
+      int fullPageCount = book.getFullPageCount(advancementCache);
+      if(page > fullPageCount - (fullPageCount % 2 != 0 ? 0 : 1)) {
+        page = fullPageCount - 1;
       }
     } else if(button == backArrow) {
       if(oldPage >= -1) {
@@ -522,10 +504,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   @Override
   protected void keyTyped(char typedChar, int keyCode) throws IOException {
     super.keyTyped(typedChar, keyCode);
-
-    if(loadingAchievements) {
-      return;
-    }
 
     switch(keyCode) {
       case Keyboard.KEY_LEFT:
@@ -544,10 +522,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
   @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-    if(loadingAchievements) {
-      return;
-    }
-
     super.mouseClicked(mouseX, mouseY, mouseButton);
 
     boolean right = false;
@@ -576,10 +550,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   protected void mouseReleased(int mouseX, int mouseY, int state) {
     super.mouseReleased(mouseX, mouseY, state);
 
-    if(loadingAchievements) {
-      return;
-    }
-
     boolean right = false;
     mouseX = getMouseX(false);
     mouseY = getMouseY();
@@ -598,10 +568,6 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
   @Override
   protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-    if(loadingAchievements) {
-      return;
-    }
-
     boolean right = false;
     mouseX = getMouseX(false);
     mouseY = getMouseY();
@@ -620,17 +586,14 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
 
   @Override
   public void onGuiClosed() {
-    if(loadingAchievements) {
-      return;
-    }
     if(mc.player == null) {
       return;
     }
 
-    PageData page = this.page == 0 ? book.findPage(0, statisticsManager) : book.findPage((this.page - 1) * 2 + 1, statisticsManager);
+    PageData page = this.page == 0 ? book.findPage(0, advancementCache) : book.findPage((this.page - 1) * 2 + 1, advancementCache);
 
     if(page == null) {
-      page = book.findPage((this.page - 1) * 2 + 2, statisticsManager);
+      page = book.findPage((this.page - 1) * 2 + 2, advancementCache);
     }
 
     if(this.page == -1) {
@@ -643,5 +606,60 @@ public class GuiBook extends GuiScreen implements IProgressMeter {
   @Override
   public boolean doesGuiPauseGame() {
     return false;
+  }
+
+  public class AdvancementCache implements ClientAdvancementManager.IListener {
+    private HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
+    private HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
+
+    public AdvancementProgress getProgress(String id){
+      return getProgress(getAdvancement(id));
+    }
+
+    public AdvancementProgress getProgress(Advancement advancement){
+      return progress.get(advancement);
+    }
+
+    public Advancement getAdvancement(String id){
+      return nameCache.get(new ResourceLocation(id));
+    }
+
+    @Override
+    public void onUpdateAdvancementProgress(Advancement advancement, AdvancementProgress advancementProgress) {
+      progress.put(advancement, advancementProgress);
+    }
+
+    @Override
+    public void setSelectedTab(@Nullable Advancement advancement) {
+      // noop
+    }
+
+    @Override
+    public void rootAdvancementAdded(Advancement advancement) {
+      nameCache.put(advancement.getId(), advancement);
+    }
+
+    @Override
+    public void rootAdvancementRemoved(Advancement advancement) {
+      progress.remove(advancement);
+      nameCache.remove(advancement.getId());
+    }
+
+    @Override
+    public void nonRootAdvancementAdded(Advancement advancement) {
+      nameCache.put(advancement.getId(), advancement);
+    }
+
+    @Override
+    public void nonRootAdvancementRemoved(Advancement advancement) {
+      progress.remove(advancement);
+      nameCache.remove(advancement.getId());
+    }
+
+    @Override
+    public void advancementsCleared() {
+      progress.clear();
+      nameCache.clear();
+    }
   }
 }

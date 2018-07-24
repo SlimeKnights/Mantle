@@ -1,15 +1,13 @@
 package slimeknights.mantle.client.gui.book;
 
-import com.google.common.collect.ImmutableList;
-
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,13 +15,29 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @SideOnly(Side.CLIENT)
 public class TextDataRenderer {
-
+  /**
+   * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
+   */
   public static String drawText(int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr) {
-    String action = "";
+    List<String> tooltip = new ArrayList<String>();
+    String action = drawText(x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
-    String[] drawLabel = null;
+    if(tooltip.size() > 0) {
+      drawTooltip(tooltip, mouseX, mouseY, fr);
+    }
+
+    return action;
+  }
+
+  public static String drawText(int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, @Nonnull List<String> tooltip) {
+    String action = "";
 
     int atX = x;
     int atY = y;
@@ -124,7 +138,7 @@ public class TextDataRenderer {
         drawGradientRect(mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);*/
 
         if((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
-          drawLabel = item.tooltip;
+          tooltip.addAll(Arrays.asList(item.tooltip));
         }
       }
 
@@ -142,21 +156,8 @@ public class TextDataRenderer {
     }
 
     if(GuiBook.debug && action != null && !action.isEmpty()) {
-      String[] label = drawLabel;
-      drawLabel = new String[label != null ? label.length + 2 : 1];
-
-      if(label != null) {
-        for(int i = 0; i < label.length; i++) {
-          drawLabel[i] = label[i];
-        }
-      }
-
-      drawLabel[drawLabel.length > 1 ? drawLabel.length - 2 : 0] = "";
-      drawLabel[drawLabel.length - 1] = TextFormatting.GRAY + "Action: " + action;
-    }
-
-    if(drawLabel != null) {
-      drawHoveringText(drawLabel, mouseX, mouseY, fr);
+      tooltip.add("");
+      tooltip.add(TextFormatting.GRAY + "Action: " + action);
     }
 
     return action;
@@ -167,7 +168,7 @@ public class TextDataRenderer {
 
     while(s.contains("$(") && s.contains(")$") && s.indexOf("$(") < s.indexOf(")$")) {
       String loc = s.substring(s.indexOf("$(") + 2, s.indexOf(")$"));
-      s = s.replace("$(" + loc + ")$", I18n.translateToLocal(loc));
+      s = s.replace("$(" + loc + ")$", I18n.format(loc));
     }
 
     if(s.indexOf("$(") > s.indexOf(")$") || s.contains(")$")) {
@@ -214,8 +215,8 @@ public class TextDataRenderer {
   }
 
   //BEGIN METHODS FROM GUI
-  private static void drawHoveringText(String[] textLines, int x, int y, FontRenderer font) {
-    GuiUtils.drawHoveringText(ImmutableList.copyOf(textLines), x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, GuiBook.PAGE_WIDTH, font);
+  public static void drawTooltip(List<String> textLines, int mouseX, int mouseY, FontRenderer font) {
+    GuiUtils.drawHoveringText(textLines, mouseX, mouseY, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, GuiBook.PAGE_WIDTH, font);
     RenderHelper.disableStandardItemLighting();
   }
 

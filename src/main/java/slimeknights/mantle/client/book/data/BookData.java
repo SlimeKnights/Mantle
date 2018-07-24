@@ -3,20 +3,9 @@ package slimeknights.mantle.client.book.data;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatisticsManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
@@ -24,6 +13,14 @@ import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.gui.book.GuiBook;
+
+import javax.annotation.Nullable;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
@@ -169,12 +166,12 @@ public class BookData implements IDataItem {
     return findSection(name, null);
   }
 
-  public SectionData findSection(String name, @Nullable StatisticsManager statisticsManager) {
+  public SectionData findSection(String name, GuiBook.AdvancementCache advancementCache) {
     for(SectionData section : sections) {
-      section.update(statisticsManager);
+      section.update(advancementCache);
 
       if(section.name.equals(name.toLowerCase())) {
-        return section.isUnlocked(statisticsManager) ? section : null;
+        return section.isUnlocked(advancementCache) ? section : null;
       }
     }
 
@@ -185,16 +182,16 @@ public class BookData implements IDataItem {
     return getFirstPageNumber(section, null);
   }
 
-  public int getFirstPageNumber(SectionData section, @Nullable StatisticsManager statisticsManager) {
+  public int getFirstPageNumber(SectionData section, @Nullable GuiBook.AdvancementCache advancementCache) {
     int pages = 0;
     for(SectionData sect : sections) {
-      sect.update(statisticsManager);
+      sect.update(advancementCache);
 
       if(section == sect) {
-        return section.isUnlocked(statisticsManager) ? pages + 1 : -1;
+        return section.isUnlocked(advancementCache) ? pages + 1 : -1;
       }
 
-      if(!sect.isUnlocked(statisticsManager)) {
+      if(!sect.isUnlocked(advancementCache)) {
         continue;
       }
 
@@ -208,16 +205,16 @@ public class BookData implements IDataItem {
     return findPage(number, null);
   }
 
-  public PageData findPage(int number, @Nullable StatisticsManager statisticsManager) {
+  public PageData findPage(int number, @Nullable GuiBook.AdvancementCache advancementCache) {
     if(number < 0) {
       return null;
     }
 
     int pages = 0;
     for(SectionData section : sections) {
-      section.update(statisticsManager);
+      section.update(advancementCache);
 
-      if(!section.isUnlocked(statisticsManager)) {
+      if(!section.isUnlocked(advancementCache)) {
         continue;
       }
 
@@ -236,15 +233,15 @@ public class BookData implements IDataItem {
     return findPage(location, null);
   }
 
-  public PageData findPage(String location, @Nullable StatisticsManager statisticsManager) {
-    return findPage(findPageNumber(location, statisticsManager));
+  public PageData findPage(String location, @Nullable GuiBook.AdvancementCache advancementCache) {
+    return findPage(findPageNumber(location, advancementCache));
   }
 
   public int findPageNumber(String location) {
     return findPageNumber(location, null);
   }
 
-  public int findPageNumber(String location, @Nullable StatisticsManager statisticsManager) {
+  public int findPageNumber(String location, @Nullable GuiBook.AdvancementCache advancementCache) {
     location = location.toLowerCase();
 
     int pages = 0;
@@ -257,9 +254,9 @@ public class BookData implements IDataItem {
     String pageName = location.substring(location.indexOf('.') + 1);
 
     for(SectionData section : sections) {
-      section.update(statisticsManager);
+      section.update(advancementCache);
 
-      if(!section.isUnlocked(statisticsManager)) {
+      if(!section.isUnlocked(advancementCache)) {
         continue;
       }
 
@@ -285,12 +282,12 @@ public class BookData implements IDataItem {
     return getPageCount(null);
   }
 
-  public int getPageCount(@Nullable StatisticsManager statisticsManager) {
+  public int getPageCount(@Nullable GuiBook.AdvancementCache advancementCache) {
     int pages = 0;
     for(SectionData section : sections) {
-      section.update(statisticsManager);
+      section.update(advancementCache);
 
-      pages += section.isUnlocked(statisticsManager) ? section.getPageCount() : 0;
+      pages += section.isUnlocked(advancementCache) ? section.getPageCount() : 0;
     }
     return pages;
   }
@@ -299,8 +296,8 @@ public class BookData implements IDataItem {
     return getFullPageCount(null);
   }
 
-  public int getFullPageCount(@Nullable StatisticsManager statisticsManager) {
-    return (int) Math.ceil((getPageCount(statisticsManager) - 1) / 2F) + 1;
+  public int getFullPageCount(@Nullable GuiBook.AdvancementCache advancementCache) {
+    return (int) Math.ceil((getPageCount(advancementCache) - 1) / 2F) + 1;
   }
 
   public String getItemAction(ItemStackData item) {
@@ -313,11 +310,11 @@ public class BookData implements IDataItem {
     return "";
   }
 
-  public List<SectionData> getVisibleSections(StatisticsManager statisticsManager) {
+  public List<SectionData> getVisibleSections(GuiBook.AdvancementCache advancementCache) {
     List<SectionData> visible = new ArrayList<>();
 
     for(SectionData section : sections) {
-      if(section.isUnlocked(statisticsManager) || !section.hideWhenLocked) {
+      if(section.isUnlocked(advancementCache) || !section.hideWhenLocked) {
         visible.add(section);
       }
     }
@@ -336,8 +333,7 @@ public class BookData implements IDataItem {
       load();
     }
     if(Minecraft.getMinecraft().player != null) {
-      Minecraft.getMinecraft()
-               .displayGuiScreen(new GuiBook(this, Minecraft.getMinecraft().player.getStatFileWriter(), item));
+      Minecraft.getMinecraft().displayGuiScreen(new GuiBook(this, item));
     }
   }
 
