@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data;
 
+import com.google.common.collect.Sets;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.resources.IResource;
 import net.minecraftforge.fml.relauncher.Side;
@@ -13,13 +14,14 @@ import slimeknights.mantle.client.gui.book.GuiBook;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
 
   public String name = null;
   public ImageData icon = new ImageData();
-  public String[] requirements = new String[0];
+  public Set<String> requirements = Sets.newHashSet();
   public boolean hideWhenLocked = false;
   public String data = "";
 
@@ -90,7 +92,7 @@ public class SectionData implements IDataItem {
   }
 
   public boolean isUnlocked(GuiBook.AdvancementCache advancementCache) {
-    if(advancementCache == null || requirements == null || requirements.length == 0) {
+    if(advancementCache == null || requirements == null || requirements.size() == 0) {
       return true;
     }
 

@@ -82,7 +82,7 @@ public class ElementSection extends SizedBookElement {
         text.add(TextFormatting.RED + "Locked");
         text.add("Requirements:");
 
-        text.addAll(Arrays.asList(section.requirements));
+        text.addAll(section.requirements);
       }
       drawHoveringText(text, mouseX, mouseY, fontRenderer);
     }
