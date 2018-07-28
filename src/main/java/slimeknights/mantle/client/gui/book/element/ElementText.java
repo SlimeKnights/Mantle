@@ -44,7 +44,7 @@ public class ElementText extends SizedBookElement {
   }
 
   @Override
-  public void drawTooltips(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(tooltip.size() > 0){
       TextDataRenderer.drawTooltip(tooltip, mouseX, mouseY, fontRenderer);
       tooltip.clear();

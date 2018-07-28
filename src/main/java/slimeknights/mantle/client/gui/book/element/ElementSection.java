@@ -74,7 +74,7 @@ public class ElementSection extends SizedBookElement {
   }
 
   @Override
-  public void drawTooltips(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(section != null && isHovered(mouseX, mouseY)) {
       List<String> text = new ArrayList<>();
       text.add(section.getTitle());

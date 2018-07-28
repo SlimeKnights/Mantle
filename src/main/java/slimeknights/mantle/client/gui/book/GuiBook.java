@@ -253,14 +253,6 @@ public class GuiBook extends GuiScreen {
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
-        // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < leftElements.size(); i++) {
-          BookElement element = leftElements.get(i);
-
-          GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawTooltips(mX, mY, partialTicks, fontRenderer);
-        }
-
         GlStateManager.popMatrix();
       }
 
@@ -301,14 +293,6 @@ public class GuiBook extends GuiScreen {
 
           GlStateManager.color(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
-        }
-
-        // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < rightElements.size(); i++) {
-          BookElement element = rightElements.get(i);
-
-          GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawTooltips(mX, mY, partialTicks, fontRenderer);
         }
 
         GlStateManager.popMatrix();
