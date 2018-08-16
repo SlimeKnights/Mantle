@@ -74,6 +74,8 @@ public class BookData implements IDataItem {
           page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
           error.pages.add(page);
           sections.add(error);
+
+          e.printStackTrace();
         }
 
         ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");

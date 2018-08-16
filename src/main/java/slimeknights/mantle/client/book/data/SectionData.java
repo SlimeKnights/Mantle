@@ -65,6 +65,8 @@ public class SectionData implements IDataItem {
             pdError.name = "errorrenous";
             pdError.content = new ContentError("Failed to load section " + name + ".", e);
             pages.add(pdError);
+
+            e.printStackTrace();
           }
         }
       }
