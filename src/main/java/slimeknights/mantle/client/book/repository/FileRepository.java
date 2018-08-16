@@ -36,12 +36,22 @@ public class FileRepository extends BookRepository {
       return safe ? new ResourceLocation("") : null;
     }
     if(!path.contains(":")) {
-      String langPath = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
+      String langPath = null;
+
+      if(Minecraft.getMinecraft().getLanguageManager() != null && Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage() != null)
+      {
+        langPath = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
+      }
+
       String defaultLangPath = "en_US";
 
-      ResourceLocation res = new ResourceLocation(location + "/" + langPath + "/" + path);
-      if(resourceExists(res)) {
-        return res;
+      ResourceLocation res;
+
+      if(langPath != null) {
+        res = new ResourceLocation(location + "/" + langPath + "/" + path);
+        if (resourceExists(res)) {
+          return res;
+        }
       }
       res = new ResourceLocation(location + "/" + defaultLangPath + "/" + path);
       if(resourceExists(res)) {
