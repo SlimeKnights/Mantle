@@ -211,7 +211,7 @@ public class ExtraHeartRenderHandler {
         this.drawTexturedModalRect(xBasePos + 8 * i, yBasePos + y, 0 + 18 * heartIndex, potionOffset, 9, 9);
       }
       if(count % 2 == 1 && renderHearts < 10) {
-      	int y = renderHearts + regenOffset == regen ? -2 : 0;
+        int y = renderHearts + regenOffset == regen ? -2 : 0;
         if(absorb) {
           this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos + y, 0, 54, 9, 9);
         }
