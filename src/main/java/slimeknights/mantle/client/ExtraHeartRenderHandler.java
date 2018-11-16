@@ -201,22 +201,24 @@ public class ExtraHeartRenderHandler {
         renderHearts = 10;
       }
       for(int i = 0; i < renderHearts; i++) {
-        int y = 0;
-        if(i + regenOffset == regen) {
-          y -= 2;
-        }
+        int y = getYRegenOffset(i, regenOffset);
         if(absorb) {
           this.drawTexturedModalRect(xBasePos + 8 * i, yBasePos + y, 0, 54, 9, 9);
         }
         this.drawTexturedModalRect(xBasePos + 8 * i, yBasePos + y, 0 + 18 * heartIndex, potionOffset, 9, 9);
       }
       if(count % 2 == 1 && renderHearts < 10) {
+        int y = getYRegenOffset(renderHearts, regenOffset);
         if(absorb) {
-          this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos, 0, 54, 9, 9);
+          this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos + y, 0, 54, 9, 9);
         }
-        this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos, 9 + 18 * heartIndex, potionOffset, 9, 9);
+        this.drawTexturedModalRect(xBasePos + 8 * renderHearts, yBasePos + y, 9 + 18 * heartIndex, potionOffset, 9, 9);
       }
     }
+  }
+
+  private int getYRegenOffset(int i, int offset) {
+    return i + offset == regen ? -2 : 0;
   }
 
   private int getPotionOffset(EntityPlayer player) {
