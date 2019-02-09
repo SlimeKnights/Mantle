@@ -61,7 +61,7 @@ public class ExtraHeartRenderHandler {
     EntityPlayer player = (EntityPlayer)this.mc.getRenderViewEntity();
     
     // extra setup stuff from us
-    left_height = 39;
+    left_height = GuiIngameForge.left_height;
     ScaledResolution resolution = event.getResolution();
     width = resolution.getScaledWidth();
     height = resolution.getScaledHeight();
