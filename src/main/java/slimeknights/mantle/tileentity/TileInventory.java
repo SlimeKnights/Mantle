@@ -51,6 +51,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -80,12 +81,17 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   public void resize(int size) {
+    // save effort if the size did not change
+    if(size == inventory.size()) {
+      return;
+    }
     ItemStackList newInventory = ItemStackList.withSize(size);
 
     for (int i = 0; i < size && i < inventory.size(); i++) {
       newInventory.set(i, inventory.get(i));
     }
     inventory = newInventory;
+    this.markDirtyFast();
   }
 
   @Override
@@ -104,16 +110,23 @@ public class TileInventory extends MantleTileEntity implements IInventory {
       return;
     }
 
+    ItemStack current = inventory.get(slot);
     inventory.set(slot, itemstack);
 
     if(!itemstack.isEmpty() && itemstack.getCount() > getInventoryStackLimit()) {
       itemstack.setCount(getInventoryStackLimit());
+    }
+    if(!ItemStack.areItemStacksEqual(current, itemstack)) {
+      this.markDirtyFast();
     }
   }
 
   @Nonnull
   @Override
   public ItemStack decrStackSize(int slot, int quantity) {
+    if(quantity <= 0) {
+      return ItemStack.EMPTY;
+    }
     ItemStack itemStack = getStackInSlot(slot);
 
     if(itemStack.isEmpty()) {
@@ -123,18 +136,19 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     // whole itemstack taken out
     if(itemStack.getCount() <= quantity) {
       setInventorySlotContents(slot, ItemStack.EMPTY);
-      this.markDirty();
+      this.markDirtyFast();
       return itemStack;
     }
 
     // split itemstack
     itemStack = itemStack.splitStack(quantity);
     // slot is empty, set to ItemStack.EMPTY
+    // isn't this redundant to the above check?
     if(getStackInSlot(slot).getCount() == 0) {
       setInventorySlotContents(slot, ItemStack.EMPTY);
     }
 
-    this.markDirty();
+    this.markDirtyFast();
     // return remainder
     return itemStack;
   }
@@ -200,7 +214,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     }
 
     return
-        entityplayer.getDistanceSq((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D)
+        entityplayer.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D)
         <= 64D;
   }
 
