@@ -80,7 +80,8 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     return !getStackInSlot(slot).isEmpty();
   }
 
-  public void resize(int size) {
+  /** Same as resize, but does not call markDirty. Used on loading from NBT */
+  private void resizeInternal(int size) {
     // save effort if the size did not change
     if(size == inventory.size()) {
       return;
@@ -91,6 +92,10 @@ public class TileInventory extends MantleTileEntity implements IInventory {
       newInventory.set(i, inventory.get(i));
     }
     inventory = newInventory;
+  }
+
+  public void resize(int size) {
+    resizeInternal(size);
     this.markDirtyFast();
   }
 
@@ -232,7 +237,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Override
   public void readFromNBT(NBTTagCompound tags) {
     super.readFromNBT(tags);
-    this.resize(tags.getInteger("InventorySize"));
+    this.resizeInternal(tags.getInteger("InventorySize"));
 
     readInventoryFromNBT(tags);
 
@@ -275,15 +280,20 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   /** Reads a an inventory from the tag. Overwrites current content */
   public void readInventoryFromNBT(NBTTagCompound tag) {
-    IInventory inventory = this;
     NBTTagList nbttaglist = tag.getTagList("Items", 10);
 
+    int limit = getInventoryStackLimit();
+    ItemStack stack;
     for(int i = 0; i < nbttaglist.tagCount(); ++i) {
       NBTTagCompound itemTag = nbttaglist.getCompoundTagAt(i);
       int slot = itemTag.getByte("Slot") & 255;
 
-      if(slot >= 0 && slot < inventory.getSizeInventory()) {
-        inventory.setInventorySlotContents(slot, new ItemStack(itemTag));
+      if(slot >= 0 && slot < inventory.size()) {
+        stack = new ItemStack(itemTag);
+        if(!stack.isEmpty() && stack.getCount() > limit) {
+          stack.setCount(limit);
+        }
+        inventory.set(slot, stack);
       }
     }
   }
@@ -310,12 +320,9 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   @Override
-  public boolean isEmpty()
-  {
-    for (ItemStack itemstack : this.inventory)
-    {
-      if (!itemstack.isEmpty())
-      {
+  public boolean isEmpty() {
+    for (ItemStack itemstack : this.inventory) {
+      if (!itemstack.isEmpty()) {
         return false;
       }
     }
