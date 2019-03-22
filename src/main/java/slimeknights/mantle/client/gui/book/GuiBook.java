@@ -263,7 +263,7 @@ public class GuiBook extends GuiScreen {
       RenderHelper.disableStandardItemLighting();
 
       int fullPageCount = book.getFullPageCount(advancementCache);
-      if((page < fullPageCount - 1 || fullPageCount % 2 != 0) && page < fullPageCount) {
+      if(page < fullPageCount - 1 || book.getPageCount(advancementCache) % 2 != 0) {
         drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
