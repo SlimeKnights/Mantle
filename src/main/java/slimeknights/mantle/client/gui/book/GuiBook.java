@@ -505,6 +505,18 @@ public class GuiBook extends GuiScreen {
   }
 
   @Override
+  public void handleMouseInput() throws IOException {
+    super.handleMouseInput();
+
+    int scroll = Mouse.getDWheel();
+
+    if (scroll < 0)
+      actionPerformed(nextArrow);
+    else if (scroll > 0)
+      actionPerformed(previousArrow);
+  }
+
+  @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
     super.mouseClicked(mouseX, mouseY, mouseButton);
 
