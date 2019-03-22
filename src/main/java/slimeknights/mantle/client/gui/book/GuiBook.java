@@ -436,7 +436,7 @@ public class GuiBook extends GuiScreen {
     super.updateScreen();
 
     previousArrow.visible = page != -1;
-    nextArrow.visible = page < book.getFullPageCount(advancementCache) - (book.getPageCount(advancementCache) % 2 != 0 ? 0 : 1);
+    nextArrow.visible = page + 1 < book.getFullPageCount(advancementCache);
     backArrow.visible = oldPage >= -1;
 
     if(page == -1) {
@@ -470,7 +470,7 @@ public class GuiBook extends GuiScreen {
     } else if(button == nextArrow) {
       page++;
       int fullPageCount = book.getFullPageCount(advancementCache);
-      if(page > fullPageCount - (fullPageCount % 2 != 0 ? 0 : 1)) {
+      if(page >= fullPageCount) {
         page = fullPageCount - 1;
       }
     } else if(button == backArrow) {
