@@ -5,8 +5,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Used in conjunction with GuiHandler. Implement in a TE to have it open its GUI/Container.
@@ -15,6 +15,6 @@ public interface IInventoryGui {
 
   Container createContainer(InventoryPlayer inventoryplayer, World world, BlockPos pos);
 
-  @SideOnly(Side.CLIENT)
+  @OnlyIn(Dist.CLIENT)
   GuiContainer createGui(InventoryPlayer inventoryplayer, World world, BlockPos pos);
 }

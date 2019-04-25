@@ -1,17 +1,15 @@
 package slimeknights.mantle.client.book;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
+import net.minecraft.state.IProperty;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.data.element.BlockData;
 
 public class StructureInfo {
@@ -50,7 +48,7 @@ public class StructureInfo {
   }
 
   private IBlockState convert(BlockData data) {
-    Block block = Block.getBlockFromName(data.block);
+    Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(data.block));
     if(block == null) {
       return Blocks.AIR.getDefaultState();
     }
@@ -62,7 +60,7 @@ public class StructureInfo {
       state = block.getDefaultState();
 
       for(Map.Entry<String, String> entry : data.state.entrySet()) {
-        Optional<IProperty<?>> property = state.getPropertyKeys().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
+        Optional<IProperty<?>> property = state.getProperties().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
 
         if(property.isPresent()) {
           state = setProperty(state, property.get(), entry.getValue());
@@ -73,9 +71,9 @@ public class StructureInfo {
   }
 
   private <T extends Comparable<T>> IBlockState setProperty(IBlockState state, IProperty<T> prop, String valueString) {
-    com.google.common.base.Optional<T> value = prop.parseValue(valueString);
+    java.util.Optional<T> value = prop.parseValue(valueString);
     if(value.isPresent()) {
-      state = state.withProperty(prop, value.get());
+      state = state.with(prop, value.get());
     }
     return state;
   }

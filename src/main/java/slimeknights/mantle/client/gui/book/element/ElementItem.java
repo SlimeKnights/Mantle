@@ -8,15 +8,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Collection;
 import java.util.List;
 
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ElementItem extends SizedBookElement {
 
   public static final int ITEM_SIZE_HARDCODED = 16;
@@ -84,11 +84,11 @@ public class ElementItem extends SizedBookElement {
 
     RenderHelper.enableGUIStandardItemLighting();
     GlStateManager.pushMatrix();
-    GlStateManager.translate(x, y, 0);
-    GlStateManager.scale(scale, scale, 1.0F);
+    GlStateManager.translatef(x, y, 0);
+    GlStateManager.scalef(scale, scale, 1.0F);
 
     if(currentItem < itemCycle.size()) {
-      mc.getRenderItem().renderItemAndEffectIntoGUI(itemCycle.get(currentItem), 0, 0);
+      mc.getItemRenderer().renderItemAndEffectIntoGUI(itemCycle.get(currentItem), 0, 0);
     }
 
     GlStateManager.popMatrix();

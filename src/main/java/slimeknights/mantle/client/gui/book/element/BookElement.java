@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.gui.book.element;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -8,22 +9,23 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 import slimeknights.mantle.client.gui.book.GuiBook;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public abstract class BookElement extends Gui {
 
   public GuiBook parent;
 
-  protected Minecraft mc = Minecraft.getMinecraft();
-  protected TextureManager renderEngine = mc.renderEngine;
+  protected Minecraft mc = Minecraft.getInstance();
+  protected TextureManager renderEngine = mc.textureManager;
 
   public int x, y;
 
@@ -55,13 +57,14 @@ public abstract class BookElement extends Gui {
 
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     if(stack != null) {
-      List<String> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-      
+      List<ITextComponent> list = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+      List<String> list1 = Lists.<String>newArrayList();
+
       for(int i = 0; i < list.size(); ++i) {
         if(i == 0) {
-          list.set(i, stack.getRarity().rarityColor + list.get(i));
+          list1.set(i, stack.getRarity().color + list.get(i).deepCopy().getFormattedText());
         } else {
-          list.set(i, TextFormatting.GRAY + list.get(i));
+          list1.set(i, TextFormatting.GRAY + list.get(i).deepCopy().getFormattedText());
         }
       }
 	
@@ -69,7 +72,7 @@ public abstract class BookElement extends Gui {
       if(font == null) {
         font = fontRenderer;
       }
-      GuiUtils.drawHoveringText(list, x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, -1, font);
+      GuiUtils.drawHoveringText(list1, x, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT, -1, font);
       RenderHelper.disableStandardItemLighting();
     }
   }
@@ -77,7 +80,7 @@ public abstract class BookElement extends Gui {
   @Deprecated
   public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
     if(!textLines.isEmpty()) {
-      GlStateManager.disableDepth();
+      GlStateManager.disableDepthTest();
       int i = 0;
 
       for(String s : textLines) {
@@ -128,7 +131,7 @@ public abstract class BookElement extends Gui {
         i2 += 10;
       }
 
-      GlStateManager.enableDepth();
+      GlStateManager.enableDepthTest();
     }
   }
 }

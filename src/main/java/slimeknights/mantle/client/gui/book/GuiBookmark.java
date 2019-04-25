@@ -32,25 +32,26 @@ public class GuiBookmark extends GuiButton {
   }
 
   @Override
-  public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+  public void render(int mouseX, int mouseY, float partialTicks) {
     if(visible) {
+      Minecraft minecraft = Minecraft.getInstance();
       int tex_y = TEX_Y + HEIGHT * type;
 
-      mc.renderEngine.bindTexture(TEX_BOOK);
+      minecraft.textureManager.bindTexture(TEX_BOOK);
 
       float r = ((data.color >> 16) & 0xff) / 255.F;
       float g = ((data.color >> 8) & 0xff) / 255.F;
       float b = (data.color & 0xff) / 255.F;
 
-      GlStateManager.color(r, g, b);
+      GlStateManager.color3f(r, g, b);
       Gui.drawScaledCustomSizeModalRect(x, y, TEX_X, tex_y, WIDTH, HEIGHT, width, height, 512, 512);
 
       if(data.text != null && !data.text.isEmpty()) {
         TextDataRenderer
-            .drawScaledString(mc.fontRenderer, data.text, x + 1, y + height / 2 - mc.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
+            .drawScaledString(minecraft.fontRenderer, data.text, x + 1, y + height / 2 - minecraft.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
       }
 
-      GlStateManager.color(1F, 1F, 1F);
+      GlStateManager.color3f(1F, 1F, 1F);
 
       if(data.page.equals("ADD")) {
         Gui.drawModalRectWithCustomSizedTexture(x + width / 2 - ADD_W / 2, y + height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);

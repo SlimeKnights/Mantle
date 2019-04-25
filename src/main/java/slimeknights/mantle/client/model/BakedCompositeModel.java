@@ -5,13 +5,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.EnumFacing;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Groups multiple baked models into a single one. Does not respect state etc. when getting quads.
@@ -29,7 +31,7 @@ public class BakedCompositeModel extends BakedWrapper {
 
   @Nonnull
   @Override
-  public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+  public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
     return parts.get(Optional.fromNullable(side));
   }
 
@@ -44,14 +46,14 @@ public class BakedCompositeModel extends BakedWrapper {
       }
     }
 
-    public void add(IBakedModel model, IBlockState state, long rand) {
+    public void add(IBakedModel model, IBlockState state, Random rand) {
       add(model, state, null, rand);
       for(EnumFacing side : EnumFacing.values()) {
         add(model, state, side, rand);
       }
     }
 
-    public void add(IBakedModel model, IBlockState state, EnumFacing side, long rand) {
+    public void add(IBakedModel model, IBlockState state, EnumFacing side, Random rand) {
       int index;
       if(side == null) {
         index = 6;

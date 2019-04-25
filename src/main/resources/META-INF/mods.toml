@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[24,)"
+issueTrackerURL="https://github.com/SlimeKnights/Mantle/issues"
+logoFile="Mantle.png"
+
+[[mods]]
+    modId="mantle"
+    version="${version}"
+    displayName="Mantle"
+    authors="Slime Knights"
+    description='''
+Shared code for Slime Knights mods and others.
+    '''
+    displayURL="https://minecraft.curseforge.com/projects/mantle"
+    [[dependencies.mantle]]
+        modId="forge"
+        mandatory=true
+        versionRange="[${forge_version},)"
+        ordering="NONE"
+        side="BOTH"

@@ -1,18 +1,28 @@
 package slimeknights.mantle.client.book;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Fluids;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.EnumLightType;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.gen.Heightmap.Type;
+
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-public class StructureBlockAccess implements IBlockAccess {
-
+public class StructureBlockAccess implements IWorldReader
+{
   private final StructureInfo data;
   private final IBlockState[][][] structure;
 
@@ -30,6 +40,11 @@ public class StructureBlockAccess implements IBlockAccess {
   @Override
   public int getCombinedLight(BlockPos pos, int lightValue) {
     // full brightness always
+    return 15 << 20 | 15 << 4;
+  }
+
+  @Override
+  public int getLightFor(EnumLightType type, BlockPos pos) {
     return 15 << 20 | 15 << 4;
   }
 
@@ -68,12 +83,62 @@ public class StructureBlockAccess implements IBlockAccess {
   }
 
   @Override
-  public WorldType getWorldType() {
+  public int getLightSubtracted(BlockPos pos, int amount) {
+    return 0;
+  }
+
+  @Override
+  public boolean isChunkLoaded(int x, int z, boolean allowEmpty) {
+    return false;
+  }
+
+  @Override
+  public boolean canSeeSky(BlockPos pos) {
+    return true;
+  }
+
+  @Override
+  public int getHeight(Type heightmapType, int x, int z) {
+    return 0;
+  }
+
+  @Override
+  public EntityPlayer getClosestPlayer(double x, double y, double z, double distance, Predicate<Entity> predicate) {
     return null;
   }
 
   @Override
-  public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+  public int getSkylightSubtracted() {
+    return 0;
+  }
+
+  @Override
+  public WorldBorder getWorldBorder() {
+    return null;
+  }
+
+  @Override
+  public boolean checkNoEntityCollision(Entity entityIn, VoxelShape shape) {
     return false;
+  }
+
+  @Override
+  public boolean isRemote() {
+    return false;
+  }
+
+  @Override
+  public int getSeaLevel() {
+    return 0;
+  }
+
+  @Override
+  public Dimension getDimension() {
+    return null;
+  }
+
+  @Override
+  public IFluidState getFluidState(BlockPos pos) {
+    return Fluids.EMPTY.getDefaultState();
   }
 }

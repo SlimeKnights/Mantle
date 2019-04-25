@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.repository;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
+import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.io.Charsets;
@@ -38,9 +38,9 @@ public class FileRepository extends BookRepository {
     if(!path.contains(":")) {
       String langPath = null;
 
-      if(Minecraft.getMinecraft().getLanguageManager() != null && Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage() != null)
+      if(Minecraft.getInstance().getLanguageManager() != null && Minecraft.getInstance().getLanguageManager().getCurrentLanguage() != null)
       {
-        langPath = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
+        langPath = Minecraft.getInstance().getLanguageManager().getCurrentLanguage().getLanguageCode();
       }
 
       String defaultLangPath = "en_US";
@@ -77,7 +77,7 @@ public class FileRepository extends BookRepository {
       return null;
     }
     try {
-      return Minecraft.getMinecraft().getResourceManager().getResource(loc);
+      return Minecraft.getInstance().getResourceManager().getResource(loc);
     } catch(IOException e) {
       return null;
     }
@@ -89,7 +89,7 @@ public class FileRepository extends BookRepository {
       return false;
     }
     try {
-      Minecraft.getMinecraft().getResourceManager().getResource(location);
+      Minecraft.getInstance().getResourceManager().getResource(location);
       return true;
     } catch(IOException e) {
       return false;

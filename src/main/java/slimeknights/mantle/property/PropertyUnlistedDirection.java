@@ -4,13 +4,13 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.state.DirectionProperty;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.property.IUnlistedProperty;
 
 import java.util.Collection;
 
-public class PropertyUnlistedDirection extends PropertyDirection implements IUnlistedProperty<EnumFacing> {
+public class PropertyUnlistedDirection extends DirectionProperty implements IUnlistedProperty<EnumFacing> {
 
   public PropertyUnlistedDirection(String name, Collection<EnumFacing> values) {
     super(name, values);

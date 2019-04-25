@@ -1,14 +1,14 @@
 package slimeknights.mantle.client.gui;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Represents a GUI element INSIDE the graphics file.
  * The coordinates all refer to the coordinates inside the graphics!
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiElement {
 
   // this is totally completely ugly but it's a simple solution that doesn't clutter everything too much >_>

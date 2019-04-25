@@ -1,10 +1,8 @@
 package slimeknights.mantle.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.awt.print.Book;
 
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.common.CommonProxy;
@@ -20,12 +18,12 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void init() {
-        bookLoader.onResourceManagerReload(Minecraft.getMinecraft().getResourceManager());
+        bookLoader.onResourceManagerReload(Minecraft.getInstance().getResourceManager());
     }
 
     @Override
     public void postInit() {
-        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(bookLoader);
+        ((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(bookLoader);
         MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
     }
 }

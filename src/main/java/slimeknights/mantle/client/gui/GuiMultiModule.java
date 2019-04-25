@@ -8,9 +8,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.awt.*;
 import java.io.IOException;
@@ -24,10 +23,8 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.inventory.ContainerMultiModule;
 import slimeknights.mantle.inventory.SlotWrapper;
 
-@SideOnly(Side.CLIENT)
-@Optional.Interface(iface = "codechicken.nei.api.INEIGuiHandler", modid = "NotEnoughItems")
-// todo: NEI
-public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
+@OnlyIn(Dist.CLIENT)
+public class GuiMultiModule extends GuiContainer {
 
   // NEI-stuff >:(
   private static Field NEI_Manager;
@@ -104,16 +101,16 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
     for(GuiModule module : modules) {
       // set correct state for the module
       GlStateManager.pushMatrix();
-      GlStateManager.translate(-this.guiLeft, -this.guiTop, 0.0F);
-      GlStateManager.translate(module.guiLeft, module.guiTop, 0.0F);
-      GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+      GlStateManager.translatef(-this.guiLeft, -this.guiTop, 0.0F);
+      GlStateManager.translatef(module.guiLeft, module.guiTop, 0.0F);
+      GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       module.handleDrawGuiContainerForegroundLayer(mouseX, mouseY);
       GlStateManager.popMatrix();
     }
   }
 
   protected void drawBackground(ResourceLocation background) {
-    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
     this.mc.getTextureManager().bindTexture(background);
     this.drawTexturedModalRect(cornerX, cornerY, 0, 0, realWidth, realHeight);
   }
@@ -127,7 +124,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   }
 
   protected void drawPlayerInventoryName() {
-    String localizedName = Minecraft.getMinecraft().player.inventory.getDisplayName().getUnformattedText();
+    String localizedName = Minecraft.getInstance().player.inventory.getDisplayName().getUnformattedComponentText();
     this.fontRenderer.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
   }
 
@@ -160,7 +157,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   }
 
   @Override
-  public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+  public void render(int mouseX, int mouseY, float partialTicks) {
     this.drawDefaultBackground();
     int oldX = guiLeft;
     int oldY = guiTop;
@@ -171,7 +168,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
     guiTop = cornerY;
     xSize = realWidth;
     ySize = realHeight;
-    super.drawScreen(mouseX, mouseY, partialTicks);
+    super.render(mouseX, mouseY, partialTicks);
     this.renderHoveredToolTip(mouseX, mouseY);
     guiLeft = oldX;
     guiTop = oldY;
@@ -182,7 +179,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
 
   // needed to get the correct slot on clicking
   @Override
-  protected boolean isPointInRegion(int left, int top, int right, int bottom, int pointX, int pointY) {
+  protected boolean isPointInRegion(int left, int top, int right, int bottom, double pointX, double pointY) {
     pointX -= this.cornerX;
     pointY -= this.cornerY;
     return pointX >= left - 1 && pointX < left + right + 1 && pointY >= top - 1 && pointY < top + bottom + 1;
@@ -232,7 +229,7 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   }
 
   @Override
-  public boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY) {
+  public boolean isSlotSelected(Slot slotIn, double mouseX, double mouseY) {
     GuiModule module = getModuleForSlot(slotIn.slotNumber);
 
     // mouse inside the module of the slot?
@@ -247,46 +244,46 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
       }
     }
 
-    return super.isMouseOverSlot(slotIn, mouseX, mouseY);
+    return super.isSlotSelected(slotIn, mouseX, mouseY);
   }
 
 
   @Override
-  protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+  public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
     GuiModule module = getModuleForPoint(mouseX, mouseY);
     if(module != null) {
       if(module.handleMouseClicked(mouseX, mouseY, mouseButton)) {
-        return;
+        return false;
       }
     }
-    super.mouseClicked(mouseX, mouseY, mouseButton);
+    return super.mouseClicked(mouseX, mouseY, mouseButton);
   }
 
   @Override
-  protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+  public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLastClick, double unkowwn) {
     GuiModule module = getModuleForPoint(mouseX, mouseY);
     if(module != null) {
       if(module.handleMouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)) {
-        return;
+        return false;
       }
     }
 
-    super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+    return super.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick, unkowwn);
   }
 
   @Override
-  protected void mouseReleased(int mouseX, int mouseY, int state) {
+  public boolean mouseReleased(double mouseX, double mouseY, int state) {
     GuiModule module = getModuleForPoint(mouseX, mouseY);
     if(module != null) {
       if(module.handleMouseReleased(mouseX, mouseY, state)) {
-        return;
+        return false;
       }
     }
 
-    super.mouseReleased(mouseX, mouseY, state);
+    return super.mouseReleased(mouseX, mouseY, state);
   }
 
-  protected GuiModule getModuleForPoint(int x, int y) {
+  protected GuiModule getModuleForPoint(double x, double y) {
     for(GuiModule module : modules) {
       if(this.isPointInRegion(module.guiLeft, module.guiTop, module.guiRight(), module.guiBottom(),
                               x + this.cornerX, y + this.cornerY)) {
@@ -314,60 +311,4 @@ public class GuiMultiModule extends GuiContainer { //implements INEIGuiHandler {
   protected ContainerMultiModule getContainer() {
     return (ContainerMultiModule) inventorySlots;
   }
-
-  /* NEI INTEGRATION */
-  // todo: NEI
-/*
-  @Override
-  @Optional.Method(modid = "NotEnoughItems")
-  public VisiblityData modifyVisiblity(GuiContainer guiContainer, VisiblityData visiblityData) {
-    int x = LayoutManager.stateButtons[0].x + LayoutManager.stateButtons[0].w;
-    int x2 = LayoutManager.timeButtons[3].x + LayoutManager.timeButtons[3].w;
-    int y2 = LayoutManager.heal.y + LayoutManager.heal.h;
-
-
-    for(GuiModule module : modules) {
-      if(x > module.guiLeft) {
-        visiblityData.showStateButtons = false;
-      }
-      if(x2 > module.guiLeft && y2 > module.guiTop) {
-        visiblityData.showUtilityButtons = false;
-      }
-    }
-
-    return visiblityData;
-  }
-
-  @Override
-  @Optional.Method(modid = "NotEnoughItems")
-  public Iterable<Integer> getItemSpawnSlots(GuiContainer guiContainer, ItemStack itemStack) {
-    return null;
-  }
-
-  @Override
-  @Optional.Method(modid = "NotEnoughItems")
-  public List<TaggedInventoryArea> getInventoryAreas(GuiContainer guiContainer) {
-    return Collections.EMPTY_LIST;
-  }
-
-  @Override
-  @Optional.Method(modid = "NotEnoughItems")
-  public boolean handleDragNDrop(GuiContainer guiContainer, int x, int y, ItemStack itemStack, int k) {
-    return false;
-  }
-
-  @Override
-  @Optional.Method(modid = "NotEnoughItems")
-  public boolean hideItemPanelSlot(GuiContainer guiContainer, int x, int y, int w, int h) {
-    for(GuiModule module : modules) {
-      // check if the panel overlaps the module (check totally not stolen from stackoverflow)
-      if(module.guiLeft < x + w && module.guiRight() > x &&
-         module.guiTop < y + h && module.guiBottom() > y) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-  */
 }

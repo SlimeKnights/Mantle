@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Arrays;
@@ -9,10 +9,10 @@ import java.util.Arrays;
 public class BookHelper {
 
   public static String getSavedPage(ItemStack item) {
-    if(!item.isEmpty() && item.hasTagCompound()) {
-      NBTTagCompound mantleBook = item.getTagCompound().getCompoundTag("mantle").getCompoundTag("book");
+    if(!item.isEmpty() && item.hasTag()) {
+      NBTTagCompound mantleBook = item.getTag().getCompound("mantle").getCompound("book");
 
-      if(mantleBook.hasKey("page", Arrays.asList(NBTBase.NBT_TYPES).indexOf("STRING"))) {
+      if(mantleBook.contains("page", Arrays.asList(INBTBase.NBT_TYPES).indexOf("STRING"))) {
         return mantleBook.getString("page");
       }
     }
@@ -21,20 +21,20 @@ public class BookHelper {
   }
 
   public static void writeSavedPage(ItemStack item, String page) {
-    NBTTagCompound compound = item.getTagCompound();
+    NBTTagCompound compound = item.getTag();
 
     if(compound == null) {
       compound = new NBTTagCompound();
     }
 
-    NBTTagCompound mantle = compound.getCompoundTag("mantle");
-    NBTTagCompound book = mantle.getCompoundTag("book");
+    NBTTagCompound mantle = compound.getCompound("mantle");
+    NBTTagCompound book = mantle.getCompound("book");
 
-    book.setString("page", page);
+    book.putString("page", page);
 
-    mantle.setTag("book", book);
-    compound.setTag("mantle", mantle);
-    item.setTagCompound(compound);
+    mantle.put("book", book);
+    compound.put("mantle", mantle);
+    item.setTag(compound);
   }
 
 }

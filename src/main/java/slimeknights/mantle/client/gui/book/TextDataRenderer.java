@@ -8,9 +8,9 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class TextDataRenderer {
   /**
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
@@ -149,7 +149,14 @@ public class TextDataRenderer {
       }
 
       if(atY >= y + boxHeight) {
-        fr.drawString("...", atX, atY, 0, item.dropshadow);
+        if(item.dropshadow)
+        {
+          fr.drawStringWithShadow("...", atX, atY, 0);
+        }
+        else
+        {
+          fr.drawString("...", atX, atY, 0);
+        }
         break;
       }
       y = atY;
@@ -222,9 +229,16 @@ public class TextDataRenderer {
 
   public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
     GlStateManager.pushMatrix();
-    GlStateManager.translate(x, y, 0);
-    GlStateManager.scale(scale, scale, 1F);
-    font.drawString(text, 0, 0, color, dropShadow);
+    GlStateManager.translatef(x, y, 0);
+    GlStateManager.scalef(scale, scale, 1F);
+    if(dropShadow)
+    {
+      font.drawStringWithShadow(text, 0, 0, color);
+    }
+    else
+    {
+      font.drawString(text, 0, 0, color);
+    }
     GlStateManager.popMatrix();
   }
 
@@ -238,8 +252,8 @@ public class TextDataRenderer {
     float f6 = (float) (endColor >> 8 & 255) / 255.0F;
     float f7 = (float) (endColor & 255) / 255.0F;
     GlStateManager.disableTexture2D();
-    GlStateManager.disableAlpha();
-    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+    GlStateManager.disableAlphaTest();
+    GlStateManager.blendFuncSeparate(770, 771, 1, 0);
     GlStateManager.shadeModel(7425);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder vertexBuffer = tessellator.getBuffer();
@@ -250,7 +264,7 @@ public class TextDataRenderer {
     vertexBuffer.pos((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
     tessellator.draw();
     GlStateManager.shadeModel(7424);
-    GlStateManager.enableAlpha();
+    GlStateManager.enableAlphaTest();
     GlStateManager.enableTexture2D();
   }
   //END METHODS FROM GUI

@@ -6,7 +6,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -17,6 +19,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import slimeknights.mantle.util.ItemStackList;
 
@@ -24,7 +27,7 @@ import slimeknights.mantle.util.ItemStackList;
 public class TileInventory extends MantleTileEntity implements IInventory {
 
   private NonNullList<ItemStack> inventory;
-  protected String inventoryTitle;
+  protected ITextComponent inventoryTitle;
   protected boolean hasCustomName;
   protected int stackSizeLimit;
   protected IItemHandlerModifiable itemHandler;
@@ -32,14 +35,15 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public TileInventory(String name, int inventorySize) {
-    this(name, inventorySize, 64);
+  public TileInventory(TileEntityType<?> tileEntityTypeIn, ITextComponent name, int inventorySize) {
+    this(tileEntityTypeIn, name, inventorySize, 64);
   }
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public TileInventory(String name, int inventorySize, int maxStackSize) {
+  public TileInventory(TileEntityType<?> tileEntityTypeIn, ITextComponent name, int inventorySize, int maxStackSize) {
+    super(tileEntityTypeIn);
     this.inventory = NonNullList.<ItemStack> withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.inventoryTitle = name;
@@ -53,9 +57,9 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+  public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-      return (T) itemHandler;
+      return itemHandler.cast();
     }
     return super.getCapability(capability, facing);
   }
@@ -185,7 +189,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   @Nonnull
   @Override
-  public String getName() {
+  public ITextComponent getName() {
     return this.inventoryTitle;
   }
 
@@ -194,19 +198,25 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     return this.hasCustomName;
   }
 
-  public void setCustomName(String customName) {
+  public void setCustomName(ITextComponent customName) {
     this.hasCustomName = true;
     this.inventoryTitle = customName;
+  }
+
+  @Nullable
+  @Override
+  public ITextComponent getCustomName() {
+    return this.inventoryTitle;
   }
 
   @Nonnull
   @Override
   public ITextComponent getDisplayName() {
     if(hasCustomName()) {
-      return new TextComponentString(getName());
+      return new TextComponentString(getName().getFormattedText());
     }
 
-    return new TextComponentTranslation(getName());
+    return new TextComponentTranslation(getName().getFormattedText());
   }
 
 
@@ -235,28 +245,28 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   /* NBT */
   @Override
-  public void readFromNBT(NBTTagCompound tags) {
-    super.readFromNBT(tags);
-    this.resizeInternal(tags.getInteger("InventorySize"));
+  public void read(NBTTagCompound tags) {
+    super.read(tags);
+    this.resizeInternal(tags.getInt("InventorySize"));
 
     readInventoryFromNBT(tags);
 
-    if(tags.hasKey("CustomName", 8)) {
+    if(tags.contains("CustomName", 8)) {
       this.inventoryTitle = tags.getString("CustomName");
     }
   }
 
   @Nonnull
   @Override
-  public NBTTagCompound writeToNBT(NBTTagCompound tags) {
-    super.writeToNBT(tags);
+  public NBTTagCompound write(NBTTagCompound tags) {
+    super.write(tags);
 
-    tags.setInteger("InventorySize", inventory.size());
+    tags.putInt("InventorySize", inventory.size());
 
     writeInventoryToNBT(tags);
 
     if(this.hasCustomName()) {
-      tags.setString("CustomName", this.inventoryTitle);
+      tags.putString("CustomName", this.inventoryTitle);
     }
     return tags;
   }
@@ -269,27 +279,27 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     for(int i = 0; i < inventory.getSizeInventory(); i++) {
       if(!inventory.getStackInSlot(i).isEmpty()) {
         NBTTagCompound itemTag = new NBTTagCompound();
-        itemTag.setByte("Slot", (byte) i);
-        inventory.getStackInSlot(i).writeToNBT(itemTag);
-        nbttaglist.appendTag(itemTag);
+        itemTag.putByte("Slot", (byte) i);
+        inventory.getStackInSlot(i).write(itemTag);
+        nbttaglist.add(itemTag);
       }
     }
 
-    tag.setTag("Items", nbttaglist);
+    tag.put("Items", nbttaglist);
   }
 
   /** Reads a an inventory from the tag. Overwrites current content */
   public void readInventoryFromNBT(NBTTagCompound tag) {
-    NBTTagList nbttaglist = tag.getTagList("Items", 10);
+    NBTTagList nbttaglist = tag.getList("Items", 10);
 
     int limit = getInventoryStackLimit();
     ItemStack stack;
-    for(int i = 0; i < nbttaglist.tagCount(); ++i) {
-      NBTTagCompound itemTag = nbttaglist.getCompoundTagAt(i);
+    for(int i = 0; i < nbttaglist.size(); ++i) {
+      NBTTagCompound itemTag = nbttaglist.getCompound(i);
       int slot = itemTag.getByte("Slot") & 255;
 
       if(slot >= 0 && slot < inventory.size()) {
-        stack = new ItemStack(itemTag);
+        stack = ItemStack.read(itemTag);
         if(!stack.isEmpty() && stack.getCount() > limit) {
           stack.setCount(limit);
         }

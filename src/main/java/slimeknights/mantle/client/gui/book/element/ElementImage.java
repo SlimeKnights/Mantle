@@ -3,12 +3,12 @@ package slimeknights.mantle.client.gui.book.element;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import slimeknights.mantle.client.book.data.element.ImageData;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ElementImage extends SizedBookElement {
 
   public ImageData image;
@@ -60,7 +60,7 @@ public class ElementImage extends SizedBookElement {
     float g = ((colorMultiplier >> 8) & 0xff) / 255.F;
     float b = (colorMultiplier & 0xff) / 255.F;
 
-    GlStateManager.color(r, g, b);
+    GlStateManager.color3f(r, g, b);
 
     if(image.item == null) {
       renderEngine.bindTexture(image.location);
@@ -68,9 +68,9 @@ public class ElementImage extends SizedBookElement {
       drawScaledCustomSizeModalRect(x, y, image.u, image.v, image.uw, image.vh, width, height, image.texWidth, image.texHeight);
     } else {
       GlStateManager.pushMatrix();
-      GlStateManager.scale(width, height, 1F);
+      GlStateManager.scalef(width, height, 1F);
       RenderHelper.enableGUIStandardItemLighting();
-      mc.getRenderItem().renderItemAndEffectIntoGUI(image.item.getItems().get(0), x, y);
+      mc.getItemRenderer().renderItemAndEffectIntoGUI(image.item.getItems().get(0), x, y);
       RenderHelper.disableStandardItemLighting();
       GlStateManager.popMatrix();
     }

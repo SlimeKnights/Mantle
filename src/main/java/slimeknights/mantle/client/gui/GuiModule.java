@@ -3,14 +3,14 @@ package slimeknights.mantle.client.gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.awt.*;
 import java.io.IOException;
 
 // a sub-gui. Mostly the same as a separate GuiContainer, but doesn't do the calls that affect the game as if this were the only gui
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public abstract class GuiModule extends GuiContainer {
 
   protected final GuiMultiModule parent;
@@ -77,9 +77,9 @@ public abstract class GuiModule extends GuiContainer {
            mouseY >= this.guiTop && mouseY < this.guiBottom();
   }
 
-  public boolean isMouseOverFullSlot(int mouseX, int mouseY) {
+  public boolean isMouseOverFullSlot(double mouseX, double mouseY) {
     for(Slot slot : inventorySlots.inventorySlots) {
-      if(parent.isMouseOverSlot(slot, mouseX, mouseY) && slot.getHasStack()) {
+      if(parent.isSlotSelected(slot, mouseX, mouseY) && slot.getHasStack()) {
         return true;
       }
     }
@@ -112,7 +112,7 @@ public abstract class GuiModule extends GuiContainer {
    *
    * @return True to prevent the main container handling the mouseclick
    */
-  public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+  public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
     return false;
   }
 
@@ -121,7 +121,7 @@ public abstract class GuiModule extends GuiContainer {
    *
    * @return True to prevent the main container handling the mouseclick
    */
-  public boolean handleMouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+  public boolean handleMouseClickMove(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLastClick) {
     return false;
   }
 
@@ -130,7 +130,7 @@ public abstract class GuiModule extends GuiContainer {
    *
    * @return True to prevent the main container handling the mouseclick
    */
-  public boolean handleMouseReleased(int mouseX, int mouseY, int state) {
+  public boolean handleMouseReleased(double mouseX, double mouseY, int state) {
     return false;
   }
 

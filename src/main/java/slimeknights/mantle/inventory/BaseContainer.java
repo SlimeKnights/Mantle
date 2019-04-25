@@ -12,6 +12,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -127,7 +128,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   public String getInventoryDisplayName() {
-    IWorldNameable nameable = null;
+    INameable nameable = null;
     if (itemHandler instanceof InvWrapper) {
       nameable = ((InvWrapper) itemHandler).getInv();
       // if the inventory doesn't have a name fall back to checking the tileentity
@@ -135,12 +136,12 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
         nameable = null;
       }
     }
-    if(nameable == null && tile instanceof IWorldNameable) {
-      nameable = (IWorldNameable) tile;
+    if(nameable == null && tile instanceof INameable) {
+      nameable = (INameable) tile;
     }
     if (nameable != null) {
       ITextComponent textName = nameable.getDisplayName();
-      return textName != null ? textName.getFormattedText() : nameable.getName();
+      return textName != null ? textName.getFormattedText() : nameable.getName().toString();
     }
     return null;
   }
@@ -164,14 +165,14 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
     for(int row = 0; row < 3; row++) {
       for(int col = 0; col < 9; col++) {
-        this.addSlotToContainer(new Slot(playerInventory, index, xCorner + col * 18, yCorner + row * 18));
+        this.addSlot(new Slot(playerInventory, index, xCorner + col * 18, yCorner + row * 18));
         index++;
       }
     }
 
     index = 0;
     for(int col = 0; col < 9; col++) {
-      this.addSlotToContainer(new Slot(playerInventory, index, xCorner + col * 18, yCorner + 58));
+      this.addSlot(new Slot(playerInventory, index, xCorner + col * 18, yCorner + 58));
       index++;
     }
 
@@ -180,11 +181,11 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   @Nonnull
   @Override
-  protected Slot addSlotToContainer(Slot slotIn) {
+  protected Slot addSlot(Slot slotIn) {
     if(playerInventoryStart >= 0) {
       throw new SlimeknightException("BaseContainer: Player inventory has to be last slots. Add all slots before adding the player inventory.");
     }
-    return super.addSlotToContainer(slotIn);
+    return super.addSlot(slotIn);
   }
 
   @Nonnull
@@ -261,7 +262,6 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
         if(!itemstack1.isEmpty()
            && itemstack1.getItem() == stack.getItem()
-           && (!stack.getHasSubtypes() || stack.getMetadata() == itemstack1.getMetadata())
            && ItemStack.areItemStackTagsEqual(stack, itemstack1)
            && this.canMergeSlot(stack, slot)) {
           int l = itemstack1.getCount() + stack.getCount();

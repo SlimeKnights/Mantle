@@ -2,25 +2,29 @@ package slimeknights.mantle.item;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.IArmorMaterial;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 public class ItemArmorTooltip extends ItemArmor {
 
-  public ItemArmorTooltip(ArmorMaterial armorMaterial, int renderIndex, EntityEquipmentSlot equipmentSlot) {
-    super(armorMaterial, renderIndex, equipmentSlot);
+  public ItemArmorTooltip(IArmorMaterial armorMaterial, EntityEquipmentSlot equipmentSlot, Item.Properties builder) {
+    super(armorMaterial, equipmentSlot, builder);
   }
 
   @Override
-  @SideOnly(Side.CLIENT)
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+  @OnlyIn(Dist.CLIENT)
+  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
     ItemTooltip.addOptionalTooltip(stack, tooltip);
     super.addInformation(stack, worldIn, tooltip, flagIn);
   }

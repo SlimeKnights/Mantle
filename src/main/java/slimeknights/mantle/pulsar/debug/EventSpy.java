@@ -1,9 +1,10 @@
 package slimeknights.mantle.pulsar.debug;
 
-import com.google.common.eventbus.Subscribe;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 
-import net.minecraftforge.fml.common.Loader;
-
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,11 +19,16 @@ import slimeknights.mantle.pulsar.pulse.Pulse;
 @Pulse(id="EventSpy", description="we iz in ur buses, monitorin ur eventz", forced=true)
 public class EventSpy {
 
-    private final Logger log = LogManager.getLogger("EventSpy/" + Loader.instance().activeModContainer().getModId());
+    private final Logger log = LogManager.getLogger("EventSpy/" + ModLoadingContext.get().getActiveContainer().getNamespace());
 
-    @Subscribe
-    public void receive(Object evt) {
+    @SubscribeEvent
+    public void receive(Event evt) {
         log.info("Received event: " + evt);
+    }
+
+    @SubscribeEvent
+    public void preInit(final FMLCommonSetupEvent evt) {
+        log.info("Example preInit hit");
     }
 
 }

@@ -13,12 +13,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import slimeknights.mantle.client.book.StructureBlockAccess;
 import slimeknights.mantle.client.book.StructureInfo;
@@ -150,7 +148,7 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if(lastClick != null) {
-      if(Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
+      if(Minecraft.getInstance().mouseHelper.isLeftDown() || Minecraft.getInstance().mouseHelper.isRightDown()) {
         int dx = mouseX - lastClick[0];
         int dy = mouseY - lastClick[1];
         float maxSpeed = 10f;
@@ -195,18 +193,18 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
     int i = 0;
     ItemStack highlighted = null;
 
-    final BlockRendererDispatcher blockRender = Minecraft.getMinecraft().getBlockRendererDispatcher();
+    final BlockRendererDispatcher blockRender = Minecraft.getInstance().getBlockRendererDispatcher();
 
     float f = (float) Math.sqrt(structureHeight * structureHeight + structureWidth * structureWidth + structureLength * structureLength);
     yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * scale));
     //GlStateManager.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
-    GlStateManager.translate(xTranslate, yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    GlStateManager.translatef(xTranslate, yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
     // todo: translate where it actually needs to be and to counter z-layer of the book
-    GlStateManager.scale(scale, -scale, 1);
-    GlStateManager.rotate(rotX, 1, 0, 0);
-    GlStateManager.rotate(rotY, 0, 1, 0);
+    GlStateManager.scalef(scale, -scale, 1);
+    GlStateManager.rotatef(rotX, 1, 0, 0);
+    GlStateManager.rotatef(rotY, 0, 1, 0);
 
-    GlStateManager.translate((float)structureLength/-2f, (float)structureHeight/-2f, (float)structureWidth/-2f);
+    GlStateManager.translatef((float)structureLength/-2f, (float)structureHeight/-2f, (float)structureWidth/-2f);
 
     GlStateManager.disableLighting();
 
@@ -232,7 +230,8 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-            blockRender.renderBlock(state, pos, blockAccess, buffer);
+            Random random = new Random();
+            blockRender.renderBlock(state, pos, blockAccess, buffer, random);
             tessellator.draw();
           }
         }

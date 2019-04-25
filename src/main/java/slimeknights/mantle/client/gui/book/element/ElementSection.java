@@ -37,12 +37,12 @@ public class ElementSection extends SizedBookElement {
         drawRect(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, parent.book.appearance.hoverColor);
       }
       if(unlocked) {
-        GlStateManager.color(1F, 1F, 1F, hover ? 1F : 0.5F);
+        GlStateManager.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
       } else {
         float r = ((parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
         float g = ((parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
         float b = (parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
-        GlStateManager.color(r, g, b, 0.75F);
+        GlStateManager.color4f(r, g, b, 0.75F);
       }
 
       if(section.icon.item == null) {
@@ -53,10 +53,10 @@ public class ElementSection extends SizedBookElement {
         }
       } else {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(iconX, iconY, 0);
-        GlStateManager.scale(2F, 2F, 1F);
+        GlStateManager.translatef(iconX, iconY, 0);
+        GlStateManager.scalef(2F, 2F, 1F);
         RenderHelper.enableGUIStandardItemLighting();
-        mc.getRenderItem().renderItemAndEffectIntoGUI(section.icon.item.getItems().get(0), 0, 0);
+        mc.getItemRenderer().renderItemAndEffectIntoGUI(section.icon.item.getItems().get(0), 0, 0);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.popMatrix();
       }

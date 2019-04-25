@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.repository;
 
-import net.minecraft.client.resources.IResource;
+import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;

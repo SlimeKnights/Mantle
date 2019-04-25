@@ -8,49 +8,40 @@
 
 buildscript {
     repositories {
-        mavenCentral()
         mavenLocal()
+        maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        mavenCentral()
         maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'maven'
+apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 repositories {
     mavenLocal()
     maven {
         name 'ForgeFS'
-        url 'http://files.minecraftforge.net/maven'
-    }
-        maven {
-        name 'CB Maven FS'
-        url "http://chickenbones.net/maven/"
+        url 'https://files.minecraftforge.net/maven'
     }
     maven {
         name 'DVS1 Maven FS'
-        url 'http://dvs1.progwml6.com/files/maven'
+        url 'https://dvs1.progwml6.com/files/maven'
     }
 }
 
 group = 'slimeknights.mantle'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 
 // sets version to the slimeKnights version format
 task buildInfo {
@@ -80,11 +71,43 @@ if (System.getenv().ARTIFACT_VERSION != null) {
 version = "${minecraft_version}-${artifact_version}"
 
 minecraft {
-    version = minecraft_version + "-" + forge_version
-    mappings = mappings_version
-    runDir = 'run'
-    useDepAts = true
-    replace '${version}', project.version
+    mappings channel: 'snapshot', version: mappings_version
+    
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                mantle {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                mantle {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 configurations {
@@ -93,10 +116,15 @@ configurations {
 }
 
 dependencies {
+    minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
+
     //compile "codechicken:CodeChickenLib:${minecraft_version}-${CCLIB_version}:dev"
     //compile "codechicken:CodeChickenCore:${minecraft_version}-${ccc_version}:dev"
     //compile "codechicken:NotEnoughItems:${minecraft_version}-${NEI_version}:dev"
-    deobfCompile "mezz.jei:jei_${minecraft_version}:${jei_version}"
+    //deobfCompile "mezz.jei:jei_${minecraft_version}:${jei_version}"
+	
+	compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+
     // Configuration
     shadow "ninja.leaping.configurate:configurate-hocon:${configurate_version}"
     //shade "ninja.leaping.configurate:configurate-gson:${configurate_version}"
@@ -106,26 +134,34 @@ processResources
 {
     inputs.property "version", artifact_version
     inputs.property "MCversion", minecraft_version
-    // replace stuff in text files, not binary ones.
+
     from(sourceSets.main.resources.srcDirs) {
-        include '**/*.info'
-        // replace version and MCVersion
-        expand 'version':artifact_version,'MCversion':minecraft_version
+        include 'META-INF/mods.toml'
+
+        expand 'version':artifact_version, 'MCversion':minecraft_version, 'forge_version':forge_version_toml
     }
-    // copy everything else, thats not text
+
     from(sourceSets.main.resources.srcDirs) {
-        exclude '**/*.info'
+        exclude 'META-INF/mods.toml'
     }
 }
 
+
 jar {
     manifest {
-        attributes 'FMLAT': 'mantle_at.cfg'
+        attributes([
+                "Specification-Title"     : "Mantle",
+                "Specification-Vendor"    : "Slime Knights",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "Slime Knights",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
     
     dependsOn shadowJar
     enabled = false
-    finalizedBy reobfJar
 }
 
 shadowJar {
@@ -142,9 +178,6 @@ shadowJar {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'deobf'
-    manifest {
-        attributes 'FMLAT': 'mantle_deobf_at.cfg'
-    }
 }
 
 task sourcesJar(type: Jar) {

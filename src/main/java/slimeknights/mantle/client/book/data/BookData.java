@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class BookData implements IDataItem {
 
   public transient int unnamedSectionCounter = 0;
@@ -330,7 +330,7 @@ public class BookData implements IDataItem {
 
   public String getItemAction(ItemStackData item) {
     for(ItemStackData.ItemLink link : itemLinks) {
-      if(item.id.equals(link.item.id) && (!link.damageSensitive || item.damage == link.item.damage)) {
+      if(item.id.equals(link.item.id) && (!link.damageSensitive)) {
         return link.action;
       }
     }
@@ -360,8 +360,8 @@ public class BookData implements IDataItem {
     if(!initialized) {
       load();
     }
-    if(Minecraft.getMinecraft().player != null) {
-      Minecraft.getMinecraft().displayGuiScreen(new GuiBook(this, item));
+    if(Minecraft.getInstance().player != null) {
+      Minecraft.getInstance().displayGuiScreen(new GuiBook(this, item));
     }
   }
 

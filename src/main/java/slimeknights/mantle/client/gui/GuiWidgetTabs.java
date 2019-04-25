@@ -4,18 +4,16 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Mouse;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiWidgetTabs extends GuiWidget {
 
   private static final ResourceLocation
@@ -61,7 +59,7 @@ public class GuiWidgetTabs extends GuiWidget {
   }
 
   public void update(int mouseX, int mouseY) {
-    boolean mouseDown = Mouse.isButtonDown(0); // left mouse button
+    boolean mouseDown = Minecraft.getInstance().mouseHelper.isLeftDown(); // left mouse button
 
     // did we click on a tab?
     mouseX -= this.xPos;
@@ -142,7 +140,7 @@ public class GuiWidgetTabs extends GuiWidget {
       // todo: draw all the tabs first and then all the itemstacks so it doesn't have to switch texture in between all the time
 
       // rebind texture from drawing an itemstack
-      Minecraft.getMinecraft().getTextureManager().bindTexture(tabsResource);
+      Minecraft.getInstance().getTextureManager().bindTexture(tabsResource);
       actualTab.draw(x, y);
 
 
@@ -158,8 +156,8 @@ public class GuiWidgetTabs extends GuiWidget {
 
   // guiContainer.drawItemStack
   private void drawItemStack(ItemStack stack, int x, int y) {
-    RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
-    GlStateManager.translate(0.0F, 0.0F, 32.0F);
+    ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
+    GlStateManager.translatef(0.0F, 0.0F, 32.0F);
     itemRender.zLevel = 200;
     //FontRenderer font = stack.getItem().getFontRenderer(stack);
 

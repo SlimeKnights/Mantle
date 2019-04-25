@@ -1,13 +1,13 @@
 package slimeknights.mantle.client.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import org.lwjgl.input.Mouse;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 // a vertical slider!
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiWidgetSlider extends GuiWidget {
 
   // gui info
@@ -149,7 +149,7 @@ public class GuiWidgetSlider extends GuiWidget {
       return;
     }
 
-    boolean mouseDown = Mouse.isButtonDown(0); // left mouse button
+    boolean mouseDown = Minecraft.getInstance().mouseHelper.isLeftDown(); // left mouse button
     int wheel = Mouse.getDWheel();
 
     if(useMouseWheel) {

@@ -66,20 +66,35 @@ public class ContentSmelting extends PageContent {
   public NonNullList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
 
-    NonNullList<ItemStack> fuels = NonNullList.<ItemStack> withSize(13, ItemStack.EMPTY);
-    fuels.set(0, new ItemStack(Blocks.WOODEN_SLAB));
-    fuels.set(1, new ItemStack(Blocks.PLANKS));
-    fuels.set(2, new ItemStack(Blocks.COAL_BLOCK));
-    fuels.set(3, new ItemStack(Items.WOODEN_PICKAXE));
-    fuels.set(4, new ItemStack(Items.WOODEN_SWORD));
-    fuels.set(5, new ItemStack(Items.WOODEN_HOE));
-    fuels.set(6, new ItemStack(Items.STICK));
-    fuels.set(7, new ItemStack(Items.COAL));
-    fuels.set(8, new ItemStack(Items.LAVA_BUCKET));
-    fuels.set(9, new ItemStack(Blocks.SAPLING));
-    fuels.set(10, new ItemStack(Items.BLAZE_ROD));
-    fuels.set(11, new ItemStack(Items.WOODEN_SHOVEL));
-    fuels.set(12, new ItemStack(Items.WOODEN_AXE));
+    NonNullList<ItemStack> fuels = NonNullList.<ItemStack> withSize(28, ItemStack.EMPTY);
+    fuels.set(0, new ItemStack(Blocks.OAK_SLAB));
+    fuels.set(1, new ItemStack(Blocks.SPRUCE_SLAB));
+    fuels.set(2, new ItemStack(Blocks.BIRCH_SLAB));
+    fuels.set(3, new ItemStack(Blocks.JUNGLE_SLAB));
+    fuels.set(4, new ItemStack(Blocks.ACACIA_SLAB));
+    fuels.set(5, new ItemStack(Blocks.DARK_OAK_SLAB));
+    fuels.set(6, new ItemStack(Blocks.OAK_PLANKS));
+    fuels.set(7, new ItemStack(Blocks.SPRUCE_PLANKS));
+    fuels.set(8, new ItemStack(Blocks.BIRCH_PLANKS));
+    fuels.set(9, new ItemStack(Blocks.JUNGLE_PLANKS));
+    fuels.set(10, new ItemStack(Blocks.ACACIA_PLANKS));
+    fuels.set(11, new ItemStack(Blocks.DARK_OAK_PLANKS));
+    fuels.set(12, new ItemStack(Blocks.COAL_BLOCK));
+    fuels.set(13, new ItemStack(Items.WOODEN_PICKAXE));
+    fuels.set(14, new ItemStack(Items.WOODEN_SWORD));
+    fuels.set(15, new ItemStack(Items.WOODEN_HOE));
+    fuels.set(16, new ItemStack(Items.STICK));
+    fuels.set(17, new ItemStack(Items.COAL));
+    fuels.set(18, new ItemStack(Items.LAVA_BUCKET));
+    fuels.set(19, new ItemStack(Blocks.OAK_SAPLING));
+    fuels.set(20, new ItemStack(Blocks.SPRUCE_SAPLING));
+    fuels.set(21, new ItemStack(Blocks.BIRCH_SAPLING));
+    fuels.set(22, new ItemStack(Blocks.JUNGLE_SAPLING));
+    fuels.set(23, new ItemStack(Blocks.ACACIA_SAPLING));
+    fuels.set(24, new ItemStack(Blocks.DARK_OAK_SAPLING));
+    fuels.set(25, new ItemStack(Items.BLAZE_ROD));
+    fuels.set(26, new ItemStack(Items.WOODEN_SHOVEL));
+    fuels.set(27, new ItemStack(Items.WOODEN_AXE));
 
     return fuels;
   }

@@ -15,27 +15,27 @@ public class TagHelper {
 
   /* Generic Tag Operations */
   public static NBTTagCompound getTagSafe(ItemStack stack) {
-    if(stack.isEmpty() || !stack.hasTagCompound()) {
+    if(stack.isEmpty() || !stack.hasTag()) {
       return new NBTTagCompound();
     }
 
-    return stack.getTagCompound();
+    return stack.getTag();
   }
 
   public static NBTTagCompound getTagSafe(NBTTagCompound tag, String key) {
-    if(tag == null || !tag.hasKey(key)) {
+    if(tag == null || !tag.contains(key)) {
       return new NBTTagCompound();
     }
 
-    return tag.getCompoundTag(key);
+    return tag.getCompound(key);
   }
 
   public static NBTTagList getTagListSafe(NBTTagCompound tag, String key, int type) {
-    if(tag == null || !tag.hasKey(key)) {
+    if(tag == null || !tag.contains(key)) {
       return new NBTTagList();
     }
 
-    return tag.getTagList(key, type);
+    return tag.getList(key, type);
   }
 
 }

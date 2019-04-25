@@ -2,20 +2,21 @@ package slimeknights.mantle.client.book.data.element;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.command.CommandGive;
-import net.minecraft.command.NumberInvalidException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.arguments.ItemArgument;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraft.util.registry.IRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
@@ -28,7 +29,6 @@ public class ItemStackData {
 
   public String id = "";
   public byte amount = 1;
-  public short damage = 0;
   public JsonObject nbt;
 
   public NonNullList<ItemStack> getItems() {
@@ -56,8 +56,8 @@ public class ItemStackData {
     Item item;
     boolean isMissingItem = false;
     try {
-      item = CommandGive.getItemByText(null, id);
-    } catch(NumberInvalidException e) {
+      item = ItemArgument.getItem(null, id).getItem();
+    } catch(Exception e) {
       item = Item.getItemFromBlock(Blocks.BARRIER);
       isMissingItem = true;
     }
@@ -67,22 +67,22 @@ public class ItemStackData {
       isMissingItem = true;
     }
 
-    ItemStack itemStack = new ItemStack(item, amount, damage);
+    ItemStack itemStack = new ItemStack(item, amount);
 
     if(nbt != null) {
       try {
-        itemStack.setTagCompound(JsonToNBT.getTagFromJson(filterJsonQuotes(nbt.toString())));
-      } catch(NBTException ignored) {
+        itemStack.setTag(JsonToNBT.getTagFromJson(filterJsonQuotes(nbt.toString())));
+      } catch(CommandSyntaxException ignored) {
       }
     }
 
     if(isMissingItem) {
-      NBTTagCompound display = itemStack.getOrCreateSubCompound("display");
-      display.setString("Name", "\u00A7rUnknown Item");
+      NBTTagCompound display = itemStack.getOrCreateChildTag("display");
+      display.putString("Name", "\u00A7rUnknown Item");
       NBTTagList lore = new NBTTagList();
-      lore.appendTag(new NBTTagString("\u00A7r\u00A7eItem Name:"));
-      lore.appendTag(new NBTTagString("\u00A7r\u00A7e" + id));
-      display.setTag("Lore", lore);
+      lore.add(new NBTTagString("\u00A7r\u00A7eItem Name:"));
+      lore.add(new NBTTagString("\u00A7r\u00A7e" + id));
+      display.put("Lore", lore);
     }
 
     return itemStack;
@@ -94,11 +94,10 @@ public class ItemStackData {
 
   public static ItemStackData getItemStackData(ItemStack stack, boolean ignoreNbt) {
     ItemStackData data = new ItemStackData();
-    data.id = Item.REGISTRY.getNameForObject(stack.getItem()).toString();
+    data.id = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
     data.amount = (byte) stack.getCount();
-    data.damage = (short) stack.getItemDamage();
-    if(!ignoreNbt && stack.getTagCompound() != null) {
-      data.nbt = BookLoader.GSON.toJsonTree(stack.getTagCompound(), NBTTagCompound.class).getAsJsonObject();
+    if(!ignoreNbt && stack.getTag() != null) {
+      data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), NBTTagCompound.class).getAsJsonObject();
     }
 
     return data;

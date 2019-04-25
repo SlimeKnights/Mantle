@@ -55,7 +55,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
     int begin = inventorySlots.size();
     for(Object slot : subcontainer.inventorySlots) {
       SlotWrapper wrapper = new SlotWrapper((Slot) slot);
-      addSlotToContainer(wrapper);
+      addSlot(wrapper);
       slotContainerMap.put(wrapper.slotNumber, subcontainer);
     }
     int end = inventorySlots.size();

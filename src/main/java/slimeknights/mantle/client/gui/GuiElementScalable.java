@@ -1,10 +1,10 @@
 package slimeknights.mantle.client.gui;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiElementScalable extends GuiElement {
 
   public GuiElementScalable(int x, int y, int w, int h, int texW, int texH) {

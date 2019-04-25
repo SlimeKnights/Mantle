@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -28,11 +28,11 @@ public class ModelHelper {
 
   public static TextureAtlasSprite getTextureFromBlock(Block block, int meta) {
     IBlockState state = block.getStateFromMeta(meta);
-    return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
+    return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
   }
 
   public static TextureAtlasSprite getTextureFromBlockstate(IBlockState state) {
-    return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
+    return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
   }
 
   public static BakedQuad colorQuad(int color, BakedQuad quad) {

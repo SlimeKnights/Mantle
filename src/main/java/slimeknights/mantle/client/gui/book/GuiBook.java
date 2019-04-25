@@ -19,9 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.stats.StatisticsManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -43,7 +43,7 @@ import slimeknights.mantle.client.gui.book.element.BookElement;
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOKFRONT;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiBook extends GuiScreen {
 
   public static boolean debug = false;
@@ -90,7 +90,7 @@ public class GuiBook extends GuiScreen {
     this.book = book;
     this.item = item;
 
-    this.mc = Minecraft.getMinecraft();
+    this.mc = Minecraft.getInstance();
     this.fontRenderer = mc.fontRenderer;
     init();
 
@@ -102,9 +102,9 @@ public class GuiBook extends GuiScreen {
 
   public void drawerTransform(boolean rightSide) {
     if(rightSide) {
-      GlStateManager.translate(width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      GlStateManager.translatef(width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     } else {
-      GlStateManager.translate(width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      GlStateManager.translatef(width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
   }
 
@@ -145,7 +145,7 @@ public class GuiBook extends GuiScreen {
       fontRenderer.drawString("DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
-    GlStateManager.enableAlpha();
+    GlStateManager.enableAlphaTest();
     GlStateManager.enableBlend();
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale
@@ -176,21 +176,21 @@ public class GuiBook extends GuiScreen {
     }
 */
     GlStateManager.pushMatrix();
-    GlStateManager.color(1F, 1F, 1F);
+    GlStateManager.color3f(1F, 1F, 1F);
 
     float coverR = ((book.appearance.coverColor >> 16) & 0xff) / 255.F;
     float coverG = ((book.appearance.coverColor >> 8) & 0xff) / 255.F;
     float coverB = (book.appearance.coverColor & 0xff) / 255.F;
 
-    TextureManager render = this.mc.renderEngine;
+    TextureManager render = this.mc.textureManager;
 
     if(page == -1) {
       render.bindTexture(TEX_BOOKFRONT);
       RenderHelper.disableStandardItemLighting();
 
-      GlStateManager.color(coverR, coverG, coverB);
+      GlStateManager.color3f(coverR, coverG, coverB);
       drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
-      GlStateManager.color(1F, 1F, 1F);
+      GlStateManager.color3f(1F, 1F, 1F);
 
       if(!book.appearance.title.isEmpty()) {
         drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);

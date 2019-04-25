@@ -21,7 +21,7 @@ public class ContainerSimpleChest extends BaseContainer<TileInventory> {
           break;
         }
 
-        this.addSlotToContainer(createSlot(tile, index, 8 + j * 18, 18 + i * 18));
+        this.addSlot(createSlot(tile, index, 8 + j * 18, 18 + i * 18));
         index++;
       }
     }

@@ -5,10 +5,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.tileentity.MantleTileEntity;
 
 import javax.annotation.Nonnull;
@@ -19,6 +20,10 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   BlockPos master;
   Block masterBlock;
   IBlockState state;
+
+  public MultiServantLogic(TileEntityType<?> tileEntityTypeIn) {
+    super(tileEntityTypeIn);
+  }
 
   public boolean canUpdate() {
     return false;
@@ -103,37 +108,37 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   public void readCustomNBT(NBTTagCompound tags) {
     this.hasMaster = tags.getBoolean("hasMaster");
     if(this.hasMaster) {
-      int xCenter = tags.getInteger("xCenter");
-      int yCenter = tags.getInteger("yCenter");
-      int zCenter = tags.getInteger("zCenter");
+      int xCenter = tags.getInt("xCenter");
+      int yCenter = tags.getInt("yCenter");
+      int zCenter = tags.getInt("zCenter");
       this.master = new BlockPos(xCenter, yCenter, zCenter);
       this.masterBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tags.getString("MasterBlockName")));
-      this.state = Block.getStateById(tags.getInteger("masterState"));
+      this.state = Block.getStateById(tags.getInt("masterState"));
     }
   }
 
   public NBTTagCompound writeCustomNBT(NBTTagCompound tags) {
-    tags.setBoolean("hasMaster", this.hasMaster);
+    tags.putBoolean("hasMaster", this.hasMaster);
     if(this.hasMaster) {
-      tags.setInteger("xCenter", this.master.getX());
-      tags.setInteger("yCenter", this.master.getY());
-      tags.setInteger("zCenter", this.master.getZ());
-      tags.setString("MasterBlockName", ForgeRegistries.BLOCKS.getKey(this.masterBlock).toString());
-      tags.setInteger("masterState", Block.getStateId(this.state));
+      tags.putInt("xCenter", this.master.getX());
+      tags.putInt("yCenter", this.master.getY());
+      tags.putInt("zCenter", this.master.getZ());
+      tags.putString("MasterBlockName", ForgeRegistries.BLOCKS.getKey(this.masterBlock).toString());
+      tags.putInt("masterState", Block.getStateId(this.state));
     }
     return tags;
   }
 
   @Override
-  public void readFromNBT(NBTTagCompound tags) {
-    super.readFromNBT(tags);
+  public void read(NBTTagCompound tags) {
+    super.read(tags);
     this.readCustomNBT(tags);
   }
 
   @Nonnull
   @Override
-  public NBTTagCompound writeToNBT(NBTTagCompound tags) {
-    tags = super.writeToNBT(tags);
+  public NBTTagCompound write(NBTTagCompound tags) {
+    tags = super.write(tags);
     return this.writeCustomNBT(tags);
   }
 

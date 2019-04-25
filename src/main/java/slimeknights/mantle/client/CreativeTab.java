@@ -1,13 +1,13 @@
 package slimeknights.mantle.client;
 
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
-public class CreativeTab extends CreativeTabs {
+public class CreativeTab extends ItemGroup {
 
   private ItemStack icon;
 
@@ -25,16 +25,16 @@ public class CreativeTab extends CreativeTabs {
   }
 
   @Nonnull
-  @SideOnly(Side.CLIENT)
+  @OnlyIn(Dist.CLIENT)
   @Override
-  public ItemStack getIconItemStack() {
+  public ItemStack getIcon() {
     return icon;
   }
 
   @Nonnull
-  @SideOnly(Side.CLIENT)
+  @OnlyIn(Dist.CLIENT)
   @Override
-  public ItemStack getTabIconItem() {
+  public ItemStack createIcon() {
     return icon;
   }
 }

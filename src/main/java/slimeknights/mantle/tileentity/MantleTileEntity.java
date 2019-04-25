@@ -1,8 +1,13 @@
 package slimeknights.mantle.tileentity;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 
 public class MantleTileEntity extends TileEntity {
+
+  public MantleTileEntity(TileEntityType<?> tileEntityTypeIn) {
+    super(tileEntityTypeIn);
+  }
 
   public boolean isClient() {
     return this.getWorld() != null && this.getWorld().isRemote;

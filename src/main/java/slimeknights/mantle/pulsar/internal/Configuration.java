@@ -6,8 +6,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import net.minecraftforge.fml.common.Loader;
-
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -16,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class Configuration implements IConfiguration {
      * @param logger The logger to send debug info to.
      */
     public Configuration(String confName, Logger logger) {
-        this.confPath = Loader.instance().getConfigDir().toString() + File.separator + confName + ".json";
+        this.confPath = Paths.get("config", confName+ ".json").toString();
         this.logger = logger;
     }
 

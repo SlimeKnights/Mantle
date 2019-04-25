@@ -1,16 +1,17 @@
 package slimeknights.mantle.pulsar.control;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLModContainer;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+import net.minecraftforge.eventbus.EventBus;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.CrashReportExtender;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,7 +54,7 @@ public class PulseManager {
     private static final Map<String, Map<Object, PulseMeta>> ALL_PULSES = new HashMap<>();
     private final Map<Object, PulseMeta> pulses = new LinkedHashMap<>();
     // Use the Google @Subscribe to avoid confusion/breaking changes.
-    private final Flightpath flightpath = new Flightpath(new AnnotationLocator(Subscribe.class));
+    private final Flightpath flightpath = new Flightpath(new AnnotationLocator(SubscribeEvent.class));
 
     private boolean blockNewRegistrations = false;
     private boolean configLoaded = false;
@@ -91,11 +92,11 @@ public class PulseManager {
      * Shared initialiser code between all the constructors.
      */
     private void init() {
-        String modId = Loader.instance().activeModContainer().getModId();
+        String modId = ModLoadingContext.get().getActiveContainer().getNamespace();
         this.id = modId;
         log = LogManager.getLogger("Pulsar-" + modId);
         flightpath.setExceptionHandler(new BusExceptionHandler(modId));
-        FMLCommonHandler.instance().registerCrashCallable(new CrashHandler(modId, this));
+        CrashReportExtender.registerCrashCallable(new CrashHandler(modId, this));
         // regsister our pulse loader so it can be found by the static method
         ALL_PULSES.put(modId, pulses);
         // Attach us to the mods FML bus
@@ -148,7 +149,7 @@ public class PulseManager {
         if (!deps.equals("")) {
             String[] parsedDeps = deps.split(";");
             for (String s : parsedDeps) {
-                if (!Loader.isModLoaded(s)) {
+                if (!ModList.get().isLoaded(s)) {
                     log.info("Skipping Pulse " + id + "; missing dependency: " + s);
                     missingDeps = true;
                     enabled = false;
@@ -164,8 +165,6 @@ public class PulseManager {
         if (meta.isEnabled()) {
             pulses.put(pulse, meta);
             flightpath.register(pulse);
-            // Work around to catch the new registry events added from the registry rewrite.
-            MinecraftForge.EVENT_BUS.register(pulse);
         }
     }
 
@@ -175,7 +174,7 @@ public class PulseManager {
      * @param obj Object to register.
      */
     private void attachToContainerEventBus(Object obj) {
-        ModContainer cnt =  Loader.instance().activeModContainer();
+        ModContainer cnt =  ModLoadingContext.get().getActiveContainer();
         log.debug("Attaching [" + obj + "] to event bus for container [" + cnt + "]");
         try {
             FMLModContainer mc = (FMLModContainer)cnt;
@@ -203,9 +202,9 @@ public class PulseManager {
      *
      * @param evt An event object.
      */
-    @Subscribe
-    public void propagateEvent(Object evt) {
-        if (evt instanceof FMLPreInitializationEvent) preInit((FMLPreInitializationEvent) evt);
+    @SubscribeEvent
+    public void propagateEvent(Event evt) {
+        if (evt instanceof FMLCommonSetupEvent) preInit((FMLCommonSetupEvent) evt);
         // We use individual buses due to the EventBus class using a Set rather than a List, thus losing the ordering.
         // This trick is shamelessly borrowed from FML.
         flightpath.post(evt);
@@ -217,7 +216,7 @@ public class PulseManager {
         return conf.isModuleEnabled(meta);
     }
 
-    private void preInit(FMLPreInitializationEvent evt) {
+    private void preInit(FMLCommonSetupEvent evt) {
         if (!blockNewRegistrations) conf.flush(); // First init call, so flush config
         blockNewRegistrations = true;
     }
@@ -257,9 +256,9 @@ public class PulseManager {
      */
     public static boolean isPulseLoadedGlobal(String pulseId) {
         ResourceLocation loc = new ResourceLocation(pulseId);
-        Map<Object, PulseMeta> pulses = ALL_PULSES.get(loc.getResourceDomain());
+        Map<Object, PulseMeta> pulses = ALL_PULSES.get(loc.getNamespace());
         if(pulses != null) {
-            return isPulseLoaded(pulses, loc.getResourcePath());
+            return isPulseLoaded(pulses, loc.getPath());
         }
         return false;
     }
