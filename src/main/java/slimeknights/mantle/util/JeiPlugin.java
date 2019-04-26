@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -19,8 +18,8 @@ import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.gui.GuiMultiModule;
 
-@JeiPlugin
-public class JEIPlugin implements IModPlugin {
+@mezz.jei.api.JeiPlugin
+public class JeiPlugin implements IModPlugin {
 
   @Override
   public void registerGuiHandlers(IGuiHandlerRegistration registration) {
