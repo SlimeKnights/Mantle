@@ -1,42 +1,33 @@
 package slimeknights.mantle.util;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.gui.GuiMultiModule;
 
-@JEIPlugin
-public class JeiPlugin implements IModPlugin {
+@JeiPlugin
+public class JEIPlugin implements IModPlugin {
 
   @Override
-  public void register(@Nonnull IModRegistry registry) {
-    registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiMultiModule>() {
-      @Nonnull
+  public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+    registration.addGuiContainerHandler(GuiMultiModule.class, new IGuiContainerHandler<GuiMultiModule>() {
       @Override
-      public Class<GuiMultiModule> getGuiContainerClass() {
-        return GuiMultiModule.class;
-      }
-
-      @Nullable
-      @Override
-      public List<Rectangle> getGuiExtraAreas(@Nonnull GuiMultiModule guiContainer) {
+      public List<Rectangle2d> getGuiExtraAreas(@Nonnull GuiMultiModule guiContainer) {
         return guiContainer.getModuleAreas();
-      }
-
-      @Override
-      public Object getIngredientUnderMouse(GuiMultiModule guiContainer, int mouseX, int mouseY)
-      {
-        return null;
       }
     });
   }
@@ -46,7 +37,13 @@ public class JeiPlugin implements IModPlugin {
   }
 
   @Override
-  public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry){
+  public ResourceLocation getPluginUid()
+  {
+    return new ResourceLocation(Mantle.modId, "internal");
+  }
+
+  @Override
+  public void registerItemSubtypes(ISubtypeRegistration subtypeRegistry){
   }
 
   @Override
