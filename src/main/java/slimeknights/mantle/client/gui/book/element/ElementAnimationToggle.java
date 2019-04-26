@@ -16,7 +16,7 @@ public class ElementAnimationToggle extends ElementArrow {
   }
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if(callback != null && isHovered(mouseX, mouseY)) {
       if(callback.onButtonClick(buttonId, this)) {
         toggled = !toggled;

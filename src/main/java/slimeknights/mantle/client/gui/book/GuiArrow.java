@@ -4,14 +4,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiArrow extends GuiButton {
 
   private static final int X = 412;
@@ -33,9 +33,10 @@ public class GuiArrow extends GuiButton {
   }
 
   @Override
-  public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+  public void render(int mouseX, int mouseY, float partialTicks) {
     if(this.visible) {
-      mc.getTextureManager().bindTexture(TEX_BOOK);
+      Minecraft minecraft = Minecraft.getInstance();
+      minecraft.getTextureManager().bindTexture(TEX_BOOK);
 
       this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
@@ -45,9 +46,9 @@ public class GuiArrow extends GuiButton {
       float g = ((color >> 8) & 0xff) / 255.F;
       float b = (color & 0xff) / 255.F;
 
-      GlStateManager.color(r, g, b);
+      GlStateManager.color3f(r, g, b);
       Gui.drawScaledCustomSizeModalRect(x, y, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
-      this.mouseDragged(mc, mouseX, mouseY);
+      this.renderBg(minecraft, mouseX, mouseY);
     }
   }
 

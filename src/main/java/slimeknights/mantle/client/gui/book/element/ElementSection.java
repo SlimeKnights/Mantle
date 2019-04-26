@@ -89,7 +89,7 @@ public class ElementSection extends SizedBookElement {
   }
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if(mouseButton == 0 && section != null && section.isUnlocked(parent.advancementCache) && isHovered(mouseX, mouseY)) {
       parent.openPage(parent.book.getFirstPageNumber(section, parent.advancementCache));
     }

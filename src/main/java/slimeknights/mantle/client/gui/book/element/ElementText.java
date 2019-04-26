@@ -52,7 +52,7 @@ public class ElementText extends SizedBookElement {
   }
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if(mouseButton == 0) {
       doAction = true;
     }

@@ -16,9 +16,9 @@ import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
@@ -38,7 +38,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   protected final Block originalBlock; // used to check if the block we interacted with got broken
   protected final BlockPos pos;
   protected final World world;
-  protected final IItemHandler itemHandler;
+  protected final LazyOptional<IItemHandler> itemHandler;
 
   public List<Container> subContainers = Lists.newArrayList();
 
@@ -49,11 +49,11 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   public BaseContainer(T tile, EnumFacing invDir) {
     this.tile = tile;
 
-    if(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir)) {
+    if(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir).isPresent()) {
       itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir);
     }
     else {
-      itemHandler = new EmptyHandler();
+      itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new EmptyHandler());
     }
 
     this.world = tile.getWorld();
@@ -85,7 +85,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   public IItemHandler getItemHandler() {
-    return itemHandler;
+    return itemHandler.orElse(new EmptyHandler());
   }
 
   /**
@@ -129,8 +129,8 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   public String getInventoryDisplayName() {
     INameable nameable = null;
-    if (itemHandler instanceof InvWrapper) {
-      nameable = ((InvWrapper) itemHandler).getInv();
+    if (itemHandler.orElse(new EmptyHandler()) instanceof InvWrapper) {
+      nameable = ((InvWrapper) itemHandler.orElse(new EmptyHandler())).getInv();
       // if the inventory doesn't have a name fall back to checking the tileentity
       if (nameable.getDisplayName() == null) {
         nameable = null;

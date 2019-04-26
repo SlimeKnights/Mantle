@@ -13,7 +13,7 @@ public abstract class ElementButton extends SizedBookElement {
   }
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if(callback != null && isHovered(mouseX, mouseY)) {
       callback.onButtonClick(buttonId, this);
     }

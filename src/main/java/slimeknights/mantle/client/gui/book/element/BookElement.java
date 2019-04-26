@@ -39,15 +39,15 @@ public abstract class BookElement extends Gui {
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
   }
 
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
 
   }
 
-  public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton) {
+  public void mouseClickMove(double mouseX, double mouseY, int clickedMouseButton) {
 
   }
 
-  public void mouseReleased(int mouseX, int mouseY, int clickedMouseButton) {
+  public void mouseReleased(double mouseX, double mouseY, int clickedMouseButton) {
 
   }
 

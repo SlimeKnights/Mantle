@@ -264,18 +264,18 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   private int lastY;
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     super.mouseClicked(mouseX, mouseY, mouseButton);
 
     //lastX = mouseX;
     //lastY = mouseY;
-    lastClick = new int[] {mouseX, mouseY};
+    lastClick = new int[] {(int) mouseX, (int) mouseY};
   }
 
   @Override
-  public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton) {
-    int dx = mouseX - lastX;
-    int dy = mouseX - lastY;
+  public void mouseClickMove(double mouseX, double mouseY, int clickedMouseButton) {
+    int dx = (int) mouseX - lastX;
+    int dy = (int) mouseX - lastY;
 
     float maxSpeed = 1f;
     float changeX = Math.min(maxSpeed, dx/100f);
@@ -292,7 +292,7 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   }
 
   @Override
-  public void mouseReleased(int mouseX, int mouseY, int clickedMouseButton) {
+  public void mouseReleased(double mouseX, double mouseY, int clickedMouseButton) {
     super.mouseReleased(mouseX, mouseY, clickedMouseButton);
     lastClick = null;
   }

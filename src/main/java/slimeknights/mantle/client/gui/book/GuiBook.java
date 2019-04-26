@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.stats.StatisticsManager;
@@ -22,8 +23,6 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.glfw.GLFW;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -124,16 +124,16 @@ public class GuiBook extends GuiScreen {
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Mouse.getX() * this.width / this.mc.displayWidth - leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.mc.mainWindow.getFramebufferWidth() - leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1 - topOffset()) / PAGE_SCALE);
+    return (int) ((this.height - Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.mc.mainWindow.getFramebufferWidth() - 1 - topOffset()) / PAGE_SCALE);
   }
 
   @Override
   @SuppressWarnings("ForLoopReplaceableByForEach")
-  public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+  public void render(int mouseX, int mouseY, float partialTicks) {
     init();
     FontRenderer fontRenderer = book.fontRenderer;
     if(fontRenderer == null) {
@@ -199,27 +199,27 @@ public class GuiBook extends GuiScreen {
 
         float scale = fontRenderer.getStringWidth(book.appearance.title) <= 67 ? 2.5F : 2F;
 
-        GlStateManager.scale(scale, scale, 1F);
-        fontRenderer.drawString(book.appearance.title, (width / 2) / scale + 3 - fontRenderer
-                                                                                     .getStringWidth(book.appearance.title) / 2, (height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000, true);
+        GlStateManager.scalef(scale, scale, 1F);
+        fontRenderer.drawStringWithShadow(book.appearance.title, (width / 2) / scale + 3 - fontRenderer
+                                                                                     .getStringWidth(book.appearance.title) / 2, (height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
         GlStateManager.popMatrix();
       }
 
       if(!book.appearance.subtitle.isEmpty()) {
         GlStateManager.pushMatrix();
-        GlStateManager.scale(1.5F, 1.5F, 1F);
-        fontRenderer.drawString(book.appearance.subtitle, (width / 2) / 1.5F + 7 - fontRenderer
-                                                                                       .getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000, true);
+        GlStateManager.scalef(1.5F, 1.5F, 1F);
+        fontRenderer.drawStringWithShadow(book.appearance.subtitle, (width / 2) / 1.5F + 7 - fontRenderer
+                                                                                       .getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
         GlStateManager.popMatrix();
       }
     } else {
       render.bindTexture(TEX_BOOK);
       RenderHelper.disableStandardItemLighting();
 
-      GlStateManager.color(coverR, coverG, coverB);
+      GlStateManager.color3f(coverR, coverG, coverB);
       drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-      GlStateManager.color(1F, 1F, 1F);
+      GlStateManager.color3f(1F, 1F, 1F);
 
       if(page != 0) {
         drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
@@ -227,11 +227,11 @@ public class GuiBook extends GuiScreen {
         GlStateManager.pushMatrix();
         drawerTransform(false);
 
-        GlStateManager.scale(PAGE_SCALE, PAGE_SCALE, 1F);
+        GlStateManager.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
         if(book.appearance.drawPageNumbers) {
           String pNum = (page - 1) * 2 + 2 + "";
-          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA, false);
+          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
         int mX = getMouseX(false);
@@ -241,7 +241,7 @@ public class GuiBook extends GuiScreen {
         for(int i = 0; i < leftElements.size(); i++) {
           BookElement element = leftElements.get(i);
 
-          GlStateManager.color(1F, 1F, 1F, 1F);
+          GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
@@ -249,7 +249,7 @@ public class GuiBook extends GuiScreen {
         for(int i = 0; i < leftElements.size(); i++) {
           BookElement element = leftElements.get(i);
 
-          GlStateManager.color(1F, 1F, 1F, 1F);
+          GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
@@ -259,7 +259,7 @@ public class GuiBook extends GuiScreen {
       // Rebind texture as the font renderer binds its own texture
       render.bindTexture(TEX_BOOK);
       // Set color back to white
-      GlStateManager.color(1F, 1F, 1F, 1F);
+      GlStateManager.color4f(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
 
       int fullPageCount = book.getFullPageCount(advancementCache);
@@ -269,11 +269,11 @@ public class GuiBook extends GuiScreen {
         GlStateManager.pushMatrix();
         drawerTransform(true);
 
-        GlStateManager.scale(PAGE_SCALE, PAGE_SCALE, 1F);
+        GlStateManager.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
         if(book.appearance.drawPageNumbers) {
           String pNum = (page - 1) * 2 + 3 + "";
-          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA, false);
+          fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
         int mX = getMouseX(true);
@@ -283,7 +283,7 @@ public class GuiBook extends GuiScreen {
         for(int i = 0; i < rightElements.size(); i++) {
           BookElement element = rightElements.get(i);
 
-          GlStateManager.color(1F, 1F, 1F, 1F);
+          GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
@@ -291,7 +291,7 @@ public class GuiBook extends GuiScreen {
         for(int i = 0; i < rightElements.size(); i++) {
           BookElement element = rightElements.get(i);
 
-          GlStateManager.color(1F, 1F, 1F, 1F);
+          GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
@@ -299,7 +299,7 @@ public class GuiBook extends GuiScreen {
       }
     }
 
-    super.drawScreen(mouseX, mouseY, partialTicks);
+    super.render(mouseX, mouseY, partialTicks);
 
     GlStateManager.popMatrix();
   }
@@ -417,23 +417,66 @@ public class GuiBook extends GuiScreen {
       height /= 2F;
     }*/
 
-    previousArrow = new GuiArrow(0, -50, -50, GuiArrow.ArrowType.PREV, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    nextArrow = new GuiArrow(1, -50, -50, GuiArrow.ArrowType.NEXT, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, book.appearance.arrowColor, book.appearance.arrowColorHover);
-    indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, book.appearance.arrowColor, book.appearance.arrowColorHover);
+    previousArrow = new GuiArrow(0, -50, -50, GuiArrow.ArrowType.PREV, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+      @Override
+      public void onClick(double mouseX, double mouseY) {
+        page--;
+        if(page < -1) {
+          page = -1;
+        }
 
-    buttonList.clear();
-    buttonList.add(previousArrow);
-    buttonList.add(nextArrow);
-    buttonList.add(backArrow);
-    buttonList.add(indexArrow);
+        oldPage = -2;
+        buildPages();
+      }
+    };
+
+    nextArrow = new GuiArrow(1, -50, -50, GuiArrow.ArrowType.NEXT, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+      @Override
+      public void onClick(double mouseX, double mouseY) {
+        page++;
+        int fullPageCount = book.getFullPageCount(advancementCache);
+        if(page >= fullPageCount) {
+          page = fullPageCount - 1;
+        }
+        oldPage = -2;
+        buildPages();
+      }
+    };
+
+    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+      @Override
+      public void onClick(double mouseX, double mouseY) {
+        if(oldPage >= -1) {
+          page = oldPage;
+        }
+
+        oldPage = -2;
+        buildPages();
+      }
+    };
+
+    indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+      @Override
+      public void onClick(double mouseX, double mouseY) {
+        openPage(book.findPageNumber("index.page1"));
+
+        oldPage = -2;
+        buildPages();
+      }
+    };
+
+    buttons.clear();
+    buttons.add(previousArrow);
+    buttons.add(nextArrow);
+    buttons.add(backArrow);
+    buttons.add(indexArrow);
 
     buildPages();
   }
 
   @Override
-  public void updateScreen() {
-    super.updateScreen();
+  public void tick() {
+    super.tick();
 
     previousArrow.visible = page != -1;
     nextArrow.visible = page + 1 < book.getFullPageCount(advancementCache);
@@ -454,72 +497,80 @@ public class GuiBook extends GuiScreen {
     nextArrow.y = height / 2 + 75;
   }
 
-  @Override
+  /*@Override
+  TODO: REMOVE
   public void actionPerformed(GuiButton button) {
     if(button instanceof GuiBookmark) {
       openPage(book.findPageNumber(((GuiBookmark) button).data.page, advancementCache));
 
       return;
     }
+  }*/
 
-    if(button == previousArrow) {
-      page--;
-      if(page < -1) {
-        page = -1;
-      }
-    } else if(button == nextArrow) {
+  @Override
+  public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    super.keyPressed(keyCode, scanCode, modifiers);
+
+    switch(keyCode) {
+      case GLFW.GLFW_KEY_LEFT:
+      case GLFW.GLFW_KEY_A:
+        page--;
+        if(page < -1) {
+          page = -1;
+        }
+
+        oldPage = -2;
+        buildPages();
+        return true;
+      case GLFW.GLFW_KEY_RIGHT:
+      case GLFW.GLFW_KEY_D:
+        page++;
+        int fullPageCount = book.getFullPageCount(advancementCache);
+        if(page >= fullPageCount) {
+          page = fullPageCount - 1;
+        }
+        oldPage = -2;
+        buildPages();
+        return true;
+      case GLFW.GLFW_KEY_F3:
+        debug = !debug;
+        return true;
+    }
+
+    return super.keyPressed(keyCode, scanCode, modifiers);
+  }
+
+  @Override
+  public boolean mouseScrolled(double scrollDelta) {
+
+    if (scrollDelta < 0.0D) {
       page++;
       int fullPageCount = book.getFullPageCount(advancementCache);
       if(page >= fullPageCount) {
         page = fullPageCount - 1;
       }
-    } else if(button == backArrow) {
-      if(oldPage >= -1) {
-        page = oldPage;
+      oldPage = -2;
+      buildPages();
+
+      return true;
+    }
+    else if (scrollDelta > 0.0D) {
+      page--;
+      if(page < -1) {
+        page = -1;
       }
-    } else if(button == indexArrow) {
-      openPage(book.findPageNumber("index.page1"));
+
+      oldPage = -2;
+      buildPages();
+
+      return true;
     }
 
-    oldPage = -2;
-    buildPages();
+    return super.mouseScrolled(scrollDelta);
   }
 
   @Override
-  protected void keyTyped(char typedChar, int keyCode) throws IOException {
-    super.keyTyped(typedChar, keyCode);
-
-    switch(keyCode) {
-      case Keyboard.KEY_LEFT:
-      case Keyboard.KEY_A:
-        actionPerformed(previousArrow);
-        break;
-      case Keyboard.KEY_RIGHT:
-      case Keyboard.KEY_D:
-        actionPerformed(nextArrow);
-        break;
-      case Keyboard.KEY_F3:
-        debug = !debug;
-        break;
-    }
-  }
-
-  @Override
-  public void handleMouseInput() throws IOException {
-    super.handleMouseInput();
-
-    int scroll = Mouse.getDWheel();
-
-    if (scroll < 0)
-      actionPerformed(nextArrow);
-    else if (scroll > 0)
-      actionPerformed(previousArrow);
-  }
-
-  @Override
-  protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-    super.mouseClicked(mouseX, mouseY, mouseButton);
-
+  public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
     boolean right = false;
 
     mouseX = getMouseX(false);
@@ -537,15 +588,15 @@ public class GuiBook extends GuiScreen {
       element.mouseClicked(mouseX, mouseY, mouseButton);
       // if we changed page stop so we don't act on the new page
       if(page != oldPage) {
-        break;
+        return true;
       }
     }
+
+    return super.mouseClicked(mouseX, mouseY, mouseButton);
   }
 
   @Override
-  protected void mouseReleased(int mouseX, int mouseY, int state) {
-    super.mouseReleased(mouseX, mouseY, state);
-
+  public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
     boolean right = false;
     mouseX = getMouseX(false);
     mouseY = getMouseY();
@@ -558,12 +609,13 @@ public class GuiBook extends GuiScreen {
     // Not foreach to prevent conmodification crashes
     for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
       BookElement element = right ? rightElements.get(i) : leftElements.get(i);
-      element.mouseReleased(mouseX, mouseY, state);
+      element.mouseReleased(mouseX, mouseY, mouseButton);
     }
+    return super.mouseReleased(mouseX, mouseY, mouseButton);
   }
 
   @Override
-  protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+  public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLaslick, double unknown) {
     boolean right = false;
     mouseX = getMouseX(false);
     mouseY = getMouseY();
@@ -578,6 +630,8 @@ public class GuiBook extends GuiScreen {
       BookElement element = right ? rightElements.get(i) : leftElements.get(i);
       element.mouseClickMove(mouseX, mouseY, clickedMouseButton);
     }
+
+    return true;
   }
 
   @Override

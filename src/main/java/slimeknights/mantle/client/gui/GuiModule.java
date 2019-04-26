@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.gui;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,8 +40,8 @@ public abstract class GuiModule extends GuiContainer {
     return guiTop + ySize;
   }
 
-  public Rectangle getArea() {
-    return new Rectangle(guiLeft, guiTop, xSize, ySize);
+  public Rectangle2d getArea() {
+    return new Rectangle2d(guiLeft, guiTop, xSize, ySize);
   }
 
   @Override

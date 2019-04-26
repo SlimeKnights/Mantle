@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
@@ -55,8 +56,8 @@ public class GuiMultiModule extends GuiContainer {
     modules.add(module);
   }
 
-  public List<Rectangle> getModuleAreas() {
-    List<Rectangle> areas = new ArrayList<Rectangle>(modules.size());
+  public List<Rectangle2d> getModuleAreas() {
+    List<Rectangle2d> areas = new ArrayList<Rectangle2d>(modules.size());
     for(GuiModule module : modules) {
       areas.add(module.getArea());
     }

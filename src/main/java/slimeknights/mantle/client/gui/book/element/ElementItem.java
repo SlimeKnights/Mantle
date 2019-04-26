@@ -108,7 +108,7 @@ public class ElementItem extends SizedBookElement {
   }
 
   @Override
-  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+  public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if(mouseButton == 0 && isHovered(mouseX, mouseY) && currentItem < itemCycle.size()) {
       if(action != null) {
         StringActionProcessor.process(action, parent);
