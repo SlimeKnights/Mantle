@@ -303,7 +303,11 @@ public class PulseManager {
         return "PulseManager[" + id + "]";
     }
 
-    //TOML Support Start
+    /**
+     * If you go and use PulsarConfig, you will need to call this method after you register all your pulses.
+     * 
+     * This is due to how TOML configs work; If you try to get the value too early; it throws NullPointerException
+     */
     public void enablePulses() {
         if(usingATomlConfig) {
             conf.popBuilder();
@@ -325,16 +329,30 @@ public class PulseManager {
         }
     }
 
+    /**
+     * Used for getting the config entry from the pulse meta.
+     *
+     * @param meta the pulse meta
+     *
+     * @return the config entry
+     */
     private BooleanValue getConfigEntryForConfig(PulseMeta meta) {
         if (meta.isForced() || !useConfig) return null;
 
         return conf.getConfigEntry(meta);
     }
 
+    /**
+     * Used to check if the pulse should be enabled or not.
+     *
+     * @param boolValue the config entry
+     * @param meta the pulse meta
+     *
+     * @return Whether the pulse should be enabled.
+     */
     private boolean getEnabledFromConfig(BooleanValue boolValue, PulseMeta meta) {
         if (meta.isForced() || !useConfig) return true; // Forced or no config set.
 
         return conf.isModuleEnabled(boolValue);
     }
-    //TOML Support End
 }
