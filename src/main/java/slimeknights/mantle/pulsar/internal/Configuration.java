@@ -54,6 +54,11 @@ public class Configuration implements IConfiguration {
     }
 
     @Override
+    public boolean isUsingTomlConfig() {
+        return false;
+    }
+
+    @Override
     public void load() {
         getModulesFromJson();
     }

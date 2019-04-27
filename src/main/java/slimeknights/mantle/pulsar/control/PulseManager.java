@@ -1,7 +1,7 @@
 package slimeknights.mantle.pulsar.control;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 
 import net.minecraftforge.eventbus.EventBus;
 import net.minecraftforge.eventbus.api.Event;
@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import slimeknights.mantle.pulsar.config.IConfiguration;
 import slimeknights.mantle.pulsar.flightpath.Flightpath;
 import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
@@ -50,9 +52,11 @@ public class PulseManager {
 
     private Logger log;
     private final boolean useConfig;
+    private final boolean usingATomlConfig;
 
     private static final Map<String, Map<Object, PulseMeta>> ALL_PULSES = new HashMap<>();
     private final Map<Object, PulseMeta> pulses = new LinkedHashMap<>();
+    private final Map<Object, PulseMeta> allPulses = new LinkedHashMap<>();
     // Use the Google @Subscribe to avoid confusion/breaking changes.
     private final Flightpath flightpath = new Flightpath(new AnnotationLocator(SubscribeEvent.class));
 
@@ -60,6 +64,8 @@ public class PulseManager {
     private boolean configLoaded = false;
     private IConfiguration conf;
     private String id;
+
+    public static final Marker CONFIG = MarkerManager.getMarker("PULSARCONFIG");
 
     /**
      * Configuration-using constructor.
@@ -71,6 +77,7 @@ public class PulseManager {
     public PulseManager(String configName) {
         init();
         useConfig = true;
+        usingATomlConfig = false;
         conf = new Configuration(configName, log);
     }
 
@@ -85,6 +92,7 @@ public class PulseManager {
     public PulseManager(IConfiguration config) {
         init();
         useConfig = true;
+        usingATomlConfig = config.isUsingTomlConfig();
         conf = config;
     }
 
@@ -123,7 +131,8 @@ public class PulseManager {
         if (blockNewRegistrations) throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
                 + pulse);
         if (!configLoaded) {
-            conf.load();
+            if(!usingATomlConfig) conf.load();
+
             configLoaded = true;
         }
 
@@ -160,11 +169,18 @@ public class PulseManager {
 
         PulseMeta meta = new PulseMeta(id, description, forced, enabled, defaultEnabled);
         meta.setMissingDeps(missingDeps || !hasRequiredPulses(meta, pulseDeps));
-        meta.setEnabled(getEnabledFromConfig(meta));
 
-        if (meta.isEnabled()) {
-            pulses.put(pulse, meta);
-            flightpath.register(pulse);
+        if(usingATomlConfig) {
+            conf.pushBuilder();
+            meta.setConfigEntry(getConfigEntryForConfig(meta));
+            allPulses.put(pulse, meta);
+        } else {
+            meta.setEnabled(getEnabledFromConfig(meta));
+
+            if (meta.isEnabled()) {
+                pulses.put(pulse, meta);
+                flightpath.register(pulse);
+            }
         }
     }
 
@@ -286,4 +302,39 @@ public class PulseManager {
     public String toString() {
         return "PulseManager[" + id + "]";
     }
+
+    //TOML Support Start
+    public void enablePulses() {
+        if(usingATomlConfig) {
+            conf.popBuilder();
+            conf.load();
+
+            for (Map.Entry<Object, PulseMeta> entry : allPulses.entrySet()) {
+                PulseMeta meta = entry.getValue();
+                Object pulse = entry.getKey();
+
+                meta.setEnabled(getEnabledFromConfig(meta.getConfigEntry(), meta));
+
+                if (meta.isEnabled()) {
+                    pulses.put(pulse, meta);
+                    flightpath.register(pulse);
+                }
+            }
+        } else {
+            log.info("Calling enablePulses isn't needed unless you are using a TOML file.");
+        }
+    }
+
+    private BooleanValue getConfigEntryForConfig(PulseMeta meta) {
+        if (meta.isForced() || !useConfig) return null;
+
+        return conf.getConfigEntry(meta);
+    }
+
+    private boolean getEnabledFromConfig(BooleanValue boolValue, PulseMeta meta) {
+        if (meta.isForced() || !useConfig) return true; // Forced or no config set.
+
+        return conf.isModuleEnabled(boolValue);
+    }
+    //TOML Support End
 }
