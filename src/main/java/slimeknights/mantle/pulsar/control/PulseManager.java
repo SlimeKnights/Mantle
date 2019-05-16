@@ -272,7 +272,7 @@ public class PulseManager {
      */
     private static boolean isPulseLoaded(Map<Object, PulseMeta> pulses, String pulseId) {
         for(Map.Entry<Object, PulseMeta> entry : pulses.entrySet()) {
-            if (entry.getValue().getId().equals(pulseId)) {
+            if (entry.getValue().getId().equalsIgnoreCase(pulseId)) {
                 return true;
             }
         }
