@@ -58,7 +58,7 @@ public class SectionData implements IDataItem {
         String data = source.resourceToString(pagesInfo);
         if(!data.isEmpty()) {
           try {
-            pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
+            pages = getPages(data);
           } catch(Exception e) {
             pages = new ArrayList<>();
             PageData pdError = new PageData(true);
@@ -79,6 +79,15 @@ public class SectionData implements IDataItem {
     }
 
     icon.location = source.getResourceLocation(icon.file, true);
+  }
+
+  /**
+   * Gets a list of pages from the given data
+   * @param data  JSON data
+   * @return  ArrayList of pages for the book
+   */
+  protected ArrayList<PageData> getPages(String data) {
+    return new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
   }
 
   public void update(@Nullable GuiBook.AdvancementCache advancementCache) {
