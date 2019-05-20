@@ -1,7 +1,5 @@
 package slimeknights.mantle.pulsar.pulse;
 
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -16,7 +14,6 @@ public class PulseMeta {
     private String id, description;
     private boolean forced, enabled, defaultEnabled;
     private boolean missingDeps = false;
-    private BooleanValue configEntry;
 
     public PulseMeta(String id, @Nullable String description, boolean forced, boolean enabled, boolean defaultEnabled) {
         this.id = id;
@@ -52,13 +49,5 @@ public class PulseMeta {
 
     public boolean isDefaultEnabled() {
         return defaultEnabled;
-    }
-
-    public void setConfigEntry(BooleanValue entry) {
-        this.configEntry = entry;
-    }
-
-    public BooleanValue getConfigEntry() {
-        return this.configEntry;
     }
 }

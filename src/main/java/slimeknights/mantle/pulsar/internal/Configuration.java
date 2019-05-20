@@ -54,23 +54,29 @@ public class Configuration implements IConfiguration {
     }
 
     @Override
-    public boolean isUsingTomlConfig() {
-        return false;
-    }
-
-    @Override
     public void load() {
         getModulesFromJson();
     }
 
     @Override
+    public void postLoad() {}
+
+    @Override
     public boolean isModuleEnabled(@Nonnull PulseMeta meta) {
         ConfigEntry entry = modules.get(meta.getId());
         if (entry == null) {
-            modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));
             return meta.isEnabled();
         } else {
             return entry.getEnabled();
+        }
+    }
+
+    @Override
+    public void addPulse(@Nonnull PulseMeta meta) {
+        ConfigEntry entry = modules.get(meta.getId());
+
+        if (entry == null) {
+            modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));
         }
     }
 

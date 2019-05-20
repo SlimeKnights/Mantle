@@ -52,7 +52,6 @@ public class PulseManager {
 
     private Logger log;
     private final boolean useConfig;
-    private final boolean usingATomlConfig;
 
     private static final Map<String, Map<Object, PulseMeta>> ALL_PULSES = new HashMap<>();
     private final Map<Object, PulseMeta> pulses = new LinkedHashMap<>();
@@ -77,7 +76,6 @@ public class PulseManager {
     public PulseManager(String configName) {
         init();
         useConfig = true;
-        usingATomlConfig = false;
         conf = new Configuration(configName, log);
     }
 
@@ -92,7 +90,6 @@ public class PulseManager {
     public PulseManager(IConfiguration config) {
         init();
         useConfig = true;
-        usingATomlConfig = config.isUsingTomlConfig();
         conf = config;
     }
 
@@ -131,7 +128,7 @@ public class PulseManager {
         if (blockNewRegistrations) throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
                 + pulse);
         if (!configLoaded) {
-            if(!usingATomlConfig) conf.load();
+            conf.load();
 
             configLoaded = true;
         }
@@ -170,18 +167,8 @@ public class PulseManager {
         PulseMeta meta = new PulseMeta(id, description, forced, enabled, defaultEnabled);
         meta.setMissingDeps(missingDeps || !hasRequiredPulses(meta, pulseDeps));
 
-        if(usingATomlConfig) {
-            conf.pushBuilder();
-            meta.setConfigEntry(getConfigEntryForConfig(meta));
-            allPulses.put(pulse, meta);
-        } else {
-            meta.setEnabled(getEnabledFromConfig(meta));
-
-            if (meta.isEnabled()) {
-                pulses.put(pulse, meta);
-                flightpath.register(pulse);
-            }
-        }
+        conf.addPulse(meta);
+        allPulses.put(pulse, meta);
     }
 
     /**
@@ -302,57 +289,26 @@ public class PulseManager {
     public String toString() {
         return "PulseManager[" + id + "]";
     }
-
     /**
-     * If you go and use PulsarConfig, you will need to call this method after you register all your pulses.
-     * 
-     * This is due to how TOML configs work; If you try to get the value too early; it throws NullPointerException
+     * Enable or Disable all Pulses registered
+     *
+     * This MUST be called after you register all your pulses using registerPulse and must be called BEFORE preinit
      */
     public void enablePulses() {
-        if(usingATomlConfig) {
-            conf.popBuilder();
-            conf.load();
+        if(blockNewRegistrations) throw new RuntimeException("A mod tried to enable their plugins after preinit!");
 
-            for (Map.Entry<Object, PulseMeta> entry : allPulses.entrySet()) {
-                PulseMeta meta = entry.getValue();
-                Object pulse = entry.getKey();
+        if(configLoaded) conf.postLoad();
 
-                meta.setEnabled(getEnabledFromConfig(meta.getConfigEntry(), meta));
+        for (Map.Entry<Object, PulseMeta> entry : allPulses.entrySet()) {
+            PulseMeta meta = entry.getValue();
+            Object pulse = entry.getKey();
 
-                if (meta.isEnabled()) {
-                    pulses.put(pulse, meta);
-                    flightpath.register(pulse);
-                }
+            meta.setEnabled(getEnabledFromConfig(meta));
+
+            if (meta.isEnabled()) {
+                pulses.put(pulse, meta);
+                flightpath.register(pulse);
             }
-        } else {
-            log.info("Calling enablePulses isn't needed unless you are using a TOML file.");
         }
-    }
-
-    /**
-     * Used for getting the config entry from the pulse meta.
-     *
-     * @param meta the pulse meta
-     *
-     * @return the config entry
-     */
-    private BooleanValue getConfigEntryForConfig(PulseMeta meta) {
-        if (meta.isForced() || !useConfig) return null;
-
-        return conf.getConfigEntry(meta);
-    }
-
-    /**
-     * Used to check if the pulse should be enabled or not.
-     *
-     * @param boolValue the config entry
-     * @param meta the pulse meta
-     *
-     * @return Whether the pulse should be enabled.
-     */
-    private boolean getEnabledFromConfig(BooleanValue boolValue, PulseMeta meta) {
-        if (meta.isForced() || !useConfig) return true; // Forced or no config set.
-
-        return conf.isModuleEnabled(boolValue);
     }
 }

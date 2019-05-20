@@ -2,12 +2,15 @@ package slimeknights.mantle.pulsar.flightpath;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.IGenericEvent;
 import slimeknights.mantle.pulsar.flightpath.lib.AnnotationLocator;
 import slimeknights.mantle.pulsar.flightpath.lib.BlackholeExceptionHandler;
 
@@ -22,8 +25,7 @@ public class Flightpath {
 
     private final ISubscriberLocator locator;
     // Note we *MUST* use a linked map, otherwise order is lost.
-    private final LinkedHashMap<Object, Map<Class, Set<Method>>> subscribers = new LinkedHashMap<Object,
-            Map<Class, Set<Method>>>();
+    private final LinkedHashMap<Object, Map<Class<?>, Map<Method, Type>>> subscribers = new LinkedHashMap<Object, Map<Class<?>, Map<Method, Type>>>();
     // Anything that manipulates state *MUST* acquire this lock. It prevents awkward issues when iterating.
     private final Object lock = new Object();
 
@@ -77,18 +79,22 @@ public class Flightpath {
      *
      * @param evt The event to post.
      */
-    public void post(Object evt) {
+    public void post(Event evt) {
         synchronized (lock) {
-            for (Map.Entry<Object, Map<Class, Set<Method>>> ent : subscribers.entrySet()) {
-                for (Map.Entry<Class, Set<Method>> objEnt: ent.getValue().entrySet()) {
-                    if (!objEnt.getKey().isAssignableFrom(evt.getClass())) continue;
-                    Set<Method> ms = objEnt.getValue();
-                    for (Method m : ms) {
+            for (Map.Entry<Object, Map<Class<?>, Map<Method, Type>>> ent : subscribers.entrySet()) {
+                for (Map.Entry<Class<?>, Map<Method, Type>> obj: ent.getValue().entrySet()) {
+                    if (!obj.getKey().isAssignableFrom(evt.getClass())) continue;
+                    for(Map.Entry<Method, Type> objEnt : obj.getValue().entrySet()){
+                        Method m = objEnt.getKey();
+                        Type filter = objEnt.getValue();
+
                         try {
-                            boolean access = m.isAccessible();
-                            m.setAccessible(true);
-                            m.invoke(ent.getKey(), evt);
-                            m.setAccessible(access);
+                            if (filter == null || filter == ((IGenericEvent)evt).getGenericType()) {
+                                boolean access = m.isAccessible();
+                                m.setAccessible(true);
+                                m.invoke(ent.getKey(), evt);
+                                m.setAccessible(access);
+                            }
                         } catch(InvocationTargetException ex) {
                             // thrown when a method throws an exception, so use that exception instead of the wrapper for a better stacktrace
                             if(ex.getTargetException() instanceof Exception) {

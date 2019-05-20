@@ -7,10 +7,14 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.pulsar.control.PulseManager;
+import slimeknights.mantle.pulsar.internal.Configuration;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class PulsarConfig implements IConfiguration
 {
@@ -25,6 +29,7 @@ public class PulsarConfig implements IConfiguration
 
     private boolean builderPushed;
     private boolean configBuilt;
+    private final Map<String, ForgeConfigSpec.BooleanValue> modules = new LinkedHashMap<>();
 
     /**
      * Creates the config to be used later.
@@ -39,16 +44,16 @@ public class PulsarConfig implements IConfiguration
         this.description = description.toLowerCase(Locale.US);
         this.builderPushed = false;
         this.configBuilt = false;
+        BUILDER.push(this.description);
     }
 
     @Override
-    public boolean isUsingTomlConfig() {
-        return true;
-    }
+    public void load() {}
 
     @Override
-    public void load() {
+    public void postLoad() {
         if(!this.configBuilt) {
+            BUILDER.pop();
             SPEC = BUILDER.build();
             SPEC.setConfig(config);
         }
@@ -57,18 +62,26 @@ public class PulsarConfig implements IConfiguration
     }
 
     @Override
-    public void pushBuilder() {
-        if(!builderPushed) BUILDER.push(this.description);
+    public boolean isModuleEnabled(@Nonnull PulseMeta meta) {
+        ForgeConfigSpec.BooleanValue entry = modules.get(meta.getId());
 
-        builderPushed = true;
+        if (entry == null) {
+            modules.put(meta.getId(), BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled()));
+            return meta.isEnabled();
+        } else {
+            return entry.get();
+        }
     }
 
     @Override
-    public void popBuilder() {
-        BUILDER.pop();
+    public void addPulse(@Nonnull PulseMeta meta) {
+        ForgeConfigSpec.BooleanValue entry = modules.get(meta.getId());
+        if (entry == null) {
+            modules.put(meta.getId(), BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled()));
+        }
     }
 
-    @Override
+    /*@Override
     public boolean isModuleEnabled(ForgeConfigSpec.BooleanValue configValue) {
         return configValue.get();
     }
@@ -78,7 +91,7 @@ public class PulsarConfig implements IConfiguration
         ForgeConfigSpec.BooleanValue value = BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled());
 
         return value;
-    }
+    }*/
 
     @Override
     public void flush() {
