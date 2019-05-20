@@ -31,4 +31,12 @@ public class ModuleFileRepository extends FileRepository {
 				.filter((section)->section.module.isEmpty() || manager.test(section.module))
 				.collect(Collectors.toList());
 	}
+
+	/**
+	 * Gets the manager used to determine if a module is available
+	 * @return  Predicate to test a module availability
+	 */
+	public Predicate<String> getManager() {
+		return manager;
+	}
 }
