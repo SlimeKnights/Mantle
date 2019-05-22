@@ -1,18 +1,16 @@
 package slimeknights.mantle.network.book;
 
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.client.book.BookHelper;
-import slimeknights.mantle.network.AbstractPacket;
 
-public class PacketUpdateSavedPage extends AbstractPacket {
+import java.util.function.Supplier;
+
+public class PacketUpdateSavedPage {
 
   private String pageName;
 
@@ -24,33 +22,29 @@ public class PacketUpdateSavedPage extends AbstractPacket {
     this.pageName = pageName;
   }
 
-  @Override
-  public IMessage handleClient(NetHandlerPlayClient netHandler) {
-    return null;
+  public static void encode(PacketUpdateSavedPage msg, PacketBuffer buf) {
+    buf.writeString(msg.pageName);
   }
 
-  @Override
-  public IMessage handleServer(NetHandlerPlayServer netHandler) {
-    if (netHandler.player != null && pageName != null) {
-      EntityPlayer player = netHandler.player;
+  public static PacketUpdateSavedPage decode(PacketBuffer buf) {
+    return new PacketUpdateSavedPage(buf.readString(32767));
+  }
 
-      ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
+  public static class Handler {
+    public static void handle(final PacketUpdateSavedPage pkt, final Supplier<NetworkEvent.Context> ctx) {
+      ctx.get().enqueueWork(() -> {
+        if(ctx.get().getSender() != null && pkt.pageName != null) {
+          EntityPlayer player = ctx.get().getSender();
 
-      if(!is.isEmpty()) {
-        BookHelper.writeSavedPage(is, pageName);
-      }
+          ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
+
+          if(!is.isEmpty()) {
+            BookHelper.writeSavedPage(is, pkt.pageName);
+          }
+        }
+      });
+
+      ctx.get().setPacketHandled(true);
     }
-
-    return null;
-  }
-
-  @Override
-  public void fromBytes(ByteBuf buf) {
-    pageName = ByteBufUtils.readUTF8String(buf);
-  }
-
-  @Override
-  public void toBytes(ByteBuf buf) {
-    ByteBufUtils.writeUTF8String(buf, pageName);
   }
 }

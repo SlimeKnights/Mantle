@@ -1,11 +1,17 @@
 package slimeknights.mantle.network;
 
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A small network implementation/wrapper using AbstractPackets instead of IMessages.
@@ -13,51 +19,29 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class NetworkWrapper {
 
-  public final SimpleNetworkWrapper network;
-  protected final AbstactPacketHandler handler;
+  public final SimpleChannel network;
   private int id = 0;
+  private static final String PROTOCOL_VERSION = Integer.toString(1);
 
   public NetworkWrapper(String channelName) {
-    network = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
-    handler = new AbstactPacketHandler();
+    network = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(channelName))
+        .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+        .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+        .networkProtocolVersion(() -> PROTOCOL_VERSION)
+        .simpleChannel();
   }
 
-  /**
-   * Packet will be received on both client and server side.
-   */
-  public void registerPacket(Class<? extends AbstractPacket> packetClazz) {
-    registerPacketClient(packetClazz);
-    registerPacketServer(packetClazz);
+  public <MSG> void registerPacket(Class<MSG> packetClazz, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
+    network.registerMessage(id++, packetClazz, encoder, decoder, messageConsumer);
   }
 
-  /**
-   * Packet will only be received on the client side
-   */
-  public void registerPacketClient(Class<? extends AbstractPacket> packetClazz) {
-    registerPacketImpl(packetClazz, Side.CLIENT);
+  public void sendToServer(Object msg) {
+    network.sendToServer(msg);
   }
 
-  /**
-   * Packet will only be received on the server side
-   */
-  public void registerPacketServer(Class<? extends AbstractPacket> packetClazz) {
-    registerPacketImpl(packetClazz, Side.SERVER);
-  }
-
-  private void registerPacketImpl(Class<? extends AbstractPacket> packetClazz, Side side) {
-    network.registerMessage(handler, packetClazz, id++, side);
-  }
-
-  public static class AbstactPacketHandler implements IMessageHandler<AbstractPacket, IMessage> {
-
-    @Override
-    public IMessage onMessage(AbstractPacket packet, MessageContext ctx) {
-      if(ctx.side == Side.SERVER) {
-        return packet.handleServer(ctx.getServerHandler());
-      }
-      else {
-        return packet.handleClient(ctx.getClientHandler());
-      }
+  public void sendTo(Object msg, EntityPlayerMP player) {
+    if(!(player instanceof FakePlayer)) {
+      network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
   }
 }

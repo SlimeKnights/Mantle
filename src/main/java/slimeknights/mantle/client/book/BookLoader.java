@@ -53,7 +53,7 @@ public class BookLoader implements IResourceManagerReloadListener {
   private static final NetworkWrapper wrapper = new NetworkWrapper("mantle:books");
 
   public BookLoader() {
-    wrapper.registerPacketServer(PacketUpdateSavedPage.class);
+    wrapper.registerPacket(PacketUpdateSavedPage.class, PacketUpdateSavedPage::encode, PacketUpdateSavedPage::decode, PacketUpdateSavedPage.Handler::handle);
 
     // Register page types
     registerPageType("blank", ContentBlank.class);
