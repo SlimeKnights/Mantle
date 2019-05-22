@@ -26,11 +26,6 @@ public class ModelHelper {
   public static final TRSRTransformation BLOCK_THIRD_PERSON_RIGHT;
   public static final TRSRTransformation BLOCK_THIRD_PERSON_LEFT;
 
-  public static TextureAtlasSprite getTextureFromBlock(Block block, int meta) {
-    IBlockState state = block.getStateFromMeta(meta);
-    return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
-  }
-
   public static TextureAtlasSprite getTextureFromBlockstate(IBlockState state) {
     return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
   }

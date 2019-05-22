@@ -14,6 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -31,6 +32,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   protected boolean hasCustomName;
   protected int stackSizeLimit;
   protected IItemHandlerModifiable itemHandler;
+  protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
@@ -48,18 +50,14 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     this.stackSizeLimit = maxStackSize;
     this.inventoryTitle = name;
     this.itemHandler = new InvWrapper(this);
-  }
-
-  @Override
-  public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
-    return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-      return itemHandler.cast();
+      return itemHandlerCap.cast();
     }
     return super.getCapability(capability, facing);
   }
@@ -150,7 +148,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     }
 
     // split itemstack
-    itemStack = itemStack.splitStack(quantity);
+    itemStack = itemStack.split(quantity);
     // slot is empty, set to ItemStack.EMPTY
     // isn't this redundant to the above check?
     if(getStackInSlot(slot).getCount() == 0) {
@@ -252,7 +250,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     readInventoryFromNBT(tags);
 
     if(tags.contains("CustomName", 8)) {
-      this.inventoryTitle = tags.getString("CustomName");
+      this.inventoryTitle = ITextComponent.Serializer.fromJson(tags.getString("CustomName"));
     }
   }
 
@@ -266,7 +264,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     writeInventoryToNBT(tags);
 
     if(this.hasCustomName()) {
-      tags.putString("CustomName", this.inventoryTitle);
+      tags.putString("CustomName", ITextComponent.Serializer.toJson(this.inventoryTitle));
     }
     return tags;
   }

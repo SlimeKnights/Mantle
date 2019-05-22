@@ -5,6 +5,8 @@ import net.minecraft.util.math.MathHelper;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 // a vertical slider!
 @OnlyIn(Dist.CLIENT)
@@ -31,10 +33,12 @@ public class GuiWidgetSlider extends GuiWidget {
 
   protected boolean isScrolling;
   protected boolean isHighlighted;
+
   // where the slider was clicked on the slider itself (not on the bar, on the thing that slides)
   private int clickX;
   private int clickY;
   private boolean clickedBar; // if the bar has already been clicked and not released
+  private boolean useMouseWheel;
 
   public GuiWidgetSlider(GuiElement slider, GuiElement sliderHighlighted, GuiElement sliderDisabled, GuiElement slideBarTop, GuiElement slideBarBottom, GuiElementScalable slideBar) {
     this.slider = slider;
@@ -57,6 +61,7 @@ public class GuiWidgetSlider extends GuiWidget {
 
     enabled = true;
     hidden = false;
+    useMouseWheel = false;
   }
 
   /** Sets the height of the whole slider and slidebar */
@@ -150,18 +155,7 @@ public class GuiWidgetSlider extends GuiWidget {
     }
 
     boolean mouseDown = Minecraft.getInstance().mouseHelper.isLeftDown(); // left mouse button
-    int wheel = Mouse.getDWheel();
-
-    if(useMouseWheel) {
-      if(wheel > 0) {
-        decrement();
-        return;
-      }
-      else if(wheel < 0) {
-        increment();
-        return;
-      }
-    }
+    this.useMouseWheel = useMouseWheel;
 
     // relative position inside the widget
     int x = mouseX - xPos;
@@ -220,6 +214,26 @@ public class GuiWidgetSlider extends GuiWidget {
     }
     else {
       isHighlighted = false;
+    }
+  }
+
+  @SubscribeEvent
+  public void onGuiMouseEvent(GuiScreenEvent.MouseScrollEvent.Pre event) {
+    double dWheel = event.getScrollDelta();
+    double mouseX = event.getMouseX();
+    double mouseY = event.getMouseY();
+
+    if(useMouseWheel) {
+      if(dWheel > 0.0) {
+        decrement();
+        event.setCanceled(true);
+        return;
+      }
+      else if(dWheel < 0.0) {
+        increment();
+        event.setCanceled(true);
+        return;
+      }
     }
   }
 
