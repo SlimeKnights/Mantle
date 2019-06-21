@@ -1,18 +1,16 @@
 package slimeknights.mantle.client.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.awt.*;
-import java.io.IOException;
-
 // a sub-gui. Mostly the same as a separate GuiContainer, but doesn't do the calls that affect the game as if this were the only gui
 @OnlyIn(Dist.CLIENT)
-public abstract class GuiModule extends GuiContainer {
+public abstract class GuiModule extends ContainerScreen
+{
 
   protected final GuiMultiModule parent;
 

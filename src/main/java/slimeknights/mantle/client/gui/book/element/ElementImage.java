@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.gui.book.element;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -65,7 +65,7 @@ public class ElementImage extends SizedBookElement {
     if(image.item == null) {
       renderEngine.bindTexture(image.location);
 
-      drawScaledCustomSizeModalRect(x, y, image.u, image.v, image.uw, image.vh, width, height, image.texWidth, image.texHeight);
+      blit(x, y, image.u, image.v, image.uw, image.vh, width, height, image.texWidth, image.texHeight);
     } else {
       GlStateManager.pushMatrix();
       GlStateManager.scalef(width, height, 1F);

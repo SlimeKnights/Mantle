@@ -1,7 +1,7 @@
 package slimeknights.mantle.config;
 
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.network.play.ServerPlayNetHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.util.ArrayList;
@@ -20,13 +20,13 @@ public abstract class AbstractConfigSyncPacket extends AbstractPacket {
   protected abstract AbstractConfig getConfig();
 
   @Override
-  public IMessage handleClient(NetHandlerPlayClient netHandler) {
+  public IMessage handleClient(ClientPlayNetHandler netHandler) {
     sync();
     return null;
   }
 
   @Override
-  public IMessage handleServer(NetHandlerPlayServer netHandler) {
+  public IMessage handleServer(ServerPlayNetHandler netHandler) {
     // We sync from server to client, not vice versa
     throw new UnsupportedOperationException("Trying to sync client configs to the server. You registered the packet for the wrong side.");
   }

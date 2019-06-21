@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.gui.book.element;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.text.TextFormatting;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -34,7 +34,7 @@ public class ElementSection extends SizedBookElement {
       int iconX = x + WIDTH / 2 - IMG_SIZE / 2;
       int iconY = y + HEIGHT / 2 - IMG_SIZE / 2;
       if(hover) {
-        drawRect(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, parent.book.appearance.hoverColor);
+        fill(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, parent.book.appearance.hoverColor);
       }
       if(unlocked) {
         GlStateManager.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
@@ -49,7 +49,7 @@ public class ElementSection extends SizedBookElement {
         if(section.icon.location != null) {
           renderEngine.bindTexture(section.icon.location);
 
-          drawScaledCustomSizeModalRect(iconX, iconY, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
+          blit(iconX, iconY, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
         }
       } else {
         GlStateManager.pushMatrix();

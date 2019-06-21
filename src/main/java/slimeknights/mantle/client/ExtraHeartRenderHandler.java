@@ -1,14 +1,14 @@
 package slimeknights.mantle.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -27,7 +27,7 @@ import slimeknights.mantle.Mantle;
 public class ExtraHeartRenderHandler {
   private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
   private static final ResourceLocation ICON_ABSORB = new ResourceLocation(Mantle.modId, "textures/gui/absorb.png");
-  private static final ResourceLocation ICON_VANILLA = Gui.ICONS;
+  private static final ResourceLocation ICON_VANILLA = AbstractGui.GUI_ICONS_LOCATION;
 
   private final Minecraft mc = Minecraft.getInstance();
 
@@ -45,7 +45,7 @@ public class ExtraHeartRenderHandler {
   private static int left_height = 39;
 
   public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
-    Minecraft.getInstance().ingameGUI.drawTexturedModalRect(x, y, textureX, textureY, width, height);
+    Minecraft.getInstance().ingameGUI.blit(x, y, textureX, textureY, width, height);
   }
 
   /* HUD */
@@ -54,10 +54,10 @@ public class ExtraHeartRenderHandler {
     Entity renderViewEnity = this.mc.getRenderViewEntity();
     if(event.getType() != RenderGameOverlayEvent.ElementType.HEALTH
        || event.isCanceled()
-       || !(renderViewEnity instanceof EntityPlayer)) {
+       || !(renderViewEnity instanceof PlayerEntity)) {
       return;
     }
-    EntityPlayer player = (EntityPlayer)this.mc.getRenderViewEntity();
+    PlayerEntity player = (PlayerEntity)this.mc.getRenderViewEntity();
     
     // extra setup stuff from us
     left_height = GuiIngameForge.left_height;
@@ -115,7 +115,7 @@ public class ExtraHeartRenderHandler {
     if (rowHeight != 10) left_height += 10 - rowHeight;
 
     regen = -1;
-    if (player.isPotionActive(MobEffects.REGENERATION))
+    if (player.isPotionActive(Effects.REGENERATION))
     {
       regen = updateCounter % 25;
     }
@@ -123,8 +123,8 @@ public class ExtraHeartRenderHandler {
     final int TOP =  9 * (mc.world.getWorldInfo().isHardcore() ? 5 : 0);
     final int BACKGROUND = (highlight ? 25 : 16);
     int MARGIN = 16;
-    if (player.isPotionActive(MobEffects.POISON))      MARGIN += 36;
-    else if (player.isPotionActive(MobEffects.WITHER)) MARGIN += 72;
+    if (player.isPotionActive(Effects.POISON))      MARGIN += 36;
+    else if (player.isPotionActive(Effects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
     for (int i = MathHelper.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i)
@@ -186,7 +186,7 @@ public class ExtraHeartRenderHandler {
     mc.profiler.endSection();
   }
 
-  private void renderExtraHearts(int xBasePos, int yBasePos, EntityPlayer player) {
+  private void renderExtraHearts(int xBasePos, int yBasePos, PlayerEntity player) {
     int potionOffset = getPotionOffset(player);
 
     // Extra hearts
@@ -225,13 +225,13 @@ public class ExtraHeartRenderHandler {
     return i + offset == regen ? -2 : 0;
   }
 
-  private int getPotionOffset(EntityPlayer player) {
+  private int getPotionOffset(PlayerEntity player) {
     int potionOffset = 0;
-    PotionEffect potion = player.getActivePotionEffect(MobEffects.WITHER);
+    EffectInstance potion = player.getActivePotionEffect(Effects.WITHER);
     if(potion != null) {
       potionOffset = 18;
     }
-    potion = player.getActivePotionEffect(MobEffects.POISON);
+    potion = player.getActivePotionEffect(Effects.POISON);
     if(potion != null) {
       potionOffset = 9;
     }
@@ -241,7 +241,7 @@ public class ExtraHeartRenderHandler {
     return potionOffset;
   }
 
-  private void renderExtraAbsorption(int xBasePos, int yBasePos, EntityPlayer player) {
+  private void renderExtraAbsorption(int xBasePos, int yBasePos, PlayerEntity player) {
     int potionOffset = getPotionOffset(player);
 
     // Extra hearts

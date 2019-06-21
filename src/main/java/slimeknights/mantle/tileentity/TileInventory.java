@@ -1,18 +1,17 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.INameable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -55,7 +54,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+  public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       return itemHandlerCap.cast();
     }
@@ -211,16 +210,16 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Override
   public ITextComponent getDisplayName() {
     if(hasCustomName()) {
-      return new TextComponentString(getName().getFormattedText());
+      return new StringTextComponent(getName().getFormattedText());
     }
 
-    return new TextComponentTranslation(getName().getFormattedText());
+    return new TranslationTextComponent(getName().getFormattedText());
   }
 
 
   /* Supporting methods */
   @Override
-  public boolean isUsableByPlayer(@Nonnull EntityPlayer entityplayer) {
+  public boolean isUsableByPlayer(@Nonnull PlayerEntity entityplayer) {
     // block changed/got broken?
     if(world.getTileEntity(pos) != this || world.getBlockState(pos).getBlock() == Blocks.AIR) {
       return false;
@@ -232,18 +231,18 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   @Override
-  public void openInventory(@Nonnull EntityPlayer player) {
+  public void openInventory(@Nonnull PlayerEntity player) {
 
   }
 
   @Override
-  public void closeInventory(@Nonnull EntityPlayer player) {
+  public void closeInventory(@Nonnull PlayerEntity player) {
 
   }
 
   /* NBT */
   @Override
-  public void read(NBTTagCompound tags) {
+  public void read(CompoundNBT tags) {
     super.read(tags);
     this.resizeInternal(tags.getInt("InventorySize"));
 
@@ -256,7 +255,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
   @Nonnull
   @Override
-  public NBTTagCompound write(NBTTagCompound tags) {
+  public CompoundNBT write(CompoundNBT tags) {
     super.write(tags);
 
     tags.putInt("InventorySize", inventory.size());
@@ -270,13 +269,13 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   /** Writes the contents of the inventory to the tag */
-  public void writeInventoryToNBT(NBTTagCompound tag) {
+  public void writeInventoryToNBT(CompoundNBT tag) {
     IInventory inventory = this;
-    NBTTagList nbttaglist = new NBTTagList();
+    ListNBT nbttaglist = new ListNBT();
 
     for(int i = 0; i < inventory.getSizeInventory(); i++) {
       if(!inventory.getStackInSlot(i).isEmpty()) {
-        NBTTagCompound itemTag = new NBTTagCompound();
+        CompoundNBT itemTag = new CompoundNBT();
         itemTag.putByte("Slot", (byte) i);
         inventory.getStackInSlot(i).write(itemTag);
         nbttaglist.add(itemTag);
@@ -287,13 +286,13 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   }
 
   /** Reads a an inventory from the tag. Overwrites current content */
-  public void readInventoryFromNBT(NBTTagCompound tag) {
-    NBTTagList nbttaglist = tag.getList("Items", 10);
+  public void readInventoryFromNBT(CompoundNBT tag) {
+    ListNBT nbttaglist = tag.getList("Items", 10);
 
     int limit = getInventoryStackLimit();
     ItemStack stack;
     for(int i = 0; i < nbttaglist.size(); ++i) {
-      NBTTagCompound itemTag = nbttaglist.getCompound(i);
+      CompoundNBT itemTag = nbttaglist.getCompound(i);
       int slot = itemTag.getByte("Slot") & 255;
 
       if(slot >= 0 && slot < inventory.size()) {
@@ -310,21 +309,6 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Nonnull
   public ItemStack getStackInSlotOnClosing(int slot) {
     return ItemStack.EMPTY;
-  }
-
-  @Override
-  public int getField(int id) {
-    return 0;
-  }
-
-  @Override
-  public void setField(int id, int value) {
-
-  }
-
-  @Override
-  public int getFieldCount() {
-    return 0;
   }
 
   @Override

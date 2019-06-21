@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -88,7 +88,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   @Override
-  public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
+  public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
     // check if subcontainers are valid
     for(Container sub : subContainers) {
       if(!sub.canInteractWith(playerIn)) {
@@ -101,7 +101,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
 
 
   @Override
-  public void onContainerClosed(EntityPlayer playerIn) {
+  public void onContainerClosed(PlayerEntity playerIn) {
     for(Container sub : subContainers) {
       sub.onContainerClosed(playerIn);
     }
@@ -111,7 +111,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
 
   @Nonnull
   @Override
-  public ItemStack slotClick(int slotId, int dragType, ClickType type, EntityPlayer player) {
+  public ItemStack slotClick(int slotId, int dragType, ClickType type, PlayerEntity player) {
     if(slotId == -999 && type == ClickType.QUICK_CRAFT) {
       for(Container container : subContainers) {
         container.slotClick(slotId, dragType, type, player);
@@ -125,7 +125,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   // Takes submodules into account when shiftclicking!
   @Nonnull
   @Override
-  public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
     Slot slot = this.inventorySlots.get(index);
 
     if(slot == null || !slot.getHasStack()) {
@@ -178,7 +178,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   @Nonnull
-  protected ItemStack notifySlotAfterTransfer(EntityPlayer player, @Nonnull ItemStack stack, @Nonnull ItemStack original, Slot slot) {
+  protected ItemStack notifySlotAfterTransfer(PlayerEntity player, @Nonnull ItemStack stack, @Nonnull ItemStack original, Slot slot) {
     // notify slot
     slot.onSlotChange(stack, original);
 

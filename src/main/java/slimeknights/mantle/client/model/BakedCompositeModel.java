@@ -4,10 +4,10 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import java.util.List;
 import java.util.Random;
@@ -21,9 +21,9 @@ import javax.annotation.Nullable;
  */
 public class BakedCompositeModel extends BakedWrapper {
 
-  protected final ImmutableMap<Optional<EnumFacing>, ImmutableList<BakedQuad>> parts;
+  protected final ImmutableMap<Optional<Direction>, ImmutableList<BakedQuad>> parts;
 
-  public BakedCompositeModel(IBakedModel parent, ImmutableMap<Optional<EnumFacing>, ImmutableList<BakedQuad>> parts) {
+  public BakedCompositeModel(IBakedModel parent, ImmutableMap<Optional<Direction>, ImmutableList<BakedQuad>> parts) {
     super(parent);
 
     this.parts = parts;
@@ -31,7 +31,7 @@ public class BakedCompositeModel extends BakedWrapper {
 
   @Nonnull
   @Override
-  public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     return parts.get(Optional.fromNullable(side));
   }
 
@@ -46,14 +46,14 @@ public class BakedCompositeModel extends BakedWrapper {
       }
     }
 
-    public void add(IBakedModel model, IBlockState state, Random rand) {
+    public void add(IBakedModel model, BlockState state, Random rand) {
       add(model, state, null, rand);
-      for(EnumFacing side : EnumFacing.values()) {
+      for(Direction side : Direction.values()) {
         add(model, state, side, rand);
       }
     }
 
-    public void add(IBakedModel model, IBlockState state, EnumFacing side, Random rand) {
+    public void add(IBakedModel model, BlockState state, Direction side, Random rand) {
       int index;
       if(side == null) {
         index = 6;
@@ -66,10 +66,10 @@ public class BakedCompositeModel extends BakedWrapper {
     }
 
     public BakedCompositeModel build(IBakedModel parent) {
-      ImmutableMap.Builder<Optional<EnumFacing>, ImmutableList<BakedQuad>> map = ImmutableMap.builder();
+      ImmutableMap.Builder<Optional<Direction>, ImmutableList<BakedQuad>> map = ImmutableMap.builder();
 
-      map.put(Optional.<EnumFacing>absent(), builders[6].build());
-      for(EnumFacing side : EnumFacing.values()) {
+      map.put(Optional.<Direction>absent(), builders[6].build());
+      for(Direction side : Direction.values()) {
         map.put(Optional.of(side), builders[side.getIndex()].build());
       }
 

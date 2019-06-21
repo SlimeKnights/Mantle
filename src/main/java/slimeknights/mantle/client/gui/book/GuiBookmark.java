@@ -1,16 +1,15 @@
 package slimeknights.mantle.client.gui.book;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
 
 import slimeknights.mantle.client.book.data.BookmarkData;
 
-public class GuiBookmark extends GuiButton {
+public class GuiBookmark extends Button
+{
 
   private static final ResourceLocation TEX_BOOK = new ResourceLocation("mantle:textures/gui/book.png");
 
@@ -44,7 +43,7 @@ public class GuiBookmark extends GuiButton {
       float b = (data.color & 0xff) / 255.F;
 
       GlStateManager.color3f(r, g, b);
-      Gui.drawScaledCustomSizeModalRect(x, y, TEX_X, tex_y, WIDTH, HEIGHT, width, height, 512, 512);
+      AbstractGui.blit(x, y, TEX_X, tex_y, WIDTH, HEIGHT, width, height, 512, 512);
 
       if(data.text != null && !data.text.isEmpty()) {
         TextDataRenderer
@@ -54,7 +53,7 @@ public class GuiBookmark extends GuiButton {
       GlStateManager.color3f(1F, 1F, 1F);
 
       if(data.page.equals("ADD")) {
-        Gui.drawModalRectWithCustomSizedTexture(x + width / 2 - ADD_W / 2, y + height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
+        AbstractGui.blit(x + width / 2 - ADD_W / 2, y + height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
       }
     }
   }

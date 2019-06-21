@@ -1,19 +1,17 @@
 package slimeknights.mantle.client.gui.book;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nonnull;
 
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiArrow extends GuiButton {
-
+public class GuiArrow extends Button
+{
   private static final int X = 412;
 
   public static final int WIDTH = 18;
@@ -38,16 +36,16 @@ public class GuiArrow extends GuiButton {
       Minecraft minecraft = Minecraft.getInstance();
       minecraft.getTextureManager().bindTexture(TEX_BOOK);
 
-      this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+      this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
-      int color = this.hovered ? this.hoverColor : this.color;
+      int color = this.isHovered ? this.hoverColor : this.color;
 
       float r = ((color >> 16) & 0xff) / 255.F;
       float g = ((color >> 8) & 0xff) / 255.F;
       float b = (color & 0xff) / 255.F;
 
       GlStateManager.color3f(r, g, b);
-      Gui.drawScaledCustomSizeModalRect(x, y, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
+      AbstractGui.blit(x, y, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
       this.renderBg(minecraft, mouseX, mouseY);
     }
   }

@@ -3,10 +3,11 @@ package slimeknights.mantle.config;
 import com.google.common.reflect.TypeToken;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.registries.ForgeRegistries;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
@@ -23,7 +24,7 @@ public class BlockMeta {
       String val = configurationNode.getString();
       String[] parts = val.split(":");
 
-      Block block = Block.REGISTRY.getObject(new ResourceLocation(parts[0], parts[1]));
+      Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(parts[0], parts[1]));
       if(block == Blocks.AIR) {
         return MISSING;
       }
@@ -53,7 +54,7 @@ public class BlockMeta {
     this.metadata = metadata;
   }
 
-  public static BlockMeta of(IBlockState state) {
+  public static BlockMeta of(BlockState state) {
     return new BlockMeta(state.getBlock(), state.getBlock().getMetaFromState(state));
   }
 

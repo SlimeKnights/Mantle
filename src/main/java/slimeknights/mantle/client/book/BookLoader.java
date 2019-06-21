@@ -3,11 +3,11 @@ package slimeknights.mantle.client.book;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.IResourceManagerReloadListener;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -136,11 +136,11 @@ public class BookLoader implements IResourceManagerReloadListener {
     return info;
   }
 
-  public static void updateSavedPage(EntityPlayer player, ItemStack item, String page) {
+  public static void updateSavedPage(PlayerEntity player, ItemStack item, String page) {
     if(player == null) {
       return;
     }
-    if(player.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
+    if(player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
       return;
     }
 

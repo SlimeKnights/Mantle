@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.data;
 
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -150,7 +150,7 @@ public class PageData implements IDataItem {
     addSwap(DataLocation.class, new ValueHotswap<DataLocation>() {
       @Override
       public void swap(BookRepository source, DataLocation object) {
-        object.location = object.file == "$BLOCK_ATLAS" ? TextureMap.LOCATION_BLOCKS_TEXTURE : source
+        object.location = object.file == "$BLOCK_ATLAS" ? AtlasTexture.LOCATION_BLOCKS_TEXTURE : source
             .getResourceLocation(object.file, true);
       }
     }.getClass());

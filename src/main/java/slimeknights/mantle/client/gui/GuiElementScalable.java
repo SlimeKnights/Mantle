@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.gui;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,7 +22,7 @@ public class GuiElementScalable extends GuiElement {
     // remainder that doesn't fit total width
     int remainder = width % w;
     if(remainder > 0) {
-      GuiScreen.drawModalRectWithCustomSizedTexture(xPos + width - remainder, yPos, x, y, remainder, h, texW, texH);
+      Screen.blit(xPos + width - remainder, yPos, x, y, remainder, h, texW, texH);
     }
 
     return width;
@@ -35,7 +35,7 @@ public class GuiElementScalable extends GuiElement {
     // remainder that doesn't fit total width
     int remainder = height % h;
     if(remainder > 0) {
-      GuiScreen.drawModalRectWithCustomSizedTexture(xPos, yPos + height - remainder, x, y, w, remainder, texW, texH);
+      Screen.blit(xPos, yPos + height - remainder, x, y, w, remainder, texW, texH);
     }
 
     return w;
@@ -59,7 +59,7 @@ public class GuiElementScalable extends GuiElement {
     // remainder that doesn't fit total width
     int remainder = width % w;
     if(remainder > 0) {
-      GuiScreen.drawModalRectWithCustomSizedTexture(xPos + width - remainder, yPos, x, y, remainder, yRest, texW, texH);
+      Screen.blit(xPos + width - remainder, yPos, x, y, remainder, yRest, texW, texH);
     }
 
     return width;

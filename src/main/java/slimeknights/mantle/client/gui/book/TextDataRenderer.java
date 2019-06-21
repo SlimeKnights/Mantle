@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.gui.book;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -251,7 +251,7 @@ public class TextDataRenderer {
     float f5 = (float) (endColor >> 16 & 255) / 255.0F;
     float f6 = (float) (endColor >> 8 & 255) / 255.0F;
     float f7 = (float) (endColor & 255) / 255.0F;
-    GlStateManager.disableTexture2D();
+    GlStateManager.disableTexture();
     GlStateManager.disableAlphaTest();
     GlStateManager.blendFuncSeparate(770, 771, 1, 0);
     GlStateManager.shadeModel(7425);
@@ -265,7 +265,7 @@ public class TextDataRenderer {
     tessellator.draw();
     GlStateManager.shadeModel(7424);
     GlStateManager.enableAlphaTest();
-    GlStateManager.enableTexture2D();
+    GlStateManager.enableTexture();
   }
   //END METHODS FROM GUI
 }

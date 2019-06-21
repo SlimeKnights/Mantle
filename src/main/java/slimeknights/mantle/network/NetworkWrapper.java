@@ -1,6 +1,6 @@
 package slimeknights.mantle.network;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.FakePlayer;
@@ -39,7 +39,7 @@ public class NetworkWrapper {
     network.sendToServer(msg);
   }
 
-  public void sendTo(Object msg, EntityPlayerMP player) {
+  public void sendTo(Object msg, ServerPlayerEntity player) {
     if(!(player instanceof FakePlayer)) {
       network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }

@@ -2,18 +2,16 @@ package slimeknights.mantle.client.gui;
 
 import com.google.common.collect.Lists;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.awt.*;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +23,15 @@ import slimeknights.mantle.inventory.ContainerMultiModule;
 import slimeknights.mantle.inventory.SlotWrapper;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiMultiModule extends GuiContainer {
+public class GuiMultiModule extends ContainerScreen
+{
 
   // NEI-stuff >:(
   private static Field NEI_Manager;
 
   static {
     try {
-      NEI_Manager = GuiContainer.class.getDeclaredField("manager");
+      NEI_Manager = ContainerScreen.class.getDeclaredField("manager");
     } catch(NoSuchFieldException e) {
       NEI_Manager = null;
     }

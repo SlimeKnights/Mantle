@@ -1,10 +1,10 @@
 package slimeknights.mantle.client.gui.book.element;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.ITooltipFlag;
@@ -20,7 +20,8 @@ import java.util.List;
 import slimeknights.mantle.client.gui.book.GuiBook;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class BookElement extends Gui {
+public abstract class BookElement extends AbstractGui
+{
 
   public GuiBook parent;
 
@@ -108,17 +109,17 @@ public abstract class BookElement extends Gui {
       }
 
       int l = -267386864;
-      this.drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, l, l);
-      this.drawGradientRect(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, l, l);
-      this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, l, l);
-      this.drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, l, l);
-      this.drawGradientRect(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, l, l);
+      this.fillGradient(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, l, l);
+      this.fillGradient(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, l, l);
+      this.fillGradient(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, l, l);
+      this.fillGradient(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, l, l);
+      this.fillGradient(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, l, l);
       int i1 = 1347420415;
       int j1 = (i1 & 16711422) >> 1 | i1 & -16777216;
-      this.drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, i1, j1);
-      this.drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, i1, j1);
-      this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, i1, i1);
-      this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, j1, j1);
+      this.fillGradient(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, i1, j1);
+      this.fillGradient(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, i1, j1);
+      this.fillGradient(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, i1, i1);
+      this.fillGradient(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, j1, j1);
 
       for(int k1 = 0; k1 < textLines.size(); ++k1) {
         String s1 = textLines.get(k1);

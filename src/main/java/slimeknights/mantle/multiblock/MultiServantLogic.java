@@ -1,10 +1,10 @@
 package slimeknights.mantle.multiblock;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +19,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   boolean hasMaster;
   BlockPos master;
   Block masterBlock;
-  IBlockState state;
+  BlockState state;
 
   public MultiServantLogic(TileEntityType<?> tileEntityTypeIn) {
     super(tileEntityTypeIn);
@@ -105,7 +105,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
     }
   }
 
-  public void readCustomNBT(NBTTagCompound tags) {
+  public void readCustomNBT(CompoundNBT tags) {
     this.hasMaster = tags.getBoolean("hasMaster");
     if(this.hasMaster) {
       int xCenter = tags.getInt("xCenter");
@@ -117,7 +117,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
     }
   }
 
-  public NBTTagCompound writeCustomNBT(NBTTagCompound tags) {
+  public CompoundNBT writeCustomNBT(CompoundNBT tags) {
     tags.putBoolean("hasMaster", this.hasMaster);
     if(this.hasMaster) {
       tags.putInt("xCenter", this.master.getX());
@@ -130,14 +130,14 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   @Override
-  public void read(NBTTagCompound tags) {
+  public void read(CompoundNBT tags) {
     super.read(tags);
     this.readCustomNBT(tags);
   }
 
   @Nonnull
   @Override
-  public NBTTagCompound write(NBTTagCompound tags) {
+  public CompoundNBT write(CompoundNBT tags) {
     tags = super.write(tags);
     return this.writeCustomNBT(tags);
   }
@@ -145,17 +145,17 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   /* Packets */
   @Nonnull
   @Override
-  public NBTTagCompound getUpdateTag() {
-    NBTTagCompound tag = new NBTTagCompound();
+  public CompoundNBT getUpdateTag() {
+    CompoundNBT tag = new CompoundNBT();
     this.writeCustomNBT(tag);
     return tag;
   }
 
   @Override
-  public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
     this.readCustomNBT(packet.getNbtCompound());
     this.world.notifyLightSet(this.pos);
-    IBlockState state = world.getBlockState(this.pos);
+    BlockState state = world.getBlockState(this.pos);
     this.world.notifyBlockUpdate(this.pos, state, state, 3);
   }
 

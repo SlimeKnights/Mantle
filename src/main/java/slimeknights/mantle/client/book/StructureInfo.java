@@ -1,8 +1,8 @@
 package slimeknights.mantle.client.book;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.data.element.BlockData;
 
 public class StructureInfo {
-  public IBlockState[][][] data;
+  public BlockState[][][] data;
   public int blockCount = 0;
   public int[] countPerLevel;
   public int structureHeight = 0;
@@ -28,7 +28,7 @@ public class StructureInfo {
     this.structureWidth = width;
     this.structureHeight = height;
     this.structureLength = length;
-    IBlockState[][][] states = new IBlockState[height][length][width];
+    BlockState[][][] states = new BlockState[height][length][width];
 
     for(int y = 0; y < height; y++) {
       for(int x = 0; x < length; x++) {
@@ -47,12 +47,12 @@ public class StructureInfo {
     maxBlockIndex = blockIndex = structureHeight * structureLength * structureWidth;
   }
 
-  private IBlockState convert(BlockData data) {
+  private BlockState convert(BlockData data) {
     Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(data.block));
     if(block == null) {
       return Blocks.AIR.getDefaultState();
     }
-    IBlockState state;
+    BlockState state;
     if(data.state == null || data.state.isEmpty()) {
       state = block.getStateFromMeta(data.meta);
     }
@@ -70,7 +70,7 @@ public class StructureInfo {
     return state;
   }
 
-  private <T extends Comparable<T>> IBlockState setProperty(IBlockState state, IProperty<T> prop, String valueString) {
+  private <T extends Comparable<T>> BlockState setProperty(BlockState state, IProperty<T> prop, String valueString) {
     java.util.Optional<T> value = prop.parseValue(valueString);
     if(value.isPresent()) {
       state = state.with(prop, value.get());

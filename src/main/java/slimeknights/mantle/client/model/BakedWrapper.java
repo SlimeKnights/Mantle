@@ -2,13 +2,13 @@ package slimeknights.mantle.client.model;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.common.model.TRSRTransformation;
 
@@ -31,7 +31,7 @@ public class BakedWrapper implements IBakedModel {
 
   @Nonnull
   @Override
-  public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     return parent.getQuads(state, side, rand);
   }
 

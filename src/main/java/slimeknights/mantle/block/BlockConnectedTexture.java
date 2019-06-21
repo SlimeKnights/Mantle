@@ -3,10 +3,10 @@ package slimeknights.mantle.block;
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.state.StateContainer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
@@ -40,21 +40,21 @@ public class BlockConnectedTexture extends Block {
     }
 
     @Override
-    public IBlockState updatePostPlacement(IBlockState stateIn, EnumFacing facing, IBlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
 
       // Creates the state to use for the block. This is where we check if every side is
       // connectable or not.
 
-      return stateIn.with(CONNECTED_DOWN,  this.isSideConnectable(stateIn, worldIn, currentPos, EnumFacing.DOWN))
-                  .with(CONNECTED_EAST,  this.isSideConnectable(stateIn, worldIn, currentPos, EnumFacing.EAST))
-                  .with(CONNECTED_NORTH, this.isSideConnectable(stateIn, worldIn, currentPos, EnumFacing.NORTH))
-                  .with(CONNECTED_SOUTH, this.isSideConnectable(stateIn, worldIn, currentPos, EnumFacing.SOUTH))
-                  .with(CONNECTED_UP,    this.isSideConnectable(stateIn, worldIn, currentPos, EnumFacing.UP))
-                  .with(CONNECTED_WEST,  this.isSideConnectable(stateIn, worldIn, currentPos, EnumFacing.WEST));
+      return stateIn.with(CONNECTED_DOWN,  this.isSideConnectable(stateIn, worldIn, currentPos, Direction.DOWN))
+                  .with(CONNECTED_EAST,  this.isSideConnectable(stateIn, worldIn, currentPos, Direction.EAST))
+                  .with(CONNECTED_NORTH, this.isSideConnectable(stateIn, worldIn, currentPos, Direction.NORTH))
+                  .with(CONNECTED_SOUTH, this.isSideConnectable(stateIn, worldIn, currentPos, Direction.SOUTH))
+                  .with(CONNECTED_UP,    this.isSideConnectable(stateIn, worldIn, currentPos, Direction.UP))
+                  .with(CONNECTED_WEST,  this.isSideConnectable(stateIn, worldIn, currentPos, Direction.WEST));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
       builder.add(CONNECTED_DOWN, CONNECTED_UP, CONNECTED_NORTH, CONNECTED_SOUTH, CONNECTED_WEST, CONNECTED_EAST);
     }
 
@@ -68,8 +68,8 @@ public class BlockConnectedTexture extends Block {
      * @param side The side of the block to check.
      * @return Whether or not the side is connectable.
      */
-    private boolean isSideConnectable(IBlockState state, IWorld world, BlockPos pos, EnumFacing side) {
-      final IBlockState connected = world.getBlockState(pos.offset(side));
+    private boolean isSideConnectable(BlockState state, IWorld world, BlockPos pos, Direction side) {
+      final BlockState connected = world.getBlockState(pos.offset(side));
       return connected != null && canConnect(state, connected);
     }
 
@@ -79,7 +79,7 @@ public class BlockConnectedTexture extends Block {
      * @param connected BlockState to check
      * @return True if the block is valid to connect
      */
-    protected boolean canConnect(@Nonnull IBlockState original, @Nonnull IBlockState connected) {
+    protected boolean canConnect(@Nonnull BlockState original, @Nonnull BlockState connected) {
       return original.getBlock() == connected.getBlock();
     }
 }

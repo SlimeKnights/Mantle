@@ -1,7 +1,7 @@
 package slimeknights.mantle.network;
 
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.network.play.ServerPlayNetHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
@@ -9,9 +9,9 @@ import io.netty.buffer.ByteBuf;
 
 public abstract class AbstractPacket implements IMessage {
 
-  public abstract IMessage handleClient(NetHandlerPlayClient netHandler);
+  public abstract IMessage handleClient(ClientPlayNetHandler netHandler);
 
-  public abstract IMessage handleServer(NetHandlerPlayServer netHandler);
+  public abstract IMessage handleServer(ServerPlayNetHandler netHandler);
 
   protected void writePos(BlockPos pos, ByteBuf buf) {
     buf.writeInt(pos.getX());

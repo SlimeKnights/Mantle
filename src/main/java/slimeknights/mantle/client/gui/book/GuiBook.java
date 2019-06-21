@@ -2,29 +2,21 @@ package slimeknights.mantle.client.gui.book;
 
 import com.google.common.collect.ImmutableList;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementList;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.IProgressMeter;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.multiplayer.ClientAdvancementManager;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.CPacketClientStatus;
-import net.minecraft.stats.StatisticsManager;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +36,8 @@ import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOK;
 import static slimeknights.mantle.client.gui.book.Textures.TEX_BOOKFRONT;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiBook extends GuiScreen {
+public class GuiBook extends Screen
+{
 
   public static boolean debug = false;
 
@@ -66,7 +59,7 @@ public class GuiBook extends GuiScreen {
   public static int PAGE_HEIGHT;
 
   static{
-    init(); // initializes page width and height
+    initWidthsAndHeights(); // initializes page width and height
   }
 
   private GuiArrow previousArrow, nextArrow, backArrow, indexArrow;
@@ -81,7 +74,8 @@ public class GuiBook extends GuiScreen {
 
   public AdvancementCache advancementCache;
 
-  public static void init() {
+  //TODO: new name as vanilla now uses init
+  public static void initWidthsAndHeights() {
     PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
@@ -90,12 +84,12 @@ public class GuiBook extends GuiScreen {
     this.book = book;
     this.item = item;
 
-    this.mc = Minecraft.getInstance();
-    this.fontRenderer = mc.fontRenderer;
+    this.minecraft = Minecraft.getInstance();
+    this.font = minecraft.fontRenderer;
     init();
 
     advancementCache = new AdvancementCache();
-    this.mc.player.connection.getAdvancementManager().setListener(advancementCache);
+    this.minecraft.player.connection.getAdvancementManager().setListener(advancementCache);
 
     openPage(book.findPageNumber(BookHelper.getSavedPage(item), advancementCache));
   }
@@ -124,11 +118,11 @@ public class GuiBook extends GuiScreen {
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.mc.mainWindow.getFramebufferWidth() - leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.mainWindow.getFramebufferWidth() - leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((this.height - Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.mc.mainWindow.getFramebufferWidth() - 1 - topOffset()) / PAGE_SCALE);
+    return (int) ((this.height - Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.mainWindow.getFramebufferWidth() - 1 - topOffset()) / PAGE_SCALE);
   }
 
   @Override
@@ -137,11 +131,11 @@ public class GuiBook extends GuiScreen {
     init();
     FontRenderer fontRenderer = book.fontRenderer;
     if(fontRenderer == null) {
-      fontRenderer = mc.fontRenderer;
+      fontRenderer = minecraft.fontRenderer;
     }
 
     if(debug) {
-      drawRect(0, 0, fontRenderer.getStringWidth("DEBUG") + 4, fontRenderer.FONT_HEIGHT + 4, 0x55000000);
+      fill(0, 0, fontRenderer.getStringWidth("DEBUG") + 4, fontRenderer.FONT_HEIGHT + 4, 0x55000000);
       fontRenderer.drawString("DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
@@ -182,18 +176,18 @@ public class GuiBook extends GuiScreen {
     float coverG = ((book.appearance.coverColor >> 8) & 0xff) / 255.F;
     float coverB = (book.appearance.coverColor & 0xff) / 255.F;
 
-    TextureManager render = this.mc.textureManager;
+    TextureManager render = this.minecraft.textureManager;
 
     if(page == -1) {
       render.bindTexture(TEX_BOOKFRONT);
       RenderHelper.disableStandardItemLighting();
 
       GlStateManager.color3f(coverR, coverG, coverB);
-      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      blit(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
       GlStateManager.color3f(1F, 1F, 1F);
 
       if(!book.appearance.title.isEmpty()) {
-        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        blit(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
 
@@ -217,12 +211,12 @@ public class GuiBook extends GuiScreen {
       RenderHelper.disableStandardItemLighting();
 
       GlStateManager.color3f(coverR, coverG, coverB);
-      drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      blit(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
       GlStateManager.color3f(1F, 1F, 1F);
 
       if(page != 0) {
-        drawModalRectWithCustomSizedTexture(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        blit(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
         drawerTransform(false);
@@ -264,7 +258,7 @@ public class GuiBook extends GuiScreen {
 
       int fullPageCount = book.getFullPageCount(advancementCache);
       if(page < fullPageCount - 1 || book.getPageCount(advancementCache) % 2 != 0) {
-        drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        blit(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
         drawerTransform(true);
@@ -407,8 +401,8 @@ public class GuiBook extends GuiScreen {
   }
 
   @Override
-  public void initGui() {
-    super.initGui();
+  public void init() {
+    super.init();
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale, and of course half the size so that all our code still works as it should
     /*
@@ -635,8 +629,8 @@ public class GuiBook extends GuiScreen {
   }
 
   @Override
-  public void onGuiClosed() {
-    if(mc.player == null) {
+  public void removed() {
+    if(minecraft.player == null) {
       return;
     }
 

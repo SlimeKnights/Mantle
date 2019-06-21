@@ -1,101 +1,120 @@
 package slimeknights.mantle.config;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
 
 import slimeknights.mantle.network.NetworkWrapper;
 
-class ExampleSync {
+class ExampleSync
+{
 
   static NetworkWrapper networkWrapper;
+
   static ExampleSync INSTANCE;
 
-  static void setup() {
+  static void setup()
+  {
     networkWrapper = new NetworkWrapper("mantle:example");
-    networkWrapper.registerPacketClient(ExampleSyncPacketImpl.class);
+    networkWrapper.registerPacket(ExampleSyncPacketImpl.class, ExampleSyncPacketImpl::encode, ExampleSyncPacketImpl::decode, ExampleSyncPacketImpl.Handler::handle);
     INSTANCE = new ExampleSync();
   }
 
-  @SideOnly(Side.CLIENT)
+  @OnlyIn(Dist.CLIENT)
   private static boolean needsRestart;
 
   @SubscribeEvent
-  @SideOnly(Side.SERVER)
-  public void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-    if(event.player instanceof EntityPlayerMP && FMLCommonHandler.instance().getSide().isServer()) {
+  @OnlyIn(Dist.DEDICATED_SERVER)
+  public void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event)
+  {
+    if (event.getPlayer() instanceof ServerPlayerEntity && FMLEnvironment.dist.isDedicatedServer())
+    {
       ExampleSyncPacketImpl packet = new ExampleSyncPacketImpl();
-      networkWrapper.network.sendTo(packet, (EntityPlayerMP) event.player);
+      networkWrapper.sendTo(packet, (ServerPlayerEntity) event.getPlayer());
     }
   }
 
   @SubscribeEvent
-  @SideOnly(Side.CLIENT)
-  public void playerJoinedWorld(TickEvent.ClientTickEvent event) {
-    EntityPlayerSP player = Minecraft.getMinecraft().player;
-    if(needsRestart) {
-      player.sendMessage(new TextComponentString("Configs synced with server. Configs require a restart"));
+  @OnlyIn(Dist.CLIENT)
+  public void playerJoinedWorld(TickEvent.ClientTickEvent event)
+  {
+    ClientPlayerEntity player = Minecraft.getInstance().player;
+    if (needsRestart)
+    {
+      player.sendMessage(new StringTextComponent("Configs synced with server. Configs require a restart"));
     }
-    else {
-      player.sendMessage(new TextComponentString("Configs synced with server."));
+    else
+    {
+      player.sendMessage(new StringTextComponent("Configs synced with server."));
     }
     MinecraftForge.EVENT_BUS.unregister(this);
   }
 
-  static class ExampleConfig extends AbstractConfig {
+  static class ExampleConfig extends AbstractConfig
+  {
     static ExampleConfig INSTANCE = new ExampleConfig();
 
     ExampleConfigFile exampleConfigFile;
 
     // call from preinit or something
-    public void onPreInit(FMLPreInitializationEvent event) {
-      exampleConfigFile = this.load(new ExampleConfigFile(event.getModConfigurationDirectory()), ExampleConfigFile.class);
+    public void onPreInit(final FMLCommonSetupEvent event)
+    {
+      exampleConfigFile = this.load(new ExampleConfigFile(FMLPaths.CONFIGDIR.get().toFile()), ExampleConfigFile.class);
 
       // register this serverside to sync
-      if(event.getSide().isServer()) {
+      if (FMLEnvironment.dist.isDedicatedServer())
+      {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
       }
     }
   }
 
-  static class ExampleConfigFile extends AbstractConfigFile {
+  static class ExampleConfigFile extends AbstractConfigFile
+  {
 
-    public ExampleConfigFile(File configFolder) {
+    public ExampleConfigFile(File configFolder)
+    {
       super(configFolder, "exampleconfigfile");
     }
 
     @Override
-    public void insertDefaults() {
+    public void insertDefaults()
+    {
       // no default values that need to initialized dynamically
     }
 
     @Override
-    protected int getConfigVersion() {
+    protected int getConfigVersion()
+    {
       return 1;
     }
   }
 
-  static class ExampleSyncPacketImpl extends AbstractConfigSyncPacket {
+  static class ExampleSyncPacketImpl extends AbstractConfigSyncPacket
+  {
 
-    @Override
-    protected AbstractConfig getConfig() {
+    protected static AbstractConfig getConfig()
+    {
       return ExampleConfig.INSTANCE;
     }
 
     @Override
-    protected boolean sync() {
-      if(super.sync()) {
+    protected boolean sync()
+    {
+      if (super.sync())
+      {
         // clientside register only
         MinecraftForge.EVENT_BUS.register(INSTANCE);
         return true;

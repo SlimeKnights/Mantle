@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.model;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -10,9 +10,9 @@ import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
@@ -58,11 +58,11 @@ public class TRSRBakedModel implements IBakedModel {
   }
 
   /** Rotates around the Y axis and adjusts culling appropriately. South is default. */
-  public TRSRBakedModel(IBakedModel original, EnumFacing facing) {
+  public TRSRBakedModel(IBakedModel original, Direction facing) {
     this.original = original;
     this.override = new TRSROverride(this);
 
-    this.faceOffset = 4 + EnumFacing.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
+    this.faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
 
     double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90)/180d;
     TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float)r, 0));
@@ -71,7 +71,7 @@ public class TRSRBakedModel implements IBakedModel {
 
   @Nonnull
   @Override
-  public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, Random rand) {
+  public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand) {
     // transform quads obtained from parent
 
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
@@ -80,7 +80,7 @@ public class TRSRBakedModel implements IBakedModel {
       try {
         // adjust side to facing-rotation
         if(side != null && side.getHorizontalIndex() > -1) {
-          side = EnumFacing.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
+          side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
         }
         for(BakedQuad quad : original.getQuads(state, side, rand)) {
           Transformer transformer = new Transformer(transformation, quad.getFormat());
@@ -140,7 +140,7 @@ public class TRSRBakedModel implements IBakedModel {
 
     @Nonnull
     @Override
-    public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entity) {
+    public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull LivingEntity entity) {
       IBakedModel baked = model.original.getOverrides().getModelWithOverrides(originalModel, stack, world, entity);
 
       return new TRSRBakedModel(baked, model.transformation);
@@ -165,16 +165,16 @@ public class TRSRBakedModel implements IBakedModel {
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.EnumUsage usage = parent.getVertexFormat().getElement(element).getUsage();
+      VertexFormatElement.Usage usage = parent.getVertexFormat().getElement(element).getUsage();
 
       // transform normals and position
-      if(usage == VertexFormatElement.EnumUsage.POSITION && data.length >= 3) {
+      if(usage == VertexFormatElement.Usage.POSITION && data.length >= 3) {
         Vector4f vec = new Vector4f(data[0], data[1], data[2], 1f);
         transformation.transform(vec);
         data = new float[4];
         vec.get(data);
       }
-      else if(usage == VertexFormatElement.EnumUsage.NORMAL && data.length >= 3) {
+      else if(usage == VertexFormatElement.Usage.NORMAL && data.length >= 3) {
         Vector3f vec = new Vector3f(data);
         normalTransformation.transform(vec);
         vec.normalize();

@@ -4,7 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.passive.EntityVillager.PriceInfo;
+import net.minecraft.entity.merchant.villager.VillagerEntity.PriceInfo;
 import net.minecraft.item.ItemStack;
 
 public class TradeRandom extends TradeGeneric {

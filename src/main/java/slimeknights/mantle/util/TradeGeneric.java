@@ -3,15 +3,16 @@ package slimeknights.mantle.util;
 import java.util.Random;
 
 import javax.annotation.Nonnull;
-import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.passive.EntityVillager.PriceInfo;
-import net.minecraft.init.Items;
+import net.minecraft.entity.merchant.IMerchant;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity.PriceInfo;
+import net.minecraft.entity.merchant.villager.VillagerTrades;
+import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
-public class TradeGeneric implements EntityVillager.ITradeList {
+public class TradeGeneric implements VillagerTrades.ITrade {
   private ItemStack input, input2, output;
   private PriceInfo inputPrice, input2Price, outputPrice;
 

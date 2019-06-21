@@ -1,16 +1,16 @@
 package slimeknights.mantle.client.book;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Fluids;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.EnumLightType;
+import net.minecraft.world.LightType;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public class StructureBlockAccess implements IWorldReader
 {
   private final StructureInfo data;
-  private final IBlockState[][][] structure;
+  private final BlockState[][][] structure;
 
   public StructureBlockAccess(StructureInfo data) {
     this.data = data;
@@ -44,12 +44,12 @@ public class StructureBlockAccess implements IWorldReader
   }
 
   @Override
-  public int getLightFor(EnumLightType type, BlockPos pos) {
+  public int getLightFor(LightType type, BlockPos pos) {
     return 15 << 20 | 15 << 4;
   }
 
   @Override
-  public IBlockState getBlockState(BlockPos pos) {
+  public BlockState getBlockState(BlockPos pos) {
     int x = pos.getX();
     int y = pos.getY();
     int z = pos.getZ();
@@ -78,7 +78,7 @@ public class StructureBlockAccess implements IWorldReader
   }
 
   @Override
-  public int getStrongPower(BlockPos pos, EnumFacing direction) {
+  public int getStrongPower(BlockPos pos, Direction direction) {
     return 0;
   }
 
@@ -103,7 +103,7 @@ public class StructureBlockAccess implements IWorldReader
   }
 
   @Override
-  public EntityPlayer getClosestPlayer(double x, double y, double z, double distance, Predicate<Entity> predicate) {
+  public PlayerEntity getClosestPlayer(double x, double y, double z, double distance, Predicate<Entity> predicate) {
     return null;
   }
 

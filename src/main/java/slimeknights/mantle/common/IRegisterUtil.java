@@ -1,8 +1,8 @@
 package slimeknights.mantle.common;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -77,8 +77,8 @@ public interface IRegisterUtil {
    * @param block    Block to get item block
    * @return Registered item block
    */
-  default ItemBlock registerItemBlock(IForgeRegistry<Item> registry, Block block) {
-    ItemBlock itemBlock = new ItemBlock(block, new Item.Properties());
+  default BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block) {
+    BlockItem itemBlock = new BlockItem(block, new Item.Properties());
     return register(registry, itemBlock, block.getRegistryName());
   }
 
@@ -90,8 +90,8 @@ public interface IRegisterUtil {
    * @param group    Group for the item block
    * @return Registered item block
    */
-  default ItemBlock registerItemBlock(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
-    ItemBlock itemBlock = new ItemBlock(block, new Item.Properties().group(group));
+  default BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
+    BlockItem itemBlock = new BlockItem(block, new Item.Properties().group(group));
     return register(registry, itemBlock, block.getRegistryName());
   }
 
@@ -102,7 +102,7 @@ public interface IRegisterUtil {
    * @param itemBlock Item block instance to register
    * @return Registered item block
    */
-  default <T extends ItemBlock> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
+  default <T extends BlockItem> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
     return register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
   }
 
@@ -145,7 +145,7 @@ public interface IRegisterUtil {
    * @param blocks   Blocks needing item blocks
    * @return Registered item blocks
    */
-  default List<ItemBlock> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks) {
+  default List<BlockItem> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks) {
     return blocks.stream().map((block) -> {
       return registerItemBlock(registry, block);
     }).collect(Collectors.toList());
@@ -159,7 +159,7 @@ public interface IRegisterUtil {
    * @param group    Group for the item blocks
    * @return Registered item blocks
    */
-  default List<ItemBlock> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, ItemGroup group) {
+  default List<BlockItem> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, ItemGroup group) {
     return blocks.stream().map((block) -> {
       return registerItemBlock(registry, block, group);
     }).collect(Collectors.toList());
@@ -173,7 +173,7 @@ public interface IRegisterUtil {
    * @param constructor ItemBlock constructor
    * @return Registered item block
    */
-  default <T extends ItemBlock> List<T> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, Function<Block,T> constructor) {
+  default <T extends BlockItem> List<T> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, Function<Block,T> constructor) {
     return blocks.stream().map((block) -> {
       return registerItemBlock(registry, constructor.apply(block));
     }).collect(Collectors.toList());

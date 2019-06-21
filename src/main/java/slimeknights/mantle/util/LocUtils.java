@@ -3,7 +3,7 @@ package slimeknights.mantle.util;
 import com.google.common.collect.Lists;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Locale;
@@ -33,11 +33,11 @@ public abstract class LocUtils {
     int k;
     while((k = text.indexOf("\\n", j)) >= 0)
     {
-      list.add(new TextComponentString(text.substring(j, k)));
+      list.add(new StringTextComponent(text.substring(j, k)));
       j = k+2;
     }
 
-    list.add(new TextComponentString(text.substring(j, text.length())));
+    list.add(new StringTextComponent(text.substring(j, text.length())));
 
     return list;
   }

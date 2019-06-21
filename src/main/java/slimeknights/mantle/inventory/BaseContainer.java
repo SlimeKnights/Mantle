@@ -3,21 +3,21 @@ package slimeknights.mantle.inventory;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.block.Blocks;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -46,7 +46,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     this(tile, null);
   }
 
-  public BaseContainer(T tile, EnumFacing invDir) {
+  public BaseContainer(T tile, Direction invDir) {
     this.tile = tile;
 
     if(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir).isPresent()) {
@@ -61,10 +61,10 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     this.originalBlock = world.getBlockState(pos).getBlock();
   }
 
-  public void syncOnOpen(EntityPlayerMP playerOpened) {
+  public void syncOnOpen(ServerPlayerEntity playerOpened) {
     // find another player that already has the gui for this tile open
-    WorldServer server = playerOpened.getServerWorld();
-    for(EntityPlayer player : server.playerEntities) {
+    ServerWorld server = playerOpened.getServerWorld();
+    for(PlayerEntity player : server.playerEntities) {
       if(player == playerOpened) {
         continue;
       }
@@ -92,14 +92,14 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
    * Called when the container is opened and another player already has a container for this tile open
    * Sync to the same state here.
    */
-  protected void syncWithOtherContainer(BaseContainer<T> otherContainer, EntityPlayerMP player) {
+  protected void syncWithOtherContainer(BaseContainer<T> otherContainer, ServerPlayerEntity player) {
   }
 
   /**
    * Called when the container is opened and no other player has it open.
    * Set the default state here.
    */
-  protected void syncNewContainer(EntityPlayerMP player) {
+  protected void syncNewContainer(ServerPlayerEntity player) {
   }
 
   public boolean sameGui(BaseContainer otherContainer) {
@@ -107,7 +107,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   @Override
-  public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
+  public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
     Block block = world.getBlockState(pos).getBlock();
     // does the block we interacted with still exist?
     if(block == Blocks.AIR || block != originalBlock) {
@@ -158,7 +158,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
    * @param xCorner         Default Value: 8
    * @param yCorner         Default Value: (rows - 4) * 18 + 103
    */
-  protected void addPlayerInventory(InventoryPlayer playerInventory, int xCorner, int yCorner) {
+  protected void addPlayerInventory(PlayerInventory playerInventory, int xCorner, int yCorner) {
     int index = 9;
 
     int start = this.inventorySlots.size();
@@ -190,7 +190,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   @Nonnull
   @Override
-  public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
     // we can only support inventory <-> playerInventory
     if(playerInventoryStart < 0) {
       // so we don't do anything if no player inventory is present because we don't know what to do

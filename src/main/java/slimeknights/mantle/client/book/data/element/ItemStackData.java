@@ -4,18 +4,17 @@ import com.google.gson.JsonObject;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.arguments.ItemArgument;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
@@ -77,11 +76,11 @@ public class ItemStackData {
     }
 
     if(isMissingItem) {
-      NBTTagCompound display = itemStack.getOrCreateChildTag("display");
+      CompoundNBT display = itemStack.getOrCreateChildTag("display");
       display.putString("Name", "\u00A7rUnknown Item");
-      NBTTagList lore = new NBTTagList();
-      lore.add(new NBTTagString("\u00A7r\u00A7eItem Name:"));
-      lore.add(new NBTTagString("\u00A7r\u00A7e" + id));
+      ListNBT lore = new ListNBT();
+      lore.add(new StringNBT("\u00A7r\u00A7eItem Name:"));
+      lore.add(new StringNBT("\u00A7r\u00A7e" + id));
       display.put("Lore", lore);
     }
 
@@ -97,7 +96,7 @@ public class ItemStackData {
     data.id = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
     data.amount = (byte) stack.getCount();
     if(!ignoreNbt && stack.getTag() != null) {
-      data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), NBTTagCompound.class).getAsJsonObject();
+      data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), CompoundNBT.class).getAsJsonObject();
     }
 
     return data;

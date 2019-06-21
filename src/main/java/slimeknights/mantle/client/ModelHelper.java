@@ -2,8 +2,7 @@ package slimeknights.mantle.client;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -26,7 +25,7 @@ public class ModelHelper {
   public static final TRSRTransformation BLOCK_THIRD_PERSON_RIGHT;
   public static final TRSRTransformation BLOCK_THIRD_PERSON_LEFT;
 
-  public static TextureAtlasSprite getTextureFromBlockstate(IBlockState state) {
+  public static TextureAtlasSprite getTextureFromBlockstate(BlockState state) {
     return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
   }
 

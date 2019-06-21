@@ -1,14 +1,14 @@
 package slimeknights.mantle.client.gui.book.element;
 
-import net.minecraft.block.state.IBlockState;
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -220,18 +220,18 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
     }
     int iterator = 0;
 
-    mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+    mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
     for(int h = 0; h < structureData.structureHeight; h++) {
       for(int l = 0; l < structureData.structureLength; l++) {
         for(int w = 0; w < structureData.structureWidth; w++) {
           BlockPos pos = new BlockPos(l, h, w);
           if(!blockAccess.isAirBlock(pos)) {
-            IBlockState state = blockAccess.getBlockState(pos);
+            BlockState state = blockAccess.getBlockState(pos);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             Random random = new Random();
-            blockRender.renderBlock(state, pos, blockAccess, buffer, random);
+            blockRender.renderBlock(state, pos, blockAccess, buffer, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
             tessellator.draw();
           }
         }

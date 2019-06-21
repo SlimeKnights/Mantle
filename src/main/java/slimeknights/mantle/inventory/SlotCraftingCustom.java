@@ -1,16 +1,17 @@
 package slimeknights.mantle.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.container.CraftingResultSlot;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class SlotCraftingCustom extends SlotCrafting {
+public class SlotCraftingCustom extends CraftingResultSlot
+{
 
-  private final InventoryCrafting craftMatrix;
+  private final CraftingInventory craftMatrix;
   private final IContainerCraftingCustom callback;
 
   /**
@@ -19,7 +20,7 @@ public class SlotCraftingCustom extends SlotCrafting {
    * @param craftingInventory Inventory where the ingredients are taken from
    * @param craftResult       Inventory where the result is put
    */
-  public SlotCraftingCustom(IContainerCraftingCustom callback, EntityPlayer player, InventoryCrafting craftingInventory, IInventory craftResult, int slotIndex, int xPosition, int yPosition) {
+  public SlotCraftingCustom(IContainerCraftingCustom callback, PlayerEntity player, CraftingInventory craftingInventory, IInventory craftResult, int slotIndex, int xPosition, int yPosition) {
     super(player, craftingInventory, craftResult, slotIndex, xPosition, yPosition);
 
     this.craftMatrix = craftingInventory;
@@ -28,7 +29,7 @@ public class SlotCraftingCustom extends SlotCrafting {
 
   @Override
   @Nonnull
-  public ItemStack onTake(EntityPlayer playerIn, @Nonnull ItemStack stack) {
+  public ItemStack onTake(PlayerEntity playerIn, @Nonnull ItemStack stack) {
     net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, craftMatrix);
     this.onCrafting(stack);
 

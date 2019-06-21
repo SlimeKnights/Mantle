@@ -1,9 +1,9 @@
 package slimeknights.mantle.network.book;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 
 import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.client.book.BookHelper;
@@ -34,9 +34,9 @@ public class PacketUpdateSavedPage {
     public static void handle(final PacketUpdateSavedPage pkt, final Supplier<NetworkEvent.Context> ctx) {
       ctx.get().enqueueWork(() -> {
         if(ctx.get().getSender() != null && pkt.pageName != null) {
-          EntityPlayer player = ctx.get().getSender();
+          PlayerEntity player = ctx.get().getSender();
 
-          ItemStack is = player.getHeldItem(EnumHand.MAIN_HAND);
+          ItemStack is = player.getHeldItem(Hand.MAIN_HAND);
 
           if(!is.isEmpty()) {
             BookHelper.writeSavedPage(is, pkt.pageName);

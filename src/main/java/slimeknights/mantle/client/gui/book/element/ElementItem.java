@@ -1,8 +1,8 @@
 package slimeknights.mantle.client.gui.book.element;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

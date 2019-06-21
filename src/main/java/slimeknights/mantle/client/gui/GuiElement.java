@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.gui;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -57,7 +57,7 @@ public class GuiElement {
    * @param yPos Y-Coordinate on the screen
    */
   public int draw(int xPos, int yPos) {
-    GuiScreen.drawModalRectWithCustomSizedTexture(xPos, yPos, x, y, w, h, texW, texH);
+    Screen.blit(xPos, yPos, x, y, w, h, texW, texH);
     return w;
   }
 
