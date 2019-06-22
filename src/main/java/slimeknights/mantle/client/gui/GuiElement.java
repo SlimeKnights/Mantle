@@ -25,7 +25,7 @@ public class GuiElement {
 
   public GuiElement(int x, int y, int w, int h, int texW, int texH) {
     this(x, y, w, h);
-    setTextureSize(texW, texH);
+    this.setTextureSize(texW, texH);
 
     defaultTexW = texW;
     defaultTexH = texH;
@@ -36,14 +36,12 @@ public class GuiElement {
     this.y = y;
     this.w = w;
     this.h = h;
-    setTextureSize(defaultTexW, defaultTexH);
+    this.setTextureSize(defaultTexW, defaultTexH);
   }
 
-  public GuiElement setTextureSize(int w, int h) {
-    texW = w;
-    texH = h;
-
-    return this;
+  public void setTextureSize(int w, int h) {
+    this.texW = w;
+    this.texH = h;
   }
 
   public GuiElement shift(int xd, int yd) {
@@ -57,8 +55,8 @@ public class GuiElement {
    * @param yPos Y-Coordinate on the screen
    */
   public int draw(int xPos, int yPos) {
-    Screen.blit(xPos, yPos, x, y, w, h, texW, texH);
-    return w;
+    Screen.blit(xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
+    return this.w;
   }
 
   public static class Builder {

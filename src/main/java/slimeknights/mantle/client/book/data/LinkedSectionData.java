@@ -11,35 +11,35 @@ public class LinkedSectionData extends SectionData {
 
     @Override
     public void load() {
-        pages.clear();
+        this.pages.clear();
 
-        name = name.toLowerCase();
+        this.name = this.name.toLowerCase();
 
-        for(SectionData section : sections){
-            section.parent = parent;
-            section.unnamedPageCounter = unnamedPageCounter;
+        for(SectionData section : this.sections){
+            section.parent = this.parent;
+            section.unnamedPageCounter = this.unnamedPageCounter;
             section.load();
-            unnamedPageCounter = section.unnamedPageCounter;
+            this.unnamedPageCounter = section.unnamedPageCounter;
 
-            pages.addAll(section.pages);
+            this.pages.addAll(section.pages);
         }
 
-        icon.location = source.getResourceLocation(icon.file, true);
+        this.icon.location = this.source.getResourceLocation(this.icon.file, true);
     }
 
     public void addSection(SectionData data){
-        if(!data.name.equalsIgnoreCase(name) && !sections.isEmpty()){
+        if(!data.name.equalsIgnoreCase(this.name) && !this.sections.isEmpty()){
             throw new IllegalArgumentException("Linked sections must contain all sections of the same name.");
         }
 
-        if(sections.isEmpty()){
-            name = data.name;
-            icon = data.icon;
-            hideWhenLocked = data.hideWhenLocked;
+        if(this.sections.isEmpty()){
+            this.name = data.name;
+            this.icon = data.icon;
+            this.hideWhenLocked = data.hideWhenLocked;
 
         }
 
-        requirements.addAll(data.requirements);
-        sections.add(data);
+        this.requirements.addAll(data.requirements);
+        this.sections.add(data);
     }
 }

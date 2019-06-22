@@ -11,12 +11,12 @@ public class ElementArrow extends ElementButton {
   public ElementArrow(int id, IButtonClickHandler handler, int x, int y, GuiArrow.ArrowType arrowType, int arrowColor, int arrowColorHover) {
     super(id, x, y, arrowType.w, arrowType.h, handler);
 
-    button = new GuiArrow(id, x, y, arrowType, arrowColor, arrowColorHover);
+    this.button = new GuiArrow(id, x, y, arrowType, arrowColor, arrowColorHover);
   }
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    button.render(mouseX, mouseY, partialTicks);
+    this.button.render(mouseX, mouseY, partialTicks);
   }
 
 }

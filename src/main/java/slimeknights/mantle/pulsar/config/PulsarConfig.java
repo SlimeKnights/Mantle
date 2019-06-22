@@ -21,7 +21,7 @@ public class PulsarConfig implements IConfiguration
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    private ForgeConfigSpec SPEC = BUILDER.build();
+    private ForgeConfigSpec SPEC = this.BUILDER.build();
 
     private final CommentedFileConfig config;
 
@@ -40,11 +40,11 @@ public class PulsarConfig implements IConfiguration
      * @param description The description for the group that the config entries will be placed in.
      */
     public PulsarConfig(String confName, String description) {
-        this.config = createConfig(FMLPaths.CONFIGDIR.get(), confName);
+        this.config = this.createConfig(FMLPaths.CONFIGDIR.get(), confName);
         this.description = description.toLowerCase(Locale.US);
         this.builderPushed = false;
         this.configBuilt = false;
-        BUILDER.push(this.description);
+        this.BUILDER.push(this.description);
     }
 
     @Override
@@ -53,20 +53,20 @@ public class PulsarConfig implements IConfiguration
     @Override
     public void postLoad() {
         if(!this.configBuilt) {
-            BUILDER.pop();
-            SPEC = BUILDER.build();
-            SPEC.setConfig(config);
+            this.BUILDER.pop();
+            this.SPEC = this.BUILDER.build();
+            this.SPEC.setConfig(this.config);
         }
 
-        configBuilt = true;
+        this.configBuilt = true;
     }
 
     @Override
     public boolean isModuleEnabled(@Nonnull PulseMeta meta) {
-        ForgeConfigSpec.BooleanValue entry = modules.get(meta.getId());
+        ForgeConfigSpec.BooleanValue entry = this.modules.get(meta.getId());
 
         if (entry == null) {
-            modules.put(meta.getId(), BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled()));
+            this.modules.put(meta.getId(), this.BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled()));
             return meta.isEnabled();
         } else {
             return entry.get();
@@ -75,9 +75,9 @@ public class PulsarConfig implements IConfiguration
 
     @Override
     public void addPulse(@Nonnull PulseMeta meta) {
-        ForgeConfigSpec.BooleanValue entry = modules.get(meta.getId());
+        ForgeConfigSpec.BooleanValue entry = this.modules.get(meta.getId());
         if (entry == null) {
-            modules.put(meta.getId(), BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled()));
+            this.modules.put(meta.getId(), this.BUILDER.comment(meta.getDescription()).worldRestart().define(meta.getId(), meta.isDefaultEnabled()));
         }
     }
 
@@ -95,7 +95,7 @@ public class PulsarConfig implements IConfiguration
 
     @Override
     public void flush() {
-        ((CommentedFileConfig)this.config).save();
+        this.config.save();
     }
 
     public CommentedFileConfig createConfig(Path configBasePath, String configName) {

@@ -57,7 +57,7 @@ public class ElementItem extends SizedBookElement {
   public ElementItem(int x, int y, float scale, ItemStack[] itemCycle, String action) {
     super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
-    NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(itemCycle.length, ItemStack.EMPTY);
+    NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(itemCycle.length, ItemStack.EMPTY);
     for(int i = 0; i < itemCycle.length; i++) {
       if(!itemCycle[i].isEmpty()) {
           nonNullStacks.set(i, itemCycle[i].copy());
@@ -71,24 +71,24 @@ public class ElementItem extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    renderTick++;
+    this.renderTick++;
 
-    if(renderTick > ITEM_SWITCH_TICKS) {
-      renderTick = 0;
-      currentItem++;
+    if(this.renderTick > ITEM_SWITCH_TICKS) {
+      this.renderTick = 0;
+      this.currentItem++;
 
-      if(currentItem >= itemCycle.size()) {
-        currentItem = 0;
+      if(this.currentItem >= this.itemCycle.size()) {
+        this.currentItem = 0;
       }
     }
 
     RenderHelper.enableGUIStandardItemLighting();
     GlStateManager.pushMatrix();
-    GlStateManager.translatef(x, y, 0);
-    GlStateManager.scalef(scale, scale, 1.0F);
+    GlStateManager.translatef(this.x, this.y, 0);
+    GlStateManager.scalef(this.scale, this.scale, 1.0F);
 
-    if(currentItem < itemCycle.size()) {
-      mc.getItemRenderer().renderItemAndEffectIntoGUI(itemCycle.get(currentItem), 0, 0);
+    if(this.currentItem < this.itemCycle.size()) {
+      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
     }
 
     GlStateManager.popMatrix();
@@ -97,23 +97,23 @@ public class ElementItem extends SizedBookElement {
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(isHovered(mouseX, mouseY) && currentItem < itemCycle.size()) {
-      if(tooltip != null) {
-        drawHoveringText(tooltip, mouseX, mouseY, fontRenderer);
+    if(this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
+      if(this.tooltip != null) {
+        this.drawHoveringText(this.tooltip, mouseX, mouseY, fontRenderer);
       }
       else {
-        renderToolTip(fontRenderer, itemCycle.get(currentItem), mouseX, mouseY);
+        this.renderToolTip(fontRenderer, this.itemCycle.get(this.currentItem), mouseX, mouseY);
       }
     }
   }
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
-    if(mouseButton == 0 && isHovered(mouseX, mouseY) && currentItem < itemCycle.size()) {
-      if(action != null) {
-        StringActionProcessor.process(action, parent);
+    if(mouseButton == 0 && this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
+      if(this.action != null) {
+        StringActionProcessor.process(this.action, this.parent);
       } else {
-        parent.itemClicked(itemCycle.get(currentItem));
+        this.parent.itemClicked(this.itemCycle.get(this.currentItem));
       }
     }
   }

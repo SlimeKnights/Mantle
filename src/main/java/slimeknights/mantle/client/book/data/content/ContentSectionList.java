@@ -13,7 +13,7 @@ public class ContentSectionList extends PageContent {
   protected ArrayList<SectionData> sections = new ArrayList<>();
 
   public boolean addSection(SectionData data) {
-    return sections.size() < 9 && sections.add(data);
+    return this.sections.size() < 9 && this.sections.add(data);
   }
 
   @Override
@@ -24,14 +24,14 @@ public class ContentSectionList extends PageContent {
     int ox = (GuiBook.PAGE_WIDTH - width) / 2;
     int oy = (GuiBook.PAGE_HEIGHT - height) / 2;
 
-    for(int i = 0; i < sections.size(); i++) {
+    for(int i = 0; i < this.sections.size(); i++) {
       int ix = i % 3;
       int iy = (int) Math.floor(i / 3F);
 
       int x = ox + ix * (ElementSection.WIDTH + 5);
       int y = oy + iy * (ElementSection.HEIGHT + 5);
 
-      list.add(new ElementSection(x, y, sections.get(i)));
+      list.add(new ElementSection(x, y, this.sections.get(i)));
     }
   }
 }

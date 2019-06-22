@@ -123,7 +123,7 @@ dependencies {
     //compile "codechicken:NotEnoughItems:${minecraft_version}-${NEI_version}:dev"
     //deobfCompile "mezz.jei:jei_${minecraft_version}:${jei_version}"
 	
-	compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+	//compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
 
     // Configuration
     shadow "ninja.leaping.configurate:configurate-hocon:${configurate_version}"

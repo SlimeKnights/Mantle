@@ -28,18 +28,18 @@ public class ContentStructure extends PageContent {
 
   @Override
   public void load() {
-    BookRepository repo = parent.source;
+    BookRepository repo = this.parent.source;
 
-    if(data == null || data.isEmpty()) {
+    if(this.data == null || this.data.isEmpty()) {
       return;
     }
 
-    ResourceLocation location = repo.getResourceLocation(data);
+    ResourceLocation location = repo.getResourceLocation(this.data);
 
     if(location != null && repo.resourceExists(location)) {
       ContentStructure structure = BookLoader.GSON
           .fromJson(repo.resourceToString(repo.getResource(location)), ContentStructure.class);
-      structure.parent = parent;
+      structure.parent = this.parent;
       structure.load();
       this.size = structure.size;
       this.structure = structure.structure;
@@ -50,30 +50,30 @@ public class ContentStructure extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
-    if(title == null || title.isEmpty()) {
+    if(this.title == null || this.title.isEmpty()) {
       y = 0;
     } else {
-      addTitle(list, title);
+      this.addTitle(list, this.title);
     }
 
     int offset = 0;
     int structureSizeX = GuiBook.PAGE_WIDTH;
     int structureSizeY = GuiBook.PAGE_HEIGHT - y - 10;
 
-    if(!StringUtils.isNullOrEmpty(text)) {
+    if(!StringUtils.isNullOrEmpty(this.text)) {
       offset = 15;
       structureSizeX -= 2*offset;
       structureSizeY -= 2*offset;
 
-      list.add(new ElementText(0, GuiBook.PAGE_HEIGHT - 10 - 2*offset, GuiBook.PAGE_WIDTH, 2*offset, text));
+      list.add(new ElementText(0, GuiBook.PAGE_HEIGHT - 10 - 2*offset, GuiBook.PAGE_WIDTH, 2*offset, this.text));
     }
 
-    if(size != null && size.length == 3 && structure != null && structure.length > 0) {
-      boolean showButtons = size[1] > 1;
+    if(this.size != null && this.size.length == 3 && this.structure != null && this.structure.length > 0) {
+      boolean showButtons = this.size[1] > 1;
       if(showButtons) {
         //structureSizeX -= GuiArrow.ArrowType.REFRESH.w;
       }
-      ElementStructure elementStructure = new ElementStructure(offset, y, structureSizeX, structureSizeY, size, structure);
+      ElementStructure elementStructure = new ElementStructure(offset, y, structureSizeX, structureSizeY, this.size, this.structure);
       list.add(elementStructure);
 
       if(showButtons) {

@@ -32,28 +32,28 @@ public class GuiBookmark extends Button
 
   @Override
   public void render(int mouseX, int mouseY, float partialTicks) {
-    if(visible) {
+    if(this.visible) {
       Minecraft minecraft = Minecraft.getInstance();
-      int tex_y = TEX_Y + HEIGHT * type;
+      int tex_y = TEX_Y + HEIGHT * this.type;
 
       minecraft.textureManager.bindTexture(TEX_BOOK);
 
-      float r = ((data.color >> 16) & 0xff) / 255.F;
-      float g = ((data.color >> 8) & 0xff) / 255.F;
-      float b = (data.color & 0xff) / 255.F;
+      float r = ((this.data.color >> 16) & 0xff) / 255.F;
+      float g = ((this.data.color >> 8) & 0xff) / 255.F;
+      float b = (this.data.color & 0xff) / 255.F;
 
       GlStateManager.color3f(r, g, b);
-      AbstractGui.blit(x, y, TEX_X, tex_y, WIDTH, HEIGHT, width, height, 512, 512);
+      AbstractGui.blit(this.x, this.y, TEX_X, tex_y, WIDTH, HEIGHT, this.width, this.height, 512, 512);
 
-      if(data.text != null && !data.text.isEmpty()) {
+      if(this.data.text != null && !this.data.text.isEmpty()) {
         TextDataRenderer
-            .drawScaledString(minecraft.fontRenderer, data.text, x + 1, y + height / 2 - minecraft.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
+            .drawScaledString(minecraft.fontRenderer, this.data.text, this.x + 1, this.y + this.height / 2 - minecraft.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
       }
 
       GlStateManager.color3f(1F, 1F, 1F);
 
-      if(data.page.equals("ADD")) {
-        AbstractGui.blit(x + width / 2 - ADD_W / 2, y + height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
+      if(this.data.page.equals("ADD")) {
+        AbstractGui.blit(this.x + this.width / 2 - ADD_W / 2, this.y + this.height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
       }
     }
   }

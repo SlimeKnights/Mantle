@@ -8,6 +8,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -42,50 +43,51 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   public List<Container> subContainers = Lists.newArrayList();
 
-  public BaseContainer(T tile) {
-    this(tile, null);
+  public BaseContainer(ContainerType<?> containerType, int windowId, T tile) {
+    this(containerType, windowId, tile, null);
   }
 
-  public BaseContainer(T tile, Direction invDir) {
+  public BaseContainer(ContainerType<?> containerType, int windowId, T tile, Direction invDir) {
+    super(containerType, windowId);
     this.tile = tile;
 
     if(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir).isPresent()) {
-      itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir);
+      this.itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir);
     }
     else {
-      itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new EmptyHandler());
+      this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new EmptyHandler());
     }
 
     this.world = tile.getWorld();
     this.pos = tile.getPos();
-    this.originalBlock = world.getBlockState(pos).getBlock();
+    this.originalBlock = this.world.getBlockState(this.pos).getBlock();
   }
 
   public void syncOnOpen(ServerPlayerEntity playerOpened) {
     // find another player that already has the gui for this tile open
     ServerWorld server = playerOpened.getServerWorld();
-    for(PlayerEntity player : server.playerEntities) {
+    for(PlayerEntity player : server.getPlayers()) {
       if(player == playerOpened) {
         continue;
       }
       if(player.openContainer instanceof BaseContainer) {
         if(this.sameGui((BaseContainer<T>) player.openContainer)) {
-          syncWithOtherContainer((BaseContainer<T>) player.openContainer, playerOpened);
+          this.syncWithOtherContainer((BaseContainer<T>) player.openContainer, playerOpened);
           return;
         }
       }
     }
 
     // no player has a container open for the tile
-    syncNewContainer(playerOpened);
+    this.syncNewContainer(playerOpened);
   }
 
   public T getTile() {
-    return tile;
+    return this.tile;
   }
 
   public IItemHandler getItemHandler() {
-    return itemHandler.orElse(new EmptyHandler());
+    return this.itemHandler.orElse(new EmptyHandler());
   }
 
   /**
@@ -108,16 +110,16 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
   @Override
   public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
-    Block block = world.getBlockState(pos).getBlock();
+    Block block = this.world.getBlockState(this.pos).getBlock();
     // does the block we interacted with still exist?
-    if(block == Blocks.AIR || block != originalBlock) {
+    if(block == Blocks.AIR || block != this.originalBlock) {
       return false;
     }
 
     // too far away from block?
-    return playerIn.getDistanceSq((double) pos.getX() + 0.5d,
-                                  (double) pos.getY() + 0.5d,
-                                  (double) pos.getZ() + 0.5d) <= maxDist;
+    return playerIn.getDistanceSq((double) this.pos.getX() + 0.5d,
+                                  (double) this.pos.getY() + 0.5d,
+                                  (double) this.pos.getZ() + 0.5d) <= this.maxDist;
   }
 
   @Nonnull
@@ -127,24 +129,24 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     return super.getInventory();
   }
 
-  public String getInventoryDisplayName() {
+  /*public String getInventoryDisplayName() {
     INameable nameable = null;
-    if (itemHandler.orElse(new EmptyHandler()) instanceof InvWrapper) {
-      nameable = ((InvWrapper) itemHandler.orElse(new EmptyHandler())).getInv();
+    if (this.itemHandler.orElse(new EmptyHandler()) instanceof InvWrapper) {
+      nameable = ((InvWrapper) this.itemHandler.orElse(new EmptyHandler())).getInv();
       // if the inventory doesn't have a name fall back to checking the tileentity
       if (nameable.getDisplayName() == null) {
         nameable = null;
       }
     }
-    if(nameable == null && tile instanceof INameable) {
-      nameable = (INameable) tile;
+    if(nameable == null && this.tile instanceof INameable) {
+      nameable = (INameable) this.tile;
     }
     if (nameable != null) {
       ITextComponent textName = nameable.getDisplayName();
       return textName != null ? textName.getFormattedText() : nameable.getName().toString();
     }
     return null;
-  }
+  }*/
 
   // standard yOffset calculation for chestlike inventories:
   // yOffset = (numRows - 4) * 18; (the -4 because of the 3 rows of inventory + 1 row of hotbar)
@@ -176,13 +178,13 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       index++;
     }
 
-    playerInventoryStart = start;
+    this.playerInventoryStart = start;
   }
 
   @Nonnull
   @Override
   protected Slot addSlot(Slot slotIn) {
-    if(playerInventoryStart >= 0) {
+    if(this.playerInventoryStart >= 0) {
       throw new SlimeknightException("BaseContainer: Player inventory has to be last slots. Add all slots before adding the player inventory.");
     }
     return super.addSlot(slotIn);
@@ -192,7 +194,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   @Override
   public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
     // we can only support inventory <-> playerInventory
-    if(playerInventoryStart < 0) {
+    if(this.playerInventoryStart < 0) {
       // so we don't do anything if no player inventory is present because we don't know what to do
       return ItemStack.EMPTY;
     }
@@ -207,14 +209,14 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       int end = this.inventorySlots.size();
 
       // Is it a slot in the main inventory? (aka not player inventory)
-      if(index < playerInventoryStart) {
+      if(index < this.playerInventoryStart) {
         // try to put it into the player inventory (if we have a player inventory)
-        if(!this.mergeItemStack(itemstack1, playerInventoryStart, end, true)) {
+        if(!this.mergeItemStack(itemstack1, this.playerInventoryStart, end, true)) {
           return ItemStack.EMPTY;
         }
       }
       // Slot is in the player inventory (if it exists), transfer to main inventory
-      else if(!this.mergeItemStack(itemstack1, 0, playerInventoryStart, false)) {
+      else if(!this.mergeItemStack(itemstack1, 0, this.playerInventoryStart, false)) {
         return ItemStack.EMPTY;
       }
 
@@ -232,9 +234,9 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
   @Override
   protected boolean mergeItemStack(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
-    boolean ret = mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
+    boolean ret = this.mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
     if(!stack.isEmpty() && stack.getCount() > 0) {
-      ret |= mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
+      ret |= this.mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
     }
     return ret;
   }

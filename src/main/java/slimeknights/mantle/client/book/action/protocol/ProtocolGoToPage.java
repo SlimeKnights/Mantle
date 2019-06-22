@@ -24,7 +24,7 @@ public class ProtocolGoToPage extends ActionProtocol {
     int pageNum = book.book.findPageNumber(param);
 
     if(pageNum >= 0) {
-      book.openPage(pageNum, returner);
+      book.openPage(pageNum, this.returner);
     }
   }
 }

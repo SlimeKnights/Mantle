@@ -30,10 +30,10 @@ public class SlotCraftingCustom extends CraftingResultSlot
   @Override
   @Nonnull
   public ItemStack onTake(PlayerEntity playerIn, @Nonnull ItemStack stack) {
-    net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, craftMatrix);
+    net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
     this.onCrafting(stack);
 
-    callback.onCrafting(playerIn, stack, craftMatrix);
+    this.callback.onCrafting(playerIn, stack, this.craftMatrix);
 
     return stack;
   }

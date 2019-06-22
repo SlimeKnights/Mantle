@@ -17,6 +17,7 @@ import slimeknights.mantle.client.gui.book.GuiBook;
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,25 +44,25 @@ public class BookData implements IDataItem {
   }
 
   public void reset() {
-    initialized = false;
+    this.initialized = false;
   }
 
   @Override
   public void load() {
-    if(initialized) {
+    if(this.initialized) {
       return;
     }
     Mantle.logger.info("Started loading book...");
     try {
-      initialized = true;
-      sections.clear();
-      appearance = new AppearanceData();
-      itemLinks.clear();
+      this.initialized = true;
+      this.sections.clear();
+      this.appearance = new AppearanceData();
+      this.itemLinks.clear();
 
-      for(BookRepository repo : repositories) {
+      for(BookRepository repo : this.repositories) {
         try {
           List<SectionData> repoContents = repo.getSections();
-          sections.addAll(repoContents);
+          this.sections.addAll(repoContents);
 
           for(SectionData section : repoContents) {
             section.source = repo;
@@ -73,7 +74,7 @@ public class BookData implements IDataItem {
           page.name = "errorenous";
           page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
           error.pages.add(page);
-          sections.add(error);
+          this.sections.add(error);
 
           e.printStackTrace();
         }
@@ -82,20 +83,20 @@ public class BookData implements IDataItem {
 
         if(repo.resourceExists(appearanceLocation)) {
           try {
-            appearance = BookLoader.GSON
+            this.appearance = BookLoader.GSON
                 .fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
           } catch(Exception e) {
             e.printStackTrace();
           }
         }
 
-        appearance.load();
+        this.appearance.load();
 
         ResourceLocation itemLinkLocation = repo.getResourceLocation("items.json");
 
         if(repo.resourceExists(itemLinkLocation)) {
           try {
-            itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON
+            this.itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON
                                                           .fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
           } catch(Exception e) {
             e.printStackTrace();
@@ -107,7 +108,7 @@ public class BookData implements IDataItem {
         if(repo.resourceExists(languageLocation)) {
           try {
             BufferedReader br = new BufferedReader(new InputStreamReader(repo.getResource(languageLocation)
-                                                                             .getInputStream(), "UTF-8"));
+                                                                             .getInputStream(), StandardCharsets.UTF_8));
 
             String next = br.readLine();
 
@@ -116,7 +117,7 @@ public class BookData implements IDataItem {
                 String key = next.substring(0, next.indexOf('='));
                 String value = next.substring(next.indexOf('=') + 1);
 
-                strings.put(key, value);
+                this.strings.put(key, value);
               }
 
               next = br.readLine();
@@ -126,12 +127,12 @@ public class BookData implements IDataItem {
         }
       }
 
-      for(int i = 0; i < sections.size(); i++){
-        SectionData section = sections.get(i);
+      for(int i = 0; i < this.sections.size(); i++){
+        SectionData section = this.sections.get(i);
         if(section.name == null)
           continue;
 
-        List<SectionData> matchingSections = sections.stream().filter(sect -> section.name.equalsIgnoreCase(sect.name)).collect(Collectors.toList());
+        List<SectionData> matchingSections = this.sections.stream().filter(sect -> section.name.equalsIgnoreCase(sect.name)).collect(Collectors.toList());
         if(matchingSections.size() < 2){
           continue;
         }
@@ -142,15 +143,14 @@ public class BookData implements IDataItem {
             linkedSection.addSection(match);
 
             if(match != section){
-              sections.remove(match);
+              this.sections.remove(match);
             }
           }
 
-
-        sections.set(i, linkedSection);
+        this.sections.set(i, linkedSection);
       }
 
-      for(SectionData section : sections) {
+      for(SectionData section : this.sections) {
         if(section.source == null) {
           section.source = BookRepository.DUMMY;
         }
@@ -159,12 +159,12 @@ public class BookData implements IDataItem {
         section.load();
       }
 
-      for(BookTransformer transformer : transformers) {
+      for(BookTransformer transformer : this.transformers) {
         transformer.transform(this);
       }
 
       // Loads orphaned sections, unless something went wrong, that would only be sections added by a transformer
-      for(SectionData section : sections) {
+      for(SectionData section : this.sections) {
         if(section.source == null) {
           section.source = BookRepository.DUMMY;
         }
@@ -191,11 +191,11 @@ public class BookData implements IDataItem {
   }
 
   public SectionData findSection(String name) {
-    return findSection(name, null);
+    return this.findSection(name, null);
   }
 
   public SectionData findSection(String name, GuiBook.AdvancementCache advancementCache) {
-    for(SectionData section : sections) {
+    for(SectionData section : this.sections) {
       section.update(advancementCache);
 
       if(section.name.equals(name.toLowerCase())) {
@@ -207,12 +207,12 @@ public class BookData implements IDataItem {
   }
 
   public int getFirstPageNumber(SectionData section) {
-    return getFirstPageNumber(section, null);
+    return this.getFirstPageNumber(section, null);
   }
 
   public int getFirstPageNumber(SectionData section, @Nullable GuiBook.AdvancementCache advancementCache) {
     int pages = 0;
-    for(SectionData sect : sections) {
+    for(SectionData sect : this.sections) {
       sect.update(advancementCache);
 
       if(section == sect) {
@@ -230,7 +230,7 @@ public class BookData implements IDataItem {
   }
 
   public PageData findPage(int number) {
-    return findPage(number, null);
+    return this.findPage(number, null);
   }
 
   public PageData findPage(int number, @Nullable GuiBook.AdvancementCache advancementCache) {
@@ -239,7 +239,7 @@ public class BookData implements IDataItem {
     }
 
     int pages = 0;
-    for(SectionData section : sections) {
+    for(SectionData section : this.sections) {
       section.update(advancementCache);
 
       if(!section.isUnlocked(advancementCache)) {
@@ -258,15 +258,15 @@ public class BookData implements IDataItem {
   }
 
   public PageData findPage(String location) {
-    return findPage(location, null);
+    return this.findPage(location, null);
   }
 
   public PageData findPage(String location, @Nullable GuiBook.AdvancementCache advancementCache) {
-    return findPage(findPageNumber(location, advancementCache));
+    return this.findPage(this.findPageNumber(location, advancementCache));
   }
 
   public int findPageNumber(String location) {
-    return findPageNumber(location, null);
+    return this.findPageNumber(location, null);
   }
 
   public int findPageNumber(String location, @Nullable GuiBook.AdvancementCache advancementCache) {
@@ -281,7 +281,7 @@ public class BookData implements IDataItem {
     String sectionName = location.substring(0, location.indexOf('.'));
     String pageName = location.substring(location.indexOf('.') + 1);
 
-    for(SectionData section : sections) {
+    for(SectionData section : this.sections) {
       section.update(advancementCache);
 
       if(!section.isUnlocked(advancementCache)) {
@@ -307,12 +307,12 @@ public class BookData implements IDataItem {
   }
 
   public int getPageCount() {
-    return getPageCount(null);
+    return this.getPageCount(null);
   }
 
   public int getPageCount(@Nullable GuiBook.AdvancementCache advancementCache) {
     int pages = 0;
-    for(SectionData section : sections) {
+    for(SectionData section : this.sections) {
       section.update(advancementCache);
 
       pages += section.isUnlocked(advancementCache) ? section.getPageCount() : 0;
@@ -321,15 +321,15 @@ public class BookData implements IDataItem {
   }
 
   public int getFullPageCount() {
-    return getFullPageCount(null);
+    return this.getFullPageCount(null);
   }
 
   public int getFullPageCount(@Nullable GuiBook.AdvancementCache advancementCache) {
-    return (int) Math.ceil((getPageCount(advancementCache) - 1) / 2F) + 1;
+    return (int) Math.ceil((this.getPageCount(advancementCache) - 1) / 2F) + 1;
   }
 
   public String getItemAction(ItemStackData item) {
-    for(ItemStackData.ItemLink link : itemLinks) {
+    for(ItemStackData.ItemLink link : this.itemLinks) {
       if(item.id.equals(link.item.id) && (!link.damageSensitive)) {
         return link.action;
       }
@@ -341,7 +341,7 @@ public class BookData implements IDataItem {
   public List<SectionData> getVisibleSections(GuiBook.AdvancementCache advancementCache) {
     List<SectionData> visible = new ArrayList<>();
 
-    for(SectionData section : sections) {
+    for(SectionData section : this.sections) {
       if(section.isUnlocked(advancementCache) || !section.hideWhenLocked) {
         visible.add(section);
       }
@@ -352,13 +352,13 @@ public class BookData implements IDataItem {
 
 
   public String translate(String string) {
-    String out = strings.get(string);
+    String out = this.strings.get(string);
     return out != null ? out : string;
   }
 
   public void openGui(@Nullable ItemStack item) {
-    if(!initialized) {
-      load();
+    if(!this.initialized) {
+      this.load();
     }
     if(Minecraft.getInstance().player != null) {
       Minecraft.getInstance().displayGuiScreen(new GuiBook(this, item));
@@ -372,8 +372,8 @@ public class BookData implements IDataItem {
   }
 
   public void addTransformer(BookTransformer transformer) {
-    if(transformer != null && !transformers.contains(transformer)) {
-      transformers.add(transformer);
+    if(transformer != null && !this.transformers.contains(transformer)) {
+      this.transformers.add(transformer);
     }
   }
 }

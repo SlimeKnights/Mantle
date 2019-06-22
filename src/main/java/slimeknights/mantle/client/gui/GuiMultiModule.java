@@ -6,9 +6,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -44,41 +46,41 @@ public class GuiMultiModule extends ContainerScreen
   public int realWidth;
   public int realHeight;
 
-  public GuiMultiModule(ContainerMultiModule container) {
-    super(container);
+  public GuiMultiModule(ContainerMultiModule container, PlayerInventory playerInventory, ITextComponent title) {
+    super(container, playerInventory, title);
 
-    realWidth = -1;
-    realHeight = -1;
+    this.realWidth = -1;
+    this.realHeight = -1;
   }
 
   protected void addModule(GuiModule module) {
-    modules.add(module);
+    this.modules.add(module);
   }
 
   public List<Rectangle2d> getModuleAreas() {
-    List<Rectangle2d> areas = new ArrayList<Rectangle2d>(modules.size());
-    for(GuiModule module : modules) {
+    List<Rectangle2d> areas = new ArrayList<Rectangle2d>(this.modules.size());
+    for(GuiModule module : this.modules) {
       areas.add(module.getArea());
     }
     return areas;
   }
 
   @Override
-  public void initGui() {
-    if(realWidth > -1) {
+  public void init() {
+    if(this.realWidth > -1) {
       // has to be reset before calling initGui so the position is getting retained
-      xSize = realWidth;
-      ySize = realHeight;
+      this.xSize = this.realWidth;
+      this.ySize = this.realHeight;
     }
-    super.initGui();
+    super.init();
 
     this.cornerX = this.guiLeft;
     this.cornerY = this.guiTop;
-    this.realWidth = xSize;
-    this.realHeight = ySize;
+    this.realWidth = this.xSize;
+    this.realHeight = this.ySize;
 
-    for(GuiModule module : modules) {
-      updateSubmodule(module);
+    for(GuiModule module : this.modules) {
+      this.updateSubmodule(module);
     }
 
     //this.guiLeft = this.guiTop = 0;
@@ -88,17 +90,17 @@ public class GuiMultiModule extends ContainerScreen
 
   @Override
   protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-    for(GuiModule module : modules) {
+    for(GuiModule module : this.modules) {
       module.handleDrawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
     }
   }
 
   @Override
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-    drawContainerName();
-    drawPlayerInventoryName();
+    this.drawContainerName();
+    this.drawPlayerInventoryName();
 
-    for(GuiModule module : modules) {
+    for(GuiModule module : this.modules) {
       // set correct state for the module
       GlStateManager.pushMatrix();
       GlStateManager.translatef(-this.guiLeft, -this.guiTop, 0.0F);
@@ -111,35 +113,35 @@ public class GuiMultiModule extends ContainerScreen
 
   protected void drawBackground(ResourceLocation background) {
     GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    this.mc.getTextureManager().bindTexture(background);
-    this.drawTexturedModalRect(cornerX, cornerY, 0, 0, realWidth, realHeight);
+    this.minecraft.getTextureManager().bindTexture(background);
+    this.blit(this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }
 
   protected void drawContainerName() {
-    ContainerMultiModule multiContainer = (ContainerMultiModule) this.inventorySlots;
-    String localizedName = multiContainer.getInventoryDisplayName();
+    ContainerMultiModule multiContainer = (ContainerMultiModule) this.container;
+    String localizedName = this.getTitle().getFormattedText();//multiContainer.getInventoryDisplayName();
     if(localizedName != null) {
-      this.fontRenderer.drawString(localizedName, 8, 6, 0x404040);
+      this.font.drawString(localizedName, 8, 6, 0x404040);
     }
   }
 
   protected void drawPlayerInventoryName() {
     String localizedName = Minecraft.getInstance().player.inventory.getDisplayName().getUnformattedComponentText();
-    this.fontRenderer.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
+    this.font.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
   }
 
   @Override
-  public void setWorldAndResolution(Minecraft mc, int width, int height) {
-    super.setWorldAndResolution(mc, width, height);
+  public void init(Minecraft mc, int width, int height) {
+    super.init(mc, width, height);
 
     // workaround for NEIs ASM hax. sigh.
     try {
-      for(GuiModule module : modules) {
-        module.setWorldAndResolution(mc, width, height);
+      for(GuiModule module : this.modules) {
+        module.init(mc, width, height);
         if(NEI_Manager != null) {
           NEI_Manager.set(module, NEI_Manager.get(this));
         }
-        updateSubmodule(module);
+        this.updateSubmodule(module);
       }
     } catch(IllegalAccessException e) {
       Mantle.logger.error(e);
@@ -147,33 +149,33 @@ public class GuiMultiModule extends ContainerScreen
   }
 
   @Override
-  public void onResize(@Nonnull Minecraft mc, int width, int height) {
-    super.onResize(mc, width, height);
+  public void resize(@Nonnull Minecraft mc, int width, int height) {
+    super.resize(mc, width, height);
 
-    for(GuiModule module : modules) {
-      module.onResize(mc, width, height);
-      updateSubmodule(module);
+    for(GuiModule module : this.modules) {
+      module.resize(mc, width, height);
+      this.updateSubmodule(module);
     }
   }
 
   @Override
   public void render(int mouseX, int mouseY, float partialTicks) {
-    this.drawDefaultBackground();
-    int oldX = guiLeft;
-    int oldY = guiTop;
-    int oldW = xSize;
-    int oldH = ySize;
+    this.renderBackground();
+    int oldX = this.guiLeft;
+    int oldY = this.guiTop;
+    int oldW = this.xSize;
+    int oldH = this.ySize;
 
-    guiLeft = cornerX;
-    guiTop = cornerY;
-    xSize = realWidth;
-    ySize = realHeight;
+    this.guiLeft = this.cornerX;
+    this.guiTop = this.cornerY;
+    this.xSize = this.realWidth;
+    this.ySize = this.realHeight;
     super.render(mouseX, mouseY, partialTicks);
     this.renderHoveredToolTip(mouseX, mouseY);
-    guiLeft = oldX;
-    guiTop = oldY;
-    xSize = oldW;
-    ySize = oldH;
+    this.guiLeft = oldX;
+    this.guiTop = oldY;
+    this.xSize = oldW;
+    this.ySize = oldH;
   }
 
 
@@ -197,16 +199,16 @@ public class GuiMultiModule extends ContainerScreen
       this.guiTop = module.guiTop;
     }
     if(module.guiRight() > this.guiLeft + this.xSize) {
-      xSize = module.guiRight() - this.guiLeft;
+      this.xSize = module.guiRight() - this.guiLeft;
     }
     if(module.guiBottom() > this.guiTop + this.ySize) {
-      ySize = module.guiBottom() - this.guiTop;
+      this.ySize = module.guiBottom() - this.guiTop;
     }
   }
 
   @Override
   public void drawSlot(Slot slotIn) {
-    GuiModule module = getModuleForSlot(slotIn.slotNumber);
+    GuiModule module = this.getModuleForSlot(slotIn.slotNumber);
 
     if(module != null) {
       Slot slot = slotIn;
@@ -230,7 +232,7 @@ public class GuiMultiModule extends ContainerScreen
 
   @Override
   public boolean isSlotSelected(Slot slotIn, double mouseX, double mouseY) {
-    GuiModule module = getModuleForSlot(slotIn.slotNumber);
+    GuiModule module = this.getModuleForSlot(slotIn.slotNumber);
 
     // mouse inside the module of the slot?
     if(module != null) {
@@ -250,7 +252,7 @@ public class GuiMultiModule extends ContainerScreen
 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-    GuiModule module = getModuleForPoint(mouseX, mouseY);
+    GuiModule module = this.getModuleForPoint(mouseX, mouseY);
     if(module != null) {
       if(module.handleMouseClicked(mouseX, mouseY, mouseButton)) {
         return false;
@@ -261,7 +263,7 @@ public class GuiMultiModule extends ContainerScreen
 
   @Override
   public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLastClick, double unkowwn) {
-    GuiModule module = getModuleForPoint(mouseX, mouseY);
+    GuiModule module = this.getModuleForPoint(mouseX, mouseY);
     if(module != null) {
       if(module.handleMouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)) {
         return false;
@@ -273,7 +275,7 @@ public class GuiMultiModule extends ContainerScreen
 
   @Override
   public boolean mouseReleased(double mouseX, double mouseY, int state) {
-    GuiModule module = getModuleForPoint(mouseX, mouseY);
+    GuiModule module = this.getModuleForPoint(mouseX, mouseY);
     if(module != null) {
       if(module.handleMouseReleased(mouseX, mouseY, state)) {
         return false;
@@ -284,7 +286,7 @@ public class GuiMultiModule extends ContainerScreen
   }
 
   protected GuiModule getModuleForPoint(double x, double y) {
-    for(GuiModule module : modules) {
+    for(GuiModule module : this.modules) {
       if(this.isPointInRegion(module.guiLeft, module.guiTop, module.guiRight(), module.guiBottom(),
                               x + this.cornerX, y + this.cornerY)) {
         return module;
@@ -295,12 +297,12 @@ public class GuiMultiModule extends ContainerScreen
   }
 
   protected GuiModule getModuleForSlot(int slotNumber) {
-    return getModuleForContainer(getContainer().getSlotContainer(slotNumber));
+    return this.getModuleForContainer(this.getContainer().getSlotContainer(slotNumber));
   }
 
   protected GuiModule getModuleForContainer(Container container) {
-    for(GuiModule module : modules) {
-      if(module.inventorySlots == container) {
+    for(GuiModule module : this.modules) {
+      if(module.getContainer() == container) {
         return module;
       }
     }
@@ -308,7 +310,8 @@ public class GuiMultiModule extends ContainerScreen
     return null;
   }
 
-  protected ContainerMultiModule getContainer() {
-    return (ContainerMultiModule) inventorySlots;
+  @Override
+  public ContainerMultiModule getContainer() {
+    return (ContainerMultiModule) this.container;
   }
 }

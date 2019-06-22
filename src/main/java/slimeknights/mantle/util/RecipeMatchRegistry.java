@@ -29,12 +29,12 @@ public class RecipeMatchRegistry {
       }
     }
 
-    return matches(nonNullStacks);
+    return this.matches(nonNullStacks);
   }
 
   // looks for a match in the given itemstacks
   public Optional<RecipeMatch.Match> matches(NonNullList<ItemStack> stacks) {
-    for(RecipeMatch recipe : items) {
+    for(RecipeMatch recipe : this.items) {
       Optional<RecipeMatch.Match> match = recipe.matches(stacks);
       if(match.isPresent()) {
         return match;
@@ -52,7 +52,7 @@ public class RecipeMatchRegistry {
 
     Optional<RecipeMatch.Match> matchOptional;
     int sum = 0;
-    while(sum < minAmount && (matchOptional = matches(stacks)).isPresent()) {
+    while(sum < minAmount && (matchOptional = this.matches(stacks)).isPresent()) {
       RecipeMatch.Match match = matchOptional.get();
       matches.add(match);
       RecipeMatch.removeMatch(stacks, match);
@@ -81,7 +81,7 @@ public class RecipeMatchRegistry {
 
     Optional<RecipeMatch.Match> matchOptional;
     int sum = 0;
-    while((matchOptional = matches(stacks)).isPresent()) {
+    while((matchOptional = this.matches(stacks)).isPresent()) {
       RecipeMatch.Match match = matchOptional.get();
       matches.add(match);
       RecipeMatch.removeMatch(stacks, match);
@@ -106,11 +106,11 @@ public class RecipeMatchRegistry {
    * @param amountMatched If both item and amount are present, how often did they match?
    */
   public void addItem(String oredictItem, int amountNeeded, int amountMatched) {
-    items.add(new RecipeMatch.Oredict(oredictItem, amountNeeded, amountMatched));
+    this.items.add(new RecipeMatch.Oredict(oredictItem, amountNeeded, amountMatched));
   }
 
   public void addItem(String oredictItem) {
-    addItem(oredictItem, 1, 1);
+    this.addItem(oredictItem, 1, 1);
   }
 
   /**
@@ -119,7 +119,7 @@ public class RecipeMatchRegistry {
    * @param amountMatched For how many matches the block counts (e.g. redstone dust = 1 match, Redstone block = 9)
    */
   public void addItem(Block block, int amountMatched) {
-    items.add(new RecipeMatch.Item(new ItemStack(block), 1, amountMatched));
+    this.items.add(new RecipeMatch.Item(new ItemStack(block), 1, amountMatched));
   }
 
   /**
@@ -130,7 +130,7 @@ public class RecipeMatchRegistry {
    * @param amountMatched If both item and amount are present, how often did they match?
    */
   public void addItem(Item item, int amountNeeded, int amountMatched) {
-    items.add(new RecipeMatch.Item(new ItemStack(item), amountNeeded, amountMatched));
+    this.items.add(new RecipeMatch.Item(new ItemStack(item), amountNeeded, amountMatched));
   }
 
   /**
@@ -141,18 +141,18 @@ public class RecipeMatchRegistry {
    * @param amountMatched If both item and amount are present, how often did they match?
    */
   public void addItem(ItemStack item, int amountNeeded, int amountMatched) {
-    items.add(new RecipeMatch.Item(item, amountNeeded, amountMatched));
+    this.items.add(new RecipeMatch.Item(item, amountNeeded, amountMatched));
   }
 
   /**
    * Associates an item with this material. Used for repairing and other.
    */
   public void addItem(Item item) {
-    addItem(item, 1, 1);
+    this.addItem(item, 1, 1);
   }
 
   public void addRecipeMatch(RecipeMatch match) {
-    items.add(match);
+    this.items.add(match);
   }
 
 

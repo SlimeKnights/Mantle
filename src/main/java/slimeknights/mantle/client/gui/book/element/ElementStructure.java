@@ -39,20 +39,20 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   public ElementStructure(int x, int y, int width, int height, int[] size, BlockData[] structure) {
     super(x, y, width, height);
     if(size.length == 3) {
-      scale = 100f / (float)IntStream.of(size).max().getAsInt();
+      this.scale = 100f / (float)IntStream.of(size).max().getAsInt();
 
       float sx = (float)width / (float)GuiBook.PAGE_WIDTH;
       float sy = (float)height / (float)GuiBook.PAGE_HEIGHT;
 
-      scale *= Math.min(sx, sy);
+      this.scale *= Math.min(sx, sy);
 
-      xTranslate = x + width / 2;// - (size[0] * scale) / 2;
-      yTranslate = y + height / 2;// - (size[1] * scale) / 2;
+      this.xTranslate = x + width / 2;// - (size[0] * scale) / 2;
+      this.yTranslate = y + height / 2;// - (size[1] * scale) / 2;
 
-      w = size[0] * scale;
-      h = size[1] * scale;
+      this.w = size[0] * this.scale;
+      this.h = size[1] * this.scale;
     }
-    init(size, structure);
+    this.init(size, structure);
   }
 
   boolean canTick = false;
@@ -68,12 +68,11 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   public void init(int[] size, BlockData[] data) {
     int yOff = 0;
 
-    structureData = new StructureInfo(size[0], size[1], size[2], data);
-    blockAccess = new StructureBlockAccess(structureData);
+    this.structureData = new StructureInfo(size[0], size[1], size[2], data);
+    this.blockAccess = new StructureBlockAccess(this.structureData);
 
-
-    rotX = 25;
-    rotY = -45;
+    this.rotX = 25;
+    this.rotY = -45;
 /*
     boolean canRenderFormed = multiblock.canRenderFormedStructure();
     //			yOff = (structureHeight-1)*12+structureWidth*5+structureLength*5+16;
@@ -147,38 +146,38 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(lastClick != null) {
+    if(this.lastClick != null) {
       if(Minecraft.getInstance().mouseHelper.isLeftDown() || Minecraft.getInstance().mouseHelper.isRightDown()) {
-        int dx = mouseX - lastClick[0];
-        int dy = mouseY - lastClick[1];
+        int dx = mouseX - this.lastClick[0];
+        int dy = mouseY - this.lastClick[1];
         float maxSpeed = 10f;
         float changeX = Math.min(maxSpeed, dx / 10f);
         float changeY = Math.min(maxSpeed, dy / 10f);
 
-        rotY += changeX;
-        rotX += changeY;
+        this.rotY += changeX;
+        this.rotX += changeY;
       }
       else {
-        lastClick = null;
+        this.lastClick = null;
       }
     }
 
-    if(canTick) {
-      if(++tick % 20 == 0) {
-        if(structureData.canStep() || ++fullStructureSteps >= 5) {
-          structureData.step();
-          fullStructureSteps = 0;
+    if(this.canTick) {
+      if(++this.tick % 20 == 0) {
+        if(this.structureData.canStep() || ++this.fullStructureSteps >= 5) {
+          this.structureData.step();
+          this.fullStructureSteps = 0;
         }
       }
     }
     else {
-      structureData.reset();
-      structureData.setShowLayer(9);
+      this.structureData.reset();
+      this.structureData.setShowLayer(9);
     }
 
-    int structureLength = structureData.structureLength;
-    int structureWidth = structureData.structureWidth;
-    int structureHeight = structureData.structureHeight;
+    int structureLength = this.structureData.structureLength;
+    int structureWidth = this.structureData.structureWidth;
+    int structureHeight = this.structureData.structureHeight;
 
     int xHalf = (structureWidth * 5 - structureLength * 5);
     int yOffPartial = (structureHeight - 1) * 16 + structureWidth * 8 + structureLength * 8;
@@ -196,13 +195,13 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
     final BlockRendererDispatcher blockRender = Minecraft.getInstance().getBlockRendererDispatcher();
 
     float f = (float) Math.sqrt(structureHeight * structureHeight + structureWidth * structureWidth + structureLength * structureLength);
-    yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * scale));
+    yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * this.scale));
     //GlStateManager.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
-    GlStateManager.translatef(xTranslate, yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    GlStateManager.translatef(this.xTranslate, this.yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
     // todo: translate where it actually needs to be and to counter z-layer of the book
-    GlStateManager.scalef(scale, -scale, 1);
-    GlStateManager.rotatef(rotX, 1, 0, 0);
-    GlStateManager.rotatef(rotY, 0, 1, 0);
+    GlStateManager.scalef(this.scale, -this.scale, 1);
+    GlStateManager.rotatef(this.rotX, 1, 0, 0);
+    GlStateManager.rotatef(this.rotY, 0, 1, 0);
 
     GlStateManager.translatef((float)structureLength/-2f, (float)structureHeight/-2f, (float)structureWidth/-2f);
 
@@ -220,18 +219,18 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
     }
     int iterator = 0;
 
-    mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-    for(int h = 0; h < structureData.structureHeight; h++) {
-      for(int l = 0; l < structureData.structureLength; l++) {
-        for(int w = 0; w < structureData.structureWidth; w++) {
+    this.mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+    for(int h = 0; h < this.structureData.structureHeight; h++) {
+      for(int l = 0; l < this.structureData.structureLength; l++) {
+        for(int w = 0; w < this.structureData.structureWidth; w++) {
           BlockPos pos = new BlockPos(l, h, w);
-          if(!blockAccess.isAirBlock(pos)) {
-            BlockState state = blockAccess.getBlockState(pos);
+          if(!this.blockAccess.isAirBlock(pos)) {
+            BlockState state = this.blockAccess.getBlockState(pos);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             Random random = new Random();
-            blockRender.renderBlock(state, pos, blockAccess, buffer, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+            blockRender.renderBlock(state, pos, this.blockAccess, buffer, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
             tessellator.draw();
           }
         }
@@ -269,13 +268,13 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
 
     //lastX = mouseX;
     //lastY = mouseY;
-    lastClick = new int[] {(int) mouseX, (int) mouseY};
+    this.lastClick = new int[] {(int) mouseX, (int) mouseY};
   }
 
   @Override
   public void mouseClickMove(double mouseX, double mouseY, int clickedMouseButton) {
-    int dx = (int) mouseX - lastX;
-    int dy = (int) mouseX - lastY;
+    int dx = (int) mouseX - this.lastX;
+    int dy = (int) mouseX - this.lastY;
 
     float maxSpeed = 1f;
     float changeX = Math.min(maxSpeed, dx/100f);
@@ -294,7 +293,7 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
   @Override
   public void mouseReleased(double mouseX, double mouseY, int clickedMouseButton) {
     super.mouseReleased(mouseX, mouseY, clickedMouseButton);
-    lastClick = null;
+    this.lastClick = null;
   }
 
   @Override
@@ -302,8 +301,8 @@ public class ElementStructure extends SizedBookElement implements IButtonClickHa
     //if((clickX >= 40 && clickX < 144 && mx >= 20 && mx < 164) && (clickY >= 30 && clickY < 130 && my >= 30 && my < 180)) {
       int dx = mx - lastX;
       int dy = my - lastY;
-      rotY = rotY + (dx / 104f);// * 80;
-      rotX = rotX + (dy / 100f);// * 80;
+    this.rotY = this.rotY + (dx / 104f);// * 80;
+    this.rotX = this.rotX + (dy / 100f);// * 80;
     //}
   }
 /*

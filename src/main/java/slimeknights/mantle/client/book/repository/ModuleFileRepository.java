@@ -27,8 +27,8 @@ public class ModuleFileRepository extends FileRepository {
 	@Override
 	public List<SectionData> getSections() {
 		// same as super, except we remove any where the related module is not loaded
-		return Arrays.stream(BookLoader.GSON.fromJson(resourceToString(getResource(getResourceLocation("index.json"))), SectionDataModule[].class))
-				.filter((section)->section.module.isEmpty() || manager.test(section.module))
+		return Arrays.stream(BookLoader.GSON.fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionDataModule[].class))
+				.filter((section)->section.module.isEmpty() || this.manager.test(section.module))
 				.collect(Collectors.toList());
 	}
 
@@ -37,6 +37,6 @@ public class ModuleFileRepository extends FileRepository {
 	 * @return  Predicate to test a module availability
 	 */
 	public Predicate<String> getManager() {
-		return manager;
+		return this.manager;
 	}
 }

@@ -22,13 +22,13 @@ public class CrashHandler implements ICrashCallable {
 
     @Override
     public String getLabel() {
-        return id;
+        return this.id;
     }
 
     @Override
     public String call() throws Exception {
         String out = "\n";
-        for (PulseMeta meta : manager.getAllPulseMetadata()) {
+        for (PulseMeta meta : this.manager.getAllPulseMetadata()) {
             String state = getStateFromMeta(meta);
             out += "\t\t- " + meta.getId() + " (" + state + ")\n"; // Yes, yes, manual indenting, I know...
         }

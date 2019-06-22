@@ -37,65 +37,65 @@ public class PageData implements IDataItem {
 
   public PageData(boolean custom) {
     if(custom) {
-      data = "no-load";
+      this.data = "no-load";
     }
   }
 
   public String translate(String string) {
-    return parent.translate(string);
+    return this.parent.translate(string);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public void load() {
-    if(name == null) {
-      name = "page" + parent.unnamedPageCounter++;
+    if(this.name == null) {
+      this.name = "page" + this.parent.unnamedPageCounter++;
     }
 
-    name = name.toLowerCase();
+    this.name = this.name.toLowerCase();
 
-    if(!data.equals("no-load")) {
-      IResource pageInfo = source.getResource(source.getResourceLocation(data));
+    if(!this.data.equals("no-load")) {
+      IResource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if(pageInfo != null) {
-        String data = source.resourceToString(pageInfo);
+        String data = this.source.resourceToString(pageInfo);
         if(!data.isEmpty()) {
-          Class<? extends PageContent> ctype = BookLoader.getPageType(type);
+          Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
 
           try {
-            content = BookLoader.GSON.fromJson(data, ctype);
+            this.content = BookLoader.GSON.fromJson(data, ctype);
           } catch(Exception e) {
-            content = new ContentError(ctype == null ? "Failed to create a page of type \"" + type + "\", perhaps the type is not registered?" : "Failed to create a page of type \"" + type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
+            this.content = new ContentError(ctype == null ? "Failed to create a page of type \"" + this.type + "\", perhaps the type is not registered?" : "Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
           }
         }
       }
     }
 
-    if(content == null) {
+    if(this.content == null) {
       try {
-        content = BookLoader.getPageType(type).newInstance();
+        this.content = BookLoader.getPageType(this.type).newInstance();
       } catch(InstantiationException | IllegalAccessException | NullPointerException e) {
-        content = new ContentError("Failed to create a page of type \"" + type + "\", perhaps the type is not registered?");
+        this.content = new ContentError("Failed to create a page of type \"" + this.type + "\", perhaps the type is not registered?");
       }
     }
 
     try {
-      content.parent = this;
-      content.load();
+      this.content.parent = this;
+      this.content.load();
     } catch(Exception e) {
-      content = new ContentError("Failed to load page " + parent.name + "." + name + ".", e);
+      this.content = new ContentError("Failed to load page " + this.parent.name + "." + this.name + ".", e);
       e.printStackTrace();
     }
 
-    content.source = source;
+    this.content.source = this.source;
 
-    for(Field f : content.getClass().getFields()) {
+    for(Field f : this.content.getClass().getFields()) {
       if(Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
           .isFinal(f.getModifiers())) {
         continue;
       }
 
       try {
-        if(f.get(content) == null) {
+        if(f.get(this.content) == null) {
           continue;
         }
       } catch(IllegalAccessException e) {
@@ -108,10 +108,10 @@ public class PageData implements IDataItem {
         if(c.isArray() && c.getComponentType().isAssignableFrom(swap.t)) {
           try {
             f.setAccessible(true);
-            Object[] o = (Object[]) f.get(content);
+            Object[] o = (Object[]) f.get(this.content);
 
             for(Object ob : o) {
-              swap.swap(source, ob);
+              swap.swap(this.source, ob);
             }
           } catch(IllegalAccessException e) {
             e.printStackTrace();
@@ -119,9 +119,9 @@ public class PageData implements IDataItem {
         } else if(swap.t.isAssignableFrom(c)) {
           try {
             f.setAccessible(true);
-            Object o = f.get(content);
+            Object o = f.get(this.content);
 
-            swap.swap(source, o);
+            swap.swap(this.source, o);
           } catch(IllegalAccessException e) {
             e.printStackTrace();
           }
@@ -142,8 +142,8 @@ public class PageData implements IDataItem {
   }
 
   public String getTitle() {
-    String title = parent.parent.strings.get(parent.name + "." + name);
-    return title == null ? name : title;
+    String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
+    return title == null ? this.name : title;
   }
 
   static {

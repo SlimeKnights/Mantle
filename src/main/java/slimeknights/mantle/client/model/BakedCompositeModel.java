@@ -32,7 +32,7 @@ public class BakedCompositeModel extends BakedWrapper {
   @Nonnull
   @Override
   public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-    return parts.get(Optional.fromNullable(side));
+    return this.parts.get(Optional.fromNullable(side));
   }
 
   public static class Builder {
@@ -40,16 +40,16 @@ public class BakedCompositeModel extends BakedWrapper {
     IBakedModel parent;
 
     public Builder() {
-      builders = new ImmutableList.Builder[7];
+      this.builders = new ImmutableList.Builder[7];
       for(int i = 0; i < 7; i++) {
-        builders[i] = ImmutableList.builder();
+        this.builders[i] = ImmutableList.builder();
       }
     }
 
     public void add(IBakedModel model, BlockState state, Random rand) {
-      add(model, state, null, rand);
+      this.add(model, state, null, rand);
       for(Direction side : Direction.values()) {
-        add(model, state, side, rand);
+        this.add(model, state, side, rand);
       }
     }
 
@@ -62,15 +62,15 @@ public class BakedCompositeModel extends BakedWrapper {
         index = side.getIndex();
       }
 
-      builders[index].addAll(model.getQuads(state, side, rand));
+      this.builders[index].addAll(model.getQuads(state, side, rand));
     }
 
     public BakedCompositeModel build(IBakedModel parent) {
       ImmutableMap.Builder<Optional<Direction>, ImmutableList<BakedQuad>> map = ImmutableMap.builder();
 
-      map.put(Optional.<Direction>absent(), builders[6].build());
+      map.put(Optional.absent(), this.builders[6].build());
       for(Direction side : Direction.values()) {
-        map.put(Optional.of(side), builders[side.getIndex()].build());
+        map.put(Optional.of(side), this.builders[side.getIndex()].build());
       }
 
       return new BakedCompositeModel(parent, map.build());

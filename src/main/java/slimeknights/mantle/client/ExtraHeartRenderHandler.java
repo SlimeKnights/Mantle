@@ -1,8 +1,8 @@
 package slimeknights.mantle.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -14,7 +14,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.client.ForgeIngameGui;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.util.Random;
@@ -58,9 +58,9 @@ public class ExtraHeartRenderHandler {
       return;
     }
     PlayerEntity player = (PlayerEntity)this.mc.getRenderViewEntity();
-    
+
     // extra setup stuff from us
-    left_height = GuiIngameForge.left_height;
+    left_height = ForgeIngameGui.left_height;
     width = mc.mainWindow.getScaledWidth();
     height = mc.mainWindow.getScaledHeight();
     event.setCanceled(true);
@@ -68,7 +68,7 @@ public class ExtraHeartRenderHandler {
 
     // start default forge/mc rendering
     // changes are indicated by comment
-    mc.profiler.startSection("health");
+    mc.getProfiler().startSection("health");
     GlStateManager.enableBlend();
 
     int health = MathHelper.ceil(player.getHealth());
@@ -175,15 +175,15 @@ public class ExtraHeartRenderHandler {
 
 
     this.mc.getTextureManager().bindTexture(ICON_VANILLA);
-    GuiIngameForge.left_height += 10;
+    ForgeIngameGui.left_height += 10;
     if(absorb > 0) {
-      GuiIngameForge.left_height += 10;
+      ForgeIngameGui.left_height += 10;
     }
 
     event.setCanceled(true);
 
     GlStateManager.disableBlend();
-    mc.profiler.endSection();
+    mc.getProfiler().endSection();
   }
 
   private void renderExtraHearts(int xBasePos, int yBasePos, PlayerEntity player) {

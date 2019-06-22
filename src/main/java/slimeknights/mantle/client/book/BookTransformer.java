@@ -34,9 +34,9 @@ public abstract class BookTransformer {
       SectionData index = new SectionData(true) {
         @Override
         public void update(GuiBook.AdvancementCache advancementCache) {
-          pages.clear();
+          this.pages.clear();
 
-          List<SectionData> visibleSections = parent.getVisibleSections(advancementCache);
+          List<SectionData> visibleSections = this.parent.getVisibleSections(advancementCache);
 
           if(visibleSections.isEmpty()) {
             return;
@@ -90,7 +90,7 @@ public abstract class BookTransformer {
         if(section.name.equals("index")) {
           continue;
         }
-        if(sectionToTransform != null && !section.name.equals(sectionToTransform)) {
+        if(this.sectionToTransform != null && !section.name.equals(this.sectionToTransform)) {
           continue;
         }
 

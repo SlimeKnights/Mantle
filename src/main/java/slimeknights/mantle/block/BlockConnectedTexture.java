@@ -70,7 +70,7 @@ public class BlockConnectedTexture extends Block {
      */
     private boolean isSideConnectable(BlockState state, IWorld world, BlockPos pos, Direction side) {
       final BlockState connected = world.getBlockState(pos.offset(side));
-      return connected != null && canConnect(state, connected);
+      return connected != null && this.canConnect(state, connected);
     }
 
     /**

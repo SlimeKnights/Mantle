@@ -15,9 +15,9 @@ public class SectionDataModule extends SectionData {
   @Override
   protected ArrayList<PageData> getPages(String data) {
       // this should always be the case, but just for safety
-      if(source instanceof ModuleFileRepository) {
+      if(this.source instanceof ModuleFileRepository) {
           // just filters out pages where the module is not loaded
-          Predicate<String> manager = ((ModuleFileRepository)source).getManager();
+          Predicate<String> manager = ((ModuleFileRepository) this.source).getManager();
           return new ArrayList<>(Arrays.stream(BookLoader.GSON.fromJson(data, PageDataModule[].class))
                   .filter((page)->page.module.isEmpty() || manager.test(page.module))
                   .collect(Collectors.toList()));

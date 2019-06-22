@@ -14,7 +14,7 @@ public abstract class BookRepository {
   public abstract List<SectionData> getSections();
 
   public ResourceLocation getResourceLocation(String path) {
-    return getResourceLocation(path, false);
+    return this.getResourceLocation(path, false);
   }
 
   public abstract ResourceLocation getResourceLocation(String path, boolean safe);
@@ -22,13 +22,13 @@ public abstract class BookRepository {
   public abstract IResource getResource(ResourceLocation loc);
 
   public boolean resourceExists(String location) {
-    return resourceExists(new ResourceLocation(location));
+    return this.resourceExists(new ResourceLocation(location));
   }
 
   public abstract boolean resourceExists(ResourceLocation location);
 
   public String resourceToString(IResource resource) {
-    return resourceToString(resource, true);
+    return this.resourceToString(resource, true);
   }
 
   public abstract String resourceToString(IResource resource, boolean skipCommments);

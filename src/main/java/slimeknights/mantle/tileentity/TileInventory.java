@@ -2,12 +2,16 @@ package slimeknights.mantle.tileentity;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -24,7 +28,7 @@ import javax.annotation.Nullable;
 import slimeknights.mantle.util.ItemStackList;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes
-public class TileInventory extends MantleTileEntity implements IInventory {
+public class TileInventory extends MantleTileEntity implements IInventory, INamedContainerProvider, INameable {
 
   private NonNullList<ItemStack> inventory;
   protected ITextComponent inventoryTitle;
@@ -45,7 +49,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
    */
   public TileInventory(TileEntityType<?> tileEntityTypeIn, ITextComponent name, int inventorySize, int maxStackSize) {
     super(tileEntityTypeIn);
-    this.inventory = NonNullList.<ItemStack> withSize(inventorySize, ItemStack.EMPTY);
+    this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.inventoryTitle = name;
     this.itemHandler = new InvWrapper(this);
@@ -56,13 +60,13 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Override
   public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
     if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-      return itemHandlerCap.cast();
+      return this.itemHandlerCap.cast();
     }
     return super.getCapability(capability, facing);
   }
 
   public IItemHandlerModifiable getItemHandler() {
-    return itemHandler;
+    return this.itemHandler;
   }
 
   /* Inventory management */
@@ -70,57 +74,57 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Nonnull
   @Override
   public ItemStack getStackInSlot(int slot) {
-    if(slot < 0 || slot >= inventory.size()) {
+    if(slot < 0 || slot >= this.inventory.size()) {
       return ItemStack.EMPTY;
     }
 
-    return inventory.get(slot);
+    return this.inventory.get(slot);
   }
 
   public boolean isStackInSlot(int slot) {
-    return !getStackInSlot(slot).isEmpty();
+    return !this.getStackInSlot(slot).isEmpty();
   }
 
   /** Same as resize, but does not call markDirty. Used on loading from NBT */
   private void resizeInternal(int size) {
     // save effort if the size did not change
-    if(size == inventory.size()) {
+    if(size == this.inventory.size()) {
       return;
     }
     ItemStackList newInventory = ItemStackList.withSize(size);
 
-    for (int i = 0; i < size && i < inventory.size(); i++) {
-      newInventory.set(i, inventory.get(i));
+    for (int i = 0; i < size && i < this.inventory.size(); i++) {
+      newInventory.set(i, this.inventory.get(i));
     }
-    inventory = newInventory;
+    this.inventory = newInventory;
   }
 
   public void resize(int size) {
-    resizeInternal(size);
+    this.resizeInternal(size);
     this.markDirtyFast();
   }
 
   @Override
   public int getSizeInventory() {
-    return inventory.size();
+    return this.inventory.size();
   }
 
   @Override
   public int getInventoryStackLimit() {
-    return stackSizeLimit;
+    return this.stackSizeLimit;
   }
 
   @Override
   public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
-    if(slot < 0 || slot >= inventory.size()) {
+    if(slot < 0 || slot >= this.inventory.size()) {
       return;
     }
 
-    ItemStack current = inventory.get(slot);
-    inventory.set(slot, itemstack);
+    ItemStack current = this.inventory.get(slot);
+    this.inventory.set(slot, itemstack);
 
-    if(!itemstack.isEmpty() && itemstack.getCount() > getInventoryStackLimit()) {
-      itemstack.setCount(getInventoryStackLimit());
+    if(!itemstack.isEmpty() && itemstack.getCount() > this.getInventoryStackLimit()) {
+      itemstack.setCount(this.getInventoryStackLimit());
     }
     if(!ItemStack.areItemStacksEqual(current, itemstack)) {
       this.markDirtyFast();
@@ -133,7 +137,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     if(quantity <= 0) {
       return ItemStack.EMPTY;
     }
-    ItemStack itemStack = getStackInSlot(slot);
+    ItemStack itemStack = this.getStackInSlot(slot);
 
     if(itemStack.isEmpty()) {
       return ItemStack.EMPTY;
@@ -141,7 +145,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
 
     // whole itemstack taken out
     if(itemStack.getCount() <= quantity) {
-      setInventorySlotContents(slot, ItemStack.EMPTY);
+      this.setInventorySlotContents(slot, ItemStack.EMPTY);
       this.markDirtyFast();
       return itemStack;
     }
@@ -150,8 +154,8 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     itemStack = itemStack.split(quantity);
     // slot is empty, set to ItemStack.EMPTY
     // isn't this redundant to the above check?
-    if(getStackInSlot(slot).getCount() == 0) {
-      setInventorySlotContents(slot, ItemStack.EMPTY);
+    if(this.getStackInSlot(slot).getCount() == 0) {
+      this.setInventorySlotContents(slot, ItemStack.EMPTY);
     }
 
     this.markDirtyFast();
@@ -162,25 +166,23 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Nonnull
   @Override
   public ItemStack removeStackFromSlot(int slot) {
-    ItemStack itemStack = getStackInSlot(slot);
-    setInventorySlotContents(slot, ItemStack.EMPTY);
+    ItemStack itemStack = this.getStackInSlot(slot);
+    this.setInventorySlotContents(slot, ItemStack.EMPTY);
     return itemStack;
   }
 
   @Override
   public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemstack) {
-    if(slot < getSizeInventory()) {
-      if(inventory.get(slot).isEmpty() || itemstack.getCount() + inventory.get(slot).getCount() <= getInventoryStackLimit()) {
-        return true;
-      }
+    if(slot < this.getSizeInventory()) {
+      return this.inventory.get(slot).isEmpty() || itemstack.getCount() + this.inventory.get(slot).getCount() <= this.getInventoryStackLimit();
     }
     return false;
   }
 
   @Override
   public void clear() {
-    for(int i = 0; i < inventory.size(); i++) {
-      inventory.set(i, ItemStack.EMPTY);
+    for(int i = 0; i < this.inventory.size(); i++) {
+      this.inventory.set(i, ItemStack.EMPTY);
     }
   }
 
@@ -209,11 +211,11 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Nonnull
   @Override
   public ITextComponent getDisplayName() {
-    if(hasCustomName()) {
-      return new StringTextComponent(getName().getFormattedText());
+    if(this.hasCustomName()) {
+      return new StringTextComponent(this.getName().getFormattedText());
     }
 
-    return new TranslationTextComponent(getName().getFormattedText());
+    return new TranslationTextComponent(this.getName().getFormattedText());
   }
 
 
@@ -221,12 +223,12 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   @Override
   public boolean isUsableByPlayer(@Nonnull PlayerEntity entityplayer) {
     // block changed/got broken?
-    if(world.getTileEntity(pos) != this || world.getBlockState(pos).getBlock() == Blocks.AIR) {
+    if(this.world.getTileEntity(this.pos) != this || this.world.getBlockState(this.pos).getBlock() == Blocks.AIR) {
       return false;
     }
 
     return
-        entityplayer.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D)
+        entityplayer.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D)
         <= 64D;
   }
 
@@ -246,7 +248,7 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     super.read(tags);
     this.resizeInternal(tags.getInt("InventorySize"));
 
-    readInventoryFromNBT(tags);
+    this.readInventoryFromNBT(tags);
 
     if(tags.contains("CustomName", 8)) {
       this.inventoryTitle = ITextComponent.Serializer.fromJson(tags.getString("CustomName"));
@@ -258,9 +260,9 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   public CompoundNBT write(CompoundNBT tags) {
     super.write(tags);
 
-    tags.putInt("InventorySize", inventory.size());
+    tags.putInt("InventorySize", this.inventory.size());
 
-    writeInventoryToNBT(tags);
+    this.writeInventoryToNBT(tags);
 
     if(this.hasCustomName()) {
       tags.putString("CustomName", ITextComponent.Serializer.toJson(this.inventoryTitle));
@@ -289,18 +291,18 @@ public class TileInventory extends MantleTileEntity implements IInventory {
   public void readInventoryFromNBT(CompoundNBT tag) {
     ListNBT nbttaglist = tag.getList("Items", 10);
 
-    int limit = getInventoryStackLimit();
+    int limit = this.getInventoryStackLimit();
     ItemStack stack;
     for(int i = 0; i < nbttaglist.size(); ++i) {
       CompoundNBT itemTag = nbttaglist.getCompound(i);
       int slot = itemTag.getByte("Slot") & 255;
 
-      if(slot >= 0 && slot < inventory.size()) {
+      if(slot >= 0 && slot < this.inventory.size()) {
         stack = ItemStack.read(itemTag);
         if(!stack.isEmpty() && stack.getCount() > limit) {
           stack.setCount(limit);
         }
-        inventory.set(slot, stack);
+        this.inventory.set(slot, stack);
       }
     }
   }
@@ -320,5 +322,11 @@ public class TileInventory extends MantleTileEntity implements IInventory {
     }
 
     return true;
+  }
+
+  @Nullable
+  @Override
+  public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    return null;
   }
 }

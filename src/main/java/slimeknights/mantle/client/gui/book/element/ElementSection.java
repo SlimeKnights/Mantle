@@ -27,46 +27,46 @@ public class ElementSection extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    boolean unlocked = section.isUnlocked(parent.advancementCache);
-    boolean hover = isHovered(mouseX, mouseY);
+    boolean unlocked = this.section.isUnlocked(this.parent.advancementCache);
+    boolean hover = this.isHovered(mouseX, mouseY);
 
-    if(section.icon != null) {
-      int iconX = x + WIDTH / 2 - IMG_SIZE / 2;
-      int iconY = y + HEIGHT / 2 - IMG_SIZE / 2;
+    if(this.section.icon != null) {
+      int iconX = this.x + WIDTH / 2 - IMG_SIZE / 2;
+      int iconY = this.y + HEIGHT / 2 - IMG_SIZE / 2;
       if(hover) {
-        fill(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, parent.book.appearance.hoverColor);
+        fill(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
       }
       if(unlocked) {
         GlStateManager.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
       } else {
-        float r = ((parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
-        float g = ((parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
-        float b = (parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
+        float r = ((this.parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
+        float g = ((this.parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
+        float b = (this.parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
         GlStateManager.color4f(r, g, b, 0.75F);
       }
 
-      if(section.icon.item == null) {
-        if(section.icon.location != null) {
-          renderEngine.bindTexture(section.icon.location);
+      if(this.section.icon.item == null) {
+        if(this.section.icon.location != null) {
+          this.renderEngine.bindTexture(this.section.icon.location);
 
-          blit(iconX, iconY, section.icon.u, section.icon.v, section.icon.uw, section.icon.vh, IMG_SIZE, IMG_SIZE, section.icon.texWidth, section.icon.texHeight);
+          blit(iconX, iconY, this.section.icon.u, this.section.icon.v, this.section.icon.uw, this.section.icon.vh, IMG_SIZE, IMG_SIZE, this.section.icon.texWidth, this.section.icon.texHeight);
         }
       } else {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(iconX, iconY, 0);
         GlStateManager.scalef(2F, 2F, 1F);
         RenderHelper.enableGUIStandardItemLighting();
-        mc.getItemRenderer().renderItemAndEffectIntoGUI(section.icon.item.getItems().get(0), 0, 0);
+        this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.section.icon.item.getItems().get(0), 0, 0);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.popMatrix();
       }
     }
 
-    if(section.parent.appearance.drawSectionListText) {
-      int textW = fontRenderer.getStringWidth(section.getTitle());
-      int textX = x + WIDTH / 2 - textW / 2;
-      int textY = y + HEIGHT - fontRenderer.FONT_HEIGHT/2;
-      fontRenderer.drawString(section.getTitle(),
+    if(this.section.parent.appearance.drawSectionListText) {
+      int textW = fontRenderer.getStringWidth(this.section.getTitle());
+      int textX = this.x + WIDTH / 2 - textW / 2;
+      int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT/2;
+      fontRenderer.drawString(this.section.getTitle(),
                               textX,
                               textY,
                               hover ? 0xFF000000 : 0x7F000000);
@@ -75,23 +75,23 @@ public class ElementSection extends SizedBookElement {
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(section != null && isHovered(mouseX, mouseY)) {
+    if(this.section != null && this.isHovered(mouseX, mouseY)) {
       List<String> text = new ArrayList<>();
-      text.add(section.getTitle());
-      if(!section.isUnlocked(parent.advancementCache)) {
+      text.add(this.section.getTitle());
+      if(!this.section.isUnlocked(this.parent.advancementCache)) {
         text.add(TextFormatting.RED + "Locked");
         text.add("Requirements:");
 
-        text.addAll(section.requirements);
+        text.addAll(this.section.requirements);
       }
-      drawHoveringText(text, mouseX, mouseY, fontRenderer);
+      this.drawHoveringText(text, mouseX, mouseY, fontRenderer);
     }
   }
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
-    if(mouseButton == 0 && section != null && section.isUnlocked(parent.advancementCache) && isHovered(mouseX, mouseY)) {
-      parent.openPage(parent.book.getFirstPageNumber(section, parent.advancementCache));
+    if(mouseButton == 0 && this.section != null && this.section.isUnlocked(this.parent.advancementCache) && this.isHovered(mouseX, mouseY)) {
+      this.parent.openPage(this.parent.book.getFirstPageNumber(this.section, this.parent.advancementCache));
     }
   }
 }

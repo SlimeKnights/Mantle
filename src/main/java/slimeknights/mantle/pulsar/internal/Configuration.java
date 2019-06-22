@@ -55,7 +55,7 @@ public class Configuration implements IConfiguration {
 
     @Override
     public void load() {
-        getModulesFromJson();
+        this.getModulesFromJson();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Configuration implements IConfiguration {
 
     @Override
     public boolean isModuleEnabled(@Nonnull PulseMeta meta) {
-        ConfigEntry entry = modules.get(meta.getId());
+        ConfigEntry entry = this.modules.get(meta.getId());
         if (entry == null) {
             return meta.isEnabled();
         } else {
@@ -73,48 +73,48 @@ public class Configuration implements IConfiguration {
 
     @Override
     public void addPulse(@Nonnull PulseMeta meta) {
-        ConfigEntry entry = modules.get(meta.getId());
+        ConfigEntry entry = this.modules.get(meta.getId());
 
         if (entry == null) {
-            modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));
+            this.modules.put(meta.getId(), new ConfigEntry(meta.isDefaultEnabled(), meta.getDescription()));
         }
     }
 
     @Override
     public void flush() {
-        writeModulesToJson();
+        this.writeModulesToJson();
     }
 
     private void getModulesFromJson() {
         // Step 1: Does the file exist?
-        File f = new File(confPath);
+        File f = new File(this.confPath);
         if (!f.exists()) {
-            logger.info("Couldn't find config file; will generate a new one later.");
-            modules = new HashMap<String, ConfigEntry>();
+            this.logger.info("Couldn't find config file; will generate a new one later.");
+            this.modules = new HashMap<String, ConfigEntry>();
             return;
         }
 
         // Step 2: File exists. Let's make sure it's usable.
         if (!(f.canRead() && f.canWrite())) {
-            throw new FileNotReadWritableException("Could not read/write Pulsar config: " + confPath);
+            throw new FileNotReadWritableException("Could not read/write Pulsar config: " + this.confPath);
         }
 
         // Step 3: Good enough. Read it.
         try {
             try {
-                modules = parseV1Config(f);
+                this.modules = this.parseV1Config(f);
             } catch (Exception ex) {
-                logger.warn("Failed to parse " + f.getName() + " using the v1 parser; trying the v0 parser.");
-                Map<String, ConfigEntry> conf = parseV0Config(f);
-                logger.info("Found valid v0 configuration. Upgrading it.");
-                modules = conf;
-                writeModulesToJson();
-                logger.info("Upgrade complete! Config is now in v1 format.");
+                this.logger.warn("Failed to parse " + f.getName() + " using the v1 parser; trying the v0 parser.");
+                Map<String, ConfigEntry> conf = this.parseV0Config(f);
+                this.logger.info("Found valid v0 configuration. Upgrading it.");
+                this.modules = conf;
+                this.writeModulesToJson();
+                this.logger.info("Upgrade complete! Config is now in v1 format.");
             }
         } catch (Exception ex) {
-            logger.warn("Invalid config file. Discarding.");
+            this.logger.warn("Invalid config file. Discarding.");
             ex.printStackTrace();
-            modules = new HashMap<String, ConfigEntry>();
+            this.modules = new HashMap<String, ConfigEntry>();
         }
     }
 
@@ -149,13 +149,13 @@ public class Configuration implements IConfiguration {
 
     private void writeModulesToJson() {
         try {
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(new File(confPath))));
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(new File(this.confPath))));
             writer.setIndent("  ");
-            GsonConfig out = new GsonConfig(CONFIG_LEVEL, modules);
+            GsonConfig out = new GsonConfig(CONFIG_LEVEL, this.modules);
             gson.toJson(out, GsonConfig.class, writer);
             writer.close();
         } catch (Exception ex) {
-            logger.warn("Could not write config? " + confPath);
+            this.logger.warn("Could not write config? " + this.confPath);
         }
     }
 
@@ -186,7 +186,7 @@ public class Configuration implements IConfiguration {
         }
 
         public Boolean getEnabled() {
-            return enabled;
+            return this.enabled;
         }
 
         public void setEnabled(Boolean enabled) {
@@ -194,7 +194,7 @@ public class Configuration implements IConfiguration {
         }
 
         public String getDescription() {
-            return description;
+            return this.description;
         }
     }
 
@@ -213,11 +213,11 @@ public class Configuration implements IConfiguration {
         }
 
         public int getConfigVersion() {
-            return CONFIG_VERSION;
+            return this.CONFIG_VERSION;
         }
 
         public Map<String, ConfigEntry> getModules() {
-            return modules;
+            return this.modules;
         }
 
     }

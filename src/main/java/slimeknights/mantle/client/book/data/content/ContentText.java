@@ -21,14 +21,14 @@ public class ContentText extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
-    if(title == null || title.isEmpty()) {
+    if(this.title == null || this.title.isEmpty()) {
       y = 0;
     } else {
-      addTitle(list, title);
+      this.addTitle(list, this.title);
     }
 
-    if(text != null && text.length > 0) {
-      list.add(new ElementText(0, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y, text));
+    if(this.text != null && this.text.length > 0) {
+      list.add(new ElementText(0, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y, this.text));
     }
   }
 }

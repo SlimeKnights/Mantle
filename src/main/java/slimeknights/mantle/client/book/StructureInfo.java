@@ -34,8 +34,8 @@ public class StructureInfo {
       for(int x = 0; x < length; x++) {
         for(int z = 0; z < width; z++) {
           for(BlockData data : blockData) {
-            if(inside(x, y, z, data.pos, data.endPos)) {
-              states[y][x][z] = convert(data);
+            if(this.inside(x, y, z, data.pos, data.endPos)) {
+              states[y][x][z] = this.convert(data);
               break;
             }
           }
@@ -43,8 +43,8 @@ public class StructureInfo {
       }
     }
 
-    data = states;
-    maxBlockIndex = blockIndex = structureHeight * structureLength * structureWidth;
+    this.data = states;
+    this.maxBlockIndex = this.blockIndex = this.structureHeight * this.structureLength * this.structureWidth;
   }
 
   private BlockState convert(BlockData data) {
@@ -52,21 +52,18 @@ public class StructureInfo {
     if(block == null) {
       return Blocks.AIR.getDefaultState();
     }
-    BlockState state;
-    if(data.state == null || data.state.isEmpty()) {
-      state = block.getStateFromMeta(data.meta);
-    }
-    else {
-      state = block.getDefaultState();
+    BlockState state = block.getDefaultState();
 
-      for(Map.Entry<String, String> entry : data.state.entrySet()) {
+    if (data.state != null || !data.state.isEmpty()) {
+      for (Map.Entry<String, String> entry : data.state.entrySet()) {
         Optional<IProperty<?>> property = state.getProperties().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
 
-        if(property.isPresent()) {
-          state = setProperty(state, property.get(), entry.getValue());
+        if (property.isPresent()) {
+          state = this.setProperty(state, property.get(), entry.getValue());
         }
       }
     }
+
     return state;
   }
 
@@ -82,9 +79,7 @@ public class StructureInfo {
   private boolean inside(int x, int y, int z, int[] rangeStart, int[] rangeEnd) {
     if(x >= rangeStart[0] && x <= rangeEnd[0]) {
       if(y >= rangeStart[1] && y <= rangeEnd[1]) {
-        if(z >= rangeStart[2] && z <= rangeEnd[2]) {
-          return true;
-        }
+        return z >= rangeStart[2] && z <= rangeEnd[2];
       }
     }
 
@@ -92,43 +87,43 @@ public class StructureInfo {
   }
 
   public void setShowLayer(int layer) {
-    showLayer = layer;
-    blockIndex = (layer + 1) * (structureLength * structureWidth) - 1;
+    this.showLayer = layer;
+    this.blockIndex = (layer + 1) * (this.structureLength * this.structureWidth) - 1;
   }
 
   public void reset() {
-    blockIndex = maxBlockIndex;
+    this.blockIndex = this.maxBlockIndex;
   }
 
   public boolean canStep() {
-    int index = blockIndex;
+    int index = this.blockIndex;
     do {
-      if(++index >= maxBlockIndex) {
+      if(++index >= this.maxBlockIndex) {
         return false;
       }
-    } while(isEmpty(index));
+    } while(this.isEmpty(index));
     return true;
   }
 
   public void step() {
-    int start = blockIndex;
+    int start = this.blockIndex;
     do {
-      if(++blockIndex >= maxBlockIndex) {
-        blockIndex = 0;
+      if(++this.blockIndex >= this.maxBlockIndex) {
+        this.blockIndex = 0;
       }
-    } while(isEmpty(blockIndex) && blockIndex != start);
+    } while(this.isEmpty(this.blockIndex) && this.blockIndex != start);
   }
 
   private boolean isEmpty(int index) {
-    int y = index / (structureLength * structureWidth);
-    int r = index % (structureLength * structureWidth);
-    int x = r / structureWidth;
-    int z = r % structureWidth;
+    int y = index / (this.structureLength * this.structureWidth);
+    int r = index % (this.structureLength * this.structureWidth);
+    int x = r / this.structureWidth;
+    int z = r % this.structureWidth;
 
-    return data[y][x][z] == null || data[y][x][z].getBlock() == Blocks.AIR;
+    return this.data[y][x][z] == null || this.data[y][x][z].getBlock() == Blocks.AIR;
   }
 
   public int getLimiter() {
-    return blockIndex;
+    return this.blockIndex;
   }
 }

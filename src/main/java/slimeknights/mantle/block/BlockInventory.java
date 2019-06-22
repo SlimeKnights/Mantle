@@ -24,7 +24,6 @@ import slimeknights.mantle.tileentity.TileInventory;
 // Updated Version of InventoryBlock in Mantle
 public abstract class BlockInventory extends ContainerBlock
 {
-
   protected BlockInventory(Block.Properties builder) {
     super(builder);
   }

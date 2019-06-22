@@ -35,26 +35,26 @@ public class ElementText extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    String action = TextDataRenderer.drawText(x, y, width, height, text, mouseX, mouseY, fontRenderer, tooltip);
+    String action = TextDataRenderer.drawText(this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
 
-    if(doAction) {
-      doAction = false;
-      StringActionProcessor.process(action, parent);
+    if(this.doAction) {
+      this.doAction = false;
+      StringActionProcessor.process(action, this.parent);
     }
   }
 
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    if(tooltip.size() > 0){
-      TextDataRenderer.drawTooltip(tooltip, mouseX, mouseY, fontRenderer);
-      tooltip.clear();
+    if(this.tooltip.size() > 0){
+      TextDataRenderer.drawTooltip(this.tooltip, mouseX, mouseY, fontRenderer);
+      this.tooltip.clear();
     }
   }
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if(mouseButton == 0) {
-      doAction = true;
+      this.doAction = true;
     }
   }
 }

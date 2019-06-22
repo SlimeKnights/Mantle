@@ -43,17 +43,17 @@ public class ContentCrafting extends PageContent {
     int resultX = 100;
     int resultY = 50;
 
-    TextData tdTitle = new TextData(title);
+    TextData tdTitle = new TextData(this.title);
     tdTitle.underlined = true;
-    list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, new TextData[]{tdTitle}));
+    list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, tdTitle));
 
-    if(grid_size.equalsIgnoreCase("small")) {
+    if(this.grid_size.equalsIgnoreCase("small")) {
       x = GuiBook.PAGE_WIDTH / 2 - IMG_CRAFTING_SMALL.width / 2;
       height = y + IMG_CRAFTING_SMALL.height;
       list.add(new ElementImage(x, y, IMG_CRAFTING_SMALL.width, IMG_CRAFTING_SMALL.height, IMG_CRAFTING_SMALL, book.appearance.slotColor));
       resultX = x + X_RESULT_SMALL;
       resultY = y + Y_RESULT_SMALL;
-    } else if(grid_size.equalsIgnoreCase("large")) {
+    } else if(this.grid_size.equalsIgnoreCase("large")) {
       x = GuiBook.PAGE_WIDTH / 2 - IMG_CRAFTING_LARGE.width / 2;
       height = y + IMG_CRAFTING_LARGE.height;
       list.add(new ElementImage(x, y, IMG_CRAFTING_LARGE.width, IMG_CRAFTING_LARGE.height, IMG_CRAFTING_LARGE, book.appearance.slotColor));
@@ -61,26 +61,26 @@ public class ContentCrafting extends PageContent {
       resultY = y + Y_RESULT_LARGE;
     }
 
-    if(grid != null) {
-      for(int i = 0; i < grid.length; i++) {
-        for(int j = 0; j < grid[i].length; j++) {
-          if(grid[i][j].id.equals("")) {
+    if(this.grid != null) {
+      for(int i = 0; i < this.grid.length; i++) {
+        for(int j = 0; j < this.grid[i].length; j++) {
+          if(this.grid[i][j].id.equals("")) {
             continue;
           }
           list.add(new ElementItem(x + SLOT_MARGIN + (SLOT_PADDING + Math
               .round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * j, y + SLOT_MARGIN + (SLOT_PADDING + Math
-              .round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, grid[i][j]
-                                       .getItems(), grid[i][j].action));
+              .round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, this.grid[i][j]
+                                       .getItems(), this.grid[i][j].action));
         }
       }
     }
 
-    if(result != null) {
-      list.add(new ElementItem(resultX, resultY, ITEM_SCALE, result.getItems(), result.action));
+    if(this.result != null) {
+      list.add(new ElementItem(resultX, resultY, ITEM_SCALE, this.result.getItems(), this.result.action));
     }
 
-    if(description != null && description.length > 0) {
-      list.add(new ElementText(0, height + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - height - 5, description));
+    if(this.description != null && this.description.length > 0) {
+      list.add(new ElementText(0, height + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - height - 5, this.description));
     }
   }
 }

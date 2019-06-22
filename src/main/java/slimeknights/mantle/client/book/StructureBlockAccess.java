@@ -14,6 +14,8 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.Heightmap.Type;
 
@@ -54,12 +56,12 @@ public class StructureBlockAccess implements IWorldReader
     int y = pos.getY();
     int z = pos.getZ();
 
-    if(y >= 0 && y < structure.length) {
-      if(x >= 0 && x < structure[y].length) {
-        if(z >= 0 && z < structure[y][x].length) {
-          int index = y * (data.structureLength * data.structureWidth) + x * data.structureWidth + z;
-          if(index <= data.getLimiter()) {
-            return structure[y][x][z] != null ? structure[y][x][z] : Blocks.AIR.getDefaultState();
+    if(y >= 0 && y < this.structure.length) {
+      if(x >= 0 && x < this.structure[y].length) {
+        if(z >= 0 && z < this.structure[y][x].length) {
+          int index = y * (this.data.structureLength * this.data.structureWidth) + x * this.data.structureWidth + z;
+          if(index <= this.data.getLimiter()) {
+            return this.structure[y][x][z] != null ? this.structure[y][x][z] : Blocks.AIR.getDefaultState();
           }
         }
       }
@@ -69,7 +71,7 @@ public class StructureBlockAccess implements IWorldReader
 
   @Override
   public boolean isAirBlock(BlockPos pos) {
-    return getBlockState(pos).getBlock() == Blocks.AIR;
+    return this.getBlockState(pos).getBlock() == Blocks.AIR;
   }
 
   @Override
@@ -87,24 +89,30 @@ public class StructureBlockAccess implements IWorldReader
     return 0;
   }
 
+  @Nullable
   @Override
-  public boolean isChunkLoaded(int x, int z, boolean allowEmpty) {
+  public IChunk getChunk(int x, int z, ChunkStatus requiredStatus, boolean nonnull) {
+    return null;
+  }
+
+  @Override
+  public boolean chunkExists(int chunkX, int chunkZ) {
     return false;
   }
 
   @Override
-  public boolean canSeeSky(BlockPos pos) {
+  public BlockPos getHeight(Type heightmapType, BlockPos pos) {
+    return BlockPos.ZERO;
+  }
+
+  @Override
+  public boolean func_217337_f(BlockPos pos) {
     return true;
   }
 
   @Override
   public int getHeight(Type heightmapType, int x, int z) {
     return 0;
-  }
-
-  @Override
-  public PlayerEntity getClosestPlayer(double x, double y, double z, double distance, Predicate<Entity> predicate) {
-    return null;
   }
 
   @Override

@@ -17,15 +17,15 @@ public class ElementAnimationToggle extends ElementArrow {
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
-    if(callback != null && isHovered(mouseX, mouseY)) {
-      if(callback.onButtonClick(buttonId, this)) {
-        toggled = !toggled;
-        updateColor();
+    if(this.callback != null && this.isHovered(mouseX, mouseY)) {
+      if(this.callback.onButtonClick(this.buttonId, this)) {
+        this.toggled = !this.toggled;
+        this.updateColor();
       }
     }
   }
 
   protected void updateColor() {
-    button.color = toggled ? arrowColorActive : arrowColorInactive;
+    this.button.color = this.toggled ? this.arrowColorActive : this.arrowColorInactive;
   }
 }

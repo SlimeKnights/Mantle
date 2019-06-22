@@ -27,25 +27,25 @@ public class ContentError extends PageContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
-    addTitle(list, "Error");
+    this.addTitle(list, "Error");
 
     StackTraceElement[] stackTrace = null;
-    if(exception != null){
-      stackTrace = exception.getStackTrace();
+    if(this.exception != null){
+      stackTrace = this.exception.getStackTrace();
     }
 
-    TextData[] text = new TextData[1 + (exception != null ? 2 : 0) + (stackTrace != null ? 1 + Math.min(stackTrace.length * 2, 8) : 0)];
-    text[0] = new TextData(errorStage);
+    TextData[] text = new TextData[1 + (this.exception != null ? 2 : 0) + (stackTrace != null ? 1 + Math.min(stackTrace.length * 2, 8) : 0)];
+    text[0] = new TextData(this.errorStage);
     text[0].color = "dark_red";
     text[0].underlined = true;
     text[0].paragraph = true;
 
-    if(exception != null) {
+    if(this.exception != null) {
       text[1] = new TextData("The following error has occured:");
       text[1].color = "dark_red";
       text[1].paragraph = true;
 
-      text[2] = new TextData(exception.getMessage() != null ? exception.getMessage() : exception.getClass()
+      text[2] = new TextData(this.exception.getMessage() != null ? this.exception.getMessage() : this.exception.getClass()
                                                                                                 .getSimpleName());
       text[2].color = "dark_red";
       text[2].paragraph = true;

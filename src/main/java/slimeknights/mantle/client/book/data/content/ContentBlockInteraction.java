@@ -37,24 +37,24 @@ public class ContentBlockInteraction extends PageContent {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2 - 10;
     int y = TITLE_HEIGHT;
 
-    if(title == null || title.isEmpty()) {
+    if(this.title == null || this.title.isEmpty()) {
       y = 0;
     } else {
-      addTitle(list, title);
+      this.addTitle(list, this.title);
     }
 
     list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
-    if(input != null && !input.id.equals("")) {
-      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
+    if(this.input != null && !this.input.id.equals("")) {
+      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
-    if(block != null && !block.id.equals("")) {
-      list.add(new ElementItem(x + BLOCK_X, y + BLOCK_Y, BLOCK_SCALE, block.getItems(), block.action));
+    if(this.block != null && !this.block.id.equals("")) {
+      list.add(new ElementItem(x + BLOCK_X, y + BLOCK_Y, BLOCK_SCALE, this.block.getItems(), this.block.action));
     }
 
-    if(description != null && description.length > 0) {
-      list.add(new ElementText(0, IMG_SMITHING.height + y + 50, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - IMG_SMITHING.height - y - 50, description));
+    if(this.description != null && this.description.length > 0) {
+      list.add(new ElementText(0, IMG_SMITHING.height + y + 50, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - IMG_SMITHING.height - y - 50, this.description));
     }
   }
 }

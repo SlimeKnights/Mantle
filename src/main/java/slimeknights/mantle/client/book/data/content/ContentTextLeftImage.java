@@ -25,24 +25,24 @@ public class ContentTextLeftImage extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
-    if(title == null || title.isEmpty()) {
+    if(this.title == null || this.title.isEmpty()) {
       y = 0;
     } else {
-      addTitle(list, title);
+      this.addTitle(list, this.title);
     }
 
-    if(image != null && image.location != null) {
-      list.add(new ElementImage(0, y, 50, 50, image));
+    if(this.image != null && this.image.location != null) {
+      list.add(new ElementImage(0, y, 50, 50, this.image));
     } else {
       list.add(new ElementImage(0, y, 50, 50, ImageData.MISSING));
     }
 
-    if(text1 != null && text1.length > 0) {
-      list.add(new ElementText(55, y, GuiBook.PAGE_WIDTH - 55, 50, text1));
+    if(this.text1 != null && this.text1.length > 0) {
+      list.add(new ElementText(55, y, GuiBook.PAGE_WIDTH - 55, 50, this.text1));
     }
 
-    if(text2 != null && text2.length > 0) {
-      list.add(new ElementText(0, y + 55, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - 55 - y, text2));
+    if(this.text2 != null && this.text2.length > 0) {
+      list.add(new ElementText(0, y + 55, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - 55 - y, this.text2));
     }
   }
 }

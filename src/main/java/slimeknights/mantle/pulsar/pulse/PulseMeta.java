@@ -24,19 +24,19 @@ public class PulseMeta {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public boolean isForced() {
-        return !missingDeps && forced;
+        return !this.missingDeps && this.forced;
     }
 
     public boolean isEnabled() {
-        return !missingDeps && enabled;
+        return !this.missingDeps && this.enabled;
     }
 
     public void setEnabled(boolean enabled) {
@@ -44,10 +44,10 @@ public class PulseMeta {
     }
 
     public void setMissingDeps(boolean missing) {
-        missingDeps = missing;
+        this.missingDeps = missing;
     }
 
     public boolean isDefaultEnabled() {
-        return defaultEnabled;
+        return this.defaultEnabled;
     }
 }

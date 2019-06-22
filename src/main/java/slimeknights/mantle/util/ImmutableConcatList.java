@@ -19,44 +19,44 @@ public class ImmutableConcatList<E> implements List<E> {
   protected final FluentIterable<E> iterable;
 
   public ImmutableConcatList(List<E>... lists) {
-    iterable = FluentIterable.from(Iterables.concat(lists));
+    this.iterable = FluentIterable.from(Iterables.concat(lists));
   }
 
   public ImmutableConcatList(List<List<E>> lists) {
-    iterable = FluentIterable.from(Iterables.concat(lists));
+    this.iterable = FluentIterable.from(Iterables.concat(lists));
   }
 
   @Override
   public int size() {
-    return iterable.size();
+    return this.iterable.size();
   }
 
   @Override
   public boolean isEmpty() {
-    return iterable.isEmpty();
+    return this.iterable.isEmpty();
   }
 
   @Override
   public boolean contains(Object o) {
-    return iterable.contains(o);
+    return this.iterable.contains(o);
   }
 
   @Nonnull
   @Override
   public Iterator<E> iterator() {
-    return iterable.iterator();
+    return this.iterable.iterator();
   }
 
   @Nonnull
   @Override
   public Object[] toArray() {
-    return iterable.toList().toArray();
+    return this.iterable.toList().toArray();
   }
 
   @Nonnull
   @Override
   public <T> T[] toArray(@Nonnull T[] a) {
-    return iterable.toList().toArray(a);
+    return this.iterable.toList().toArray(a);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class ImmutableConcatList<E> implements List<E> {
   @Override
   public boolean containsAll(@Nonnull Collection<?> c) {
     for (Object e : c)
-      if (!contains(e))
+      if (!this.contains(e))
         return false;
     return true;
   }
@@ -104,7 +104,7 @@ public class ImmutableConcatList<E> implements List<E> {
 
   @Override
   public E get(int index) {
-    return iterable.get(index);
+    return this.iterable.get(index);
   }
 
   @Override
@@ -124,7 +124,7 @@ public class ImmutableConcatList<E> implements List<E> {
 
   @Override
   public int indexOf(final Object o) {
-    Iterator<E> iterator = iterable.iterator();
+    Iterator<E> iterator = this.iterable.iterator();
     for (int i = 0; iterator.hasNext(); i++) {
       if(o == iterator.next()) {
         return i;
@@ -136,7 +136,7 @@ public class ImmutableConcatList<E> implements List<E> {
 
   @Override
   public int lastIndexOf(Object o) {
-    Iterator<E> iterator = iterable.iterator();
+    Iterator<E> iterator = this.iterable.iterator();
     int j = -1;
     for (int i = 0; iterator.hasNext(); i++) {
       if(o == iterator.next()) {
@@ -150,7 +150,7 @@ public class ImmutableConcatList<E> implements List<E> {
   @Nonnull
   @Override
   public ListIterator<E> listIterator() {
-    return listIterator(0);
+    return this.listIterator(0);
   }
 
   @Nonnull
@@ -186,38 +186,38 @@ public class ImmutableConcatList<E> implements List<E> {
 
     @Override
     public final boolean hasNext() {
-      return position < size;
+      return this.position < this.size;
     }
 
     @Override
     public final E next() {
-      if (!hasNext()) {
+      if (!this.hasNext()) {
         throw new NoSuchElementException();
       }
-      return get(position++);
+      return this.get(this.position++);
     }
 
     @Override
     public final int nextIndex() {
-      return position;
+      return this.position;
     }
 
     @Override
     public final boolean hasPrevious() {
-      return position > 0;
+      return this.position > 0;
     }
 
     @Override
     public final E previous() {
-      if (!hasPrevious()) {
+      if (!this.hasPrevious()) {
         throw new NoSuchElementException();
       }
-      return get(--position);
+      return this.get(--this.position);
     }
 
     @Override
     public final int previousIndex() {
-      return position - 1;
+      return this.position - 1;
     }
   }
 }

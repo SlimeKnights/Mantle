@@ -56,21 +56,21 @@ public class ElementImage extends SizedBookElement {
 
   @Override
   public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    float r = ((colorMultiplier >> 16) & 0xff) / 255.F;
-    float g = ((colorMultiplier >> 8) & 0xff) / 255.F;
-    float b = (colorMultiplier & 0xff) / 255.F;
+    float r = ((this.colorMultiplier >> 16) & 0xff) / 255.F;
+    float g = ((this.colorMultiplier >> 8) & 0xff) / 255.F;
+    float b = (this.colorMultiplier & 0xff) / 255.F;
 
     GlStateManager.color3f(r, g, b);
 
-    if(image.item == null) {
-      renderEngine.bindTexture(image.location);
+    if(this.image.item == null) {
+      this.renderEngine.bindTexture(this.image.location);
 
-      blit(x, y, image.u, image.v, image.uw, image.vh, width, height, image.texWidth, image.texHeight);
+      blit(this.x, this.y, this.image.u, this.image.v, this.image.uw, this.image.vh, this.width, this.height, this.image.texWidth, this.image.texHeight);
     } else {
       GlStateManager.pushMatrix();
-      GlStateManager.scalef(width, height, 1F);
+      GlStateManager.scalef(this.width, this.height, 1F);
       RenderHelper.enableGUIStandardItemLighting();
-      mc.getItemRenderer().renderItemAndEffectIntoGUI(image.item.getItems().get(0), x, y);
+      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.image.item.getItems().get(0), this.x, this.y);
       RenderHelper.disableStandardItemLighting();
       GlStateManager.popMatrix();
     }

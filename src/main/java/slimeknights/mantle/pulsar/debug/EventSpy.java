@@ -23,12 +23,12 @@ public class EventSpy {
 
     @SubscribeEvent
     public void receive(Event evt) {
-        log.info("Received event: " + evt);
+        this.log.info("Received event: " + evt);
     }
 
     @SubscribeEvent
     public void preInit(final FMLCommonSetupEvent evt) {
-        log.info("Example preInit hit");
+        this.log.info("Example preInit hit");
     }
 
 }

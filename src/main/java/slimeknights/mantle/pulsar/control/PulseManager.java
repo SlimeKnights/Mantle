@@ -74,9 +74,9 @@ public class PulseManager {
      * @param configName The config file name.
      */
     public PulseManager(String configName) {
-        init();
-        useConfig = true;
-        conf = new Configuration(configName, log);
+        this.init();
+        this.useConfig = true;
+        this.conf = new Configuration(configName, this.log);
     }
 
     /**
@@ -88,9 +88,9 @@ public class PulseManager {
      * @param config Configuration handler.
      */
     public PulseManager(IConfiguration config) {
-        init();
-        useConfig = true;
-        conf = config;
+        this.init();
+        this.useConfig = true;
+        this.conf = config;
     }
 
     /**
@@ -99,13 +99,13 @@ public class PulseManager {
     private void init() {
         String modId = ModLoadingContext.get().getActiveContainer().getNamespace();
         this.id = modId;
-        log = LogManager.getLogger("Pulsar-" + modId);
-        flightpath.setExceptionHandler(new BusExceptionHandler(modId));
+        this.log = LogManager.getLogger("Pulsar-" + modId);
+        this.flightpath.setExceptionHandler(new BusExceptionHandler(modId));
         CrashReportExtender.registerCrashCallable(new CrashHandler(modId, this));
         // regsister our pulse loader so it can be found by the static method
-        ALL_PULSES.put(modId, pulses);
+        ALL_PULSES.put(modId, this.pulses);
         // Attach us to the mods FML bus
-        attachToContainerEventBus(this);
+        this.attachToContainerEventBus(this);
     }
 
     /**
@@ -114,7 +114,7 @@ public class PulseManager {
      * @param handler The Flightpath-compatible exception handler to use.
      */
     public void setPulseExceptionHandler(IExceptionHandler handler) {
-        flightpath.setExceptionHandler(handler);
+        this.flightpath.setExceptionHandler(handler);
     }
 
     /**
@@ -125,12 +125,12 @@ public class PulseManager {
      * @param pulse The Pulse to register.
      */
     public void registerPulse(Object pulse) {
-        if (blockNewRegistrations) throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
+        if (this.blockNewRegistrations) throw new RuntimeException("A mod tried to register a plugin after preinit! Pulse: "
                 + pulse);
-        if (!configLoaded) {
-            conf.load();
+        if (!this.configLoaded) {
+            this.conf.load();
 
-            configLoaded = true;
+            this.configLoaded = true;
         }
 
         String id, description, deps, pulseDeps;
@@ -156,7 +156,7 @@ public class PulseManager {
             String[] parsedDeps = deps.split(";");
             for (String s : parsedDeps) {
                 if (!ModList.get().isLoaded(s)) {
-                    log.info("Skipping Pulse " + id + "; missing dependency: " + s);
+                    this.log.info("Skipping Pulse " + id + "; missing dependency: " + s);
                     missingDeps = true;
                     enabled = false;
                     break;
@@ -165,10 +165,10 @@ public class PulseManager {
         }
 
         PulseMeta meta = new PulseMeta(id, description, forced, enabled, defaultEnabled);
-        meta.setMissingDeps(missingDeps || !hasRequiredPulses(meta, pulseDeps));
+        meta.setMissingDeps(missingDeps || !this.hasRequiredPulses(meta, pulseDeps));
 
-        conf.addPulse(meta);
-        allPulses.put(pulse, meta);
+        this.conf.addPulse(meta);
+        this.allPulses.put(pulse, meta);
     }
 
     /**
@@ -178,7 +178,7 @@ public class PulseManager {
      */
     private void attachToContainerEventBus(Object obj) {
         ModContainer cnt =  ModLoadingContext.get().getActiveContainer();
-        log.debug("Attaching [" + obj + "] to event bus for container [" + cnt + "]");
+        this.log.debug("Attaching [" + obj + "] to event bus for container [" + cnt + "]");
         try {
             FMLModContainer mc = (FMLModContainer)cnt;
             Field ebf = mc.getClass().getDeclaredField("eventBus");
@@ -207,29 +207,31 @@ public class PulseManager {
      */
     @SubscribeEvent
     public void propagateEvent(Event evt) {
-        if (evt instanceof FMLCommonSetupEvent) preInit((FMLCommonSetupEvent) evt);
+        if (evt instanceof FMLCommonSetupEvent)
+            this.preInit((FMLCommonSetupEvent) evt);
         // We use individual buses due to the EventBus class using a Set rather than a List, thus losing the ordering.
         // This trick is shamelessly borrowed from FML.
-        flightpath.post(evt);
+        this.flightpath.post(evt);
     }
 
     private boolean getEnabledFromConfig(PulseMeta meta) {
-        if (meta.isForced() || !useConfig) return true; // Forced or no config set.
+        if (meta.isForced() || !this.useConfig) return true; // Forced or no config set.
 
-        return conf.isModuleEnabled(meta);
+        return this.conf.isModuleEnabled(meta);
     }
 
     private void preInit(FMLCommonSetupEvent evt) {
-        if (!blockNewRegistrations) conf.flush(); // First init call, so flush config
-        blockNewRegistrations = true;
+        if (!this.blockNewRegistrations)
+            this.conf.flush(); // First init call, so flush config
+        this.blockNewRegistrations = true;
     }
 
     private boolean hasRequiredPulses(PulseMeta meta, String deps) {
         if (!deps.equals("")) {
             String[] parsedDeps = deps.split(";");
             for (String s : parsedDeps) {
-                if (!isPulseLoaded(s)) {
-                    log.info("Skipping Pulse " + meta.getId() + "; missing pulse: " + s);
+                if (!this.isPulseLoaded(s)) {
+                    this.log.info("Skipping Pulse " + meta.getId() + "; missing pulse: " + s);
                     return false;
                 }
             }
@@ -248,7 +250,7 @@ public class PulseManager {
         if(pulseId.contains(":")) {
             return isPulseLoadedGlobal(pulseId);
         }
-        return isPulseLoaded(pulses, pulseId);
+        return isPulseLoaded(this.pulses, pulseId);
     }
 
     /**
@@ -282,12 +284,12 @@ public class PulseManager {
     }
 
     public Collection<PulseMeta> getAllPulseMetadata() {
-        return pulses.values();
+        return this.pulses.values();
     }
 
     @Override
     public String toString() {
-        return "PulseManager[" + id + "]";
+        return "PulseManager[" + this.id + "]";
     }
     /**
      * Enable or Disable all Pulses registered
@@ -295,19 +297,20 @@ public class PulseManager {
      * This MUST be called after you register all your pulses using registerPulse and must be called BEFORE preinit
      */
     public void enablePulses() {
-        if(blockNewRegistrations) throw new RuntimeException("A mod tried to enable their plugins after preinit!");
+        if(this.blockNewRegistrations) throw new RuntimeException("A mod tried to enable their plugins after preinit!");
 
-        if(configLoaded) conf.postLoad();
+        if(this.configLoaded)
+            this.conf.postLoad();
 
-        for (Map.Entry<Object, PulseMeta> entry : allPulses.entrySet()) {
+        for (Map.Entry<Object, PulseMeta> entry : this.allPulses.entrySet()) {
             PulseMeta meta = entry.getValue();
             Object pulse = entry.getKey();
 
-            meta.setEnabled(getEnabledFromConfig(meta));
+            meta.setEnabled(this.getEnabledFromConfig(meta));
 
             if (meta.isEnabled()) {
-                pulses.put(pulse, meta);
-                flightpath.register(pulse);
+                this.pulses.put(pulse, meta);
+                this.flightpath.register(pulse);
             }
         }
     }

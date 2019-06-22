@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -80,25 +81,26 @@ public class GuiBook extends Screen
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public GuiBook(BookData book, @Nullable ItemStack item) {
+  public GuiBook(ITextComponent title, BookData book, @Nullable ItemStack item) {
+    super(title);
     this.book = book;
     this.item = item;
 
     this.minecraft = Minecraft.getInstance();
-    this.font = minecraft.fontRenderer;
-    init();
+    this.font = this.minecraft.fontRenderer;
+    this.init();
 
-    advancementCache = new AdvancementCache();
-    this.minecraft.player.connection.getAdvancementManager().setListener(advancementCache);
+    this.advancementCache = new AdvancementCache();
+    this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
 
-    openPage(book.findPageNumber(BookHelper.getSavedPage(item), advancementCache));
+    this.openPage(book.findPageNumber(BookHelper.getSavedPage(item), this.advancementCache));
   }
 
   public void drawerTransform(boolean rightSide) {
     if(rightSide) {
-      GlStateManager.translatef(width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      GlStateManager.translatef(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     } else {
-      GlStateManager.translatef(width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      GlStateManager.translatef(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
   }
 
@@ -106,32 +108,32 @@ public class GuiBook extends Screen
   protected float leftOffset(boolean rightSide) {
     if(rightSide) {
       // from center: go padding + margin to the right
-      return width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN;
+      return this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN;
     } else {
       // from center: go page width left, then right with padding and margin
-      return width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN;
+      return this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN;
     }
   }
 
   protected float topOffset() {
-    return height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN;
+    return this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN;
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.mainWindow.getFramebufferWidth() - leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.mainWindow.getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((this.height - Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.mainWindow.getFramebufferWidth() - 1 - topOffset()) / PAGE_SCALE);
+    return (int) ((this.height - Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.mainWindow.getFramebufferWidth() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
   @Override
   @SuppressWarnings("ForLoopReplaceableByForEach")
   public void render(int mouseX, int mouseY, float partialTicks) {
-    init();
-    FontRenderer fontRenderer = book.fontRenderer;
+    this.init();
+    FontRenderer fontRenderer = this.book.fontRenderer;
     if(fontRenderer == null) {
-      fontRenderer = minecraft.fontRenderer;
+      fontRenderer = this.minecraft.fontRenderer;
     }
 
     if(debug) {
@@ -172,38 +174,38 @@ public class GuiBook extends Screen
     GlStateManager.pushMatrix();
     GlStateManager.color3f(1F, 1F, 1F);
 
-    float coverR = ((book.appearance.coverColor >> 16) & 0xff) / 255.F;
-    float coverG = ((book.appearance.coverColor >> 8) & 0xff) / 255.F;
-    float coverB = (book.appearance.coverColor & 0xff) / 255.F;
+    float coverR = ((this.book.appearance.coverColor >> 16) & 0xff) / 255.F;
+    float coverG = ((this.book.appearance.coverColor >> 8) & 0xff) / 255.F;
+    float coverB = (this.book.appearance.coverColor & 0xff) / 255.F;
 
     TextureManager render = this.minecraft.textureManager;
 
-    if(page == -1) {
+    if(this.page == -1) {
       render.bindTexture(TEX_BOOKFRONT);
       RenderHelper.disableStandardItemLighting();
 
       GlStateManager.color3f(coverR, coverG, coverB);
-      blit(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      blit(this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
       GlStateManager.color3f(1F, 1F, 1F);
 
-      if(!book.appearance.title.isEmpty()) {
-        blit(width / 2 - PAGE_WIDTH_UNSCALED / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      if(!this.book.appearance.title.isEmpty()) {
+        blit(this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
 
-        float scale = fontRenderer.getStringWidth(book.appearance.title) <= 67 ? 2.5F : 2F;
+        float scale = fontRenderer.getStringWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
 
         GlStateManager.scalef(scale, scale, 1F);
-        fontRenderer.drawStringWithShadow(book.appearance.title, (width / 2) / scale + 3 - fontRenderer
-                                                                                     .getStringWidth(book.appearance.title) / 2, (height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
+        fontRenderer.drawStringWithShadow(this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer
+                                                                                     .getStringWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
         GlStateManager.popMatrix();
       }
 
-      if(!book.appearance.subtitle.isEmpty()) {
+      if(!this.book.appearance.subtitle.isEmpty()) {
         GlStateManager.pushMatrix();
         GlStateManager.scalef(1.5F, 1.5F, 1F);
-        fontRenderer.drawStringWithShadow(book.appearance.subtitle, (width / 2) / 1.5F + 7 - fontRenderer
-                                                                                       .getStringWidth(book.appearance.subtitle) / 2, (height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
+        fontRenderer.drawStringWithShadow(this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer
+                                                                                       .getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
         GlStateManager.popMatrix();
       }
     } else {
@@ -211,37 +213,37 @@ public class GuiBook extends Screen
       RenderHelper.disableStandardItemLighting();
 
       GlStateManager.color3f(coverR, coverG, coverB);
-      blit(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      blit(this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
       GlStateManager.color3f(1F, 1F, 1F);
 
-      if(page != 0) {
-        blit(width / 2 - PAGE_WIDTH_UNSCALED, height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      if(this.page != 0) {
+        blit(this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
-        drawerTransform(false);
+        this.drawerTransform(false);
 
         GlStateManager.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
-        if(book.appearance.drawPageNumbers) {
-          String pNum = (page - 1) * 2 + 2 + "";
+        if(this.book.appearance.drawPageNumbers) {
+          String pNum = (this.page - 1) * 2 + 2 + "";
           fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
-        int mX = getMouseX(false);
-        int mY = getMouseY();
+        int mX = this.getMouseX(false);
+        int mY = this.getMouseY();
 
         // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < leftElements.size(); i++) {
-          BookElement element = leftElements.get(i);
+        for(int i = 0; i < this.leftElements.size(); i++) {
+          BookElement element = this.leftElements.get(i);
 
           GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
         // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < leftElements.size(); i++) {
-          BookElement element = leftElements.get(i);
+        for(int i = 0; i < this.leftElements.size(); i++) {
+          BookElement element = this.leftElements.get(i);
 
           GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
@@ -256,34 +258,34 @@ public class GuiBook extends Screen
       GlStateManager.color4f(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
 
-      int fullPageCount = book.getFullPageCount(advancementCache);
-      if(page < fullPageCount - 1 || book.getPageCount(advancementCache) % 2 != 0) {
-        blit(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      int fullPageCount = this.book.getFullPageCount(this.advancementCache);
+      if(this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0) {
+        blit(this.width / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
-        drawerTransform(true);
+        this.drawerTransform(true);
 
         GlStateManager.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
-        if(book.appearance.drawPageNumbers) {
-          String pNum = (page - 1) * 2 + 3 + "";
+        if(this.book.appearance.drawPageNumbers) {
+          String pNum = (this.page - 1) * 2 + 3 + "";
           fontRenderer.drawString(pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
-        int mX = getMouseX(true);
-        int mY = getMouseY();
+        int mX = this.getMouseX(true);
+        int mY = this.getMouseY();
 
         // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < rightElements.size(); i++) {
-          BookElement element = rightElements.get(i);
+        for(int i = 0; i < this.rightElements.size(); i++) {
+          BookElement element = this.rightElements.get(i);
 
           GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
         // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < rightElements.size(); i++) {
-          BookElement element = rightElements.get(i);
+        for(int i = 0; i < this.rightElements.size(); i++) {
+          BookElement element = this.rightElements.get(i);
 
           GlStateManager.color4f(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
@@ -299,7 +301,7 @@ public class GuiBook extends Screen
   }
 
   public int openPage(int page) {
-    return openPage(page, false);
+    return this.openPage(page, false);
   }
 
   public int openPage(int page, boolean returner) {
@@ -316,12 +318,12 @@ public class GuiBook extends Screen
       bookPage = (page - 2) / 2 + 1;
     }
 
-    if(bookPage >= -1 && bookPage < book.getFullPageCount(advancementCache)) {
+    if(bookPage >= -1 && bookPage < this.book.getFullPageCount(this.advancementCache)) {
       if(returner) {
-        oldPage = this.page;
+        this.oldPage = this.page;
       }
 
-      _setPage(bookPage);
+      this._setPage(bookPage);
     }
 
     return page % 2 == 0 ? 0 : 1;
@@ -329,73 +331,73 @@ public class GuiBook extends Screen
 
   public void _setPage(int page) {
     this.page = page;
-    buildPages();
+    this.buildPages();
   }
 
   public int getPage(int side) {
-    if(page == 0 && side == 0) {
+    if(this.page == 0 && side == 0) {
       return -1;
-    } else if(page == 0 && side == 1) {
+    } else if(this.page == 0 && side == 1) {
       return 0;
     } else if(side == 0) {
-      return (page - 1) * 2 + 1;
+      return (this.page - 1) * 2 + 1;
     } else if(side == 1) {
-      return (page - 2) * 2 + 2;
+      return (this.page - 2) * 2 + 2;
     } else {
       return -1;
     }
   }
 
   public int getPage_() {
-    return page;
+    return this.page;
   }
 
   public ArrayList<BookElement> getElements(int side) {
-    return side == 0 ? leftElements : side == 1 ? rightElements : null;
+    return side == 0 ? this.leftElements : side == 1 ? this.rightElements : null;
   }
 
   public void openCover() {
-    _setPage(-1);
+    this._setPage(-1);
 
     this.leftElements.clear();
     this.rightElements.clear();
-    buildPages();
+    this.buildPages();
   }
 
   public void itemClicked(ItemStack item) {
-    StringActionProcessor.process(book.getItemAction(ItemStackData.getItemStackData(item, true)), this);
+    StringActionProcessor.process(this.book.getItemAction(ItemStackData.getItemStackData(item, true)), this);
   }
 
   private void buildPages() {
-    leftElements.clear();
-    rightElements.clear();
+    this.leftElements.clear();
+    this.rightElements.clear();
 
-    if(page == -1) {
+    if(this.page == -1) {
       return;
     }
 
-    if(page == 0) {
-      PageData page = book.findPage(0, advancementCache);
+    if(this.page == 0) {
+      PageData page = this.book.findPage(0, this.advancementCache);
 
       if(page != null) {
-        page.content.build(book, rightElements, false);
+        page.content.build(this.book, this.rightElements, false);
       }
     } else {
-      PageData leftPage = book.findPage((page - 1) * 2 + 1, advancementCache);
-      PageData rightPage = book.findPage((page - 1) * 2 + 2, advancementCache);
+      PageData leftPage = this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
+      PageData rightPage = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
 
       if(leftPage != null) {
-        leftPage.content.build(book, leftElements, false);
+        leftPage.content.build(this.book, this.leftElements, false);
       }
       if(rightPage != null) {
-        rightPage.content.build(book, rightElements, true);
+        rightPage.content.build(this.book, this.rightElements, true);
       }
     }
 
-    for(BookElement element : leftElements) {
+    for(BookElement element : this.leftElements) {
       element.parent = this;
     }
-    for(BookElement element : rightElements) {
+    for(BookElement element : this.rightElements) {
       element.parent = this;
     }
   }
@@ -411,84 +413,84 @@ public class GuiBook extends Screen
       height /= 2F;
     }*/
 
-    previousArrow = new GuiArrow(0, -50, -50, GuiArrow.ArrowType.PREV, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+    this.previousArrow = new GuiArrow(0, -50, -50, GuiArrow.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover) {
       @Override
       public void onClick(double mouseX, double mouseY) {
-        page--;
-        if(page < -1) {
-          page = -1;
+        GuiBook.this.page--;
+        if(GuiBook.this.page < -1) {
+          GuiBook.this.page = -1;
         }
 
-        oldPage = -2;
-        buildPages();
+        GuiBook.this.oldPage = -2;
+        GuiBook.this.buildPages();
       }
     };
 
-    nextArrow = new GuiArrow(1, -50, -50, GuiArrow.ArrowType.NEXT, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+    this.nextArrow = new GuiArrow(1, -50, -50, GuiArrow.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover) {
       @Override
       public void onClick(double mouseX, double mouseY) {
-        page++;
-        int fullPageCount = book.getFullPageCount(advancementCache);
-        if(page >= fullPageCount) {
-          page = fullPageCount - 1;
+        GuiBook.this.page++;
+        int fullPageCount = GuiBook.this.book.getFullPageCount(GuiBook.this.advancementCache);
+        if(GuiBook.this.page >= fullPageCount) {
+          GuiBook.this.page = fullPageCount - 1;
         }
-        oldPage = -2;
-        buildPages();
+        GuiBook.this.oldPage = -2;
+        GuiBook.this.buildPages();
       }
     };
 
-    backArrow = new GuiArrow(2, width / 2 - GuiArrow.WIDTH / 2, height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+    this.backArrow = new GuiArrow(2, this.width / 2 - GuiArrow.WIDTH / 2, this.height / 2 + GuiArrow.HEIGHT / 2 + PAGE_HEIGHT/2, GuiArrow.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover) {
       @Override
       public void onClick(double mouseX, double mouseY) {
-        if(oldPage >= -1) {
-          page = oldPage;
+        if(GuiBook.this.oldPage >= -1) {
+          GuiBook.this.page = GuiBook.this.oldPage;
         }
 
-        oldPage = -2;
-        buildPages();
+        GuiBook.this.oldPage = -2;
+        GuiBook.this.buildPages();
       }
     };
 
-    indexArrow = new GuiArrow(3, width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, book.appearance.arrowColor, book.appearance.arrowColorHover) {
+    this.indexArrow = new GuiArrow(3, this.width / 2 - PAGE_WIDTH_UNSCALED - GuiArrow.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, GuiArrow.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover) {
       @Override
       public void onClick(double mouseX, double mouseY) {
-        openPage(book.findPageNumber("index.page1"));
+        GuiBook.this.openPage(GuiBook.this.book.findPageNumber("index.page1"));
 
-        oldPage = -2;
-        buildPages();
+        GuiBook.this.oldPage = -2;
+        GuiBook.this.buildPages();
       }
     };
 
-    buttons.clear();
-    buttons.add(previousArrow);
-    buttons.add(nextArrow);
-    buttons.add(backArrow);
-    buttons.add(indexArrow);
+    this.buttons.clear();
+    this.buttons.add(this.previousArrow);
+    this.buttons.add(this.nextArrow);
+    this.buttons.add(this.backArrow);
+    this.buttons.add(this.indexArrow);
 
-    buildPages();
+    this.buildPages();
   }
 
   @Override
   public void tick() {
     super.tick();
 
-    previousArrow.visible = page != -1;
-    nextArrow.visible = page + 1 < book.getFullPageCount(advancementCache);
-    backArrow.visible = oldPage >= -1;
+    this.previousArrow.visible = this.page != -1;
+    this.nextArrow.visible = this.page + 1 < this.book.getFullPageCount(this.advancementCache);
+    this.backArrow.visible = this.oldPage >= -1;
 
-    if(page == -1) {
-      nextArrow.x = width / 2 + 80;
-      indexArrow.visible = false;
+    if(this.page == -1) {
+      this.nextArrow.x = this.width / 2 + 80;
+      this.indexArrow.visible = false;
     } else {
-      previousArrow.x = width / 2 - 184;
-      nextArrow.x = width / 2 + 165;
+      this.previousArrow.x = this.width / 2 - 184;
+      this.nextArrow.x = this.width / 2 + 165;
 
-      indexArrow.visible = book.findSection("index") != null && (page - 1) * 2 + 2 > book.findSection("index")
+      this.indexArrow.visible = this.book.findSection("index") != null && (this.page - 1) * 2 + 2 > this.book.findSection("index")
                                                                                          .getPageCount();
     }
 
-    previousArrow.y = height / 2 + 75;
-    nextArrow.y = height / 2 + 75;
+    this.previousArrow.y = this.height / 2 + 75;
+    this.nextArrow.y = this.height / 2 + 75;
   }
 
   /*@Override
@@ -508,23 +510,23 @@ public class GuiBook extends Screen
     switch(keyCode) {
       case GLFW.GLFW_KEY_LEFT:
       case GLFW.GLFW_KEY_A:
-        page--;
-        if(page < -1) {
-          page = -1;
+        this.page--;
+        if(this.page < -1) {
+          this.page = -1;
         }
 
-        oldPage = -2;
-        buildPages();
+        this.oldPage = -2;
+        this.buildPages();
         return true;
       case GLFW.GLFW_KEY_RIGHT:
       case GLFW.GLFW_KEY_D:
-        page++;
-        int fullPageCount = book.getFullPageCount(advancementCache);
-        if(page >= fullPageCount) {
-          page = fullPageCount - 1;
+        this.page++;
+        int fullPageCount = this.book.getFullPageCount(this.advancementCache);
+        if(this.page >= fullPageCount) {
+          this.page = fullPageCount - 1;
         }
-        oldPage = -2;
-        buildPages();
+        this.oldPage = -2;
+        this.buildPages();
         return true;
       case GLFW.GLFW_KEY_F3:
         debug = !debug;
@@ -535,53 +537,53 @@ public class GuiBook extends Screen
   }
 
   @Override
-  public boolean mouseScrolled(double scrollDelta) {
+  public boolean mouseScrolled(double scrollDelta, double unKnown1, double unKnown2) {
 
     if (scrollDelta < 0.0D) {
-      page++;
-      int fullPageCount = book.getFullPageCount(advancementCache);
-      if(page >= fullPageCount) {
-        page = fullPageCount - 1;
+      this.page++;
+      int fullPageCount = this.book.getFullPageCount(this.advancementCache);
+      if(this.page >= fullPageCount) {
+        this.page = fullPageCount - 1;
       }
-      oldPage = -2;
-      buildPages();
+      this.oldPage = -2;
+      this.buildPages();
 
       return true;
     }
     else if (scrollDelta > 0.0D) {
-      page--;
-      if(page < -1) {
-        page = -1;
+      this.page--;
+      if(this.page < -1) {
+        this.page = -1;
       }
 
-      oldPage = -2;
-      buildPages();
+      this.oldPage = -2;
+      this.buildPages();
 
       return true;
     }
 
-    return super.mouseScrolled(scrollDelta);
+    return super.mouseScrolled(scrollDelta, unKnown1, unKnown2);
   }
 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
     boolean right = false;
 
-    mouseX = getMouseX(false);
-    mouseY = getMouseY();
+    mouseX = this.getMouseX(false);
+    mouseY = this.getMouseY();
 
     if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
-      mouseX = getMouseX(true);
+      mouseX = this.getMouseX(true);
       right = true;
     }
 
     // Not foreach to prevent conmodification crashes
-    int oldPage = page;
-    List<BookElement> elementList = ImmutableList.copyOf(right ? rightElements: leftElements);
+    int oldPage = this.page;
+    List<BookElement> elementList = ImmutableList.copyOf(right ? this.rightElements : this.leftElements);
     for(BookElement element : elementList) {
       element.mouseClicked(mouseX, mouseY, mouseButton);
       // if we changed page stop so we don't act on the new page
-      if(page != oldPage) {
+      if(this.page != oldPage) {
         return true;
       }
     }
@@ -592,17 +594,17 @@ public class GuiBook extends Screen
   @Override
   public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
     boolean right = false;
-    mouseX = getMouseX(false);
-    mouseY = getMouseY();
+    mouseX = this.getMouseX(false);
+    mouseY = this.getMouseY();
 
     if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
-      mouseX = getMouseX(true);
+      mouseX = this.getMouseX(true);
       right = true;
     }
 
     // Not foreach to prevent conmodification crashes
-    for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
-      BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+    for(int i = 0; right ? i < this.rightElements.size() : i < this.leftElements.size(); i++) {
+      BookElement element = right ? this.rightElements.get(i) : this.leftElements.get(i);
       element.mouseReleased(mouseX, mouseY, mouseButton);
     }
     return super.mouseReleased(mouseX, mouseY, mouseButton);
@@ -611,17 +613,17 @@ public class GuiBook extends Screen
   @Override
   public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLaslick, double unknown) {
     boolean right = false;
-    mouseX = getMouseX(false);
-    mouseY = getMouseY();
+    mouseX = this.getMouseX(false);
+    mouseY = this.getMouseY();
 
     if(mouseX > PAGE_WIDTH + (PAGE_MARGIN + PAGE_PADDING_LEFT) / PAGE_SCALE) {
-      mouseX = getMouseX(true);
+      mouseX = this.getMouseX(true);
       right = true;
     }
 
     // Not foreach to prevent conmodification crashes
-    for(int i = 0; right ? i < rightElements.size() : i < leftElements.size(); i++) {
-      BookElement element = right ? rightElements.get(i) : leftElements.get(i);
+    for(int i = 0; right ? i < this.rightElements.size() : i < this.leftElements.size(); i++) {
+      BookElement element = right ? this.rightElements.get(i) : this.leftElements.get(i);
       element.mouseClickMove(mouseX, mouseY, clickedMouseButton);
     }
 
@@ -630,25 +632,25 @@ public class GuiBook extends Screen
 
   @Override
   public void removed() {
-    if(minecraft.player == null) {
+    if(this.minecraft.player == null) {
       return;
     }
 
-    PageData page = this.page == 0 ? book.findPage(0, advancementCache) : book.findPage((this.page - 1) * 2 + 1, advancementCache);
+    PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
 
     if(page == null) {
-      page = book.findPage((this.page - 1) * 2 + 2, advancementCache);
+      page = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
     }
 
     if(this.page == -1) {
-      BookLoader.updateSavedPage(mc.player, item, "");
+      BookLoader.updateSavedPage(this.minecraft.player, this.item, "");
     } else if(page != null && page.parent != null) {
-      BookLoader.updateSavedPage(mc.player, item, page.parent.name + "." + page.name);
+      BookLoader.updateSavedPage(this.minecraft.player, this.item, page.parent.name + "." + page.name);
     }
   }
 
   @Override
-  public boolean doesGuiPauseGame() {
+  public boolean isPauseScreen() {
     return false;
   }
 
@@ -657,20 +659,20 @@ public class GuiBook extends Screen
     private HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
 
     public AdvancementProgress getProgress(String id){
-      return getProgress(getAdvancement(id));
+      return this.getProgress(this.getAdvancement(id));
     }
 
     public AdvancementProgress getProgress(Advancement advancement){
-      return progress.get(advancement);
+      return this.progress.get(advancement);
     }
 
     public Advancement getAdvancement(String id){
-      return nameCache.get(new ResourceLocation(id));
+      return this.nameCache.get(new ResourceLocation(id));
     }
 
     @Override
     public void onUpdateAdvancementProgress(Advancement advancement, AdvancementProgress advancementProgress) {
-      progress.put(advancement, advancementProgress);
+      this.progress.put(advancement, advancementProgress);
     }
 
     @Override
@@ -680,30 +682,30 @@ public class GuiBook extends Screen
 
     @Override
     public void rootAdvancementAdded(Advancement advancement) {
-      nameCache.put(advancement.getId(), advancement);
+      this.nameCache.put(advancement.getId(), advancement);
     }
 
     @Override
     public void rootAdvancementRemoved(Advancement advancement) {
-      progress.remove(advancement);
-      nameCache.remove(advancement.getId());
+      this.progress.remove(advancement);
+      this.nameCache.remove(advancement.getId());
     }
 
     @Override
     public void nonRootAdvancementAdded(Advancement advancement) {
-      nameCache.put(advancement.getId(), advancement);
+      this.nameCache.put(advancement.getId(), advancement);
     }
 
     @Override
     public void nonRootAdvancementRemoved(Advancement advancement) {
-      progress.remove(advancement);
-      nameCache.remove(advancement.getId());
+      this.progress.remove(advancement);
+      this.nameCache.remove(advancement.getId());
     }
 
     @Override
     public void advancementsCleared() {
-      progress.clear();
-      nameCache.clear();
+      this.progress.clear();
+      this.nameCache.clear();
     }
   }
 }

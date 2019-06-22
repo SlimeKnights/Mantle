@@ -55,7 +55,7 @@ public class Flightpath {
      * @param handler The handler to use.
      */
     public void setExceptionHandler(IExceptionHandler handler) {
-        synchronized (lock) {
+        synchronized (this.lock) {
             this.exceptionHandler = handler;
         }
     }
@@ -66,9 +66,9 @@ public class Flightpath {
      * @param obj Object to attach to the bus.
      */
     public void register(Object obj) {
-        synchronized (lock) {
-            if (subscribers.containsKey(obj)) return; // Nothing to do.
-            subscribers.put(obj, locator.findSubscribers(obj));
+        synchronized (this.lock) {
+            if (this.subscribers.containsKey(obj)) return; // Nothing to do.
+            this.subscribers.put(obj, this.locator.findSubscribers(obj));
         }
     }
 
@@ -80,8 +80,8 @@ public class Flightpath {
      * @param evt The event to post.
      */
     public void post(Event evt) {
-        synchronized (lock) {
-            for (Map.Entry<Object, Map<Class<?>, Map<Method, Type>>> ent : subscribers.entrySet()) {
+        synchronized (this.lock) {
+            for (Map.Entry<Object, Map<Class<?>, Map<Method, Type>>> ent : this.subscribers.entrySet()) {
                 for (Map.Entry<Class<?>, Map<Method, Type>> obj: ent.getValue().entrySet()) {
                     if (!obj.getKey().isAssignableFrom(evt.getClass())) continue;
                     for(Map.Entry<Method, Type> objEnt : obj.getValue().entrySet()){
@@ -98,18 +98,18 @@ public class Flightpath {
                         } catch(InvocationTargetException ex) {
                             // thrown when a method throws an exception, so use that exception instead of the wrapper for a better stacktrace
                             if(ex.getTargetException() instanceof Exception) {
-                                exceptionHandler.handle((Exception)ex.getTargetException());
+                                this.exceptionHandler.handle((Exception)ex.getTargetException());
                             } else {
-                                exceptionHandler.handle(ex);
+                                this.exceptionHandler.handle(ex);
                             }
                         } catch (Exception ex) {
                             // all other exceptions, this means something when wrong with the reflection
-                            exceptionHandler.handle(ex);
+                            this.exceptionHandler.handle(ex);
                         }
                     }
                 }
             }
-            exceptionHandler.flush();
+            this.exceptionHandler.flush();
         }
     }
 

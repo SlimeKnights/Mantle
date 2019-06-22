@@ -36,35 +36,35 @@ public class SectionData implements IDataItem {
 
   public SectionData(boolean custom) {
     if(custom) {
-      data = "no-load";
+      this.data = "no-load";
     }
   }
 
   public String translate(String string) {
-    return parent.translate(string);
+    return this.parent.translate(string);
   }
 
   @Override
   public void load() {
-    if(name == null) {
-      name = "section" + parent.unnamedSectionCounter++;
+    if(this.name == null) {
+      this.name = "section" + this.parent.unnamedSectionCounter++;
     }
 
-    name = name.toLowerCase();
+    this.name = this.name.toLowerCase();
 
-    if(!data.equals("no-load")) {
-      IResource pagesInfo = source.getResource(source.getResourceLocation(data));
+    if(!this.data.equals("no-load")) {
+      IResource pagesInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if(pagesInfo != null) {
-        String data = source.resourceToString(pagesInfo);
+        String data = this.source.resourceToString(pagesInfo);
         if(!data.isEmpty()) {
           try {
-            pages = getPages(data);
+            this.pages = this.getPages(data);
           } catch(Exception e) {
-            pages = new ArrayList<>();
+            this.pages = new ArrayList<>();
             PageData pdError = new PageData(true);
             pdError.name = "errorrenous";
-            pdError.content = new ContentError("Failed to load section " + name + ".", e);
-            pages.add(pdError);
+            pdError.content = new ContentError("Failed to load section " + this.name + ".", e);
+            this.pages.add(pdError);
 
             e.printStackTrace();
           }
@@ -72,13 +72,13 @@ public class SectionData implements IDataItem {
       }
     }
 
-    for(PageData page : pages) {
+    for(PageData page : this.pages) {
       page.parent = this;
-      page.source = source;
+      page.source = this.source;
       page.load();
     }
 
-    icon.location = source.getResourceLocation(icon.file, true);
+    this.icon.location = this.source.getResourceLocation(this.icon.file, true);
   }
 
   /**
@@ -94,20 +94,20 @@ public class SectionData implements IDataItem {
   }
 
   public String getTitle() {
-    String title = parent.strings.get(name);
-    return title == null ? name : title;
+    String title = this.parent.strings.get(this.name);
+    return title == null ? this.name : title;
   }
 
   public int getPageCount() {
-    return pages.size();
+    return this.pages.size();
   }
 
   public boolean isUnlocked(GuiBook.AdvancementCache advancementCache) {
-    if(advancementCache == null || requirements == null || requirements.size() == 0) {
+    if(advancementCache == null || this.requirements == null || this.requirements.size() == 0) {
       return true;
     }
 
-    for(String achievement : requirements) {
+    for(String achievement : this.requirements) {
       if(!requirementSatisfied(achievement, advancementCache)) {
         return false;
       }

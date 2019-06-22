@@ -179,16 +179,16 @@ public abstract class RecipeMatch {
 
     @Override
     public List<ItemStack> getInputs() {
-      return ImmutableList.of(template);
+      return ImmutableList.of(this.template);
     }
 
     @Override
     public Optional<Match> matches(NonNullList<ItemStack> stacks) {
       List<ItemStack> found = Lists.newLinkedList();
-      int stillNeeded = amountNeeded;
+      int stillNeeded = this.amountNeeded;
 
       for(ItemStack stack : stacks) {
-        if(OreDictionary.itemMatches(template, stack, false)) {
+        if(OreDictionary.itemMatches(this.template, stack, false)) {
           // add the amount found to the list
           ItemStack copy = stack.copy();
           copy.setCount(Math.min(copy.getCount(), stillNeeded));
@@ -197,7 +197,7 @@ public abstract class RecipeMatch {
 
           // we found enough
           if(stillNeeded <= 0) {
-            return Optional.of(new Match(found, amountMatched));
+            return Optional.of(new Match(found, this.amountMatched));
           }
         }
       }
@@ -217,7 +217,7 @@ public abstract class RecipeMatch {
     public ItemCombination(int amountMatched, ItemStack... stacks) {
       super(amountMatched, 0);
 
-      NonNullList<ItemStack> nonNullStacks = NonNullList.<ItemStack> withSize(stacks.length, ItemStack.EMPTY);
+      NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(stacks.length, ItemStack.EMPTY);
       for(int i = 0; i < stacks.length; i++) {
         if(!stacks[i].isEmpty()) {
             nonNullStacks.set(i, stacks[i].copy());
@@ -229,7 +229,7 @@ public abstract class RecipeMatch {
 
     @Override
     public List<ItemStack> getInputs() {
-      return ImmutableList.copyOf(itemStacks);
+      return ImmutableList.copyOf(this.itemStacks);
     }
 
     @Override
@@ -237,8 +237,8 @@ public abstract class RecipeMatch {
       List<ItemStack> found = Lists.newLinkedList();
       Set<Integer> needed = Sets.newHashSet();
 
-      for(int i = 0; i < itemStacks.size(); i++) {
-        if(!itemStacks.get(i).isEmpty()) {
+      for(int i = 0; i < this.itemStacks.size(); i++) {
+        if(!this.itemStacks.get(i).isEmpty()) {
           needed.add(i);
         }
       }
@@ -247,7 +247,7 @@ public abstract class RecipeMatch {
         Iterator<Integer> iter = needed.iterator();
         while(iter.hasNext()) {
           int index = iter.next();
-          ItemStack template = itemStacks.get(index);
+          ItemStack template = this.itemStacks.get(index);
           if(ItemStack.areItemsEqual(template, stack) && ItemStack.areItemStackTagsEqual(template, stack)) {
             // add the amount found to the list
             ItemStack copy = stack.copy();
@@ -260,7 +260,7 @@ public abstract class RecipeMatch {
       }
 
       if(needed.isEmpty()) {
-        return Optional.of(new Match(found, amountMatched));
+        return Optional.of(new Match(found, this.amountMatched));
       }
       return Optional.empty();
     }
@@ -293,16 +293,16 @@ public abstract class RecipeMatch {
     public List<ItemStack> getInputs() {
       // transform "Requires 2 Cobblestone" into "2x require 1 Cobblestone" since the oredictEntry only contains stacksize 1 usually
       ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
-      oredictEntry.forEach(stack -> IntStream.range(0, amountNeeded).forEach(i -> builder.add(stack)));
+      this.oredictEntry.forEach(stack -> IntStream.range(0, this.amountNeeded).forEach(i -> builder.add(stack)));
       return builder.build();
     }
 
     @Override
     public Optional<Match> matches(NonNullList<ItemStack> stacks) {
       List<ItemStack> found = Lists.newLinkedList();
-      int stillNeeded = amountNeeded;
+      int stillNeeded = this.amountNeeded;
 
-      for(ItemStack ore : oredictEntry) {
+      for(ItemStack ore : this.oredictEntry) {
         for(ItemStack stack : stacks) {
           if(OreDictionary.itemMatches(ore, stack, false)) {
             // add the amount found to the list
@@ -313,7 +313,7 @@ public abstract class RecipeMatch {
 
             // we found enough
             if(stillNeeded <= 0) {
-              return Optional.of(new Match(found, amountMatched));
+              return Optional.of(new Match(found, this.amountMatched));
             }
           }
         }

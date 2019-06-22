@@ -27,7 +27,7 @@ public class FileRepository extends BookRepository {
   @Override
   public List<SectionData> getSections() {
     return new ArrayList<>(Arrays.asList(BookLoader.GSON
-                                             .fromJson(resourceToString(getResource(getResourceLocation("index.json"))), SectionData[].class)));
+                                             .fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionData[].class)));
   }
 
   @Override
@@ -40,7 +40,7 @@ public class FileRepository extends BookRepository {
 
       if(Minecraft.getInstance().getLanguageManager() != null && Minecraft.getInstance().getLanguageManager().getCurrentLanguage() != null)
       {
-        langPath = Minecraft.getInstance().getLanguageManager().getCurrentLanguage().getLanguageCode();
+        langPath = Minecraft.getInstance().getLanguageManager().getCurrentLanguage().getCode();
       }
 
       String defaultLangPath = "en_US";
@@ -48,23 +48,23 @@ public class FileRepository extends BookRepository {
       ResourceLocation res;
 
       if(langPath != null) {
-        res = new ResourceLocation(location + "/" + langPath + "/" + path);
-        if (resourceExists(res)) {
+        res = new ResourceLocation(this.location + "/" + langPath + "/" + path);
+        if (this.resourceExists(res)) {
           return res;
         }
       }
-      res = new ResourceLocation(location + "/" + defaultLangPath + "/" + path);
-      if(resourceExists(res)) {
+      res = new ResourceLocation(this.location + "/" + defaultLangPath + "/" + path);
+      if(this.resourceExists(res)) {
         return res;
       }
-      res = new ResourceLocation(location + "/" + path);
-      if(resourceExists(res)) {
+      res = new ResourceLocation(this.location + "/" + path);
+      if(this.resourceExists(res)) {
         return res;
       }
       return safe ? new ResourceLocation("") : null;
     } else {
       ResourceLocation res = new ResourceLocation(path);
-      if(resourceExists(res)) {
+      if(this.resourceExists(res)) {
         return res;
       }
       return safe ? new ResourceLocation("") : null;

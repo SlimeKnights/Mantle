@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -33,8 +34,8 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   protected int subContainerSlotStart = -1;
   protected Set<Container> shiftClickContainers = Sets.newHashSet();
 
-  public ContainerMultiModule(T tile) {
-    super(tile);
+  public ContainerMultiModule(ContainerType<?> containerType, int windowId, T tile) {
+    super(containerType, windowId, tile);
   }
 
 
@@ -43,31 +44,31 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
    * @param preferForShiftClick If true shift clicking on slots of the main-container will try to move to this module before the player inventory
    */
   public void addSubContainer(Container subcontainer, boolean preferForShiftClick) {
-    if(subContainers.isEmpty()) {
-      subContainerSlotStart = inventorySlots.size();
+    if(this.subContainers.isEmpty()) {
+      this.subContainerSlotStart = this.inventorySlots.size();
     }
-    subContainers.add(subcontainer);
+    this.subContainers.add(subcontainer);
 
     if(preferForShiftClick) {
-      shiftClickContainers.add(subcontainer);
+      this.shiftClickContainers.add(subcontainer);
     }
 
-    int begin = inventorySlots.size();
+    int begin = this.inventorySlots.size();
     for(Object slot : subcontainer.inventorySlots) {
       SlotWrapper wrapper = new SlotWrapper((Slot) slot);
-      addSlot(wrapper);
-      slotContainerMap.put(wrapper.slotNumber, subcontainer);
+      this.addSlot(wrapper);
+      this.slotContainerMap.put(wrapper.slotNumber, subcontainer);
     }
-    int end = inventorySlots.size();
-    subContainerSlotRanges.put(subcontainer, Pair.of(begin, end));
+    int end = this.inventorySlots.size();
+    this.subContainerSlotRanges.put(subcontainer, Pair.of(begin, end));
   }
 
   public <TC extends Container> TC getSubContainer(Class<TC> clazz) {
-    return getSubContainer(clazz, 0);
+    return this.getSubContainer(clazz, 0);
   }
 
   public <TC extends Container> TC getSubContainer(Class<TC> clazz, int index) {
-    for(Container sub : subContainers) {
+    for(Container sub : this.subContainers) {
       if(clazz.isAssignableFrom(sub.getClass())) {
         index--;
       }
@@ -80,8 +81,8 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   public Container getSlotContainer(int slotNumber) {
-    if(slotContainerMap.containsKey(slotNumber)) {
-      return slotContainerMap.get(slotNumber);
+    if(this.slotContainerMap.containsKey(slotNumber)) {
+      return this.slotContainerMap.get(slotNumber);
     }
 
     return this;
@@ -90,7 +91,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   @Override
   public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
     // check if subcontainers are valid
-    for(Container sub : subContainers) {
+    for(Container sub : this.subContainers) {
       if(!sub.canInteractWith(playerIn)) {
         return false;
       }
@@ -102,7 +103,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
 
   @Override
   public void onContainerClosed(PlayerEntity playerIn) {
-    for(Container sub : subContainers) {
+    for(Container sub : this.subContainers) {
       sub.onContainerClosed(playerIn);
     }
 
@@ -113,7 +114,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   @Override
   public ItemStack slotClick(int slotId, int dragType, ClickType type, PlayerEntity player) {
     if(slotId == -999 && type == ClickType.QUICK_CRAFT) {
-      for(Container container : subContainers) {
+      for(Container container : this.subContainers) {
         container.slotClick(slotId, dragType, type, player);
       }
     }
@@ -135,35 +136,35 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
     ItemStack ret = slot.getStack().copy();
     ItemStack itemstack = slot.getStack().copy();
 
-    Container container = getSlotContainer(index);
+    Container container = this.getSlotContainer(index);
     boolean nothingDone = true;
 
     // Is the slot from a module?
     if(container != this) {
       // Try moving module -> tile inventory
-      nothingDone &= moveToTileInventory(itemstack);
+      nothingDone &= this.moveToTileInventory(itemstack);
 
       // Try moving module -> player inventory
-      nothingDone &= moveToPlayerInventory(itemstack);
+      nothingDone &= this.moveToPlayerInventory(itemstack);
     }
     // Is the slot from the tile?
-    else if(index < subContainerSlotStart || (index < playerInventoryStart && subContainerSlotStart < 0)) {
+    else if(index < this.subContainerSlotStart || (index < this.playerInventoryStart && this.subContainerSlotStart < 0)) {
       // Try moving tile -> preferred modules
-      nothingDone &= refillAnyContainer(itemstack, subContainers);
+      nothingDone &= this.refillAnyContainer(itemstack, this.subContainers);
 
       // Try moving module -> player inventory
-      nothingDone &= moveToPlayerInventory(itemstack);
+      nothingDone &= this.moveToPlayerInventory(itemstack);
 
       // Try moving module -> all submodules
-      nothingDone &= moveToAnyContainer(itemstack, subContainers);
+      nothingDone &= this.moveToAnyContainer(itemstack, this.subContainers);
     }
     // Slot is from the player inventory (if present)
-    else if(index >= playerInventoryStart && playerInventoryStart >= 0) {
+    else if(index >= this.playerInventoryStart && this.playerInventoryStart >= 0) {
       // Try moving player -> tile inventory
-      nothingDone &= moveToTileInventory(itemstack);
+      nothingDone &= this.moveToTileInventory(itemstack);
 
       // try moving player -> modules
-      nothingDone &= moveToAnyContainer(itemstack, subContainers);
+      nothingDone &= this.moveToAnyContainer(itemstack, this.subContainers);
     }
     // you violated some assumption or something. Shame on you.
     else {
@@ -174,7 +175,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
       return ItemStack.EMPTY;
     }
 
-    return notifySlotAfterTransfer(playerIn, itemstack, ret, slot);
+    return this.notifySlotAfterTransfer(playerIn, itemstack, ret, slot);
   }
 
   @Nonnull
@@ -202,9 +203,9 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
       return false;
     }
 
-    int end = subContainerSlotStart;
+    int end = this.subContainerSlotStart;
     if(end < 0) {
-      end = playerInventoryStart;
+      end = this.playerInventoryStart;
     }
     return !this.mergeItemStack(itemstack, 0, end, false);
   }
@@ -214,8 +215,8 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
       return false;
     }
 
-    return playerInventoryStart > 0 && !this
-        .mergeItemStack(itemstack, playerInventoryStart, this.inventorySlots.size(), true);
+    return this.playerInventoryStart > 0 && !this
+        .mergeItemStack(itemstack, this.playerInventoryStart, this.inventorySlots.size(), true);
   }
 
   protected boolean moveToAnyContainer(@Nonnull ItemStack itemstack, Collection<Container> containers) {
@@ -224,7 +225,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
     }
 
     for(Container submodule : containers) {
-      if(moveToContainer(itemstack, submodule)) {
+      if(this.moveToContainer(itemstack, submodule)) {
         return true;
       }
     }
@@ -233,7 +234,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   protected boolean moveToContainer(@Nonnull ItemStack itemstack, Container container) {
-    Pair<Integer, Integer> range = subContainerSlotRanges.get(container);
+    Pair<Integer, Integer> range = this.subContainerSlotRanges.get(container);
     return !this.mergeItemStack(itemstack, range.getLeft(), range.getRight(), false);
   }
 
@@ -244,7 +245,7 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
     }
 
     for(Container submodule : containers) {
-      if(refillContainer(itemstack, submodule)) {
+      if(this.refillContainer(itemstack, submodule)) {
         return true;
       }
     }
@@ -253,16 +254,16 @@ public class ContainerMultiModule<T extends TileEntity & IInventory> extends Bas
   }
 
   protected boolean refillContainer(@Nonnull ItemStack itemstack, Container container) {
-    Pair<Integer, Integer> range = subContainerSlotRanges.get(container);
+    Pair<Integer, Integer> range = this.subContainerSlotRanges.get(container);
     return !this.mergeItemStackRefill(itemstack, range.getLeft(), range.getRight(), false);
   }
 
   /** Searches for a sidechest to display in the UI */
   public <TE extends TileEntity> TE detectTE(Class<TE> clazz) {
-    return ObjectUtils.firstNonNull(detectChest(this.pos.north(), clazz),
-                                    detectChest(this.pos.east(), clazz),
-                                    detectChest(this.pos.south(), clazz),
-                                    detectChest(this.pos.west(), clazz));
+    return ObjectUtils.firstNonNull(this.detectChest(this.pos.north(), clazz),
+            this.detectChest(this.pos.east(), clazz),
+            this.detectChest(this.pos.south(), clazz),
+            this.detectChest(this.pos.west(), clazz));
   }
 
   private <TE extends TileEntity> TE detectChest(BlockPos pos, Class<TE> clazz) {

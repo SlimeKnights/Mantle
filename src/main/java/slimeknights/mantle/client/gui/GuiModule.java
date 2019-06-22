@@ -2,8 +2,10 @@ package slimeknights.mantle.client.gui;
 
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,8 +24,8 @@ public abstract class GuiModule extends ContainerScreen
   public int yOffset = 0;
   public int xOffset = 0;
 
-  public GuiModule(GuiMultiModule parent, Container container, boolean right, boolean bottom) {
-    super(container);
+  public GuiModule(GuiMultiModule parent, Container container, PlayerInventory playerInventory, ITextComponent title, boolean right, boolean bottom) {
+    super(container, playerInventory, title);
 
     this.parent = parent;
     this.right = right;
@@ -31,40 +33,40 @@ public abstract class GuiModule extends ContainerScreen
   }
 
   public int guiRight() {
-    return guiLeft + xSize;
+    return this.guiLeft + this.xSize;
   }
 
   public int guiBottom() {
-    return guiTop + ySize;
+    return this.guiTop + this.ySize;
   }
 
   public Rectangle2d getArea() {
-    return new Rectangle2d(guiLeft, guiTop, xSize, ySize);
+    return new Rectangle2d(this.guiLeft, this.guiTop, this.xSize, this.ySize);
   }
 
   @Override
-  public void initGui() {
+  public void init() {
     this.guiLeft = (this.width - this.xSize) / 2;
     this.guiTop = (this.height - this.ySize) / 2;
   }
 
   public void updatePosition(int parentX, int parentY, int parentSizeX, int parentSizeY) {
-    if(right) {
+    if(this.right) {
       this.guiLeft = parentX + parentSizeX;
     }
     else {
       this.guiLeft = parentX - this.xSize;
     }
 
-    if(bottom) {
+    if(this.bottom) {
       this.guiTop = parentY + parentSizeY - this.ySize;
     }
     else {
       this.guiTop = parentY;
     }
 
-    this.guiLeft += xOffset;
-    this.guiTop += yOffset;
+    this.guiLeft += this.xOffset;
+    this.guiTop += this.yOffset;
   }
 
   public boolean shouldDrawSlot(Slot slot) {
@@ -77,8 +79,8 @@ public abstract class GuiModule extends ContainerScreen
   }
 
   public boolean isMouseOverFullSlot(double mouseX, double mouseY) {
-    for(Slot slot : inventorySlots.inventorySlots) {
-      if(parent.isSlotSelected(slot, mouseX, mouseY) && slot.getHasStack()) {
+    for(Slot slot : this.container.inventorySlots) {
+      if(this.parent.isSlotSelected(slot, mouseX, mouseY) && slot.getHasStack()) {
         return true;
       }
     }

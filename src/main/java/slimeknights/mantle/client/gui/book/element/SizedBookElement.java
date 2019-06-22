@@ -16,6 +16,6 @@ public abstract class SizedBookElement extends BookElement {
   }
 
   public boolean isHovered(double mouseX, double mouseY) {
-    return mouseX > x && mouseY > y && mouseX < x + width && mouseY < y + height;
+    return mouseX > this.x && mouseY > this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
   }
 }

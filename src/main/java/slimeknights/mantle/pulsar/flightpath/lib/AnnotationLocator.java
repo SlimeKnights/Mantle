@@ -34,7 +34,7 @@ public class AnnotationLocator implements ISubscriberLocator {
         Map<Class<?>, Map<Method, Type>> methods = new HashMap<Class<?>, Map<Method, Type>>();
 
         for (Method m : obj.getClass().getMethods()) {
-            if (m.isAnnotationPresent(annotation) && m.getParameterTypes().length == 1) {
+            if (m.isAnnotationPresent(this.annotation) && m.getParameterTypes().length == 1) {
                 Class<?> param = m.getParameterTypes()[0];
 
                 Type filter = null;

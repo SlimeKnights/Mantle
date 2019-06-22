@@ -97,10 +97,10 @@ public class ModelHelper {
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.EnumUsage usage = parent.getVertexFormat().getElement(element).getUsage();
+      VertexFormatElement.Usage usage = parent.getVertexFormat().getElement(element).getUsage();
 
       // transform normals and position
-      if(usage == VertexFormatElement.EnumUsage.COLOR && data.length >= 4) {
+      if(usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {
         data[0] = r;
         data[1] = g;
         data[2] = b;

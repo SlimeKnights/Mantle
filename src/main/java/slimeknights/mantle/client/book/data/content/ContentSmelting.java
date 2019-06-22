@@ -43,30 +43,30 @@ public class ContentSmelting extends PageContent {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMELTING.width / 2;
     int y = TITLE_HEIGHT;
 
-    TextData tdTitle = new TextData(title);
+    TextData tdTitle = new TextData(this.title);
     tdTitle.underlined = true;
-    list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, new TextData[]{tdTitle}));
+    list.add(new ElementText(0, 0, GuiBook.PAGE_WIDTH, 9, tdTitle));
     list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
 
-    if(input != null && !input.id.equals("")) {
-      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
+    if(this.input != null && !this.input.id.equals("")) {
+      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
-    if(result != null && !result.id.equals("")) {
-      list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, result.getItems(), result.action));
+    if(this.result != null && !this.result.id.equals("")) {
+      list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, this.result.getItems(), this.result.action));
     }
 
-    list.add(new ElementItem(x + FUEL_X, y + FUEL_Y, ITEM_SCALE, getFuelsList()));
+    list.add(new ElementItem(x + FUEL_X, y + FUEL_Y, ITEM_SCALE, this.getFuelsList()));
 
-    if(description != null && description.length > 0) {
-      list.add(new ElementText(0, IMG_SMELTING.height + y + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y - 5, description));
+    if(this.description != null && this.description.length > 0) {
+      list.add(new ElementText(0, IMG_SMELTING.height + y + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y - 5, this.description));
     }
   }
 
   public NonNullList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
 
-    NonNullList<ItemStack> fuels = NonNullList.<ItemStack> withSize(28, ItemStack.EMPTY);
+    NonNullList<ItemStack> fuels = NonNullList.withSize(28, ItemStack.EMPTY);
     fuels.set(0, new ItemStack(Blocks.OAK_SLAB));
     fuels.set(1, new ItemStack(Blocks.SPRUCE_SLAB));
     fuels.set(2, new ItemStack(Blocks.BIRCH_SLAB));

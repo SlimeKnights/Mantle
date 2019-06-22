@@ -154,7 +154,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   @Override
   public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
     this.readCustomNBT(packet.getNbtCompound());
-    this.world.notifyLightSet(this.pos);
+    //this.world.notifyLightSet(this.pos);
     BlockState state = world.getBlockState(this.pos);
     this.world.notifyBlockUpdate(this.pos, state, state, 3);
   }

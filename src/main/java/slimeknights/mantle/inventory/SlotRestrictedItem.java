@@ -13,11 +13,11 @@ public class SlotRestrictedItem extends Slot {
 
   public SlotRestrictedItem(Item item, IInventory inventoryIn, int index, int xPosition, int yPosition) {
     super(inventoryIn, index, xPosition, yPosition);
-    allowedItem = item;
+    this.allowedItem = item;
   }
 
   @Override
   public boolean isItemValid(@Nonnull ItemStack stack) {
-    return !stack.isEmpty() && stack.getItem() == allowedItem;
+    return !stack.isEmpty() && stack.getItem() == this.allowedItem;
   }
 }

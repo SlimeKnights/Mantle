@@ -25,33 +25,33 @@ public class SlotWrapper extends Slot {
 
   @Override
   public void onSlotChange(ItemStack p_75220_1_, ItemStack p_75220_2_) {
-    parent.onSlotChange(p_75220_1_, p_75220_2_);
+    this.parent.onSlotChange(p_75220_1_, p_75220_2_);
   }
 
   @Override
   public void onSlotChanged() {
-    parent.onSlotChanged();
+    this.parent.onSlotChanged();
   }
 
   @Override
   public boolean isItemValid(ItemStack stack) {
-    return parent.isItemValid(stack);
+    return this.parent.isItemValid(stack);
   }
 
   @Override
   public boolean canTakeStack(PlayerEntity playerIn) {
-    return parent.canTakeStack(playerIn);
+    return this.parent.canTakeStack(playerIn);
   }
 
   @Override
   public void putStack(@Nonnull ItemStack stack) {
-    parent.putStack(stack);
+    this.parent.putStack(stack);
   }
 
   @Override
   @Nonnull
   public ItemStack onTake(PlayerEntity playerIn, ItemStack stack) {
-    parent.onTake(playerIn, stack);
+    this.parent.onTake(playerIn, stack);
 
     return stack;
   }
@@ -59,66 +59,61 @@ public class SlotWrapper extends Slot {
   @Override
   @Nonnull
   public ItemStack getStack() {
-    return parent.getStack();
+    return this.parent.getStack();
   }
 
   @Override
   public boolean getHasStack() {
-    return parent.getHasStack();
+    return this.parent.getHasStack();
   }
 
   @Override
   public int getSlotStackLimit() {
-    return parent.getSlotStackLimit();
+    return this.parent.getSlotStackLimit();
   }
 
   @Override
   public int getItemStackLimit(ItemStack stack) {
-    return parent.getItemStackLimit(stack);
+    return this.parent.getItemStackLimit(stack);
   }
 
   @Override
   @OnlyIn(Dist.CLIENT)
   public String getSlotTexture() {
-    return parent.getSlotTexture();
+    return this.parent.getSlotTexture();
   }
 
   @Nonnull
   @Override
   public ItemStack decrStackSize(int amount) {
-    return parent.decrStackSize(amount);
-  }
-
-  @Override
-  public boolean isHere(IInventory inv, int slotIn) {
-    return parent.isHere(inv, slotIn);
+    return this.parent.decrStackSize(amount);
   }
 
   @Nonnull
   @Override
   public ResourceLocation getBackgroundLocation() {
-    return parent.getBackgroundLocation();
+    return this.parent.getBackgroundLocation();
   }
 
   @Override
   public void setBackgroundName(@Nonnull String name) {
-    parent.setBackgroundName(name);
+    this.parent.setBackgroundName(name);
   }
 
   @Nonnull
   @Override
   public TextureAtlasSprite getBackgroundSprite() {
-    return parent.getBackgroundSprite();
+    return this.parent.getBackgroundSprite();
   }
 
   @Override
   public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
-    parent.setBackgroundLocation(texture);
+    this.parent.setBackgroundLocation(texture);
   }
 
   @OnlyIn(Dist.CLIENT)
   @Override
   public boolean isEnabled() {
-    return parent.isEnabled();
+    return this.parent.isEnabled();
   }
 }

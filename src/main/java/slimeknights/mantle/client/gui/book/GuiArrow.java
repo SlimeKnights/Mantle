@@ -45,7 +45,7 @@ public class GuiArrow extends Button
       float b = (color & 0xff) / 255.F;
 
       GlStateManager.color3f(r, g, b);
-      AbstractGui.blit(x, y, arrowType.x, arrowType.y, width, height, width, height, 512, 512);
+      AbstractGui.blit(this.x, this.y, this.arrowType.x, this.arrowType.y, this.width, this.height, this.width, this.height, 512, 512);
       this.renderBg(minecraft, mouseX, mouseY);
     }
   }

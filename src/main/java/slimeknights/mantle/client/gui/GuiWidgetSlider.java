@@ -48,20 +48,20 @@ public class GuiWidgetSlider extends GuiWidget {
     this.slideBarTop = slideBarTop;
     this.slideBarBottom = slideBarBottom;
 
-    height = slideBar.h;
-    width = slideBar.w;
-    currentValue = minValue = 0;
-    maxValue = slideBar.h;
-    increment = 1;
+    this.height = slideBar.h;
+    this.width = slideBar.w;
+    this.currentValue = this.minValue = 0;
+    this.maxValue = slideBar.h;
+    this.increment = 1;
 
-    sliderOffset = MathHelper.abs(slideBar.w - slider.w) / 2;
+    this.sliderOffset = MathHelper.abs(slideBar.w - slider.w) / 2;
 
-    isScrolling = false;
-    isHighlighted = false;
+    this.isScrolling = false;
+    this.isHighlighted = false;
 
-    enabled = true;
-    hidden = false;
-    useMouseWheel = false;
+    this.enabled = true;
+    this.hidden = false;
+    this.useMouseWheel = false;
   }
 
   /** Sets the height of the whole slider and slidebar */
@@ -76,14 +76,14 @@ public class GuiWidgetSlider extends GuiWidget {
     this.increment = stepsize;
 
     // just in case
-    setSliderValue(currentValue);
+    this.setSliderValue(this.currentValue);
   }
 
   public int getValue() {
-    if(isHidden()) {
+    if(this.isHidden()) {
       return 0;
     }
-    return Math.min(maxValue, Math.max(minValue, currentValue));
+    return Math.min(this.maxValue, Math.max(this.minValue, this.currentValue));
   }
 
   public void setEnabled(boolean enabled) {
@@ -120,37 +120,37 @@ public class GuiWidgetSlider extends GuiWidget {
 
   @Override
   public void draw() {
-    if(hidden) {
+    if(this.hidden) {
       return;
     }
 
     // slidebar background
-    slideBarTop.draw(xPos, yPos);
-    slideBar.drawScaledY(xPos, yPos + slideBarTop.h, getUsableSlidebarHeight());
-    slideBarBottom.draw(xPos, yPos + height - slideBarBottom.h);
+    this.slideBarTop.draw(this.xPos, this.yPos);
+    this.slideBar.drawScaledY(this.xPos, this.yPos + this.slideBarTop.h, this.getUsableSlidebarHeight());
+    this.slideBarBottom.draw(this.xPos, this.yPos + this.height - this.slideBarBottom.h);
 
-    int x = xPos + sliderOffset;
-    int y = yPos + getSliderTop();
+    int x = this.xPos + this.sliderOffset;
+    int y = this.yPos + this.getSliderTop();
 
     // the slider depending on state
-    if(enabled) {
-      if(isScrolling) {
-        sliderDisabled.draw(x, y);
+    if(this.enabled) {
+      if(this.isScrolling) {
+        this.sliderDisabled.draw(x, y);
       }
-      else if(isHighlighted) {
-        sliderHighlighted.draw(x, y);
+      else if(this.isHighlighted) {
+        this.sliderHighlighted.draw(x, y);
       }
       else {
-        slider.draw(x, y);
+        this.slider.draw(x, y);
       }
     }
     else {
-      sliderDisabled.draw(x, y);
+      this.sliderDisabled.draw(x, y);
     }
   }
 
   public void update(int mouseX, int mouseY, boolean useMouseWheel) {
-    if(!enabled || hidden) {
+    if(!this.enabled || this.hidden) {
       return;
     }
 
@@ -158,62 +158,62 @@ public class GuiWidgetSlider extends GuiWidget {
     this.useMouseWheel = useMouseWheel;
 
     // relative position inside the widget
-    int x = mouseX - xPos;
-    int y = mouseY - yPos;
+    int x = mouseX - this.xPos;
+    int y = mouseY - this.yPos;
 
     // reset click data
-    if(!mouseDown && clickedBar) {
-      clickedBar = false;
+    if(!mouseDown && this.clickedBar) {
+      this.clickedBar = false;
     }
 
     // button not pressed and scrolling -> stop scrolling
-    if(!mouseDown && isScrolling) {
-      isScrolling = false;
+    if(!mouseDown && this.isScrolling) {
+      this.isScrolling = false;
     }
     // button pressed and scrolling -> update position of slider
-    else if(isScrolling) {
-      float d = maxValue - minValue;
-      float val = (float) (y - clickY) / (float) (getUsableSlidebarHeight() - slider.h);
+    else if(this.isScrolling) {
+      float d = this.maxValue - this.minValue;
+      float val = (float) (y - this.clickY) / (float) (this.getUsableSlidebarHeight() - this.slider.h);
       val *= d;
 
-      if(val < (float) increment / 2f) {
+      if(val < (float) this.increment / 2f) {
         // < 1/2 increment
-        setSliderValue(minValue);
+        this.setSliderValue(this.minValue);
       }
-      else if(val > maxValue - ((float) increment / 2f)) {
+      else if(val > this.maxValue - ((float) this.increment / 2f)) {
         // > max-1/2 increment
-        setSliderValue(maxValue);
+        this.setSliderValue(this.maxValue);
       }
       else {
         // in between
-        setSliderValue((int) (minValue + (float) increment * Math.round(val)));
+        this.setSliderValue((int) (this.minValue + (float) this.increment * Math.round(val)));
       }
     }
     // not scrolling yet but possibly inside the slider
-    else if(x >= 0 && y >= getSliderTop() &&
-            x - sliderOffset <= slider.w && y <= getSliderTop() + slider.h) {
-      isHighlighted = true;
+    else if(x >= 0 && y >= this.getSliderTop() &&
+            x - this.sliderOffset <= this.slider.w && y <= this.getSliderTop() + this.slider.h) {
+      this.isHighlighted = true;
       if(mouseDown) {
-        isScrolling = true;
-        clickX = x - sliderOffset;
-        clickY = y - getSliderTop();
+        this.isScrolling = true;
+        this.clickX = x - this.sliderOffset;
+        this.clickY = y - this.getSliderTop();
       }
     }
     // not on the slider but clicked on the bar
-    else if(mouseDown && !clickedBar &&
+    else if(mouseDown && !this.clickedBar &&
             x >= 0 && y >= 0 &&
-            x <= slideBar.w && y <= height) {
-      if(y < getSliderTop()) {
-        decrement();
+            x <= this.slideBar.w && y <= this.height) {
+      if(y < this.getSliderTop()) {
+        this.decrement();
       }
       else {
-        increment();
+        this.increment();
       }
 
-      clickedBar = true;
+      this.clickedBar = true;
     }
     else {
-      isHighlighted = false;
+      this.isHighlighted = false;
     }
   }
 
@@ -223,14 +223,14 @@ public class GuiWidgetSlider extends GuiWidget {
     double mouseX = event.getMouseX();
     double mouseY = event.getMouseY();
 
-    if(useMouseWheel) {
+    if(this.useMouseWheel) {
       if(dWheel > 0.0) {
-        decrement();
+        this.decrement();
         event.setCanceled(true);
         return;
       }
       else if(dWheel < 0.0) {
-        increment();
+        this.increment();
         event.setCanceled(true);
         return;
       }
@@ -238,36 +238,36 @@ public class GuiWidgetSlider extends GuiWidget {
   }
 
   public int increment() {
-    setSliderValue(currentValue + increment);
-    return currentValue;
+    this.setSliderValue(this.currentValue + this.increment);
+    return this.currentValue;
   }
 
   public int decrement() {
-    setSliderValue(currentValue - increment);
-    return currentValue;
+    this.setSliderValue(this.currentValue - this.increment);
+    return this.currentValue;
   }
 
   public int setSliderValue(int val) {
-    if(val > maxValue) {
-      val = maxValue;
+    if(val > this.maxValue) {
+      val = this.maxValue;
     }
-    else if(val < minValue) {
-      val = minValue;
+    else if(val < this.minValue) {
+      val = this.minValue;
     }
 
-    currentValue = val;
-    return currentValue;
+    this.currentValue = val;
+    return this.currentValue;
   }
 
   private int getSliderTop() {
-    float d = maxValue - minValue;
-    d = (float) (currentValue - minValue) / d;
-    d *= getUsableSlidebarHeight() - slider.h;
+    float d = this.maxValue - this.minValue;
+    d = (float) (this.currentValue - this.minValue) / d;
+    d *= this.getUsableSlidebarHeight() - this.slider.h;
 
-    return (int) d + slideBarTop.h;
+    return (int) d + this.slideBarTop.h;
   }
 
   private int getUsableSlidebarHeight() {
-    return height - slideBarTop.h - slideBarBottom.h;
+    return this.height - this.slideBarTop.h - this.slideBarBottom.h;
   }
 }

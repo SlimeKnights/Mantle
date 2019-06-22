@@ -39,28 +39,28 @@ public class ContentSmithing extends PageContent {
     int x = GuiBook.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2;
     int y = TITLE_HEIGHT;
 
-    if(title == null || title.isEmpty()) {
+    if(this.title == null || this.title.isEmpty()) {
       y = 0;
     } else {
-      addTitle(list, title);
+      this.addTitle(list, this.title);
     }
 
     list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
-    if(input != null && !input.id.equals("")) {
-      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, input.getItems(), input.action));
+    if(this.input != null && !this.input.id.equals("")) {
+      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
-    if(modifier != null && !modifier.id.equals("")) {
-      list.add(new ElementItem(x + MODIFIER_X, y + MODIFIER_Y, ITEM_SCALE, modifier.getItems(), modifier.action));
+    if(this.modifier != null && !this.modifier.id.equals("")) {
+      list.add(new ElementItem(x + MODIFIER_X, y + MODIFIER_Y, ITEM_SCALE, this.modifier.getItems(), this.modifier.action));
     }
 
-    if(result != null && !result.id.equals("")) {
-      list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, result.getItems(), result.action));
+    if(this.result != null && !this.result.id.equals("")) {
+      list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, this.result.getItems(), this.result.action));
     }
 
-    if(description != null && description.length > 0) {
-      list.add(new ElementText(0, IMG_SMITHING.height + y + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - IMG_SMITHING.height - y - 5, description));
+    if(this.description != null && this.description.length > 0) {
+      list.add(new ElementText(0, IMG_SMITHING.height + y + 5, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - IMG_SMITHING.height - y - 5, this.description));
     }
   }
 }

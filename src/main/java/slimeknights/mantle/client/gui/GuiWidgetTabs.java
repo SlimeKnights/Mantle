@@ -2,8 +2,8 @@ package slimeknights.mantle.client.gui;
 
 import com.google.common.collect.Lists;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -46,16 +46,16 @@ public class GuiWidgetTabs extends GuiWidget {
     this.tabActive[1] = activeCenter;
     this.tabActive[2] = activeRight;
 
-    selected = 0;
+    this.selected = 0;
   }
 
   public void addTab(ItemStack icon) {
-    icons.add(icon);
+    this.icons.add(icon);
   }
 
   public void clear() {
-    selected = 0;
-    icons.clear();
+    this.selected = 0;
+    this.icons.clear();
   }
 
   public void update(int mouseX, int mouseY) {
@@ -66,36 +66,36 @@ public class GuiWidgetTabs extends GuiWidget {
     mouseY -= this.yPos;
 
     // update highlighted
-    highlighted = -1;
-    if(mouseY >= 0 && mouseY <= tab[1].h) {
+    this.highlighted = -1;
+    if(mouseY >= 0 && mouseY <= this.tab[1].h) {
       // which one did we click?
       int x = 0;
-      for(int i = 0; i < icons.size(); i++) {
+      for(int i = 0; i < this.icons.size(); i++) {
         // clicking on spacing has no effect
-        if(mouseX >= x && mouseX < x + tab[1].w) {
-          highlighted = i;
+        if(mouseX >= x && mouseX < x + this.tab[1].w) {
+          this.highlighted = i;
           break;
         }
-        x += tab[1].w;
-        x += spacing;
+        x += this.tab[1].w;
+        x += this.spacing;
       }
     }
 
     // already clicked
-    if(clicked) {
+    if(this.clicked) {
       // still clicking
       if(mouseDown) {
         return;
       }
       // release click
       else {
-        clicked = false;
+        this.clicked = false;
         return;
       }
     }
     // new click
     else if(mouseDown) {
-      clicked = true;
+      this.clicked = true;
     }
     // no click - do nothing
     else {
@@ -103,34 +103,34 @@ public class GuiWidgetTabs extends GuiWidget {
     }
 
     // was new click, select highlighted
-    if(highlighted > -1) {
-      selected = highlighted;
+    if(this.highlighted > -1) {
+      this.selected = this.highlighted;
     }
   }
 
   @Override
   public void draw() {
-    int y = yPos + yOffset;
-    for(int i = 0; i < icons.size(); i++) {
-      int x = xPos + i * tab[0].w;
+    int y = this.yPos + this.yOffset;
+    for(int i = 0; i < this.icons.size(); i++) {
+      int x = this.xPos + i * this.tab[0].w;
 
       if(i > 0) {
-        x += i * spacing;
+        x += i * this.spacing;
       }
 
       GuiElement[] toDraw;
-      if(i == selected) {
-        toDraw = tabActive;
+      if(i == this.selected) {
+        toDraw = this.tabActive;
       }
       else {
-        toDraw = tab;
+        toDraw = this.tab;
       }
 
       GuiElement actualTab;
-      if(i == 0 && x == parent.cornerX) {
+      if(i == 0 && x == this.parent.cornerX) {
         actualTab = toDraw[0];
       }
-      else if(x == parent.cornerX + parent.width) {
+      else if(x == this.parent.cornerX + this.parent.width) {
         actualTab = toDraw[2];
       }
       else {
@@ -140,14 +140,14 @@ public class GuiWidgetTabs extends GuiWidget {
       // todo: draw all the tabs first and then all the itemstacks so it doesn't have to switch texture in between all the time
 
       // rebind texture from drawing an itemstack
-      Minecraft.getInstance().getTextureManager().bindTexture(tabsResource);
+      Minecraft.getInstance().getTextureManager().bindTexture(this.tabsResource);
       actualTab.draw(x, y);
 
 
-      ItemStack icon = icons.get(i);
+      ItemStack icon = this.icons.get(i);
       if(icon != null) {
         RenderHelper.enableGUIStandardItemLighting();
-        drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
+        this.drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
         RenderHelper.disableStandardItemLighting();
         //RenderHelper.enableStandardItemLighting();
       }
