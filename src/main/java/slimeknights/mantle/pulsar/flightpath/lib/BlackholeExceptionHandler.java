@@ -1,8 +1,8 @@
 package slimeknights.mantle.pulsar.flightpath.lib;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Default exception handler when Flightpath has been asked to ignore errors.
@@ -12,14 +12,14 @@ import slimeknights.mantle.pulsar.flightpath.IExceptionHandler;
 @ParametersAreNonnullByDefault
 public class BlackholeExceptionHandler implements IExceptionHandler {
 
-    @Override
-    public void handle(Exception ex) {
-        // NO-OP
-    }
+  @Override
+  public void handle(Exception ex) {
+    // NO-OP
+  }
 
-    @Override
-    public void flush() {
-        // NO-OP
-    }
+  @Override
+  public void flush() {
+    // NO-OP
+  }
 
 }

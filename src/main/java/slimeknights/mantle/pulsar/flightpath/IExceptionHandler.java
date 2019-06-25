@@ -10,16 +10,16 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public interface IExceptionHandler {
 
-    /**
-     * Handle a given exception.
-     *
-     * @param ex The exception (duh)
-     */
-    void handle(Exception ex);
+  /**
+   * Handle a given exception.
+   *
+   * @param ex The exception (duh)
+   */
+  void handle(Exception ex);
 
-    /**
-     * Called after all methods have been invoked for cleanup or coalescing.
-     */
-    void flush();
+  /**
+   * Called after all methods have been invoked for cleanup or coalescing.
+   */
+  void flush();
 
 }

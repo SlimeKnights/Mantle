@@ -1,12 +1,10 @@
 package slimeknights.mantle.pulsar.flightpath;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Interface for defining custom subscriber scanners.
@@ -14,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public interface ISubscriberLocator {
 
-    @Nonnull
-    Map<Class<?>, Map<Method, Type>> findSubscribers(Object obj);
+  @Nonnull
+  Map<Class<?>, Map<Method, Type>> findSubscribers(Object obj);
 
 }

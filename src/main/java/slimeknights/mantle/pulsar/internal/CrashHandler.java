@@ -1,7 +1,6 @@
 package slimeknights.mantle.pulsar.internal;
 
 import net.minecraftforge.fml.common.ICrashCallable;
-
 import slimeknights.mantle.pulsar.control.PulseManager;
 import slimeknights.mantle.pulsar.pulse.PulseMeta;
 
@@ -12,39 +11,41 @@ import slimeknights.mantle.pulsar.pulse.PulseMeta;
  */
 public class CrashHandler implements ICrashCallable {
 
-    private String id;
-    private PulseManager manager;
+  private String id;
+  private PulseManager manager;
 
-    public CrashHandler(String modId, PulseManager manager) {
-        this.id = "Pulsar/" + modId + " loaded Pulses";
-        this.manager = manager;
-    }
+  public CrashHandler(String modId, PulseManager manager) {
+    this.id = "Pulsar/" + modId + " loaded Pulses";
+    this.manager = manager;
+  }
 
-    @Override
-    public String getLabel() {
-        return this.id;
-    }
+  @Override
+  public String getLabel() {
+    return this.id;
+  }
 
-    @Override
-    public String call() throws Exception {
-        String out = "\n";
-        for (PulseMeta meta : this.manager.getAllPulseMetadata()) {
-            String state = getStateFromMeta(meta);
-            out += "\t\t- " + meta.getId() + " (" + state + ")\n"; // Yes, yes, manual indenting, I know...
-        }
-        return out;
+  @Override
+  public String call() throws Exception {
+    String out = "\n";
+    for (PulseMeta meta : this.manager.getAllPulseMetadata()) {
+      String state = getStateFromMeta(meta);
+      out += "\t\t- " + meta.getId() + " (" + state + ")\n"; // Yes, yes, manual indenting, I know...
     }
+    return out;
+  }
 
-    private static String getStateFromMeta(PulseMeta meta) {
-        if (meta.isForced()) {
-            return "Enabled/Forced";
-        } else {
-            if (meta.isEnabled()) {
-                return "Enabled/Not Forced";
-            } else {
-                return "Disabled/Not Forced";
-            }
-        }
+  private static String getStateFromMeta(PulseMeta meta) {
+    if (meta.isForced()) {
+      return "Enabled/Forced";
     }
+    else {
+      if (meta.isEnabled()) {
+        return "Enabled/Not Forced";
+      }
+      else {
+        return "Disabled/Not Forced";
+      }
+    }
+  }
 
 }

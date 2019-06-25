@@ -77,7 +77,7 @@ public interface IRegisterUtil {
    * @param block    Block to get item block
    * @return Registered item block
    */
-  default BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block) {
+  default BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block) {
     BlockItem itemBlock = new BlockItem(block, new Item.Properties());
     return this.register(registry, itemBlock, block.getRegistryName());
   }
@@ -90,7 +90,7 @@ public interface IRegisterUtil {
    * @param group    Group for the item block
    * @return Registered item block
    */
-  default BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
+  default BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
     BlockItem itemBlock = new BlockItem(block, new Item.Properties().group(group));
     return this.register(registry, itemBlock, block.getRegistryName());
   }
@@ -102,7 +102,7 @@ public interface IRegisterUtil {
    * @param itemBlock Item block instance to register
    * @return Registered item block
    */
-  default <T extends BlockItem> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
+  default <T extends BlockItem> T registerBlockItem(IForgeRegistry<Item> registry, T itemBlock) {
     return this.register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
   }
 
@@ -144,9 +144,9 @@ public interface IRegisterUtil {
    * @param blocks   Blocks needing item blocks
    * @return Registered item blocks
    */
-  default List<BlockItem> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks) {
+  default List<BlockItem> registerBlockItems(IForgeRegistry<Item> registry, List<? extends Block> blocks) {
     return blocks.stream().map((block) -> {
-      return this.registerItemBlock(registry, block);
+      return this.registerBlockItem(registry, block);
     }).collect(Collectors.toList());
   }
 
@@ -158,9 +158,9 @@ public interface IRegisterUtil {
    * @param group    Group for the item blocks
    * @return Registered item blocks
    */
-  default List<BlockItem> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, ItemGroup group) {
+  default List<BlockItem> registerBlockItems(IForgeRegistry<Item> registry, List<? extends Block> blocks, ItemGroup group) {
     return blocks.stream().map((block) -> {
-      return this.registerItemBlock(registry, block, group);
+      return this.registerBlockItem(registry, block, group);
     }).collect(Collectors.toList());
   }
 
@@ -172,9 +172,9 @@ public interface IRegisterUtil {
    * @param constructor ItemBlock constructor
    * @return Registered item block
    */
-  default <T extends BlockItem> List<T> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, Function<Block, T> constructor) {
+  default <T extends BlockItem> List<T> registerBlockItems(IForgeRegistry<Item> registry, List<? extends Block> blocks, Function<Block, T> constructor) {
     return blocks.stream().map((block) -> {
-      return this.registerItemBlock(registry, constructor.apply(block));
+      return this.registerBlockItem(registry, constructor.apply(block));
     }).collect(Collectors.toList());
   }
 }
