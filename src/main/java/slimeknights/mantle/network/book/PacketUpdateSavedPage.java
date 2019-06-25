@@ -4,47 +4,43 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
-
 import net.minecraftforge.fml.network.NetworkEvent;
 import slimeknights.mantle.client.book.BookHelper;
+import slimeknights.mantle.network.AbstractPacket;
 
 import java.util.function.Supplier;
 
-public class PacketUpdateSavedPage {
+public class PacketUpdateSavedPage extends AbstractPacket {
 
   private String pageName;
-
-  public PacketUpdateSavedPage() {
-
-  }
 
   public PacketUpdateSavedPage(String pageName) {
     this.pageName = pageName;
   }
 
-  public static void encode(PacketUpdateSavedPage msg, PacketBuffer buf) {
-    buf.writeString(msg.pageName);
+  public PacketUpdateSavedPage(PacketBuffer buffer) {
+    this.pageName = buffer.readString(32767);
   }
 
-  public static PacketUpdateSavedPage decode(PacketBuffer buf) {
-    return new PacketUpdateSavedPage(buf.readString(32767));
+  @Override
+  public void encode(PacketBuffer buf) {
+    buf.writeString(this.pageName);
   }
 
-  public static class Handler {
-    public static void handle(final PacketUpdateSavedPage pkt, final Supplier<NetworkEvent.Context> ctx) {
-      ctx.get().enqueueWork(() -> {
-        if(ctx.get().getSender() != null && pkt.pageName != null) {
-          PlayerEntity player = ctx.get().getSender();
+  @Override
+  public void handle(Supplier<NetworkEvent.Context> context) {
+    context.get().enqueueWork(() -> {
+      if (context.get().getSender() != null && this.pageName != null) {
+        PlayerEntity player = context.get().getSender();
 
-          ItemStack is = player.getHeldItem(Hand.MAIN_HAND);
+        ItemStack is = player.getHeldItem(Hand.MAIN_HAND);
 
-          if(!is.isEmpty()) {
-            BookHelper.writeSavedPage(is, pkt.pageName);
-          }
+        if (!is.isEmpty()) {
+          BookHelper.writeSavedPage(is, this.pageName);
         }
-      });
+      }
+    });
 
-      ctx.get().setPacketHandled(true);
-    }
+    context.get().setPacketHandled(true);
   }
 }

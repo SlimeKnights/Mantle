@@ -1,14 +1,14 @@
 package slimeknights.mantle.client.book.data.content;
 
-import java.util.ArrayList;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
-import slimeknights.mantle.client.gui.book.GuiBook;
-import slimeknights.mantle.client.gui.book.element.BookElement;
-import slimeknights.mantle.client.gui.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.client.screen.book.element.BookElement;
+import slimeknights.mantle.client.screen.book.element.ElementText;
+
+import java.util.ArrayList;
 
 @OnlyIn(Dist.CLIENT)
 public class ContentError extends PageContent {
@@ -30,7 +30,7 @@ public class ContentError extends PageContent {
     this.addTitle(list, "Error");
 
     StackTraceElement[] stackTrace = null;
-    if(this.exception != null){
+    if (this.exception != null) {
       stackTrace = this.exception.getStackTrace();
     }
 
@@ -40,21 +40,20 @@ public class ContentError extends PageContent {
     text[0].underlined = true;
     text[0].paragraph = true;
 
-    if(this.exception != null) {
+    if (this.exception != null) {
       text[1] = new TextData("The following error has occured:");
       text[1].color = "dark_red";
       text[1].paragraph = true;
 
-      text[2] = new TextData(this.exception.getMessage() != null ? this.exception.getMessage() : this.exception.getClass()
-                                                                                                .getSimpleName());
+      text[2] = new TextData(this.exception.getMessage() != null ? this.exception.getMessage() : this.exception.getClass().getSimpleName());
       text[2].color = "dark_red";
       text[2].paragraph = true;
     }
 
     text[3] = TextData.LINEBREAK;
 
-    if(stackTrace != null){
-      for(int i = 0; i < stackTrace.length && 5 + i * 2 < text.length; i++){
+    if (stackTrace != null) {
+      for (int i = 0; i < stackTrace.length && 5 + i * 2 < text.length; i++) {
         text[4 + i * 2] = new TextData(stackTrace[i].toString());
         text[4 + i * 2].text += "\n";
         text[4 + i * 2].color = "dark_red";
@@ -62,6 +61,6 @@ public class ContentError extends PageContent {
       }
     }
 
-    list.add(new ElementText(0, TITLE_HEIGHT, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - TITLE_HEIGHT, text));
+    list.add(new ElementText(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
   }
 }

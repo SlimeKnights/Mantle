@@ -2,7 +2,6 @@ package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
@@ -11,38 +10,24 @@ import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
-
-import java.util.HashMap;
-
-import javax.annotation.Nonnull;
-
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
-import slimeknights.mantle.client.book.data.content.ContentBlank;
-import slimeknights.mantle.client.book.data.content.ContentBlockInteraction;
-import slimeknights.mantle.client.book.data.content.ContentCrafting;
-import slimeknights.mantle.client.book.data.content.ContentImage;
-import slimeknights.mantle.client.book.data.content.ContentImageText;
-import slimeknights.mantle.client.book.data.content.ContentSmelting;
-import slimeknights.mantle.client.book.data.content.ContentSmithing;
-import slimeknights.mantle.client.book.data.content.ContentStructure;
-import slimeknights.mantle.client.book.data.content.ContentText;
-import slimeknights.mantle.client.book.data.content.ContentTextImage;
-import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
-import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
-import slimeknights.mantle.client.book.data.content.PageContent;
+import slimeknights.mantle.client.book.data.content.*;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.book.PacketUpdateSavedPage;
+
+import javax.annotation.Nonnull;
+import java.util.HashMap;
 
 @OnlyIn(Dist.CLIENT)
 public class BookLoader implements IResourceManagerReloadListener {
 
   /** GSON object to be used for book loading purposes */
   public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer())
-                                                   .create();
+          .create();
 
   /** Maps page content presets to names */
   private static final HashMap<String, Class<? extends PageContent>> typeToContentMap = new HashMap<>();
@@ -53,7 +38,7 @@ public class BookLoader implements IResourceManagerReloadListener {
   private static final NetworkWrapper wrapper = new NetworkWrapper("mantle:books");
 
   public BookLoader() {
-    wrapper.registerPacket(PacketUpdateSavedPage.class, PacketUpdateSavedPage::encode, PacketUpdateSavedPage::decode, PacketUpdateSavedPage.Handler::handle);
+    wrapper.registerPacket(PacketUpdateSavedPage.class, PacketUpdateSavedPage::encode, PacketUpdateSavedPage::new, PacketUpdateSavedPage::handle);
 
     // Register page types
     registerPageType("blank", ContentBlank.class);
@@ -82,7 +67,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * @RecommendedInvoke init
    */
   public static void registerPageType(String name, Class<? extends PageContent> clazz) {
-    if(typeToContentMap.containsKey(name)) {
+    if (typeToContentMap.containsKey(name)) {
       throw new IllegalArgumentException("Page type " + name + " already in use.");
     }
 
@@ -126,10 +111,10 @@ public class BookLoader implements IResourceManagerReloadListener {
 
     books.put(name.contains(":") ? name : ModLoadingContext.get().getActiveContainer().getNamespace() + ":" + name, info);
 
-    if(appendIndex) {
-      info.addTransformer(BookTransformer.IndexTranformer());
+    if (appendIndex) {
+      info.addTransformer(BookTransformer.indexTranformer());
     }
-    if(appendContentTable) {
+    if (appendContentTable) {
       info.addTransformer(BookTransformer.contentTableTransformer());
     }
 
@@ -137,10 +122,10 @@ public class BookLoader implements IResourceManagerReloadListener {
   }
 
   public static void updateSavedPage(PlayerEntity player, ItemStack item, String page) {
-    if(player == null) {
+    if (player == null) {
       return;
     }
-    if(player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
+    if (player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
       return;
     }
 

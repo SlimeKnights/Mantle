@@ -45,9 +45,9 @@ public class TRSRBakedModel implements IBakedModel {
 
   public TRSRBakedModel(IBakedModel original, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) {
     this(original, new TRSRTransformation(new Vector3f(x, y, z),
-                                          null,
-                                          new Vector3f(scaleX, scaleY, scaleZ),
-                                          TRSRTransformation.quatFromXYZ(rotX, rotY, rotZ)));
+            null,
+            new Vector3f(scaleX, scaleY, scaleZ),
+            TRSRTransformation.quatFromXYZ(rotX, rotY, rotZ)));
   }
 
   public TRSRBakedModel(IBakedModel original, TRSRTransformation transform) {
@@ -64,8 +64,8 @@ public class TRSRBakedModel implements IBakedModel {
 
     this.faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
 
-    double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90)/180d;
-    TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float)r, 0));
+    double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90) / 180d;
+    TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float) r, 0));
     this.transformation = TRSRTransformation.blockCenterToCorner(t);
   }
 
@@ -76,18 +76,19 @@ public class TRSRBakedModel implements IBakedModel {
 
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
-    if(!original.isBuiltInRenderer()) {
+    if (!original.isBuiltInRenderer()) {
       try {
         // adjust side to facing-rotation
-        if(side != null && side.getHorizontalIndex() > -1) {
+        if (side != null && side.getHorizontalIndex() > -1) {
           side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
         }
-        for(BakedQuad quad : original.getQuads(state, side, rand)) {
+        for (BakedQuad quad : original.getQuads(state, side, rand)) {
           Transformer transformer = new Transformer(transformation, quad.getFormat());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
-      } catch(Exception e) {
+      }
+      catch (Exception e) {
         // do nothing. Seriously, why are you using immutable lists?!
       }
     }
@@ -133,7 +134,7 @@ public class TRSRBakedModel implements IBakedModel {
     private final TRSRBakedModel model;
 
     public TRSROverride(TRSRBakedModel model) {
-      super(null, null, null,ImmutableList.<ItemOverride>of());
+      super(null, null, null, ImmutableList.<ItemOverride>of());
 
       this.model = model;
     }
@@ -168,13 +169,13 @@ public class TRSRBakedModel implements IBakedModel {
       VertexFormatElement.Usage usage = parent.getVertexFormat().getElement(element).getUsage();
 
       // transform normals and position
-      if(usage == VertexFormatElement.Usage.POSITION && data.length >= 3) {
+      if (usage == VertexFormatElement.Usage.POSITION && data.length >= 3) {
         Vector4f vec = new Vector4f(data[0], data[1], data[2], 1f);
         transformation.transform(vec);
         data = new float[4];
         vec.get(data);
       }
-      else if(usage == VertexFormatElement.Usage.NORMAL && data.length >= 3) {
+      else if (usage == VertexFormatElement.Usage.NORMAL && data.length >= 3) {
         Vector3f vec = new Vector3f(data);
         normalTransformation.transform(vec);
         vec.normalize();

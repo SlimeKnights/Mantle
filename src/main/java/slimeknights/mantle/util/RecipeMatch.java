@@ -3,23 +3,18 @@ package slimeknights.mantle.util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.IntStream;
-
-import slimeknights.mantle.Mantle;
 
 /**
  * Utility class that allows to find a specific subset of items in a list of itemstacks.
- * Matches can be found through oredictionary, simple nbt-independant item-meta combinations etc.
+ * Matches can be found through tags, simple nbt-independant item-meta combinations etc.
  *
  * The match returned by this class can then be used to remove the found recipe match from the items.
  */
@@ -43,30 +38,6 @@ public abstract class RecipeMatch {
   public abstract List<ItemStack> getInputs();
 
   public abstract Optional<Match> matches(NonNullList<ItemStack> stacks);
-
-  public static RecipeMatch of(String oredict) {
-    return of(oredict, 1);
-  }
-
-  public static RecipeMatch of(String oredict, int matched) {
-    return of(oredict, 1, matched);
-  }
-
-  public static RecipeMatch of(String oredict, int amount, int matched) {
-    return new RecipeMatch.Oredict(oredict, amount, matched);
-  }
-
-  public static RecipeMatch of(List<ItemStack> oredict) {
-    return of(oredict, 1);
-  }
-
-  public static RecipeMatch of(List<ItemStack> oredict, int matched) {
-    return of(oredict, 1, matched);
-  }
-
-  public static RecipeMatch of(List<ItemStack> oredict, int amount, int matched) {
-    return new RecipeMatch.Oredict(oredict, amount, matched);
-  }
 
   public static RecipeMatch of(net.minecraft.item.Item item) {
     return of(item, 1);
@@ -122,14 +93,14 @@ public abstract class RecipeMatch {
 
   private static void removeOrder(NonNullList<ItemStack> stacks, List<ItemStack> toRemove, int[] amountsRemoved) {
     int i = 0;
-    for(int j = 0; j < amountsRemoved.length; j++) {
+    for (int j = 0; j < amountsRemoved.length; j++) {
       ItemStack stack = toRemove.get(j);
-      for(; i < stacks.size(); i++) {
+      for (; i < stacks.size(); i++) {
         // nbt sensitive since toolparts etc. use nbt
-        if(ItemStack.areItemsEqual(stack, stacks.get(i)) && ItemStack.areItemStackTagsEqual(stack, stacks.get(i))) {
-          if(stacks.get(i).getCount() >= stack.getCount()) {
+        if (ItemStack.areItemsEqual(stack, stacks.get(i)) && ItemStack.areItemStackTagsEqual(stack, stacks.get(i))) {
+          if (stacks.get(i).getCount() >= stack.getCount()) {
             stacks.get(i).shrink(stack.getCount());
-            if(stacks.get(i).getCount() == 0) {
+            if (stacks.get(i).getCount() == 0) {
               stacks.set(i, ItemStack.EMPTY);
             }
             amountsRemoved[j] += stack.getCount();
@@ -142,14 +113,14 @@ public abstract class RecipeMatch {
   }
 
   private static void removeRemaining(NonNullList<ItemStack> stacks, List<ItemStack> toRemove, int[] amountsRemoved) {
-    for(int j = 0; j < amountsRemoved.length; j++) {
+    for (int j = 0; j < amountsRemoved.length; j++) {
       ItemStack stack = toRemove.get(j);
       int needed = stack.getCount() - amountsRemoved[j];
-      for(int i = 0; i < stacks.size() && needed > 0; i++) {
-        if(ItemStack.areItemsEqual(stack, stacks.get(i)) && ItemStack.areItemStackTagsEqual(stack, stacks.get(i))) {
+      for (int i = 0; i < stacks.size() && needed > 0; i++) {
+        if (ItemStack.areItemsEqual(stack, stacks.get(i)) && ItemStack.areItemStackTagsEqual(stack, stacks.get(i))) {
           int change = Math.min(stacks.get(i).getCount(), needed);
           stacks.get(i).shrink(change);
-          if(stacks.get(i).getCount() == 0) {
+          if (stacks.get(i).getCount() == 0) {
             stacks.set(i, ItemStack.EMPTY);
           }
           needed -= change;
@@ -187,8 +158,8 @@ public abstract class RecipeMatch {
       List<ItemStack> found = Lists.newLinkedList();
       int stillNeeded = this.amountNeeded;
 
-      for(ItemStack stack : stacks) {
-        if(OreDictionary.itemMatches(this.template, stack, false)) {
+      for (ItemStack stack : stacks) {
+        if (this.template.getItem() == stack.getItem()) {
           // add the amount found to the list
           ItemStack copy = stack.copy();
           copy.setCount(Math.min(copy.getCount(), stillNeeded));
@@ -196,7 +167,7 @@ public abstract class RecipeMatch {
           stillNeeded -= copy.getCount();
 
           // we found enough
-          if(stillNeeded <= 0) {
+          if (stillNeeded <= 0) {
             return Optional.of(new Match(found, this.amountMatched));
           }
         }
@@ -218,9 +189,9 @@ public abstract class RecipeMatch {
       super(amountMatched, 0);
 
       NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(stacks.length, ItemStack.EMPTY);
-      for(int i = 0; i < stacks.length; i++) {
-        if(!stacks[i].isEmpty()) {
-            nonNullStacks.set(i, stacks[i].copy());
+      for (int i = 0; i < stacks.length; i++) {
+        if (!stacks[i].isEmpty()) {
+          nonNullStacks.set(i, stacks[i].copy());
         }
       }
 
@@ -237,18 +208,18 @@ public abstract class RecipeMatch {
       List<ItemStack> found = Lists.newLinkedList();
       Set<Integer> needed = Sets.newHashSet();
 
-      for(int i = 0; i < this.itemStacks.size(); i++) {
-        if(!this.itemStacks.get(i).isEmpty()) {
+      for (int i = 0; i < this.itemStacks.size(); i++) {
+        if (!this.itemStacks.get(i).isEmpty()) {
           needed.add(i);
         }
       }
 
-      for(ItemStack stack : stacks) {
+      for (ItemStack stack : stacks) {
         Iterator<Integer> iter = needed.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
           int index = iter.next();
           ItemStack template = this.itemStacks.get(index);
-          if(ItemStack.areItemsEqual(template, stack) && ItemStack.areItemStackTagsEqual(template, stack)) {
+          if (ItemStack.areItemsEqual(template, stack) && ItemStack.areItemStackTagsEqual(template, stack)) {
             // add the amount found to the list
             ItemStack copy = stack.copy();
             copy.setCount(1);
@@ -259,66 +230,9 @@ public abstract class RecipeMatch {
         }
       }
 
-      if(needed.isEmpty()) {
+      if (needed.isEmpty()) {
         return Optional.of(new Match(found, this.amountMatched));
       }
-      return Optional.empty();
-    }
-  }
-
-  /** A specific amount of an oredicted material is needed to match. */
-  public static class Oredict extends RecipeMatch {
-
-    private final List<ItemStack> oredictEntry; // todo: change this to the actual list in the oredict
-
-    public Oredict(List<ItemStack> oredictEntry, int amountNeeded) {
-      this(oredictEntry, amountNeeded, 1);
-    }
-
-    public Oredict(List<ItemStack> oredictEntry, int amountNeeded, int amountMatched) {
-      super(amountMatched, amountNeeded);
-      this.oredictEntry = oredictEntry;
-    }
-
-    public Oredict(String oredictEntry, int amountNeeded) {
-      this(oredictEntry, amountNeeded, 1);
-    }
-
-    public Oredict(String oredictEntry, int amountNeeded, int amountMatched) {
-      super(amountMatched, amountNeeded);
-      this.oredictEntry = OreDictionary.getOres(oredictEntry);
-    }
-
-    @Override
-    public List<ItemStack> getInputs() {
-      // transform "Requires 2 Cobblestone" into "2x require 1 Cobblestone" since the oredictEntry only contains stacksize 1 usually
-      ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
-      this.oredictEntry.forEach(stack -> IntStream.range(0, this.amountNeeded).forEach(i -> builder.add(stack)));
-      return builder.build();
-    }
-
-    @Override
-    public Optional<Match> matches(NonNullList<ItemStack> stacks) {
-      List<ItemStack> found = Lists.newLinkedList();
-      int stillNeeded = this.amountNeeded;
-
-      for(ItemStack ore : this.oredictEntry) {
-        for(ItemStack stack : stacks) {
-          if(OreDictionary.itemMatches(ore, stack, false)) {
-            // add the amount found to the list
-            ItemStack copy = stack.copy();
-            copy.setCount(Math.min(copy.getCount(), stillNeeded));
-            found.add(copy);
-            stillNeeded -= copy.getCount();
-
-            // we found enough
-            if(stillNeeded <= 0) {
-              return Optional.of(new Match(found, this.amountMatched));
-            }
-          }
-        }
-      }
-
       return Optional.empty();
     }
   }

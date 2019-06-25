@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.action.protocol;
 
-import slimeknights.mantle.client.gui.book.GuiBook;
+import slimeknights.mantle.client.screen.book.BookScreen;
 
 public abstract class ActionProtocol {
 
@@ -10,5 +10,5 @@ public abstract class ActionProtocol {
     this.protocol = protocol;
   }
 
-  public abstract void processCommand(GuiBook book, String param);
+  public abstract void processCommand(BookScreen book, String param);
 }

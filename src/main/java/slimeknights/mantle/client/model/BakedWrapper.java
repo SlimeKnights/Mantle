@@ -69,6 +69,7 @@ public class BakedWrapper implements IBakedModel {
   }
 
   public static class Perspective extends BakedWrapper implements IBakedModel {
+
     protected final ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms;
 
     public Perspective(IBakedModel parent, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms) {

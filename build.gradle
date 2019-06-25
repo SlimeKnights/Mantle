@@ -121,9 +121,8 @@ dependencies {
     //compile "codechicken:CodeChickenLib:${minecraft_version}-${CCLIB_version}:dev"
     //compile "codechicken:CodeChickenCore:${minecraft_version}-${ccc_version}:dev"
     //compile "codechicken:NotEnoughItems:${minecraft_version}-${NEI_version}:dev"
-    //deobfCompile "mezz.jei:jei_${minecraft_version}:${jei_version}"
 	
-	//compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+	compileOnly fg.deobf("mezz.jei:jei-${minecraft_version_previos}:${jei_version}")
 
     // Configuration
     shadow "ninja.leaping.configurate:configurate-hocon:${configurate_version}"

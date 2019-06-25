@@ -24,24 +24,24 @@ public class NetworkWrapper {
   private static final String PROTOCOL_VERSION = Integer.toString(1);
 
   public NetworkWrapper(String channelName) {
-    network = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(channelName))
-        .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-        .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-        .networkProtocolVersion(() -> PROTOCOL_VERSION)
-        .simpleChannel();
+    this.network = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(channelName))
+            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .simpleChannel();
   }
 
   public <MSG> void registerPacket(Class<MSG> packetClazz, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
-    network.registerMessage(id++, packetClazz, encoder, decoder, messageConsumer);
+    this.network.registerMessage(this.id++, packetClazz, encoder, decoder, messageConsumer);
   }
 
   public void sendToServer(Object msg) {
-    network.sendToServer(msg);
+    this.network.sendToServer(msg);
   }
 
   public void sendTo(Object msg, ServerPlayerEntity player) {
-    if(!(player instanceof FakePlayer)) {
-      network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+    if (!(player instanceof FakePlayer)) {
+      this.network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
   }
 }

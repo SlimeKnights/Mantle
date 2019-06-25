@@ -4,13 +4,12 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.UnmodifiableListIterator;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-
-import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkPositionIndex;
 
@@ -71,9 +70,11 @@ public class ImmutableConcatList<E> implements List<E> {
 
   @Override
   public boolean containsAll(@Nonnull Collection<?> c) {
-    for (Object e : c)
-      if (!this.contains(e))
+    for (Object e : c) {
+      if (!this.contains(e)) {
         return false;
+      }
+    }
     return true;
   }
 
@@ -126,7 +127,7 @@ public class ImmutableConcatList<E> implements List<E> {
   public int indexOf(final Object o) {
     Iterator<E> iterator = this.iterable.iterator();
     for (int i = 0; iterator.hasNext(); i++) {
-      if(o == iterator.next()) {
+      if (o == iterator.next()) {
         return i;
       }
     }
@@ -139,7 +140,7 @@ public class ImmutableConcatList<E> implements List<E> {
     Iterator<E> iterator = this.iterable.iterator();
     int j = -1;
     for (int i = 0; iterator.hasNext(); i++) {
-      if(o == iterator.next()) {
+      if (o == iterator.next()) {
         j = i;
       }
     }

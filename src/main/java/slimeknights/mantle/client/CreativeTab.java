@@ -19,7 +19,7 @@ public class CreativeTab extends ItemGroup {
   }
 
   public void setDisplayIcon(ItemStack displayIcon) {
-    if(!displayIcon.isEmpty()) {
+    if (!displayIcon.isEmpty()) {
       this.icon = displayIcon;
     }
   }
@@ -28,13 +28,13 @@ public class CreativeTab extends ItemGroup {
   @OnlyIn(Dist.CLIENT)
   @Override
   public ItemStack getIcon() {
-    return icon;
+    return this.icon;
   }
 
   @Nonnull
   @OnlyIn(Dist.CLIENT)
   @Override
   public ItemStack createIcon() {
-    return icon;
+    return this.icon;
   }
 }

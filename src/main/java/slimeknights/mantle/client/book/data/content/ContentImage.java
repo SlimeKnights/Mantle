@@ -1,14 +1,14 @@
 package slimeknights.mantle.client.book.data.content;
 
-import java.util.ArrayList;
-
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
-import slimeknights.mantle.client.gui.book.GuiBook;
-import slimeknights.mantle.client.gui.book.element.BookElement;
-import slimeknights.mantle.client.gui.book.element.ElementImage;
+import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.client.screen.book.element.BookElement;
+import slimeknights.mantle.client.screen.book.element.ElementImage;
+
+import java.util.ArrayList;
 
 @OnlyIn(Dist.CLIENT)
 public class ContentImage extends PageContent {
@@ -20,15 +20,17 @@ public class ContentImage extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
-    if(this.title == null || this.title.isEmpty()) {
+    if (this.title == null || this.title.isEmpty()) {
       y = 0;
-    } else {
+    }
+    else {
       this.addTitle(list, this.title);
     }
 
-    if(this.image != null && this.image.location != null) {
-      list.add(new ElementImage(0, y, GuiBook.PAGE_WIDTH, GuiBook.PAGE_HEIGHT - y, this.image));
-    } else {
+    if (this.image != null && this.image.location != null) {
+      list.add(new ElementImage(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.image));
+    }
+    else {
       list.add(new ElementImage(ImageData.MISSING));
     }
   }

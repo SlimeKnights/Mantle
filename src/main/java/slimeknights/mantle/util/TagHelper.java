@@ -15,7 +15,7 @@ public class TagHelper {
 
   /* Generic Tag Operations */
   public static CompoundNBT getTagSafe(ItemStack stack) {
-    if(stack.isEmpty() || !stack.hasTag()) {
+    if (stack.isEmpty() || !stack.hasTag()) {
       return new CompoundNBT();
     }
 
@@ -23,7 +23,7 @@ public class TagHelper {
   }
 
   public static CompoundNBT getTagSafe(CompoundNBT tag, String key) {
-    if(tag == null || !tag.contains(key)) {
+    if (tag == null || !tag.contains(key)) {
       return new CompoundNBT();
     }
 
@@ -31,7 +31,7 @@ public class TagHelper {
   }
 
   public static ListNBT getTagListSafe(CompoundNBT tag, String key, int type) {
-    if(tag == null || !tag.contains(key)) {
+    if (tag == null || !tag.contains(key)) {
       return new ListNBT();
     }
 

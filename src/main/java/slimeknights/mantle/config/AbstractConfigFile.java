@@ -1,14 +1,23 @@
 package slimeknights.mantle.config;
 
 import com.google.common.reflect.TypeToken;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.AtomicFiles;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -23,18 +32,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.AtomicFiles;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
 public abstract class AbstractConfigFile implements Serializable {
 
@@ -51,8 +48,8 @@ public abstract class AbstractConfigFile implements Serializable {
 
   // required constructor for deserialization
   public AbstractConfigFile() {
-    file = null;
-    loader = null;
+    this.file = null;
+    this.loader = null;
   }
 
   public AbstractConfigFile(File configFolder, String name) {
@@ -61,20 +58,20 @@ public abstract class AbstractConfigFile implements Serializable {
 
   public AbstractConfigFile(File configFile) {
     configFile.getParentFile().mkdirs();
-    file = configFile;
-    loader = HoconConfigurationLoader.builder().setFile(file).build();
+    this.file = configFile;
+    this.loader = HoconConfigurationLoader.builder().setFile(this.file).build();
   }
 
   public CommentedConfigurationNode load() throws IOException {
-    return loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
+    return this.loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
   }
 
   public void save(ConfigurationNode node) throws IOException {
-    loader.save(node);
+    this.loader.save(node);
   }
 
   public String getName() {
-    return file.getName();
+    return this.file.getName();
   }
 
   public abstract void insertDefaults();
@@ -87,39 +84,40 @@ public abstract class AbstractConfigFile implements Serializable {
   protected abstract int getConfigVersion();
 
   void setConfigVersion() {
-    if(configVersion != getConfigVersion()) {
-      configVersion = getConfigVersion();
-      setNeedsSaving();
+    if (this.configVersion != this.getConfigVersion()) {
+      this.configVersion = this.getConfigVersion();
+      this.setNeedsSaving();
     }
   }
 
-
   public AbstractConfigFile loadFromPacket(byte[] packetData) {
     ConfigurationLoader<CommentedConfigurationNode> packetDataLoader = HoconConfigurationLoader
-        .builder()
-        .setSource(() -> new BufferedReader(new InputStreamReader(new ByteArrayInputStream(packetData))))
-        .setSink(AtomicFiles.createAtomicWriterFactory(file.toPath(), StandardCharsets.UTF_8))
-        .build();
+            .builder()
+            .setSource(() -> new BufferedReader(new InputStreamReader(new ByteArrayInputStream(packetData))))
+            .setSink(AtomicFiles.createAtomicWriterFactory(this.file.toPath(), StandardCharsets.UTF_8))
+            .build();
 
     try {
       CommentedConfigurationNode node = packetDataLoader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
 
       try {
         return node.getValue(TypeToken.of(this.getClass()));
-      } catch(ObjectMappingException e) {
+      }
+      catch (ObjectMappingException e) {
         e.printStackTrace();
       }
-    } catch(IOException e) {
+    }
+    catch (IOException e) {
       e.printStackTrace();
     }
     return null;
   }
 
   public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-    if(type != AbstractConfigFile.class) {
+    if (type != AbstractConfigFile.class) {
       fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
-      if(type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass())) {
+      if (type.getSuperclass() != null && AbstractConfigFile.class.isAssignableFrom(type.getSuperclass())) {
         fields = getAllFields(fields, type.getSuperclass());
       }
     }
@@ -129,42 +127,43 @@ public abstract class AbstractConfigFile implements Serializable {
 
   public byte[] getPacketData() {
     try {
-      return Files.readAllBytes(file.toPath());
-    } catch(IOException e) {
+      return Files.readAllBytes(this.file.toPath());
+    }
+    catch (IOException e) {
       e.printStackTrace();
     }
     return null;
   }
 
   public boolean sync(AbstractConfigFile other) {
-    return sync(other, this);
+    return this.sync(other, this);
   }
 
   public boolean sync(Object other, Object that) {
-    if(other.getClass() != that.getClass()) {
+    if (other.getClass() != that.getClass()) {
       return false;
     }
 
     List<Field> fieldsToProcess = new ArrayList<>();
     getAllFields(fieldsToProcess, that.getClass());
 
-    for(Field field : fieldsToProcess) {
-      syncField(other, that, field);
+    for (Field field : fieldsToProcess) {
+      this.syncField(other, that, field);
     }
 
-    return needsSaving();
+    return this.needsSaving();
   }
 
   private void syncField(Object other, Object that, Field field) {
     try {
       // don't sync transient fields
-      if(Modifier.isTransient(field.getModifiers())) {
+      if (Modifier.isTransient(field.getModifiers())) {
         return;
       }
-      if(Modifier.isStatic(field.getModifiers())) {
+      if (Modifier.isStatic(field.getModifiers())) {
         return;
       }
-      if(!field.isAccessible()) {
+      if (!field.isAccessible()) {
         field.setAccessible(true);
       }
 
@@ -172,34 +171,35 @@ public abstract class AbstractConfigFile implements Serializable {
       Object remote = field.get(other);
 
       // is this a subclass that contains entries itself?
-      if(field.getType().isAnnotationPresent(ConfigSerializable.class)) {
-        sync(remote, original);
+      if (field.getType().isAnnotationPresent(ConfigSerializable.class)) {
+        this.sync(remote, original);
       }
       else {
-        if(!original.equals(remote)) {
+        if (!original.equals(remote)) {
           field.set(that, remote);
-          setNeedsSaving();
+          this.setNeedsSaving();
         }
       }
-    } catch(IllegalAccessException e) {
+    }
+    catch (IllegalAccessException e) {
       e.printStackTrace();
     }
   }
 
   public void setNeedsSaving() {
-    needsSaving = true;
+    this.needsSaving = true;
   }
 
   public boolean needsSaving() {
-    return needsSaving;
+    return this.needsSaving;
   }
 
   public void clearNeedsSaving() {
-    needsSaving = false;
+    this.needsSaving = false;
   }
 
   public static void init() {
-    if(initialized) {
+    if (initialized) {
       return;
     }
 
@@ -218,7 +218,7 @@ public abstract class AbstractConfigFile implements Serializable {
       }
     });
 
-    TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(BlockMeta.class), BlockMeta.SERIALIZER);
+    TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(BlockState.class), BlockState.SERIALIZER);
 
     initialized = true;
   }
@@ -230,12 +230,11 @@ public abstract class AbstractConfigFile implements Serializable {
 
     @Override
     public T deserialize(TypeToken<?> typeToken, ConfigurationNode configurationNode) throws ObjectMappingException {
-      return getRegistry().getValue(new ResourceLocation(configurationNode.getString()));
+      return this.getRegistry().getValue(new ResourceLocation(configurationNode.getString()));
     }
 
     @Override
-    public void serialize(TypeToken<?> typeToken, T t, ConfigurationNode configurationNode)
-        throws ObjectMappingException {
+    public void serialize(TypeToken<?> typeToken, T t, ConfigurationNode configurationNode) throws ObjectMappingException {
       configurationNode.setValue(t.getRegistryName());
     }
   }

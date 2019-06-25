@@ -55,7 +55,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    */
   public static ItemStackList of(IInventory inventory) {
     ItemStackList itemStackList = withSize(inventory.getSizeInventory());
-    for(int i = 0; i < inventory.getSizeInventory(); i++) {
+    for (int i = 0; i < inventory.getSizeInventory(); i++) {
       itemStackList.add(inventory.getStackInSlot(i));
     }
     return itemStackList;
@@ -78,7 +78,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * @param index The index to set empty
    */
   public void setEmpty(int index) {
-    if(index >= 0 && index < size()) {
+    if (index >= 0 && index < size()) {
       set(index, ItemStack.EMPTY);
     }
   }
@@ -89,7 +89,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    */
   public ItemStackList copy(boolean fixed) {
     ItemStackList copy = fixed ? withSize(this.size()) : create();
-    for(int i = 0; i < size(); i++) {
+    for (int i = 0; i < size(); i++) {
       copy.set(i, get(i));
     }
     return copy;
@@ -102,7 +102,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    */
   public ItemStackList deepCopy(boolean fixed) {
     ItemStackList copy = fixed ? withSize(this.size()) : create();
-    for(int i = 0; i < size(); i++) {
+    for (int i = 0; i < size(); i++) {
       copy.set(i, get(i).copy());
     }
     return copy;

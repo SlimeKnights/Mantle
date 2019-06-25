@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.data.element.BlockData;
 
 public class StructureInfo {
+
   public BlockState[][][] data;
   public int blockCount = 0;
   public int[] countPerLevel;
@@ -30,11 +31,11 @@ public class StructureInfo {
     this.structureLength = length;
     BlockState[][][] states = new BlockState[height][length][width];
 
-    for(int y = 0; y < height; y++) {
-      for(int x = 0; x < length; x++) {
-        for(int z = 0; z < width; z++) {
-          for(BlockData data : blockData) {
-            if(this.inside(x, y, z, data.pos, data.endPos)) {
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < length; x++) {
+        for (int z = 0; z < width; z++) {
+          for (BlockData data : blockData) {
+            if (this.inside(x, y, z, data.pos, data.endPos)) {
               states[y][x][z] = this.convert(data);
               break;
             }
@@ -49,12 +50,12 @@ public class StructureInfo {
 
   private BlockState convert(BlockData data) {
     Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(data.block));
-    if(block == null) {
+    if (block == null) {
       return Blocks.AIR.getDefaultState();
     }
     BlockState state = block.getDefaultState();
 
-    if (data.state != null || !data.state.isEmpty()) {
+    if (data.state != null && !data.state.isEmpty()) {
       for (Map.Entry<String, String> entry : data.state.entrySet()) {
         Optional<IProperty<?>> property = state.getProperties().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
 
@@ -69,16 +70,15 @@ public class StructureInfo {
 
   private <T extends Comparable<T>> BlockState setProperty(BlockState state, IProperty<T> prop, String valueString) {
     java.util.Optional<T> value = prop.parseValue(valueString);
-    if(value.isPresent()) {
+    if (value.isPresent()) {
       state = state.with(prop, value.get());
     }
     return state;
   }
 
-
   private boolean inside(int x, int y, int z, int[] rangeStart, int[] rangeEnd) {
-    if(x >= rangeStart[0] && x <= rangeEnd[0]) {
-      if(y >= rangeStart[1] && y <= rangeEnd[1]) {
+    if (x >= rangeStart[0] && x <= rangeEnd[0]) {
+      if (y >= rangeStart[1] && y <= rangeEnd[1]) {
         return z >= rangeStart[2] && z <= rangeEnd[2];
       }
     }
@@ -98,20 +98,22 @@ public class StructureInfo {
   public boolean canStep() {
     int index = this.blockIndex;
     do {
-      if(++index >= this.maxBlockIndex) {
+      if (++index >= this.maxBlockIndex) {
         return false;
       }
-    } while(this.isEmpty(index));
+    }
+    while (this.isEmpty(index));
     return true;
   }
 
   public void step() {
     int start = this.blockIndex;
     do {
-      if(++this.blockIndex >= this.maxBlockIndex) {
+      if (++this.blockIndex >= this.maxBlockIndex) {
         this.blockIndex = 0;
       }
-    } while(this.isEmpty(this.blockIndex) && this.blockIndex != start);
+    }
+    while (this.isEmpty(this.blockIndex) && this.blockIndex != start);
   }
 
   private boolean isEmpty(int index) {

@@ -27,14 +27,14 @@ public abstract class LocUtils {
 
   public static List<ITextComponent> getTooltips(String text) {
     List<ITextComponent> list = Lists.newLinkedList();
-    if(text == null)
+    if (text == null) {
       return list;
+    }
     int j = 0;
     int k;
-    while((k = text.indexOf("\\n", j)) >= 0)
-    {
+    while ((k = text.indexOf("\\n", j)) >= 0) {
       list.add(new StringTextComponent(text.substring(j, k)));
-      j = k+2;
+      j = k + 2;
     }
 
     list.add(new StringTextComponent(text.substring(j, text.length())));
@@ -42,14 +42,13 @@ public abstract class LocUtils {
     return list;
   }
 
-
   public static String convertNewlines(String line) {
-    if(line == null)
+    if (line == null) {
       return null;
+    }
     int j;
-    while((j = line.indexOf("\\n")) >= 0)
-    {
-      line = line.substring(0, j) + '\n' + line.substring(j+2);
+    while ((j = line.indexOf("\\n")) >= 0) {
+      line = line.substring(0, j) + '\n' + line.substring(j + 2);
     }
 
     return line;

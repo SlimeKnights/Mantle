@@ -1,58 +1,52 @@
 package slimeknights.mantle.config;
 
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.network.play.ServerPlayNetHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
+import slimeknights.mantle.network.AbstractPacket;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.netty.buffer.ByteBuf;
-import slimeknights.mantle.network.AbstractPacket;
+import java.util.function.Supplier;
 
 public abstract class AbstractConfigSyncPacket extends AbstractPacket {
 
   private List<AbstractConfigFile> config;
 
+  public AbstractConfigSyncPacket(PacketBuffer buffer) {
+    this.config = new ArrayList<>();
+    for (AbstractConfigFile configFile : this.getConfig().configFileList) {
+      int length = buffer.readInt();
+      byte[] data = new byte[length];
+      buffer.readBytes(data);
+      this.config.add(configFile.loadFromPacket(data));
+    }
+  }
+
   public AbstractConfigSyncPacket() {
+  }
+
+  protected boolean sync() {
+    return AbstractConfig.syncConfig(this.getConfig(), this.config);
   }
 
   protected abstract AbstractConfig getConfig();
 
   @Override
-  public IMessage handleClient(ClientPlayNetHandler netHandler) {
-    sync();
-    return null;
-  }
-
-  @Override
-  public IMessage handleServer(ServerPlayNetHandler netHandler) {
-    // We sync from server to client, not vice versa
-    throw new UnsupportedOperationException("Trying to sync client configs to the server. You registered the packet for the wrong side.");
-  }
-
-  protected boolean sync() {
-    return AbstractConfig.syncConfig(getConfig(), config);
-  }
-
-
-  @Override
-  public void fromBytes(ByteBuf buf) {
-    config = new ArrayList<>();
-    for(AbstractConfigFile configFile : getConfig().configFileList) {
-      int length = buf.readInt();
-      byte[] data = new byte[length];
-      buf.readBytes(data);
-      config.add(configFile.loadFromPacket(data));
-    }
-  }
-
-  @Override
-  public void toBytes(ByteBuf buf) {
-    for(AbstractConfigFile configFile : getConfig().configFileList) {
+  public void encode(PacketBuffer buf) {
+    for (AbstractConfigFile configFile : this.getConfig().configFileList) {
       byte[] data = configFile.getPacketData();
       buf.writeInt(data.length);
       buf.writeBytes(data);
     }
+  }
+
+  @Override
+  public void handle(Supplier<NetworkEvent.Context> context) {
+    context.get().enqueueWork(() -> DistExecutor.runForDist(() -> this::sync, () -> {
+      throw new UnsupportedOperationException("Trying to sync client configs to the server. You registered the packet for the wrong side.");
+    }));
+
+    context.get().setPacketHandled(true);
   }
 }

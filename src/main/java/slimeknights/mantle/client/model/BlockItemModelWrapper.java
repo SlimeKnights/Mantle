@@ -34,10 +34,10 @@ public class BlockItemModelWrapper implements IBakedModel {
   public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
     Matrix4f matrix = null;
     // fix transformation in hand
-    if(cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND) {
+    if (cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND) {
       matrix = ModelHelper.BLOCK_THIRD_PERSON_RIGHT.getMatrixVec();
     }
-    else if(cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND) {
+    else if (cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND) {
       matrix = ModelHelper.BLOCK_THIRD_PERSON_LEFT.getMatrixVec();
     }
 

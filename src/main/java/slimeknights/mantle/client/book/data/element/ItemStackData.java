@@ -1,20 +1,17 @@
 package slimeknights.mantle.client.book.data.element;
 
 import com.google.gson.JsonObject;
-
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.arguments.ItemArgument;
 import net.minecraft.block.Blocks;
-import net.minecraft.item.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
@@ -31,51 +28,54 @@ public class ItemStackData {
   public JsonObject nbt;
 
   public NonNullList<ItemStack> getItems() {
-    if(itemListLocation != null && source.resourceExists(itemListLocation)) {
+    if (itemListLocation != null && source.resourceExists(itemListLocation)) {
       try {
         ItemsList itemsList = BookLoader.GSON
-            .fromJson(source.resourceToString(source.getResource(itemListLocation)), ItemsList.class);
-        NonNullList<ItemStack> items = NonNullList.<ItemStack> withSize(itemsList.items.length, ItemStack.EMPTY);
+                .fromJson(source.resourceToString(source.getResource(itemListLocation)), ItemsList.class);
+        NonNullList<ItemStack> items = NonNullList.<ItemStack>withSize(itemsList.items.length, ItemStack.EMPTY);
 
-        for(int i = 0; i < itemsList.items.length; i++) {
+        for (int i = 0; i < itemsList.items.length; i++) {
           items.set(i, itemsList.items[i].getItem());
         }
 
         this.action = itemsList.action;
 
         return items;
-      } catch(Exception ignored) {
+      }
+      catch (Exception ignored) {
       }
     }
 
-    return NonNullList.<ItemStack> withSize(1, getItem());
+    return NonNullList.<ItemStack>withSize(1, getItem());
   }
 
   private ItemStack getItem() {
     Item item;
     boolean isMissingItem = false;
     try {
-      item = ItemArgument.getItem(null, id).getItem();
-    } catch(Exception e) {
+      item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));//ItemArgument.getItem(null, id).getItem();
+    }
+    catch (Exception e) {
       item = Item.getItemFromBlock(Blocks.BARRIER);
       isMissingItem = true;
     }
 
-    if(item == Items.AIR) {
+    if (item == Items.AIR) {
       item = Item.getItemFromBlock(Blocks.BARRIER);
       isMissingItem = true;
     }
 
     ItemStack itemStack = new ItemStack(item, amount);
 
-    if(nbt != null) {
+    if (nbt != null) {
       try {
         itemStack.setTag(JsonToNBT.getTagFromJson(filterJsonQuotes(nbt.toString())));
-      } catch(CommandSyntaxException ignored) {
+      }
+      catch (CommandSyntaxException ignored) {
       }
     }
 
-    if(isMissingItem) {
+    if (isMissingItem) {
       CompoundNBT display = itemStack.getOrCreateChildTag("display");
       display.putString("Name", "\u00A7rUnknown Item");
       ListNBT lore = new ListNBT();
@@ -95,7 +95,7 @@ public class ItemStackData {
     ItemStackData data = new ItemStackData();
     data.id = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
     data.amount = (byte) stack.getCount();
-    if(!ignoreNbt && stack.getTag() != null) {
+    if (!ignoreNbt && stack.getTag() != null) {
       data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), CompoundNBT.class).getAsJsonObject();
     }
 

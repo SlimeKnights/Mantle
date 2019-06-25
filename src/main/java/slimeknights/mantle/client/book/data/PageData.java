@@ -1,11 +1,6 @@
 package slimeknights.mantle.client.book.data;
 
 import net.minecraft.client.renderer.texture.AtlasTexture;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-
 import net.minecraft.resources.IResource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,6 +11,10 @@ import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.data.element.DataLocation;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 
 @OnlyIn(Dist.CLIENT)
 public class PageData implements IDataItem {
@@ -36,7 +35,7 @@ public class PageData implements IDataItem {
   }
 
   public PageData(boolean custom) {
-    if(custom) {
+    if (custom) {
       this.data = "no-load";
     }
   }
@@ -48,32 +47,34 @@ public class PageData implements IDataItem {
   @Override
   @SuppressWarnings("unchecked")
   public void load() {
-    if(this.name == null) {
+    if (this.name == null) {
       this.name = "page" + this.parent.unnamedPageCounter++;
     }
 
     this.name = this.name.toLowerCase();
 
-    if(!this.data.equals("no-load")) {
+    if (!this.data.equals("no-load")) {
       IResource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
-      if(pageInfo != null) {
+      if (pageInfo != null) {
         String data = this.source.resourceToString(pageInfo);
-        if(!data.isEmpty()) {
+        if (!data.isEmpty()) {
           Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
 
           try {
             this.content = BookLoader.GSON.fromJson(data, ctype);
-          } catch(Exception e) {
+          }
+          catch (Exception e) {
             this.content = new ContentError(ctype == null ? "Failed to create a page of type \"" + this.type + "\", perhaps the type is not registered?" : "Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
           }
         }
       }
     }
 
-    if(this.content == null) {
+    if (this.content == null) {
       try {
         this.content = BookLoader.getPageType(this.type).newInstance();
-      } catch(InstantiationException | IllegalAccessException | NullPointerException e) {
+      }
+      catch (InstantiationException | IllegalAccessException | NullPointerException e) {
         this.content = new ContentError("Failed to create a page of type \"" + this.type + "\", perhaps the type is not registered?");
       }
     }
@@ -81,48 +82,53 @@ public class PageData implements IDataItem {
     try {
       this.content.parent = this;
       this.content.load();
-    } catch(Exception e) {
+    }
+    catch (Exception e) {
       this.content = new ContentError("Failed to load page " + this.parent.name + "." + this.name + ".", e);
       e.printStackTrace();
     }
 
     this.content.source = this.source;
 
-    for(Field f : this.content.getClass().getFields()) {
-      if(Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
-          .isFinal(f.getModifiers())) {
+    for (Field f : this.content.getClass().getFields()) {
+      if (Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
+              .isFinal(f.getModifiers())) {
         continue;
       }
 
       try {
-        if(f.get(this.content) == null) {
+        if (f.get(this.content) == null) {
           continue;
         }
-      } catch(IllegalAccessException e) {
+      }
+      catch (IllegalAccessException e) {
         e.printStackTrace();
       }
 
-      for(ValueHotswap swap : hotswaps) {
+      for (ValueHotswap swap : hotswaps) {
         Class<?> c = f.getType();
 
-        if(c.isArray() && c.getComponentType().isAssignableFrom(swap.t)) {
+        if (c.isArray() && c.getComponentType().isAssignableFrom(swap.t)) {
           try {
             f.setAccessible(true);
             Object[] o = (Object[]) f.get(this.content);
 
-            for(Object ob : o) {
+            for (Object ob : o) {
               swap.swap(this.source, ob);
             }
-          } catch(IllegalAccessException e) {
+          }
+          catch (IllegalAccessException e) {
             e.printStackTrace();
           }
-        } else if(swap.t.isAssignableFrom(c)) {
+        }
+        else if (swap.t.isAssignableFrom(c)) {
           try {
             f.setAccessible(true);
             Object o = f.get(this.content);
 
             swap.swap(this.source, o);
-          } catch(IllegalAccessException e) {
+          }
+          catch (IllegalAccessException e) {
             e.printStackTrace();
           }
         }
@@ -136,7 +142,8 @@ public class PageData implements IDataItem {
       hotswap.t = t;
 
       hotswaps.add(hotswap);
-    } catch(InstantiationException | IllegalAccessException e) {
+    }
+    catch (InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
     }
   }
@@ -151,7 +158,7 @@ public class PageData implements IDataItem {
       @Override
       public void swap(BookRepository source, DataLocation object) {
         object.location = object.file == "$BLOCK_ATLAS" ? AtlasTexture.LOCATION_BLOCKS_TEXTURE : source
-            .getResourceLocation(object.file, true);
+                .getResourceLocation(object.file, true);
       }
     }.getClass());
     addSwap(ItemStackData.class, new ValueHotswap<ItemStackData>() {
@@ -160,7 +167,7 @@ public class PageData implements IDataItem {
         object.source = source;
         object.itemListLocation = source.getResourceLocation(object.itemList);
 
-        if(object.itemListLocation != null) {
+        if (object.itemListLocation != null) {
           object.id = "->itemList";
         }
       }
@@ -168,7 +175,7 @@ public class PageData implements IDataItem {
     addSwap(BlockData.class, new ValueHotswap<BlockData>() {
       @Override
       public void swap(BookRepository source, BlockData object) {
-        if(object.endPos == null) {
+        if (object.endPos == null) {
           object.endPos = object.pos;
         }
       }

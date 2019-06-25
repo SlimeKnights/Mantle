@@ -9,7 +9,7 @@ import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.repository.BookRepository;
-import slimeknights.mantle.client.gui.book.GuiBook;
+import slimeknights.mantle.client.screen.book.BookScreen;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class SectionData implements IDataItem {
   }
 
   public SectionData(boolean custom) {
-    if(custom) {
+    if (custom) {
       this.data = "no-load";
     }
   }
@@ -46,20 +46,21 @@ public class SectionData implements IDataItem {
 
   @Override
   public void load() {
-    if(this.name == null) {
+    if (this.name == null) {
       this.name = "section" + this.parent.unnamedSectionCounter++;
     }
 
     this.name = this.name.toLowerCase();
 
-    if(!this.data.equals("no-load")) {
+    if (!this.data.equals("no-load")) {
       IResource pagesInfo = this.source.getResource(this.source.getResourceLocation(this.data));
-      if(pagesInfo != null) {
+      if (pagesInfo != null) {
         String data = this.source.resourceToString(pagesInfo);
-        if(!data.isEmpty()) {
+        if (!data.isEmpty()) {
           try {
             this.pages = this.getPages(data);
-          } catch(Exception e) {
+          }
+          catch (Exception e) {
             this.pages = new ArrayList<>();
             PageData pdError = new PageData(true);
             pdError.name = "errorrenous";
@@ -72,7 +73,7 @@ public class SectionData implements IDataItem {
       }
     }
 
-    for(PageData page : this.pages) {
+    for (PageData page : this.pages) {
       page.parent = this;
       page.source = this.source;
       page.load();
@@ -84,13 +85,13 @@ public class SectionData implements IDataItem {
   /**
    * Gets a list of pages from the given data
    * @param data  JSON data
-   * @return  ArrayList of pages for the book
+   * @return ArrayList of pages for the book
    */
   protected ArrayList<PageData> getPages(String data) {
     return new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
   }
 
-  public void update(@Nullable GuiBook.AdvancementCache advancementCache) {
+  public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
   }
 
   public String getTitle() {
@@ -102,13 +103,13 @@ public class SectionData implements IDataItem {
     return this.pages.size();
   }
 
-  public boolean isUnlocked(GuiBook.AdvancementCache advancementCache) {
-    if(advancementCache == null || this.requirements == null || this.requirements.size() == 0) {
+  public boolean isUnlocked(BookScreen.AdvancementCache advancementCache) {
+    if (advancementCache == null || this.requirements == null || this.requirements.size() == 0) {
       return true;
     }
 
-    for(String achievement : this.requirements) {
-      if(!requirementSatisfied(achievement, advancementCache)) {
+    for (String achievement : this.requirements) {
+      if (!requirementSatisfied(achievement, advancementCache)) {
         return false;
       }
     }
@@ -116,8 +117,8 @@ public class SectionData implements IDataItem {
     return true;
   }
 
-  public static boolean requirementSatisfied(String requirement, GuiBook.AdvancementCache advancementCache) {
-    if(advancementCache == null) {
+  public static boolean requirementSatisfied(String requirement, BookScreen.AdvancementCache advancementCache) {
+    if (advancementCache == null) {
       return true;
     }
 

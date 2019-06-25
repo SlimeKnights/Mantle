@@ -33,23 +33,23 @@ public class BakedSimple implements IBakedModel {
 
   public BakedSimple(ImmutableList<BakedQuad> quads, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, IBakedModel base) {
     this(
-        (List<BakedQuad>)quads,
-        transforms,
-        base.getParticleTexture(),
-        base.isAmbientOcclusion(),
-        base.isGui3d(),
-        base.getOverrides()
+            (List<BakedQuad>) quads,
+            transforms,
+            base.getParticleTexture(),
+            base.isAmbientOcclusion(),
+            base.isGui3d(),
+            base.getOverrides()
     );
   }
 
   public BakedSimple(List<BakedQuad> quads, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, IBakedModel base) {
     this(
-        quads,
-        transforms,
-        base.getParticleTexture(),
-        base.isAmbientOcclusion(),
-        base.isGui3d(),
-        base.getOverrides()
+            quads,
+            transforms,
+            base.getParticleTexture(),
+            base.isAmbientOcclusion(),
+            base.isGui3d(),
+            base.getOverrides()
     );
   }
 

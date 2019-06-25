@@ -34,12 +34,11 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   public boolean hasValidMaster() {
-    if(!this.hasMaster) {
+    if (!this.hasMaster) {
       return false;
     }
 
-    if(this.world.getBlockState(this.master).getBlock() == this.masterBlock
-        && this.world.getBlockState(this.master) == this.state) {
+    if (this.world.getBlockState(this.master).getBlock() == this.masterBlock && this.world.getBlockState(this.master) == this.state) {
       return true;
     }
     else {
@@ -78,12 +77,12 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   @Deprecated
   public boolean verifyMaster(IMasterLogic logic, BlockPos pos) {
     return this.master.equals(pos) && this.world.getBlockState(pos) == this.state
-        && this.world.getBlockState(pos).getBlock() == this.masterBlock;
+            && this.world.getBlockState(pos).getBlock() == this.masterBlock;
   }
 
   @Override
   public boolean verifyMaster(IMasterLogic logic, World world, BlockPos pos) {
-    if(this.hasMaster) {
+    if (this.hasMaster) {
       return this.hasValidMaster();
     }
     else {
@@ -99,7 +98,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   @Override
   public void notifyMasterOfChange() {
-    if(this.hasValidMaster()) {
+    if (this.hasValidMaster()) {
       IMasterLogic logic = (IMasterLogic) this.world.getTileEntity(this.master);
       logic.notifyChange(this, this.pos);
     }
@@ -107,7 +106,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   public void readCustomNBT(CompoundNBT tags) {
     this.hasMaster = tags.getBoolean("hasMaster");
-    if(this.hasMaster) {
+    if (this.hasMaster) {
       int xCenter = tags.getInt("xCenter");
       int yCenter = tags.getInt("yCenter");
       int zCenter = tags.getInt("zCenter");
@@ -119,7 +118,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   public CompoundNBT writeCustomNBT(CompoundNBT tags) {
     tags.putBoolean("hasMaster", this.hasMaster);
-    if(this.hasMaster) {
+    if (this.hasMaster) {
       tags.putInt("xCenter", this.master.getX());
       tags.putInt("yCenter", this.master.getY());
       tags.putInt("zCenter", this.master.getZ());
@@ -167,9 +166,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   @Deprecated
   public boolean setMaster(BlockPos pos) {
-    if(!this.hasMaster || this.world.getBlockState(this.master) != this.state || (this.world
-                                                                                         .getBlockState(this.master)
-                                                                                         .getBlock() != this.masterBlock)) {
+    if (!this.hasMaster || this.world.getBlockState(this.master) != this.state || (this.world.getBlockState(this.master).getBlock() != this.masterBlock)) {
       this.overrideMaster(pos);
       return true;
     }

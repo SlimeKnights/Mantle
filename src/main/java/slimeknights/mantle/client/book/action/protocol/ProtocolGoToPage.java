@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.action.protocol;
 
-import slimeknights.mantle.client.gui.book.GuiBook;
+import slimeknights.mantle.client.screen.book.BookScreen;
 
 public class ProtocolGoToPage extends ActionProtocol {
 
@@ -20,10 +20,10 @@ public class ProtocolGoToPage extends ActionProtocol {
   }
 
   @Override
-  public void processCommand(GuiBook book, String param) {
+  public void processCommand(BookScreen book, String param) {
     int pageNum = book.book.findPageNumber(param);
 
-    if(pageNum >= 0) {
+    if (pageNum >= 0) {
       book.openPage(pageNum, this.returner);
     }
   }

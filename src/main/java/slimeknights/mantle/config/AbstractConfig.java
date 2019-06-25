@@ -1,8 +1,8 @@
 package slimeknights.mantle.config;
 
 import com.google.common.reflect.TypeToken;
-
-import net.minecraftforge.common.MinecraftForge;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,16 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-
 public abstract class AbstractConfig {
 
   List<AbstractConfigFile> configFileList = new ArrayList<>();
   private List<Function<?, ?>> configFiles = new ArrayList<>();
 
   public void save() {
-    configFiles.forEach(function -> function.apply(null));
+    this.configFiles.forEach(function -> function.apply(null));
   }
 
   public <T extends AbstractConfigFile> T load(T configFile, Class<T> clazz) {
@@ -32,28 +29,30 @@ public abstract class AbstractConfig {
       val.insertDefaults();
       val.setConfigVersion();
 
-      configFileList.add(val);
+      this.configFileList.add(val);
       // note: this is a workaround for generics because the generic info has to match the same class
-      configFiles.add(configFile1 -> {
+      this.configFiles.add(configFile1 -> {
         this.save(val, clazz);
         return true;
       });
 
       return val;
-    } catch(IOException | ObjectMappingException e) {
+    }
+    catch (IOException | ObjectMappingException e) {
       e.printStackTrace();
     }
     return configFile;
   }
 
   public <T extends AbstractConfigFile> void save(T configFile, Class<T> clazz) {
-    if(configFile.needsSaving()) {
+    if (configFile.needsSaving()) {
       try {
         CommentedConfigurationNode node = configFile.load();
 
         node.setValue(TypeToken.of(clazz), configFile);
         configFile.save(node);
-      } catch(IOException | ObjectMappingException e) {
+      }
+      catch (IOException | ObjectMappingException e) {
         e.printStackTrace();
       }
     }
@@ -67,18 +66,18 @@ public abstract class AbstractConfig {
   public static boolean syncConfig(AbstractConfig config, List<AbstractConfigFile> files) {
     boolean changed = false;
 
-    if(config.configFileList.size() != files.size()) {
+    if (config.configFileList.size() != files.size()) {
       return false;
     }
 
     Iterator<AbstractConfigFile> iterLocal = config.configFileList.iterator();
     Iterator<AbstractConfigFile> iterRemote = files.iterator();
 
-    while(iterLocal.hasNext() && iterRemote.hasNext()) {
+    while (iterLocal.hasNext() && iterRemote.hasNext()) {
       changed |= iterLocal.next().sync(iterRemote.next());
     }
 
-    if(changed) {
+    if (changed) {
       config.save();
     }
     return changed;

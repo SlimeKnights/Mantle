@@ -1,7 +1,6 @@
 package slimeknights.mantle.client;
 
 import com.google.common.collect.ImmutableMap;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -37,10 +36,10 @@ public class ModelHelper {
 
   private static TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
     return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(
-        new Vector3f(tx / 16, ty / 16, tz / 16),
-        TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
-        new Vector3f(s, s, s),
-        null));
+            new Vector3f(tx / 16, ty / 16, tz / 16),
+            TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)),
+            new Vector3f(s, s, s),
+            null));
   }
 
   static {
@@ -73,44 +72,43 @@ public class ModelHelper {
     }
   }
 
-
   private static class ColorTransformer extends VertexTransformer {
 
-    private final float r,g,b,a;
+    private final float r, g, b, a;
 
     public ColorTransformer(int color, VertexFormat format) {
       super(new UnpackedBakedQuad.Builder(format));
 
       int a = (color >> 24);
-      if(a == 0) {
+      if (a == 0) {
         a = 255;
       }
       int r = (color >> 16) & 0xFF;
       int g = (color >> 8) & 0xFF;
       int b = (color >> 0) & 0xFF;
 
-      this.r = (float)r/255f;
-      this.g = (float)g/255f;
-      this.b = (float)b/255f;
-      this.a = (float)a/255f;
+      this.r = (float) r / 255f;
+      this.g = (float) g / 255f;
+      this.b = (float) b / 255f;
+      this.a = (float) a / 255f;
     }
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.Usage usage = parent.getVertexFormat().getElement(element).getUsage();
+      VertexFormatElement.Usage usage = this.parent.getVertexFormat().getElement(element).getUsage();
 
       // transform normals and position
-      if(usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {
-        data[0] = r;
-        data[1] = g;
-        data[2] = b;
-        data[3] = a;
+      if (usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {
+        data[0] = this.r;
+        data[1] = this.g;
+        data[2] = this.b;
+        data[3] = this.a;
       }
       super.put(element, data);
     }
 
     public UnpackedBakedQuad build() {
-      return ((UnpackedBakedQuad.Builder) parent).build();
+      return ((UnpackedBakedQuad.Builder) this.parent).build();
     }
   }
 }

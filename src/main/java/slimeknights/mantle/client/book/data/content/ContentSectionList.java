@@ -1,12 +1,12 @@
 package slimeknights.mantle.client.book.data.content;
 
-import java.util.ArrayList;
-
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
-import slimeknights.mantle.client.gui.book.GuiBook;
-import slimeknights.mantle.client.gui.book.element.BookElement;
-import slimeknights.mantle.client.gui.book.element.ElementSection;
+import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.client.screen.book.element.BookElement;
+import slimeknights.mantle.client.screen.book.element.ElementSection;
+
+import java.util.ArrayList;
 
 public class ContentSectionList extends PageContent {
 
@@ -21,10 +21,10 @@ public class ContentSectionList extends PageContent {
     int width = (ElementSection.WIDTH + 5) * 3 - 5;
     int height = (ElementSection.HEIGHT + 5) * 3 - 5;
 
-    int ox = (GuiBook.PAGE_WIDTH - width) / 2;
-    int oy = (GuiBook.PAGE_HEIGHT - height) / 2;
+    int ox = (BookScreen.PAGE_WIDTH - width) / 2;
+    int oy = (BookScreen.PAGE_HEIGHT - height) / 2;
 
-    for(int i = 0; i < this.sections.size(); i++) {
+    for (int i = 0; i < this.sections.size(); i++) {
       int ix = i % 3;
       int iy = (int) Math.floor(i / 3F);
 

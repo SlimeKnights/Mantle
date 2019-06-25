@@ -23,8 +23,8 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-public class StructureBlockAccess implements IWorldReader
-{
+public class StructureBlockAccess implements IWorldReader {
+
   private final StructureInfo data;
   private final BlockState[][][] structure;
 
@@ -56,11 +56,11 @@ public class StructureBlockAccess implements IWorldReader
     int y = pos.getY();
     int z = pos.getZ();
 
-    if(y >= 0 && y < this.structure.length) {
-      if(x >= 0 && x < this.structure[y].length) {
-        if(z >= 0 && z < this.structure[y][x].length) {
+    if (y >= 0 && y < this.structure.length) {
+      if (x >= 0 && x < this.structure[y].length) {
+        if (z >= 0 && z < this.structure[y][x].length) {
           int index = y * (this.data.structureLength * this.data.structureWidth) + x * this.data.structureWidth + z;
-          if(index <= this.data.getLimiter()) {
+          if (index <= this.data.getLimiter()) {
             return this.structure[y][x][z] != null ? this.structure[y][x][z] : Blocks.AIR.getDefaultState();
           }
         }

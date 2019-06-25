@@ -34,7 +34,7 @@ public interface IRegisterUtil {
    * @return Resource location in this mod
    */
   default ResourceLocation getResource(String name) {
-    return new ResourceLocation(getModId(), name);
+    return new ResourceLocation(this.getModId(), name);
   }
 
   /**
@@ -48,7 +48,7 @@ public interface IRegisterUtil {
    * @return Thing that was registered
    */
   default <I extends T, T extends IForgeRegistryEntry<T>> I register(IForgeRegistry<T> registry, I thing, String name) {
-    return register(registry, thing, getResource(name));
+    return this.register(registry, thing, this.getResource(name));
   }
 
   /**
@@ -79,7 +79,7 @@ public interface IRegisterUtil {
    */
   default BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block) {
     BlockItem itemBlock = new BlockItem(block, new Item.Properties());
-    return register(registry, itemBlock, block.getRegistryName());
+    return this.register(registry, itemBlock, block.getRegistryName());
   }
 
   /**
@@ -92,7 +92,7 @@ public interface IRegisterUtil {
    */
   default BlockItem registerItemBlock(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
     BlockItem itemBlock = new BlockItem(block, new Item.Properties().group(group));
-    return register(registry, itemBlock, block.getRegistryName());
+    return this.register(registry, itemBlock, block.getRegistryName());
   }
 
   /**
@@ -103,7 +103,7 @@ public interface IRegisterUtil {
    * @return Registered item block
    */
   default <T extends BlockItem> T registerItemBlock(IForgeRegistry<Item> registry, T itemBlock) {
-    return register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
+    return this.register(registry, itemBlock, itemBlock.getBlock().getRegistryName());
   }
 
   /**
@@ -115,9 +115,8 @@ public interface IRegisterUtil {
    */
   default <T extends TileEntity> TileEntityType<T> registerTE(IForgeRegistry<TileEntityType<?>> registry, Supplier<T> constructor, String name) {
     TileEntityType<T> type = TileEntityType.Builder.create(constructor).build(null);
-    return register(registry, type, name);
+    return this.register(registry, type, name);
   }
-
 
   /* List methods */
 
@@ -132,9 +131,9 @@ public interface IRegisterUtil {
    * @param <B>         Block type
    * @return List of blocks registered
    */
-  default <B extends Block> List<B> registerBlocks(IForgeRegistry<Block> registry, Function<Block.Properties,B> constructor, IStringSerializable[] variants, Block.Properties props, String baseName) {
+  default <B extends Block> List<B> registerBlocks(IForgeRegistry<Block> registry, Function<Block.Properties, B> constructor, IStringSerializable[] variants, Block.Properties props, String baseName) {
     return Arrays.stream(variants).map((s) -> {
-      return register(registry, constructor.apply(props), baseName + "_" + s.getName());
+      return this.register(registry, constructor.apply(props), baseName + "_" + s.getName());
     }).collect(Collectors.toList());
   }
 
@@ -147,7 +146,7 @@ public interface IRegisterUtil {
    */
   default List<BlockItem> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks) {
     return blocks.stream().map((block) -> {
-      return registerItemBlock(registry, block);
+      return this.registerItemBlock(registry, block);
     }).collect(Collectors.toList());
   }
 
@@ -161,7 +160,7 @@ public interface IRegisterUtil {
    */
   default List<BlockItem> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, ItemGroup group) {
     return blocks.stream().map((block) -> {
-      return registerItemBlock(registry, block, group);
+      return this.registerItemBlock(registry, block, group);
     }).collect(Collectors.toList());
   }
 
@@ -173,9 +172,9 @@ public interface IRegisterUtil {
    * @param constructor ItemBlock constructor
    * @return Registered item block
    */
-  default <T extends BlockItem> List<T> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, Function<Block,T> constructor) {
+  default <T extends BlockItem> List<T> registerItemBlocks(IForgeRegistry<Item> registry, List<? extends Block> blocks, Function<Block, T> constructor) {
     return blocks.stream().map((block) -> {
-      return registerItemBlock(registry, constructor.apply(block));
+      return this.registerItemBlock(registry, constructor.apply(block));
     }).collect(Collectors.toList());
   }
 }

@@ -1,13 +1,11 @@
 package slimeknights.mantle.util;
 
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +21,8 @@ public class RecipeMatchRegistry {
   // looks for a match in the given itemstacks
   public Optional<RecipeMatch.Match> matches(ItemStack... stacks) {
     NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(stacks.length, ItemStack.EMPTY);
-    for(int i = 0; i < stacks.length; i++) {
-      if(!stacks[i].isEmpty()) {
+    for (int i = 0; i < stacks.length; i++) {
+      if (!stacks[i].isEmpty()) {
         nonNullStacks.set(i, stacks[i].copy());
       }
     }
@@ -34,9 +32,9 @@ public class RecipeMatchRegistry {
 
   // looks for a match in the given itemstacks
   public Optional<RecipeMatch.Match> matches(NonNullList<ItemStack> stacks) {
-    for(RecipeMatch recipe : this.items) {
+    for (RecipeMatch recipe : this.items) {
       Optional<RecipeMatch.Match> match = recipe.matches(stacks);
-      if(match.isPresent()) {
+      if (match.isPresent()) {
         return match;
       }
     }
@@ -52,7 +50,7 @@ public class RecipeMatchRegistry {
 
     Optional<RecipeMatch.Match> matchOptional;
     int sum = 0;
-    while(sum < minAmount && (matchOptional = this.matches(stacks)).isPresent()) {
+    while (sum < minAmount && (matchOptional = this.matches(stacks)).isPresent()) {
       RecipeMatch.Match match = matchOptional.get();
       matches.add(match);
       RecipeMatch.removeMatch(stacks, match);
@@ -61,13 +59,13 @@ public class RecipeMatchRegistry {
     }
 
     // not enough found
-    if(sum < minAmount) {
+    if (sum < minAmount) {
       return Optional.empty();
     }
 
     // merge all found matches into one match
     List<ItemStack> foundStacks = Lists.newLinkedList();
-    for(RecipeMatch.Match m : matches) {
+    for (RecipeMatch.Match m : matches) {
       foundStacks.addAll(m.stacks);
     }
 
@@ -81,7 +79,7 @@ public class RecipeMatchRegistry {
 
     Optional<RecipeMatch.Match> matchOptional;
     int sum = 0;
-    while((matchOptional = this.matches(stacks)).isPresent()) {
+    while ((matchOptional = this.matches(stacks)).isPresent()) {
       RecipeMatch.Match match = matchOptional.get();
       matches.add(match);
       RecipeMatch.removeMatch(stacks, match);
@@ -91,26 +89,11 @@ public class RecipeMatchRegistry {
 
     // merge all found matches into one match
     List<ItemStack> foundStacks = Lists.newLinkedList();
-    for(RecipeMatch.Match m : matches) {
+    for (RecipeMatch.Match m : matches) {
       foundStacks.addAll(m.stacks);
     }
 
     return Optional.of(new RecipeMatch.Match(foundStacks, sum));
-  }
-
-  /**
-   * Associates an oredict entry with this material. Used for repairing and other.
-   *
-   * @param oredictItem   Oredict-String
-   * @param amountNeeded  How many of this item are needed to count as one full material item.
-   * @param amountMatched If both item and amount are present, how often did they match?
-   */
-  public void addItem(String oredictItem, int amountNeeded, int amountMatched) {
-    this.items.add(new RecipeMatch.Oredict(oredictItem, amountNeeded, amountMatched));
-  }
-
-  public void addItem(String oredictItem) {
-    this.addItem(oredictItem, 1, 1);
   }
 
   /**
@@ -155,11 +138,10 @@ public class RecipeMatchRegistry {
     this.items.add(match);
   }
 
-
   public static NonNullList<ItemStack> copyItemStackArray(NonNullList<ItemStack> in) {
     NonNullList<ItemStack> stacksCopy = NonNullList.withSize(in.size(), ItemStack.EMPTY);
-    for(int i = 0; i < in.size(); i++) {
-      if(!in.get(i).isEmpty()) {
+    for (int i = 0; i < in.size(); i++) {
+      if (!in.get(i).isEmpty()) {
         stacksCopy.set(i, in.get(i).copy());
       }
     }

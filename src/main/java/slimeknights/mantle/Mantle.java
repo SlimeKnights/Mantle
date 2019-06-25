@@ -2,16 +2,14 @@ package slimeknights.mantle;
 
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import slimeknights.mantle.client.ClientProxy;
-import slimeknights.mantle.common.CommonProxy;
+import slimeknights.mantle.common.ServerProxy;
 
 /**
  * Mantle
@@ -30,15 +28,13 @@ public class Mantle {
   public static Mantle instance;
 
   /* Proxies for sides, used for graphics processing */
-  public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+  public static ServerProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
-  public Mantle()
-  {
+  public Mantle() {
     instance = this;
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::postInit);
-
   }
 
   private void preInit(final FMLCommonSetupEvent event) {
