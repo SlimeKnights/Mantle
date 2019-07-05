@@ -3,6 +3,7 @@ package slimeknights.mantle.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
@@ -10,9 +11,11 @@ import net.minecraft.data.IDataProvider;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.common.IGeneratedJson;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,15 @@ public class ModelJsonGenerator implements IDataProvider {
     JsonObject blockObject = new JsonObject();
     JsonObject itemObject = new JsonObject();
     List<ResourceLocation> resourceLocations = new ArrayList<ResourceLocation>();
+    int generatedEntries = 0;
+    JsonObject modelCache = new JsonObject();
+
+    Path cacheP = this.generator.getOutputFolder().resolve("cache/" + this.modId + "/models/models.json");
+
+    if (Files.exists(cacheP)) {
+      String jsonTxt = IOUtils.toString(cacheP.toUri(), "UTF-8");
+      modelCache = new JsonParser().parse(jsonTxt).getAsJsonObject();
+    }
 
     for (Block block : Registry.BLOCK) {
       blockObject = new JsonObject();
@@ -44,6 +56,9 @@ public class ModelJsonGenerator implements IDataProvider {
       if (!(block instanceof IGeneratedJson)) {
         continue;
       }
+      if (modelCache.has(resourcelocation.toString())) {
+        continue;
+      }
 
       IGeneratedJson block1 = (IGeneratedJson) block;
 
@@ -52,6 +67,9 @@ public class ModelJsonGenerator implements IDataProvider {
       blockObject.addProperty("parent", block1.getParentToUse());
 
       blockObject.add("textures", block1.getTexturesToUse());
+
+      modelCache.addProperty(resourcelocation.toString(), "UNUSED");
+      generatedEntries++;
 
       Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/block/" + resourcelocation.getPath() + ".json");
       IDataProvider.func_218426_a(GSON, cache, blockObject, path);
@@ -62,6 +80,9 @@ public class ModelJsonGenerator implements IDataProvider {
       ResourceLocation resourcelocation = Registry.ITEM.getKey(item);
 
       if (!resourcelocation.getNamespace().equals(this.modId)) {
+        continue;
+      }
+      if (modelCache.has(resourcelocation.toString())) {
         continue;
       }
 
@@ -82,10 +103,19 @@ public class ModelJsonGenerator implements IDataProvider {
 
         itemObject.add("textures", item1.getTexturesToUse());
 
+        modelCache.addProperty(resourcelocation.toString(), "UNUSED");
+        generatedEntries++;
+
         Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/item/" + resourcelocation.getPath() + ".json");
         IDataProvider.func_218426_a(GSON, cache, itemObject, path);
       }
     }
+
+    if (generatedEntries != 0) {
+      IDataProvider.func_218426_a(GSON, cache, modelCache, cacheP);
+    }
+
+    cache.func_218456_c(cacheP);
   }
 
   /**
