@@ -60,7 +60,7 @@ public class PulseManager {
   private IConfiguration conf;
   private String id;
 
-  public static final Marker CONFIG = MarkerManager.getMarker("PULSARCONFIG");
+  public static final Marker PULSAR = MarkerManager.getMarker("PULSAR");
 
   /**
    * Configuration-using constructor.
@@ -157,7 +157,7 @@ public class PulseManager {
       String[] parsedDeps = deps.split(";");
       for (String s : parsedDeps) {
         if (!ModList.get().isLoaded(s)) {
-          this.log.info("Skipping Pulse " + id + "; missing dependency: " + s);
+          this.log.info(PULSAR, "Skipping Pulse " + id + "; missing dependency: " + s);
           missingDeps = true;
           enabled = false;
           break;
@@ -184,7 +184,7 @@ public class PulseManager {
    */
   private void attachToContainerEventBus(Object obj) {
     ModContainer cnt = ModLoadingContext.get().getActiveContainer();
-    this.log.debug("Attaching [" + obj + "] to event bus for container [" + cnt + "]");
+    this.log.debug(PULSAR, "Attaching [" + obj + "] to event bus for container [" + cnt + "]");
     try {
       FMLModContainer mc = (FMLModContainer) cnt;
       Field ebf = mc.getClass().getDeclaredField("eventBus");
@@ -244,7 +244,7 @@ public class PulseManager {
       String[] parsedDeps = deps.split(";");
       for (String s : parsedDeps) {
         if (!this.isPulseLoaded(s)) {
-          this.log.info("Skipping Pulse " + meta.getId() + "; missing pulse: " + s);
+          this.log.info(PULSAR, "Skipping Pulse " + meta.getId() + "; missing pulse: " + s);
           return false;
         }
       }

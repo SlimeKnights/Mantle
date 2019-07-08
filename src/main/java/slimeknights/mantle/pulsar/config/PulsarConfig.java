@@ -100,9 +100,9 @@ public class PulsarConfig implements IConfiguration {
   public CommentedFileConfig createConfig(Path configBasePath, String configName) {
     final Path configPath = configBasePath.resolve(String.format("%s.toml", configName));
     final CommentedFileConfig configData = CommentedFileConfig.builder(configPath).sync().autosave().writingMode(WritingMode.REPLACE).build();
-    LOGGER.debug(PulseManager.CONFIG, "Built TOML config for {}", configPath.toString());
+    LOGGER.debug(PulseManager.PULSAR, "Built TOML config for {}", configPath.toString());
     configData.load();
-    LOGGER.debug(PulseManager.CONFIG, "Loaded TOML config file {}", configPath.toString());
+    LOGGER.debug(PulseManager.PULSAR, "Loaded TOML config file {}", configPath.toString());
     return configData;
   }
 }

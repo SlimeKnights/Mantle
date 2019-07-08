@@ -72,15 +72,15 @@ version = "${minecraft_version}-${artifact_version}"
 
 minecraft {
     mappings channel: 'snapshot', version: mappings_version
-    
+
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    
+
     runs {
         client {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE,PULSARCONFIG'
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE,PULSAR'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -96,10 +96,28 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE,PULSARCONFIG'
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE,PULSAR'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            mods {
+                mantle {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE,PULSAR'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'mantle', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 mantle {
@@ -118,33 +136,30 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
-    //compile "codechicken:CodeChickenLib:${minecraft_version}-${CCLIB_version}:dev"
-    //compile "codechicken:CodeChickenCore:${minecraft_version}-${ccc_version}:dev"
-    //compile "codechicken:NotEnoughItems:${minecraft_version}-${NEI_version}:dev"
-	
-	compileOnly fg.deobf("mezz.jei:jei-${minecraft_version_previos}:${jei_version}")
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version_previos}:${jei_version}:api")
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version_previos}:${jei_version}")
 
     // Configuration
     shadow "ninja.leaping.configurate:configurate-hocon:${configurate_version}"
     //shade "ninja.leaping.configurate:configurate-gson:${configurate_version}"
 }
 
-processResources
-{
+processResources {
     inputs.property "version", artifact_version
     inputs.property "MCversion", minecraft_version
 
     from(sourceSets.main.resources.srcDirs) {
         include 'META-INF/mods.toml'
 
-        expand 'version':artifact_version, 'MCversion':minecraft_version, 'forge_version':forge_version_toml
+        expand 'version': artifact_version, 'MCversion': minecraft_version, 'forge_version': forge_version_toml
     }
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'META-INF/mods.toml'
     }
 }
-
 
 jar {
     manifest {
@@ -158,7 +173,7 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-    
+
     dependsOn shadowJar
     enabled = false
 }
