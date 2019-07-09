@@ -3,23 +3,20 @@ package slimeknights.mantle.client.book;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.LightType;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.Heightmap.Type;
-
-import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -106,7 +103,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public boolean func_217337_f(BlockPos pos) {
+  public boolean isSkyLightMax(BlockPos pos) {
     return true;
   }
 
