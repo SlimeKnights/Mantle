@@ -14,6 +14,7 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class LanguageJsonGenerator implements IDataProvider {
@@ -31,10 +32,14 @@ public class LanguageJsonGenerator implements IDataProvider {
   public void act(DirectoryCache cache) throws IOException {
     JsonObject names = new JsonObject();
     int generatedEntries = 0;
+    JsonObject langCache = new JsonObject();
 
     Path cacheP = this.generator.getOutputFolder().resolve("cache/" + this.modId + "/lang/en_us.json");
-    String jsonTxt = IOUtils.toString(cacheP.toUri(), "UTF-8");
-    JsonObject langCache = new JsonParser().parse(jsonTxt).getAsJsonObject();
+
+    if (Files.exists(cacheP)) {
+      String jsonTxt = IOUtils.toString(cacheP.toUri(), "UTF-8");
+      langCache = new JsonParser().parse(jsonTxt).getAsJsonObject();
+    }
 
     for (Block block : Registry.BLOCK) {
       ResourceLocation resourcelocation = Registry.BLOCK.getKey(block);
