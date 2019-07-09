@@ -35,15 +35,19 @@ public class ModelJsonGenerator implements IDataProvider {
   public void act(DirectoryCache cache) throws IOException {
     JsonObject blockObject = new JsonObject();
     JsonObject itemObject = new JsonObject();
+
     List<ResourceLocation> resourceLocations = new ArrayList<ResourceLocation>();
-    int generatedEntries = 0;
-    JsonObject modelCache = new JsonObject();
 
-    Path cacheP = this.generator.getOutputFolder().resolve("cache/" + this.modId + "/models/models.json");
+    int generatedBlockEntries = 0;
+    int generatedItemEntries = 0;
+    JsonObject blockModelCache = new JsonObject();
+    JsonObject itemModelCache = new JsonObject();
 
-    if (Files.exists(cacheP)) {
-      String jsonTxt = IOUtils.toString(cacheP.toUri(), "UTF-8");
-      modelCache = new JsonParser().parse(jsonTxt).getAsJsonObject();
+    Path blockCachePath = this.generator.getOutputFolder().resolve("cache/" + this.modId + "/models/block/models.json");
+
+    if (Files.exists(blockCachePath)) {
+      String jsonTxt = IOUtils.toString(blockCachePath.toUri(), "UTF-8");
+      blockModelCache = new JsonParser().parse(jsonTxt).getAsJsonObject();
     }
 
     for (Block block : Registry.BLOCK) {
@@ -56,7 +60,7 @@ public class ModelJsonGenerator implements IDataProvider {
       if (!(block instanceof IGeneratedJson)) {
         continue;
       }
-      if (modelCache.has(resourcelocation.toString())) {
+      if (blockModelCache.has(resourcelocation.toString())) {
         continue;
       }
 
@@ -68,11 +72,18 @@ public class ModelJsonGenerator implements IDataProvider {
 
       blockObject.add("textures", block1.getTexturesToUse());
 
-      modelCache.addProperty(resourcelocation.toString(), "UNUSED");
-      generatedEntries++;
+      blockModelCache.addProperty(resourcelocation.toString(), "UNUSED");
+      generatedBlockEntries++;
 
       Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/block/" + resourcelocation.getPath() + ".json");
       IDataProvider.func_218426_a(GSON, cache, blockObject, path);
+    }
+
+    Path itemCachePath = this.generator.getOutputFolder().resolve("cache/" + this.modId + "/models/item/models.json");
+
+    if (Files.exists(itemCachePath)) {
+      String jsonTxt = IOUtils.toString(itemCachePath.toUri(), "UTF-8");
+      itemModelCache = new JsonParser().parse(jsonTxt).getAsJsonObject();
     }
 
     for (Item item : Registry.ITEM) {
@@ -82,12 +93,15 @@ public class ModelJsonGenerator implements IDataProvider {
       if (!resourcelocation.getNamespace().equals(this.modId)) {
         continue;
       }
-      if (modelCache.has(resourcelocation.toString())) {
+      if (itemModelCache.has(resourcelocation.toString())) {
         continue;
       }
 
       if (resourceLocations.contains(resourcelocation)) {
         itemObject.addProperty("parent", resourcelocation.getNamespace() + ":block/" + resourcelocation.getPath());
+
+        itemModelCache.addProperty(resourcelocation.toString(), "UNUSED");
+        generatedItemEntries++;
 
         Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/item/" + resourcelocation.getPath() + ".json");
         IDataProvider.func_218426_a(GSON, cache, itemObject, path);
@@ -103,19 +117,24 @@ public class ModelJsonGenerator implements IDataProvider {
 
         itemObject.add("textures", item1.getTexturesToUse());
 
-        modelCache.addProperty(resourcelocation.toString(), "UNUSED");
-        generatedEntries++;
+        itemModelCache.addProperty(resourcelocation.toString(), "UNUSED");
+        generatedItemEntries++;
 
         Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/item/" + resourcelocation.getPath() + ".json");
         IDataProvider.func_218426_a(GSON, cache, itemObject, path);
       }
     }
 
-    if (generatedEntries != 0) {
-      IDataProvider.func_218426_a(GSON, cache, modelCache, cacheP);
+    if (generatedBlockEntries != 0) {
+      IDataProvider.func_218426_a(GSON, cache, blockModelCache, blockCachePath);
     }
 
-    cache.func_218456_c(cacheP);
+    if (generatedItemEntries != 0) {
+      IDataProvider.func_218426_a(GSON, cache, itemModelCache, itemCachePath);
+    }
+
+    cache.func_218456_c(blockCachePath);
+    cache.func_218456_c(itemCachePath);
   }
 
   /**
