@@ -64,11 +64,11 @@ public class BlockStateJsonGenerator implements IDataProvider {
       generatedEntries++;
 
       Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/blockstates/" + resourcelocation.getPath() + ".json");
-      IDataProvider.func_218426_a(GSON, cache, blockState, path);
+      IDataProvider.save(GSON, cache, blockState, path);
     }
 
     if (generatedEntries != 0) {
-      IDataProvider.func_218426_a(GSON, cache, blockstateCache, cacheP);
+      IDataProvider.save(GSON, cache, blockstateCache, cacheP);
     }
 
     cache.func_218456_c(cacheP);

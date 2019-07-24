@@ -74,10 +74,10 @@ public class LanguageJsonGenerator implements IDataProvider {
     }
 
     Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/lang/en_us.json");
-    IDataProvider.func_218426_a(GSON, cache, names, path);
+    IDataProvider.save(GSON, cache, names, path);
 
     if (generatedEntries != 0) {
-      IDataProvider.func_218426_a(GSON, cache, langCache, cacheP);
+      IDataProvider.save(GSON, cache, langCache, cacheP);
     }
 
     cache.func_218456_c(cacheP);
