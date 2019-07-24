@@ -76,7 +76,7 @@ public class ModelJsonGenerator implements IDataProvider {
       generatedBlockEntries++;
 
       Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/block/" + resourcelocation.getPath() + ".json");
-      IDataProvider.func_218426_a(GSON, cache, blockObject, path);
+      IDataProvider.save(GSON, cache, blockObject, path);
     }
 
     Path itemCachePath = this.generator.getOutputFolder().resolve("cache/" + this.modId + "/models/item/models.json");
@@ -104,7 +104,7 @@ public class ModelJsonGenerator implements IDataProvider {
         generatedItemEntries++;
 
         Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/item/" + resourcelocation.getPath() + ".json");
-        IDataProvider.func_218426_a(GSON, cache, itemObject, path);
+        IDataProvider.save(GSON, cache, itemObject, path);
       }
       else {
         if (!(item instanceof IGeneratedJson)) {
@@ -121,16 +121,16 @@ public class ModelJsonGenerator implements IDataProvider {
         generatedItemEntries++;
 
         Path path = this.generator.getOutputFolder().resolve("assets/" + this.modId + "/models/item/" + resourcelocation.getPath() + ".json");
-        IDataProvider.func_218426_a(GSON, cache, itemObject, path);
+        IDataProvider.save(GSON, cache, itemObject, path);
       }
     }
 
     if (generatedBlockEntries != 0) {
-      IDataProvider.func_218426_a(GSON, cache, blockModelCache, blockCachePath);
+      IDataProvider.save(GSON, cache, blockModelCache, blockCachePath);
     }
 
     if (generatedItemEntries != 0) {
-      IDataProvider.func_218426_a(GSON, cache, itemModelCache, itemCachePath);
+      IDataProvider.save(GSON, cache, itemModelCache, itemCachePath);
     }
 
     cache.func_218456_c(blockCachePath);
