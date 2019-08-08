@@ -1,13 +1,13 @@
 {
     "__comment": "Model for when two adgacent sides are connected.",
-	"parent": "mantle:block/tinted_cube",
+    "parent": "mantle:block/tinted_cube",
     "textures": {
-		"particle": "#normal",
+        "particle": "#normal",
         "down": "#r",
-		"up": "#udlr",
-		"north": "#ul",
-		"south": "#ur",
-		"west": "#u",
-		"east": "#udlr"
+        "up": "#udlr",
+        "north": "#ul",
+        "south": "#ur",
+        "west": "#u",
+        "east": "#udlr"
     }
 }

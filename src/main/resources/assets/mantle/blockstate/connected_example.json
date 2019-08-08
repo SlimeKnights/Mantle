@@ -1,47 +1,47 @@
 {
-	"forge_marker": 1,
+    "forge_marker": 1,
     "defaults": {
-		"textures": {
-			"normal": "MOD:blocks/NAME_normal",
-			"u": "MOD:blocks/NAME_u",
-			"r": "MOD:blocks/NAME_r",
-			"ud": "MOD:blocks/NAME_ud",
-			"ul": "MOD:blocks/NAME_ul",
-			"ur": "MOD:blocks/NAME_ur",
-			"lr": "MOD:blocks/NAME_lr",
-			"udr": "MOD:blocks/NAME_udr",
-			"udl": "MOD:blocks/NAME_udl",
-			"ulr": "MOD:blocks/NAME_ulr",
-			"udlr": "MOD:blocks/NAME_udlr"
-		}
-	},
-	"variants": {
-		"inventory": { "model": "mantle:connected_0" },
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_0" },
+        "textures": {
+            "normal": "MOD:blocks/NAME_normal",
+            "u": "MOD:blocks/NAME_u",
+            "r": "MOD:blocks/NAME_r",
+            "ud": "MOD:blocks/NAME_ud",
+            "ul": "MOD:blocks/NAME_ul",
+            "ur": "MOD:blocks/NAME_ur",
+            "lr": "MOD:blocks/NAME_lr",
+            "udr": "MOD:blocks/NAME_udr",
+            "udl": "MOD:blocks/NAME_udl",
+            "ulr": "MOD:blocks/NAME_ulr",
+            "udlr": "MOD:blocks/NAME_udlr"
+        }
+    },
+    "variants": {
+        "inventory": { "model": "mantle:connected_0" },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_0" },
 
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_1" },
-		"connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": 180 },
-		"connected_down=false,connected_east=false,connected_north=true,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": 90 },
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": -90 },
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_1", "x": 90, "y": -90 },
-		"connected_down=false,connected_east=true,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": 90, "y": 90 },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_1" },
+        "connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": 180 },
+        "connected_down=false,connected_east=false,connected_north=true,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": 90 },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": -90 },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_1", "x": 90, "y": -90 },
+        "connected_down=false,connected_east=true,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_1", "x": 90, "y": 90 },
 
-		"connected_down=false,connected_east=true,connected_north=false,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_2_angle" },
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=true": { "model": "mantle:connected_2_angle", "y": 180 },
-		"connected_down=true,connected_east=true,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 180 },
-		"connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_2_angle", "x": 180, "y": 180 },
-		"connected_down=false,connected_east=false,connected_north=true,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_2_angle", "y": -90 },
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=true,connected_up=true,connected_west=false": { "model": "mantle:connected_2_angle", "y": 90 },
-		"connected_down=true,connected_east=false,connected_north=true,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 180, "y": -90 },
-		"connected_down=true,connected_east=false,connected_north=false,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 180, "y": 90 },
-		"connected_down=false,connected_east=true,connected_north=true,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 90 },
-		"connected_down=false,connected_east=true,connected_north=false,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": -90 },
-		"connected_down=false,connected_east=false,connected_north=true,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_2_angle", "x": 90, "y": -90 },
-		"connected_down=false,connected_east=false,connected_north=false,connected_south=true,connected_up=false,connected_west=true": { "model": "mantle:connected_2_angle", "x": -90, "y": 90 },
+        "connected_down=false,connected_east=true,connected_north=false,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_2_angle" },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=true": { "model": "mantle:connected_2_angle", "y": 180 },
+        "connected_down=true,connected_east=true,connected_north=false,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 180 },
+        "connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_2_angle", "x": 180, "y": 180 },
+        "connected_down=false,connected_east=false,connected_north=true,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_2_angle", "y": -90 },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=true,connected_up=true,connected_west=false": { "model": "mantle:connected_2_angle", "y": 90 },
+        "connected_down=true,connected_east=false,connected_north=true,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 180, "y": -90 },
+        "connected_down=true,connected_east=false,connected_north=false,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 180, "y": 90 },
+        "connected_down=false,connected_east=true,connected_north=true,connected_south=false,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": 90 },
+        "connected_down=false,connected_east=true,connected_north=false,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_2_angle", "x": -90 },
+        "connected_down=false,connected_east=false,connected_north=true,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_2_angle", "x": 90, "y": -90 },
+        "connected_down=false,connected_east=false,connected_north=false,connected_south=true,connected_up=false,connected_west=true": { "model": "mantle:connected_2_angle", "x": -90, "y": 90 },
 
-		"connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_2" },
-		"connected_down=false,connected_east=true,connected_north=false,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_2", "x": -90, "y": 90  },
-		"connected_down=false,connected_east=false,connected_north=true,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_2", "x": -90 },
+        "connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=false": { "model": "mantle:connected_2" },
+        "connected_down=false,connected_east=true,connected_north=false,connected_south=false,connected_up=false,connected_west=true": { "model": "mantle:connected_2", "x": -90, "y": 90 },
+        "connected_down=false,connected_east=false,connected_north=true,connected_south=true,connected_up=false,connected_west=false": { "model": "mantle:connected_2", "x": -90 },
 
         "connected_down=true,connected_east=false,connected_north=false,connected_south=false,connected_up=true,connected_west=true": { "model": "mantle:connected_3_t1" },
         "connected_down=true,connected_east=false,connected_north=false,connected_south=true,connected_up=true,connected_west=false": { "model": "mantle:connected_3_t1", "y": -90 },
@@ -92,5 +92,5 @@
         "connected_down=false,connected_east=true,connected_north=true,connected_south=true,connected_up=true,connected_west=true": { "model": "mantle:connected_4_cross" },
 
         "connected_down=true,connected_east=true,connected_north=true,connected_south=true,connected_up=true,connected_west=true": { "model": "mantle:connected_4_cross" }
-	}
+    }
 }

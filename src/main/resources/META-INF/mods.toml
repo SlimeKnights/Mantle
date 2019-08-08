@@ -15,6 +15,6 @@ Shared code for Slime Knights mods and others.
     [[dependencies.mantle]]
         modId="forge"
         mandatory=true
-        versionRange="[${forge_version},)"
+        versionRange="[28.0.1,)"
         ordering="NONE"
         side="BOTH"

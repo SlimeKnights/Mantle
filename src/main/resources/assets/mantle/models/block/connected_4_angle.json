@@ -1,13 +1,13 @@
 {
     "__comment": "Model for when four connected sides at an angle.",
-	"parent": "mantle:block/tinted_cube",
+    "parent": "mantle:block/tinted_cube",
     "textures": {
-		"particle": "#normal",
+        "particle": "#normal",
         "down": "#udlr",
-		"up": "#udlr",
-		"north": "#udlr",
-		"south": "#udl",
-		"west": "#udlr",
-		"east": "#udr"
+        "up": "#udlr",
+        "north": "#udlr",
+        "south": "#udl",
+        "west": "#udlr",
+        "east": "#udr"
     }
 }

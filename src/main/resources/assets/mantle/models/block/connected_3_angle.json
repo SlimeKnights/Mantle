@@ -1,13 +1,13 @@
 {
     "__comment": "Model for when three adjacent sides are connected.",
-	"parent": "mantle:block/tinted_cube",
+    "parent": "mantle:block/tinted_cube",
     "textures": {
-		"particle": "#normal",
+        "particle": "#normal",
         "down": "#ur",
-		"up": "#udlr",
-		"north": "#ul",
-		"south": "#udlr",
-		"west": "#ur",
-		"east": "#udlr"
+        "up": "#udlr",
+        "north": "#ul",
+        "south": "#udlr",
+        "west": "#ur",
+        "east": "#udlr"
     }
 }
