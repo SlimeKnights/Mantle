@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiModuleScreen extends ContainerScreen<MultiModuleContainer> {
+public class MultiModuleScreen<T extends MultiModuleContainer> extends ContainerScreen<T> {
 
   protected List<ModuleScreen> modules = Lists.newArrayList();
 
@@ -26,7 +26,7 @@ public class MultiModuleScreen extends ContainerScreen<MultiModuleContainer> {
   public int realWidth;
   public int realHeight;
 
-  public MultiModuleScreen(MultiModuleContainer container, PlayerInventory playerInventory, ITextComponent title) {
+  public MultiModuleScreen(T container, PlayerInventory playerInventory, ITextComponent title) {
     super(container, playerInventory, title);
 
     this.realWidth = -1;
@@ -98,7 +98,6 @@ public class MultiModuleScreen extends ContainerScreen<MultiModuleContainer> {
   }
 
   protected void drawContainerName() {
-    MultiModuleContainer multiContainer = (MultiModuleContainer) this.container;
     String localizedName = this.getTitle().getFormattedText();//multiContainer.getInventoryDisplayName();
     if (localizedName != null) {
       this.font.drawString(localizedName, 8, 6, 0x404040);
@@ -280,9 +279,10 @@ public class MultiModuleScreen extends ContainerScreen<MultiModuleContainer> {
     return null;
   }
 
+  @Nonnull
   @Override
-  public MultiModuleContainer getContainer() {
-    return (MultiModuleContainer) this.container;
+  public T getContainer() {
+    return this.container;
   }
 
 }
