@@ -24,10 +24,7 @@ public class BlockTooltipItem extends BlockItem {
   @Override
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    if (I18n.hasKey(stack.getDisplayName()+ ".tooltip")) {
-      tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() + LocUtils.translateRecursive(stack.getDisplayName() + ".tooltip")));
-    }
-
+    TooltipItem.addOptionalTooltip(stack, tooltip);
     super.addInformation(stack, worldIn, tooltip, flagIn);
   }
 }
