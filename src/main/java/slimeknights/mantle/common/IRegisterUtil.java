@@ -10,6 +10,7 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import slimeknights.mantle.item.BlockTooltipItem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -91,7 +92,7 @@ public interface IRegisterUtil {
    * @return Registered item block
    */
   default BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block, ItemGroup group) {
-    BlockItem itemBlock = new BlockItem(block, new Item.Properties().group(group));
+    BlockItem itemBlock = new BlockTooltipItem(block, new Item.Properties().group(group));
     return this.register(registry, itemBlock, block.getRegistryName());
   }
 

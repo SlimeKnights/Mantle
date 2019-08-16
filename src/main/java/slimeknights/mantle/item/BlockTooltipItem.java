@@ -1,7 +1,9 @@
 package slimeknights.mantle.item;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -14,23 +16,18 @@ import slimeknights.mantle.util.LocUtils;
 import javax.annotation.Nullable;
 import java.util.List;
 
-// Item with automatic tooltip support
-public class TooltipItem extends Item {
-
-  public TooltipItem(Properties properties) {
-    super(properties);
+public class BlockTooltipItem extends BlockItem {
+  public BlockTooltipItem(Block blockIn, Item.Properties builder) {
+    super(blockIn, builder);
   }
 
   @Override
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    addOptionalTooltip(stack, tooltip);
-    super.addInformation(stack, worldIn, tooltip, flagIn);
-  }
-
-  public static void addOptionalTooltip(ItemStack stack, List<ITextComponent> tooltip) {
-    if (I18n.hasKey(stack.getDisplayName() + ".tooltip")) {
+    if (I18n.hasKey(stack.getDisplayName()+ ".tooltip")) {
       tooltip.addAll(LocUtils.getTooltips(TextFormatting.GRAY.toString() + LocUtils.translateRecursive(stack.getDisplayName() + ".tooltip")));
     }
+
+    super.addInformation(stack, worldIn, tooltip, flagIn);
   }
 }
