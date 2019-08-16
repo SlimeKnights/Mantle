@@ -79,7 +79,7 @@ public interface IRegisterUtil {
    * @return Registered item block
    */
   default BlockItem registerBlockItem(IForgeRegistry<Item> registry, Block block) {
-    BlockItem itemBlock = new BlockItem(block, new Item.Properties());
+    BlockItem itemBlock = new BlockTooltipItem(block, new Item.Properties());
     return this.register(registry, itemBlock, block.getRegistryName());
   }
 
