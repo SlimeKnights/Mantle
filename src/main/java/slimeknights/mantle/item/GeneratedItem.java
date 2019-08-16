@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import slimeknights.mantle.common.IGeneratedJson;
 
-public class GeneratedItem extends Item implements IGeneratedJson {
+public class GeneratedItem extends TooltipItem implements IGeneratedJson {
 
   public GeneratedItem(ItemGroup itemGroup) {
     super(new Properties().group(itemGroup));
