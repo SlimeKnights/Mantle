@@ -1,4 +1,4 @@
-package slimeknights.tconstruct.library;
+package slimeknights.mantle.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,7 +11,6 @@ import net.minecraft.data.IDataProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
-import slimeknights.mantle.common.IGeneratedJson;
 
 import java.io.IOException;
 import java.nio.file.Files;
