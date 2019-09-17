@@ -114,8 +114,8 @@ public interface IRegisterUtil {
    * @param constructor Tile entity constructor instance
    * @param name        Registry name to use
    */
-  default <T extends TileEntity> TileEntityType<T> registerTE(IForgeRegistry<TileEntityType<?>> registry, Supplier<T> constructor, String name) {
-    TileEntityType<T> type = TileEntityType.Builder.create(constructor).build(null);
+  default <T extends TileEntity> TileEntityType<T> registerTE(IForgeRegistry<TileEntityType<?>> registry, Supplier<T> constructor, String name, Block... validBlocks) {
+    TileEntityType<T> type = TileEntityType.Builder.create(constructor, validBlocks).build(null);
     return this.register(registry, type, name);
   }
 
