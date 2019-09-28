@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.client.ClientProxy;
 import slimeknights.mantle.common.ServerProxy;
+import slimeknights.mantle.network.BookNetwork;
 
 /**
  * Mantle
@@ -39,6 +40,8 @@ public class Mantle {
 
   private void preInit(final FMLCommonSetupEvent event) {
     proxy.preInit();
+
+    BookNetwork.registerPackets();
   }
 
   private void init(final InterModEnqueueEvent event) {

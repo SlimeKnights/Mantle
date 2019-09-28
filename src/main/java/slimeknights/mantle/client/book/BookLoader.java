@@ -16,7 +16,7 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.content.*;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
-import slimeknights.mantle.network.NetworkWrapper;
+import slimeknights.mantle.network.BookNetwork;
 import slimeknights.mantle.network.book.UpdateSavedPagePacket;
 
 import javax.annotation.Nonnull;
@@ -35,11 +35,7 @@ public class BookLoader implements IResourceManagerReloadListener {
   /** Internal registry of all books for the purposes of the reloader, maps books to name */
   private static final HashMap<String, BookData> books = new HashMap<>();
 
-  private static final NetworkWrapper wrapper = new NetworkWrapper("mantle:books");
-
   public BookLoader() {
-    wrapper.registerPacket(UpdateSavedPagePacket.class, UpdateSavedPagePacket::encode, UpdateSavedPagePacket::new, UpdateSavedPagePacket::handle);
-
     // Register page types
     registerPageType("blank", ContentBlank.class);
     registerPageType("text", ContentText.class);
@@ -130,7 +126,7 @@ public class BookLoader implements IResourceManagerReloadListener {
     }
 
     BookHelper.writeSavedPage(item, page);
-    wrapper.network.sendToServer(new UpdateSavedPagePacket(page));
+    BookNetwork.wrapper.network.sendToServer(new UpdateSavedPagePacket(page));
   }
 
   /**
