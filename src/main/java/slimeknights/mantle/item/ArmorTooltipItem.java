@@ -14,9 +14,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ArmorTooltip extends ArmorItem {
+public class ArmorTooltipItem extends ArmorItem {
 
-  public ArmorTooltip(IArmorMaterial armorMaterial, EquipmentSlotType equipmentSlot, Item.Properties builder) {
+  public ArmorTooltipItem(IArmorMaterial armorMaterial, EquipmentSlotType equipmentSlot, Item.Properties builder) {
     super(armorMaterial, equipmentSlot, builder);
   }
 
