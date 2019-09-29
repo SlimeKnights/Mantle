@@ -64,7 +64,7 @@ public class ElementImage extends SizedBookElement {
     if (this.image.item == null) {
       this.renderEngine.bindTexture(this.image.location);
 
-      blit(this.x, this.y, this.image.u, this.image.v, this.image.uw, this.image.vh, this.width, this.height, this.image.texWidth, this.image.texHeight);
+      blitRaw(x, y, width, height, image.u, image.u + image.uw, image.v, image.v + image.vh, image.texWidth, image.texHeight);
     }
     else {
       GlStateManager.pushMatrix();
@@ -74,5 +74,9 @@ public class ElementImage extends SizedBookElement {
       RenderHelper.disableStandardItemLighting();
       GlStateManager.popMatrix();
     }
+  }
+
+  public static void blitRaw(int x, int y, int w, int h, int minU, int maxU, int minV, int maxV, float tw, float th) {
+    innerBlit(x, x + w, y, y + h, 0, minU / tw, maxU / tw, minV / th, maxV / th);
   }
 }
