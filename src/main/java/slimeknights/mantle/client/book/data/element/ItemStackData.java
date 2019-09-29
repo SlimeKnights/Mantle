@@ -16,7 +16,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
-public class ItemStackData {
+public class ItemStackData implements IDataElement {
 
   public String itemList = null;
   public transient BookRepository source;
@@ -104,6 +104,17 @@ public class ItemStackData {
 
   public static String filterJsonQuotes(String s) {
     return s.replaceAll("\"(\\w+)\"\\s*:", "$1: ");
+  }
+
+  @Override
+  public void load(BookRepository source) {
+    this.source = source;
+
+    itemListLocation = source.getResourceLocation(itemList);
+
+    if (itemListLocation != null) {
+      id = "->itemList";
+    }
   }
 
   private static class ItemsList {

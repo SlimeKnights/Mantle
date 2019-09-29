@@ -25,7 +25,7 @@ public class LinkedSectionData extends SectionData {
       this.pages.addAll(section.pages);
     }
 
-    this.icon.location = this.source.getResourceLocation(this.icon.file, true);
+    this.icon.load(source);
   }
 
   public void addSection(SectionData data) {

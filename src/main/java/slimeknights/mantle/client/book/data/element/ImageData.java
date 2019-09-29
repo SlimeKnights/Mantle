@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.element;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.client.book.repository.BookRepository;
 
 @OnlyIn(Dist.CLIENT)
 public class ImageData extends DataLocation {
@@ -56,5 +57,14 @@ public class ImageData extends DataLocation {
     MISSING.texHeight = 32;
     MISSING.uw = 32;
     MISSING.vh = 32;
+  }
+
+  @Override
+  public void load(BookRepository source) {
+    super.load(source);
+
+    if(item != null) {
+      item.load(source);
+    }
   }
 }

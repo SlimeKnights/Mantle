@@ -1,25 +1,20 @@
 package slimeknights.mantle.client.book.data;
 
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.resources.IResource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.PageContent;
-import slimeknights.mantle.client.book.data.element.BlockData;
-import slimeknights.mantle.client.book.data.element.DataLocation;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
+import slimeknights.mantle.client.book.data.element.IDataElement;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 
 @OnlyIn(Dist.CLIENT)
 public class PageData implements IDataItem {
-
-  private static final transient ArrayList<ValueHotswap> hotswaps = new ArrayList<>();
 
   public String name = null;
   public String type = "";
@@ -91,101 +86,49 @@ public class PageData implements IDataItem {
     this.content.source = this.source;
 
     for (Field f : this.content.getClass().getFields()) {
-      if (Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
-              .isFinal(f.getModifiers())) {
-        continue;
-      }
-
-      try {
-        if (f.get(this.content) == null) {
-          continue;
-        }
-      }
-      catch (IllegalAccessException e) {
-        e.printStackTrace();
-      }
-
-      for (ValueHotswap swap : hotswaps) {
-        Class<?> c = f.getType();
-
-        if (c.isArray() && c.getComponentType().isAssignableFrom(swap.t)) {
-          try {
-            f.setAccessible(true);
-            Object[] o = (Object[]) f.get(this.content);
-
-            for (Object ob : o) {
-              swap.swap(this.source, ob);
-            }
-          }
-          catch (IllegalAccessException e) {
-            e.printStackTrace();
-          }
-        }
-        else if (swap.t.isAssignableFrom(c)) {
-          try {
-            f.setAccessible(true);
-            Object o = f.get(this.content);
-
-            swap.swap(this.source, o);
-          }
-          catch (IllegalAccessException e) {
-            e.printStackTrace();
-          }
-        }
-      }
+      processField(f);
     }
   }
 
-  public static void addSwap(Class<?> t, Class<? extends ValueHotswap> swap) {
-    try {
-      ValueHotswap hotswap = swap.newInstance();
-      hotswap.t = t;
+  private void processField(Field f) {
+    f.setAccessible(true);
 
-      hotswaps.add(hotswap);
+    if (Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
+            .isFinal(f.getModifiers())) {
+      return;
     }
-    catch (InstantiationException | IllegalAccessException e) {
+
+    try {
+      Object o = f.get(content);
+      if (o != null) {
+        processObject(o, 0);
+      }
+    } catch (IllegalAccessException e) {
       e.printStackTrace();
+    }
+  }
+
+  private void processObject(Object o, final int depth) {
+    if(depth > 4 || o == null)
+      return;
+
+    Class<?> c = o.getClass();
+    boolean isArray = c.isArray();
+
+    if(!isArray) {
+      if(IDataElement.class.isAssignableFrom(c)) {
+        ((IDataElement)o).load(source);
+      }
+      return;
+    }
+
+    for(int i = 0; i < Array.getLength(o); i++){
+      processObject(Array.get(o, i), depth + 1);
     }
   }
 
   public String getTitle() {
     String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
     return title == null ? this.name : title;
-  }
-
-  static {
-    addSwap(DataLocation.class, new ValueHotswap<DataLocation>() {
-      @Override
-      public void swap(BookRepository source, DataLocation object) {
-        object.location = object.file == "$BLOCK_ATLAS" ? AtlasTexture.LOCATION_BLOCKS_TEXTURE : source
-                .getResourceLocation(object.file, true);
-      }
-    }.getClass());
-    addSwap(ItemStackData.class, new ValueHotswap<ItemStackData>() {
-      @Override
-      public void swap(BookRepository source, ItemStackData object) {
-        object.source = source;
-        object.itemListLocation = source.getResourceLocation(object.itemList);
-
-        if (object.itemListLocation != null) {
-          object.id = "->itemList";
-        }
-      }
-    }.getClass());
-    addSwap(BlockData.class, new ValueHotswap<BlockData>() {
-      @Override
-      public void swap(BookRepository source, BlockData object) {
-        if (object.endPos == null) {
-          object.endPos = object.pos;
-        }
-      }
-    }.getClass());
-  }
-
-  public static abstract class ValueHotswap<T> {
-
-    protected Class<?> t;
-
-    public abstract void swap(BookRepository source, T object);
   }
 }

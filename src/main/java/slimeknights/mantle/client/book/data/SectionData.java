@@ -79,7 +79,7 @@ public class SectionData implements IDataItem {
       page.load();
     }
 
-    this.icon.location = this.source.getResourceLocation(this.icon.file, true);
+    this.icon.load(source);
   }
 
   /**
