@@ -19,31 +19,18 @@ import slimeknights.mantle.client.book.repository.BookRepository;
 public class ItemStackData implements IDataElement {
 
   public String itemList = null;
-  public transient BookRepository source;
-  public transient ResourceLocation itemListLocation = null;
   public transient String action;
+  private transient NonNullList<ItemStack> items;
 
   public String id = "";
   public byte amount = 1;
   public JsonObject nbt;
 
+  private transient boolean customData;
+
   public NonNullList<ItemStack> getItems() {
-    if (itemListLocation != null && source.resourceExists(itemListLocation)) {
-      try {
-        ItemsList itemsList = BookLoader.GSON
-                .fromJson(source.resourceToString(source.getResource(itemListLocation)), ItemsList.class);
-        NonNullList<ItemStack> items = NonNullList.<ItemStack>withSize(itemsList.items.length, ItemStack.EMPTY);
-
-        for (int i = 0; i < itemsList.items.length; i++) {
-          items.set(i, itemsList.items[i].getItem());
-        }
-
-        this.action = itemsList.action;
-
-        return items;
-      }
-      catch (Exception ignored) {
-      }
+    if (items != null) {
+      return items;
     }
 
     return NonNullList.<ItemStack>withSize(1, getItem());
@@ -102,18 +89,45 @@ public class ItemStackData implements IDataElement {
     return data;
   }
 
+  public static ItemStackData getItemStackData(NonNullList<ItemStack> items) {
+    ItemStackData data = new ItemStackData();
+    data.items = items;
+    data.customData = true;
+
+    data.id = "->itemList";
+
+    return data;
+  }
+
   public static String filterJsonQuotes(String s) {
     return s.replaceAll("\"(\\w+)\"\\s*:", "$1: ");
   }
 
   @Override
   public void load(BookRepository source) {
-    this.source = source;
+    if(customData) {
+      return;
+    }
 
-    itemListLocation = source.getResourceLocation(itemList);
+    ResourceLocation location = source.getResourceLocation(itemList);
 
-    if (itemListLocation != null) {
+    if (location != null) {
       id = "->itemList";
+
+      if (source.resourceExists(location)) {
+        try {
+          ItemsList itemsList = BookLoader.GSON
+                  .fromJson(source.resourceToString(source.getResource(location)), ItemsList.class);
+          items = NonNullList.<ItemStack>withSize(itemsList.items.length, ItemStack.EMPTY);
+
+          for (int i = 0; i < itemsList.items.length; i++) {
+            items.set(i, itemsList.items[i].getItem());
+          }
+
+          this.action = itemsList.action;
+        } catch (Exception ignored) {
+        }
+      }
     }
   }
 
