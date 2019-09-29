@@ -58,7 +58,7 @@ public class ContentSmelting extends PageContent {
     tdTitle.underlined = true;
     list.add(new ElementText(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
     list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
-    list.add(new ElementTooltip(ImmutableList.of(I18n.format("mantle:tooltip.cooktime", cookTime)), x + 7, y + 42, 60, 28));
+    list.add(new ElementTooltip(ImmutableList.of(I18n.format("mantle:tooltip.cooktime", cookTime / 20)), x + 7, y + 42, 60, 28));
 
     if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
