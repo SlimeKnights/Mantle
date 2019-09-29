@@ -13,6 +13,8 @@ public class ElementImage extends SizedBookElement {
   public ImageData image;
   public int colorMultiplier;
 
+  private ElementItem itemElement;
+
   public ElementImage(ImageData image) {
     this(image, 0xFFFFFF);
   }
@@ -51,6 +53,10 @@ public class ElementImage extends SizedBookElement {
     this.width = width;
     this.height = height;
     this.colorMultiplier = colorMultiplier;
+
+    if(image.item != null) {
+      itemElement = new ElementItem(0, 0, 1F, image.item.getItems());
+    }
   }
 
   @Override
@@ -68,9 +74,9 @@ public class ElementImage extends SizedBookElement {
     }
     else {
       GlStateManager.pushMatrix();
-      GlStateManager.scalef(this.width, this.height, 1F);
-      RenderHelper.enableGUIStandardItemLighting();
-      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.image.item.getItems().get(0), this.x, this.y);
+      GlStateManager.translatef(this.x, this.y, 0F);
+      GlStateManager.scalef(this.width / 16F, this.height / 16F, 1F);
+      itemElement.draw(mouseX, mouseY, partialTicks, fontRenderer);
       RenderHelper.disableStandardItemLighting();
       GlStateManager.popMatrix();
     }
