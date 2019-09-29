@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.book.data.content;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
@@ -18,6 +20,7 @@ import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.ElementImage;
 import slimeknights.mantle.client.screen.book.element.ElementItem;
 import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.ElementTooltip;
 
 import java.util.ArrayList;
 
@@ -55,6 +58,7 @@ public class ContentSmelting extends PageContent {
     tdTitle.underlined = true;
     list.add(new ElementText(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
     list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
+    list.add(new ElementTooltip(ImmutableList.of(I18n.format("mantle:tooltip.cooktime", cookTime)), x + 7, y + 42, 60, 28));
 
     if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
