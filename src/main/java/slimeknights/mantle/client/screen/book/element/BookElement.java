@@ -17,6 +17,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class BookElement extends AbstractGui {
@@ -57,16 +58,7 @@ public abstract class BookElement extends AbstractGui {
   public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     if (stack != null) {
       List<ITextComponent> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-      List<String> list1 = Lists.newArrayList();
-
-      for (int i = 0; i < list.size(); ++i) {
-        if (i == 0) {
-          list1.set(i, stack.getRarity().color + list.get(i).deepCopy().getFormattedText());
-        }
-        else {
-          list1.set(i, TextFormatting.GRAY + list.get(i).deepCopy().getFormattedText());
-        }
-      }
+      List<String> list1 = list.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList());
 
       FontRenderer font = stack.getItem().getFontRenderer(stack);
       if (font == null) {
