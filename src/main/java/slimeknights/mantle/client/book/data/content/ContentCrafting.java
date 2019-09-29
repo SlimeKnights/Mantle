@@ -1,6 +1,16 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.IShapedRecipe;
+import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -34,6 +44,7 @@ public class ContentCrafting extends PageContent {
   public ItemStackData[][] grid;
   public ItemStackData result;
   public TextData[] description;
+  public String recipe;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
@@ -65,7 +76,7 @@ public class ContentCrafting extends PageContent {
     if (this.grid != null) {
       for (int i = 0; i < this.grid.length; i++) {
         for (int j = 0; j < this.grid[i].length; j++) {
-          if (this.grid[i][j].id.equals("")) {
+          if (this.grid[i][j] == null || this.grid[i][j].getItems().isEmpty()) {
             continue;
           }
           list.add(new ElementItem(x + SLOT_MARGIN + (SLOT_PADDING + Math.round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * j, y + SLOT_MARGIN + (SLOT_PADDING + Math.round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, this.grid[i][j].getItems(), this.grid[i][j].action));
@@ -79,6 +90,53 @@ public class ContentCrafting extends PageContent {
 
     if (this.description != null && this.description.length > 0) {
       list.add(new ElementText(0, height + 5, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - height - 5, this.description));
+    }
+  }
+
+  @Override
+  public void load() {
+    super.load();
+
+    if(!StringUtils.isEmpty(recipe) && ResourceLocation.isResouceNameValid(recipe)) {
+      int w = 0, h = 0;
+      switch(grid_size.toLowerCase()) {
+        case "large":
+          w = h = 3;
+          break;
+        case "small":
+          w = h = 2;
+          break;
+      }
+
+      IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
+      if(recipe instanceof ICraftingRecipe) {
+        if(!recipe.canFit(w, h)) {
+          throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
+        }
+
+        result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
+
+        NonNullList<Ingredient> ingredients = recipe.getIngredients();
+
+        if(recipe instanceof IShapedRecipe) {
+          IShapedRecipe shaped = (IShapedRecipe) recipe;
+
+          grid = new ItemStackData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
+
+          for(int y = 0; y < grid.length; y++) {
+            for(int x = 0; x < grid[y].length; x++){
+              grid[y][x] = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getMatchingStacks()));
+            }
+          }
+
+          return;
+        }
+
+        grid = new ItemStackData[h][w];
+        for(int i = 0; i < ingredients.size(); i++){
+          grid[i / h][i % w] = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(i).getMatchingStacks()));
+        }
+      }
     }
   }
 }

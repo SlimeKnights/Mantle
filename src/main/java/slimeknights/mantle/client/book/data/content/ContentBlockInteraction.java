@@ -46,11 +46,11 @@ public class ContentBlockInteraction extends PageContent {
 
     list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
-    if (this.input != null && !this.input.id.equals("")) {
+    if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
-    if (this.block != null && !this.block.id.equals("")) {
+    if (this.block != null && !this.block.getItems().isEmpty()) {
       list.add(new ElementItem(x + BLOCK_X, y + BLOCK_Y, BLOCK_SCALE, this.block.getItems(), this.block.action));
     }
 

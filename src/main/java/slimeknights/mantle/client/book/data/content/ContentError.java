@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -28,6 +29,11 @@ public class ContentError extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     this.addTitle(list, "Error");
+
+    if(exception instanceof BookLoadException) {
+      buildSimple(list);
+      return;
+    }
 
     StackTraceElement[] stackTrace = null;
     if (this.exception != null) {
@@ -60,6 +66,15 @@ public class ContentError extends PageContent {
         text[5 + i * 2] = TextData.LINEBREAK;
       }
     }
+
+    list.add(new ElementText(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
+  }
+
+  public void buildSimple(ArrayList<BookElement> list) {
+    TextData[] text = new TextData[1];
+
+    text[0] = new TextData(exception.getMessage());
+    text[0].color = "dark_red";
 
     list.add(new ElementText(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
   }

@@ -1,9 +1,14 @@
 package slimeknights.mantle.client.book.data.content;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.AbstractCookingRecipe;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
@@ -19,6 +24,7 @@ import java.util.ArrayList;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_SMELTING;
 
 public class ContentSmelting extends PageContent {
+  private static final NonNullList<ItemStack> FUELS;
 
   public static final transient int TEX_SIZE = 128;
   public static final transient ImageData IMG_SMELTING = new ImageData(TEX_SMELTING, 0, 0, 110, 114, TEX_SIZE, TEX_SIZE);
@@ -35,7 +41,10 @@ public class ContentSmelting extends PageContent {
   public String title = "Smelting";
   public ItemStackData input;
   public ItemStackData result;
+  public ItemStackData fuel;
+  public int cookTime = 200;
   public TextData[] description;
+  public String recipe;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
@@ -47,11 +56,11 @@ public class ContentSmelting extends PageContent {
     list.add(new ElementText(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
     list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
 
-    if (this.input != null && !this.input.id.equals("")) {
+    if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
-    if (this.result != null && !this.result.id.equals("")) {
+    if (this.result != null && !this.result.getItems().isEmpty()) {
       list.add(new ElementItem(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, this.result.getItems(), this.result.action));
     }
 
@@ -65,36 +74,57 @@ public class ContentSmelting extends PageContent {
   public NonNullList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
 
-    NonNullList<ItemStack> fuels = NonNullList.withSize(28, ItemStack.EMPTY);
-    fuels.set(0, new ItemStack(Blocks.OAK_SLAB));
-    fuels.set(1, new ItemStack(Blocks.SPRUCE_SLAB));
-    fuels.set(2, new ItemStack(Blocks.BIRCH_SLAB));
-    fuels.set(3, new ItemStack(Blocks.JUNGLE_SLAB));
-    fuels.set(4, new ItemStack(Blocks.ACACIA_SLAB));
-    fuels.set(5, new ItemStack(Blocks.DARK_OAK_SLAB));
-    fuels.set(6, new ItemStack(Blocks.OAK_PLANKS));
-    fuels.set(7, new ItemStack(Blocks.SPRUCE_PLANKS));
-    fuels.set(8, new ItemStack(Blocks.BIRCH_PLANKS));
-    fuels.set(9, new ItemStack(Blocks.JUNGLE_PLANKS));
-    fuels.set(10, new ItemStack(Blocks.ACACIA_PLANKS));
-    fuels.set(11, new ItemStack(Blocks.DARK_OAK_PLANKS));
-    fuels.set(12, new ItemStack(Blocks.COAL_BLOCK));
-    fuels.set(13, new ItemStack(Items.WOODEN_PICKAXE));
-    fuels.set(14, new ItemStack(Items.WOODEN_SWORD));
-    fuels.set(15, new ItemStack(Items.WOODEN_HOE));
-    fuels.set(16, new ItemStack(Items.STICK));
-    fuels.set(17, new ItemStack(Items.COAL));
-    fuels.set(18, new ItemStack(Items.LAVA_BUCKET));
-    fuels.set(19, new ItemStack(Blocks.OAK_SAPLING));
-    fuels.set(20, new ItemStack(Blocks.SPRUCE_SAPLING));
-    fuels.set(21, new ItemStack(Blocks.BIRCH_SAPLING));
-    fuels.set(22, new ItemStack(Blocks.JUNGLE_SAPLING));
-    fuels.set(23, new ItemStack(Blocks.ACACIA_SAPLING));
-    fuels.set(24, new ItemStack(Blocks.DARK_OAK_SAPLING));
-    fuels.set(25, new ItemStack(Items.BLAZE_ROD));
-    fuels.set(26, new ItemStack(Items.WOODEN_SHOVEL));
-    fuels.set(27, new ItemStack(Items.WOODEN_AXE));
+    if(fuel != null) {
+      return fuel.getItems();
+    }
 
-    return fuels;
+    return FUELS;
+  }
+
+  @Override
+  public void load() {
+    super.load();
+
+    if(!StringUtils.isEmpty(recipe) && ResourceLocation.isResouceNameValid(recipe)) {
+      IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
+
+      if(recipe instanceof AbstractCookingRecipe) {
+        input = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
+        cookTime = ((AbstractCookingRecipe)recipe).getCookTime();
+        result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
+      }
+    }
+  }
+
+  static {
+    FUELS = NonNullList.from(ItemStack.EMPTY,
+            new ItemStack(Blocks.OAK_SLAB),
+            new ItemStack(Blocks.SPRUCE_SLAB),
+            new ItemStack(Blocks.BIRCH_SLAB),
+            new ItemStack(Blocks.JUNGLE_SLAB),
+            new ItemStack(Blocks.ACACIA_SLAB),
+            new ItemStack(Blocks.DARK_OAK_SLAB),
+            new ItemStack(Blocks.OAK_PLANKS),
+            new ItemStack(Blocks.SPRUCE_PLANKS),
+            new ItemStack(Blocks.BIRCH_PLANKS),
+            new ItemStack(Blocks.JUNGLE_PLANKS),
+            new ItemStack(Blocks.ACACIA_PLANKS),
+            new ItemStack(Blocks.DARK_OAK_PLANKS),
+            new ItemStack(Blocks.COAL_BLOCK),
+            new ItemStack(Items.WOODEN_PICKAXE),
+            new ItemStack(Items.WOODEN_SWORD),
+            new ItemStack(Items.WOODEN_HOE),
+            new ItemStack(Items.STICK),
+            new ItemStack(Items.COAL),
+            new ItemStack(Items.LAVA_BUCKET),
+            new ItemStack(Blocks.OAK_SAPLING),
+            new ItemStack(Blocks.SPRUCE_SAPLING),
+            new ItemStack(Blocks.BIRCH_SAPLING),
+            new ItemStack(Blocks.JUNGLE_SAPLING),
+            new ItemStack(Blocks.ACACIA_SAPLING),
+            new ItemStack(Blocks.DARK_OAK_SAPLING),
+            new ItemStack(Items.BLAZE_ROD),
+            new ItemStack(Items.WOODEN_SHOVEL),
+            new ItemStack(Items.WOODEN_AXE));
   }
 }
