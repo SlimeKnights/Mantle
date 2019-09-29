@@ -11,6 +11,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.config.GuiUtils;
+import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
 
@@ -204,14 +205,14 @@ public class TextDataRenderer {
           i = oldI;
         }
 
-        s = s.substring(0, i).trim() + "\r" + s.substring(i + (i == oldI ? 0 : 1)).trim();
+        s = s.substring(0, i) + "\r" + StringUtils.stripStart(s.substring(i + (i == oldI ? 0 : 1)), " ");
 
         i++;
         curWidth = 0;
         curHeight += fr.FONT_HEIGHT * scale;
 
         if (curHeight >= height) {
-          return s.substring(0, i).trim().split("\r");
+          return s.substring(0, i).split("\r");
         }
       }
     }
