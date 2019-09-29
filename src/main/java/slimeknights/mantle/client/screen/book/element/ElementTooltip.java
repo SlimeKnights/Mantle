@@ -22,7 +22,7 @@ public class ElementTooltip extends SizedBookElement {
   @Override
   public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if (this.isHovered(mouseX, mouseY)) {
-      GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, fontRenderer);
+      drawHoveringText(tooltip, mouseX, mouseY, fontRenderer);
     }
   }
 }

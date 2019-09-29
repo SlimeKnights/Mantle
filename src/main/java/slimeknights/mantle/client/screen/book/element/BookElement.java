@@ -1,7 +1,5 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -10,7 +8,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.config.GuiUtils;
@@ -64,66 +61,13 @@ public abstract class BookElement extends AbstractGui {
       if (font == null) {
         font = fontRenderer;
       }
-      GuiUtils.drawHoveringText(list1, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, -1, font);
+      drawHoveringText(list1, x, y, font);
       RenderHelper.disableStandardItemLighting();
     }
   }
 
-  @Deprecated
   public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-    if (!textLines.isEmpty()) {
-      GlStateManager.disableDepthTest();
-      int i = 0;
-
-      for (String s : textLines) {
-        int j = font.getStringWidth(s);
-
-        if (j > i) {
-          i = j;
-        }
-      }
-
-      int l1 = x + 12;
-      int i2 = y - 12;
-      int k = 8;
-
-      if (textLines.size() > 1) {
-        k += 2 + (textLines.size() - 1) * 10;
-      }
-
-      if (l1 + i > BookScreen.PAGE_WIDTH) {
-        l1 -= 28 + i;
-      }
-
-      if (i2 + k + 6 > BookScreen.PAGE_HEIGHT) {
-        i2 = BookScreen.PAGE_HEIGHT - k - 6;
-      }
-
-      int l = -267386864;
-      this.fillGradient(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, l, l);
-      this.fillGradient(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, l, l);
-      this.fillGradient(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, l, l);
-      this.fillGradient(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, l, l);
-      this.fillGradient(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, l, l);
-      int i1 = 1347420415;
-      int j1 = (i1 & 16711422) >> 1 | i1 & -16777216;
-      this.fillGradient(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, i1, j1);
-      this.fillGradient(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, i1, j1);
-      this.fillGradient(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, i1, i1);
-      this.fillGradient(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, j1, j1);
-
-      for (int k1 = 0; k1 < textLines.size(); ++k1) {
-        String s1 = textLines.get(k1);
-        font.drawStringWithShadow(s1, (float) l1, (float) i2, -1);
-
-        if (k1 == 0) {
-          i2 += 2;
-        }
-
-        i2 += 10;
-      }
-
-      GlStateManager.enableDepthTest();
-    }
+    GuiUtils.drawHoveringText(textLines, x, y, parent.width, parent.height, -1, font);
+    RenderHelper.disableStandardItemLighting();
   }
 }
