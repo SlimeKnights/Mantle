@@ -10,15 +10,21 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
+import java.util.stream.Collectors;
+
 public class ItemStackData implements IDataElement {
 
   public String itemList = null;
+  public String tag = null;
   public transient String action;
   private transient NonNullList<ItemStack> items;
 
@@ -107,6 +113,17 @@ public class ItemStackData implements IDataElement {
   public void load(BookRepository source) {
     if(customData) {
       return;
+    }
+
+    if(!StringUtils.isNullOrEmpty(tag) && ResourceLocation.isResouceNameValid(tag)) {
+      Tag<Item> values = ItemTags.getCollection().get(new ResourceLocation(tag));
+
+      if (values != null && !values.getAllElements().isEmpty()) {
+        items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
+
+        id = "->itemList";
+        return;
+      }
     }
 
     ResourceLocation location = source.getResourceLocation(itemList);
