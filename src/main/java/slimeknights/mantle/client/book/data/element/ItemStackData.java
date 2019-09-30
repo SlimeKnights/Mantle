@@ -33,13 +33,19 @@ public class ItemStackData implements IDataElement {
   public JsonObject nbt;
 
   private transient boolean customData;
+  private transient boolean isTag;
+  private transient int tagGeneration;
 
   public NonNullList<ItemStack> getItems() {
+    if(isTag && tagGeneration != ItemTags.getGeneration()) {
+      loadTag();
+    }
+
     if (items != null) {
       return items;
     }
 
-    return NonNullList.<ItemStack>withSize(1, getItem());
+    return NonNullList.withSize(1, getItem());
   }
 
   private ItemStack getItem() {
@@ -109,21 +115,29 @@ public class ItemStackData implements IDataElement {
     return s.replaceAll("\"(\\w+)\"\\s*:", "$1: ");
   }
 
+  private void loadTag() {
+    isTag = true;
+    tagGeneration = ItemTags.getGeneration();
+
+    Tag<Item> values = ItemTags.getCollection().get(new ResourceLocation(tag));
+    if (values != null) {
+      items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
+    }
+    else {
+      items = NonNullList.create();
+    }
+  }
+
   @Override
   public void load(BookRepository source) {
-    if(customData) {
+    if (customData) {
       return;
     }
 
-    if(!StringUtils.isNullOrEmpty(tag) && ResourceLocation.isResouceNameValid(tag)) {
-      Tag<Item> values = ItemTags.getCollection().get(new ResourceLocation(tag));
-
-      if (values != null && !values.getAllElements().isEmpty()) {
-        items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
-
-        id = "->itemList";
-        return;
-      }
+    if (!StringUtils.isNullOrEmpty(tag) && ResourceLocation.isResouceNameValid(tag)) {
+      loadTag();
+      id = "->itemList";
+      return;
     }
 
     ResourceLocation location = source.getResourceLocation(itemList);
@@ -142,7 +156,8 @@ public class ItemStackData implements IDataElement {
           }
 
           this.action = itemsList.action;
-        } catch (Exception ignored) {
+        }
+        catch (Exception ignored) {
         }
       }
     }
