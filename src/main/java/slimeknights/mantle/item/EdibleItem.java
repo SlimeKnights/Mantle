@@ -55,7 +55,7 @@ public class EdibleItem extends Item implements IGeneratedJson {
     if (this.displayEffectsTooltip) {
       for (Pair<EffectInstance, Float> pair : stack.getItem().getFood().getEffects()) {
         if (pair.getLeft() != null) {
-          tooltip.add(new StringTextComponent(TextFormatting.GRAY.toString() + I18n.format(pair.getLeft().getEffectName()).trim()));
+          tooltip.add(new StringTextComponent(I18n.format(pair.getLeft().getEffectName()).trim()).applyTextStyle(TextFormatting.GRAY));
         }
       }
     }
