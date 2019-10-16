@@ -4,9 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
@@ -50,11 +52,16 @@ public class ExtraHeartRenderHandler {
   /* HUD */
   @SubscribeEvent(priority = EventPriority.LOW)
   public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
-    if(event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()) {
+    Entity renderViewEnity = this.mc.getRenderViewEntity();
+    if(event.getType() != RenderGameOverlayEvent.ElementType.HEALTH
+       || event.isCanceled()
+       || !(renderViewEnity instanceof EntityPlayer)) {
       return;
     }
+    EntityPlayer player = (EntityPlayer)this.mc.getRenderViewEntity();
+    
     // extra setup stuff from us
-    left_height = 39;
+    left_height = GuiIngameForge.left_height;
     ScaledResolution resolution = event.getResolution();
     width = resolution.getScaledWidth();
     height = resolution.getScaledHeight();
@@ -66,7 +73,6 @@ public class ExtraHeartRenderHandler {
     mc.mcProfiler.startSection("health");
     GlStateManager.enableBlend();
 
-    EntityPlayer player = (EntityPlayer)this.mc.getRenderViewEntity();
     int health = MathHelper.ceil(player.getHealth());
     boolean highlight = healthUpdateCounter > (long)updateCounter && (healthUpdateCounter - (long)updateCounter) / 3L %2L == 1L;
 

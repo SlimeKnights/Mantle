@@ -5,22 +5,19 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import slimeknights.mantle.tileentity.MantleTileEntity;
 
 import javax.annotation.Nonnull;
 
-public class MultiServantLogic extends TileEntity implements IServantLogic {
+public class MultiServantLogic extends MantleTileEntity implements IServantLogic {
 
   boolean hasMaster;
-
   BlockPos master;
-
   Block masterBlock;
-
   IBlockState state;
 
   public boolean canUpdate() {
@@ -36,8 +33,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
       return false;
     }
 
-    if(this.world.getBlockState(this.master).getBlock() == this.masterBlock && this.world
-                                                                                      .getBlockState(this.master) == this.state) {
+    if(this.world.getBlockState(this.master).getBlock() == this.masterBlock
+        && this.world.getBlockState(this.master) == this.state) {
       return true;
     }
     else {
@@ -57,6 +54,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     this.master = pos;
     this.state = this.world.getBlockState(this.master);
     this.masterBlock = this.state.getBlock();
+    this.markDirtyFast();
   }
 
   public void removeMaster() {
@@ -64,6 +62,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
     this.master = null;
     this.masterBlock = null;
     this.state = null;
+    this.markDirtyFast();
   }
 
   @Override
@@ -73,8 +72,8 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
 
   @Deprecated
   public boolean verifyMaster(IMasterLogic logic, BlockPos pos) {
-    return this.master.equals(pos) && this.world.getBlockState(pos) == this.state && this.world.getBlockState(pos)
-                                                                                                     .getBlock() == this.masterBlock;
+    return this.master.equals(pos) && this.world.getBlockState(pos) == this.state
+        && this.world.getBlockState(pos).getBlock() == this.masterBlock;
   }
 
   @Override
@@ -90,8 +89,7 @@ public class MultiServantLogic extends TileEntity implements IServantLogic {
 
   @Override
   public void invalidateMaster(IMasterLogic master, World w, BlockPos pos) {
-    this.hasMaster = false;
-    master = null;
+    this.removeMaster();
   }
 
   @Override

@@ -253,14 +253,6 @@ public class GuiBook extends GuiScreen {
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
-        // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < leftElements.size(); i++) {
-          BookElement element = leftElements.get(i);
-
-          GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawTooltips(mX, mY, partialTicks, fontRenderer);
-        }
-
         GlStateManager.popMatrix();
       }
 
@@ -271,7 +263,7 @@ public class GuiBook extends GuiScreen {
       RenderHelper.disableStandardItemLighting();
 
       int fullPageCount = book.getFullPageCount(advancementCache);
-      if((page < fullPageCount - 1 || fullPageCount % 2 != 0) && page < fullPageCount) {
+      if(page < fullPageCount - 1 || book.getPageCount(advancementCache) % 2 != 0) {
         drawModalRectWithCustomSizedTexture(width / 2, height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         GlStateManager.pushMatrix();
@@ -301,14 +293,6 @@ public class GuiBook extends GuiScreen {
 
           GlStateManager.color(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
-        }
-
-        // Not foreach to prevent conmodification crashes
-        for(int i = 0; i < rightElements.size(); i++) {
-          BookElement element = rightElements.get(i);
-
-          GlStateManager.color(1F, 1F, 1F, 1F);
-          element.drawTooltips(mX, mY, partialTicks, fontRenderer);
         }
 
         GlStateManager.popMatrix();
@@ -452,7 +436,7 @@ public class GuiBook extends GuiScreen {
     super.updateScreen();
 
     previousArrow.visible = page != -1;
-    nextArrow.visible = page < book.getFullPageCount(advancementCache) - (book.getPageCount(advancementCache) % 2 != 0 ? 0 : 1);
+    nextArrow.visible = page + 1 < book.getFullPageCount(advancementCache);
     backArrow.visible = oldPage >= -1;
 
     if(page == -1) {
@@ -486,7 +470,7 @@ public class GuiBook extends GuiScreen {
     } else if(button == nextArrow) {
       page++;
       int fullPageCount = book.getFullPageCount(advancementCache);
-      if(page > fullPageCount - (fullPageCount % 2 != 0 ? 0 : 1)) {
+      if(page >= fullPageCount) {
         page = fullPageCount - 1;
       }
     } else if(button == backArrow) {
@@ -518,6 +502,18 @@ public class GuiBook extends GuiScreen {
         debug = !debug;
         break;
     }
+  }
+
+  @Override
+  public void handleMouseInput() throws IOException {
+    super.handleMouseInput();
+
+    int scroll = Mouse.getDWheel();
+
+    if (scroll < 0)
+      actionPerformed(nextArrow);
+    else if (scroll > 0)
+      actionPerformed(previousArrow);
   }
 
   @Override

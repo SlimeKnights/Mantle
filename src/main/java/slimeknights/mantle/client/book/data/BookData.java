@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class BookData implements IDataItem {
@@ -73,6 +74,8 @@ public class BookData implements IDataItem {
           page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
           error.pages.add(page);
           sections.add(error);
+
+          e.printStackTrace();
         }
 
         ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");
@@ -123,6 +126,30 @@ public class BookData implements IDataItem {
         }
       }
 
+      for(int i = 0; i < sections.size(); i++){
+        SectionData section = sections.get(i);
+        if(section.name == null)
+          continue;
+
+        List<SectionData> matchingSections = sections.stream().filter(sect -> section.name.equalsIgnoreCase(sect.name)).collect(Collectors.toList());
+        if(matchingSections.size() < 2){
+          continue;
+        }
+
+        LinkedSectionData linkedSection = new LinkedSectionData();
+
+          for(SectionData match : matchingSections){
+            linkedSection.addSection(match);
+
+            if(match != section){
+              sections.remove(match);
+            }
+          }
+
+
+        sections.set(i, linkedSection);
+      }
+
       for(SectionData section : sections) {
         if(section.source == null) {
           section.source = BookRepository.DUMMY;
@@ -159,6 +186,7 @@ public class BookData implements IDataItem {
 
       e.printStackTrace();
     }
+
     Mantle.logger.info("Finished loading book");
   }
 

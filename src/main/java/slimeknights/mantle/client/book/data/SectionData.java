@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data;
 
+import com.google.common.collect.Sets;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.resources.IResource;
 import net.minecraftforge.fml.relauncher.Side;
@@ -13,13 +14,14 @@ import slimeknights.mantle.client.gui.book.GuiBook;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public class SectionData implements IDataItem {
 
   public String name = null;
   public ImageData icon = new ImageData();
-  public String[] requirements = new String[0];
+  public Set<String> requirements = Sets.newHashSet();
   public boolean hideWhenLocked = false;
   public String data = "";
 
@@ -56,13 +58,15 @@ public class SectionData implements IDataItem {
         String data = source.resourceToString(pagesInfo);
         if(!data.isEmpty()) {
           try {
-            pages = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
+            pages = getPages(data);
           } catch(Exception e) {
             pages = new ArrayList<>();
             PageData pdError = new PageData(true);
             pdError.name = "errorrenous";
             pdError.content = new ContentError("Failed to load section " + name + ".", e);
             pages.add(pdError);
+
+            e.printStackTrace();
           }
         }
       }
@@ -75,6 +79,15 @@ public class SectionData implements IDataItem {
     }
 
     icon.location = source.getResourceLocation(icon.file, true);
+  }
+
+  /**
+   * Gets a list of pages from the given data
+   * @param data  JSON data
+   * @return  ArrayList of pages for the book
+   */
+  protected ArrayList<PageData> getPages(String data) {
+    return new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
   }
 
   public void update(@Nullable GuiBook.AdvancementCache advancementCache) {
@@ -90,7 +103,7 @@ public class SectionData implements IDataItem {
   }
 
   public boolean isUnlocked(GuiBook.AdvancementCache advancementCache) {
-    if(advancementCache == null || requirements == null || requirements.length == 0) {
+    if(advancementCache == null || requirements == null || requirements.size() == 0) {
       return true;
     }
 

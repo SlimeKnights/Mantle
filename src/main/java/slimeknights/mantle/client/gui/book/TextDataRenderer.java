@@ -49,7 +49,7 @@ public class TextDataRenderer {
       int box2X, box2Y = 9999, box2W, box2H;
       int box3X = 9999, box3Y = 9999, box3W, box3H;
 
-      if(item.text == null || item.text.isEmpty()) {
+      if(item == null || item.text == null || item.text.isEmpty()) {
         continue;
       }
       if(item.text.equals("\n")) {

@@ -33,15 +33,15 @@ public class EnumBlockConnectedTexture<E extends Enum<E> & EnumBlock.IEnumMeta &
     }
     
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos position) { 
+    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos position) {
       // Creates the state to use for the block. This is where we check if every side is
       // connectable or not.
-      return state.withProperty(BlockConnectedTexture.CONNECTED_DOWN,  this.isSideConnectable(world, position, EnumFacing.DOWN))
-                  .withProperty(BlockConnectedTexture.CONNECTED_EAST,  this.isSideConnectable(world, position, EnumFacing.EAST))
-                  .withProperty(BlockConnectedTexture.CONNECTED_NORTH, this.isSideConnectable(world, position, EnumFacing.NORTH))
-                  .withProperty(BlockConnectedTexture.CONNECTED_SOUTH, this.isSideConnectable(world, position, EnumFacing.SOUTH))
-                  .withProperty(BlockConnectedTexture.CONNECTED_UP,    this.isSideConnectable(world, position, EnumFacing.UP))
-                  .withProperty(BlockConnectedTexture.CONNECTED_WEST,  this.isSideConnectable(world, position, EnumFacing.WEST));
+      return state.withProperty(BlockConnectedTexture.CONNECTED_DOWN,  this.isSideConnectable(state, world, position, EnumFacing.DOWN))
+                  .withProperty(BlockConnectedTexture.CONNECTED_EAST,  this.isSideConnectable(state, world, position, EnumFacing.EAST))
+                  .withProperty(BlockConnectedTexture.CONNECTED_NORTH, this.isSideConnectable(state, world, position, EnumFacing.NORTH))
+                  .withProperty(BlockConnectedTexture.CONNECTED_SOUTH, this.isSideConnectable(state, world, position, EnumFacing.SOUTH))
+                  .withProperty(BlockConnectedTexture.CONNECTED_UP,    this.isSideConnectable(state, world, position, EnumFacing.UP))
+                  .withProperty(BlockConnectedTexture.CONNECTED_WEST,  this.isSideConnectable(state, world, position, EnumFacing.WEST));
     }
     
     @Nonnull
@@ -56,17 +56,16 @@ public class EnumBlockConnectedTexture<E extends Enum<E> & EnumBlock.IEnumMeta &
     /**
      * Checks if a specific side of a block can connect to this block. For this example, a side
      * is connectable if the block is the same block as this one.
-     * 
+     *
+     * @param state Base state to check
      * @param world The world to run the check in.
      * @param pos The position of the block to check for.
      * @param side The side of the block to check.
      * @return Whether or not the side is connectable.
      */
-    private boolean isSideConnectable(IBlockAccess world, BlockPos pos, EnumFacing side) {
-      final IBlockState original = world.getBlockState(pos);
+    private boolean isSideConnectable(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
       final IBlockState connected = world.getBlockState(pos.offset(side));
-      
-      return original != null && connected != null && canConnect(original, connected);
+      return connected != null && canConnect(state, connected);
     }
     
     /**

@@ -3,6 +3,7 @@ package slimeknights.mantle.pulsar.control;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLModContainer;
@@ -15,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,7 +50,8 @@ public class PulseManager {
     private Logger log;
     private final boolean useConfig;
 
-    private final LinkedHashMap<Object, PulseMeta> pulses = new LinkedHashMap<Object, PulseMeta>();
+    private static final Map<String, Map<Object, PulseMeta>> ALL_PULSES = new HashMap<>();
+    private final Map<Object, PulseMeta> pulses = new LinkedHashMap<>();
     // Use the Google @Subscribe to avoid confusion/breaking changes.
     private final Flightpath flightpath = new Flightpath(new AnnotationLocator(Subscribe.class));
 
@@ -93,6 +96,8 @@ public class PulseManager {
         log = LogManager.getLogger("Pulsar-" + modId);
         flightpath.setExceptionHandler(new BusExceptionHandler(modId));
         FMLCommonHandler.instance().registerCrashCallable(new CrashHandler(modId, this));
+        // regsister our pulse loader so it can be found by the static method
+        ALL_PULSES.put(modId, pulses);
         // Attach us to the mods FML bus
         attachToContainerEventBus(this);
     }
@@ -233,12 +238,41 @@ public class PulseManager {
     /**
      * Check if a given Pulse ID is loaded in this manager.
      *
-     * @param pulseId The ID to check.
+     * @param pulseId The ID to check. If it contains : treats the ID as a resource location and checks the global list
      * @return Whether the ID was present.
      */
     public boolean isPulseLoaded(String pulseId) {
+        // if it has a colon, assume its a namespaced ID
+        if(pulseId.contains(":")) {
+            return isPulseLoadedGlobal(pulseId);
+        }
+        return isPulseLoaded(pulses, pulseId);
+    }
+
+    /**
+     * Check if a given Pulse ID is loaded in any manager.
+     *
+     * @param pulseId Resource location string to check. Domain is the mod ID, path is the pulse ID
+     * @return Whether the ID was present.
+     */
+    public static boolean isPulseLoadedGlobal(String pulseId) {
+        ResourceLocation loc = new ResourceLocation(pulseId);
+        Map<Object, PulseMeta> pulses = ALL_PULSES.get(loc.getResourceDomain());
+        if(pulses != null) {
+            return isPulseLoaded(pulses, loc.getResourcePath());
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a pulse is loaded in the given pulse manager
+     *
+     * @param pulseId The ID to check.
+     * @return Whether the ID was present.
+     */
+    private static boolean isPulseLoaded(Map<Object, PulseMeta> pulses, String pulseId) {
         for(Map.Entry<Object, PulseMeta> entry : pulses.entrySet()) {
-            if (entry.getValue().getId().equals(pulseId)) {
+            if (entry.getValue().getId().equalsIgnoreCase(pulseId)) {
                 return true;
             }
         }
