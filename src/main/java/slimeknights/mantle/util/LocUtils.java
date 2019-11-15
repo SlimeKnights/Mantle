@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.ForgeI18n;
 
 import java.util.List;
 import java.util.Locale;
@@ -27,17 +30,23 @@ public abstract class LocUtils {
 
   public static List<ITextComponent> getTooltips(String text) {
     List<ITextComponent> list = Lists.newLinkedList();
-    if (text == null) {
-      return list;
-    }
-    int j = 0;
-    int k;
-    while ((k = text.indexOf("\\n", j)) >= 0) {
-      list.add(new StringTextComponent(text.substring(j, k)));
-      j = k + 2;
-    }
+    if (!ForgeI18n.getPattern(text).equals(text)) {
+      String translate = ForgeI18n.getPattern(text);
+      if (!ForgeI18n.getPattern(translate).equals(translate)) {
+        String[] strings = new TranslationTextComponent(translate).getFormattedText().split("\n");
 
-    list.add(new StringTextComponent(text.substring(j, text.length())));
+        for (String string : strings) {
+          list.add(new StringTextComponent(string).applyTextStyle(TextFormatting.GRAY));
+        }
+      }
+      else {
+        String[] strings = new TranslationTextComponent(text).getFormattedText().split("\n");
+
+        for (String string : strings) {
+          list.add(new StringTextComponent(string).applyTextStyle(TextFormatting.GRAY));
+        }
+      }
+    }
 
     return list;
   }
@@ -47,7 +56,7 @@ public abstract class LocUtils {
       return null;
     }
     int j;
-    while ((j = line.indexOf("\\n")) >= 0) {
+    while ((j = line.indexOf("\n")) >= 0) {
       line = line.substring(0, j) + '\n' + line.substring(j + 2);
     }
 
