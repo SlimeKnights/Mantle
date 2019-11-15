@@ -1,6 +1,5 @@
 package slimeknights.mantle.item;
 
-import com.google.gson.JsonObject;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Food;
@@ -15,12 +14,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
-import slimeknights.mantle.common.IGeneratedJson;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EdibleItem extends Item implements IGeneratedJson {
+public class EdibleItem extends Item {
 
   private boolean displayEffectsTooltip; // set to false to not display effects of food in tooltip
 
@@ -31,20 +29,6 @@ public class EdibleItem extends Item implements IGeneratedJson {
   public EdibleItem(Food foodIn, ItemGroup itemGroup, boolean displayEffectsTooltip) {
     super(new Properties().food(foodIn).group(itemGroup));
     this.displayEffectsTooltip = displayEffectsTooltip;
-  }
-
-  @Override
-  public String getParentToUse() {
-    return "item/generated";
-  }
-
-  @Override
-  public JsonObject getTexturesToUse() {
-    JsonObject textures = new JsonObject();
-
-    textures.addProperty("layer0", this.getRegistryName().getNamespace() + ":item/" + this.getRegistryName().getPath() + " CHANGEME");
-
-    return textures;
   }
 
   @Override
