@@ -56,7 +56,7 @@ public abstract class LocUtils {
       return null;
     }
     int j;
-    while ((j = line.indexOf("\n")) >= 0) {
+    while ((j = line.indexOf("\\n")) >= 0) {
       line = line.substring(0, j) + '\n' + line.substring(j + 2);
     }
 
