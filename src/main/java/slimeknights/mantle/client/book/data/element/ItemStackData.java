@@ -37,22 +37,22 @@ public class ItemStackData implements IDataElement {
   private transient int tagGeneration;
 
   public NonNullList<ItemStack> getItems() {
-    if(isTag && tagGeneration != ItemTags.getGeneration()) {
-      loadTag();
+    if(this.isTag && this.tagGeneration != ItemTags.getGeneration()) {
+      this.loadTag();
     }
 
-    if (items != null) {
-      return items;
+    if (this.items != null) {
+      return this.items;
     }
 
-    return NonNullList.withSize(1, getItem());
+    return NonNullList.withSize(1, this.getItem());
   }
 
   private ItemStack getItem() {
     Item item;
     boolean isMissingItem = false;
     try {
-      item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));//ItemArgument.getItem(null, id).getItem();
+      item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.id));//ItemArgument.getItem(null, id).getItem();
     }
     catch (Exception e) {
       item = Item.getItemFromBlock(Blocks.BARRIER);
@@ -64,11 +64,11 @@ public class ItemStackData implements IDataElement {
       isMissingItem = true;
     }
 
-    ItemStack itemStack = new ItemStack(item, amount);
+    ItemStack itemStack = new ItemStack(item, this.amount);
 
-    if (nbt != null) {
+    if (this.nbt != null) {
       try {
-        itemStack.setTag(JsonToNBT.getTagFromJson(filterJsonQuotes(nbt.toString())));
+        itemStack.setTag(JsonToNBT.getTagFromJson(filterJsonQuotes(this.nbt.toString())));
       }
       catch (CommandSyntaxException ignored) {
       }
@@ -78,8 +78,8 @@ public class ItemStackData implements IDataElement {
       CompoundNBT display = itemStack.getOrCreateChildTag("display");
       display.putString("Name", "\u00A7rUnknown Item");
       ListNBT lore = new ListNBT();
-      lore.add(new StringNBT("\u00A7r\u00A7eItem Name:"));
-      lore.add(new StringNBT("\u00A7r\u00A7e" + id));
+      lore.add(StringNBT.func_229705_a_("\u00A7r\u00A7eItem Name:"));
+      lore.add(StringNBT.func_229705_a_("\u00A7r\u00A7e" + this.id));
       display.put("Lore", lore);
     }
 
@@ -116,43 +116,43 @@ public class ItemStackData implements IDataElement {
   }
 
   private void loadTag() {
-    isTag = true;
-    tagGeneration = ItemTags.getGeneration();
+    this.isTag = true;
+    this.tagGeneration = ItemTags.getGeneration();
 
-    Tag<Item> values = ItemTags.getCollection().get(new ResourceLocation(tag));
+    Tag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
     if (values != null) {
-      items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
+      this.items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
     }
     else {
-      items = NonNullList.create();
+      this.items = NonNullList.create();
     }
   }
 
   @Override
   public void load(BookRepository source) {
-    if (customData) {
+    if (this.customData) {
       return;
     }
 
-    if (!StringUtils.isNullOrEmpty(tag) && ResourceLocation.isResouceNameValid(tag)) {
-      loadTag();
-      id = "->itemList";
+    if (!StringUtils.isNullOrEmpty(this.tag) && ResourceLocation.isResouceNameValid(this.tag)) {
+      this.loadTag();
+      this.id = "->itemList";
       return;
     }
 
-    ResourceLocation location = source.getResourceLocation(itemList);
+    ResourceLocation location = source.getResourceLocation(this.itemList);
 
     if (location != null) {
-      id = "->itemList";
+      this.id = "->itemList";
 
       if (source.resourceExists(location)) {
         try {
           ItemsList itemsList = BookLoader.GSON
                   .fromJson(source.resourceToString(source.getResource(location)), ItemsList.class);
-          items = NonNullList.<ItemStack>withSize(itemsList.items.length, ItemStack.EMPTY);
+          this.items = NonNullList.withSize(itemsList.items.length, ItemStack.EMPTY);
 
           for (int i = 0; i < itemsList.items.length; i++) {
-            items.set(i, itemsList.items[i].getItem());
+            this.items.set(i, itemsList.items[i].getItem());
           }
 
           this.action = itemsList.action;

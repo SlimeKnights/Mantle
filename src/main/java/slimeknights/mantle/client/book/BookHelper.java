@@ -12,7 +12,7 @@ public class BookHelper {
     if (!item.isEmpty() && item.hasTag()) {
       CompoundNBT mantleBook = item.getTag().getCompound("mantle").getCompound("book");
 
-      if (mantleBook.contains("page", Arrays.asList(INBT.NBT_TYPES).indexOf("STRING"))) {
+      if (mantleBook.contains("page", 8)) {
         return mantleBook.getString("page");
       }
     }

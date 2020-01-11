@@ -12,11 +12,13 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.Heightmap.Type;
+import net.minecraft.world.lighting.WorldLightManager;
 
 import javax.annotation.Nullable;
 
@@ -37,13 +39,12 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public int getCombinedLight(BlockPos pos, int lightValue) {
-    // full brightness always
-    return 15 << 20 | 15 << 4;
+  public WorldLightManager func_225524_e_() {
+    return null;
   }
 
   @Override
-  public int getLightFor(LightType type, BlockPos pos) {
+  public int func_226658_a_(LightType type, BlockPos pos) {
     return 15 << 20 | 15 << 4;
   }
 
@@ -72,7 +73,12 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public Biome getBiome(BlockPos pos) {
+  public Biome func_226691_t_(BlockPos pos) {
+    return null;
+  }
+
+  @Override
+  public Biome func_225604_a_(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
     return null;
   }
 
@@ -82,7 +88,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public int getLightSubtracted(BlockPos pos, int amount) {
+  public int func_226659_b_(BlockPos pos, int amount) {
     return 0;
   }
 
@@ -103,7 +109,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public boolean isSkyLightMax(BlockPos pos) {
+  public boolean func_226660_f_(BlockPos pos) {
     return true;
   }
 
@@ -115,6 +121,11 @@ public class StructureBlockAccess implements IWorldReader {
   @Override
   public int getSkylightSubtracted() {
     return 0;
+  }
+
+  @Override
+  public BiomeManager func_225523_d_() {
+    return null;
   }
 
   @Override

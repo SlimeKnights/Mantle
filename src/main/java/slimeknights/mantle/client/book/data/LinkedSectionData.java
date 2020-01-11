@@ -25,7 +25,7 @@ public class LinkedSectionData extends SectionData {
       this.pages.addAll(section.pages);
     }
 
-    this.icon.load(source);
+    this.icon.load(this.source);
   }
 
   public void addSection(SectionData data) {

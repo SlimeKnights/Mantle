@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraftforge.api.distmarker.Dist;
@@ -40,7 +40,7 @@ public class ArrowButton extends Button {
     float g = ((color >> 8) & 0xff) / 255.F;
     float b = (color & 0xff) / 255.F;
 
-    GlStateManager.color3f(r, g, b);
+    RenderSystem.color3f(r, g, b);
     blit(this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
     this.renderBg(minecraft, mouseX, mouseY);
   }

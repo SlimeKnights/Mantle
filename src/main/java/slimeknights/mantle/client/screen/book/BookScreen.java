@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
@@ -106,14 +106,14 @@ public class BookScreen extends Screen {
       fontRenderer.drawString("DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
-    GlStateManager.enableAlphaTest();
-    GlStateManager.enableBlend();
+    RenderSystem.enableAlphaTest();
+    RenderSystem.enableBlend();
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale
     /*
     if(mc.gameSettings.guiScale == 1) {
       float f = 1.5f;
-      GlStateManager.scale(f, f, 1);
+      RenderSystem.scale(f, f, 1);
 
       float ox = this.width/6;
       float oy = this.height/6;
@@ -121,11 +121,11 @@ public class BookScreen extends Screen {
       mouseX = (int)((float)mouseX / f);
       mouseY = (int)((float)mouseY / f);
 
-      GlStateManager.translate(ox, oy, 0);
+      RenderSystem.translate(ox, oy, 0);
     }
     else if(mc.gameSettings.guiScale == 2) {
       float f = 3f/2f;
-      GlStateManager.scale(f, f, 1);
+      RenderSystem.scale(f, f, 1);
 
       float ox = -this.width/6;
       float oy = -this.height/6;
@@ -133,11 +133,11 @@ public class BookScreen extends Screen {
       mouseX = (int)(((float)mouseX - ox)/f);
       mouseY = (int)(((float)mouseY - oy)/f);
 
-      GlStateManager.translate(ox, oy, 0);
+      RenderSystem.translate(ox, oy, 0);
     }
 */
-    GlStateManager.pushMatrix();
-    GlStateManager.color3f(1F, 1F, 1F);
+    RenderSystem.pushMatrix();
+    RenderSystem.color3f(1F, 1F, 1F);
 
     float coverR = ((this.book.appearance.coverColor >> 16) & 0xff) / 255.F;
     float coverG = ((this.book.appearance.coverColor >> 8) & 0xff) / 255.F;
@@ -149,45 +149,45 @@ public class BookScreen extends Screen {
       render.bindTexture(TEX_BOOKFRONT);
       RenderHelper.disableStandardItemLighting();
 
-      GlStateManager.color3f(coverR, coverG, coverB);
+      RenderSystem.color3f(coverR, coverG, coverB);
       blit(this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
-      GlStateManager.color3f(1F, 1F, 1F);
+      RenderSystem.color3f(1F, 1F, 1F);
 
       if (!this.book.appearance.title.isEmpty()) {
         blit(this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
 
         float scale = fontRenderer.getStringWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
 
-        GlStateManager.scalef(scale, scale, 1F);
+        RenderSystem.scalef(scale, scale, 1F);
         fontRenderer.drawStringWithShadow(this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer.getStringWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
       }
 
       if (!this.book.appearance.subtitle.isEmpty()) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(1.5F, 1.5F, 1F);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(1.5F, 1.5F, 1F);
         fontRenderer.drawStringWithShadow(this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
       }
     }
     else {
       render.bindTexture(TEX_BOOK);
       RenderHelper.disableStandardItemLighting();
 
-      GlStateManager.color3f(coverR, coverG, coverB);
+      RenderSystem.color3f(coverR, coverG, coverB);
       blit(this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-      GlStateManager.color3f(1F, 1F, 1F);
+      RenderSystem.color3f(1F, 1F, 1F);
 
       if (this.page != 0) {
         blit(this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         this.drawerTransform(false);
 
-        GlStateManager.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
+        RenderSystem.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 2 + "";
@@ -201,7 +201,7 @@ public class BookScreen extends Screen {
         for (int i = 0; i < this.leftElements.size(); i++) {
           BookElement element = this.leftElements.get(i);
 
-          GlStateManager.color4f(1F, 1F, 1F, 1F);
+          RenderSystem.color4f(1F, 1F, 1F, 1F);
           element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
@@ -209,27 +209,27 @@ public class BookScreen extends Screen {
         for (int i = 0; i < this.leftElements.size(); i++) {
           BookElement element = this.leftElements.get(i);
 
-          GlStateManager.color4f(1F, 1F, 1F, 1F);
+          RenderSystem.color4f(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
       }
 
       // Rebind texture as the font renderer binds its own texture
       render.bindTexture(TEX_BOOK);
       // Set color back to white
-      GlStateManager.color4f(1F, 1F, 1F, 1F);
+      RenderSystem.color4f(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
       if (this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0) {
         blit(this.width / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         this.drawerTransform(true);
 
-        GlStateManager.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
+        RenderSystem.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 3 + "";
@@ -243,7 +243,7 @@ public class BookScreen extends Screen {
         for (int i = 0; i < this.rightElements.size(); i++) {
           BookElement element = this.rightElements.get(i);
 
-          GlStateManager.color4f(1F, 1F, 1F, 1F);
+          RenderSystem.color4f(1F, 1F, 1F, 1F);
           element.draw(mX, mY, partialTicks, fontRenderer);
         }
 
@@ -251,17 +251,17 @@ public class BookScreen extends Screen {
         for (int i = 0; i < this.rightElements.size(); i++) {
           BookElement element = this.rightElements.get(i);
 
-          GlStateManager.color4f(1F, 1F, 1F, 1F);
+          RenderSystem.color4f(1F, 1F, 1F, 1F);
           element.drawOverlay(mX, mY, partialTicks, fontRenderer);
         }
 
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
       }
     }
 
     super.render(mouseX, mouseY, partialTicks);
 
-    GlStateManager.popMatrix();
+    RenderSystem.popMatrix();
   }
 
   @Override
@@ -508,10 +508,10 @@ public class BookScreen extends Screen {
 
   public void drawerTransform(boolean rightSide) {
     if (rightSide) {
-      GlStateManager.translatef(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      RenderSystem.translatef(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
     else {
-      GlStateManager.translatef(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      RenderSystem.translatef(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
   }
 
@@ -532,11 +532,11 @@ public class BookScreen extends Screen {
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.mainWindow.getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.func_228018_at_().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.mainWindow.getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.func_228018_at_().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
   public int openPage(int page) {

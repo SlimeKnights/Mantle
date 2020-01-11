@@ -10,6 +10,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -41,16 +42,16 @@ public abstract class InventoryBlock extends ContainerBlock {
   protected abstract boolean openGui(PlayerEntity player, World world, BlockPos pos);
 
   @Override
-  public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
-    if (player.isSneaking()) {
-      return false;
+  public ActionResultType func_225533_a_(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+    if (player.func_226272_bl_()) {
+      return ActionResultType.PASS;
     }
 
     if (!world.isRemote) {
-      return this.openGui(player, world, pos);
+      return this.openGui(player, world, pos) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
 
-    return true;
+    return ActionResultType.SUCCESS;
   }
 
   @Override

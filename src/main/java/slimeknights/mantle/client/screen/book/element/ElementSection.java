@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -26,9 +27,9 @@ public class ElementSection extends SizedBookElement {
 
     this.section = section;
 
-    iconX = this.x + WIDTH / 2 - IMG_SIZE / 2;
-    iconY = this.y + HEIGHT / 2 - IMG_SIZE / 2;
-    iconRenderer = new ElementImage(iconX, iconY, IMG_SIZE, IMG_SIZE, section.icon);
+    this.iconX = this.x + WIDTH / 2 - IMG_SIZE / 2;
+    this.iconY = this.y + HEIGHT / 2 - IMG_SIZE / 2;
+    this.iconRenderer = new ElementImage(this.iconX, this.iconY, IMG_SIZE, IMG_SIZE, section.icon);
   }
 
   @Override
@@ -37,19 +38,19 @@ public class ElementSection extends SizedBookElement {
     boolean hover = this.isHovered(mouseX, mouseY);
 
     if (hover) {
-      fill(iconX, iconY, iconX + IMG_SIZE, iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
+      fill(this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
     }
     if (unlocked) {
-      GlStateManager.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
+      RenderSystem.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
     }
     else {
       float r = ((this.parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
       float g = ((this.parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
       float b = (this.parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
-      GlStateManager.color4f(r, g, b, 0.75F);
+      RenderSystem.color4f(r, g, b, 0.75F);
     }
 
-    iconRenderer.draw(mouseX, mouseY, partialTicks, fontRenderer);
+    this.iconRenderer.draw(mouseX, mouseY, partialTicks, fontRenderer);
 
     if (this.section.parent.appearance.drawSectionListText) {
       int textW = fontRenderer.getStringWidth(this.section.getTitle());

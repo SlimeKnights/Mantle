@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -179,8 +180,8 @@ public class ElementStructure extends SizedBookElement {
     int yOffPartial = (structureHeight - 1) * 16 + structureWidth * 8 + structureLength * 8;
     int yOffTotal = Math.max(52, yOffPartial + 16);
 
-    GlStateManager.enableRescaleNormal();
-    GlStateManager.pushMatrix();
+    RenderSystem.enableRescaleNormal();
+    RenderSystem.pushMatrix();
     RenderHelper.disableStandardItemLighting();
     //			GL11.glEnable(GL11.GL_DEPTH_TEST);
     //			GL11.glDepthFunc(GL11.GL_ALWAYS);
@@ -192,26 +193,26 @@ public class ElementStructure extends SizedBookElement {
 
     float f = (float) Math.sqrt(structureHeight * structureHeight + structureWidth * structureWidth + structureLength * structureLength);
     yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * this.scale));
-    //GlStateManager.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
-    GlStateManager.translatef(this.xTranslate, this.yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    //RenderSystem.translate(x + 60, y + 10 + f / 2 * scale, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
+    RenderSystem.translatef(this.xTranslate, this.yTranslate, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
     // todo: translate where it actually needs to be and to counter z-layer of the book
-    GlStateManager.scalef(this.scale, -this.scale, 1);
-    GlStateManager.rotatef(this.rotX, 1, 0, 0);
-    GlStateManager.rotatef(this.rotY, 0, 1, 0);
+    RenderSystem.scalef(this.scale, -this.scale, 1);
+    RenderSystem.rotatef(this.rotX, 1, 0, 0);
+    RenderSystem.rotatef(this.rotY, 0, 1, 0);
 
-    GlStateManager.translatef((float) structureLength / -2f, (float) structureHeight / -2f, (float) structureWidth / -2f);
+    RenderSystem.translatef((float) structureLength / -2f, (float) structureHeight / -2f, (float) structureWidth / -2f);
 
-    GlStateManager.disableLighting();
+    RenderSystem.disableLighting();
 
     if (Minecraft.isAmbientOcclusionEnabled()) {
-      GlStateManager.shadeModel(GL11.GL_SMOOTH);
+      RenderSystem.shadeModel(GL11.GL_SMOOTH);
     }
     else {
-      GlStateManager.shadeModel(GL11.GL_FLAT);
+      RenderSystem.shadeModel(GL11.GL_FLAT);
     }
 
     if (structureWidth % 2 == 1) {
-      //GlStateManager.translate(-.5f, 0, 0);
+      //RenderSystem.translate(-.5f, 0, 0);
     }
     int iterator = 0;
 
@@ -226,19 +227,19 @@ public class ElementStructure extends SizedBookElement {
             BufferBuilder buffer = tessellator.getBuffer();
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             Random random = new Random();
-            blockRender.renderBlock(state, pos, this.blockAccess, buffer, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+            //blockRender.renderBlock(state, pos, this.blockAccess, buffer, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
             tessellator.draw();
           }
         }
       }
     }
     //			GL11.glTranslated(0, 0, -i);
-    GlStateManager.popMatrix();
+    RenderSystem.popMatrix();
 
     RenderHelper.disableStandardItemLighting();
-    GlStateManager.disableRescaleNormal();
-    GlStateManager.shadeModel(GL11.GL_FLAT);
-    GlStateManager.enableBlend();
+    RenderSystem.disableRescaleNormal();
+    RenderSystem.shadeModel(GL11.GL_FLAT);
+    RenderSystem.enableBlend();
     RenderHelper.disableStandardItemLighting();
 /*
     fontRenderer.setUnicodeFlag(true);

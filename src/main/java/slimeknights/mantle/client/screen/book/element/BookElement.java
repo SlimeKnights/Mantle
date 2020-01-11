@@ -61,13 +61,13 @@ public abstract class BookElement extends AbstractGui {
       if (font == null) {
         font = fontRenderer;
       }
-      drawHoveringText(list1, x, y, font);
+      this.drawHoveringText(list1, x, y, font);
       RenderHelper.disableStandardItemLighting();
     }
   }
 
   public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-    GuiUtils.drawHoveringText(textLines, x, y, parent.width, parent.height, -1, font);
+    GuiUtils.drawHoveringText(textLines, x, y, this.parent.width, this.parent.height, -1, font);
     RenderHelper.disableStandardItemLighting();
   }
 }

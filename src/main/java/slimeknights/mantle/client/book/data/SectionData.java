@@ -79,7 +79,7 @@ public class SectionData implements IDataItem {
       page.load();
     }
 
-    this.icon.load(source);
+    this.icon.load(this.source);
   }
 
   /**

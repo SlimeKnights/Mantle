@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -81,16 +81,15 @@ public class ElementItem extends SizedBookElement {
       }
     }
 
-    RenderHelper.enableGUIStandardItemLighting();
-    GlStateManager.pushMatrix();
-    GlStateManager.translatef(this.x, this.y, 0);
-    GlStateManager.scalef(this.scale, this.scale, 1.0F);
+    RenderSystem.pushMatrix();
+    RenderSystem.translatef(this.x, this.y, 0);
+    RenderSystem.scalef(this.scale, this.scale, 1.0F);
 
     if (this.currentItem < this.itemCycle.size()) {
       this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
     }
 
-    GlStateManager.popMatrix();
+    RenderSystem.popMatrix();
     RenderHelper.disableStandardItemLighting();
   }
 

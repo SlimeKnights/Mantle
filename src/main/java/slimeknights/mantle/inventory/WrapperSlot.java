@@ -1,6 +1,6 @@
 package slimeknights.mantle.inventory;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -78,36 +78,19 @@ public class WrapperSlot extends Slot {
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public String getSlotTexture() {
-    return this.parent.getSlotTexture();
+  public Pair<ResourceLocation, ResourceLocation> func_225517_c_() {
+    return this.parent.func_225517_c_();
+  }
+
+  @Override
+  public Slot setBackground(ResourceLocation atlas, ResourceLocation sprite) {
+    return this.parent.setBackground(atlas, sprite);
   }
 
   @Nonnull
   @Override
   public ItemStack decrStackSize(int amount) {
     return this.parent.decrStackSize(amount);
-  }
-
-  @Nonnull
-  @Override
-  public ResourceLocation getBackgroundLocation() {
-    return this.parent.getBackgroundLocation();
-  }
-
-  @Override
-  public void setBackgroundName(@Nonnull String name) {
-    this.parent.setBackgroundName(name);
-  }
-
-  @Nonnull
-  @Override
-  public TextureAtlasSprite getBackgroundSprite() {
-    return this.parent.getBackgroundSprite();
-  }
-
-  @Override
-  public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
-    this.parent.setBackgroundLocation(texture);
   }
 
   @OnlyIn(Dist.CLIENT)

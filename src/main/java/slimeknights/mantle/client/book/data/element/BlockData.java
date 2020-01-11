@@ -15,8 +15,8 @@ public class BlockData implements IDataElement {
 
   @Override
   public void load(BookRepository source) {
-    if(endPos == null) {
-      endPos = pos;
+    if(this.endPos == null) {
+      this.endPos = this.pos;
     }
   }
 }

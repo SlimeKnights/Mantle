@@ -1,8 +1,7 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -42,14 +41,14 @@ public class BookmarkButton extends Button {
     float g = ((this.data.color >> 8) & 0xff) / 255.F;
     float b = (this.data.color & 0xff) / 255.F;
 
-    GlStateManager.color3f(r, g, b);
+    RenderSystem.color3f(r, g, b);
     blit(this.x, this.y, this.width, this.height, TEX_X, tex_y, WIDTH, HEIGHT, 512, 512);
 
     if (this.data.text != null && !this.data.text.isEmpty()) {
       TextDataRenderer.drawScaledString(minecraft.fontRenderer, this.data.text, this.x + 1, this.y + this.height / 2 - minecraft.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
     }
 
-    GlStateManager.color3f(1F, 1F, 1F);
+    RenderSystem.color3f(1F, 1F, 1F);
 
     if (this.data.page.equals("ADD")) {
       blit(this.x + this.width / 2 - ADD_W / 2, this.y + this.height / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);

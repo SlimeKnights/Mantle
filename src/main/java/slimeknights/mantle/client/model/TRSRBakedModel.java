@@ -2,36 +2,34 @@ package slimeknights.mantle.client.model;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.Matrix3f;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.TransformationMatrix;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemOverride;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
-import net.minecraftforge.common.model.TRSRTransformation;
-
-import java.util.List;
-import java.util.Random;
+import net.minecraftforge.common.model.TransformationHelper;
 
 import javax.annotation.Nonnull;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
+import java.util.List;
+import java.util.Random;
 
 // for those wondering TRSR stands for Translation Rotation Scale Rotation
 public class TRSRBakedModel implements IBakedModel {
 
   protected final IBakedModel original;
-  protected final TRSRTransformation transformation;
+  protected final TransformationMatrix transformation;
   private final TRSROverride override;
   private final int faceOffset;
 
@@ -44,15 +42,15 @@ public class TRSRBakedModel implements IBakedModel {
   }
 
   public TRSRBakedModel(IBakedModel original, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) {
-    this(original, new TRSRTransformation(new Vector3f(x, y, z),
+    this(original, new TransformationMatrix(new Vector3f(x, y, z),
             null,
             new Vector3f(scaleX, scaleY, scaleZ),
-            TRSRTransformation.quatFromXYZ(rotX, rotY, rotZ)));
+            TransformationHelper.quatFromXYZ(new float[] { rotX, rotY, rotZ }, false)));
   }
 
-  public TRSRBakedModel(IBakedModel original, TRSRTransformation transform) {
+  public TRSRBakedModel(IBakedModel original, TransformationMatrix transform) {
     this.original = original;
-    this.transformation = TRSRTransformation.blockCenterToCorner(transform);
+    this.transformation = transform.blockCenterToCorner();
     this.override = new TRSROverride(this);
     this.faceOffset = 0;
   }
@@ -65,8 +63,7 @@ public class TRSRBakedModel implements IBakedModel {
     this.faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
 
     double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90) / 180d;
-    TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float) r, 0));
-    this.transformation = TRSRTransformation.blockCenterToCorner(t);
+    this.transformation = new TransformationMatrix(null, null, null, TransformationHelper.quatFromXYZ(new float[] { 0, (float) r, 0 }, false)).blockCenterToCorner();
   }
 
   @Nonnull
@@ -76,14 +73,14 @@ public class TRSRBakedModel implements IBakedModel {
 
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
-    if (!original.isBuiltInRenderer()) {
+    if (!this.original.isBuiltInRenderer()) {
       try {
         // adjust side to facing-rotation
         if (side != null && side.getHorizontalIndex() > -1) {
-          side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
+          side = Direction.byHorizontalIndex((side.getHorizontalIndex() + this.faceOffset) % 4);
         }
-        for (BakedQuad quad : original.getQuads(state, side, rand)) {
-          Transformer transformer = new Transformer(transformation, quad.getFormat());
+        for (BakedQuad quad : this.original.getQuads(state, side, rand)) {
+          Transformer transformer = new Transformer(this.transformation, quad.getSprite());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
@@ -103,30 +100,30 @@ public class TRSRBakedModel implements IBakedModel {
 
   @Override
   public boolean isGui3d() {
-    return original.isGui3d();
+    return this.original.isGui3d();
   }
 
   @Override
   public boolean isBuiltInRenderer() {
-    return original.isBuiltInRenderer();
+    return this.original.isBuiltInRenderer();
   }
 
   @Nonnull
   @Override
   public TextureAtlasSprite getParticleTexture() {
-    return original.getParticleTexture();
+    return this.original.getParticleTexture();
   }
 
   @Nonnull
   @Override
   public ItemCameraTransforms getItemCameraTransforms() {
-    return original.getItemCameraTransforms();
+    return this.original.getItemCameraTransforms();
   }
 
   @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
-    return override;
+    return this.override;
   }
 
   private static class TRSROverride extends ItemOverrideList {
@@ -134,7 +131,7 @@ public class TRSRBakedModel implements IBakedModel {
     private final TRSRBakedModel model;
 
     public TRSROverride(TRSRBakedModel model) {
-      super(null, null, null, ImmutableList.<ItemOverride>of());
+      super(null, null, null, ImmutableList.of());
 
       this.model = model;
     }
@@ -142,9 +139,9 @@ public class TRSRBakedModel implements IBakedModel {
     @Nonnull
     @Override
     public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull LivingEntity entity) {
-      IBakedModel baked = model.original.getOverrides().getModelWithOverrides(originalModel, stack, world, entity);
+      IBakedModel baked = this.model.original.getOverrides().getModelWithOverrides(originalModel, stack, world, entity);
 
-      return new TRSRBakedModel(baked, model.transformation);
+      return new TRSRBakedModel(baked, this.model.transformation);
     }
   }
 
@@ -153,40 +150,44 @@ public class TRSRBakedModel implements IBakedModel {
     protected Matrix4f transformation;
     protected Matrix3f normalTransformation;
 
-    public Transformer(TRSRTransformation transformation, VertexFormat format) {
-      super(new UnpackedBakedQuad.Builder(format));
+    public Transformer(TransformationMatrix transformation, TextureAtlasSprite textureAtlasSprite) {
+      super(new BakedQuadBuilder(textureAtlasSprite));
       // position transform
-      this.transformation = transformation.getMatrixVec();
+      this.transformation = transformation.func_227988_c_();
       // normal transform
-      this.normalTransformation = new Matrix3f();
-      this.transformation.getRotationScale(this.normalTransformation);
-      this.normalTransformation.invert();
-      this.normalTransformation.transpose();
+      this.normalTransformation = new Matrix3f(this.transformation);
+      this.normalTransformation.func_226123_f_();
+      this.normalTransformation.func_226110_a_();
     }
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.Usage usage = parent.getVertexFormat().getElement(element).getUsage();
+      VertexFormatElement.Usage usage = this.parent.getVertexFormat().func_227894_c_().get(element).getUsage();
 
       // transform normals and position
       if (usage == VertexFormatElement.Usage.POSITION && data.length >= 3) {
         Vector4f vec = new Vector4f(data[0], data[1], data[2], 1f);
-        transformation.transform(vec);
+        vec.func_229372_a_(this.transformation);
         data = new float[4];
-        vec.get(data);
+        data[0] = vec.getX();
+        data[1] = vec.getY();
+        data[2] = vec.getZ();
+        data[3] = vec.getW();
       }
       else if (usage == VertexFormatElement.Usage.NORMAL && data.length >= 3) {
         Vector3f vec = new Vector3f(data);
-        normalTransformation.transform(vec);
-        vec.normalize();
+        vec.func_229188_a_(this.normalTransformation);
+        vec.func_229194_d_();
         data = new float[4];
-        vec.get(data);
+        data[0] = vec.getX();
+        data[1] = vec.getY();
+        data[2] = vec.getZ();
       }
       super.put(element, data);
     }
 
-    public UnpackedBakedQuad build() {
-      return ((UnpackedBakedQuad.Builder) parent).build();
+    public BakedQuad build() {
+      return ((BakedQuadBuilder) this.parent).build();
     }
   }
 }

@@ -58,7 +58,7 @@ public class ContentSmelting extends PageContent {
     tdTitle.underlined = true;
     list.add(new ElementText(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
     list.add(new ElementImage(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
-    list.add(new ElementTooltip(ImmutableList.of(I18n.format("mantle:tooltip.cooktime", cookTime / 20)), x + 7, y + 42, 60, 28));
+    list.add(new ElementTooltip(ImmutableList.of(I18n.format("mantle:tooltip.cooktime", this.cookTime / 20)), x + 7, y + 42, 60, 28));
 
     if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
@@ -78,8 +78,8 @@ public class ContentSmelting extends PageContent {
   public NonNullList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
 
-    if(fuel != null) {
-      return fuel.getItems();
+    if(this.fuel != null) {
+      return this.fuel.getItems();
     }
 
     return FUELS;
@@ -89,13 +89,13 @@ public class ContentSmelting extends PageContent {
   public void load() {
     super.load();
 
-    if(!StringUtils.isEmpty(recipe) && ResourceLocation.isResouceNameValid(recipe)) {
+    if(!StringUtils.isEmpty(this.recipe) && ResourceLocation.isResouceNameValid(this.recipe)) {
       IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
 
       if(recipe instanceof AbstractCookingRecipe) {
-        input = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
-        cookTime = ((AbstractCookingRecipe)recipe).getCookTime();
-        result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
+        this.input = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
+        this.cookTime = ((AbstractCookingRecipe)recipe).getCookTime();
+        this.result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
       }
     }
   }

@@ -7,7 +7,7 @@ import net.minecraft.nbt.StringNBT;
 
 public class TagHelper {
 
-  public static int TAG_TYPE_STRING = (new StringNBT()).getId();
+  public static int TAG_TYPE_STRING = (StringNBT.func_229705_a_("")).getId();
   public static int TAG_TYPE_COMPOUND = (new CompoundNBT()).getId();
 
   private TagHelper() {

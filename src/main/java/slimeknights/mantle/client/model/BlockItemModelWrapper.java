@@ -1,23 +1,20 @@
 package slimeknights.mantle.client.model;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.List;
-import java.util.Random;
+import slimeknights.mantle.client.ModelHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
-
-import slimeknights.mantle.client.ModelHelper;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Takes a blockmodel and applies the standard-block-perspective for third_person to it
@@ -31,23 +28,26 @@ public class BlockItemModelWrapper implements IBakedModel {
   }
 
   @Override
-  public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-    Matrix4f matrix = null;
+  public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
+    TransformationMatrix transform = null;
     // fix transformation in hand
     if (cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND) {
-      matrix = ModelHelper.BLOCK_THIRD_PERSON_RIGHT.getMatrixVec();
+      transform = ModelHelper.BLOCK_THIRD_PERSON_RIGHT;
     }
     else if (cameraTransformType == ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND) {
-      matrix = ModelHelper.BLOCK_THIRD_PERSON_LEFT.getMatrixVec();
+      transform = ModelHelper.BLOCK_THIRD_PERSON_LEFT;
     }
 
-    return Pair.of(this, matrix);
+    if (transform != null) {
+      mat.func_227866_c_().func_227870_a_().func_226595_a_(transform.func_227988_c_());
+    }
+    return this;
   }
 
   @Nonnull
   @Override
   public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-    return parent.getQuads(state, side, rand);
+    return this.parent.getQuads(state, side, rand);
   }
 
   @Override
@@ -57,24 +57,24 @@ public class BlockItemModelWrapper implements IBakedModel {
 
   @Override
   public boolean isGui3d() {
-    return parent.isGui3d();
+    return this.parent.isGui3d();
   }
 
   @Override
   public boolean isBuiltInRenderer() {
-    return parent.isBuiltInRenderer();
+    return this.parent.isBuiltInRenderer();
   }
 
   @Nonnull
   @Override
   public TextureAtlasSprite getParticleTexture() {
-    return parent.getParticleTexture();
+    return this.parent.getParticleTexture();
   }
 
   @Nonnull
   @Override
   public ItemCameraTransforms getItemCameraTransforms() {
-    return parent.getItemCameraTransforms();
+    return this.parent.getItemCameraTransforms();
   }
 
   @Nonnull

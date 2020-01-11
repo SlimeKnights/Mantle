@@ -63,8 +63,8 @@ public class ImageData extends DataLocation {
   public void load(BookRepository source) {
     super.load(source);
 
-    if(item != null) {
-      item.load(source);
+    if(this.item != null) {
+      this.item.load(source);
     }
   }
 }

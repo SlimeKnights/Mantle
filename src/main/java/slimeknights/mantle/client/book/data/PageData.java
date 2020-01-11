@@ -86,7 +86,7 @@ public class PageData implements IDataItem {
     this.content.source = this.source;
 
     for (Field f : this.content.getClass().getFields()) {
-      processField(f);
+      this.processField(f);
     }
   }
 
@@ -99,9 +99,9 @@ public class PageData implements IDataItem {
     }
 
     try {
-      Object o = f.get(content);
+      Object o = f.get(this.content);
       if (o != null) {
-        processObject(o, 0);
+        this.processObject(o, 0);
       }
     } catch (IllegalAccessException e) {
       e.printStackTrace();
@@ -117,13 +117,13 @@ public class PageData implements IDataItem {
 
     if(!isArray) {
       if(IDataElement.class.isAssignableFrom(c)) {
-        ((IDataElement)o).load(source);
+        ((IDataElement)o).load(this.source);
       }
       return;
     }
 
     for(int i = 0; i < Array.getLength(o); i++){
-      processObject(Array.get(o, i), depth + 1);
+      this.processObject(Array.get(o, i), depth + 1);
     }
   }
 

@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -55,7 +56,7 @@ public class ElementImage extends SizedBookElement {
     this.colorMultiplier = colorMultiplier;
 
     if(image.item != null) {
-      itemElement = new ElementItem(0, 0, 1F, image.item.getItems());
+      this.itemElement = new ElementItem(0, 0, 1F, image.item.getItems());
     }
   }
 
@@ -65,20 +66,20 @@ public class ElementImage extends SizedBookElement {
     float g = ((this.colorMultiplier >> 8) & 0xff) / 255.F;
     float b = (this.colorMultiplier & 0xff) / 255.F;
 
-    GlStateManager.color3f(r, g, b);
+    RenderSystem.color3f(r, g, b);
 
     if (this.image.item == null) {
       this.renderEngine.bindTexture(this.image.location);
 
-      blitRaw(x, y, width, height, image.u, image.u + image.uw, image.v, image.v + image.vh, image.texWidth, image.texHeight);
+      blitRaw(this.x, this.y, this.width, this.height, this.image.u, this.image.u + this.image.uw, this.image.v, this.image.v + this.image.vh, this.image.texWidth, this.image.texHeight);
     }
     else {
-      GlStateManager.pushMatrix();
-      GlStateManager.translatef(this.x, this.y, 0F);
-      GlStateManager.scalef(this.width / 16F, this.height / 16F, 1F);
-      itemElement.draw(mouseX, mouseY, partialTicks, fontRenderer);
+      RenderSystem.pushMatrix();
+      RenderSystem.translatef(this.x, this.y, 0F);
+      RenderSystem.scalef(this.width / 16F, this.height / 16F, 1F);
+      this.itemElement.draw(mouseX, mouseY, partialTicks, fontRenderer);
       RenderHelper.disableStandardItemLighting();
-      GlStateManager.popMatrix();
+      RenderSystem.popMatrix();
     }
   }
 

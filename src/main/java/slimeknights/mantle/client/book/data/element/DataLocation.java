@@ -11,6 +11,6 @@ public class DataLocation implements IDataElement {
 
   @Override
   public void load(BookRepository source) {
-    location = "$BLOCK_ATLAS".equals(file) ? AtlasTexture.LOCATION_BLOCKS_TEXTURE : source.getResourceLocation(file, true);
+    this.location = "$BLOCK_ATLAS".equals(this.file) ? AtlasTexture.LOCATION_BLOCKS_TEXTURE : source.getResourceLocation(this.file, true);
   }
 }

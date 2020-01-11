@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -144,7 +144,6 @@ public class WidgetTabs extends Widget {
 
       ItemStack icon = this.icons.get(i);
       if (icon != null) {
-        RenderHelper.enableGUIStandardItemLighting();
         this.drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
         RenderHelper.disableStandardItemLighting();
         //RenderHelper.enableStandardItemLighting();
@@ -155,7 +154,7 @@ public class WidgetTabs extends Widget {
   // guiContainer.drawItemStack
   private void drawItemStack(ItemStack stack, int x, int y) {
     ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
-    GlStateManager.translatef(0.0F, 0.0F, 32.0F);
+    RenderSystem.translatef(0.0F, 0.0F, 32.0F);
     itemRender.zLevel = 200;
     //FontRenderer font = stack.getItem().getFontRenderer(stack);
 

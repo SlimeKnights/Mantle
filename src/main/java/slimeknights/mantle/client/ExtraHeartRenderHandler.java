@@ -1,6 +1,6 @@
 package slimeknights.mantle.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.entity.Entity;
@@ -14,8 +14,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeIngameGui;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
@@ -60,15 +60,15 @@ public class ExtraHeartRenderHandler {
 
     // extra setup stuff from us
     left_height = ForgeIngameGui.left_height;
-    this.width = this.mc.mainWindow.getScaledWidth();
-    this.height = this.mc.mainWindow.getScaledHeight();
+    this.width = this.mc.func_228018_at_().getScaledWidth();
+    this.height = this.mc.func_228018_at_().getScaledHeight();
     event.setCanceled(true);
     int updateCounter = this.mc.ingameGUI.getTicks();
 
     // start default forge/mc rendering
     // changes are indicated by comment
     this.mc.getProfiler().startSection("health");
-    GlStateManager.enableBlend();
+    RenderSystem.enableBlend();
 
     int health = MathHelper.ceil(player.getHealth());
     boolean highlight = this.healthUpdateCounter > (long) updateCounter && (this.healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
@@ -183,7 +183,7 @@ public class ExtraHeartRenderHandler {
 
     event.setCanceled(true);
 
-    GlStateManager.disableBlend();
+    RenderSystem.disableBlend();
     this.mc.getProfiler().endSection();
   }
 

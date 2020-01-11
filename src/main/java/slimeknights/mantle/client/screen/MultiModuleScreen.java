@@ -2,6 +2,7 @@ package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -82,17 +83,17 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
 
     for (ModuleScreen module : this.modules) {
       // set correct state for the module
-      GlStateManager.pushMatrix();
-      GlStateManager.translatef(-this.guiLeft, -this.guiTop, 0.0F);
-      GlStateManager.translatef(module.guiLeft, module.guiTop, 0.0F);
-      GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+      RenderSystem.pushMatrix();
+      RenderSystem.translatef(-this.guiLeft, -this.guiTop, 0.0F);
+      RenderSystem.translatef(module.guiLeft, module.guiTop, 0.0F);
+      RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       module.handleDrawGuiContainerForegroundLayer(mouseX, mouseY);
-      GlStateManager.popMatrix();
+      RenderSystem.popMatrix();
     }
   }
 
   protected void drawBackground(ResourceLocation background) {
-    GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
     this.minecraft.getTextureManager().bindTexture(background);
     this.blit(this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }

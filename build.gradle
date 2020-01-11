@@ -39,6 +39,11 @@ repositories {
         name 'DVS1 Maven FS'
         url 'https://dvs1.progwml6.com/files/maven'
     }
+    maven {
+        // for Yarn2MCP
+        name "yarn2mcp"
+        url "https://maven.tterrag.com/"
+    }
 }
 
 group = 'slimeknights.mantle'

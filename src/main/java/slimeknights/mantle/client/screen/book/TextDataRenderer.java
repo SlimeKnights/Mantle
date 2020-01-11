@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
@@ -227,16 +227,16 @@ public class TextDataRenderer {
   }
 
   public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
-    GlStateManager.pushMatrix();
-    GlStateManager.translatef(x, y, 0);
-    GlStateManager.scalef(scale, scale, 1F);
+    RenderSystem.pushMatrix();
+    RenderSystem.translatef(x, y, 0);
+    RenderSystem.scalef(scale, scale, 1F);
     if (dropShadow) {
       font.drawStringWithShadow(text, 0, 0, color);
     }
     else {
       font.drawString(text, 0, 0, color);
     }
-    GlStateManager.popMatrix();
+    RenderSystem.popMatrix();
   }
 
   private static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
@@ -248,21 +248,21 @@ public class TextDataRenderer {
     float f5 = (float) (endColor >> 16 & 255) / 255.0F;
     float f6 = (float) (endColor >> 8 & 255) / 255.0F;
     float f7 = (float) (endColor & 255) / 255.0F;
-    GlStateManager.disableTexture();
-    GlStateManager.disableAlphaTest();
-    GlStateManager.blendFuncSeparate(770, 771, 1, 0);
-    GlStateManager.shadeModel(7425);
+    RenderSystem.disableTexture();
+    RenderSystem.disableAlphaTest();
+    RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+    RenderSystem.shadeModel(7425);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder vertexBuffer = tessellator.getBuffer();
     vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-    vertexBuffer.pos((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.pos((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.pos((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    vertexBuffer.pos((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
+    vertexBuffer.func_225582_a_((double) right, (double) top, 0D).func_227885_a_(f1, f2, f3, f).endVertex();
+    vertexBuffer.func_225582_a_((double) left, (double) top, 0D).func_227885_a_(f1, f2, f3, f).endVertex();
+    vertexBuffer.func_225582_a_((double) left, (double) bottom, 0D).func_227885_a_(f5, f6, f7, f4).endVertex();
+    vertexBuffer.func_225582_a_((double) right, (double) bottom, 0D).func_227885_a_(f5, f6, f7, f4).endVertex();
     tessellator.draw();
-    GlStateManager.shadeModel(7424);
-    GlStateManager.enableAlphaTest();
-    GlStateManager.enableTexture();
+    RenderSystem.shadeModel(7424);
+    RenderSystem.enableAlphaTest();
+    RenderSystem.enableTexture();
   }
   //END METHODS FROM GUI
 }
