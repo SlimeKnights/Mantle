@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
@@ -217,6 +218,7 @@ public class ElementStructure extends SizedBookElement {
     int iterator = 0;
 
     this.mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+    MatrixStack matrixstack = new MatrixStack();
     for (int h = 0; h < this.structureData.structureHeight; h++) {
       for (int l = 0; l < this.structureData.structureLength; l++) {
         for (int w = 0; w < this.structureData.structureWidth; w++) {
@@ -227,7 +229,11 @@ public class ElementStructure extends SizedBookElement {
             BufferBuilder buffer = tessellator.getBuffer();
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             Random random = new Random();
-            //blockRender.renderBlock(state, pos, this.blockAccess, buffer, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+
+            matrixstack.func_227860_a_();
+            matrixstack.func_227861_a_((double) (pos.getX() & 15), (double) (pos.getY() & 15), (double) (pos.getZ() & 15));
+
+            blockRender.renderModel(state, pos, this.blockAccess, matrixstack, buffer, false, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
             tessellator.draw();
           }
         }
