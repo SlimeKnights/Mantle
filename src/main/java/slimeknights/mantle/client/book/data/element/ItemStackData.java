@@ -78,8 +78,8 @@ public class ItemStackData implements IDataElement {
       CompoundNBT display = itemStack.getOrCreateChildTag("display");
       display.putString("Name", "\u00A7rUnknown Item");
       ListNBT lore = new ListNBT();
-      lore.add(StringNBT.func_229705_a_("\u00A7r\u00A7eItem Name:"));
-      lore.add(StringNBT.func_229705_a_("\u00A7r\u00A7e" + this.id));
+      lore.add(StringNBT.valueOf("\u00A7r\u00A7eItem Name:"));
+      lore.add(StringNBT.valueOf("\u00A7r\u00A7e" + this.id));
       display.put("Lore", lore);
     }
 

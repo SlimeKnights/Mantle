@@ -27,6 +27,7 @@ public class BakedWrapper implements IBakedModel {
 
   @Nonnull
   @Override
+  @Deprecated
   public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     return this.parent.getQuads(state, side, rand);
   }
@@ -42,6 +43,11 @@ public class BakedWrapper implements IBakedModel {
   }
 
   @Override
+  public boolean func_230044_c_() {
+    return false;
+  }
+
+  @Override
   public boolean isBuiltInRenderer() {
     return this.parent.isBuiltInRenderer();
   }
@@ -54,6 +60,7 @@ public class BakedWrapper implements IBakedModel {
 
   @Nonnull
   @Override
+  @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return this.parent.getItemCameraTransforms();
   }
@@ -76,6 +83,11 @@ public class BakedWrapper implements IBakedModel {
     @Override
     public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
       return PerspectiveMapWrapper.handlePerspective(this, this.transforms, cameraTransformType, mat);
+    }
+
+    @Override
+    public boolean func_230044_c_() {
+      return false;
     }
   }
 }

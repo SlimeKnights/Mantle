@@ -230,8 +230,8 @@ public class ElementStructure extends SizedBookElement {
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             Random random = new Random();
 
-            matrixstack.func_227860_a_();
-            matrixstack.func_227861_a_((double) (pos.getX() & 15), (double) (pos.getY() & 15), (double) (pos.getZ() & 15));
+            matrixstack.push();
+            matrixstack.translate((double) (pos.getX() & 15), (double) (pos.getY() & 15), (double) (pos.getZ() & 15));
 
             blockRender.renderModel(state, pos, this.blockAccess, matrixstack, buffer, false, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
             tessellator.draw();

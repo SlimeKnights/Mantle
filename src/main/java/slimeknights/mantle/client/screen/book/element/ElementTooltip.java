@@ -1,8 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraftforge.fml.client.config.GuiUtils;
-import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
 
