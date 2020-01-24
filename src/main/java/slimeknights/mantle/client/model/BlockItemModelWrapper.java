@@ -39,7 +39,7 @@ public class BlockItemModelWrapper implements IBakedModel {
     }
 
     if (transform != null) {
-      mat.func_227866_c_().func_227870_a_().func_226595_a_(transform.func_227988_c_());
+      mat.getLast().getPositionMatrix().multiply(transform.func_227988_c_());
     }
     return this;
   }
@@ -61,6 +61,11 @@ public class BlockItemModelWrapper implements IBakedModel {
   }
 
   @Override
+  public boolean func_230044_c_() {
+    return false;
+  }
+
+  @Override
   public boolean isBuiltInRenderer() {
     return this.parent.isBuiltInRenderer();
   }
@@ -73,6 +78,7 @@ public class BlockItemModelWrapper implements IBakedModel {
 
   @Nonnull
   @Override
+  @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return this.parent.getItemCameraTransforms();
   }

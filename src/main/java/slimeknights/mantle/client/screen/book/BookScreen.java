@@ -532,11 +532,11 @@ public class BookScreen extends Screen {
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.func_228018_at_().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.func_228018_at_().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
   public int openPage(int page) {

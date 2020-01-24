@@ -39,12 +39,12 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public WorldLightManager func_225524_e_() {
+  public WorldLightManager getLightManager() {
     return null;
   }
 
   @Override
-  public int func_226658_a_(LightType type, BlockPos pos) {
+  public int getLightFor(LightType type, BlockPos pos) {
     return 15 << 20 | 15 << 4;
   }
 
@@ -73,7 +73,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public Biome func_226691_t_(BlockPos pos) {
+  public Biome getBiome(BlockPos pos) {
     return null;
   }
 

@@ -41,7 +41,7 @@ public abstract class InventoryBlock extends ContainerBlock {
    */
   protected abstract boolean openGui(PlayerEntity player, World world, BlockPos pos);
 
-  @Override
+  @Deprecated
   public ActionResultType func_225533_a_(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
     if (player.func_226272_bl_()) {
       return ActionResultType.PASS;

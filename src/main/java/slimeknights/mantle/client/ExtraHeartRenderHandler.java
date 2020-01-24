@@ -60,8 +60,8 @@ public class ExtraHeartRenderHandler {
 
     // extra setup stuff from us
     left_height = ForgeIngameGui.left_height;
-    this.width = this.mc.func_228018_at_().getScaledWidth();
-    this.height = this.mc.func_228018_at_().getScaledHeight();
+    this.width = this.mc.getMainWindow().getScaledWidth();
+    this.height = this.mc.getMainWindow().getScaledHeight();
     event.setCanceled(true);
     int updateCounter = this.mc.ingameGUI.getTicks();
 

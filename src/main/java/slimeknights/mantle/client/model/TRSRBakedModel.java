@@ -80,7 +80,7 @@ public class TRSRBakedModel implements IBakedModel {
           side = Direction.byHorizontalIndex((side.getHorizontalIndex() + this.faceOffset) % 4);
         }
         for (BakedQuad quad : this.original.getQuads(state, side, rand)) {
-          Transformer transformer = new Transformer(this.transformation, quad.getSprite());
+          Transformer transformer = new Transformer(this.transformation, quad.func_187508_a());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
@@ -101,6 +101,11 @@ public class TRSRBakedModel implements IBakedModel {
   @Override
   public boolean isGui3d() {
     return this.original.isGui3d();
+  }
+
+  @Override
+  public boolean func_230044_c_() {
+    return false;
   }
 
   @Override
