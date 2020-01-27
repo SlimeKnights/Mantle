@@ -94,7 +94,7 @@ public class ModelHelper {
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.Usage usage = this.parent.getVertexFormat().func_227894_c_().get(element).getUsage();
+      VertexFormatElement.Usage usage = this.parent.getVertexFormat().getElements().get(element).getUsage();
 
       // transform normals and position
       if (usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {

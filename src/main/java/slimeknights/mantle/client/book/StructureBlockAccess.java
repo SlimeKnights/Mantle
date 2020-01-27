@@ -78,7 +78,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public Biome func_225604_a_(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
+  public Biome getNoiseBiomeRaw(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
     return null;
   }
 
@@ -88,7 +88,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public int func_226659_b_(BlockPos pos, int amount) {
+  public int getLightSubtracted(BlockPos pos, int amount) {
     return 0;
   }
 
@@ -109,7 +109,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public boolean func_226660_f_(BlockPos pos) {
+  public boolean canSeeSky(BlockPos pos) {
     return true;
   }
 
@@ -124,7 +124,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public BiomeManager func_225523_d_() {
+  public BiomeManager getBiomeManager() {
     return null;
   }
 

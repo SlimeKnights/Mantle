@@ -39,7 +39,7 @@ public class BlockItemModelWrapper implements IBakedModel {
     }
 
     if (transform != null) {
-      mat.getLast().getPositionMatrix().multiply(transform.func_227988_c_());
+      mat.getLast().getPositionMatrix().multiply(transform.getMatrix());
     }
     return this;
   }

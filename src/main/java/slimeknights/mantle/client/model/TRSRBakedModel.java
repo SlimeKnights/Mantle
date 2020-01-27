@@ -158,21 +158,21 @@ public class TRSRBakedModel implements IBakedModel {
     public Transformer(TransformationMatrix transformation, TextureAtlasSprite textureAtlasSprite) {
       super(new BakedQuadBuilder(textureAtlasSprite));
       // position transform
-      this.transformation = transformation.func_227988_c_();
+      this.transformation = transformation.getMatrix();
       // normal transform
       this.normalTransformation = new Matrix3f(this.transformation);
-      this.normalTransformation.func_226123_f_();
-      this.normalTransformation.func_226110_a_();
+      this.normalTransformation.invert();
+      this.normalTransformation.transpose();
     }
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.Usage usage = this.parent.getVertexFormat().func_227894_c_().get(element).getUsage();
+      VertexFormatElement.Usage usage = this.parent.getVertexFormat().getElements().get(element).getUsage();
 
       // transform normals and position
       if (usage == VertexFormatElement.Usage.POSITION && data.length >= 3) {
         Vector4f vec = new Vector4f(data[0], data[1], data[2], 1f);
-        vec.func_229372_a_(this.transformation);
+        vec.transform(this.transformation);
         data = new float[4];
         data[0] = vec.getX();
         data[1] = vec.getY();
@@ -181,8 +181,8 @@ public class TRSRBakedModel implements IBakedModel {
       }
       else if (usage == VertexFormatElement.Usage.NORMAL && data.length >= 3) {
         Vector3f vec = new Vector3f(data);
-        vec.func_229188_a_(this.normalTransformation);
-        vec.func_229194_d_();
+        vec.transform(this.normalTransformation);
+        vec.normalize();
         data = new float[4];
         data[0] = vec.getX();
         data[1] = vec.getY();
