@@ -183,6 +183,8 @@ jar {
     enabled = false
 }
 
+jar.finalizedBy('reobfJar')
+
 shadowJar {
     archiveName = tasks.jar.archiveName
     configurations = [project.configurations.shadow]
