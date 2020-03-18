@@ -3,11 +3,11 @@ package slimeknights.mantle.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ContainerBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -19,8 +19,9 @@ import net.minecraft.world.World;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class InventoryBlock extends ContainerBlock {
+public abstract class InventoryBlock extends Block {
 
   protected InventoryBlock(Block.Properties builder) {
     super(builder);
@@ -90,5 +91,19 @@ public abstract class InventoryBlock extends ContainerBlock {
   @Override
   public BlockRenderType getRenderType(BlockState state) {
     return BlockRenderType.MODEL;
+  }
+
+  @Override
+  public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
+    super.eventReceived(state, worldIn, pos, id, param);
+    TileEntity tileentity = worldIn.getTileEntity(pos);
+    return tileentity != null && tileentity.receiveClientEvent(id, param);
+  }
+
+  @Override
+  @Nullable
+  public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
+    TileEntity tileentity = worldIn.getTileEntity(pos);
+    return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider)tileentity : null;
   }
 }
