@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +62,14 @@ public class BakedSimple implements IBakedModel {
 
   @Nonnull
   @Override
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
+  @Deprecated
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+    return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
+  }
+
+  @Nonnull
+  @Override
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
     return this.quads;
   }
 
@@ -86,12 +95,20 @@ public class BakedSimple implements IBakedModel {
 
   @Nonnull
   @Override
+  @Deprecated
   public TextureAtlasSprite getParticleTexture() {
     return this.particle;
   }
 
   @Nonnull
   @Override
+  public TextureAtlasSprite getParticleTexture(@Nonnull IModelData data) {
+    return this.particle;
+  }
+
+  @Nonnull
+  @Override
+  @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return ItemCameraTransforms.DEFAULT;
   }

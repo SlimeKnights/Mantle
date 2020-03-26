@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.model;
 
+import com.google.common.base.Optional;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.TransformationMatrix;
@@ -9,6 +10,10 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ILightReader;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.client.ModelHelper;
 
 import javax.annotation.Nonnull;
@@ -46,8 +51,15 @@ public class BlockItemModelWrapper implements IBakedModel {
 
   @Nonnull
   @Override
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-    return this.parent.getQuads(state, side, rand);
+  @Deprecated
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+    return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
+  }
+
+  @Nonnull
+  @Override
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    return this.parent.getQuads(state, side, rand, extraData);
   }
 
   @Override
@@ -72,8 +84,21 @@ public class BlockItemModelWrapper implements IBakedModel {
 
   @Nonnull
   @Override
+  @Deprecated
   public TextureAtlasSprite getParticleTexture() {
     return this.parent.getParticleTexture();
+  }
+
+  @Nonnull
+  @Override
+  public TextureAtlasSprite getParticleTexture(@Nonnull IModelData data) {
+    return this.parent.getParticleTexture(data);
+  }
+
+  @Nonnull
+  @Override
+  public IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    return this.parent.getModelData(world, pos, state, tileData);
   }
 
   @Nonnull
