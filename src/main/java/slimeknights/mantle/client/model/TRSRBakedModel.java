@@ -121,6 +121,7 @@ public class TRSRBakedModel implements IBakedModel {
 
   @Nonnull
   @Override
+  @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return this.original.getItemCameraTransforms();
   }
@@ -136,8 +137,6 @@ public class TRSRBakedModel implements IBakedModel {
     private final TRSRBakedModel model;
 
     public TRSROverride(TRSRBakedModel model) {
-      super(null, null, null, ImmutableList.of());
-
       this.model = model;
     }
 
