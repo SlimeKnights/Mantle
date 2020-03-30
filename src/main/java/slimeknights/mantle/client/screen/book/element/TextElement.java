@@ -12,22 +12,22 @@ import java.util.Collection;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class ElementText extends SizedBookElement {
+public class TextElement extends SizedBookElement {
 
   public TextData[] text;
   private List<String> tooltip = new ArrayList<String>();
 
   private boolean doAction = false;
 
-  public ElementText(int x, int y, int width, int height, String text) {
+  public TextElement(int x, int y, int width, int height, String text) {
     this(x, y, width, height, new TextData(text));
   }
 
-  public ElementText(int x, int y, int width, int height, Collection<TextData> text) {
+  public TextElement(int x, int y, int width, int height, Collection<TextData> text) {
     this(x, y, width, height, text.toArray(new TextData[text.size()]));
   }
 
-  public ElementText(int x, int y, int width, int height, TextData... text) {
+  public TextElement(int x, int y, int width, int height, TextData... text) {
     super(x, y, width, height);
 
     this.text = text;

@@ -16,9 +16,9 @@ import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementImage;
-import slimeknights.mantle.client.screen.book.element.ElementItem;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.ImageElement;
+import slimeknights.mantle.client.screen.book.element.ItemElement;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -56,19 +56,19 @@ public class ContentCrafting extends PageContent {
 
     TextData tdTitle = new TextData(this.title);
     tdTitle.underlined = true;
-    list.add(new ElementText(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
+    list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
 
     if (this.grid_size.equalsIgnoreCase("small")) {
       x = BookScreen.PAGE_WIDTH / 2 - IMG_CRAFTING_SMALL.width / 2;
       height = y + IMG_CRAFTING_SMALL.height;
-      list.add(new ElementImage(x, y, IMG_CRAFTING_SMALL.width, IMG_CRAFTING_SMALL.height, IMG_CRAFTING_SMALL, book.appearance.slotColor));
+      list.add(new ImageElement(x, y, IMG_CRAFTING_SMALL.width, IMG_CRAFTING_SMALL.height, IMG_CRAFTING_SMALL, book.appearance.slotColor));
       resultX = x + X_RESULT_SMALL;
       resultY = y + Y_RESULT_SMALL;
     }
     else if (this.grid_size.equalsIgnoreCase("large")) {
       x = BookScreen.PAGE_WIDTH / 2 - IMG_CRAFTING_LARGE.width / 2;
       height = y + IMG_CRAFTING_LARGE.height;
-      list.add(new ElementImage(x, y, IMG_CRAFTING_LARGE.width, IMG_CRAFTING_LARGE.height, IMG_CRAFTING_LARGE, book.appearance.slotColor));
+      list.add(new ImageElement(x, y, IMG_CRAFTING_LARGE.width, IMG_CRAFTING_LARGE.height, IMG_CRAFTING_LARGE, book.appearance.slotColor));
       resultX = x + X_RESULT_LARGE;
       resultY = y + Y_RESULT_LARGE;
     }
@@ -79,17 +79,17 @@ public class ContentCrafting extends PageContent {
           if (this.grid[i][j] == null || this.grid[i][j].getItems().isEmpty()) {
             continue;
           }
-          list.add(new ElementItem(x + SLOT_MARGIN + (SLOT_PADDING + Math.round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * j, y + SLOT_MARGIN + (SLOT_PADDING + Math.round(ElementItem.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, this.grid[i][j].getItems(), this.grid[i][j].action));
+          list.add(new ItemElement(x + SLOT_MARGIN + (SLOT_PADDING + Math.round(ItemElement.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * j, y + SLOT_MARGIN + (SLOT_PADDING + Math.round(ItemElement.ITEM_SIZE_HARDCODED * ITEM_SCALE)) * i, ITEM_SCALE, this.grid[i][j].getItems(), this.grid[i][j].action));
         }
       }
     }
 
     if (this.result != null) {
-      list.add(new ElementItem(resultX, resultY, ITEM_SCALE, this.result.getItems(), this.result.action));
+      list.add(new ItemElement(resultX, resultY, ITEM_SCALE, this.result.getItems(), this.result.action));
     }
 
     if (this.description != null && this.description.length > 0) {
-      list.add(new ElementText(0, height + 5, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - height - 5, this.description));
+      list.add(new TextElement(0, height + 5, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - height - 5, this.description));
     }
   }
 

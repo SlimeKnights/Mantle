@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class WidgetTabs extends Widget {
+public class TabsWidget extends Widget {
 
   private static final ResourceLocation
           creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
@@ -35,7 +35,7 @@ public class WidgetTabs extends Widget {
   private final MultiModuleScreen parent;
   private boolean clicked = false;
 
-  public WidgetTabs(MultiModuleScreen parent, ElementScreen tabLeft, ElementScreen tabCenter, ElementScreen tabRight, ElementScreen activeLeft, ElementScreen activeCenter, ElementScreen activeRight) {
+  public TabsWidget(MultiModuleScreen parent, ElementScreen tabLeft, ElementScreen tabCenter, ElementScreen tabRight, ElementScreen activeLeft, ElementScreen activeCenter, ElementScreen activeRight) {
     this.parent = parent;
 
     this.tab[0] = tabLeft;

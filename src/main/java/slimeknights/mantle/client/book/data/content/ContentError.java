@@ -7,7 +7,7 @@ import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -67,7 +67,7 @@ public class ContentError extends PageContent {
       }
     }
 
-    list.add(new ElementText(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
+    list.add(new TextElement(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
   }
 
   public void buildSimple(ArrayList<BookElement> list) {
@@ -76,6 +76,6 @@ public class ContentError extends PageContent {
     text[0] = new TextData(exception.getMessage());
     text[0].color = "dark_red";
 
-    list.add(new ElementText(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
+    list.add(new TextElement(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
   }
 }

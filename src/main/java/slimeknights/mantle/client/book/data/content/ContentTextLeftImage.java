@@ -7,8 +7,8 @@ import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementImage;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.ImageElement;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -32,18 +32,18 @@ public class ContentTextLeftImage extends PageContent {
     }
 
     if (this.image != null && this.image.location != null) {
-      list.add(new ElementImage(0, y, 50, 50, this.image));
+      list.add(new ImageElement(0, y, 50, 50, this.image));
     }
     else {
-      list.add(new ElementImage(0, y, 50, 50, ImageData.MISSING));
+      list.add(new ImageElement(0, y, 50, 50, ImageData.MISSING));
     }
 
     if (this.text1 != null && this.text1.length > 0) {
-      list.add(new ElementText(55, y, BookScreen.PAGE_WIDTH - 55, 50, this.text1));
+      list.add(new TextElement(55, y, BookScreen.PAGE_WIDTH - 55, 50, this.text1));
     }
 
     if (this.text2 != null && this.text2.length > 0) {
-      list.add(new ElementText(0, y + 55, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 55 - y, this.text2));
+      list.add(new TextElement(0, y + 55, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 55 - y, this.text2));
     }
   }
 }

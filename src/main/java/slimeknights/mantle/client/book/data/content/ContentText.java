@@ -9,7 +9,7 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 @OnlyIn(Dist.CLIENT)
 public class ContentText extends PageContent {
@@ -29,7 +29,7 @@ public class ContentText extends PageContent {
     }
 
     if (this.text != null && this.text.length > 0) {
-      list.add(new ElementText(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.text));
+      list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.text));
     }
   }
 }

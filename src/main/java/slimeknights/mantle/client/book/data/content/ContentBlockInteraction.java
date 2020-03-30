@@ -6,9 +6,9 @@ import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementImage;
-import slimeknights.mantle.client.screen.book.element.ElementItem;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.ImageElement;
+import slimeknights.mantle.client.screen.book.element.ItemElement;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -44,18 +44,18 @@ public class ContentBlockInteraction extends PageContent {
       this.addTitle(list, this.title);
     }
 
-    list.add(new ElementImage(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
+    list.add(new ImageElement(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
     if (this.input != null && !this.input.getItems().isEmpty()) {
-      list.add(new ElementItem(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
+      list.add(new ItemElement(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
     if (this.block != null && !this.block.getItems().isEmpty()) {
-      list.add(new ElementItem(x + BLOCK_X, y + BLOCK_Y, BLOCK_SCALE, this.block.getItems(), this.block.action));
+      list.add(new ItemElement(x + BLOCK_X, y + BLOCK_Y, BLOCK_SCALE, this.block.getItems(), this.block.action));
     }
 
     if (this.description != null && this.description.length > 0) {
-      list.add(new ElementText(0, IMG_SMITHING.height + y + 50, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - IMG_SMITHING.height - y - 50, this.description));
+      list.add(new TextElement(0, IMG_SMITHING.height + y + 50, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - IMG_SMITHING.height - y - 50, this.description));
     }
   }
 }

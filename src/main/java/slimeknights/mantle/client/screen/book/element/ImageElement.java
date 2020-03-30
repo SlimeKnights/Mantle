@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -9,26 +8,26 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.element.ImageData;
 
 @OnlyIn(Dist.CLIENT)
-public class ElementImage extends SizedBookElement {
+public class ImageElement extends SizedBookElement {
 
   public ImageData image;
   public int colorMultiplier;
 
-  private ElementItem itemElement;
+  private ItemElement itemElement;
 
-  public ElementImage(ImageData image) {
+  public ImageElement(ImageData image) {
     this(image, 0xFFFFFF);
   }
 
-  public ElementImage(ImageData image, int colorMultiplier) {
+  public ImageElement(ImageData image, int colorMultiplier) {
     this(image.x, image.y, image.width, image.height, image, colorMultiplier);
   }
 
-  public ElementImage(int x, int y, int width, int height, ImageData image) {
+  public ImageElement(int x, int y, int width, int height, ImageData image) {
     this(x, y, width, height, image, image.colorMultiplier);
   }
 
-  public ElementImage(int x, int y, int width, int height, ImageData image, int colorMultiplier) {
+  public ImageElement(int x, int y, int width, int height, ImageData image, int colorMultiplier) {
     super(x, y, width, height);
 
     this.image = image;
@@ -56,7 +55,7 @@ public class ElementImage extends SizedBookElement {
     this.colorMultiplier = colorMultiplier;
 
     if(image.item != null) {
-      this.itemElement = new ElementItem(0, 0, 1F, image.item.getItems());
+      this.itemElement = new ItemElement(0, 0, 1F, image.item.getItems());
     }
   }
 

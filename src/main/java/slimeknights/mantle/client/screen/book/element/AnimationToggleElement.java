@@ -2,15 +2,15 @@ package slimeknights.mantle.client.screen.book.element;
 
 import slimeknights.mantle.client.screen.book.ArrowButton;
 
-public class ElementAnimationToggle extends ElementArrow {
+public class AnimationToggleElement extends ArrowElement {
 
   private final int arrowColorActive;
   private final int arrowColorInactive;
   private boolean toggled = false;
 
-  public ElementAnimationToggle(int x, int y, ArrowButton.ArrowType arrowType, int arrowColor, int arrowColorHover, int arrowColorActive, ElementStructure elementStructure) {
+  public AnimationToggleElement(int x, int y, ArrowButton.ArrowType arrowType, int arrowColor, int arrowColorHover, int arrowColorActive, StructureElement structureElement) {
     super(x, y, arrowType, arrowColor, arrowColorHover, (p_212998_1_) -> {
-      elementStructure.canTick = !elementStructure.canTick;
+      structureElement.canTick = !structureElement.canTick;
     });
 
     this.arrowColorInactive = arrowColor;

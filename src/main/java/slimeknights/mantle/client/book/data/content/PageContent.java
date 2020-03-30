@@ -8,7 +8,7 @@ import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -32,6 +32,6 @@ public abstract class PageContent {
   }
 
   public void addTitle(ArrayList<BookElement> list, TextData[] title) {
-    list.add(new ElementText(0, 0, BookScreen.PAGE_WIDTH, 9, title));
+    list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, title));
   }
 }

@@ -23,7 +23,7 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class ElementStructure extends SizedBookElement {
+public class StructureElement extends SizedBookElement {
 
   private float scale = 50.0F;
   private float xTranslate = 0F;
@@ -32,7 +32,7 @@ public class ElementStructure extends SizedBookElement {
   private float w = 0F;
   private float h = 0F;
 
-  public ElementStructure(int x, int y, int width, int height, int[] size, BlockData[] structure) {
+  public StructureElement(int x, int y, int width, int height, int[] size, BlockData[] structure) {
     super(x, y, width, height);
 
     if (size.length == 3) {

@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class ElementItem extends SizedBookElement {
+public class ItemElement extends SizedBookElement {
 
   public static final int ITEM_SIZE_HARDCODED = 16;
   public static final int ITEM_SWITCH_TICKS = 90;
@@ -29,31 +29,31 @@ public class ElementItem extends SizedBookElement {
   public int renderTick = 0;
   public int currentItem = 0;
 
-  public ElementItem(int x, int y, float scale, Item item) {
+  public ItemElement(int x, int y, float scale, Item item) {
     this(x, y, scale, new ItemStack(item));
   }
 
-  public ElementItem(int x, int y, float scale, Block item) {
+  public ItemElement(int x, int y, float scale, Block item) {
     this(x, y, scale, new ItemStack(item));
   }
 
-  public ElementItem(int x, int y, float scale, ItemStack item) {
+  public ItemElement(int x, int y, float scale, ItemStack item) {
     this(x, y, scale, new ItemStack[] { item });
   }
 
-  public ElementItem(int x, int y, float scale, Collection<ItemStack> itemCycle) {
+  public ItemElement(int x, int y, float scale, Collection<ItemStack> itemCycle) {
     this(x, y, scale, itemCycle.toArray(new ItemStack[itemCycle.size()]));
   }
 
-  public ElementItem(int x, int y, float scale, Collection<ItemStack> itemCycle, String action) {
+  public ItemElement(int x, int y, float scale, Collection<ItemStack> itemCycle, String action) {
     this(x, y, scale, itemCycle.toArray(new ItemStack[itemCycle.size()]), action);
   }
 
-  public ElementItem(int x, int y, float scale, ItemStack... itemCycle) {
+  public ItemElement(int x, int y, float scale, ItemStack... itemCycle) {
     this(x, y, scale, itemCycle, null);
   }
 
-  public ElementItem(int x, int y, float scale, ItemStack[] itemCycle, String action) {
+  public ItemElement(int x, int y, float scale, ItemStack[] itemCycle, String action) {
     super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
     NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(itemCycle.length, ItemStack.EMPTY);

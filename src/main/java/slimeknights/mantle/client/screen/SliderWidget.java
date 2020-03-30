@@ -7,7 +7,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 // a vertical slider!
 @OnlyIn(Dist.CLIENT)
-public class WidgetSlider extends Widget {
+public class SliderWidget extends Widget {
 
   // gui info
   public final ElementScreen slider;
@@ -36,7 +36,7 @@ public class WidgetSlider extends Widget {
   private int clickY;
   private boolean clickedBar; // if the bar has already been clicked and not released
 
-  public WidgetSlider(ElementScreen slider, ElementScreen sliderHighlighted, ElementScreen sliderDisabled, ElementScreen slideBarTop, ElementScreen slideBarBottom, ScalableElementScreen slideBar) {
+  public SliderWidget(ElementScreen slider, ElementScreen sliderHighlighted, ElementScreen sliderDisabled, ElementScreen slideBarTop, ElementScreen slideBarBottom, ScalableElementScreen slideBar) {
     this.slider = slider;
     this.sliderHighlighted = sliderHighlighted;
     this.sliderDisabled = sliderDisabled;

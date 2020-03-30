@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
@@ -9,7 +8,7 @@ import slimeknights.mantle.client.book.data.SectionData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementSection extends SizedBookElement {
+public class SelectionElement extends SizedBookElement {
 
   public static final int IMG_SIZE = 32;
 
@@ -17,19 +16,19 @@ public class ElementSection extends SizedBookElement {
   public static final int HEIGHT = 42;
 
   private SectionData section;
-  private ElementImage iconRenderer;
+  private ImageElement iconRenderer;
 
   private final int iconX;
   private final int iconY;
 
-  public ElementSection(int x, int y, SectionData section) {
+  public SelectionElement(int x, int y, SectionData section) {
     super(x, y, WIDTH, HEIGHT);
 
     this.section = section;
 
     this.iconX = this.x + WIDTH / 2 - IMG_SIZE / 2;
     this.iconY = this.y + HEIGHT / 2 - IMG_SIZE / 2;
-    this.iconRenderer = new ElementImage(this.iconX, this.iconY, IMG_SIZE, IMG_SIZE, section.icon);
+    this.iconRenderer = new ImageElement(this.iconX, this.iconY, IMG_SIZE, IMG_SIZE, section.icon);
   }
 
   @Override

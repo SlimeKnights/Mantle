@@ -9,9 +9,9 @@ import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.ArrowButton;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementAnimationToggle;
-import slimeknights.mantle.client.screen.book.element.ElementStructure;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.AnimationToggleElement;
+import slimeknights.mantle.client.screen.book.element.StructureElement;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -63,7 +63,7 @@ public class ContentStructure extends PageContent {
       structureSizeX -= 2 * offset;
       structureSizeY -= 2 * offset;
 
-      list.add(new ElementText(0, BookScreen.PAGE_HEIGHT - 10 - 2 * offset, BookScreen.PAGE_WIDTH, 2 * offset, this.text));
+      list.add(new TextElement(0, BookScreen.PAGE_HEIGHT - 10 - 2 * offset, BookScreen.PAGE_WIDTH, 2 * offset, this.text));
     }
 
     if (this.size != null && this.size.length == 3 && this.structure != null && this.structure.length > 0) {
@@ -71,8 +71,8 @@ public class ContentStructure extends PageContent {
       if (showButtons) {
         //structureSizeX -= ArrowButton.ArrowType.REFRESH.w;
       }
-      ElementStructure elementStructure = new ElementStructure(offset, y, structureSizeX, structureSizeY, this.size, this.structure);
-      list.add(elementStructure);
+      StructureElement structureElement = new StructureElement(offset, y, structureSizeX, structureSizeY, this.size, this.structure);
+      list.add(structureElement);
 
       if (showButtons) {
         int col = book.appearance.structureButtonColor;
@@ -87,7 +87,7 @@ public class ContentStructure extends PageContent {
         //midY += ArrowButton.ArrowType.UP.h + 2;
         //list.add(new ElementArrow(ElementStructure.BUTTON_ID_LAYER_DOWN, elementStructure, structureSizeX + offset + dx, midY, ArrowButton.ArrowType.DOWN, col, colHover));
 
-        list.add(new ElementAnimationToggle(BookScreen.PAGE_WIDTH - ArrowButton.ArrowType.REFRESH.w, 0, ArrowButton.ArrowType.REFRESH, col, colHover, colToggled, elementStructure));
+        list.add(new AnimationToggleElement(BookScreen.PAGE_WIDTH - ArrowButton.ArrowType.REFRESH.w, 0, ArrowButton.ArrowType.REFRESH, col, colHover, colToggled, structureElement));
       }
     }
   }

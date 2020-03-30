@@ -5,7 +5,7 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ElementText;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
@@ -30,7 +30,7 @@ public class ContentTableOfContents extends PageContent {
 
     for (int i = 0; i < this.data.length; i++) {
       TextData text = this.data[i];
-      list.add(new ElementText(0, y + i * (int) (Minecraft.getInstance().fontRenderer.FONT_HEIGHT * text.scale), BookScreen.PAGE_WIDTH, Minecraft.getInstance().fontRenderer.FONT_HEIGHT, text));
+      list.add(new TextElement(0, y + i * (int) (Minecraft.getInstance().fontRenderer.FONT_HEIGHT * text.scale), BookScreen.PAGE_WIDTH, Minecraft.getInstance().fontRenderer.FONT_HEIGHT, text));
     }
   }
 }

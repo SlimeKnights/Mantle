@@ -4,10 +4,10 @@ import net.minecraft.client.gui.FontRenderer;
 
 import java.util.List;
 
-public class ElementTooltip extends SizedBookElement {
+public class TooltipElement extends SizedBookElement {
   private List<String> tooltip;
 
-  public ElementTooltip(List<String> tooltip, int x, int y, int width, int height) {
+  public TooltipElement(List<String> tooltip, int x, int y, int width, int height) {
     super(x, y, width, height);
 
     this.tooltip = tooltip;
