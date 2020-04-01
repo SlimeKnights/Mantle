@@ -52,15 +52,13 @@ public abstract class ModuleScreen extends ContainerScreen {
   public void updatePosition(int parentX, int parentY, int parentSizeX, int parentSizeY) {
     if (this.right) {
       this.guiLeft = parentX + parentSizeX;
-    }
-    else {
+    } else {
       this.guiLeft = parentX - this.xSize;
     }
 
     if (this.bottom) {
       this.guiTop = parentY + parentSizeY - this.ySize;
-    }
-    else {
+    } else {
       this.guiTop = parentY;
     }
 
@@ -73,8 +71,7 @@ public abstract class ModuleScreen extends ContainerScreen {
   }
 
   public boolean isMouseInModule(int mouseX, int mouseY) {
-    return mouseX >= this.guiLeft && mouseX < this.guiRight() &&
-            mouseY >= this.guiTop && mouseY < this.guiBottom();
+    return mouseX >= this.guiLeft && mouseX < this.guiRight() && mouseY >= this.guiTop && mouseY < this.guiBottom();
   }
 
   public boolean isMouseOverFullSlot(double mouseX, double mouseY) {
@@ -86,18 +83,6 @@ public abstract class ModuleScreen extends ContainerScreen {
     return false;
   }
 
-  /*
-    public void updateDragged(boolean dragSplitting, Set draggedSlots) {
-      this.dragSplitting = dragSplitting;
-      this.dragSplittingSlots.clear();
-      for(Object o : draggedSlots) {
-        if(o instanceof SlotWrapper)
-          this.dragSplittingSlots.add(((SlotWrapper) o).parent);
-        else
-          this.dragSplittingSlots.add(o);
-      }
-    }
-  */
   public void handleDrawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
     this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
   }
@@ -130,6 +115,15 @@ public abstract class ModuleScreen extends ContainerScreen {
    * @return True to prevent the main container handling the mouseclick
    */
   public boolean handleMouseReleased(double mouseX, double mouseY, int state) {
+    return false;
+  }
+
+  /**
+   * Custom mouse scrolled handling.
+   *
+   * @return True to prevent the main container handling the mouseclick
+   */
+  public boolean handleMouseScrolled(double mouseX, double mouseY, double delta) {
     return false;
   }
 

@@ -2,14 +2,17 @@ package slimeknights.mantle.inventory;
 
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.network.PacketBuffer;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
+/*
+NEVER USED, PENDING REMOVAL?
+ */
 public class SimpleChestContainer extends BaseContainer<InventoryTileEntity> {
 
-  public SimpleChestContainer(ContainerType<?> containerType, int windowId, InventoryTileEntity tile, int rows, int columns, PlayerInventory playerInventory) {
-    super(containerType, windowId, tile);
+  public SimpleChestContainer(int windowId, PlayerInventory playerInventory, InventoryTileEntity tile, int rows, int columns) {
+    super(null, windowId, playerInventory, tile);
 
     int index = 0;
 
@@ -27,10 +30,22 @@ public class SimpleChestContainer extends BaseContainer<InventoryTileEntity> {
     }
 
     // player inventory
-    this.addPlayerInventory(playerInventory, 17, 86);
+    this.addInventorySlots();
+  }
+
+  public SimpleChestContainer(int id, PlayerInventory inv, PacketBuffer buf) {
+    this(id, inv, getTileEntityFromBuf(buf, InventoryTileEntity.class), 0, 0);
   }
 
   protected Slot createSlot(IInventory inventory, int index, int x, int y) {
     return new Slot(inventory, index, x, y);
+  }
+
+  protected int getInventoryXOffset() {
+    return 17;
+  }
+
+  protected int getInventoryYOffset() {
+    return 86;
   }
 }

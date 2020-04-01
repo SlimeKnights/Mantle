@@ -1,7 +1,6 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -11,14 +10,14 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import slimeknights.mantle.inventory.MultiModuleContainer;
 import slimeknights.mantle.inventory.WrapperSlot;
+import slimeknights.mantle.inventory.MultiModuleContainer;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiModuleScreen<T extends MultiModuleContainer> extends ContainerScreen<T> {
+public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extends ContainerScreen<CONTAINER> {
 
   protected List<ModuleScreen> modules = Lists.newArrayList();
 
@@ -27,11 +26,12 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
   public int realWidth;
   public int realHeight;
 
-  public MultiModuleScreen(T container, PlayerInventory playerInventory, ITextComponent title) {
+  public MultiModuleScreen(CONTAINER container, PlayerInventory playerInventory, ITextComponent title) {
     super(container, playerInventory, title);
 
     this.realWidth = -1;
     this.realHeight = -1;
+    this.passEvents = true;
   }
 
   protected void addModule(ModuleScreen module) {
@@ -53,6 +53,7 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
       this.xSize = this.realWidth;
       this.ySize = this.realHeight;
     }
+
     super.init();
 
     this.cornerX = this.guiLeft;
@@ -63,10 +64,6 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
     for (ModuleScreen module : this.modules) {
       this.updateSubmodule(module);
     }
-
-    //this.guiLeft = this.guiTop = 0;
-    //this.xSize = width;
-    //this.ySize = height;
   }
 
   @Override
@@ -165,13 +162,16 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
       this.xSize += this.guiLeft - module.guiLeft;
       this.guiLeft = module.guiLeft;
     }
+
     if (module.guiTop < this.guiTop) {
       this.ySize += this.guiTop - module.guiTop;
       this.guiTop = module.guiTop;
     }
+
     if (module.guiRight() > this.guiLeft + this.xSize) {
       this.xSize = module.guiRight() - this.guiLeft;
     }
+
     if (module.guiBottom() > this.guiTop + this.ySize) {
       this.ySize = module.guiBottom() - this.guiTop;
     }
@@ -187,6 +187,7 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
       if (slotIn instanceof WrapperSlot) {
         slot = ((WrapperSlot) slotIn).parent;
       }
+
       if (!module.shouldDrawSlot(slot)) {
         return;
       }
@@ -212,6 +213,7 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
       if (slotIn instanceof WrapperSlot) {
         slot = ((WrapperSlot) slotIn).parent;
       }
+
       if (!module.shouldDrawSlot(slot)) {
         return false;
       }
@@ -223,17 +225,20 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
+
     if (module != null) {
       if (module.handleMouseClicked(mouseX, mouseY, mouseButton)) {
         return false;
       }
     }
+
     return super.mouseClicked(mouseX, mouseY, mouseButton);
   }
 
   @Override
   public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLastClick, double unkowwn) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
+
     if (module != null) {
       if (module.handleMouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)) {
         return false;
@@ -244,8 +249,22 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
   }
 
   @Override
+  public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
+
+    if (module != null) {
+      if (module.handleMouseScrolled(mouseX, mouseY, delta)) {
+        return false;
+      }
+    }
+
+    return super.mouseScrolled(mouseX, mouseY, delta);
+  }
+
+  @Override
   public boolean mouseReleased(double mouseX, double mouseY, int state) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
+
     if (module != null) {
       if (module.handleMouseReleased(mouseX, mouseY, state)) {
         return false;
@@ -257,8 +276,7 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
 
   protected ModuleScreen getModuleForPoint(double x, double y) {
     for (ModuleScreen module : this.modules) {
-      if (this.isPointInRegion(module.guiLeft, module.guiTop, module.guiRight(), module.guiBottom(),
-              x + this.cornerX, y + this.cornerY)) {
+      if (this.isPointInRegion(module.guiLeft, module.guiTop, module.guiRight(), module.guiBottom(), x + this.cornerX, y + this.cornerY)) {
         return module;
       }
     }
@@ -282,8 +300,7 @@ public class MultiModuleScreen<T extends MultiModuleContainer> extends Container
 
   @Nonnull
   @Override
-  public T getContainer() {
+  public CONTAINER getContainer() {
     return this.container;
   }
-
 }

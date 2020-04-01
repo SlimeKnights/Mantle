@@ -1,8 +1,6 @@
 package slimeknights.mantle.inventory;
 
-import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -10,63 +8,52 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.EmptyHandler;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import slimeknights.mantle.util.SlimeknightException;
+import slimeknights.mantle.util.TileEntityUtil;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import javax.annotation.Nullable;
 
-/** Same as Container but provides some extra functionality to simplify things */
-public abstract class BaseContainer<T extends TileEntity> extends Container {
+public class BaseContainer<TILE extends TileEntity> extends Container {
 
-  protected double maxDist = 8 * 8; // 8 blocks
-  protected T tile;
-  protected final Block originalBlock; // used to check if the block we interacted with got broken
-  protected final BlockPos pos;
-  protected final World world;
-  protected final LazyOptional<IItemHandler> itemHandler;
+  public static double MAX_DISTANCE = 64;
+  public static int BASE_Y_OFFSET = 84;
 
-  public List<Container> subContainers = Lists.newArrayList();
+  @Nullable
+  protected final TILE tile;
 
-  public BaseContainer(ContainerType<?> containerType, int windowId, T tile) {
-    this(containerType, windowId, tile, null);
+  @Nullable
+  protected final PlayerInventory inv;
+
+  protected BaseContainer(ContainerType<?> type, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
+    super(type, id);
+    this.inv = inv;
+    this.tile = tile;
   }
 
-  public BaseContainer(ContainerType<?> containerType, int windowId, T tile, Direction invDir) {
-    super(containerType, windowId);
-    this.tile = tile;
-
-    if (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir).isPresent()) {
-      this.itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, invDir);
-    }
-    else {
-      this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new EmptyHandler());
-    }
-
-    this.world = tile.getWorld();
-    this.pos = tile.getPos();
-    this.originalBlock = this.world.getBlockState(this.pos).getBlock();
+  public TILE getTileEntity() {
+    return this.tile;
   }
 
   public void syncOnOpen(ServerPlayerEntity playerOpened) {
     // find another player that already has the gui for this tile open
     ServerWorld server = playerOpened.getServerWorld();
+
     for (PlayerEntity player : server.getPlayers()) {
       if (player == playerOpened) {
         continue;
       }
+
       if (player.openContainer instanceof BaseContainer) {
-        if (this.sameGui((BaseContainer<T>) player.openContainer)) {
-          this.syncWithOtherContainer((BaseContainer<T>) player.openContainer, playerOpened);
+        if (this.sameGui((BaseContainer) player.openContainer)) {
+          this.syncWithOtherContainer((BaseContainer) player.openContainer, playerOpened);
           return;
         }
       }
@@ -76,19 +63,11 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     this.syncNewContainer(playerOpened);
   }
 
-  public T getTile() {
-    return this.tile;
-  }
-
-  public IItemHandler getItemHandler() {
-    return this.itemHandler.orElse(new EmptyHandler());
-  }
-
   /**
    * Called when the container is opened and another player already has a container for this tile open
    * Sync to the same state here.
    */
-  protected void syncWithOtherContainer(BaseContainer<T> otherContainer, ServerPlayerEntity player) {
+  protected void syncWithOtherContainer(BaseContainer otherContainer, ServerPlayerEntity player) {
   }
 
   /**
@@ -99,77 +78,79 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
   }
 
   public boolean sameGui(BaseContainer otherContainer) {
+    if (this.tile == null) {
+      return false;
+    }
+
     return this.tile == otherContainer.tile;
   }
 
   @Override
   public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
-    Block block = this.world.getBlockState(this.pos).getBlock();
-    // does the block we interacted with still exist?
-    if (block == Blocks.AIR || block != this.originalBlock) {
-      return false;
+    if (this.tile == null) {
+      return true;
     }
 
-    // too far away from block?
-    return playerIn.getDistanceSq((double) this.pos.getX() + 0.5d,
-            (double) this.pos.getY() + 0.5d,
-            (double) this.pos.getZ() + 0.5d) <= this.maxDist;
+    if (!tile.isRemoved()) {
+      //prevent Containers from remaining valid after the chunk has unloaded;
+      World world = tile.getWorld();
+
+      if (world == null) {
+        return false;
+      }
+
+      return world.isBlockPresent(tile.getPos());
+    }
+
+    return false;
   }
 
   @Nonnull
   @Override
-  @SuppressWarnings("unchecked")
   public NonNullList<ItemStack> getInventory() {
     return super.getInventory();
   }
 
-  /*public String getInventoryDisplayName() {
-    INameable nameable = null;
-    if (this.itemHandler.orElse(new EmptyHandler()) instanceof InvWrapper) {
-      nameable = ((InvWrapper) this.itemHandler.orElse(new EmptyHandler())).getInv();
-      // if the inventory doesn't have a name fall back to checking the tileentity
-      if (nameable.getDisplayName() == null) {
-        nameable = null;
-      }
+  /*
+   * Call this to add the player's inventory to the GUI.
+   */
+  protected void addInventorySlots() {
+    if (this.inv != null) {
+      this.addInventorySlots(this.inv);
     }
-    if(nameable == null && this.tile instanceof INameable) {
-      nameable = (INameable) this.tile;
-    }
-    if (nameable != null) {
-      ITextComponent textName = nameable.getDisplayName();
-      return textName != null ? textName.getFormattedText() : nameable.getName().toString();
-    }
-    return null;
-  }*/
-
-  // standard yOffset calculation for chestlike inventories:
-  // yOffset = (numRows - 4) * 18; (the -4 because of the 3 rows of inventory + 1 row of hotbar)
+  }
 
   protected int playerInventoryStart = -1;
 
-  /**
-   * Draws the player inventory starting at the given position
-   *
-   * @param playerInventory The players inventory
-   * @param xCorner         Default Value: 8
-   * @param yCorner         Default Value: (rows - 4) * 18 + 103
+  /*
+   * Override this to set the X offset for the inventory slots.
    */
-  protected void addPlayerInventory(PlayerInventory playerInventory, int xCorner, int yCorner) {
-    int index = 9;
+  protected int getInventoryXOffset() {
+    return 8;
+  }
+
+  /*
+  * Override this to set the Y offset for the inventory slots.
+   */
+  protected int getInventoryYOffset() {
+    return BASE_Y_OFFSET;
+  }
+
+  protected void addInventorySlots(@Nonnull PlayerInventory inv) {
+    int yOffset = this.getInventoryYOffset();
+    int xOffset = this.getInventoryXOffset();
 
     int start = this.inventorySlots.size();
 
-    for (int row = 0; row < 3; row++) {
-      for (int col = 0; col < 9; col++) {
-        this.addSlot(new Slot(playerInventory, index, xCorner + col * 18, yCorner + row * 18));
-        index++;
+    for (int slotY = 0; slotY < 3; slotY++) {
+      for (int slotX = 0; slotX < 9; slotX++) {
+        addSlot(new Slot(inv, slotX + slotY * 9 + 9, xOffset + slotX * 18, yOffset + slotY * 18));
       }
     }
 
-    index = 0;
-    for (int col = 0; col < 9; col++) {
-      this.addSlot(new Slot(playerInventory, index, xCorner + col * 18, yCorner + 58));
-      index++;
+    yOffset += 58;
+    for (int slotY = 0; slotY < 9; slotY++) {
+      addSlot(new Slot(inv, slotY, xOffset + slotY * 18, yOffset));
     }
 
     this.playerInventoryStart = start;
@@ -216,8 +197,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
       if (itemstack1.isEmpty()) {
         slot.putStack(ItemStack.EMPTY);
-      }
-      else {
+      } else {
         slot.onSlotChanged();
       }
     }
@@ -256,10 +236,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
         slot = this.inventorySlots.get(k);
         itemstack1 = slot.getStack();
 
-        if (!itemstack1.isEmpty()
-                && itemstack1.getItem() == stack.getItem()
-                && ItemStack.areItemStackTagsEqual(stack, itemstack1)
-                && this.canMergeSlot(stack, slot)) {
+        if (!itemstack1.isEmpty() && itemstack1.getItem() == stack.getItem() && ItemStack.areItemStackTagsEqual(stack, itemstack1) && this.canMergeSlot(stack, slot)) {
           int l = itemstack1.getCount() + stack.getCount();
           int limit = Math.min(stack.getMaxStackSize(), slot.getItemStackLimit(stack));
 
@@ -268,8 +245,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
             itemstack1.setCount(l);
             slot.onSlotChanged();
             flag1 = true;
-          }
-          else if (itemstack1.getCount() < limit) {
+          } else if (itemstack1.getCount() < limit) {
             stack.shrink(limit - itemstack1.getCount());
             itemstack1.setCount(limit);
             slot.onSlotChanged();
@@ -279,8 +255,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
         if (useEndIndex) {
           --k;
-        }
-        else {
+        } else {
           ++k;
         }
       }
@@ -300,8 +275,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
     if (useEndIndex) {
       k = endIndex - 1;
-    }
-    else {
+    } else {
       k = startIndex;
     }
 
@@ -309,17 +283,18 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
       Slot slot = this.inventorySlots.get(k);
       ItemStack itemstack1 = slot.getStack();
 
-      if (itemstack1.isEmpty() && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) // Forge: Make sure to respect isItemValid in the slot.
-      {
+      // Forge: Make sure to respect isItemValid in the slot.
+      if (itemstack1.isEmpty() && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) {
         int limit = slot.getItemStackLimit(stack);
         ItemStack stack2 = stack.copy();
+
         if (stack2.getCount() > limit) {
           stack2.setCount(limit);
           stack.shrink(limit);
-        }
-        else {
+        } else {
           stack.setCount(0);
         }
+
         slot.putStack(stack2);
         slot.onSlotChanged();
         flag1 = true;
@@ -331,8 +306,7 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
 
       if (useEndIndex) {
         --k;
-      }
-      else {
+      } else {
         ++k;
       }
     }
@@ -340,4 +314,11 @@ public abstract class BaseContainer<T extends TileEntity> extends Container {
     return flag1;
   }
 
+  public static <TILE extends TileEntity> TILE getTileEntityFromBuf(PacketBuffer buf, Class<TILE> type) {
+    if (buf == null) {
+      return null;
+    }
+
+    return DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> TileEntityUtil.getTileEntity(type, Minecraft.getInstance().world, buf.readBlockPos()));
+  }
 }

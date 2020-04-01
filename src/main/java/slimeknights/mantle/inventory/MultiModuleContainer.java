@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
@@ -16,12 +17,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MultiModuleContainer<T extends TileEntity & IInventory> extends BaseContainer<T> {
+public class MultiModuleContainer<TILE extends TileEntity & IInventory> extends BaseContainer<TILE> {
 
   public List<Container> subContainers = Lists.newArrayList();
 
@@ -31,8 +33,8 @@ public class MultiModuleContainer<T extends TileEntity & IInventory> extends Bas
   protected int subContainerSlotStart = -1;
   protected Set<Container> shiftClickContainers = Sets.newHashSet();
 
-  public MultiModuleContainer(ContainerType<?> containerType, int windowId, T tile) {
-    super(containerType, windowId, tile);
+  public MultiModuleContainer(ContainerType<?> containerType, int id, @Nullable PlayerInventory inv, TILE tile) {
+    super(containerType, id, inv, tile);
   }
 
   /**
@@ -59,17 +61,18 @@ public class MultiModuleContainer<T extends TileEntity & IInventory> extends Bas
     this.subContainerSlotRanges.put(subcontainer, Pair.of(begin, end));
   }
 
-  public <TC extends Container> TC getSubContainer(Class<TC> clazz) {
+  public <CONTAINER extends Container> CONTAINER getSubContainer(Class<CONTAINER> clazz) {
     return this.getSubContainer(clazz, 0);
   }
 
-  public <TC extends Container> TC getSubContainer(Class<TC> clazz, int index) {
+  public <CONTAINER extends Container> CONTAINER getSubContainer(Class<CONTAINER> clazz, int index) {
     for (Container sub : this.subContainers) {
       if (clazz.isAssignableFrom(sub.getClass())) {
         index--;
       }
+
       if (index < 0) {
-        return (TC) sub;
+        return (CONTAINER) sub;
       }
     }
 
@@ -210,8 +213,7 @@ public class MultiModuleContainer<T extends TileEntity & IInventory> extends Bas
       return false;
     }
 
-    return this.playerInventoryStart > 0 && !this
-            .mergeItemStack(itemstack, this.playerInventoryStart, this.inventorySlots.size(), true);
+    return this.playerInventoryStart > 0 && !this.mergeItemStack(itemstack, this.playerInventoryStart, this.inventorySlots.size(), true);
   }
 
   protected boolean moveToAnyContainer(@Nonnull ItemStack itemstack, Collection<Container> containers) {
@@ -252,20 +254,35 @@ public class MultiModuleContainer<T extends TileEntity & IInventory> extends Bas
     return !this.mergeItemStackRefill(itemstack, range.getLeft(), range.getRight(), false);
   }
 
-  /** Searches for a sidechest to display in the UI */
+  /**
+   * Searches for a sidechest to display in the UI
+   */
   public <TE extends TileEntity> TE detectTE(Class<TE> clazz) {
-    return ObjectUtils.firstNonNull(this.detectChest(this.pos.north(), clazz),
-            this.detectChest(this.pos.east(), clazz),
-            this.detectChest(this.pos.south(), clazz),
-            this.detectChest(this.pos.west(), clazz));
+    if (this.tile == null) {
+      return null;
+    } else {
+      return ObjectUtils.firstNonNull(this.detectChest(this.tile.getPos().north(), clazz),
+        this.detectChest(this.tile.getPos().east(), clazz),
+        this.detectChest(this.tile.getPos().south(), clazz),
+        this.detectChest(this.tile.getPos().west(), clazz));
+    }
   }
 
   private <TE extends TileEntity> TE detectChest(BlockPos pos, Class<TE> clazz) {
-    TileEntity te = this.world.getTileEntity(pos);
+    if (this.tile == null) {
+      return null;
+    } else {
+      if (this.tile.getWorld() == null) {
+        return null;
+      } else {
+        TileEntity te = this.tile.getWorld().getTileEntity(pos);
 
-    if (te != null && clazz.isAssignableFrom(te.getClass())) {
-      return (TE) te;
+        if (te != null && clazz.isAssignableFrom(te.getClass())) {
+          return (TE) te;
+        }
+      }
     }
+
     return null;
   }
 }

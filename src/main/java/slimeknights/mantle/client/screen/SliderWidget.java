@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.screen;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,6 +34,7 @@ public class SliderWidget extends Widget {
   private int clickX;
   private int clickY;
   private boolean clickedBar; // if the bar has already been clicked and not released
+  private boolean leftMouseDown = false;
 
   public SliderWidget(ElementScreen slider, ElementScreen sliderHighlighted, ElementScreen sliderDisabled, ElementScreen slideBarTop, ElementScreen slideBarBottom, ScalableElementScreen slideBar) {
     this.slider = slider;
@@ -59,12 +59,16 @@ public class SliderWidget extends Widget {
     this.hidden = false;
   }
 
-  /** Sets the height of the whole slider and slidebar */
+  /**
+   * Sets the height of the whole slider and slidebar
+   */
   public void setSize(int height) {
     this.height = height;
   }
 
-  /** specifies the values that the slider represents */
+  /**
+   * specifies the values that the slider represents
+   */
   public void setSliderParameters(int min, int max, int stepsize) {
     this.minValue = min;
     this.maxValue = max;
@@ -119,7 +123,7 @@ public class SliderWidget extends Widget {
       return;
     }
 
-    // slidebar background
+    // slide bar background
     this.slideBarTop.draw(this.xPos, this.yPos);
     this.slideBar.drawScaledY(this.xPos, this.yPos + this.slideBarTop.h, this.getUsableSlidebarHeight());
     this.slideBarBottom.draw(this.xPos, this.yPos + this.height - this.slideBarBottom.h);
@@ -131,15 +135,12 @@ public class SliderWidget extends Widget {
     if (this.enabled) {
       if (this.isScrolling) {
         this.sliderDisabled.draw(x, y);
-      }
-      else if (this.isHighlighted) {
+      } else if (this.isHighlighted) {
         this.sliderHighlighted.draw(x, y);
-      }
-      else {
+      } else {
         this.slider.draw(x, y);
       }
-    }
-    else {
+    } else {
       this.sliderDisabled.draw(x, y);
     }
   }
@@ -149,19 +150,17 @@ public class SliderWidget extends Widget {
       return;
     }
 
-    boolean mouseDown = Minecraft.getInstance().mouseHelper.isLeftDown(); // left mouse button
-
     // relative position inside the widget
     int x = mouseX - this.xPos;
     int y = mouseY - this.yPos;
 
     // reset click data
-    if (!mouseDown && this.clickedBar) {
+    if (!this.leftMouseDown && this.clickedBar) {
       this.clickedBar = false;
     }
 
     // button not pressed and scrolling -> stop scrolling
-    if (!mouseDown && this.isScrolling) {
+    if (!this.leftMouseDown && this.isScrolling) {
       this.isScrolling = false;
     }
     // button pressed and scrolling -> update position of slider
@@ -173,56 +172,64 @@ public class SliderWidget extends Widget {
       if (val < (float) this.increment / 2f) {
         // < 1/2 increment
         this.setSliderValue(this.minValue);
-      }
-      else if (val > this.maxValue - ((float) this.increment / 2f)) {
+      } else if (val > this.maxValue - ((float) this.increment / 2f)) {
         // > max-1/2 increment
         this.setSliderValue(this.maxValue);
-      }
-      else {
+      } else {
         // in between
         this.setSliderValue((int) (this.minValue + (float) this.increment * Math.round(val)));
       }
     }
     // not scrolling yet but possibly inside the slider
     else if (x >= 0 && y >= this.getSliderTop() &&
-            x - this.sliderOffset <= this.slider.w && y <= this.getSliderTop() + this.slider.h) {
+      x - this.sliderOffset <= this.slider.w && y <= this.getSliderTop() + this.slider.h) {
       this.isHighlighted = true;
-      if (mouseDown) {
+      if (this.leftMouseDown) {
         this.isScrolling = true;
         this.clickX = x - this.sliderOffset;
         this.clickY = y - this.getSliderTop();
       }
     }
     // not on the slider but clicked on the bar
-    else if (mouseDown && !this.clickedBar &&
-            x >= 0 && y >= 0 &&
-            x <= this.slideBar.w && y <= this.height) {
+    else if (this.leftMouseDown && !this.clickedBar &&
+      x >= 0 && y >= 0 &&
+      x <= this.slideBar.w && y <= this.height) {
       if (y < this.getSliderTop()) {
         this.decrement();
-      }
-      else {
+      } else {
         this.increment();
       }
 
       this.clickedBar = true;
-    }
-    else {
+    } else {
       this.isHighlighted = false;
     }
   }
 
+  @Override
+  public void handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+    if (mouseButton == 0) {
+      this.leftMouseDown = true;
+    }
+  }
+
+  @Override
+  public void handleMouseReleased() {
+    this.leftMouseDown = false;
+  }
+
   // Call this via Screen.mouseScrolled on your screen if you wish to use scroll data.
-  public boolean mouseScrolled(double mouseX, double mouseY, double scrollData, boolean useMouseWheel) {
+  public boolean mouseScrolled(double scrollData, boolean useMouseWheel) {
     if (useMouseWheel) {
       if (scrollData > 0.0) {
         this.decrement();
         return true;
-      }
-      else if (scrollData < 0.0) {
+      } else if (scrollData < 0.0) {
         this.increment();
         return true;
       }
     }
+
     return true;
   }
 
@@ -239,8 +246,7 @@ public class SliderWidget extends Widget {
   public int setSliderValue(int val) {
     if (val > this.maxValue) {
       val = this.maxValue;
-    }
-    else if (val < this.minValue) {
+    } else if (val < this.minValue) {
       val = this.minValue;
     }
 

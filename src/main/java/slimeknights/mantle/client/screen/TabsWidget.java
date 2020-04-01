@@ -15,8 +15,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class TabsWidget extends Widget {
 
-  private static final ResourceLocation
-          creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+  private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
 
   private final ElementScreen[] tabActive = new ElementScreen[3];
   private final ElementScreen[] tab = new ElementScreen[3];
@@ -34,6 +33,7 @@ public class TabsWidget extends Widget {
 
   private final MultiModuleScreen parent;
   private boolean clicked = false;
+  private boolean leftMouseDown = false;
 
   public TabsWidget(MultiModuleScreen parent, ElementScreen tabLeft, ElementScreen tabCenter, ElementScreen tabRight, ElementScreen activeLeft, ElementScreen activeCenter, ElementScreen activeRight) {
     this.parent = parent;
@@ -57,24 +57,37 @@ public class TabsWidget extends Widget {
     this.icons.clear();
   }
 
-  public void update(int mouseX, int mouseY) {
-    boolean mouseDown = Minecraft.getInstance().mouseHelper.isLeftDown(); // left mouse button
+  @Override
+  public void handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+    if (mouseButton == 0) {
+      this.leftMouseDown = true;
+    }
+  }
 
+  @Override
+  public void handleMouseReleased() {
+    this.leftMouseDown = false;
+  }
+
+  public void update(int mouseX, int mouseY) {
     // did we click on a tab?
     mouseX -= this.xPos;
     mouseY -= this.yPos;
 
     // update highlighted
     this.highlighted = -1;
+
     if (mouseY >= 0 && mouseY <= this.tab[1].h) {
       // which one did we click?
       int x = 0;
+
       for (int i = 0; i < this.icons.size(); i++) {
         // clicking on spacing has no effect
         if (mouseX >= x && mouseX < x + this.tab[1].w) {
           this.highlighted = i;
           break;
         }
+
         x += this.tab[1].w;
         x += this.spacing;
       }
@@ -83,17 +96,13 @@ public class TabsWidget extends Widget {
     // already clicked
     if (this.clicked) {
       // still clicking
-      if (mouseDown) {
-        return;
-      }
-      // release click
-      else {
+      if (!this.leftMouseDown) {
         this.clicked = false;
-        return;
       }
+      return;
     }
     // new click
-    else if (mouseDown) {
+    else if (this.leftMouseDown) {
       this.clicked = true;
     }
     // no click - do nothing
@@ -101,7 +110,7 @@ public class TabsWidget extends Widget {
       return;
     }
 
-    // was new click, select highlighted
+    // was a new click, select highlighted
     if (this.highlighted > -1) {
       this.selected = this.highlighted;
     }
@@ -120,19 +129,16 @@ public class TabsWidget extends Widget {
       ElementScreen[] toDraw;
       if (i == this.selected) {
         toDraw = this.tabActive;
-      }
-      else {
+      } else {
         toDraw = this.tab;
       }
 
       ElementScreen actualTab;
       if (i == 0 && x == this.parent.cornerX) {
         actualTab = toDraw[0];
-      }
-      else if (x == this.parent.cornerX + this.parent.width) {
+      } else if (x == this.parent.cornerX + this.parent.width) {
         actualTab = toDraw[2];
-      }
-      else {
+      } else {
         actualTab = toDraw[1];
       }
 
@@ -146,21 +152,17 @@ public class TabsWidget extends Widget {
       if (icon != null) {
         this.drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
         RenderHelper.disableStandardItemLighting();
-        //RenderHelper.enableStandardItemLighting();
       }
     }
   }
 
-  // guiContainer.drawItemStack
+  // ContainerScreen.drawItemStack
   private void drawItemStack(ItemStack stack, int x, int y) {
     ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
     RenderSystem.translatef(0.0F, 0.0F, 32.0F);
-    itemRender.zLevel = 200;
-    //FontRenderer font = stack.getItem().getFontRenderer(stack);
+    itemRender.zLevel = 200.0F;
 
     itemRender.renderItemAndEffectIntoGUI(stack, x, y);
-    //this.itemRender.renderItemOverlayIntoGUI(font, stack, x, y - (this.draggedStack == null ? 0 : 8), altText);
-    //this.zLevel = 0.0F;
     itemRender.zLevel = 0.0F;
   }
 }

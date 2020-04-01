@@ -13,7 +13,9 @@ public abstract class Widget {
 
   public abstract void draw();
 
-  /** Where the part will be drawn. Upper left corner. */
+  /**
+   * Where the part will be drawn. Upper left corner.
+   */
   public void setPosition(int x, int y) {
     this.xPos = x;
     this.yPos = y;
@@ -22,6 +24,14 @@ public abstract class Widget {
   public void setSize(int width, int height) {
     this.width = width;
     this.height = height;
+  }
+
+  public void handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+
+  }
+
+  public void handleMouseReleased() {
+
   }
 }
 
