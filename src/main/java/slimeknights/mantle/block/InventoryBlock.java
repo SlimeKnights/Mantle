@@ -57,8 +57,7 @@ public abstract class InventoryBlock extends Block {
   }
 
   @Override
-  public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer,
-          ItemStack stack) {
+  public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
     super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 
     // set custom name from named stack
@@ -74,8 +73,6 @@ public abstract class InventoryBlock extends Block {
   @Override
   public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      super.onReplaced(state, worldIn, pos, newState, isMoving);
-
       TileEntity tileentity = worldIn.getTileEntity(pos);
 
       if (tileentity instanceof InventoryTileEntity) {
@@ -83,6 +80,8 @@ public abstract class InventoryBlock extends Block {
         worldIn.updateComparatorOutputLevel(pos, this);
       }
     }
+
+    super.onReplaced(state, worldIn, pos, newState, isMoving);
   }
 
   // BlockContainer sets this to invisible
@@ -104,6 +103,6 @@ public abstract class InventoryBlock extends Block {
   @Nullable
   public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
     TileEntity tileentity = worldIn.getTileEntity(pos);
-    return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider)tileentity : null;
+    return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
   }
 }

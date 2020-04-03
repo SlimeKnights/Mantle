@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityUtil {
+
   @Nullable
   public static <T extends TileEntity> T getTileEntity(@Nonnull Class<T> clazz, @Nullable IBlockReader world, @Nonnull BlockPos pos) {
     return getTileEntity(clazz, world, pos, false);
@@ -17,15 +18,12 @@ public class TileEntityUtil {
 
   @Nullable
   public static <T extends TileEntity> T getTileEntity(@Nonnull Class<T> clazz, @Nullable IBlockReader world, @Nonnull BlockPos pos, boolean logWrongType) {
-    System.out.println("world: " + world + " pos: " + pos);
     if (!isBlockLoaded(world, pos)) {
       return null;
     }
 
     //TODO: This causes freezes if being called from onLoad
     TileEntity tile = world.getTileEntity(pos);
-
-    System.out.println("world: " + world + " pos: " + pos + " tile: " + tile);
 
     if (tile == null) {
       return null;

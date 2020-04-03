@@ -82,7 +82,9 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     return !this.getStackInSlot(slot).isEmpty();
   }
 
-  /** Same as resize, but does not call markDirty. Used on loading from NBT */
+  /**
+   * Same as resize, but does not call markDirty. Used on loading from NBT
+   */
   private void resizeInternal(int size) {
     // save effort if the size did not change
     if (size == this.inventory.size()) {
@@ -191,11 +193,10 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
   @Override
   public boolean hasCustomName() {
-    return this.hasCustomName;
+    return this.getCustomName() != null;
   }
 
   public void setCustomName(ITextComponent customName) {
-    this.hasCustomName = true;
     this.inventoryTitle = customName;
   }
 
@@ -223,9 +224,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
       return false;
     }
 
-    return
-            entityplayer.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D)
-                    <= 64D;
+    return entityplayer.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64D;
   }
 
   @Override
@@ -266,7 +265,9 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     return tags;
   }
 
-  /** Writes the contents of the inventory to the tag */
+  /**
+   * Writes the contents of the inventory to the tag
+   */
   public void writeInventoryToNBT(CompoundNBT tag) {
     IInventory inventory = this;
     ListNBT nbttaglist = new ListNBT();
@@ -283,7 +284,9 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     tag.put("Items", nbttaglist);
   }
 
-  /** Reads a an inventory from the tag. Overwrites current content */
+  /**
+   * Reads a an inventory from the tag. Overwrites current content
+   */
   public void readInventoryFromNBT(CompoundNBT tag) {
     ListNBT nbttaglist = tag.getList("Items", 10);
 
