@@ -76,12 +76,15 @@ public abstract class InventoryBlock extends Block {
       TileEntity tileentity = worldIn.getTileEntity(pos);
 
       if (tileentity instanceof InventoryTileEntity) {
-        InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory) tileentity);
+        dropInventoryItems(state, worldIn, pos, tileentity);
         worldIn.updateComparatorOutputLevel(pos, this);
       }
     }
-
     super.onReplaced(state, worldIn, pos, newState, isMoving);
+  }
+
+  protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, TileEntity tileentity) {
+    InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory) tileentity);
   }
 
   // BlockContainer sets this to invisible
