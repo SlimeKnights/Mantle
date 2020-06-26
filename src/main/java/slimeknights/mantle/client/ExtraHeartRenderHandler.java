@@ -58,7 +58,7 @@ public class ExtraHeartRenderHandler {
       return;
     }
     PlayerEntity player = (PlayerEntity) this.mc.getRenderViewEntity();
-    MatrixStack matrixStack = new MatrixStack();
+    MatrixStack matrixStack = event.getMatrixStack();
 
     // extra setup stuff from us
     left_height = ForgeIngameGui.left_height;
