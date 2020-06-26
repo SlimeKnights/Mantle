@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button.IPressable;
 import slimeknights.mantle.client.screen.book.ArrowButton;
@@ -15,14 +16,14 @@ public class ArrowElement extends ButtonElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    this.button.render(mouseX, mouseY, partialTicks);
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+    this.button.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
   }
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if (this.button != null && this.isHovered(mouseX, mouseY)) {
-      this.button.onPress();
+      this.button.func_230930_b_();
     }
   }
 

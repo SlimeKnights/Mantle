@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -54,8 +55,8 @@ public class ElementScreen {
    * @param xPos X-Coordinate on the screen
    * @param yPos Y-Coordinate on the screen
    */
-  public int draw(int xPos, int yPos) {
-    Screen.blit(xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
+  public int draw(MatrixStack matrixStack, int xPos, int yPos) {
+    Screen.func_238463_a_(matrixStack, xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
     return this.w;
   }
 

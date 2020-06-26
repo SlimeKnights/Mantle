@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -10,8 +11,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import slimeknights.mantle.inventory.WrapperSlot;
 import slimeknights.mantle.inventory.MultiModuleContainer;
+import slimeknights.mantle.inventory.WrapperSlot;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
 
     this.realWidth = -1;
     this.realHeight = -1;
-    this.passEvents = true;
+    this.field_230711_n_ = true;
   }
 
   protected void addModule(ModuleScreen module) {
@@ -47,14 +48,14 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void init() {
+  public void func_231160_c_() {
     if (this.realWidth > -1) {
       // has to be reset before calling initGui so the position is getting retained
       this.xSize = this.realWidth;
       this.ySize = this.realHeight;
     }
 
-    super.init();
+    super.func_231160_c_();
 
     this.cornerX = this.guiLeft;
     this.cornerY = this.guiTop;
@@ -67,16 +68,16 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+  protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
     for (ModuleScreen module : this.modules) {
-      module.handleDrawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+      module.handleDrawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
     }
   }
 
   @Override
-  protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-    this.drawContainerName();
-    this.drawPlayerInventoryName();
+  protected void func_230451_b_(MatrixStack matrixStack, int mouseX, int mouseY) {
+    this.drawContainerName(matrixStack);
+    this.drawPlayerInventoryName(matrixStack);
 
     for (ModuleScreen module : this.modules) {
       // set correct state for the module
@@ -84,52 +85,49 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       RenderSystem.translatef(-this.guiLeft, -this.guiTop, 0.0F);
       RenderSystem.translatef(module.guiLeft, module.guiTop, 0.0F);
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      module.handleDrawGuiContainerForegroundLayer(mouseX, mouseY);
+      module.handleDrawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
       RenderSystem.popMatrix();
     }
   }
 
-  protected void drawBackground(ResourceLocation background) {
+  protected void drawBackground(MatrixStack matrixStack, ResourceLocation background) {
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    this.minecraft.getTextureManager().bindTexture(background);
-    this.blit(this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
+    this.field_230706_i_.getTextureManager().bindTexture(background);
+    this.func_238474_b_(matrixStack, this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }
 
-  protected void drawContainerName() {
-    String localizedName = this.getTitle().getFormattedText();//multiContainer.getInventoryDisplayName();
-    if (localizedName != null) {
-      this.font.drawString(localizedName, 8, 6, 0x404040);
-    }
+  protected void drawContainerName(MatrixStack matrixStack) {
+    this.field_230712_o_.func_238422_b_(matrixStack, this.func_231171_q_(), 8, 6, 0x404040);
   }
 
-  protected void drawPlayerInventoryName() {
-    String localizedName = Minecraft.getInstance().player.inventory.getDisplayName().getUnformattedComponentText();
-    this.font.drawString(localizedName, 8, this.ySize - 96 + 2, 0x404040);
+  protected void drawPlayerInventoryName(MatrixStack matrixStack) {
+    ITextComponent localizedName = Minecraft.getInstance().player.inventory.getDisplayName();
+    this.field_230712_o_.func_238422_b_(matrixStack, localizedName, 8, this.ySize - 96 + 2, 0x404040);
   }
 
   @Override
-  public void init(Minecraft mc, int width, int height) {
-    super.init(mc, width, height);
+  public void func_231158_b_(Minecraft mc, int width, int height) {
+    super.func_231158_b_(mc, width, height);
 
     for (ModuleScreen module : this.modules) {
-      module.init(mc, width, height);
+      module.func_231158_b_(mc, width, height);
       this.updateSubmodule(module);
     }
   }
 
   @Override
-  public void resize(@Nonnull Minecraft mc, int width, int height) {
-    super.resize(mc, width, height);
+  public void func_231152_a_(@Nonnull Minecraft mc, int width, int height) {
+    super.func_231152_a_(mc, width, height);
 
     for (ModuleScreen module : this.modules) {
-      module.resize(mc, width, height);
+      module.func_231152_a_(mc, width, height);
       this.updateSubmodule(module);
     }
   }
 
   @Override
-  public void render(int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground();
+  public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    this.func_230446_a_(matrixStack);
     int oldX = this.guiLeft;
     int oldY = this.guiTop;
     int oldW = this.xSize;
@@ -139,8 +137,8 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     this.guiTop = this.cornerY;
     this.xSize = this.realWidth;
     this.ySize = this.realHeight;
-    super.render(mouseX, mouseY, partialTicks);
-    this.renderHoveredToolTip(mouseX, mouseY);
+    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    this.func_230459_a_(matrixStack, mouseX, mouseY);
     this.guiLeft = oldX;
     this.guiTop = oldY;
     this.xSize = oldW;
@@ -178,7 +176,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void drawSlot(Slot slotIn) {
+  public void func_238746_a_(MatrixStack matrixStack, Slot slotIn) {
     ModuleScreen module = this.getModuleForSlot(slotIn.slotNumber);
 
     if (module != null) {
@@ -199,7 +197,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       slotIn.yPos = ((WrapperSlot) slotIn).parent.yPos;
     }
 
-    super.drawSlot(slotIn);
+    super.func_238746_a_(matrixStack, slotIn);
   }
 
   @Override
@@ -223,7 +221,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+  public boolean func_231044_a_(double mouseX, double mouseY, int mouseButton) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
 
     if (module != null) {
@@ -232,11 +230,11 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       }
     }
 
-    return super.mouseClicked(mouseX, mouseY, mouseButton);
+    return super.func_231044_a_(mouseX, mouseY, mouseButton);
   }
 
   @Override
-  public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLastClick, double unkowwn) {
+  public boolean func_231045_a_(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLastClick, double unkowwn) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
 
     if (module != null) {
@@ -245,11 +243,11 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       }
     }
 
-    return super.mouseDragged(mouseX, mouseY, clickedMouseButton, timeSinceLastClick, unkowwn);
+    return super.func_231045_a_(mouseX, mouseY, clickedMouseButton, timeSinceLastClick, unkowwn);
   }
 
   @Override
-  public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+  public boolean func_231043_a_(double mouseX, double mouseY, double delta) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
 
     if (module != null) {
@@ -258,11 +256,11 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       }
     }
 
-    return super.mouseScrolled(mouseX, mouseY, delta);
+    return super.func_231043_a_(mouseX, mouseY, delta);
   }
 
   @Override
-  public boolean mouseReleased(double mouseX, double mouseY, int state) {
+  public boolean func_231048_c_(double mouseX, double mouseY, int state) {
     ModuleScreen module = this.getModuleForPoint(mouseX, mouseY);
 
     if (module != null) {
@@ -271,7 +269,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       }
     }
 
-    return super.mouseReleased(mouseX, mouseY, state);
+    return super.func_231048_c_(mouseX, mouseY, state);
   }
 
   protected ModuleScreen getModuleForPoint(double x, double y) {

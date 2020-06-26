@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -31,9 +32,9 @@ public abstract class BookElement extends AbstractGui {
     this.y = y;
   }
 
-  public abstract void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer);
+  public abstract void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer);
 
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
   }
 
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
@@ -52,22 +53,22 @@ public abstract class BookElement extends AbstractGui {
 
   }
 
-  public void renderToolTip(FontRenderer fontRenderer, ItemStack stack, int x, int y) {
+  public void renderToolTip(MatrixStack matrixStack, FontRenderer fontRenderer, ItemStack stack, int x, int y) {
     if (stack != null) {
       List<ITextComponent> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-      List<String> list1 = list.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList());
 
       FontRenderer font = stack.getItem().getFontRenderer(stack);
       if (font == null) {
         font = fontRenderer;
       }
-      this.drawHoveringText(list1, x, y, font);
+
+      this.drawHoveringText(matrixStack, list, x, y, font);
       RenderHelper.disableStandardItemLighting();
     }
   }
 
-  public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-    GuiUtils.drawHoveringText(textLines, x, y, this.parent.width, this.parent.height, -1, font);
+  public void drawHoveringText(MatrixStack matrixStack, List<ITextComponent> textLines, int x, int y, FontRenderer font) {
+    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.field_230708_k_, this.parent.field_230709_l_, -1, font);
     RenderHelper.disableStandardItemLighting();
   }
 }

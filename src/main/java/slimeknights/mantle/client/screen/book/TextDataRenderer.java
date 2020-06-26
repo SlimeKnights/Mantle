@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen.book;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -7,6 +8,8 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -26,18 +29,18 @@ public class TextDataRenderer {
   /**
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
-  public static String drawText(int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr) {
-    List<String> tooltip = new ArrayList<String>();
-    String action = drawText(x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
+  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr) {
+    List<ITextComponent> tooltip = new ArrayList<ITextComponent>();
+    String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
     if (tooltip.size() > 0) {
-      drawTooltip(tooltip, mouseX, mouseY, fr);
+      drawTooltip(matrixStack, tooltip, mouseX, mouseY, fr);
     }
 
     return action;
   }
 
-  public static String drawText(int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, @Nonnull List<String> tooltip) {
+  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, @Nonnull List<ITextComponent> tooltip) {
     String action = "";
 
     int atX = x;
@@ -102,7 +105,7 @@ public class TextDataRenderer {
         }
 
         String s = split[i];
-        drawScaledString(fr, modifiers + s, atX, atY, 0, item.dropshadow, item.scale);
+        drawScaledString(matrixStack, fr, modifiers + s, atX, atY, 0, item.dropshadow, item.scale);
 
         if (i < split.length - 1) {
           atY += fr.FONT_HEIGHT;
@@ -152,10 +155,10 @@ public class TextDataRenderer {
 
       if (atY >= y + boxHeight) {
         if (item.dropshadow) {
-          fr.drawStringWithShadow("...", atX, atY, 0);
+          fr.func_238405_a_(matrixStack, "...", atX, atY, 0);
         }
         else {
-          fr.drawString("...", atX, atY, 0);
+          fr.func_238421_b_(matrixStack, "...", atX, atY, 0);
         }
         break;
       }
@@ -163,8 +166,8 @@ public class TextDataRenderer {
     }
 
     if (BookScreen.debug && action != null && !action.isEmpty()) {
-      tooltip.add("");
-      tooltip.add(TextFormatting.GRAY + "Action: " + action);
+      tooltip.add(StringTextComponent.field_240750_d_);
+      tooltip.add(new StringTextComponent("Action: " + action).func_240699_a_(TextFormatting.GRAY));
     }
 
     return action;
@@ -221,20 +224,20 @@ public class TextDataRenderer {
   }
 
   //BEGIN METHODS FROM GUI
-  public static void drawTooltip(List<String> textLines, int mouseX, int mouseY, FontRenderer font) {
-    GuiUtils.drawHoveringText(textLines, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
+  public static void drawTooltip(MatrixStack matrixStack, List<ITextComponent> textLines, int mouseX, int mouseY, FontRenderer font) {
+    GuiUtils.drawHoveringText(matrixStack, textLines, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
     RenderHelper.disableStandardItemLighting();
   }
 
-  public static void drawScaledString(FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
+  public static void drawScaledString(MatrixStack matrixStack, FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
     RenderSystem.pushMatrix();
     RenderSystem.translatef(x, y, 0);
     RenderSystem.scalef(scale, scale, 1F);
     if (dropShadow) {
-      font.drawStringWithShadow(text, 0, 0, color);
+      font.func_238405_a_(matrixStack, text, 0, 0, color);
     }
     else {
-      font.drawString(text, 0, 0, color);
+      font.func_238421_b_(matrixStack, text, 0, 0, color);
     }
     RenderSystem.popMatrix();
   }

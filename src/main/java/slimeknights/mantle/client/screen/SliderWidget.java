@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -118,15 +119,15 @@ public class SliderWidget extends Widget {
   }
 
   @Override
-  public void draw() {
+  public void draw(MatrixStack matrixStack) {
     if (this.hidden) {
       return;
     }
 
     // slide bar background
-    this.slideBarTop.draw(this.xPos, this.yPos);
-    this.slideBar.drawScaledY(this.xPos, this.yPos + this.slideBarTop.h, this.getUsableSlidebarHeight());
-    this.slideBarBottom.draw(this.xPos, this.yPos + this.height - this.slideBarBottom.h);
+    this.slideBarTop.draw(matrixStack, this.xPos, this.yPos);
+    this.slideBar.drawScaledY(matrixStack, this.xPos, this.yPos + this.slideBarTop.h, this.getUsableSlidebarHeight());
+    this.slideBarBottom.draw(matrixStack, this.xPos, this.yPos + this.height - this.slideBarBottom.h);
 
     int x = this.xPos + this.sliderOffset;
     int y = this.yPos + this.getSliderTop();
@@ -134,14 +135,14 @@ public class SliderWidget extends Widget {
     // the slider depending on state
     if (this.enabled) {
       if (this.isScrolling) {
-        this.sliderDisabled.draw(x, y);
+        this.sliderDisabled.draw(matrixStack, x, y);
       } else if (this.isHighlighted) {
-        this.sliderHighlighted.draw(x, y);
+        this.sliderHighlighted.draw(matrixStack, x, y);
       } else {
-        this.slider.draw(x, y);
+        this.slider.draw(matrixStack, x, y);
       }
     } else {
-      this.sliderDisabled.draw(x, y);
+      this.sliderDisabled.draw(matrixStack, x, y);
     }
   }
 

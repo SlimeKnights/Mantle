@@ -2,11 +2,12 @@ package slimeknights.mantle.client.model;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.Matrix3f;
-import net.minecraft.client.renderer.Matrix4f;
-import net.minecraft.client.renderer.TransformationMatrix;
-import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.client.renderer.Vector4f;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.vector.Matrix3f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector4f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -142,8 +143,8 @@ public class TRSRBakedModel implements IBakedModel {
 
     @Nonnull
     @Override
-    public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull LivingEntity entity) {
-      IBakedModel baked = this.model.original.getOverrides().getModelWithOverrides(originalModel, stack, world, entity);
+    public IBakedModel func_239290_a_(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull ClientWorld world, @Nonnull LivingEntity entity) {
+      IBakedModel baked = this.model.original.getOverrides().func_239290_a_(originalModel, stack, world, entity);
 
       return new TRSRBakedModel(baked, this.model.transformation);
     }

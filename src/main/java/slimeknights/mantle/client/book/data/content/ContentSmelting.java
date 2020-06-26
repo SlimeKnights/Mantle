@@ -10,6 +10,7 @@ import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -58,7 +59,7 @@ public class ContentSmelting extends PageContent {
     tdTitle.underlined = true;
     list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
     list.add(new ImageElement(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
-    list.add(new TooltipElement(ImmutableList.of(I18n.format("mantle:tooltip.cooktime", this.cookTime / 20)), x + 7, y + 42, 60, 28));
+    list.add(new TooltipElement(ImmutableList.of(new TranslationTextComponent("mantle:tooltip.cooktime", this.cookTime / 20)), x + 7, y + 42, 60, 28));
 
     if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ItemElement(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));

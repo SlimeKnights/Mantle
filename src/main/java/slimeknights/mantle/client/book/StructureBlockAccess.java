@@ -4,11 +4,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
@@ -16,11 +18,12 @@ import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.Heightmap.Type;
 import net.minecraft.world.lighting.WorldLightManager;
 
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class StructureBlockAccess implements IWorldReader {
 
@@ -36,6 +39,11 @@ public class StructureBlockAccess implements IWorldReader {
   @Override
   public TileEntity getTileEntity(BlockPos pos) {
     return null;
+  }
+
+  @Override
+  public float func_230487_a_(Direction p_230487_1_, boolean p_230487_2_) {
+    return 0;
   }
 
   @Override
@@ -139,6 +147,11 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
+  public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
+    return null;
+  }
+
+  @Override
   public boolean isRemote() {
     return false;
   }
@@ -149,12 +162,12 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public Dimension getDimension() {
+  public DimensionType func_230315_m_() {
     return null;
   }
 
   @Override
-  public IFluidState getFluidState(BlockPos pos) {
+  public FluidState getFluidState(BlockPos pos) {
     return Fluids.EMPTY.getDefaultState();
   }
 }

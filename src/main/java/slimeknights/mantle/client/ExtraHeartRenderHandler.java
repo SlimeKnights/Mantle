@@ -1,11 +1,12 @@
 package slimeknights.mantle.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -27,7 +28,7 @@ public class ExtraHeartRenderHandler {
 
   private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
   private static final ResourceLocation ICON_ABSORB = new ResourceLocation(Mantle.modId, "textures/gui/absorb.png");
-  private static final ResourceLocation ICON_VANILLA = AbstractGui.GUI_ICONS_LOCATION;
+  private static final ResourceLocation ICON_VANILLA = AbstractGui.field_230665_h_;
 
   private final Minecraft mc = Minecraft.getInstance();
 
@@ -43,8 +44,8 @@ public class ExtraHeartRenderHandler {
 
   private static int left_height = 39;
 
-  public void blit(int x, int y, int textureX, int textureY, int width, int height) {
-    Minecraft.getInstance().ingameGUI.blit(x, y, textureX, textureY, width, height);
+  public void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
+    Minecraft.getInstance().ingameGUI.func_238474_b_(matrixStack, x, y, textureX, textureY, width, height);
   }
 
   /* HUD */
@@ -57,6 +58,7 @@ public class ExtraHeartRenderHandler {
       return;
     }
     PlayerEntity player = (PlayerEntity) this.mc.getRenderViewEntity();
+    MatrixStack matrixStack = new MatrixStack();
 
     // extra setup stuff from us
     left_height = ForgeIngameGui.left_height;
@@ -91,7 +93,7 @@ public class ExtraHeartRenderHandler {
     this.playerHealth = health;
     int healthLast = this.lastPlayerHealth;
 
-    IAttributeInstance attrMaxHealth = player.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+    ModifiableAttributeInstance attrMaxHealth = player.getAttribute(Attributes.field_233818_a_);
     float healthMax = (float) attrMaxHealth.getValue();
     float absorb = MathHelper.ceil(player.getAbsorptionAmount());
 
@@ -141,39 +143,39 @@ public class ExtraHeartRenderHandler {
         y -= 2;
       }
 
-      this.blit(x, y, BACKGROUND, TOP, 9, 9);
+      this.blit(matrixStack, x, y, BACKGROUND, TOP, 9, 9);
 
       if (highlight) {
         if (i * 2 + 1 < healthLast) {
-          this.blit(x, y, MARGIN + 54, TOP, 9, 9); //6
+          this.blit(matrixStack, x, y, MARGIN + 54, TOP, 9, 9); //6
         }
         else if (i * 2 + 1 == healthLast) {
-          this.blit(x, y, MARGIN + 63, TOP, 9, 9); //7
+          this.blit(matrixStack, x, y, MARGIN + 63, TOP, 9, 9); //7
         }
       }
 
       if (absorbRemaining > 0.0F) {
         if (absorbRemaining == absorb && absorb % 2.0F == 1.0F) {
-          this.blit(x, y, MARGIN + 153, TOP, 9, 9); //17
+          this.blit(matrixStack, x, y, MARGIN + 153, TOP, 9, 9); //17
           absorbRemaining -= 1.0F;
         }
         else {
-          this.blit(x, y, MARGIN + 144, TOP, 9, 9); //16
+          this.blit(matrixStack, x, y, MARGIN + 144, TOP, 9, 9); //16
           absorbRemaining -= 2.0F;
         }
       }
       else {
         if (i * 2 + 1 < health) {
-          this.blit(x, y, MARGIN + 36, TOP, 9, 9); //4
+          this.blit(matrixStack, x, y, MARGIN + 36, TOP, 9, 9); //4
         }
         else if (i * 2 + 1 == health) {
-          this.blit(x, y, MARGIN + 45, TOP, 9, 9); //5
+          this.blit(matrixStack, x, y, MARGIN + 45, TOP, 9, 9); //5
         }
       }
     }
 
-    this.renderExtraHearts(left, top, player);
-    this.renderExtraAbsorption(left, top - rowHeight, player);
+    this.renderExtraHearts(matrixStack, left, top, player);
+    this.renderExtraAbsorption(matrixStack, left, top - rowHeight, player);
 
     this.mc.getTextureManager().bindTexture(ICON_VANILLA);
     ForgeIngameGui.left_height += 10;
@@ -187,17 +189,17 @@ public class ExtraHeartRenderHandler {
     this.mc.getProfiler().endSection();
   }
 
-  private void renderExtraHearts(int xBasePos, int yBasePos, PlayerEntity player) {
+  private void renderExtraHearts(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
     this.mc.getTextureManager().bindTexture(ICON_HEARTS);
 
     int hp = MathHelper.ceil(player.getHealth());
-    this.renderCustomHearts(xBasePos, yBasePos, potionOffset, hp, false);
+    this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, hp, false);
   }
 
-  private void renderCustomHearts(int xBasePos, int yBasePos, int potionOffset, int count, boolean absorb) {
+  private void renderCustomHearts(MatrixStack matrixStack, int xBasePos, int yBasePos, int potionOffset, int count, boolean absorb) {
     int regenOffset = absorb ? 10 : 0;
     for (int iter = 0; iter < count / 20; iter++) {
       int renderHearts = (count - 20 * (iter + 1)) / 2;
@@ -208,16 +210,16 @@ public class ExtraHeartRenderHandler {
       for (int i = 0; i < renderHearts; i++) {
         int y = this.getYRegenOffset(i, regenOffset);
         if (absorb) {
-          this.blit(xBasePos + 8 * i, yBasePos + y, 0, 54, 9, 9);
+          this.blit(matrixStack, xBasePos + 8 * i, yBasePos + y, 0, 54, 9, 9);
         }
-        this.blit(xBasePos + 8 * i, yBasePos + y, 18 * heartIndex, potionOffset, 9, 9);
+        this.blit(matrixStack, xBasePos + 8 * i, yBasePos + y, 18 * heartIndex, potionOffset, 9, 9);
       }
       if (count % 2 == 1 && renderHearts < 10) {
         int y = this.getYRegenOffset(renderHearts, regenOffset);
         if (absorb) {
-          this.blit(xBasePos + 8 * renderHearts, yBasePos + y, 0, 54, 9, 9);
+          this.blit(matrixStack, xBasePos + 8 * renderHearts, yBasePos + y, 0, 54, 9, 9);
         }
-        this.blit(xBasePos + 8 * renderHearts, yBasePos + y, 9 + 18 * heartIndex, potionOffset, 9, 9);
+        this.blit(matrixStack, xBasePos + 8 * renderHearts, yBasePos + y, 9 + 18 * heartIndex, potionOffset, 9, 9);
       }
     }
   }
@@ -242,13 +244,13 @@ public class ExtraHeartRenderHandler {
     return potionOffset;
   }
 
-  private void renderExtraAbsorption(int xBasePos, int yBasePos, PlayerEntity player) {
+  private void renderExtraAbsorption(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
     this.mc.getTextureManager().bindTexture(ICON_ABSORB);
 
     int absorb = MathHelper.ceil(player.getAbsorptionAmount());
-    this.renderCustomHearts(xBasePos, yBasePos, potionOffset, absorb, true);
+    this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, absorb, true);
   }
 }

@@ -1,5 +1,6 @@
 package slimeknights.mantle.tileentity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
@@ -210,10 +211,10 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   @Override
   public ITextComponent getDisplayName() {
     if (this.hasCustomName()) {
-      return new StringTextComponent(this.getName().getFormattedText());
+      return new StringTextComponent(this.getName().getString());
     }
 
-    return new TranslationTextComponent(this.getName().getFormattedText());
+    return new TranslationTextComponent(this.getName().getString());
   }
 
   /* Supporting methods */
@@ -239,14 +240,14 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
   /* NBT */
   @Override
-  public void read(CompoundNBT tags) {
-    super.read(tags);
+  public void func_230337_a_(BlockState blockState, CompoundNBT tags) {
+    super.func_230337_a_(blockState, tags);
     this.resizeInternal(tags.getInt("InventorySize"));
 
     this.readInventoryFromNBT(tags);
 
     if (tags.contains("CustomName", 8)) {
-      this.inventoryTitle = ITextComponent.Serializer.fromJson(tags.getString("CustomName"));
+      this.inventoryTitle = ITextComponent.Serializer.func_240643_a_(tags.getString("CustomName"));
     }
   }
 

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -47,10 +48,10 @@ class ExampleSync {
   public void playerJoinedWorld(TickEvent.ClientTickEvent event) {
     ClientPlayerEntity player = Minecraft.getInstance().player;
     if (needsRestart) {
-      player.sendMessage(new StringTextComponent("Configs synced with server. Configs require a restart"));
+      player.sendMessage(new StringTextComponent("Configs synced with server. Configs require a restart"), Util.field_240973_b_);
     }
     else {
-      player.sendMessage(new StringTextComponent("Configs synced with server."));
+      player.sendMessage(new StringTextComponent("Configs synced with server."), Util.field_240973_b_);
     }
     MinecraftForge.EVENT_BUS.unregister(this);
   }

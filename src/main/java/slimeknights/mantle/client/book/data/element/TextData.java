@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.element;
 
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -19,7 +20,7 @@ public class TextData {
   public boolean dropshadow = false;
   public float scale = 1.F;
   public String action = "";
-  public String[] tooltip = null;
+  public ITextComponent[] tooltip = null;
 
   public TextData() {
   }

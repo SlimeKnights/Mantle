@@ -7,7 +7,7 @@ import net.minecraft.block.Blocks;
 import java.util.Map;
 import java.util.Optional;
 
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.data.element.BlockData;
@@ -57,7 +57,7 @@ public class StructureInfo {
 
     if (data.state != null && !data.state.isEmpty()) {
       for (Map.Entry<String, String> entry : data.state.entrySet()) {
-        Optional<IProperty<?>> property = state.getProperties().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
+        Optional<Property<?>> property = state.func_235904_r_().stream().filter(iProperty -> entry.getKey().equals(iProperty.getName())).findFirst();
 
         if (property.isPresent()) {
           state = this.setProperty(state, property.get(), entry.getValue());
@@ -68,7 +68,7 @@ public class StructureInfo {
     return state;
   }
 
-  private <T extends Comparable<T>> BlockState setProperty(BlockState state, IProperty<T> prop, String valueString) {
+  private <T extends Comparable<T>> BlockState setProperty(BlockState state, Property<T> prop, String valueString) {
     java.util.Optional<T> value = prop.parseValue(valueString);
     if (value.isPresent()) {
       state = state.with(prop, value.get());

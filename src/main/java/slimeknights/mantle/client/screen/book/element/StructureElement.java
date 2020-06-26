@@ -143,7 +143,7 @@ public class StructureElement extends SizedBookElement {
   private int fullStructureSteps = 5;
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if (this.lastClick != null) {
       if (Minecraft.getInstance().mouseHelper.isLeftDown() || Minecraft.getInstance().mouseHelper.isRightDown()) {
         int dx = mouseX - this.lastClick[0];

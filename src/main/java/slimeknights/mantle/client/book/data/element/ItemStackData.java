@@ -11,7 +11,7 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
@@ -37,7 +37,7 @@ public class ItemStackData implements IDataElement {
   private transient int tagGeneration;
 
   public NonNullList<ItemStack> getItems() {
-    if(this.isTag && this.tagGeneration != ItemTags.getGeneration()) {
+    if(this.isTag && this.tagGeneration != 0) { //ItemTags.getGeneration()) {  TODO FIX
       this.loadTag();
     }
 
@@ -117,11 +117,11 @@ public class ItemStackData implements IDataElement {
 
   private void loadTag() {
     this.isTag = true;
-    this.tagGeneration = ItemTags.getGeneration();
+    this.tagGeneration = 0;//ItemTags.getGeneration(); TODO FIX
 
-    Tag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
+    ITag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
     if (values != null) {
-      this.items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
+      this.items = values.func_230236_b_().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
     }
     else {
       this.items = NonNullList.create();

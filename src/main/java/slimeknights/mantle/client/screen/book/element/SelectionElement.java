@@ -1,7 +1,10 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import slimeknights.mantle.client.book.data.SectionData;
 
@@ -32,12 +35,12 @@ public class SelectionElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     boolean unlocked = this.section.isUnlocked(this.parent.advancementCache);
     boolean hover = this.isHovered(mouseX, mouseY);
 
     if (hover) {
-      fill(this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
+      func_238467_a_(matrixStack, this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
     }
     if (unlocked) {
       RenderSystem.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
@@ -49,31 +52,36 @@ public class SelectionElement extends SizedBookElement {
       RenderSystem.color4f(r, g, b, 0.75F);
     }
 
-    this.iconRenderer.draw(mouseX, mouseY, partialTicks, fontRenderer);
+    this.iconRenderer.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);
 
     if (this.section.parent.appearance.drawSectionListText) {
       int textW = fontRenderer.getStringWidth(this.section.getTitle());
       int textX = this.x + WIDTH / 2 - textW / 2;
       int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2;
-      fontRenderer.drawString(this.section.getTitle(),
-              textX,
-              textY,
-              hover ? 0xFF000000 : 0x7F000000);
+      fontRenderer.func_238421_b_(matrixStack, this.section.getTitle(),
+        textX,
+        textY,
+        hover ? 0xFF000000 : 0x7F000000);
     }
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if (this.section != null && this.isHovered(mouseX, mouseY)) {
-      List<String> text = new ArrayList<>();
-      text.add(this.section.getTitle());
-      if (!this.section.isUnlocked(this.parent.advancementCache)) {
-        text.add(TextFormatting.RED + "Locked");
-        text.add("Requirements:");
+      List<ITextComponent> text = new ArrayList<>();
 
-        text.addAll(this.section.requirements);
+      text.add(new StringTextComponent(this.section.getTitle()));
+
+      if (!this.section.isUnlocked(this.parent.advancementCache)) {
+        text.add(new StringTextComponent("Locked").func_240701_a_(TextFormatting.RED));
+        text.add(new StringTextComponent("Requirements:"));
+
+        for (String requirement : this.section.requirements) {
+          text.add(new StringTextComponent(requirement));
+        }
       }
-      this.drawHoveringText(text, mouseX, mouseY, fontRenderer);
+
+      this.drawHoveringText(matrixStack, text, mouseX, mouseY, fontRenderer);
     }
   }
 

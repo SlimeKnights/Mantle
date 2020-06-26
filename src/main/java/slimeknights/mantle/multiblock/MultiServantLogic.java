@@ -77,7 +77,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   @Deprecated
   public boolean verifyMaster(IMasterLogic logic, BlockPos pos) {
     return this.master.equals(pos) && this.world.getBlockState(pos) == this.state
-            && this.world.getBlockState(pos).getBlock() == this.masterBlock;
+      && this.world.getBlockState(pos).getBlock() == this.masterBlock;
   }
 
   @Override
@@ -129,8 +129,8 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   @Override
-  public void read(CompoundNBT tags) {
-    super.read(tags);
+  public void func_230337_a_(BlockState blockState, CompoundNBT tags) {
+    super.func_230337_a_(blockState, tags);
     this.readCustomNBT(tags);
   }
 

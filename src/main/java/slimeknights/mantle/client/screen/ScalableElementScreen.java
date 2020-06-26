@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,37 +16,37 @@ public class ScalableElementScreen extends ElementScreen {
     super(x, y, w, h);
   }
 
-  public int drawScaledX(int xPos, int yPos, int width) {
+  public int drawScaledX(MatrixStack matrixStack, int xPos, int yPos, int width) {
     for (int i = 0; i < width / this.w; i++) {
-      this.draw(xPos + i * this.w, yPos);
+      this.draw(matrixStack, xPos + i * this.w, yPos);
     }
     // remainder that doesn't fit total width
     int remainder = width % this.w;
     if (remainder > 0) {
-      Screen.blit(xPos + width - remainder, yPos, this.x, this.y, remainder, this.h, this.texW, this.texH);
+      Screen.func_238463_a_(matrixStack, xPos + width - remainder, yPos, this.x, this.y, remainder, this.h, this.texW, this.texH);
     }
 
     return width;
   }
 
-  public int drawScaledY(int xPos, int yPos, int height) {
+  public int drawScaledY(MatrixStack matrixStack, int xPos, int yPos, int height) {
     for (int i = 0; i < height / this.h; i++) {
-      this.draw(xPos, yPos + i * this.h);
+      this.draw(matrixStack, xPos, yPos + i * this.h);
     }
     // remainder that doesn't fit total width
     int remainder = height % this.h;
     if (remainder > 0) {
-      Screen.blit(xPos, yPos + height - remainder, this.x, this.y, this.w, remainder, this.texW, this.texH);
+      Screen.func_238463_a_(matrixStack, xPos, yPos + height - remainder, this.x, this.y, this.w, remainder, this.texW, this.texH);
     }
 
     return this.w;
   }
 
-  public int drawScaled(int xPos, int yPos, int width, int height) {
+  public int drawScaled(MatrixStack matrixStack, int xPos, int yPos, int width, int height) {
     // we draw full height row-wise
     int full = height / this.h;
     for (int i = 0; i < full; i++) {
-      this.drawScaledX(xPos, yPos + i * this.h, width);
+      this.drawScaledX(matrixStack, xPos, yPos + i * this.h, width);
     }
 
     yPos += full * this.h;
@@ -54,12 +55,14 @@ public class ScalableElementScreen extends ElementScreen {
     int yRest = height % this.h;
     // the same as drawScaledX but with the remaining height
     for (int i = 0; i < width / this.w; i++) {
-      this.drawScaledY(xPos + i * this.w, yPos, yRest);
+      this.drawScaledY(matrixStack, xPos + i * this.w, yPos, yRest);
     }
+
     // remainder that doesn't fit total width
     int remainder = width % this.w;
+
     if (remainder > 0) {
-      Screen.blit(xPos + width - remainder, yPos, this.x, this.y, remainder, yRest, this.texW, this.texH);
+      Screen.func_238463_a_(matrixStack, xPos + width - remainder, yPos, this.x, this.y, remainder, yRest, this.texW, this.texH);
     }
 
     return width;

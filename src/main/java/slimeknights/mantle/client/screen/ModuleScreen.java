@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerInventory;
@@ -44,9 +45,9 @@ public abstract class ModuleScreen extends ContainerScreen {
   }
 
   @Override
-  public void init() {
-    this.guiLeft = (this.width - this.xSize) / 2;
-    this.guiTop = (this.height - this.ySize) / 2;
+  public void func_231160_c_() {
+    this.guiLeft = (this.field_230708_k_ - this.xSize) / 2;
+    this.guiTop = (this.field_230709_l_ - this.ySize) / 2;
   }
 
   public void updatePosition(int parentX, int parentY, int parentSizeX, int parentSizeY) {
@@ -83,12 +84,12 @@ public abstract class ModuleScreen extends ContainerScreen {
     return false;
   }
 
-  public void handleDrawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-    this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+  public void handleDrawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    this.func_230450_a_(matrixStack,partialTicks, mouseX, mouseY);
   }
 
-  public void handleDrawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-    this.drawGuiContainerForegroundLayer(mouseX, mouseY);
+  public void handleDrawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
+    this.func_230451_b_(matrixStack, mouseX, mouseY);
   }
 
   /**

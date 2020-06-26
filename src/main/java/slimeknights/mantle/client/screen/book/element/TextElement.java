@@ -1,6 +1,8 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -15,7 +17,7 @@ import java.util.List;
 public class TextElement extends SizedBookElement {
 
   public TextData[] text;
-  private List<String> tooltip = new ArrayList<String>();
+  private final List<ITextComponent> tooltip = new ArrayList<ITextComponent>();
 
   private boolean doAction = false;
 
@@ -34,8 +36,8 @@ public class TextElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    String action = TextDataRenderer.drawText(this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+    String action = TextDataRenderer.drawText(matrixStack, this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
 
     if (this.doAction) {
       this.doAction = false;
@@ -44,9 +46,9 @@ public class TextElement extends SizedBookElement {
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if (this.tooltip.size() > 0) {
-      TextDataRenderer.drawTooltip(this.tooltip, mouseX, mouseY, fontRenderer);
+      TextDataRenderer.drawTooltip(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
       this.tooltip.clear();
     }
   }

@@ -35,17 +35,17 @@ public class TooltipItem extends Item {
     if (!ForgeI18n.getPattern(translationKey).equals(translationKey)) {
       String translate = ForgeI18n.getPattern(translationKey);
       if (!ForgeI18n.getPattern(translate).equals(translate)) {
-        String[] strings = new TranslationTextComponent(translate).getFormattedText().split("\n");
+        String[] strings = new TranslationTextComponent(translate).getString().split("\n");
 
         for (String string : strings) {
-          tooltip.add(new StringTextComponent(string).applyTextStyle(TextFormatting.GRAY));
+          tooltip.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
         }
       }
       else {
-        String[] strings = new TranslationTextComponent(translationKey).getFormattedText().split("\n");
+        String[] strings = new TranslationTextComponent(translationKey).getString().split("\n");
 
         for (String string : strings) {
-          tooltip.add(new StringTextComponent(string).applyTextStyle(TextFormatting.GRAY));
+          tooltip.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
         }
       }
     }

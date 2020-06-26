@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -117,7 +118,7 @@ public class TabsWidget extends Widget {
   }
 
   @Override
-  public void draw() {
+  public void draw(MatrixStack matrixStack) {
     int y = this.yPos + this.yOffset;
     for (int i = 0; i < this.icons.size(); i++) {
       int x = this.xPos + i * this.tab[0].w;
@@ -136,7 +137,7 @@ public class TabsWidget extends Widget {
       ElementScreen actualTab;
       if (i == 0 && x == this.parent.cornerX) {
         actualTab = toDraw[0];
-      } else if (x == this.parent.cornerX + this.parent.width) {
+      } else if (x == this.parent.cornerX + this.parent.field_230708_k_) {
         actualTab = toDraw[2];
       } else {
         actualTab = toDraw[1];
@@ -146,7 +147,7 @@ public class TabsWidget extends Widget {
 
       // rebind texture from drawing an itemstack
       Minecraft.getInstance().getTextureManager().bindTexture(this.tabsResource);
-      actualTab.draw(x, y);
+      actualTab.draw(matrixStack,x, y);
 
       ItemStack icon = this.icons.get(i);
       if (icon != null) {

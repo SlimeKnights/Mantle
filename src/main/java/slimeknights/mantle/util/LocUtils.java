@@ -33,17 +33,17 @@ public abstract class LocUtils {
     if (!ForgeI18n.getPattern(text).equals(text)) {
       String translate = ForgeI18n.getPattern(text);
       if (!ForgeI18n.getPattern(translate).equals(translate)) {
-        String[] strings = new TranslationTextComponent(translate).getFormattedText().split("\n");
+        String[] strings = new TranslationTextComponent(translate).getString().split("\n");
 
         for (String string : strings) {
-          list.add(new StringTextComponent(string).applyTextStyle(TextFormatting.GRAY));
+          list.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
         }
       }
       else {
-        String[] strings = new TranslationTextComponent(text).getFormattedText().split("\n");
+        String[] strings = new TranslationTextComponent(text).getString().split("\n");
 
         for (String string : strings) {
-          list.add(new StringTextComponent(string).applyTextStyle(TextFormatting.GRAY));
+          list.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
         }
       }
     }

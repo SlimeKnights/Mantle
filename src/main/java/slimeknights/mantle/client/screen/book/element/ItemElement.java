@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
@@ -8,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -24,7 +26,7 @@ public class ItemElement extends SizedBookElement {
   public NonNullList<ItemStack> itemCycle;
   public float scale;
   public String action;
-  public List<String> tooltip;
+  public List<ITextComponent> tooltip;
 
   public int renderTick = 0;
   public int currentItem = 0;
@@ -69,7 +71,7 @@ public class ItemElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     this.renderTick++;
 
     if (this.renderTick > ITEM_SWITCH_TICKS) {
@@ -94,13 +96,13 @@ public class ItemElement extends SizedBookElement {
   }
 
   @Override
-  public void drawOverlay(int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
     if (this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
       if (this.tooltip != null) {
-        this.drawHoveringText(this.tooltip, mouseX, mouseY, fontRenderer);
+        this.drawHoveringText(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
       }
       else {
-        this.renderToolTip(fontRenderer, this.itemCycle.get(this.currentItem), mouseX, mouseY);
+        this.renderToolTip(matrixStack, fontRenderer, this.itemCycle.get(this.currentItem), mouseX, mouseY);
       }
     }
   }
