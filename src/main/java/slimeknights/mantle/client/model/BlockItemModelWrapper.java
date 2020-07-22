@@ -3,7 +3,6 @@ package slimeknights.mantle.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -11,12 +10,12 @@ import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.client.ModelHelper;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
@@ -49,16 +48,14 @@ public class BlockItemModelWrapper implements IBakedModel {
     return this;
   }
 
-  @Nonnull
   @Override
   @Deprecated
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
   }
 
-  @Nonnull
   @Override
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData) {
     return this.parent.getQuads(state, side, rand, extraData);
   }
 
@@ -82,33 +79,28 @@ public class BlockItemModelWrapper implements IBakedModel {
     return this.parent.isBuiltInRenderer();
   }
 
-  @Nonnull
   @Override
   @Deprecated
   public TextureAtlasSprite getParticleTexture() {
     return this.parent.getParticleTexture();
   }
 
-  @Nonnull
   @Override
-  public TextureAtlasSprite getParticleTexture(@Nonnull IModelData data) {
+  public TextureAtlasSprite getParticleTexture(IModelData data) {
     return this.parent.getParticleTexture(data);
   }
 
-  @Nonnull
   @Override
-  public IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+  public IModelData getModelData(IBlockDisplayReader world, BlockPos pos, BlockState state, IModelData tileData) {
     return this.parent.getModelData(world, pos, state, tileData);
   }
 
-  @Nonnull
   @Override
   @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return this.parent.getItemCameraTransforms();
   }
 
-  @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
     return ItemOverrideList.EMPTY;

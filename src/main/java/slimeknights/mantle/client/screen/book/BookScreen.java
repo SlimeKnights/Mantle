@@ -627,10 +627,12 @@ public class BookScreen extends Screen {
     private HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
     private HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
 
+    @Nullable
     public AdvancementProgress getProgress(String id) {
       return this.getProgress(this.getAdvancement(id));
     }
 
+    @Nullable
     public AdvancementProgress getProgress(Advancement advancement) {
       return this.progress.get(advancement);
     }

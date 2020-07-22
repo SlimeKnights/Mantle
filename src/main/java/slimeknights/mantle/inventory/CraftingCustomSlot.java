@@ -5,8 +5,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.CraftingResultSlot;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import net.minecraftforge.fml.hooks.BasicEventHooks;
 
 public class CraftingCustomSlot extends CraftingResultSlot {
 
@@ -27,9 +26,8 @@ public class CraftingCustomSlot extends CraftingResultSlot {
   }
 
   @Override
-  @Nonnull
-  public ItemStack onTake(PlayerEntity playerIn, @Nonnull ItemStack stack) {
-    net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
+  public ItemStack onTake(PlayerEntity playerIn, ItemStack stack) {
+    BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
     this.onCrafting(stack);
 
     this.callback.onCrafting(playerIn, stack, this.craftMatrix);

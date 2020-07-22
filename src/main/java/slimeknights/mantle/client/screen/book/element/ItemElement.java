@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class ItemElement extends SizedBookElement {
 
   public NonNullList<ItemStack> itemCycle;
   public float scale;
+  @Nullable
   public String action;
   public List<ITextComponent> tooltip;
 
@@ -44,18 +46,18 @@ public class ItemElement extends SizedBookElement {
   }
 
   public ItemElement(int x, int y, float scale, Collection<ItemStack> itemCycle) {
-    this(x, y, scale, itemCycle.toArray(new ItemStack[itemCycle.size()]));
+    this(x, y, scale, itemCycle.toArray(new ItemStack[0]));
   }
 
   public ItemElement(int x, int y, float scale, Collection<ItemStack> itemCycle, String action) {
-    this(x, y, scale, itemCycle.toArray(new ItemStack[itemCycle.size()]), action);
+    this(x, y, scale, itemCycle.toArray(new ItemStack[0]), action);
   }
 
   public ItemElement(int x, int y, float scale, ItemStack... itemCycle) {
     this(x, y, scale, itemCycle, null);
   }
 
-  public ItemElement(int x, int y, float scale, ItemStack[] itemCycle, String action) {
+  public ItemElement(int x, int y, float scale, ItemStack[] itemCycle, @Nullable String action) {
     super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
     NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(itemCycle.length, ItemStack.EMPTY);

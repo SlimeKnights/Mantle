@@ -4,7 +4,6 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.UnmodifiableListIterator;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -40,21 +39,18 @@ public class ImmutableConcatList<E> implements List<E> {
     return this.iterable.contains(o);
   }
 
-  @Nonnull
   @Override
   public Iterator<E> iterator() {
     return this.iterable.iterator();
   }
 
-  @Nonnull
   @Override
   public Object[] toArray() {
     return this.iterable.toList().toArray();
   }
 
-  @Nonnull
   @Override
-  public <T> T[] toArray(@Nonnull T[] a) {
+  public <T> T[] toArray(T[] a) {
     return this.iterable.toList().toArray(a);
   }
 
@@ -69,7 +65,7 @@ public class ImmutableConcatList<E> implements List<E> {
   }
 
   @Override
-  public boolean containsAll(@Nonnull Collection<?> c) {
+  public boolean containsAll(Collection<?> c) {
     for (Object e : c) {
       if (!this.contains(e)) {
         return false;
@@ -79,22 +75,22 @@ public class ImmutableConcatList<E> implements List<E> {
   }
 
   @Override
-  public boolean addAll(@Nonnull Collection<? extends E> c) {
+  public boolean addAll(Collection<? extends E> c) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean addAll(int index, @Nonnull Collection<? extends E> c) {
+  public boolean addAll(int index, Collection<? extends E> c) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean removeAll(@Nonnull Collection<?> c) {
+  public boolean removeAll(Collection<?> c) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean retainAll(@Nonnull Collection<?> c) {
+  public boolean retainAll(Collection<?> c) {
     throw new UnsupportedOperationException();
   }
 
@@ -148,13 +144,11 @@ public class ImmutableConcatList<E> implements List<E> {
     return j;
   }
 
-  @Nonnull
   @Override
   public ListIterator<E> listIterator() {
     return this.listIterator(0);
   }
 
-  @Nonnull
   @Override
   public ListIterator<E> listIterator(int index) {
     return new ListItr<E>(this.size(), index) {
@@ -165,7 +159,6 @@ public class ImmutableConcatList<E> implements List<E> {
     };
   }
 
-  @Nonnull
   @Override
   public List<E> subList(int fromIndex, int toIndex) {
     throw new UnsupportedOperationException();

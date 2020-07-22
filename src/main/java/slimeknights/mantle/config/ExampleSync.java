@@ -47,6 +47,7 @@ class ExampleSync {
   @OnlyIn(Dist.CLIENT)
   public void playerJoinedWorld(TickEvent.ClientTickEvent event) {
     ClientPlayerEntity player = Minecraft.getInstance().player;
+    assert player != null;
     if (needsRestart) {
       player.sendMessage(new StringTextComponent("Configs synced with server. Configs require a restart"), Util.DUMMY_UUID);
     }

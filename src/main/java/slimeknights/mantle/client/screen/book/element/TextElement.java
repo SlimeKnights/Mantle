@@ -26,7 +26,7 @@ public class TextElement extends SizedBookElement {
   }
 
   public TextElement(int x, int y, int width, int height, Collection<TextData> text) {
-    this(x, y, width, height, text.toArray(new TextData[text.size()]));
+    this(x, y, width, height, text.toArray(new TextData[0]));
   }
 
   public TextElement(int x, int y, int width, int height, TextData... text) {

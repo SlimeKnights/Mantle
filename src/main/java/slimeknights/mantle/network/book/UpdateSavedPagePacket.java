@@ -32,11 +32,11 @@ public class UpdateSavedPagePacket extends AbstractPacket {
     context.get().enqueueWork(() -> {
       if (context.get().getSender() != null && this.pageName != null) {
         PlayerEntity player = context.get().getSender();
-
-        ItemStack is = player.getHeldItem(Hand.MAIN_HAND);
-
-        if (!is.isEmpty()) {
-          BookHelper.writeSavedPage(is, this.pageName);
+        if (player != null) {
+          ItemStack is = player.getHeldItem(Hand.MAIN_HAND);
+          if (!is.isEmpty()) {
+            BookHelper.writeSavedPage(is, this.pageName);
+          }
         }
       }
     });

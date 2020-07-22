@@ -2,27 +2,26 @@ package slimeknights.mantle.client.model;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.vector.Matrix3f;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
-import net.minecraft.world.World;
+import net.minecraft.util.math.vector.Matrix3f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 import net.minecraftforge.common.model.TransformationHelper;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
@@ -67,9 +66,8 @@ public class TRSRBakedModel implements IBakedModel {
     this.transformation = new TransformationMatrix(null, null, null, TransformationHelper.quatFromXYZ(new float[] { 0, (float) r, 0 }, false)).blockCenterToCorner();
   }
 
-  @Nonnull
   @Override
-  public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     // transform quads obtained from parent
 
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
@@ -114,20 +112,17 @@ public class TRSRBakedModel implements IBakedModel {
     return this.original.isBuiltInRenderer();
   }
 
-  @Nonnull
   @Override
   public TextureAtlasSprite getParticleTexture() {
     return this.original.getParticleTexture();
   }
 
-  @Nonnull
   @Override
   @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return this.original.getItemCameraTransforms();
   }
 
-  @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
     return this.override;
@@ -141,11 +136,13 @@ public class TRSRBakedModel implements IBakedModel {
       this.model = model;
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public IBakedModel func_239290_a_(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull ClientWorld world, @Nonnull LivingEntity entity) {
+    public IBakedModel func_239290_a_(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
       IBakedModel baked = this.model.original.getOverrides().func_239290_a_(originalModel, stack, world, entity);
-
+      if (baked == null) {
+        return null;
+      }
       return new TRSRBakedModel(baked, this.model.transformation);
     }
   }

@@ -103,7 +103,7 @@ public class SectionData implements IDataItem {
     return this.pages.size();
   }
 
-  public boolean isUnlocked(BookScreen.AdvancementCache advancementCache) {
+  public boolean isUnlocked(@Nullable BookScreen.AdvancementCache advancementCache) {
     if (advancementCache == null || this.requirements == null || this.requirements.size() == 0) {
       return true;
     }
@@ -117,7 +117,7 @@ public class SectionData implements IDataItem {
     return true;
   }
 
-  public static boolean requirementSatisfied(String requirement, BookScreen.AdvancementCache advancementCache) {
+  public static boolean requirementSatisfied(String requirement, @Nullable BookScreen.AdvancementCache advancementCache) {
     if (advancementCache == null) {
       return true;
     }

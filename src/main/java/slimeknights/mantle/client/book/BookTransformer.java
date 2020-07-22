@@ -8,6 +8,7 @@ import slimeknights.mantle.client.book.data.content.ContentTableOfContents;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +42,7 @@ public abstract class BookTransformer {
     public void transform(BookData book) {
       SectionData index = new SectionData(true) {
         @Override
-        public void update(BookScreen.AdvancementCache advancementCache) {
+        public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
           this.pages.clear();
 
           List<SectionData> visibleSections = this.parent.getVisibleSections(advancementCache);

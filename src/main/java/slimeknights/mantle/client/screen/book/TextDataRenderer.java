@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +29,7 @@ public class TextDataRenderer {
   /**
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
+  @Nullable
   public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr) {
     List<ITextComponent> tooltip = new ArrayList<ITextComponent>();
     String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
@@ -40,7 +41,8 @@ public class TextDataRenderer {
     return action;
   }
 
-  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, @Nonnull List<ITextComponent> tooltip) {
+  @Nullable
+  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, List<ITextComponent> tooltip) {
     String action = "";
 
     int atX = x;

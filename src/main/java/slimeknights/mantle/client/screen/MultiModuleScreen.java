@@ -14,7 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 import slimeknights.mantle.inventory.WrapperSlot;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +101,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   protected void drawPlayerInventoryName(MatrixStack matrixStack) {
+    assert Minecraft.getInstance().player != null;
     ITextComponent localizedName = Minecraft.getInstance().player.inventory.getDisplayName();
     this.font.func_238422_b_(matrixStack, localizedName, 8, this.ySize - 96 + 2, 0x404040);
   }
@@ -116,7 +117,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void resize(@Nonnull Minecraft mc, int width, int height) {
+  public void resize(Minecraft mc, int width, int height) {
     super.resize(mc, width, height);
 
     for (ModuleScreen module : this.modules) {
@@ -272,6 +273,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     return super.mouseReleased(mouseX, mouseY, state);
   }
 
+  @Nullable
   protected ModuleScreen getModuleForPoint(double x, double y) {
     for (ModuleScreen module : this.modules) {
       if (this.isPointInRegion(module.guiLeft, module.guiTop, module.guiRight(), module.guiBottom(), x + this.cornerX, y + this.cornerY)) {
@@ -282,10 +284,12 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     return null;
   }
 
+  @Nullable
   protected ModuleScreen getModuleForSlot(int slotNumber) {
     return this.getModuleForContainer(this.getContainer().getSlotContainer(slotNumber));
   }
 
+  @Nullable
   protected ModuleScreen getModuleForContainer(Container container) {
     for (ModuleScreen module : this.modules) {
       if (module.getContainer() == container) {
@@ -296,7 +300,6 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     return null;
   }
 
-  @Nonnull
   @Override
   public CONTAINER getContainer() {
     return this.container;

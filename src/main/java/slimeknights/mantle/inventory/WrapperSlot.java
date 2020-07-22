@@ -8,8 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
-
 /**
  * Used to wrap the slots inside Modules/Subcontainers
  */
@@ -43,12 +41,11 @@ public class WrapperSlot extends Slot {
   }
 
   @Override
-  public void putStack(@Nonnull ItemStack stack) {
+  public void putStack(ItemStack stack) {
     this.parent.putStack(stack);
   }
 
   @Override
-  @Nonnull
   public ItemStack onTake(PlayerEntity playerIn, ItemStack stack) {
     this.parent.onTake(playerIn, stack);
 
@@ -56,7 +53,6 @@ public class WrapperSlot extends Slot {
   }
 
   @Override
-  @Nonnull
   public ItemStack getStack() {
     return this.parent.getStack();
   }
@@ -87,7 +83,6 @@ public class WrapperSlot extends Slot {
     return this.parent.setBackground(atlas, sprite);
   }
 
-  @Nonnull
   @Override
   public ItemStack decrStackSize(int amount) {
     return this.parent.decrStackSize(amount);

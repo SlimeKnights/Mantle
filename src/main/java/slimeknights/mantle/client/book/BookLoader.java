@@ -13,13 +13,25 @@ import net.minecraftforge.fml.ModLoadingContext;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
-import slimeknights.mantle.client.book.data.content.*;
+import slimeknights.mantle.client.book.data.content.ContentBlank;
+import slimeknights.mantle.client.book.data.content.ContentBlockInteraction;
+import slimeknights.mantle.client.book.data.content.ContentCrafting;
+import slimeknights.mantle.client.book.data.content.ContentImage;
+import slimeknights.mantle.client.book.data.content.ContentImageText;
+import slimeknights.mantle.client.book.data.content.ContentSmelting;
+import slimeknights.mantle.client.book.data.content.ContentSmithing;
+import slimeknights.mantle.client.book.data.content.ContentStructure;
+import slimeknights.mantle.client.book.data.content.ContentText;
+import slimeknights.mantle.client.book.data.content.ContentTextImage;
+import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
+import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
+import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.BookNetwork;
 import slimeknights.mantle.network.book.UpdateSavedPagePacket;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 
 @OnlyIn(Dist.CLIENT)
@@ -117,7 +129,7 @@ public class BookLoader implements IResourceManagerReloadListener {
     return info;
   }
 
-  public static void updateSavedPage(PlayerEntity player, ItemStack item, String page) {
+  public static void updateSavedPage(@Nullable PlayerEntity player, ItemStack item, String page) {
     if (player == null) {
       return;
     }
@@ -133,7 +145,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
-  public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
+  public void onResourceManagerReload(IResourceManager resourceManager) {
     books.forEach((s, bookData) -> bookData.reset());
   }
 }

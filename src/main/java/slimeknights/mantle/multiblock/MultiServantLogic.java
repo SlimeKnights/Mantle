@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.tileentity.MantleTileEntity;
 
-import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class MultiServantLogic extends MantleTileEntity implements IServantLogic {
 
@@ -38,6 +38,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       return false;
     }
 
+    assert this.world != null;
     if (this.world.getBlockState(this.master).getBlock() == this.masterBlock && this.world.getBlockState(this.master) == this.state) {
       return true;
     }
@@ -54,6 +55,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   public void overrideMaster(BlockPos pos) {
+    assert this.world != null;
     this.hasMaster = true;
     this.master = pos;
     this.state = this.world.getBlockState(this.master);
@@ -76,8 +78,9 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   @Deprecated
   public boolean verifyMaster(IMasterLogic logic, BlockPos pos) {
+    assert this.world != null;
     return this.master.equals(pos) && this.world.getBlockState(pos) == this.state
-      && this.world.getBlockState(pos).getBlock() == this.masterBlock;
+           && this.world.getBlockState(pos).getBlock() == this.masterBlock;
   }
 
   @Override
@@ -99,6 +102,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   @Override
   public void notifyMasterOfChange() {
     if (this.hasValidMaster()) {
+      assert this.world != null;
       IMasterLogic logic = (IMasterLogic) this.world.getTileEntity(this.master);
       logic.notifyChange(this, this.pos);
     }
@@ -122,7 +126,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       tags.putInt("xCenter", this.master.getX());
       tags.putInt("yCenter", this.master.getY());
       tags.putInt("zCenter", this.master.getZ());
-      tags.putString("MasterBlockName", ForgeRegistries.BLOCKS.getKey(this.masterBlock).toString());
+      tags.putString("MasterBlockName", Objects.requireNonNull(this.masterBlock.getRegistryName()).toString());
       tags.putInt("masterState", Block.getStateId(this.state));
     }
     return tags;
@@ -134,7 +138,6 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
     this.readCustomNBT(tags);
   }
 
-  @Nonnull
   @Override
   public CompoundNBT write(CompoundNBT tags) {
     tags = super.write(tags);
@@ -142,7 +145,6 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   /* Packets */
-  @Nonnull
   @Override
   public CompoundNBT getUpdateTag() {
     CompoundNBT tag = new CompoundNBT();
@@ -154,18 +156,14 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
     this.readCustomNBT(packet.getNbtCompound());
     //this.world.notifyLightSet(this.pos);
+    assert world != null;
     BlockState state = world.getBlockState(this.pos);
     this.world.notifyBlockUpdate(this.pos, state, state, 3);
   }
 
-  @Nonnull
-  @Override
-  public World getWorld() {
-    return this.world;
-  }
-
   @Deprecated
   public boolean setMaster(BlockPos pos) {
+    assert this.world != null;
     if (!this.hasMaster || this.world.getBlockState(this.master) != this.state || (this.world.getBlockState(this.master).getBlock() != this.masterBlock)) {
       this.overrideMaster(pos);
       return true;

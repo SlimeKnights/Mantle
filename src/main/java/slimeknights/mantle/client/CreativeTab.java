@@ -5,8 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
-
 public class CreativeTab extends ItemGroup {
 
   private ItemStack icon;
@@ -24,14 +22,12 @@ public class CreativeTab extends ItemGroup {
     }
   }
 
-  @Nonnull
   @OnlyIn(Dist.CLIENT)
   @Override
   public ItemStack getIcon() {
     return this.icon;
   }
 
-  @Nonnull
   @OnlyIn(Dist.CLIENT)
   @Override
   public ItemStack createIcon() {

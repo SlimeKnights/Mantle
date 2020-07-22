@@ -18,7 +18,6 @@ import net.minecraftforge.fml.DistExecutor;
 import slimeknights.mantle.util.SlimeknightException;
 import slimeknights.mantle.util.TileEntityUtil;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BaseContainer<TILE extends TileEntity> extends Container {
@@ -38,7 +37,8 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     this.tile = tile;
   }
 
-  public TILE getTileEntity() {
+  @Nullable
+  public TILE getTile() {
     return this.tile;
   }
 
@@ -86,7 +86,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   @Override
-  public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
+  public boolean canInteractWith(PlayerEntity playerIn) {
     if (this.tile == null) {
       return true;
     }
@@ -105,7 +105,6 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return false;
   }
 
-  @Nonnull
   @Override
   public NonNullList<ItemStack> getInventory() {
     return super.getInventory();
@@ -136,7 +135,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return BASE_Y_OFFSET;
   }
 
-  protected void addInventorySlots(@Nonnull PlayerInventory inv) {
+  protected void addInventorySlots(PlayerInventory inv) {
     int yOffset = this.getInventoryYOffset();
     int xOffset = this.getInventoryXOffset();
 
@@ -156,7 +155,6 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     this.playerInventoryStart = start;
   }
 
-  @Nonnull
   @Override
   protected Slot addSlot(Slot slotIn) {
     if (this.playerInventoryStart >= 0) {
@@ -165,7 +163,6 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return super.addSlot(slotIn);
   }
 
-  @Nonnull
   @Override
   public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
     // we can only support inventory <-> playerInventory
@@ -207,7 +204,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
 
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
   @Override
-  protected boolean mergeItemStack(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     boolean ret = this.mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
     if (!stack.isEmpty() && stack.getCount() > 0) {
       ret |= this.mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
@@ -216,7 +213,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   // only refills items that are already present
-  protected boolean mergeItemStackRefill(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean mergeItemStackRefill(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     if (stack.getCount() <= 0) {
       return false;
     }
@@ -265,7 +262,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   // only moves items into empty slots
-  protected boolean mergeItemStackMove(@Nonnull ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean mergeItemStackMove(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     if (stack.getCount() <= 0) {
       return false;
     }
@@ -314,7 +311,8 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return flag1;
   }
 
-  public static <TILE extends TileEntity> TILE getTileEntityFromBuf(PacketBuffer buf, Class<TILE> type) {
+  @Nullable
+  public static <TILE extends TileEntity> TILE getTileEntityFromBuf(@Nullable PacketBuffer buf, Class<TILE> type) {
     if (buf == null) {
       return null;
     }

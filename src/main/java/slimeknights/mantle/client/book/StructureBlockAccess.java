@@ -3,8 +3,8 @@ package slimeknights.mantle.client.book;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -48,7 +48,7 @@ public class StructureBlockAccess implements IWorldReader {
 
   @Override
   public WorldLightManager getLightManager() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -82,12 +82,12 @@ public class StructureBlockAccess implements IWorldReader {
 
   @Override
   public Biome getBiome(BlockPos pos) {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public Biome getNoiseBiomeRaw(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -133,22 +133,22 @@ public class StructureBlockAccess implements IWorldReader {
 
   @Override
   public BiomeManager getBiomeManager() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public WorldBorder getWorldBorder() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean checkNoEntityCollision(Entity entityIn, VoxelShape shape) {
+  public boolean checkNoEntityCollision(@Nullable Entity entityIn, VoxelShape shape) {
     return false;
   }
 
   @Override
   public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -163,7 +163,7 @@ public class StructureBlockAccess implements IWorldReader {
 
   @Override
   public DimensionType func_230315_m_() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override

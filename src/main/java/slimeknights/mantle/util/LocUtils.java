@@ -8,6 +8,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.ForgeI18n;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,7 +52,8 @@ public abstract class LocUtils {
     return list;
   }
 
-  public static String convertNewlines(String line) {
+  @Nullable
+  public static String convertNewlines(@Nullable String line) {
     if (line == null) {
       return null;
     }

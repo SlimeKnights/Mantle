@@ -1,7 +1,6 @@
 package slimeknights.mantle.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +17,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class InventoryBlock extends Block {
@@ -33,7 +31,6 @@ public abstract class InventoryBlock extends Block {
     return true;
   }
 
-  @Nonnull
   @Override
   public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
 
@@ -57,7 +54,7 @@ public abstract class InventoryBlock extends Block {
   }
 
   @Override
-  public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+  public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
     super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 
     // set custom name from named stack

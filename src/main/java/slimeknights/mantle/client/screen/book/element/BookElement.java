@@ -15,7 +15,6 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class BookElement extends AbstractGui {
@@ -54,17 +53,15 @@ public abstract class BookElement extends AbstractGui {
   }
 
   public void renderToolTip(MatrixStack matrixStack, FontRenderer fontRenderer, ItemStack stack, int x, int y) {
-    if (stack != null) {
-      List<ITextComponent> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+    List<ITextComponent> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 
-      FontRenderer font = stack.getItem().getFontRenderer(stack);
-      if (font == null) {
-        font = fontRenderer;
-      }
-
-      this.drawHoveringText(matrixStack, list, x, y, font);
-      RenderHelper.disableStandardItemLighting();
+    FontRenderer font = stack.getItem().getFontRenderer(stack);
+    if (font == null) {
+      font = fontRenderer;
     }
+
+    this.drawHoveringText(matrixStack, list, x, y, font);
+    RenderHelper.disableStandardItemLighting();
   }
 
   public void drawHoveringText(MatrixStack matrixStack, List<ITextComponent> textLines, int x, int y, FontRenderer font) {

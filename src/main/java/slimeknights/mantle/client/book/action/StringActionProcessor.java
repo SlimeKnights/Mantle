@@ -1,9 +1,10 @@
 package slimeknights.mantle.client.book.action;
 
-import java.util.HashMap;
-
 import slimeknights.mantle.client.book.action.protocol.ActionProtocol;
 import slimeknights.mantle.client.screen.book.BookScreen;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
 
 public class StringActionProcessor {
 
@@ -11,7 +12,7 @@ public class StringActionProcessor {
 
   private static final HashMap<String, ActionProtocol> protocols = new HashMap<>();
 
-  public static void registerProtocol(ActionProtocol protocol) {
+  public static void registerProtocol(@Nullable ActionProtocol protocol) {
     if (protocol == null || protocol.protocol == null || protocol.protocol.isEmpty()) {
       throw new IllegalArgumentException("Protocol must be defined and must not have an empty protocol identifier.");
     }
@@ -23,8 +24,8 @@ public class StringActionProcessor {
   }
 
   //Format: action://param
-  public static void process(String action, BookScreen book) {
-    if (!action.contains(PROTOCOL_SEPARATOR)) {
+  public static void process(@Nullable String action, BookScreen book) {
+    if (action == null || !action.contains(PROTOCOL_SEPARATOR)) {
       return;
     }
 

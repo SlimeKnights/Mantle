@@ -1,21 +1,17 @@
 package slimeknights.mantle.client.model;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.util.Direction;
-import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Groups multiple baked models into a single one. Does not respect state etc. when getting quads.
@@ -31,17 +27,9 @@ public class BakedCompositeModel extends BakedWrapper {
     this.parts = parts;
   }
 
-  @Nonnull
   @Override
-  @Deprecated
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
-    return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
-  }
-
-  @Nonnull
-  @Override
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-    return this.parts.get(Optional.fromNullable(side));
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData) {
+    return this.parts.get(Optional.ofNullable(side));
   }
 
   public static class Builder {
@@ -63,7 +51,7 @@ public class BakedCompositeModel extends BakedWrapper {
       }
     }
 
-    public void add(IBakedModel model, BlockState state, Direction side, Random rand) {
+    public void add(IBakedModel model, BlockState state, @Nullable Direction side, Random rand) {
       int index;
       if (side == null) {
         index = 6;
@@ -76,9 +64,9 @@ public class BakedCompositeModel extends BakedWrapper {
     }
 
     public BakedCompositeModel build(IBakedModel parent) {
-      ImmutableMap.Builder<Optional<Direction>, ImmutableList<BakedQuad>> map = ImmutableMap.builder();
+      ImmutableMap.Builder<Optional<Direction>,ImmutableList<BakedQuad>> map = ImmutableMap.builder();
 
-      map.put(Optional.absent(), this.builders[6].build());
+      map.put(Optional.empty(), this.builders[6].build());
       for (Direction side : Direction.values()) {
         map.put(Optional.of(side), this.builders[side.getIndex()].build());
       }

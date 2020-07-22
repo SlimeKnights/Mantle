@@ -6,18 +6,17 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import slimeknights.mantle.Mantle;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityUtil {
 
   @Nullable
-  public static <T extends TileEntity> T getTileEntity(@Nonnull Class<T> clazz, @Nullable IBlockReader world, @Nonnull BlockPos pos) {
+  public static <T extends TileEntity> T getTileEntity(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos) {
     return getTileEntity(clazz, world, pos, false);
   }
 
   @Nullable
-  public static <T extends TileEntity> T getTileEntity(@Nonnull Class<T> clazz, @Nullable IBlockReader world, @Nonnull BlockPos pos, boolean logWrongType) {
+  public static <T extends TileEntity> T getTileEntity(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos, boolean logWrongType) {
     if (!isBlockLoaded(world, pos)) {
       return null;
     }
@@ -38,7 +37,7 @@ public class TileEntityUtil {
     return null;
   }
 
-  public static boolean isBlockLoaded(@Nullable IBlockReader world, @Nonnull BlockPos pos) {
+  public static boolean isBlockLoaded(@Nullable IBlockReader world, BlockPos pos) {
     if (world == null) {
       return false;
     }

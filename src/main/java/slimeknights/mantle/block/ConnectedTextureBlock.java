@@ -8,8 +8,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
-import javax.annotation.Nonnull;
-
 /**
  * Creates a block with textures that connect to other blocks
  * <p>
@@ -69,8 +67,7 @@ public class ConnectedTextureBlock extends Block {
    * @return Whether or not the side is connectable.
    */
   private boolean isSideConnectable(BlockState state, IWorld world, BlockPos pos, Direction side) {
-    final BlockState connected = world.getBlockState(pos.offset(side));
-    return connected != null && this.canConnect(state, connected);
+    return this.canConnect(state, world.getBlockState(pos.offset(side)));
   }
 
   /**
@@ -79,7 +76,7 @@ public class ConnectedTextureBlock extends Block {
    * @param connected BlockState to check
    * @return True if the block is valid to connect
    */
-  protected boolean canConnect(@Nonnull BlockState original, @Nonnull BlockState connected) {
+  protected boolean canConnect(BlockState original, BlockState connected) {
     return original.getBlock() == connected.getBlock();
   }
 }

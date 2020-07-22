@@ -4,8 +4,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
-
 /** Slot that can only be taken out of */
 public class OutSlot extends Slot {
 
@@ -14,7 +12,7 @@ public class OutSlot extends Slot {
   }
 
   @Override
-  public boolean isItemValid(@Nonnull ItemStack stack) {
+  public boolean isItemValid(ItemStack stack) {
     return false;
   }
 }

@@ -22,7 +22,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
@@ -56,7 +55,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
+  public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
     if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       return this.itemHandlerCap.cast();
     }
@@ -69,7 +68,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
   /* Inventory management */
 
-  @Nonnull
   @Override
   public ItemStack getStackInSlot(int slot) {
     if (slot < 0 || slot >= this.inventory.size()) {
@@ -115,7 +113,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   }
 
   @Override
-  public void setInventorySlotContents(int slot, @Nonnull ItemStack itemstack) {
+  public void setInventorySlotContents(int slot, ItemStack itemstack) {
     if (slot < 0 || slot >= this.inventory.size()) {
       return;
     }
@@ -131,7 +129,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     }
   }
 
-  @Nonnull
   @Override
   public ItemStack decrStackSize(int slot, int quantity) {
     if (quantity <= 0) {
@@ -163,7 +160,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     return itemStack;
   }
 
-  @Nonnull
   @Override
   public ItemStack removeStackFromSlot(int slot) {
     ItemStack itemStack = this.getStackInSlot(slot);
@@ -172,7 +168,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   }
 
   @Override
-  public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemstack) {
+  public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
     if (slot < this.getSizeInventory()) {
       return this.inventory.get(slot).isEmpty() || itemstack.getCount() + this.inventory.get(slot).getCount() <= this.getInventoryStackLimit();
     }
@@ -186,7 +182,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     }
   }
 
-  @Nonnull
   @Override
   public ITextComponent getName() {
     return this.inventoryTitle;
@@ -207,7 +202,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     return this.inventoryTitle;
   }
 
-  @Nonnull
   @Override
   public ITextComponent getDisplayName() {
     if (this.hasCustomName()) {
@@ -219,9 +213,9 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
   /* Supporting methods */
   @Override
-  public boolean isUsableByPlayer(@Nonnull PlayerEntity entityplayer) {
+  public boolean isUsableByPlayer(PlayerEntity entityplayer) {
     // block changed/got broken?
-    if (this.world.getTileEntity(this.pos) != this || this.world.getBlockState(this.pos).getBlock() == Blocks.AIR) {
+    if (world == null || this.world.getTileEntity(this.pos) != this || this.getBlockState().getBlock() == Blocks.AIR) {
       return false;
     }
 
@@ -229,14 +223,10 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   }
 
   @Override
-  public void openInventory(@Nonnull PlayerEntity player) {
-
-  }
+  public void openInventory(PlayerEntity player) {}
 
   @Override
-  public void closeInventory(@Nonnull PlayerEntity player) {
-
-  }
+  public void closeInventory(PlayerEntity player) {}
 
   /* NBT */
   @Override
@@ -250,8 +240,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
       this.inventoryTitle = ITextComponent.Serializer.func_240643_a_(tags.getString("CustomName"));
     }
   }
-
-  @Nonnull
+  
   @Override
   public CompoundNBT write(CompoundNBT tags) {
     super.write(tags);
@@ -296,8 +285,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     for (int i = 0; i < nbttaglist.size(); ++i) {
       CompoundNBT itemTag = nbttaglist.getCompound(i);
       int slot = itemTag.getByte("Slot") & 255;
-
-      if (slot >= 0 && slot < this.inventory.size()) {
+      if (slot < this.inventory.size()) {
         stack = ItemStack.read(itemTag);
         if (!stack.isEmpty() && stack.getCount() > limit) {
           stack.setCount(limit);
@@ -308,7 +296,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   }
 
   /* Default implementations of hardly used methods */
-  @Nonnull
   public ItemStack getStackInSlotOnClosing(int slot) {
     return ItemStack.EMPTY;
   }

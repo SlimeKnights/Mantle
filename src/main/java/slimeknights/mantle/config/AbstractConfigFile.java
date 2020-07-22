@@ -19,6 +19,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -125,6 +126,7 @@ public abstract class AbstractConfigFile implements Serializable {
     return fields;
   }
 
+  @Nullable
   public byte[] getPacketData() {
     try {
       return Files.readAllBytes(this.file.toPath());

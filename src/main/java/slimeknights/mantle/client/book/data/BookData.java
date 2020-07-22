@@ -15,7 +15,6 @@ import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -198,11 +197,13 @@ public class BookData implements IDataItem {
     Mantle.logger.info("Finished loading book");
   }
 
+  @Nullable
   public SectionData findSection(String name) {
     return this.findSection(name, null);
   }
 
-  public SectionData findSection(String name, BookScreen.AdvancementCache advancementCache) {
+  @Nullable
+  public SectionData findSection(String name, @Nullable BookScreen.AdvancementCache advancementCache) {
     for (SectionData section : this.sections) {
       section.update(advancementCache);
 
@@ -237,10 +238,12 @@ public class BookData implements IDataItem {
     return -1;
   }
 
+  @Nullable
   public PageData findPage(int number) {
     return this.findPage(number, null);
   }
 
+  @Nullable
   public PageData findPage(int number, @Nullable BookScreen.AdvancementCache advancementCache) {
     if (number < 0) {
       return null;
@@ -265,10 +268,12 @@ public class BookData implements IDataItem {
     return null;
   }
 
+  @Nullable
   public PageData findPage(String location) {
     return this.findPage(location, null);
   }
 
+  @Nullable
   public PageData findPage(String location, @Nullable BookScreen.AdvancementCache advancementCache) {
     return this.findPage(this.findPageNumber(location, advancementCache));
   }
@@ -363,7 +368,7 @@ public class BookData implements IDataItem {
     return out != null ? out : string;
   }
 
-  public void openGui(@Nonnull ITextComponent title, @Nullable ItemStack item) {
+  public void openGui(ITextComponent title, @Nullable ItemStack item) {
     if (!this.initialized) {
       this.load();
     }
@@ -372,13 +377,13 @@ public class BookData implements IDataItem {
     }
   }
 
-  public void addRepository(BookRepository repository) {
+  public void addRepository(@Nullable BookRepository repository) {
     if (repository != null && !this.repositories.contains(repository)) {
       this.repositories.add(repository);
     }
   }
 
-  public void addTransformer(BookTransformer transformer) {
+  public void addTransformer(@Nullable BookTransformer transformer) {
     if (transformer != null && !this.transformers.contains(transformer)) {
       this.transformers.add(transformer);
     }

@@ -9,6 +9,8 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
+import java.util.Objects;
+
 public class BlockState {
 
   private static final BlockState MISSING = new BlockState(Blocks.AIR, "");
@@ -20,7 +22,7 @@ public class BlockState {
       String[] parts = val.split(":");
 
       Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(parts[0], parts[1]));
-      if (block == Blocks.AIR) {
+      if (block == null || block == Blocks.AIR) {
         return MISSING;
       }
       String state = "";
@@ -80,7 +82,7 @@ public class BlockState {
 
   @Override
   public String toString() {
-    String val = this.block.getRegistryName().toString();
+    String val = Objects.requireNonNull(this.block.getRegistryName()).toString();
     if (!this.state.equals("")) {
       val += ":" + this.state;
     }

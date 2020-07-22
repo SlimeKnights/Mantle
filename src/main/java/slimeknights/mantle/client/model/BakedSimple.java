@@ -4,18 +4,17 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
@@ -60,16 +59,14 @@ public class BakedSimple implements IBakedModel {
     this.overrides = overrides;
   }
 
-  @Nonnull
   @Override
   @Deprecated
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
   }
 
-  @Nonnull
   @Override
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData) {
     return this.quads;
   }
 
@@ -93,27 +90,23 @@ public class BakedSimple implements IBakedModel {
     return false;
   }
 
-  @Nonnull
   @Override
   @Deprecated
   public TextureAtlasSprite getParticleTexture() {
     return this.particle;
   }
 
-  @Nonnull
   @Override
-  public TextureAtlasSprite getParticleTexture(@Nonnull IModelData data) {
+  public TextureAtlasSprite getParticleTexture(IModelData data) {
     return this.particle;
   }
 
-  @Nonnull
   @Override
   @Deprecated
   public ItemCameraTransforms getItemCameraTransforms() {
     return ItemCameraTransforms.DEFAULT;
   }
 
-  @Nonnull
   @Override
   public ItemOverrideList getOverrides() {
     return this.overrides;
@@ -128,9 +121,9 @@ public class BakedSimple implements IBakedModel {
 
     private final IBakedModel parent;
 
+    @SuppressWarnings("ConstantConditions")
     public Wrapper(ImmutableList<BakedQuad> quads, IBakedModel base) {
       super(quads, null, base);
-
       this.parent = base;
     }
 
