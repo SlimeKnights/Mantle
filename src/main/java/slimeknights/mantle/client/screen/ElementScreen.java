@@ -56,7 +56,7 @@ public class ElementScreen {
    * @param yPos Y-Coordinate on the screen
    */
   public int draw(MatrixStack matrixStack, int xPos, int yPos) {
-    Screen.func_238463_a_(matrixStack, xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
+    Screen.blit(matrixStack, xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
     return this.w;
   }
 

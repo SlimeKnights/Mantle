@@ -240,8 +240,8 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
   /* NBT */
   @Override
-  public void func_230337_a_(BlockState blockState, CompoundNBT tags) {
-    super.func_230337_a_(blockState, tags);
+  public void read(BlockState blockState, CompoundNBT tags) {
+    super.read(blockState, tags);
     this.resizeInternal(tags.getInt("InventorySize"));
 
     this.readInventoryFromNBT(tags);

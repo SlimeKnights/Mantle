@@ -68,7 +68,7 @@ public abstract class BookElement extends AbstractGui {
   }
 
   public void drawHoveringText(MatrixStack matrixStack, List<ITextComponent> textLines, int x, int y, FontRenderer font) {
-    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.field_230708_k_, this.parent.field_230709_l_, -1, font);
+    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
     RenderHelper.disableStandardItemLighting();
   }
 }

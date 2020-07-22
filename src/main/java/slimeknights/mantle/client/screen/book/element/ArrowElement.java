@@ -17,13 +17,13 @@ public class ArrowElement extends ButtonElement {
 
   @Override
   public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    this.button.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
+    this.button.renderButton(matrixStack, mouseX, mouseY, partialTicks);
   }
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if (this.button != null && this.isHovered(mouseX, mouseY)) {
-      this.button.func_230930_b_();
+      this.button.onPress();
     }
   }
 

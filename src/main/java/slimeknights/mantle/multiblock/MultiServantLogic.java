@@ -129,8 +129,8 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   @Override
-  public void func_230337_a_(BlockState blockState, CompoundNBT tags) {
-    super.func_230337_a_(blockState, tags);
+  public void read(BlockState blockState, CompoundNBT tags) {
+    super.read(blockState, tags);
     this.readCustomNBT(tags);
   }
 

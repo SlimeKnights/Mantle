@@ -22,7 +22,7 @@ public class ArrowButton extends Button {
   public int hoverColor;
 
   public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
-    super(x, y, arrowType.w, arrowType.h, StringTextComponent.field_240750_d_, iPressable);
+    super(x, y, arrowType.w, arrowType.h, StringTextComponent.EMPTY, iPressable);
 
     this.arrowType = arrowType;
     this.color = color;
@@ -30,21 +30,21 @@ public class ArrowButton extends Button {
   }
 
   @Override
-  public void func_230431_b_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     Minecraft minecraft = Minecraft.getInstance();
     minecraft.getTextureManager().bindTexture(TEX_BOOK);
 
-    this.field_230692_n_ = mouseX >= this.field_230690_l_ && mouseY >= this.field_230691_m_ && mouseX < this.field_230690_l_ + this.field_230688_j_ && mouseY < this.field_230691_m_ + this.field_230689_k_;
+    this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
-    int color = this.field_230692_n_ ? this.hoverColor : this.color;
+    int color = this.isHovered ? this.hoverColor : this.color;
 
     float r = ((color >> 16) & 0xff) / 255.F;
     float g = ((color >> 8) & 0xff) / 255.F;
     float b = (color & 0xff) / 255.F;
 
     RenderSystem.color3f(r, g, b);
-    func_238466_a_(matrixStack, this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_, this.arrowType.x, this.arrowType.y, this.field_230688_j_, this.field_230689_k_, 512, 512);
-    this.func_230441_a_(matrixStack, minecraft, mouseX, mouseY);
+    blit(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
+    this.renderBg(matrixStack, minecraft, mouseX, mouseY);
   }
 
   public enum ArrowType {

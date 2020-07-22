@@ -155,10 +155,10 @@ public class TextDataRenderer {
 
       if (atY >= y + boxHeight) {
         if (item.dropshadow) {
-          fr.func_238405_a_(matrixStack, "...", atX, atY, 0);
+          fr.drawStringWithShadow(matrixStack, "...", atX, atY, 0);
         }
         else {
-          fr.func_238421_b_(matrixStack, "...", atX, atY, 0);
+          fr.drawString(matrixStack, "...", atX, atY, 0);
         }
         break;
       }
@@ -166,7 +166,7 @@ public class TextDataRenderer {
     }
 
     if (BookScreen.debug && action != null && !action.isEmpty()) {
-      tooltip.add(StringTextComponent.field_240750_d_);
+      tooltip.add(StringTextComponent.EMPTY);
       tooltip.add(new StringTextComponent("Action: " + action).func_240699_a_(TextFormatting.GRAY));
     }
 
@@ -234,10 +234,10 @@ public class TextDataRenderer {
     RenderSystem.translatef(x, y, 0);
     RenderSystem.scalef(scale, scale, 1F);
     if (dropShadow) {
-      font.func_238405_a_(matrixStack, text, 0, 0, color);
+      font.drawStringWithShadow(matrixStack, text, 0, 0, color);
     }
     else {
-      font.func_238421_b_(matrixStack, text, 0, 0, color);
+      font.drawString(matrixStack, text, 0, 0, color);
     }
     RenderSystem.popMatrix();
   }

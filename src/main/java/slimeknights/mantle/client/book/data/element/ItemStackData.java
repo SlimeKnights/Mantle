@@ -121,7 +121,7 @@ public class ItemStackData implements IDataElement {
 
     ITag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
     if (values != null) {
-      this.items = values.func_230236_b_().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
+      this.items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
     }
     else {
       this.items = NonNullList.create();

@@ -28,7 +28,7 @@ public class ExtraHeartRenderHandler {
 
   private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
   private static final ResourceLocation ICON_ABSORB = new ResourceLocation(Mantle.modId, "textures/gui/absorb.png");
-  private static final ResourceLocation ICON_VANILLA = AbstractGui.field_230665_h_;
+  private static final ResourceLocation ICON_VANILLA = AbstractGui.GUI_ICONS_LOCATION;
 
   private final Minecraft mc = Minecraft.getInstance();
 
@@ -45,7 +45,7 @@ public class ExtraHeartRenderHandler {
   private static int left_height = 39;
 
   public void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
-    Minecraft.getInstance().ingameGUI.func_238474_b_(matrixStack, x, y, textureX, textureY, width, height);
+    Minecraft.getInstance().ingameGUI.blit(matrixStack, x, y, textureX, textureY, width, height);
   }
 
   /* HUD */
@@ -93,7 +93,7 @@ public class ExtraHeartRenderHandler {
     this.playerHealth = health;
     int healthLast = this.lastPlayerHealth;
 
-    ModifiableAttributeInstance attrMaxHealth = player.getAttribute(Attributes.field_233818_a_);
+    ModifiableAttributeInstance attrMaxHealth = player.getAttribute(Attributes.MAX_HEALTH);
     float healthMax = (float) attrMaxHealth.getValue();
     float absorb = MathHelper.ceil(player.getAbsorptionAmount());
 

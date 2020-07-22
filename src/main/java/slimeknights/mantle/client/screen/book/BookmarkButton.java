@@ -27,13 +27,13 @@ public class BookmarkButton extends Button {
   public final BookmarkData data;
 
   public BookmarkButton(BookmarkData data, IPressable iPressable) {
-    super(-500, -500, WIDTH, HEIGHT, StringTextComponent.field_240750_d_, iPressable);
+    super(-500, -500, WIDTH, HEIGHT, StringTextComponent.EMPTY, iPressable);
 
     this.data = data;
   }
 
   @Override
-  public void func_230431_b_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     Minecraft minecraft = Minecraft.getInstance();
     int tex_y = TEX_Y + HEIGHT * this.type;
 
@@ -44,16 +44,16 @@ public class BookmarkButton extends Button {
     float b = (this.data.color & 0xff) / 255.F;
 
     RenderSystem.color3f(r, g, b);
-    func_238466_a_(matrixStack, this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230691_m_, TEX_X, tex_y, WIDTH, HEIGHT, 512, 512);
+    blit(matrixStack, this.x, this.y, this.width, this.y, TEX_X, tex_y, WIDTH, HEIGHT, 512, 512);
 
     if (this.data.text != null && !this.data.text.isEmpty()) {
-      TextDataRenderer.drawScaledString(matrixStack, minecraft.fontRenderer, this.data.text, this.field_230690_l_ + 1, this.field_230691_m_ + this.field_230691_m_ / 2 - minecraft.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
+      TextDataRenderer.drawScaledString(matrixStack, minecraft.fontRenderer, this.data.text, this.x + 1, this.y + this.y / 2 - minecraft.fontRenderer.FONT_HEIGHT * TEXT_SCALE / 2 + 1, 0xFFFFFFFF, true, TEXT_SCALE);
     }
 
     RenderSystem.color3f(1F, 1F, 1F);
 
     if (this.data.page.equals("ADD")) {
-      func_238463_a_(matrixStack, this.field_230690_l_ + this.field_230688_j_ / 2 - ADD_W / 2, this.field_230691_m_ + this.field_230691_m_ / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
+      blit(matrixStack, this.x + this.width / 2 - ADD_W / 2, this.y + this.y / 2 - ADD_H / 2, ADD_X, ADD_Y, ADD_W, ADD_H, 512, 512);
     }
   }
 }

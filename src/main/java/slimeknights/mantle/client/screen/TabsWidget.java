@@ -137,7 +137,7 @@ public class TabsWidget extends Widget {
       ElementScreen actualTab;
       if (i == 0 && x == this.parent.cornerX) {
         actualTab = toDraw[0];
-      } else if (x == this.parent.cornerX + this.parent.field_230708_k_) {
+      } else if (x == this.parent.cornerX + this.parent.width) {
         actualTab = toDraw[2];
       } else {
         actualTab = toDraw[1];

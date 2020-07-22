@@ -48,10 +48,10 @@ class ExampleSync {
   public void playerJoinedWorld(TickEvent.ClientTickEvent event) {
     ClientPlayerEntity player = Minecraft.getInstance().player;
     if (needsRestart) {
-      player.sendMessage(new StringTextComponent("Configs synced with server. Configs require a restart"), Util.field_240973_b_);
+      player.sendMessage(new StringTextComponent("Configs synced with server. Configs require a restart"), Util.DUMMY_UUID);
     }
     else {
-      player.sendMessage(new StringTextComponent("Configs synced with server."), Util.field_240973_b_);
+      player.sendMessage(new StringTextComponent("Configs synced with server."), Util.DUMMY_UUID);
     }
     MinecraftForge.EVENT_BUS.unregister(this);
   }

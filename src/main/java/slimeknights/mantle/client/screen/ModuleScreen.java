@@ -45,9 +45,9 @@ public abstract class ModuleScreen extends ContainerScreen {
   }
 
   @Override
-  public void func_231160_c_() {
-    this.guiLeft = (this.field_230708_k_ - this.xSize) / 2;
-    this.guiTop = (this.field_230709_l_ - this.ySize) / 2;
+  public void init() {
+    this.guiLeft = (this.width - this.xSize) / 2;
+    this.guiTop = (this.height - this.ySize) / 2;
   }
 
   public void updatePosition(int parentX, int parentY, int parentSizeX, int parentSizeY) {

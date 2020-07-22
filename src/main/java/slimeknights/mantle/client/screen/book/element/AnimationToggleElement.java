@@ -20,7 +20,7 @@ public class AnimationToggleElement extends ArrowElement {
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if (this.button != null && this.isHovered(mouseX, mouseY)) {
-      this.button.func_230930_b_();
+      this.button.onPress();
       this.toggled = !this.toggled;
       this.updateColor();
     }

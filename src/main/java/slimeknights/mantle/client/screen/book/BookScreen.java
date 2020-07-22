@@ -82,29 +82,29 @@ public class BookScreen extends Screen {
     this.book = book;
     this.item = item;
 
-    this.field_230706_i_ = Minecraft.getInstance();
-    this.field_230712_o_ = this.field_230706_i_.fontRenderer;
+    this.minecraft = Minecraft.getInstance();
+    this.font = this.minecraft.fontRenderer;
 
     initWidthsAndHeights();
 
     this.advancementCache = new AdvancementCache();
-    this.field_230706_i_.player.connection.getAdvancementManager().setListener(this.advancementCache);
+    this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
 
     this.openPage(book.findPageNumber(BookHelper.getSavedPage(item), this.advancementCache));
   }
 
   @Override
   @SuppressWarnings("ForLoopReplaceableByForEach")
-  public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     initWidthsAndHeights();
     FontRenderer fontRenderer = this.book.fontRenderer;
     if (fontRenderer == null) {
-      fontRenderer = this.field_230706_i_.fontRenderer;
+      fontRenderer = this.minecraft.fontRenderer;
     }
 
     if (debug) {
-      func_238467_a_(matrixStack, 0, 0, fontRenderer.getStringWidth("DEBUG") + 4, fontRenderer.FONT_HEIGHT + 4, 0x55000000);
-      fontRenderer.func_238421_b_(matrixStack, "DEBUG", 2, 2, 0xFFFFFFFF);
+      fill(matrixStack, 0, 0, fontRenderer.getStringWidth("DEBUG") + 4, fontRenderer.FONT_HEIGHT + 4, 0x55000000);
+      fontRenderer.drawString(matrixStack, "DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
     RenderSystem.enableAlphaTest();
@@ -118,32 +118,32 @@ public class BookScreen extends Screen {
     float coverG = ((this.book.appearance.coverColor >> 8) & 0xff) / 255.F;
     float coverB = (this.book.appearance.coverColor & 0xff) / 255.F;
 
-    TextureManager render = this.field_230706_i_.textureManager;
+    TextureManager render = this.minecraft.textureManager;
 
     if (this.page == -1) {
       render.bindTexture(TEX_BOOKFRONT);
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
-      func_238463_a_(matrixStack, this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED / 2, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
       RenderSystem.color3f(1F, 1F, 1F);
 
       if (!this.book.appearance.title.isEmpty()) {
-        func_238463_a_(matrixStack, this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED / 2, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
 
         float scale = fontRenderer.getStringWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
 
         RenderSystem.scalef(scale, scale, 1F);
-        fontRenderer.func_238405_a_(matrixStack, this.book.appearance.title, (this.field_230708_k_ / 2) / scale + 3 - fontRenderer.getStringWidth(this.book.appearance.title) / 2, (this.field_230709_l_ / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
+        fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer.getStringWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
         RenderSystem.popMatrix();
       }
 
       if (!this.book.appearance.subtitle.isEmpty()) {
         RenderSystem.pushMatrix();
         RenderSystem.scalef(1.5F, 1.5F, 1F);
-        fontRenderer.func_238405_a_(matrixStack, this.book.appearance.subtitle, (this.field_230708_k_ / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.field_230709_l_ / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
+        fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
         RenderSystem.popMatrix();
       }
     }
@@ -152,12 +152,12 @@ public class BookScreen extends Screen {
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
-      func_238463_a_(matrixStack, this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
       RenderSystem.color3f(1F, 1F, 1F);
 
       if (this.page != 0) {
-        func_238463_a_(matrixStack, this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
         this.drawerTransform(false);
@@ -166,7 +166,7 @@ public class BookScreen extends Screen {
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 2 + "";
-          fontRenderer.func_238421_b_(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
+          fontRenderer.drawString(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
         int mX = this.getMouseX(false);
@@ -199,7 +199,7 @@ public class BookScreen extends Screen {
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
       if (this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0) {
-        func_238463_a_(matrixStack, this.field_230708_k_ / 2, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        blit(matrixStack, this.width / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
         this.drawerTransform(true);
@@ -208,7 +208,7 @@ public class BookScreen extends Screen {
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 3 + "";
-          fontRenderer.func_238421_b_(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
+          fontRenderer.drawString(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
         int mX = this.getMouseX(true);
@@ -234,14 +234,14 @@ public class BookScreen extends Screen {
       }
     }
 
-    super.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+    super.render(matrixStack, mouseX, mouseY, partialTicks);
 
     RenderSystem.popMatrix();
   }
 
   @Override
-  protected void func_231160_c_() {
-    super.func_231160_c_();
+  protected void init() {
+    super.init();
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale, and of course half the size so that all our code still works as it should
     /*
@@ -250,10 +250,10 @@ public class BookScreen extends Screen {
       height /= 2F;
     }*/
 
-    this.field_230710_m_.clear();
-    this.field_230705_e_.clear();
+    this.buttons.clear();
+    this.children.clear();
 
-    this.previousArrow = this.func_230480_a_(new ArrowButton(-50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.previousArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.page--;
 
       if (this.page < -1) {
@@ -264,7 +264,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.nextArrow = this.func_230480_a_(new ArrowButton(-50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.nextArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.page++;
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
@@ -277,7 +277,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.backArrow = this.func_230480_a_(new ArrowButton(this.field_230708_k_ / 2 - ArrowButton.WIDTH / 2, this.field_230709_l_ / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.backArrow = this.addButton(new ArrowButton(this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       if (this.oldPage >= -1) {
         this.page = this.oldPage;
       }
@@ -286,7 +286,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.indexArrow = this.func_230480_a_(new ArrowButton(this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.indexArrow = this.addButton(new ArrowButton(this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.openPage(this.book.findPageNumber("index.page1"));
 
       this.oldPage = -2;
@@ -297,26 +297,26 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public void func_231023_e_() {
-    super.func_231023_e_();
+  public void tick() {
+    super.tick();
 
-    this.previousArrow.field_230694_p_ = this.page != -1;
-    this.nextArrow.field_230694_p_ = this.page + 1 < this.book.getFullPageCount(this.advancementCache);
-    this.backArrow.field_230694_p_ = this.oldPage >= -1;
+    this.previousArrow.visible = this.page != -1;
+    this.nextArrow.visible = this.page + 1 < this.book.getFullPageCount(this.advancementCache);
+    this.backArrow.visible = this.oldPage >= -1;
 
     if (this.page == -1) {
-      this.nextArrow.field_230690_l_ = this.field_230708_k_ / 2 + 80;
-      this.indexArrow.field_230694_p_ = false;
+      this.nextArrow.x = this.width / 2 + 80;
+      this.indexArrow.visible = false;
     }
     else {
-      this.previousArrow.field_230690_l_ = this.field_230708_k_ / 2 - 184;
-      this.nextArrow.field_230690_l_ = this.field_230708_k_ / 2 + 165;
+      this.previousArrow.x = this.width / 2 - 184;
+      this.nextArrow.x = this.width / 2 + 165;
 
-      this.indexArrow.field_230694_p_ = this.book.findSection("index") != null && (this.page - 1) * 2 + 2 > this.book.findSection("index").getPageCount();
+      this.indexArrow.visible = this.book.findSection("index") != null && (this.page - 1) * 2 + 2 > this.book.findSection("index").getPageCount();
     }
 
-    this.previousArrow.field_230691_m_ = this.field_230709_l_ / 2 + 75;
-    this.nextArrow.field_230691_m_ = this.field_230709_l_ / 2 + 75;
+    this.previousArrow.y = this.height / 2 + 75;
+    this.nextArrow.y = this.height / 2 + 75;
   }
 
   /*@Override
@@ -330,8 +330,8 @@ public class BookScreen extends Screen {
   }*/
 
   @Override
-  public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
-    super.func_231046_a_(keyCode, scanCode, modifiers);
+  public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    super.keyPressed(keyCode, scanCode, modifiers);
 
     switch (keyCode) {
       case GLFW.GLFW_KEY_LEFT:
@@ -359,12 +359,11 @@ public class BookScreen extends Screen {
         return true;
     }
 
-    return super.func_231046_a_(keyCode, scanCode, modifiers);
+    return super.keyPressed(keyCode, scanCode, modifiers);
   }
 
   @Override
-  public boolean func_231043_a_(double unKnown1, double unKnown2, double scrollDelta) {
-
+  public boolean mouseScrolled(double unKnown1, double unKnown2, double scrollDelta) {
     if (scrollDelta < 0.0D) {
       this.page++;
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
@@ -388,11 +387,11 @@ public class BookScreen extends Screen {
       return true;
     }
 
-    return super.func_231043_a_(scrollDelta, unKnown1, unKnown2);
+    return super.mouseScrolled(scrollDelta, unKnown1, unKnown2);
   }
 
   @Override
-  public boolean func_231044_a_(double originalMouseX, double originalMouseY, int mouseButton) {
+  public boolean mouseClicked(double originalMouseX, double originalMouseY, int mouseButton) {
     boolean right = false;
 
     double mouseX = this.getMouseX(false);
@@ -414,11 +413,11 @@ public class BookScreen extends Screen {
       }
     }
 
-    return super.func_231044_a_(originalMouseX, originalMouseY, mouseButton);
+    return super.mouseClicked(originalMouseX, originalMouseY, mouseButton);
   }
 
   @Override
-  public boolean func_231048_c_(double originalMouseX, double originalMouseY, int mouseButton) {
+  public boolean mouseReleased(double originalMouseX, double originalMouseY, int mouseButton) {
     boolean right = false;
     double mouseX = this.getMouseX(false);
     double mouseY = this.getMouseY();
@@ -433,11 +432,11 @@ public class BookScreen extends Screen {
       BookElement element = right ? this.rightElements.get(i) : this.leftElements.get(i);
       element.mouseReleased(mouseX, mouseY, mouseButton);
     }
-    return super.func_231048_c_(originalMouseX, originalMouseY, mouseButton);
+    return super.mouseReleased(originalMouseX, originalMouseY, mouseButton);
   }
 
   @Override
-  public boolean func_231045_a_(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLaslick, double unknown) {
+  public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLaslick, double unknown) {
     boolean right = false;
     mouseX = this.getMouseX(false);
     mouseY = this.getMouseY();
@@ -457,8 +456,8 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public void func_231164_f_() {
-    if (this.field_230706_i_.player == null) {
+  public void removed() {
+    if (this.minecraft.player == null) {
       return;
     }
 
@@ -469,24 +468,24 @@ public class BookScreen extends Screen {
     }
 
     if (this.page == -1) {
-      BookLoader.updateSavedPage(this.field_230706_i_.player, this.item, "");
+      BookLoader.updateSavedPage(this.minecraft.player, this.item, "");
     }
     else if (page != null && page.parent != null) {
-      BookLoader.updateSavedPage(this.field_230706_i_.player, this.item, page.parent.name + "." + page.name);
+      BookLoader.updateSavedPage(this.minecraft.player, this.item, page.parent.name + "." + page.name);
     }
   }
 
   @Override
-  public boolean func_231177_au__() {
+  public boolean isPauseScreen() {
     return false;
   }
 
   public void drawerTransform(boolean rightSide) {
     if (rightSide) {
-      RenderSystem.translatef(this.field_230708_k_ / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      RenderSystem.translatef(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
     else {
-      RenderSystem.translatef(this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      RenderSystem.translatef(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
   }
 
@@ -494,24 +493,24 @@ public class BookScreen extends Screen {
   protected float leftOffset(boolean rightSide) {
     if (rightSide) {
       // from center: go padding + margin to the right
-      return this.field_230708_k_ / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN;
+      return this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN;
     }
     else {
       // from center: go page width left, then right with padding and margin
-      return this.field_230708_k_ / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN;
+      return this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN;
     }
   }
 
   protected float topOffset() {
-    return this.field_230709_l_ / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN;
+    return this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN;
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.field_230708_k_ / this.field_230706_i_.getMainWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.field_230709_l_ / this.field_230706_i_.getMainWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
+    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
   public int openPage(int page) {

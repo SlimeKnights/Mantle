@@ -40,7 +40,7 @@ public class SelectionElement extends SizedBookElement {
     boolean hover = this.isHovered(mouseX, mouseY);
 
     if (hover) {
-      func_238467_a_(matrixStack, this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
+      fill(matrixStack, this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
     }
     if (unlocked) {
       RenderSystem.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
@@ -58,7 +58,7 @@ public class SelectionElement extends SizedBookElement {
       int textW = fontRenderer.getStringWidth(this.section.getTitle());
       int textX = this.x + WIDTH / 2 - textW / 2;
       int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2;
-      fontRenderer.func_238421_b_(matrixStack, this.section.getTitle(),
+      fontRenderer.drawString(matrixStack, this.section.getTitle(),
         textX,
         textY,
         hover ? 0xFF000000 : 0x7F000000);
