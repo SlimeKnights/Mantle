@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -15,15 +15,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
+import slimeknights.mantle.inventory.BaseContainer;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import javax.annotation.Nullable;
 
+/**
+ * Base class for blocks with an inventory
+ */
+@SuppressWarnings("WeakerAccess")
 public abstract class InventoryBlock extends Block {
 
   protected InventoryBlock(Block.Properties builder) {
     super(builder);
   }
+
+  /* Tile entity */
 
   // inventories usually need a tileEntity
   @Override
@@ -35,9 +43,26 @@ public abstract class InventoryBlock extends Block {
   public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
 
   /**
-   * Called when the block is activated. Return true if a GUI is opened, false if the block has no GUI.
+   * Called when the block is activated to open the UI. Override to return false for blocks with no inventory
+   * @param player Player instance
+   * @param world  World instance
+   * @param pos    Block position
+   * @return true if the GUI opened, false if not
    */
-  protected abstract boolean openGui(PlayerEntity player, World world, BlockPos pos);
+  protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
+    if (!world.isRemote()) {
+      INamedContainerProvider container = this.getContainer(world.getBlockState(pos), world, pos);
+      if (container != null && player instanceof ServerPlayerEntity) {
+        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+        NetworkHooks.openGui(serverPlayer, container, pos);
+        if (player.openContainer instanceof BaseContainer<?>) {
+          ((BaseContainer<?>) player.openContainer).syncOnOpen(serverPlayer);
+        }
+      }
+    }
+
+    return true;
+  }
 
   @Deprecated
   @Override
@@ -45,13 +70,14 @@ public abstract class InventoryBlock extends Block {
     if (player.isSuppressingBounce()) {
       return ActionResultType.PASS;
     }
-
     if (!world.isRemote) {
       return this.openGui(player, world, pos) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
-
     return ActionResultType.SUCCESS;
   }
+
+
+  /* Naming */
 
   @Override
   public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
@@ -60,7 +86,6 @@ public abstract class InventoryBlock extends Block {
     // set custom name from named stack
     if (stack.hasDisplayName()) {
       TileEntity tileentity = worldIn.getTileEntity(pos);
-
       if (tileentity instanceof InventoryTileEntity) {
         ((InventoryTileEntity) tileentity).setCustomName(stack.getDisplayName());
       }
@@ -68,13 +93,21 @@ public abstract class InventoryBlock extends Block {
   }
 
   @Override
+  @Nullable
+  public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
+    TileEntity tileentity = worldIn.getTileEntity(pos);
+    return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
+  }
+
+
+  /* Inventory handling */
+
+  @Override
   public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
       TileEntity tileentity = worldIn.getTileEntity(pos);
-
       if (tileentity instanceof InventoryTileEntity) {
-        dropInventoryItems(state, worldIn, pos, tileentity);
-
+        dropInventoryItems(state, worldIn, pos, (InventoryTileEntity) tileentity);
         worldIn.updateComparatorOutputLevel(pos, this);
       }
     }
@@ -82,21 +115,22 @@ public abstract class InventoryBlock extends Block {
     super.onReplaced(state, worldIn, pos, newState, isMoving);
   }
 
-  protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, TileEntity tileentity) {
-    InventoryHelper.dropInventoryItems(worldIn, pos, (IInventory) tileentity);
+  /**
+   * Called when the block is replaced to drop contained items.
+   * @param state       Block state
+   * @param worldIn     Tile world
+   * @param pos         Tile position
+   * @param inventory   Tile entity instance
+   */
+  protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, InventoryTileEntity inventory) {
+    InventoryHelper.dropInventoryItems(worldIn, pos, inventory);
   }
 
+  @Deprecated
   @Override
   public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
     super.eventReceived(state, worldIn, pos, id, param);
     TileEntity tileentity = worldIn.getTileEntity(pos);
     return tileentity != null && tileentity.receiveClientEvent(id, param);
-  }
-
-  @Override
-  @Nullable
-  public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
-    TileEntity tileentity = worldIn.getTileEntity(pos);
-    return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
   }
 }
