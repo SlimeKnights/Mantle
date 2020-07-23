@@ -3,25 +3,69 @@ package slimeknights.mantle.client;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.renderer.model.MultipartBakedModel;
+import net.minecraft.client.renderer.model.WeightedBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.util.IItemProvider;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.SimpleModelTransform;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 import net.minecraftforge.common.model.TransformationHelper;
 
-public class ModelHelper {
+import javax.annotation.Nullable;
 
+public class ModelHelper {
   public static final IModelTransform DEFAULT_ITEM_STATE;
   public static final IModelTransform DEFAULT_TOOL_STATE;
   public static final TransformationMatrix BLOCK_THIRD_PERSON_RIGHT;
   public static final TransformationMatrix BLOCK_THIRD_PERSON_LEFT;
+
+  /**
+   * Gets the model for the given block
+   * @param state  Block state
+   * @param clazz  Class type to cast result into
+   * @param <T>    Class type
+   * @return  Block model, or null if its missing or the wrong class type
+   */
+  @Nullable
+  public static <T extends IBakedModel> T getBakedModel(BlockState state, Class<T> clazz) {
+    IBakedModel baked = Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(state);
+    // map multipart and weighted random into the first variant
+    if (baked instanceof MultipartBakedModel) {
+      baked = ((MultipartBakedModel)baked).selectors.get(0).getRight();
+    }
+    if (baked instanceof WeightedBakedModel) {
+      baked = ((WeightedBakedModel) baked).baseModel;
+    }
+    // final model should match the desired type
+    if (clazz.isInstance(baked)) {
+      return clazz.cast(baked);
+    }
+    return null;
+  }
+
+  /**
+   * Gets the model for the given item
+   * @param item   Item provider
+   * @param clazz  Class type to cast result into
+   * @param <T>    Class type
+   * @return  Item model, or null if its missing or the wrong class type
+   */
+  @Nullable
+  public static <T extends IBakedModel> T getBakedModel(IItemProvider item, Class<T> clazz) {
+    IBakedModel baked = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(item.asItem());
+    if (clazz.isInstance(baked)) {
+      return clazz.cast(baked);
+    }
+    return null;
+  }
 
   public static TextureAtlasSprite getTextureFromBlockstate(BlockState state) {
     return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);

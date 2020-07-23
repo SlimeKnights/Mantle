@@ -1,5 +1,6 @@
 package slimeknights.mantle;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -31,5 +32,14 @@ public class Mantle {
 
   private void commonSetup(final FMLCommonSetupEvent event) {
     BookNetwork.registerPackets();
+  }
+
+  /**
+   * Gets a resource location for Mantle
+   * @param name  Name
+   * @return  Resource location instance
+   */
+  public static ResourceLocation getResource(String name) {
+    return new ResourceLocation(modId, name);
   }
 }
