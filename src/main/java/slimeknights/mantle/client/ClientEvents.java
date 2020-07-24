@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,6 +19,14 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = Bus.MOD)
 public class ClientEvents {
+
+  public static void onConstruct() {
+    // register on construct as sometimes models start loading before client setup or model regsitry event
+    ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
+    ModelLoaderRegistry.registerLoader(Mantle.getResource("inventory"), InventoryModel.Loader.INSTANCE);
+    ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
+  }
+
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     IResourceManager manager = Minecraft.getInstance().getResourceManager();
@@ -27,12 +34,5 @@ public class ClientEvents {
       ((IReloadableResourceManager)manager).addReloadListener(new BookLoader());
     }
     MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-  }
-
-  @SubscribeEvent
-  static void registerModelLoaders(ModelRegistryEvent event) {
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("inventory"), InventoryModel.Loader.INSTANCE);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
   }
 }

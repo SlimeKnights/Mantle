@@ -1,12 +1,15 @@
 package slimeknights.mantle;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.network.BookNetwork;
+import slimeknights.mantle.client.ClientEvents;
 
 /**
  * Mantle
@@ -28,6 +31,7 @@ public class Mantle {
   public Mantle() {
     instance = this;
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientEvents::onConstruct);
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
