@@ -28,8 +28,8 @@ import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
-import slimeknights.mantle.network.BookNetwork;
-import slimeknights.mantle.network.book.UpdateSavedPagePacket;
+import slimeknights.mantle.network.MantleNetwork;
+import slimeknights.mantle.network.packet.UpdateSavedPagePacket;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -138,7 +138,7 @@ public class BookLoader implements IResourceManagerReloadListener {
     }
 
     BookHelper.writeSavedPage(item, page);
-    BookNetwork.wrapper.network.sendToServer(new UpdateSavedPagePacket(page));
+    MantleNetwork.INSTANCE.network.sendToServer(new UpdateSavedPagePacket(page));
   }
 
   /**

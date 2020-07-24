@@ -8,8 +8,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.network.BookNetwork;
 import slimeknights.mantle.client.ClientEvents;
+import slimeknights.mantle.network.MantleNetwork;
 
 /**
  * Mantle
@@ -35,7 +35,7 @@ public class Mantle {
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
-    BookNetwork.registerPackets();
+    MantleNetwork.registerPackets();
   }
 
   /**

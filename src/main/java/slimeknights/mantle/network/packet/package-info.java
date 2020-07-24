@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package slimeknights.mantle.network.book;
+package slimeknights.mantle.network.packet;
 
 import mcp.MethodsReturnNonnullByDefault;
 
