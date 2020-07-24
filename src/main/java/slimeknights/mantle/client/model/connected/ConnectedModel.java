@@ -91,7 +91,11 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     for (Entry<String,String[]> entry : connectedTextures.entrySet()) {
       // fetch data from the base texture
       String name = entry.getKey();
-      RenderMaterial base = owner.resolveTexture(name);
+      // skip if missing
+      if (!model.isTexturePresent(name)) {
+        continue;
+      }
+      RenderMaterial base = model.resolveTextureName(name);
       ResourceLocation atlas = base.getAtlasLocation();
       ResourceLocation texture = base.getTextureLocation();
       String namespace = texture.getNamespace();
@@ -108,8 +112,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
         if (!suffixedTextures.containsKey(suffixedName)) {
           RenderMaterial mat;
           // allow overriding a specific texture
-          if (owner.isTexturePresent(suffixedName)) {
-            mat = owner.resolveTexture(suffixedName);
+          if (model.isTexturePresent(suffixedName)) {
+            mat = model.resolveTextureName(suffixedName);
           } else {
             mat = new RenderMaterial(atlas, new ResourceLocation(namespace, path + "/" + suffixes[i]));
           }
@@ -371,13 +375,6 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       TransformationMatrix rotation = transforms.getRotation();
       data.setData(CONNECTIONS, getConnections((dir) -> parent.sides.contains(dir) && parent.connectionPredicate.test(state, world.getBlockState(pos.offset(rotation.rotateTransform(dir))))));
 
-      // set connected properties
-//      for (Direction dir : Direction.values()) {
-//        if (parent.sides.contains(dir)) {
-//          data.setData(CONNECTED_PROPERTIES.get(dir), parent.connectionPredicate.test(state, world.getBlockState(pos.offset(rotation.rotateTransform(dir)))));
-//        }
-//      }
-
       return data;
     }
 
@@ -460,12 +457,9 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       // build texture list
       ImmutableMap.Builder<String,String[]> connectedTextures = new ImmutableMap.Builder<>();
       for (Entry<String,JsonElement> entry : connected.entrySet()) {
-        // texture must be in the model
-        String name = entry.getKey();
-        if(!model.textures.containsKey(name)) {
-          throw new JsonSyntaxException("Invalid connected texture " + name + ", missing in model");
-        }
+        // don't validate texture as it may be contained in a child model that is not yet loaded
         // get type, put in map
+        String name = entry.getKey();
         connectedTextures.put(name, ConnectedModelRegistry.deserializeType(entry.getValue(), "textures[" + name + "]"));
       }
 
