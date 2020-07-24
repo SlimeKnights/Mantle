@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,6 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.network.NetworkDirection;
 import slimeknights.mantle.network.NetworkWrapper;
 
 import java.io.File;
@@ -26,8 +28,8 @@ class ExampleSync {
   static ExampleSync INSTANCE;
 
   static void setup() {
-    networkWrapper = new NetworkWrapper("mantle:example");
-    networkWrapper.registerPacket(ExampleSyncPacketImpl.class, ExampleSyncPacketImpl::encode, ExampleSyncPacketImpl::new, ExampleSyncPacketImpl::handle);
+    networkWrapper = new NetworkWrapper(new ResourceLocation("mantle:example"));
+    networkWrapper.registerPacket(ExampleSyncPacketImpl.class, ExampleSyncPacketImpl::new, NetworkDirection.PLAY_TO_CLIENT);
     INSTANCE = new ExampleSync();
   }
 
