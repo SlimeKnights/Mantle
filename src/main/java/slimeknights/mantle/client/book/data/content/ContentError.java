@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @OnlyIn(Dist.CLIENT)
 public class ContentError extends PageContent {
 
-  private String errorStage;
+  private final String errorStage;
   private Exception exception;
 
   public ContentError(String errorStage) {

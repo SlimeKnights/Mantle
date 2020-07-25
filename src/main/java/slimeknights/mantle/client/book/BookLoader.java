@@ -5,11 +5,12 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.resource.IResourceType;
+import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
@@ -33,9 +34,10 @@ import slimeknights.mantle.network.packet.UpdateSavedPagePacket;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
-public class BookLoader implements IResourceManagerReloadListener {
+public class BookLoader implements ISelectiveResourceReloadListener {
 
   /** GSON object to be used for book loading purposes */
   public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer())
@@ -88,6 +90,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * @param name The name of the page type
    * @return The class of the page type, ContentError.class if page type not registered
    */
+  @Nullable
   public static Class<? extends PageContent> getPageType(String name) {
     return typeToContentMap.get(name);
   }
@@ -145,7 +148,7 @@ public class BookLoader implements IResourceManagerReloadListener {
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
-  public void onResourceManagerReload(IResourceManager resourceManager) {
+  public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
     books.forEach((s, bookData) -> bookData.reset());
   }
 }

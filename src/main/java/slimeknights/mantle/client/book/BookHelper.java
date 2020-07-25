@@ -2,15 +2,14 @@ package slimeknights.mantle.client.book;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 
-import java.util.Arrays;
+import java.util.Objects;
 
 public class BookHelper {
 
   public static String getSavedPage(ItemStack item) {
     if (!item.isEmpty() && item.hasTag()) {
-      CompoundNBT mantleBook = item.getTag().getCompound("mantle").getCompound("book");
+      CompoundNBT mantleBook = Objects.requireNonNull(item.getTag()).getCompound("mantle").getCompound("book");
 
       if (mantleBook.contains("page", 8)) {
         return mantleBook.getString("page");

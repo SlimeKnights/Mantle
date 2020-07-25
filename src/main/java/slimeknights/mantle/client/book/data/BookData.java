@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,7 +39,7 @@ public class BookData implements IDataItem {
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
 
-  private ArrayList<BookRepository> repositories;
+  private final ArrayList<BookRepository> repositories;
 
   public BookData(BookRepository... repositories) {
     this.repositories = new ArrayList<>(Arrays.asList(repositories));
@@ -111,20 +112,23 @@ public class BookData implements IDataItem {
 
         if (repo.resourceExists(languageLocation)) {
           try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(repo.getResource(languageLocation)
-                    .getInputStream(), StandardCharsets.UTF_8));
+            IResource resource = repo.getResource(languageLocation);
+            if (resource != null) {
+              BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(),
+                      StandardCharsets.UTF_8));
 
-            String next = br.readLine();
+              String next = br.readLine();
 
-            while (next != null) {
-              if (!next.startsWith("//") && next.contains("=")) {
-                String key = next.substring(0, next.indexOf('='));
-                String value = next.substring(next.indexOf('=') + 1);
+              while (next != null) {
+                if (!next.startsWith("//") && next.contains("=")) {
+                  String key = next.substring(0, next.indexOf('='));
+                  String value = next.substring(next.indexOf('=') + 1);
 
-                this.strings.put(key, value);
+                  this.strings.put(key, value);
+                }
+
+                next = br.readLine();
               }
-
-              next = br.readLine();
             }
           }
           catch (Exception ignored) {
@@ -215,10 +219,6 @@ public class BookData implements IDataItem {
     return null;
   }
 
-  public int getFirstPageNumber(SectionData section) {
-    return this.getFirstPageNumber(section, null);
-  }
-
   public int getFirstPageNumber(SectionData section, @Nullable BookScreen.AdvancementCache advancementCache) {
     int pages = 0;
     for (SectionData sect : this.sections) {
@@ -236,11 +236,6 @@ public class BookData implements IDataItem {
     }
 
     return -1;
-  }
-
-  @Nullable
-  public PageData findPage(int number) {
-    return this.findPage(number, null);
   }
 
   @Nullable
@@ -268,14 +263,10 @@ public class BookData implements IDataItem {
     return null;
   }
 
-  @Nullable
-  public PageData findPage(String location) {
-    return this.findPage(location, null);
-  }
-
+  @SuppressWarnings("unused") // API
   @Nullable
   public PageData findPage(String location, @Nullable BookScreen.AdvancementCache advancementCache) {
-    return this.findPage(this.findPageNumber(location, advancementCache));
+    return this.findPage(this.findPageNumber(location, advancementCache), advancementCache);
   }
 
   public int findPageNumber(String location) {
@@ -319,10 +310,6 @@ public class BookData implements IDataItem {
     return -1;
   }
 
-  public int getPageCount() {
-    return this.getPageCount(null);
-  }
-
   public int getPageCount(@Nullable BookScreen.AdvancementCache advancementCache) {
     int pages = 0;
     for (SectionData section : this.sections) {
@@ -331,10 +318,6 @@ public class BookData implements IDataItem {
       pages += section.isUnlocked(advancementCache) ? section.getPageCount() : 0;
     }
     return pages;
-  }
-
-  public int getFullPageCount() {
-    return this.getFullPageCount(null);
   }
 
   public int getFullPageCount(@Nullable BookScreen.AdvancementCache advancementCache) {
@@ -351,7 +334,7 @@ public class BookData implements IDataItem {
     return "";
   }
 
-  public List<SectionData> getVisibleSections(BookScreen.AdvancementCache advancementCache) {
+  public List<SectionData> getVisibleSections(@Nullable BookScreen.AdvancementCache advancementCache) {
     List<SectionData> visible = new ArrayList<>();
 
     for (SectionData section : this.sections) {
@@ -377,6 +360,7 @@ public class BookData implements IDataItem {
     }
   }
 
+  @SuppressWarnings("unused") // API
   public void addRepository(@Nullable BookRepository repository) {
     if (repository != null && !this.repositories.contains(repository)) {
       this.repositories.add(repository);

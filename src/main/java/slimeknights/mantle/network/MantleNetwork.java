@@ -2,7 +2,6 @@ package slimeknights.mantle.network;
 
 import net.minecraftforge.fml.network.NetworkDirection;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.network.packet.FluidUpdatePacket;
 import slimeknights.mantle.network.packet.UpdateSavedPagePacket;
 
 public class MantleNetwork {

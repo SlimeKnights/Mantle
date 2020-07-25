@@ -7,29 +7,40 @@ import java.util.List;
 
 import slimeknights.mantle.client.book.data.SectionData;
 
+import javax.annotation.Nullable;
+
 public abstract class BookRepository {
 
+  @SuppressWarnings("StaticInitializerReferencesSubClass") // will only occur in very specific threaded environment
   public static final BookRepository DUMMY = new DummyRepository();
 
   public abstract List<SectionData> getSections();
 
-  public ResourceLocation getResourceLocation(String path) {
+  @Nullable
+  public ResourceLocation getResourceLocation(@Nullable String path) {
     return this.getResourceLocation(path, false);
   }
 
-  public abstract ResourceLocation getResourceLocation(String path, boolean safe);
+  @Nullable
+  public abstract ResourceLocation getResourceLocation(@Nullable String path, boolean safe);
 
-  public abstract IResource getResource(ResourceLocation loc);
+  @Nullable
+  public abstract IResource getResource(@Nullable ResourceLocation loc);
 
-  public boolean resourceExists(String location) {
+  @SuppressWarnings("unused") // API
+  public boolean resourceExists(@Nullable String location) {
+    if(location == null) {
+      return false;
+    }
+
     return this.resourceExists(new ResourceLocation(location));
   }
 
-  public abstract boolean resourceExists(ResourceLocation location);
+  public abstract boolean resourceExists(@Nullable ResourceLocation location);
 
-  public String resourceToString(IResource resource) {
+  public String resourceToString(@Nullable IResource resource) {
     return this.resourceToString(resource, true);
   }
 
-  public abstract String resourceToString(IResource resource, boolean skipCommments);
+  public abstract String resourceToString(@Nullable IResource resource, boolean skipCommments);
 }

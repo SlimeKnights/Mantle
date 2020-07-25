@@ -3,12 +3,13 @@ package slimeknights.mantle.client.book.repository;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.SectionData;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -28,13 +29,14 @@ public class FileRepository extends BookRepository {
   }
 
   @Override
-  public ResourceLocation getResourceLocation(String path, boolean safe) {
+  public ResourceLocation getResourceLocation(@Nullable String path, boolean safe) {
     if (path == null) {
       return safe ? new ResourceLocation("") : null;
     }
     if (!path.contains(":")) {
       String langPath = null;
 
+      //noinspection ConstantConditions - this was proven to be null once
       if (Minecraft.getInstance().getLanguageManager() != null && Minecraft.getInstance().getLanguageManager().getCurrentLanguage() != null) {
         langPath = Minecraft.getInstance().getLanguageManager().getCurrentLanguage().getCode();
       }
@@ -43,6 +45,7 @@ public class FileRepository extends BookRepository {
 
       ResourceLocation res;
 
+      //noinspection ConstantConditions - see above
       if (langPath != null) {
         res = new ResourceLocation(this.location + "/" + langPath + "/" + path);
         if (this.resourceExists(res)) {
@@ -57,19 +60,19 @@ public class FileRepository extends BookRepository {
       if (this.resourceExists(res)) {
         return res;
       }
-      return safe ? new ResourceLocation("") : null;
     }
     else {
       ResourceLocation res = new ResourceLocation(path);
       if (this.resourceExists(res)) {
         return res;
       }
-      return safe ? new ResourceLocation("") : null;
     }
+
+    return safe ? new ResourceLocation("") : null;
   }
 
   @Override
-  public IResource getResource(ResourceLocation loc) {
+  public IResource getResource(@Nullable ResourceLocation loc) {
     if (loc == null) {
       return null;
     }
@@ -82,7 +85,7 @@ public class FileRepository extends BookRepository {
   }
 
   @Override
-  public boolean resourceExists(ResourceLocation location) {
+  public boolean resourceExists(@Nullable ResourceLocation location) {
     if (location == null) {
       return false;
     }
@@ -96,18 +99,18 @@ public class FileRepository extends BookRepository {
   }
 
   @Override
-  public String resourceToString(IResource resource, boolean skipCommments) {
+  public String resourceToString(@Nullable IResource resource, boolean skipCommments) {
     if (resource == null) {
       return "";
     }
     try {
-      Iterator iterator = IOUtils.readLines(resource.getInputStream(), Charsets.UTF_8).iterator();
+      Iterator<String> iterator = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8).iterator();
       StringBuilder builder = new StringBuilder();
 
       boolean isLongComment = false;
 
       while (iterator.hasNext()) {
-        String s = ((String) iterator.next()).trim() + "\n";
+        String s = iterator.next().trim() + "\n";
 
         // Comment skipper
         if (skipCommments) {

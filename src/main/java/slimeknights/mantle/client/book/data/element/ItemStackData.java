@@ -52,15 +52,15 @@ public class ItemStackData implements IDataElement {
     Item item;
     boolean isMissingItem = false;
     try {
-      item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.id));//ItemArgument.getItem(null, id).getItem();
+      item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.id));
     }
     catch (Exception e) {
-      item = Item.getItemFromBlock(Blocks.BARRIER);
+      item = Items.BARRIER;
       isMissingItem = true;
     }
 
     if (item == Items.AIR) {
-      item = Item.getItemFromBlock(Blocks.BARRIER);
+      item = Items.BARRIER;
       isMissingItem = true;
     }
 

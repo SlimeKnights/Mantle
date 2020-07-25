@@ -23,6 +23,7 @@ public abstract class BookTransformer {
     return ContentTableTransformer.INSTANCE;
   }
 
+  @SuppressWarnings("unused") // API
   public static BookTransformer contentTableTransformerForSection(String sectionName) {
     return new ContentTableTransformer(sectionName);
   }

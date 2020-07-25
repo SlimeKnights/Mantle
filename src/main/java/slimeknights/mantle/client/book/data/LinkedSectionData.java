@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class LinkedSectionData extends SectionData {
 
-  private transient ArrayList<SectionData> sections = new ArrayList<>();
+  private final transient ArrayList<SectionData> sections = new ArrayList<>();
 
   public LinkedSectionData() {
     super(true);
