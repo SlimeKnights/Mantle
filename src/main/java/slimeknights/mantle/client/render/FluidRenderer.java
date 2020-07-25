@@ -35,6 +35,21 @@ public class FluidRenderer {
                       .transparency(RenderType.TRANSLUCENT_TRANSPARENCY)
                       .build(false));
 
+  /** Cached sprite getter instance */
+  private static Function<ResourceLocation, TextureAtlasSprite> blockSpriteGetter;
+
+  /**
+   * Gets a block sprite from the given location
+   * @param sprite  Sprite name
+   * @return  Sprite location
+   */
+  public static TextureAtlasSprite getBlockSprite(ResourceLocation sprite) {
+    if (blockSpriteGetter == null) {
+      blockSpriteGetter = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+    }
+    return blockSpriteGetter.apply(sprite);
+  }
+
   /* Fluid cuboids */
 
   /**
@@ -207,11 +222,14 @@ public class FluidRenderer {
    * @param light     Light level from TER
    */
   public static void renderCuboids(MatrixStack matrices, IVertexBuilder buffer, List<FluidCuboid> cubes, FluidStack fluid, int light) {
+    if (fluid.isEmpty()) {
+      return;
+    }
+
     // fluid attributes, fetch once for all fluids to save effort
     FluidAttributes attributes = fluid.getFluid().getAttributes();
-    Function<ResourceLocation, TextureAtlasSprite> spriteGetter = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-    TextureAtlasSprite still = spriteGetter.apply(attributes.getStillTexture(fluid));
-    TextureAtlasSprite flowing = spriteGetter.apply(attributes.getFlowingTexture(fluid));
+    TextureAtlasSprite still = getBlockSprite(attributes.getStillTexture(fluid));
+    TextureAtlasSprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
     int color = attributes.getColor(fluid);
     boolean isGas = attributes.isGaseous(fluid);
 
@@ -263,9 +281,8 @@ public class FluidRenderer {
 
     // fluid attributes
     FluidAttributes attributes = fluid.getFluid().getAttributes();
-    Function<ResourceLocation, TextureAtlasSprite> spriteGetter = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-    TextureAtlasSprite still = spriteGetter.apply(attributes.getStillTexture(fluid));
-    TextureAtlasSprite flowing = spriteGetter.apply(attributes.getFlowingTexture(fluid));
+    TextureAtlasSprite still = getBlockSprite(attributes.getStillTexture(fluid));
+    TextureAtlasSprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
     boolean isGas = attributes.isGaseous(fluid);
 
     // determine height based on fluid amount
