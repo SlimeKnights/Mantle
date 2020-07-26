@@ -7,8 +7,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.registration.object.EnumObject;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -56,17 +54,16 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
    * @param register  Function to register an entry
    * @return  EnumObject mapping between different block types
    */
-  @SuppressWarnings("unchecked")
   protected static <E extends Enum<E> & IStringSerializable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(E[] values, String name, BiFunction<String,E,Supplier<? extends V>> register) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
     // note this cast only works because you cannot extend an enum
-    Map<E,Supplier<? extends V>> map = new EnumMap<>((Class<E>)values[0].getClass());
+    EnumObject.Builder<E,V> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      map.put(value, register.apply(value.getString() + "_" + name, value));
+      builder.put(value, register.apply(value.getString() + "_" + name, value));
     }
-    return new EnumObject<>(map);
+    return builder.build();
   }
 
   /**
@@ -76,16 +73,15 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
    * @param register  Function to register an entry
    * @return  EnumObject mapping between different block types
    */
-  @SuppressWarnings("unchecked")
   protected static <E extends Enum<E> & IStringSerializable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(String name, E[] values, BiFunction<String,E,Supplier<? extends V>> register) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
     // note this cast only works because you cannot extend an enum
-    Map<E,Supplier<? extends V>> map = new EnumMap<>((Class<E>)values[0].getClass());
+    EnumObject.Builder<E,V> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      map.put(value, register.apply(name + "_" + value.getString(), value));
+      builder.put(value, register.apply(name + "_" + value.getString(), value));
     }
-    return new EnumObject<>(map);
+    return builder.build();
   }
 }

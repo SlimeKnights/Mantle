@@ -6,16 +6,13 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IRegistryDelegate;
 import slimeknights.mantle.registration.object.EnumObject;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Adapter that allows certain registry types to register from a list of values
  * @param <T>  Registry type
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends RegistryAdapter<T> {
 
   public EnumRegistryAdapter(IForgeRegistry<T> registry) {
@@ -39,13 +36,13 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
       throw new IllegalArgumentException("Must have at least one value");
     }
     // note this cast only works because you cannot extend an enum
-    Map<E,Supplier<? extends I>> map = new EnumMap<>((Class<E>)values[0].getClass());
+    EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
       // assuming the type will not sub for a different class
       IRegistryDelegate<T> delegate = register(mapper.apply(value), value.getString() + "_" + name).delegate;
-      map.put(value, () -> (I) delegate.get());
+      builder.put(value, () -> (I) delegate.get());
     }
-    return new EnumObject<>(map);
+    return builder.build();
   }
 
   /**
@@ -61,12 +58,12 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
       throw new IllegalArgumentException("Must have at least one value");
     }
     // note this cast only works because you cannot extend an enum
-    Map<E,Supplier<? extends I>> map = new EnumMap<>((Class<E>)values[0].getClass());
+    EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
       // assuming the type will not sub for a different class
       IRegistryDelegate<T> delegate = register(mapper.apply(value), name + "_" + value.getString()).delegate;
-      map.put(value, () -> (I) delegate.get());
+      builder.put(value, () -> (I) delegate.get());
     }
-    return new EnumObject<>(map);
+    return builder.build();
   }
 }
