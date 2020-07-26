@@ -46,7 +46,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
-import slimeknights.mantle.client.model.ModelJsonUtils;
+import slimeknights.mantle.client.model.ModelHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -443,7 +443,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
 
     @Override
     public ConnectedModel read(JsonDeserializationContext context, JsonObject json) {
-      BlockModel model = ModelJsonUtils.deserialize(context, json);
+      BlockModel model = ModelHelper.deserialize(context, json);
 
       // root object for all model data
       JsonObject data = JSONUtils.getJsonObject(json, "connection");

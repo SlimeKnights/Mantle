@@ -19,7 +19,7 @@ import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
-import slimeknights.mantle.client.model.ModelJsonUtils;
+import slimeknights.mantle.client.model.ModelHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -68,7 +68,7 @@ public class InventoryModel implements IModelGeometry<InventoryModel> {
 
     @Override
     public InventoryModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-      BlockModel model = ModelJsonUtils.deserialize(deserializationContext, modelContents);
+      BlockModel model = ModelHelper.deserialize(deserializationContext, modelContents);
       List<ModelItem> items = ModelItem.listFromJson(modelContents, "items");
       return new InventoryModel(model, items);
     }

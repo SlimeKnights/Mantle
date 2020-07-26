@@ -19,7 +19,7 @@ import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
-import slimeknights.mantle.client.model.ModelJsonUtils;
+import slimeknights.mantle.client.model.ModelHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -68,7 +68,7 @@ public class FluidsModel implements IModelGeometry<FluidsModel> {
 
     @Override
     public FluidsModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-      BlockModel model = ModelJsonUtils.deserialize(deserializationContext, modelContents);
+      BlockModel model = ModelHelper.deserialize(deserializationContext, modelContents);
       List<FluidCuboid> fluid = FluidCuboid.listFromJson(modelContents, "fluids");
       return new FluidsModel(model, fluid);
     }

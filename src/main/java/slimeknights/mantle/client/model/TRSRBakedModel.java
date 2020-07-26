@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
+import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 import net.minecraftforge.common.model.TransformationHelper;
@@ -25,11 +25,13 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-// for those wondering TRSR stands for Translation Rotation Scale Rotation
-public class TRSRBakedModel implements IBakedModel {
+/**
+ * Model that Translates, Rotates, Scales, then Rotates a child model
+ * TODO: is this still needed?
+ */
+public class TRSRBakedModel extends DynamicBakedWrapper<IBakedModel> {
 
-  protected final IBakedModel original;
-  protected final TransformationMatrix transformation;
+  private final TransformationMatrix transformation;
   private final TRSROverride override;
   private final int faceOffset;
 
@@ -49,7 +51,7 @@ public class TRSRBakedModel implements IBakedModel {
   }
 
   public TRSRBakedModel(IBakedModel original, TransformationMatrix transform) {
-    this.original = original;
+    super(original);
     this.transformation = transform.blockCenterToCorner();
     this.override = new TRSROverride(this);
     this.faceOffset = 0;
@@ -57,7 +59,7 @@ public class TRSRBakedModel implements IBakedModel {
 
   /** Rotates around the Y axis and adjusts culling appropriately. South is default. */
   public TRSRBakedModel(IBakedModel original, Direction facing) {
-    this.original = original;
+    super(original);
     this.override = new TRSROverride(this);
 
     this.faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
@@ -67,18 +69,17 @@ public class TRSRBakedModel implements IBakedModel {
   }
 
   @Override
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
     // transform quads obtained from parent
 
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
-
-    if (!this.original.isBuiltInRenderer()) {
+    if (!this.originalModel.isBuiltInRenderer()) {
       try {
         // adjust side to facing-rotation
         if (side != null && side.getHorizontalIndex() > -1) {
           side = Direction.byHorizontalIndex((side.getHorizontalIndex() + this.faceOffset) % 4);
         }
-        for (BakedQuad quad : this.original.getQuads(state, side, rand)) {
+        for (BakedQuad quad : this.originalModel.getQuads(state, side, rand, data)) {
           Transformer transformer = new Transformer(this.transformation, quad.func_187508_a());
           quad.pipe(transformer);
           builder.add(transformer.build());
@@ -93,37 +94,6 @@ public class TRSRBakedModel implements IBakedModel {
   }
 
   @Override
-  public boolean isAmbientOcclusion() {
-    return false;
-  }
-
-  @Override
-  public boolean isGui3d() {
-    return this.original.isGui3d();
-  }
-
-  @Override
-  public boolean func_230044_c_() {
-    return false;
-  }
-
-  @Override
-  public boolean isBuiltInRenderer() {
-    return this.original.isBuiltInRenderer();
-  }
-
-  @Override
-  public TextureAtlasSprite getParticleTexture() {
-    return this.original.getParticleTexture();
-  }
-
-  @Override
-  @Deprecated
-  public ItemCameraTransforms getItemCameraTransforms() {
-    return this.original.getItemCameraTransforms();
-  }
-
-  @Override
   public ItemOverrideList getOverrides() {
     return this.override;
   }
@@ -132,14 +102,14 @@ public class TRSRBakedModel implements IBakedModel {
 
     private final TRSRBakedModel model;
 
-    public TRSROverride(TRSRBakedModel model) {
+    TRSROverride(TRSRBakedModel model) {
       this.model = model;
     }
 
     @Nullable
     @Override
     public IBakedModel func_239290_a_(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-      IBakedModel baked = this.model.original.getOverrides().func_239290_a_(originalModel, stack, world, entity);
+      IBakedModel baked = this.model.originalModel.getOverrides().func_239290_a_(originalModel, stack, world, entity);
       if (baked == null) {
         return null;
       }

@@ -4,7 +4,8 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.vector.Vector3f;
-import slimeknights.mantle.client.model.ModelJsonUtils;
+import slimeknights.mantle.client.model.ModelHelper;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.util.List;
 
@@ -79,9 +80,9 @@ public class ModelItem {
     if (size == 0) {
       return ModelItem.EMPTY;
     }
-    Vector3f center = ModelJsonUtils.arrayToVector(json, "center");
-    float x = ModelJsonUtils.getRotation(json, "x");
-    float y = ModelJsonUtils.getRotation(json, "y");
+    Vector3f center = ModelHelper.arrayToVector(json, "center");
+    float x = ModelHelper.getRotation(json, "x");
+    float y = ModelHelper.getRotation(json, "y");
     return new ModelItem(center, size, x, y);
   }
 
@@ -92,6 +93,6 @@ public class ModelItem {
    * @return  List of model items
    */
   public static List<ModelItem> listFromJson(JsonObject parent, String key) {
-    return ModelJsonUtils.parseList(JSONUtils.getJsonArray(parent, key), ModelItem::fromJson, key);
+    return JsonHelper.parseList(parent, key, JSONUtils::getJsonObject, ModelItem::fromJson);
   }
 }

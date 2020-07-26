@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 
+/**
+ * Loads the first model from a list of models that has a loaded mod ID, ideal for optional CTM model support
+ */
 @RequiredArgsConstructor
 public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.BlockModelWrapper> {
   /** Loader instance */

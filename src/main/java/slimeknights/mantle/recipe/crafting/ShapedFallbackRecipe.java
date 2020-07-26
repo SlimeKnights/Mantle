@@ -1,7 +1,6 @@
 package slimeknights.mantle.recipe.crafting;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
@@ -17,6 +16,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -88,12 +88,8 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     @Override
     public ShapedFallbackRecipe read(ResourceLocation id, JsonObject json) {
       ShapedRecipe base = super.read(id, json);
-      JsonArray array = JSONUtils.getJsonArray(json, "alternatives");
-      ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
-      for (int i = 0; i < array.size(); i++) {
-        builder.add(new ResourceLocation(JSONUtils.getString(array.get(i), "alternatives[" + i + "]")));
-      }
-      return new ShapedFallbackRecipe(base, builder.build());
+      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", JSONUtils::getString, ResourceLocation::new);
+      return new ShapedFallbackRecipe(base, alternatives);
     }
 
     @Override

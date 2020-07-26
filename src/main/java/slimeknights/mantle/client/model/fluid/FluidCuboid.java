@@ -9,7 +9,8 @@ import lombok.Getter;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.vector.Vector3f;
-import slimeknights.mantle.client.model.ModelJsonUtils;
+import slimeknights.mantle.client.model.ModelHelper;
+import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -91,8 +92,8 @@ public class FluidCuboid {
    * @return  Fluid cuboid
    */
   public static FluidCuboid fromJson(JsonObject json) {
-    Vector3f from = ModelJsonUtils.arrayToVector(json, "from");
-    Vector3f to = ModelJsonUtils.arrayToVector(json, "to");
+    Vector3f from = ModelHelper.arrayToVector(json, "from");
+    Vector3f to = ModelHelper.arrayToVector(json, "to");
     // if faces is defined, fill with specified faces
     Map<Direction,FluidFace> faces = getFaces(json);
     return new FluidCuboid(from, to, faces);
@@ -114,7 +115,7 @@ public class FluidCuboid {
 
     // array: multiple cubes
     if (json.isJsonArray()) {
-      return ModelJsonUtils.parseList(json.getAsJsonArray(), FluidCuboid::fromJson, key);
+      return JsonHelper.parseList(json.getAsJsonArray(), key, JSONUtils::getJsonObject, FluidCuboid::fromJson);
     }
 
     throw new JsonSyntaxException("Invalid fluid '" + key + "', must be an array or an object");
@@ -139,7 +140,7 @@ public class FluidCuboid {
       if (dir != null) {
         JsonObject face = JSONUtils.getJsonObject(entry.getValue(), name);
         boolean flowing = JSONUtils.getBoolean(face, "flowing", false);
-        int rotation = ModelJsonUtils.getRotation(face, "rotation");
+        int rotation = ModelHelper.getRotation(face, "rotation");
         faces.put(dir, new FluidFace(flowing, rotation));
       } else {
         throw new JsonSyntaxException("Unknown face '" + name + "'");

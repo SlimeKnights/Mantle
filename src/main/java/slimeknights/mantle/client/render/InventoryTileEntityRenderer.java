@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
-import slimeknights.mantle.client.ModelHelper;
+import slimeknights.mantle.client.model.ModelHelper;
 import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.inventory.ModelItem;
 
