@@ -6,6 +6,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,13 @@ import java.util.stream.Collectors;
  * @param <T>  Enum type
  * @param <I>  Entry type
  */
+@SuppressWarnings("unused")
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("WeakerAccess")
 public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> {
+  /** Singleton empty object, type does not matter as it has no items */
+  private static final EnumObject EMPTY = new EnumObject<>(Collections.emptyMap());
+
+  /** Internal backing supplier map */
   private final Map<T,Supplier<? extends I>> map;
 
   /**
@@ -28,6 +33,7 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
    * @param value  Value to get
    * @return  Entry supplier
    */
+  @Nullable
   public Supplier<? extends I> getSupplier(T value) {
     return map.get(value);
   }
@@ -39,10 +45,11 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
    */
   @Nullable
   public I get(T value) {
-    if (!map.containsKey(value)) {
+    Supplier<? extends I> supplier = map.get(value);
+    if (supplier == null) {
       return null;
     }
-    return getSupplier(value).get();
+    return supplier.get();
   }
 
   /**
@@ -68,6 +75,17 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
    */
   public void forEach(BiConsumer<T, I> consumer) {
     this.map.forEach((key, sup) -> consumer.accept(key, sup.get()));
+  }
+
+  /**
+   * Fetches the empty enum object, casted to the given type. This is useful to reduce potential of null pointers by default fields to empty map
+   * @param <T>  Key type
+   * @param <I>  Value type
+   * @return  Empty EnumObject
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> EnumObject<T,I> empty() {
+    return (EnumObject<T,I>) EMPTY;
   }
 
   /**
