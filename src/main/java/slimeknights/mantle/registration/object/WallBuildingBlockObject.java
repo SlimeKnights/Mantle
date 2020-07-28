@@ -4,13 +4,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallBlock;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
+
+@SuppressWarnings("unused")
 public class WallBuildingBlockObject extends BuildingBlockObject {
   private final Supplier<? extends WallBlock> wall;
 
@@ -44,8 +45,7 @@ public class WallBuildingBlockObject extends BuildingBlockObject {
    * @return  BuildingBlockObject instance
    */
   public static WallBuildingBlockObject fromBlocks(BuildingBlockObject object, Block wall) {
-    IRegistryDelegate<Block> wallDelegate = wall.delegate;
-    return new WallBuildingBlockObject(object, () -> (WallBlock) wallDelegate.get());
+    return new WallBuildingBlockObject(object, castDelegate(wall.delegate));
   }
 
   /**

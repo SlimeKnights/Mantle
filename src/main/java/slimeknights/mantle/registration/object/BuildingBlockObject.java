@@ -3,7 +3,6 @@ package slimeknights.mantle.registration.object;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,12 +48,10 @@ public class BuildingBlockObject extends ItemObject<Block> {
    * @return  BuildingBlockObject instance
    */
   public static BuildingBlockObject fromBlocks(Block block, Block slab, Block stairs) {
-    IRegistryDelegate<Block> slabDelegate = slab.delegate;
-    IRegistryDelegate<Block> stairsDelegate = stairs.delegate;
     return new BuildingBlockObject(
       block.delegate,
-      () -> (SlabBlock) slabDelegate.get(),
-      () -> (StairsBlock) stairsDelegate.get()
+      castDelegate(slab.delegate),
+      castDelegate(stairs.delegate)
     );
   }
 

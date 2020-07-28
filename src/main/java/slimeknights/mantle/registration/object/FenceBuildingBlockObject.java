@@ -4,13 +4,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
+
+@SuppressWarnings("unused")
 public class FenceBuildingBlockObject extends BuildingBlockObject {
   private final Supplier<? extends FenceBlock> fence;
 
@@ -44,9 +45,7 @@ public class FenceBuildingBlockObject extends BuildingBlockObject {
    * @return  BuildingBlockObject instance
    */
   public static FenceBuildingBlockObject fromBlocks(BuildingBlockObject object, Block fence) {
-    IRegistryDelegate<Block> fenceDelegate = fence.delegate;
-    return new FenceBuildingBlockObject(object, () -> (FenceBlock) fenceDelegate.get()
-    );
+    return new FenceBuildingBlockObject(object, castDelegate(fence.delegate));
   }
 
   /**
