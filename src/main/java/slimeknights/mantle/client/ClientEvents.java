@@ -21,10 +21,13 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 public class ClientEvents {
 
   public static void onConstruct() {
-    // register on construct as sometimes models start loading before client setup or model regsitry event
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("inventory"), InventoryModel.Loader.INSTANCE);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
+    //noinspection ConstantConditions  Minecraft is null during data gen, causing loader registration to fail
+    if (Minecraft.getInstance() != null) {
+      // register on construct as sometimes models start loading before client setup or model regsitry event
+      ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
+      ModelLoaderRegistry.registerLoader(Mantle.getResource("inventory"), InventoryModel.Loader.INSTANCE);
+      ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
+    }
   }
 
   @SubscribeEvent
