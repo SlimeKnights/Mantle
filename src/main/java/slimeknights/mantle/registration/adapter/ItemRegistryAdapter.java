@@ -16,7 +16,6 @@ import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -67,7 +66,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param props  Item properties for the block
    */
   public BlockItem registerBlockItem(Block block, Item.Properties props) {
-    return register(new BlockTooltipItem(block, props), Objects.requireNonNull(block.getRegistryName()));
+    return register(new BlockTooltipItem(block, props), block);
   }
 
   /**
@@ -76,7 +75,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return Registered item block, should be the same as teh one passed in.
    */
   public <T extends BlockItem> T registerBlockItem(T blockItem) {
-    return register(blockItem, Objects.requireNonNull(blockItem.getBlock().getRegistryName()));
+    return register(blockItem, blockItem.getBlock());
   }
 
   /* Block wrappers */

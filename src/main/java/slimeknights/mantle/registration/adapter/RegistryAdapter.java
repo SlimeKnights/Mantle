@@ -6,6 +6,8 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import java.util.Objects;
+
 /**
  * A convenience wrapper for forge registries, to be used in combination with the {@link net.minecraftforge.event.RegistryEvent.Register} event.
  * Simply put it allows you to register things by passing (thing, name) instead of having to set the name inline.
@@ -48,9 +50,19 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * @param name   Registry name
    * @return Registry entry
    */
-  @SuppressWarnings("UnusedReturnValue")
   public <I extends T> I register(I entry, String name) {
     return this.register(entry, this.getResource(name));
+  }
+
+  /**
+   * Registers an entry using the name from another entry
+   * @param entry  Entry to register
+   * @param name   Entry name to copy
+   * @param <I>    Value type
+   * @return  Registered entry
+   */
+  public <I extends T> I register(I entry, IForgeRegistryEntry<?> name) {
+    return this.register(entry, Objects.requireNonNull(name.getRegistryName()));
   }
 
   /**

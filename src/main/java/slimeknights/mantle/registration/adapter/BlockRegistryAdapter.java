@@ -1,5 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
+import net.minecraft.block.AbstractBlock.Properties;
 import net.minecraft.block.Block;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.FlowingFluidBlock;
@@ -13,6 +14,7 @@ import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -27,6 +29,17 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
 
   public BlockRegistryAdapter(IForgeRegistry<Block> registry, String modid) {
     super(registry, modid);
+  }
+
+  /**
+   * Registers a block override based on the given block
+   * @param constructor  Override constructor
+   * @param base         Base block
+   * @param <T>          Block type
+   * @return  Registered block
+   */
+  public <T extends Block> T registerOverride(Function<Properties, T> constructor, Block base) {
+    return register(constructor.apply(Block.Properties.from(base)), base);
   }
 
   /* Building */
