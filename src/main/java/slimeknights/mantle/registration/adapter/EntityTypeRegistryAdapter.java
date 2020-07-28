@@ -7,6 +7,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 /**
  * Registry adapter for registering entity types
  */
+@SuppressWarnings("unused")
 public class EntityTypeRegistryAdapter extends RegistryAdapter<EntityType<?>> {
   /** @inheritDoc */
   public EntityTypeRegistryAdapter(IForgeRegistry<EntityType<?>> registry, String modId) {

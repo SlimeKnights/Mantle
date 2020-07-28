@@ -6,6 +6,7 @@ import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.IForgeRegistry;
 
+@SuppressWarnings("unused")
 public class ContainerTypeRegistryAdapter extends RegistryAdapter<ContainerType<?>> {
   /** @inheritDoc */
   public ContainerTypeRegistryAdapter(IForgeRegistry<ContainerType<?>> registry, String modId) {

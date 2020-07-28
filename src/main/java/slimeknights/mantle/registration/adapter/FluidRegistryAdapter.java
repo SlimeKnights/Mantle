@@ -12,6 +12,7 @@ import java.util.function.Function;
 /**
  * Registry adapter for registering fluids
  */
+@SuppressWarnings("unused")
 public class FluidRegistryAdapter extends RegistryAdapter<Fluid> {
   /** @inheritDoc */
   public FluidRegistryAdapter(IForgeRegistry<Fluid> registry) {

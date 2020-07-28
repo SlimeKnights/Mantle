@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> {
   /** Singleton empty object, type does not matter as it has no items */
-  private static final EnumObject EMPTY = new EnumObject<>(Collections.emptyMap());
+  @SuppressWarnings("unchecked")
+  private static final EnumObject EMPTY = new EnumObject(Collections.emptyMap());
 
   /** Internal backing supplier map */
   private final Map<T,Supplier<? extends I>> map;
