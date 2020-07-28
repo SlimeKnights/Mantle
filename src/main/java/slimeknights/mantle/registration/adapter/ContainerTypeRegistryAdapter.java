@@ -24,7 +24,7 @@ public class ContainerTypeRegistryAdapter extends RegistryAdapter<ContainerType<
    * @param <C>      Container type
    * @return  Registry object containing the container type
    */
-  public <C extends Container> ContainerType<C> register(IContainerFactory<C> factory, String name) {
+  public <C extends Container> ContainerType<C> registerType(IContainerFactory<C> factory, String name) {
     return register(IForgeContainerType.create(factory), name);
   }
 }
