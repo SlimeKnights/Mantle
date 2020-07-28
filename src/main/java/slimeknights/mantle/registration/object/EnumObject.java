@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -49,6 +50,20 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
     Supplier<? extends I> supplier = map.get(value);
     if (supplier == null) {
       return null;
+    }
+    return supplier.get();
+  }
+
+  /**
+   * Gets the value for the given enum, or throws an exception if missing
+   * @param value  Key to get
+   * @return  Value, or null if missing
+   * @throws NoSuchElementException  If the key is not defined
+   */
+  public I getOrThrow(T value) {
+    Supplier<? extends I> supplier = map.get(value);
+    if (supplier == null) {
+      throw new NoSuchElementException("Missing key " + value);
     }
     return supplier.get();
   }
