@@ -139,7 +139,7 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
      * @param object  Enum object
      * @return  Builder instance
      */
-    public Builder<T,I> putAll(EnumObject<T,I> object) {
+    public Builder<T,I> putAll(EnumObject<T,? extends I> object) {
       this.map.putAll(object.map);
       return this;
     }
