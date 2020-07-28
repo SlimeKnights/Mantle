@@ -182,6 +182,24 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
     enumObject.values().forEach(this::registerBlockItem);
   }
 
+  /**
+   * Registers block items for an enum object
+   * @param enumObject  Enum object instance
+   * @param props       Item properties to use
+   */
+  public <B extends Block> void registerBlockItem(EnumObject<?, B> enumObject, Item.Properties props) {
+    enumObject.values().forEach(block -> this.registerBlockItem(block, props));
+  }
+
+  /**
+   * Registers block items for an enum object
+   * @param enumObject  Enum object instance
+   * @param blockItem   Block item constructor
+   */
+  public <B extends Block> void registerBlockItem(EnumObject<?, B> enumObject, Function<B,? extends BlockItem> blockItem) {
+    enumObject.values().forEach(block -> this.registerBlockItem(blockItem.apply(block)));
+  }
+
 
   /* Misc */
 
