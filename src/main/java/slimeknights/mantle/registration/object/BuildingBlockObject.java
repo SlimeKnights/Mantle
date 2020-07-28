@@ -19,19 +19,31 @@ public class BuildingBlockObject extends ItemObject<Block> {
   private final Supplier<? extends StairsBlock> stairs;
 
   /**
-   * Creates a new object from a set of suppliers
+   * Standard supplier method, expects the supplier to have resolved in order to call registry name.
    * @param block   Base block
    * @param slab    Slab block
    * @param stairs  Stairs block
    */
-  public BuildingBlockObject(Supplier<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairsBlock> stairs) {
+  protected BuildingBlockObject(Supplier<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairsBlock> stairs) {
     super(block);
     this.slab = slab;
     this.stairs = stairs;
   }
 
   /**
-   * Creates a new object from another building block object
+   * Creates a new object from a ItemObject. Avoids an extra supplier wrapper
+   * @param block   Base block
+   * @param slab    Slab block
+   * @param stairs  Stairs block
+   */
+  public BuildingBlockObject(ItemObject<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairsBlock> stairs) {
+    super(block);
+    this.slab = slab;
+    this.stairs = stairs;
+  }
+
+  /**
+   * Creates a new object from another building block object, intended to be used in subclasses to copy properties
    * @param object   Object to copy
    */
   protected BuildingBlockObject(BuildingBlockObject object) {

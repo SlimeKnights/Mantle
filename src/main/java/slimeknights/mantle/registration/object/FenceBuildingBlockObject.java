@@ -2,8 +2,6 @@ package slimeknights.mantle.registration.object;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.FenceBlock;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,20 +14,7 @@ public class FenceBuildingBlockObject extends BuildingBlockObject {
   private final Supplier<? extends FenceBlock> fence;
 
   /**
-   * Creates a new building block object with all parameters
-   * @param block    Block object
-   * @param slab     Slab object
-   * @param stairs   Stairs object
-   * @param fence    Fence object
-   */
-  public FenceBuildingBlockObject(Supplier<? extends Block> block, Supplier<? extends SlabBlock> slab,
-      Supplier<? extends StairsBlock> stairs, Supplier<? extends FenceBlock> fence) {
-    super(block, slab, stairs);
-    this.fence = fence;
-  }
-
-  /**
-   * Creates a new object from a building block object plus a fence
+   * Creates a new object from a building block object plus a fence.
    * @param object  Previous building block object
    * @param fence   Fence object
    */

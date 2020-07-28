@@ -1,8 +1,6 @@
 package slimeknights.mantle.registration.object;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallBlock;
 
 import java.util.Arrays;
@@ -16,20 +14,7 @@ public class WallBuildingBlockObject extends BuildingBlockObject {
   private final Supplier<? extends WallBlock> wall;
 
   /**
-   * Creates a new building block object with all parameters
-   * @param block    Block supplier
-   * @param slab     Slab supplier
-   * @param stairs   Stairs supplier
-   * @param wall     Wall supplier
-   */
-  public WallBuildingBlockObject(Supplier<? extends Block> block, Supplier<? extends SlabBlock> slab,
-      Supplier<? extends StairsBlock> stairs, Supplier<? extends WallBlock> wall) {
-    super(block, slab, stairs);
-    this.wall = wall;
-  }
-
-  /**
-   * Creates a new object from a building block object plus a wall
+   * Creates a new object from a building block object plus a wall.
    * @param object  Previous building block object
    * @param wall    Wall object
    */
