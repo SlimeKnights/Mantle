@@ -6,9 +6,11 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.Item.Properties;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.BlockTooltipItem;
+import slimeknights.mantle.item.TooltipItem;
 import slimeknights.mantle.registration.ItemProperties;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
@@ -16,6 +18,8 @@ import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
 import javax.annotation.Nullable;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -25,6 +29,19 @@ import java.util.function.Supplier;
 public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
   private final Item.Properties defaultProps;
 
+  /**
+   * Registers a new item registry adapter with default mod ID and item properties
+   * @param registry  Item registry instance
+   */
+  public ItemRegistryAdapter(IForgeRegistry<Item> registry) {
+    this(registry, null);
+  }
+
+  /**
+   * Registers a new item registry adapter with default mod ID
+   * @param registry      Item registry instance
+   * @param defaultProps  Default item properties
+   */
   public ItemRegistryAdapter(IForgeRegistry<Item> registry, @Nullable Item.Properties defaultProps) {
     super(registry);
     if (defaultProps == null) {
@@ -34,6 +51,12 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
     }
   }
 
+  /**
+   * Registers a new item registry adapter with a specific mod ID
+   * @param registry      Item registry instance
+   * @param modid         Mod ID override
+   * @param defaultProps  Default item properties
+   */
   public ItemRegistryAdapter(IForgeRegistry<Item> registry, String modid, @Nullable Item.Properties defaultProps) {
     super(registry, modid);
     if (defaultProps == null) {
@@ -41,6 +64,38 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
     } else {
       this.defaultProps = defaultProps;
     }
+  }
+
+  /* Item helpers */
+
+  /**
+   * Registers a generic tooltip item using the default props
+   * @param name  Item name
+   * @return  Registered item
+   */
+  public TooltipItem register(String name) {
+    return register(defaultProps, name);
+  }
+
+  /**
+   * Registers a generic tooltip item from the given props
+   * @param props  Item properties
+   * @param name   Item name
+   * @return  Registered item
+   */
+  public TooltipItem register(Item.Properties props, String name) {
+    return register(new TooltipItem(props), name);
+  }
+
+  /**
+   * Registers an item with the default properties
+   * @param constructor  Item constructor
+   * @param name         Item name
+   * @param <T>          Item type
+   * @return  Registered item
+   */
+  public <T extends Item> T register(Function<Properties,T> constructor, String name) {
+    return register(constructor.apply(defaultProps), name);
   }
 
 
@@ -58,6 +113,17 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    */
   public BlockItem registerBlockItem(Block block) {
     return registerBlockItem(block, defaultProps);
+  }
+
+  /**
+   * Registers a block item with default properties using the given constructor
+   * @param block        Block instance
+   * @param constructor  Constructor
+   * @param <T>          Result block item type
+   * @return  Registered block item
+   */
+  public <T extends BlockItem> T registerBlockItem(Block block, BiFunction<Block,Properties,T> constructor) {
+    return register(constructor.apply(block, defaultProps), block);
   }
 
   /**

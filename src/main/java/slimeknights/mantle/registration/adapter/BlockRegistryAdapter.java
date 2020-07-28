@@ -23,10 +23,12 @@ import java.util.function.Supplier;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
 
+  /** @inheritDoc */
   public BlockRegistryAdapter(IForgeRegistry<Block> registry) {
     super(registry);
   }
 
+  /** @inheritDoc */
   public BlockRegistryAdapter(IForgeRegistry<Block> registry, String modid) {
     super(registry, modid);
   }

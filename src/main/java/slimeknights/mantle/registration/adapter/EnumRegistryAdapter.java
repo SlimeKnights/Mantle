@@ -15,10 +15,12 @@ import java.util.function.Function;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends RegistryAdapter<T> {
 
+  /** @inheritDoc */
   public EnumRegistryAdapter(IForgeRegistry<T> registry) {
     super(registry);
   }
 
+  /** @inheritDoc */
   public EnumRegistryAdapter(IForgeRegistry<T> registry, String modId) {
     super(registry, modId);
   }

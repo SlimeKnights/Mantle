@@ -13,10 +13,12 @@ import java.util.function.Function;
  * Registry adapter for registering fluids
  */
 public class FluidRegistryAdapter extends RegistryAdapter<Fluid> {
+  /** @inheritDoc */
   public FluidRegistryAdapter(IForgeRegistry<Fluid> registry) {
     super(registry);
   }
 
+  /** @inheritDoc */
   public FluidRegistryAdapter(IForgeRegistry<Fluid> registry, String modId) {
     super(registry, modId);
   }

@@ -8,10 +8,12 @@ import net.minecraftforge.registries.IForgeRegistry;
  * Registry adapter for registering entity types
  */
 public class EntityTypeRegistryAdapter extends RegistryAdapter<EntityType<?>> {
+  /** @inheritDoc */
   public EntityTypeRegistryAdapter(IForgeRegistry<EntityType<?>> registry, String modId) {
     super(registry, modId);
   }
 
+  /** @inheritDoc */
   public EntityTypeRegistryAdapter(IForgeRegistry<EntityType<?>> registry) {
     super(registry);
   }
