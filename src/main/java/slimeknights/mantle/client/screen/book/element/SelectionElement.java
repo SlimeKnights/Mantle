@@ -73,7 +73,7 @@ public class SelectionElement extends SizedBookElement {
       text.add(new StringTextComponent(this.section.getTitle()));
 
       if (!this.section.isUnlocked(this.parent.advancementCache)) {
-        text.add(new StringTextComponent("Locked").func_240701_a_(TextFormatting.RED));
+        text.add(new StringTextComponent("Locked").mergeStyle(TextFormatting.RED));
         text.add(new StringTextComponent("Requirements:"));
 
         for (String requirement : this.section.requirements) {

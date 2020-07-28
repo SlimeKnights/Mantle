@@ -456,7 +456,7 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public void removed() {
+  public void onClose() {
     if (this.minecraft.player == null) {
       return;
     }

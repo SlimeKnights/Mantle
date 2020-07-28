@@ -37,14 +37,14 @@ public abstract class LocUtils {
         String[] strings = new TranslationTextComponent(translate).getString().split("\n");
 
         for (String string : strings) {
-          list.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
+          list.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
         }
       }
       else {
         String[] strings = new TranslationTextComponent(text).getString().split("\n");
 
         for (String string : strings) {
-          list.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
+          list.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
         }
       }
     }

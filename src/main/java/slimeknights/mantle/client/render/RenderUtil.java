@@ -23,7 +23,7 @@ public class RenderUtil {
    * @return  True if rotation was applied. Caller is expected to call {@link MatrixStack#pop()} if true
    */
   public static boolean applyRotation(MatrixStack matrices, BlockState state) {
-    if (state.func_235901_b_(BlockStateProperties.HORIZONTAL_FACING)) {
+    if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
       return applyRotation(matrices, state.get(BlockStateProperties.HORIZONTAL_FACING));
     }
     return false;

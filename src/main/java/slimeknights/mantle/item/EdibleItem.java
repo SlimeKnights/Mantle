@@ -39,7 +39,7 @@ public class EdibleItem extends Item {
     if (this.displayEffectsTooltip) {
       for (Pair<EffectInstance, Float> pair : stack.getItem().getFood().getEffects()) {
         if (pair.getFirst() != null) {
-          tooltip.add(new StringTextComponent(I18n.format(pair.getFirst().getEffectName()).trim()).func_240699_a_(TextFormatting.GRAY));
+          tooltip.add(new StringTextComponent(I18n.format(pair.getFirst().getEffectName()).trim()).mergeStyle(TextFormatting.GRAY));
         }
       }
     }

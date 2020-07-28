@@ -71,7 +71,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
     }
     this.advancementBuilder
       .withParentId(new ResourceLocation("recipes/root"))
-      .withCriterion("has_the_recipe", RecipeUnlockedTrigger.func_235675_a_(id))
+      .withCriterion("has_the_recipe", RecipeUnlockedTrigger.create(id))
       .withRewards(AdvancementRewards.Builder.recipe(id))
       .withRequirementsStrategy(IRequirementsStrategy.OR);
     return new ResourceLocation(id.getNamespace(), "recipes/" + folder + "/" + id.getPath());

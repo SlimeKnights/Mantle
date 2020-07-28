@@ -169,7 +169,7 @@ public class TextDataRenderer {
 
     if (BookScreen.debug && action != null && !action.isEmpty()) {
       tooltip.add(StringTextComponent.EMPTY);
-      tooltip.add(new StringTextComponent("Action: " + action).func_240699_a_(TextFormatting.GRAY));
+      tooltip.add(new StringTextComponent("Action: " + action).mergeStyle(TextFormatting.GRAY));
     }
 
     return action;

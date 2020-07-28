@@ -38,14 +38,14 @@ public class TooltipItem extends Item {
         String[] strings = new TranslationTextComponent(translate).getString().split("\n");
 
         for (String string : strings) {
-          tooltip.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
+          tooltip.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
         }
       }
       else {
         String[] strings = new TranslationTextComponent(translationKey).getString().split("\n");
 
         for (String string : strings) {
-          tooltip.add(new StringTextComponent(string).func_240699_a_(TextFormatting.GRAY));
+          tooltip.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
         }
       }
     }

@@ -427,7 +427,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
           return false;
         }
         BooleanProperty prop = IMultipartConnectedBlock.CONNECTED_DIRECTIONS.get(rotation.rotateTransform(dir));
-        return state.func_235901_b_(prop) && state.get(prop);
+        return state.hasProperty(prop) && state.get(prop);
       });
       return getCachedQuads(connections, state, side, rand, EmptyModelData.INSTANCE);
     }

@@ -74,8 +74,8 @@ public class WrapperSlot extends Slot {
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public Pair<ResourceLocation, ResourceLocation> func_225517_c_() {
-    return this.parent.func_225517_c_();
+  public Pair<ResourceLocation, ResourceLocation> getBackground() {
+    return this.parent.getBackground();
   }
 
   @Override

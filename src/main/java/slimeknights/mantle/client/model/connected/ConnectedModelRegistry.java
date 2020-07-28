@@ -67,7 +67,7 @@ public class ConnectedModelRegistry {
    * @return  True if the property exists and is true, false if false or missing
    */
   private static boolean safeGet(BlockState state, BooleanProperty prop) {
-    return state.func_235901_b_(prop) && state.get(prop);
+    return state.hasProperty(prop) && state.get(prop);
   }
 
   static {

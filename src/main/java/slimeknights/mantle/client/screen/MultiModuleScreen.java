@@ -68,14 +68,14 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  protected void func_230450_a_(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+  protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
     for (ModuleScreen module : this.modules) {
       module.handleDrawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
     }
   }
 
   @Override
-  protected void func_230451_b_(MatrixStack matrixStack, int mouseX, int mouseY) {
+  protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
     this.drawContainerName(matrixStack);
     this.drawPlayerInventoryName(matrixStack);
 
@@ -177,7 +177,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void func_238746_a_(MatrixStack matrixStack, Slot slotIn) {
+  public void moveItems(MatrixStack matrixStack, Slot slotIn) {
     ModuleScreen module = this.getModuleForSlot(slotIn.slotNumber);
 
     if (module != null) {
@@ -198,7 +198,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
       slotIn.yPos = ((WrapperSlot) slotIn).parent.yPos;
     }
 
-    super.func_238746_a_(matrixStack, slotIn);
+    super.moveItems(matrixStack, slotIn);
   }
 
   @Override

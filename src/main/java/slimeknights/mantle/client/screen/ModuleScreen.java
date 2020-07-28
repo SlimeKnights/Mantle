@@ -85,11 +85,11 @@ public abstract class ModuleScreen extends ContainerScreen {
   }
 
   public void handleDrawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-    this.func_230450_a_(matrixStack,partialTicks, mouseX, mouseY);
+    this.drawGuiContainerBackgroundLayer(matrixStack,partialTicks, mouseX, mouseY);
   }
 
   public void handleDrawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-    this.func_230451_b_(matrixStack, mouseX, mouseY);
+    this.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
   }
 
   /**

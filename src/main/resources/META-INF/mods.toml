@@ -2,6 +2,7 @@ modLoader="javafml"
 loaderVersion="[24,)"
 issueTrackerURL="https://github.com/SlimeKnights/Mantle/issues"
 logoFile="Mantle.png"
+license="MIT"
 
 [[mods]]
     modId="mantle"
