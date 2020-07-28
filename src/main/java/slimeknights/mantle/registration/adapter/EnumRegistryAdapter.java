@@ -3,7 +3,6 @@ package slimeknights.mantle.registration.adapter;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IRegistryDelegate;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.function.Function;
@@ -32,7 +31,6 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
    * @param name      Name of the block
    * @return  EnumObject mapping between different block types
    */
-  @SuppressWarnings("unchecked")
   public <E extends Enum<E> & IStringSerializable,I extends T> EnumObject<E,I> registerEnum(Function<E,I> mapper, E[] values, String name) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
@@ -41,8 +39,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
     EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
       // assuming the type will not sub for a different class
-      IRegistryDelegate<T> delegate = register(mapper.apply(value), value.getString() + "_" + name).delegate;
-      builder.put(value, () -> (I) delegate.get());
+      builder.putDelegate(value, register(mapper.apply(value), value.getString() + "_" + name).delegate);
     }
     return builder.build();
   }
@@ -54,7 +51,6 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
    * @param values    Enum values to use for this block
    * @return  EnumObject mapping between different block types
    */
-  @SuppressWarnings("unchecked")
   public <E extends Enum<E> & IStringSerializable,I extends T> EnumObject<E,I> registerEnum(Function<E,I> mapper, String name, E[] values) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
@@ -62,9 +58,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      // assuming the type will not sub for a different class
-      IRegistryDelegate<T> delegate = register(mapper.apply(value), name + "_" + value.getString()).delegate;
-      builder.put(value, () -> (I) delegate.get());
+      builder.putDelegate(value, register(mapper.apply(value), name + "_" + value.getString()).delegate);
     }
     return builder.build();
   }

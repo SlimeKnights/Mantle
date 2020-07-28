@@ -3,11 +3,13 @@ package slimeknights.mantle.registration.object;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,14 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
   }
 
   /**
+   * Runs the given consumer on each key in the enum object
+   * @param consumer  Consumer passed each key value pair
+   */
+  public void forEach(BiConsumer<T, I> consumer) {
+    this.map.forEach((key, sup) -> consumer.accept(key, sup.get()));
+  }
+
+  /**
    * Enum object builder, to more conveiently create it from items, a map, or another enum object
    * @param <T>  Enum type
    * @param <I>  Entry type
@@ -80,6 +90,19 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
      */
     public Builder<T,I> put(T key, Supplier<? extends I> value) {
       this.map.put(key, value);
+      return this;
+    }
+
+    /**
+     * Adds the given registry delegate to this enum object.
+     * This method does an unchecked cast to add the object, so be absolutely certain the class it right.
+     * @param key    Key
+     * @param value  Registry delegate
+     * @return  Builder instance
+     */
+    @SuppressWarnings("unchecked")
+    public Builder<T,I> putDelegate(T key, IRegistryDelegate<? super I> value) {
+      this.map.put(key, () -> (I) value.get());
       return this;
     }
 
