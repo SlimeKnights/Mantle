@@ -20,7 +20,6 @@ import slimeknights.mantle.client.model.fluid.FluidCuboid;
 import slimeknights.mantle.client.model.fluid.FluidCuboid.FluidFace;
 
 import java.util.List;
-import java.util.function.Function;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class FluidRenderer {
@@ -35,19 +34,13 @@ public class FluidRenderer {
                       .transparency(RenderType.TRANSLUCENT_TRANSPARENCY)
                       .build(false));
 
-  /** Cached sprite getter instance */
-  private static Function<ResourceLocation, TextureAtlasSprite> blockSpriteGetter;
-
   /**
    * Gets a block sprite from the given location
    * @param sprite  Sprite name
    * @return  Sprite location
    */
   public static TextureAtlasSprite getBlockSprite(ResourceLocation sprite) {
-    if (blockSpriteGetter == null) {
-      blockSpriteGetter = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-    }
-    return blockSpriteGetter.apply(sprite);
+    return Minecraft.getInstance().getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).getSprite(sprite);
   }
 
   /* Fluid cuboids */
