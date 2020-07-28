@@ -9,6 +9,9 @@ import java.util.function.Supplier;
 
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
+/**
+ * Object containing a block with slab, stairs, and fence variants
+ */
 @SuppressWarnings("unused")
 public class FenceBuildingBlockObject extends BuildingBlockObject {
   private final Supplier<? extends FenceBlock> fence;

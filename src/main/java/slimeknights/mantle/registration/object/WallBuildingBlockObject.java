@@ -9,6 +9,9 @@ import java.util.function.Supplier;
 
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
+/**
+ * Object containing a block with slab, stairs, and wall variants
+ */
 @SuppressWarnings("unused")
 public class WallBuildingBlockObject extends BuildingBlockObject {
   private final Supplier<? extends WallBlock> wall;

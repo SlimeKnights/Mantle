@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
 /**
- * Object containing a block
+ * Object containing a block with slab and stairs variants
  */
 @SuppressWarnings("WeakerAccess")
 public class BuildingBlockObject extends ItemObject<Block> {
