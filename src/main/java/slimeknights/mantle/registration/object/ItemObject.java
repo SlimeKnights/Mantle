@@ -4,27 +4,28 @@ import lombok.AllArgsConstructor;
 import net.minecraft.item.Item;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
  * Registry object wrapper to implement {@link IItemProvider}
  * @param <I>  Item class
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor
-public class ItemObject<I extends Item> implements Supplier<I>, IItemProvider {
-  private final Supplier<? extends I> item;
+public class ItemObject<I extends IForgeRegistryEntry<? super I> & IItemProvider> implements Supplier<I>, IItemProvider {
+  /** Supplier to the registry entry */
+  private final Supplier<? extends I> entry;
 
   @Override
   public I get() {
-    return item.get();
+    return entry.get();
   }
 
   @Override
-  public I asItem() {
-    return item.get();
+  public Item asItem() {
+    return entry.get().asItem();
   }
 
   /**

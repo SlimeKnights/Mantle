@@ -9,11 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
+
 /**
  * Object containing a block
  */
 @SuppressWarnings("WeakerAccess")
-public class BuildingBlockObject extends BlockItemObject<Block> {
+public class BuildingBlockObject extends ItemObject<Block> {
   private final Supplier<? extends SlabBlock> slab;
   private final Supplier<? extends StairsBlock> stairs;
 
@@ -34,7 +36,7 @@ public class BuildingBlockObject extends BlockItemObject<Block> {
    * @param object   Object to copy
    */
   protected BuildingBlockObject(BuildingBlockObject object) {
-    super(object.block);
+    super(object);
     this.slab = object.slab;
     this.stairs = object.stairs;
   }

@@ -12,10 +12,10 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.registration.object.BlockItemObject;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
+import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
 import java.util.function.Function;
@@ -73,10 +73,10 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param <B>    Block class
    * @return  Block item registry object pair
    */
-  public <B extends Block> BlockItemObject<B> register(String name, Supplier<? extends B> block, final Function<? super B, ? extends BlockItem> item) {
+  public <B extends Block> ItemObject<B> register(String name, Supplier<? extends B> block, final Function<? super B, ? extends BlockItem> item) {
     RegistryObject<B> blockObj = registerNoItem(name, block);
     itemRegister.register(name, () -> item.apply(blockObj.get()));
-    return new BlockItemObject<>(blockObj);
+    return new ItemObject<>(blockObj);
   }
 
   /**
@@ -86,7 +86,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item        Function to create a BlockItem from a Block
    * @return  Block item registry object pair
    */
-  public BlockItemObject<Block> register(String name, Block.Properties blockProps, Function<? super Block, ? extends BlockItem> item) {
+  public ItemObject<Block> register(String name, Block.Properties blockProps, Function<? super Block, ? extends BlockItem> item) {
     return register(name, () -> new Block(blockProps), item);
   }
 
@@ -101,7 +101,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @return  BuildingBlockObject class that returns different block types
    */
   public BuildingBlockObject registerBuilding(String name, Block.Properties props, Function<? super Block, ? extends BlockItem> item) {
-    BlockItemObject<Block> blockObj = register(name, props, item);
+    ItemObject<Block> blockObj = register(name, props, item);
     return new BuildingBlockObject(blockObj,
       register(name + "_slab", () -> new SlabBlock(props), item),
       register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().getDefaultState(), props), item)
