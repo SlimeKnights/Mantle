@@ -7,6 +7,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -26,7 +27,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
    * @return  Still form
    */
   public F getStill() {
-    return still.get();
+    return Objects.requireNonNull(still.get(), "Fluid object missing still fluid");
   }
 
   @Override
@@ -39,7 +40,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
    * @return  flowing form
    */
   public F getFlowing() {
-    return flowing.get();
+    return Objects.requireNonNull(flowing.get(), "Fluid object missing flowing fluid");
   }
 
   /**

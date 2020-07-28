@@ -24,11 +24,10 @@ public class RegistrationHelper {
    * Note that this performs an unchecked cast, be certain that the right type is returned
    * @param delegate  Delegate instance
    * @param <I>  Forge registry type
-   * @param <T>  Instance type
    * @return  Supplier for the given instance
    */
   @SuppressWarnings("unchecked")
-  public static <I extends T, T extends IForgeRegistryEntry<T>> Supplier<I> castDelegate(IRegistryDelegate<T> delegate) {
+  public static <I extends IForgeRegistryEntry<? super I>> Supplier<I> castDelegate(IRegistryDelegate<? super I> delegate) {
     return () -> (I) delegate.get();
   }
 }

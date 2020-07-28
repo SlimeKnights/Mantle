@@ -11,7 +11,9 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
  * @param <T>  Enum type
  * @param <I>  Entry type
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> {
   /** Singleton empty object, type does not matter as it has no items */
@@ -41,35 +43,40 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
   }
 
   /**
-   * Gets the value for the given enum
+   * Gets the value for the given enum, assuring its not null
    * @param value  Value to get
-   * @return  Value, or null if missing
-   */
-  @Nullable
-  public I get(T value) {
-    Supplier<? extends I> supplier = map.get(value);
-    if (supplier == null) {
-      return null;
-    }
-    return supplier.get();
-  }
-
-  /**
-   * Gets the value for the given enum, or throws an exception if missing
-   * @param value  Key to get
-   * @return  Value, or null if missing
+   * @return  Value
    * @throws NoSuchElementException  If the key is not defined
+   * @throws NullPointerException    If the supplier at the key returns null
    */
-  public I getOrThrow(T value) {
+  public I get(T value) {
     Supplier<? extends I> supplier = map.get(value);
     if (supplier == null) {
       throw new NoSuchElementException("Missing key " + value);
     }
-    return supplier.get();
+    return Objects.requireNonNull(supplier.get(), () -> "No enum object value for " + value);
   }
 
   /**
-   * Checks if this enum object contains the given value
+   * Gets the value for the given enum, or null if the key is missing
+   * @param value  Key to get
+   * @return  Value, or null if missing
+   */
+  @Nullable
+  public I getOrNull(T value) {
+    Supplier<? extends I> supplier = map.get(value);
+    if (supplier == null) {
+      return null;
+    }
+    try {
+      return supplier.get();
+    } catch (NullPointerException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Checks if this enum object contains the given value.
    * @param value  Value to check for
    * @return  True if the value is contained, false otherwise
    */
@@ -78,19 +85,40 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
   }
 
   /**
-   * Gets a list of values in this enum object
+   * Gets a list of values in this enum object. Will error if a {@link net.minecraftforge.fml.RegistryObject} cannot be resolved, unlike {@link #forEach(Consumer)}
    * @return  List of values in the object
    */
   public List<I> values() {
-    return this.map.values().stream().map(Supplier::get).collect(Collectors.toList());
+    return this.map.values().stream().map(Supplier::get).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
   /**
-   * Runs the given consumer on each key in the enum object
+   * Runs the given consumer on each key in the enum object.
+   * Will ignore any suppliers that have not yet resolved, to work around a Forge error with registry events failing.
    * @param consumer  Consumer passed each key value pair
    */
-  public void forEach(BiConsumer<T, I> consumer) {
-    this.map.forEach((key, sup) -> consumer.accept(key, sup.get()));
+  public void forEach(BiConsumer<T, ? super I> consumer) {
+    this.map.forEach((key, sup) -> {
+      I value;
+      try {
+        value = sup.get();
+      } catch (NullPointerException e) {
+        // registry object throws null pointer exception on get if the object is not registered, ignore
+        return;
+      }
+      if (value != null) {
+        consumer.accept(key, value);
+      }
+    });
+  }
+
+  /**
+   * Runs the given consumer on each key in the enum object.
+   * Will ignore any suppliers that have not yet resolved, to work around a Forge error with registry events failing.
+   * @param consumer  Consumer passed each key value pair
+   */
+  public void forEach(Consumer<? super I> consumer) {
+    forEach((k, v) -> consumer.accept(v));
   }
 
   /**

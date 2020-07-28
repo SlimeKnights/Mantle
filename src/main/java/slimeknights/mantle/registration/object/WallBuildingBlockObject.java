@@ -5,6 +5,7 @@ import net.minecraft.block.WallBlock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
@@ -29,28 +30,15 @@ public class WallBuildingBlockObject extends BuildingBlockObject {
   /**
    * Creates a new wall building block object from the given blocks
    * @param object  Building block object
-   * @param wall    Wall object
-   * @return  BuildingBlockObject instance
+   * @param wall    Wall entry
    */
-  public static WallBuildingBlockObject fromBlocks(BuildingBlockObject object, Block wall) {
-    return new WallBuildingBlockObject(object, castDelegate(wall.delegate));
-  }
-
-  /**
-   * Creates a new wall building block object from the given blocks
-   * @param block    Block object
-   * @param slab     Slab object
-   * @param stairs   Stairs object
-   * @param wall     Wall object
-   * @return  BuildingBlockObject instance
-   */
-  public static WallBuildingBlockObject fromBlocks(Block block, Block slab, Block stairs, Block wall) {
-    return fromBlocks(BuildingBlockObject.fromBlocks(block, slab, stairs), wall);
+  public WallBuildingBlockObject(BuildingBlockObject object, Block wall) {
+    this(object, castDelegate(wall.delegate));
   }
 
   /** Gets the wall for this block */
   public WallBlock getWall() {
-    return wall.get();
+    return Objects.requireNonNull(wall.get(), "Wall Building Block Object missing wall");
   }
 
   @Override

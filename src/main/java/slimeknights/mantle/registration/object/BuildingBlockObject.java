@@ -6,6 +6,7 @@ import net.minecraft.block.StairsBlock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
@@ -19,19 +20,19 @@ public class BuildingBlockObject extends ItemObject<Block> {
   private final Supplier<? extends StairsBlock> stairs;
 
   /**
-   * Standard supplier method, expects the supplier to have resolved in order to call registry name.
+   * Creates a new building block object from three blocks
    * @param block   Base block
-   * @param slab    Slab block
-   * @param stairs  Stairs block
+   * @param slab    Slab block, should be an instance of SlabBlock
+   * @param stairs  Stairs block, should be an instance of StairsBlock
    */
-  protected BuildingBlockObject(Supplier<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairsBlock> stairs) {
+  public BuildingBlockObject(Block block, Block slab, Block stairs) {
     super(block);
-    this.slab = slab;
-    this.stairs = stairs;
+    this.slab = castDelegate(slab.delegate);
+    this.stairs = castDelegate(stairs.delegate);
   }
 
   /**
-   * Creates a new object from a ItemObject. Avoids an extra supplier wrapper
+   * Creates a new object from a ItemObject and some suppliers.
    * @param block   Base block
    * @param slab    Slab block
    * @param stairs  Stairs block
@@ -52,29 +53,14 @@ public class BuildingBlockObject extends ItemObject<Block> {
     this.stairs = object.stairs;
   }
 
-  /**
-   * Creates a building block object from the set of blocks
-   * @param block   Block
-   * @param slab    Slab block
-   * @param stairs  Stairs block
-   * @return  BuildingBlockObject instance
-   */
-  public static BuildingBlockObject fromBlocks(Block block, Block slab, Block stairs) {
-    return new BuildingBlockObject(
-      block.delegate,
-      castDelegate(slab.delegate),
-      castDelegate(stairs.delegate)
-    );
-  }
-
   /** Gets the slab for this block */
   public SlabBlock getSlab() {
-    return slab.get();
+    return Objects.requireNonNull(slab.get(), "Building Block Object missing slab");
   }
 
   /** Gets the stairs for this block */
   public StairsBlock getStairs() {
-    return stairs.get();
+    return Objects.requireNonNull(stairs.get(), "Building Block Object missing stairs");
   }
 
   /**

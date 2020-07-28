@@ -56,7 +56,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @return  BuildingBlockObject for the given block
    */
   public BuildingBlockObject registerBuilding(Block block, String name) {
-    return BuildingBlockObject.fromBlocks(
+    return new BuildingBlockObject(
       this.register(block, name),
       this.register(new SlabBlock(Block.Properties.from(block)), name + "_slab"),
       this.register(new StairsBlock(block::getDefaultState, Block.Properties.from(block)), name + "_stairs")
@@ -71,7 +71,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @return  BuildingBlockObject for the given block
    */
   public WallBuildingBlockObject registerWallBuilding(Block block, String name) {
-    return WallBuildingBlockObject.fromBlocks(
+    return new WallBuildingBlockObject(
       registerBuilding(block, name),
       this.register(new WallBlock(Block.Properties.from(block)), name + "_wall")
     );
@@ -85,7 +85,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @return  BuildingBlockObject for the given block
    */
   public FenceBuildingBlockObject registerFenceBuilding(Block block, String name) {
-    return FenceBuildingBlockObject.fromBlocks(
+    return new FenceBuildingBlockObject(
       registerBuilding(block, name),
       this.register(new FenceBlock(Block.Properties.from(block)), name + "_fence")
     );
