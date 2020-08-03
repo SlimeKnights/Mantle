@@ -81,7 +81,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
 
   @Override
   public IRecipeSerializer<?> getSerializer() {
-    return MantleRecipeSerializers.crafting_shaped_fallback;
+    return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
   }
 
   public static class Serializer extends ShapedRecipe.Serializer {
