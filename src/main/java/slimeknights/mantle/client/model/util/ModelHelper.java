@@ -1,7 +1,6 @@
-package slimeknights.mantle.client.model;
+package slimeknights.mantle.client.model.util;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import lombok.AccessLevel;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.MultipartBakedModel;
 import net.minecraft.client.renderer.model.WeightedBakedModel;
@@ -70,19 +68,6 @@ public class ModelHelper {
   }
 
   /* JSON */
-  /* Serializer without any Forge extensions */
-  private static final BlockModel.Deserializer DESERIALIZER = new BlockModel.Deserializer();
-
-  /**
-   * Deserializes a BlockModel from the given context
-   * @param context  Serialization context
-   * @param json     JSON data
-   * @return  BlockModel instance
-   */
-  public static BlockModel deserialize(JsonDeserializationContext context, JsonObject json) {
-    // the middle parameter is not used in the BlockModel deserializer
-    return DESERIALIZER.deserialize(json, null, context);
-  }
 
   /**
    * Converts a JSON array with 3 elements into a Vector3f

@@ -19,7 +19,7 @@ import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
-import slimeknights.mantle.client.model.ModelHelper;
+import slimeknights.mantle.client.model.util.ModelHelper;
 
 import java.util.Collection;
 import java.util.List;

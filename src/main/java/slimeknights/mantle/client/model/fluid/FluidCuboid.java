@@ -9,7 +9,7 @@ import lombok.Getter;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.vector.Vector3f;
-import slimeknights.mantle.client.model.ModelHelper;
+import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;

@@ -1,4 +1,4 @@
-package slimeknights.mantle.client.model;
+package slimeknights.mantle.client.model.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;

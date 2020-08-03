@@ -46,7 +46,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
-import slimeknights.mantle.client.model.ModelHelper;
+import slimeknights.mantle.client.model.util.ModelHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
