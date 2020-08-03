@@ -2,7 +2,6 @@ package slimeknights.mantle.client.model.connected;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.BlockPart;
 import net.minecraft.client.renderer.model.BlockPartFace;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -39,14 +37,15 @@ import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
-import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.client.model.util.ExtraTextureConfiguration;
+import slimeknights.mantle.client.model.util.ModelTextureIteratable;
+import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -73,7 +72,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   private static final ModelProperty<Byte> CONNECTIONS = new ModelProperty<>();
 
   /** Parent model */
-  private final BlockModel model;
+  private final SimpleBlockModel model;
   /** Map of texture name to index of suffixes (indexed as 0bENWS) */
   private final Map<String,String[]> connectedTextures;
   /** Function to run to check if this block connects to another */
@@ -82,70 +81,75 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   private final Set<Direction> sides;
 
   /** Map of full texture name to the resulting material, filled during {@link #getTextures(IModelConfiguration, Function, Set)} */
-  private final Map<String,Either<RenderMaterial,String>> suffixedTextures = new HashMap<>();
+  private Map<String,RenderMaterial> extraTextures;
 
   @Override
   public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    Collection<RenderMaterial> textures = model.getTextures(modelGetter, missingTextureErrors);
+    Collection<RenderMaterial> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
     // for all connected textures, add suffix textures
+    Map<String, RenderMaterial> extraTextures = new HashMap<>();
     for (Entry<String,String[]> entry : connectedTextures.entrySet()) {
       // fetch data from the base texture
       String name = entry.getKey();
       // skip if missing
-      if (!model.isTexturePresent(name)) {
+      if (!owner.isTexturePresent(name)) {
         continue;
       }
-      RenderMaterial base = model.resolveTextureName(name);
+      RenderMaterial base = owner.resolveTexture(name);
       ResourceLocation atlas = base.getAtlasLocation();
       ResourceLocation texture = base.getTextureLocation();
       String namespace = texture.getNamespace();
       String path = texture.getPath();
+
       // use base atlas and texture, but suffix the name
-      // skip suffix 0, because we already added that texture
       String[] suffixes = entry.getValue();
-      for (int i = 1; i < suffixes.length; i++) {
-        if (suffixes[i].isEmpty()) {
+      for (String suffix : suffixes) {
+        if (suffix.isEmpty()) {
           continue;
         }
         // skip running if we have seen it before
-        String suffixedName = name + "_" + suffixes[i];
-        if (!suffixedTextures.containsKey(suffixedName)) {
+        String suffixedName = name + "_" + suffix;
+        if (!extraTextures.containsKey(suffixedName)) {
           RenderMaterial mat;
           // allow overriding a specific texture
-          if (model.isTexturePresent(suffixedName)) {
-            mat = model.resolveTextureName(suffixedName);
+          if (owner.isTexturePresent(suffixedName)) {
+            mat = owner.resolveTexture(suffixedName);
           } else {
-            mat = new RenderMaterial(atlas, new ResourceLocation(namespace, path + "/" + suffixes[i]));
+            mat = new RenderMaterial(atlas, new ResourceLocation(namespace, path + "/" + suffix));
           }
           textures.add(mat);
           // cache the texture name, we use it a lot in rebaking
-          suffixedTextures.put(suffixedName, Either.left(mat));
+          extraTextures.put(suffixedName, mat);
         }
       }
     }
+    // copy into immutable for better performance
+    this.extraTextures = ImmutableMap.copyOf(extraTextures);
+
+    // return textures list
     return textures;
   }
 
   @Override
   public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
-    IBakedModel baked = model.bakeModel(bakery, model, spriteGetter, transform, location, true);
-    return new BakedModel(bakery, transform, baked, this);
+    IBakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
+    return new BakedModel(this, new ExtraTextureConfiguration(owner, extraTextures), transform, baked);
   }
 
   @SuppressWarnings("WeakerAccess")
   protected static class BakedModel extends BakedModelWrapper<IBakedModel> {
-    private static final ResourceLocation BAKE_LOCATION = new ResourceLocation("tconstruct:connected_model");
-
-    private final ModelBakery bakery;
     private final ConnectedModel parent;
+    private final IModelConfiguration owner;
     private final IModelTransform transforms;
     private final IBakedModel[] cache = new IBakedModel[64];
     private final Map<String,String> nameMappingCache = new HashMap<>();
-    protected BakedModel(ModelBakery bakery, IModelTransform transforms, IBakedModel baked, ConnectedModel parent) {
+    private final ModelTextureIteratable modelTextures;
+    protected BakedModel(ConnectedModel parent, IModelConfiguration owner, IModelTransform transforms, IBakedModel baked) {
       super(baked);
-      this.bakery = bakery;
-      this.transforms = transforms;
       this.parent = parent;
+      this.owner = owner;
+      this.transforms = transforms;
+      this.modelTextures = ModelTextureIteratable.of(owner, parent.model);
       // all directions false gives cache key of 0, that is ourself
       this.cache[0] = baked;
     }
@@ -235,7 +239,6 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      * @param key  Name of the part texture
      * @return  Name of the connected texture
      */
-    @Nullable
     private String getConnectedName(String key) {
       if (key.charAt(0) == '#') {
         key = key.substring(1);
@@ -251,27 +254,28 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       }
 
       // otherwise, iterate into the parent models, trying to find a match
-      String name = key;
-      for(BlockModel model = parent.model; model != null; model = model.parent) {
-        Either<RenderMaterial, String> either = model.textures.get(name);
+      String check = key;
+      String found = "";
+      for(Map<String, Either<RenderMaterial, String>> textures : modelTextures) {
+        Either<RenderMaterial, String> either = textures.get(check);
         if (either != null) {
           // if no name, its not connected
           Optional<String> newName = either.right();
           if (!newName.isPresent()) {
-            nameMappingCache.put(key, null);
-            return null;
+            break;
           }
-          // if the name is connected, we are done, return it
-          name = newName.get();
-          if (parent.connectedTextures.containsKey(name)) {
-            nameMappingCache.put(key, name);
-            return name;
+          // if the name is connected, we are done
+          check = newName.get();
+          if (parent.connectedTextures.containsKey(check)) {
+            found = check;
+            break;
           }
         }
       }
-      // never found it
-      nameMappingCache.put(key, null);
-      return null;
+
+      // cache what we found
+      nameMappingCache.put(key, found);
+      return found;
     }
 
     /**
@@ -304,10 +308,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      * @param connections  Array of face connections, true at indexes of connected sides
      * @return  Model with connections applied
      */
-    private BlockModel applyConnections(byte connections) {
-      // will add new textures to this map based on connections
-      Map<String,Either<RenderMaterial, String>> textures = Maps.newHashMap(parent.model.textures);
-
+    private IBakedModel applyConnections(byte connections) {
       // copy each element with updated faces
       List<BlockPart> elements = Lists.newArrayList();
       for (BlockPart part : parent.model.getElements()) {
@@ -317,20 +318,17 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
           Direction dir = entry.getKey();
           BlockPartFace original = entry.getValue();
           BlockPartFace face = original;
+
           // follow the texture name back to the original name
           // if it never reaches a connected texture, skip
           String connectedTexture = getConnectedName(original.texture);
-          if (connectedTexture != null) {
+          if (!connectedTexture.isEmpty()) {
             // if empty string, we can keep the old face
             String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, original.blockFaceUV));
             if (!suffix.isEmpty()) {
               // suffix the texture
               String fullTexture = connectedTexture + suffix;
               face = new BlockPartFace(original.cullFace, original.tintIndex, "#" + fullTexture, original.blockFaceUV);
-              // add the suffixed texture to the map if needed
-              if (!textures.containsKey(fullTexture)) {
-                textures.put(fullTexture, parent.suffixedTextures.get(fullTexture));
-              }
             }
           }
           // add the updated face
@@ -340,13 +338,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
         elements.add(new BlockPart(part.positionFrom, part.positionTo, partFaces, part.partRotation, part.shade));
       }
 
-      // create the final model, copying data we do not change
-      BlockModel newModel = new BlockModel(parent.model.getParentLocation(), elements, textures,
-                                           parent.model.isAmbientOcclusion(), parent.model.func_230176_c_(),
-                                           parent.model.getAllTransforms(), Lists.newArrayList(parent.model.getOverrides()));
-      newModel.name = parent.model.name;
-      newModel.parent = parent.model.parent;
-      return newModel;
+      // bake the model
+      return SimpleBlockModel.bakeDynamic(owner, elements, transforms);
     }
 
     /**
@@ -391,8 +384,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     protected List<BakedQuad> getCachedQuads(byte connections, @Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
       // bake a new model if the orientation is not yet baked
       if (cache[connections] == null) {
-        BlockModel connected = applyConnections(connections);
-        cache[connections] = connected.bakeModel(bakery, connected, ModelLoader.defaultTextureGetter(), transforms, BAKE_LOCATION, true);
+        cache[connections] = applyConnections(connections);
       }
 
       // get the model for the given orientation
@@ -443,7 +435,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
 
     @Override
     public ConnectedModel read(JsonDeserializationContext context, JsonObject json) {
-      BlockModel model = ModelHelper.deserialize(context, json);
+      SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
 
       // root object for all model data
       JsonObject data = JSONUtils.getJsonObject(json, "connection");

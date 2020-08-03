@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.IUnbakedModel;
@@ -19,7 +18,7 @@ import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
-import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,17 +30,17 @@ import java.util.function.Function;
  */
 @AllArgsConstructor
 public class FluidsModel implements IModelGeometry<FluidsModel> {
-  private final BlockModel model;
+  private final SimpleBlockModel model;
   private final List<FluidCuboid> fluids;
 
   @Override
   public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    return model.getTextures(modelGetter, missingTextureErrors);
+    return model.getTextures(owner, modelGetter, missingTextureErrors);
   }
 
   @Override
   public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
-    IBakedModel baked = model.bakeModel(bakery, model, spriteGetter, transform, location, true);
+    IBakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
     return new BakedModel(baked, fluids);
   }
 
@@ -68,7 +67,7 @@ public class FluidsModel implements IModelGeometry<FluidsModel> {
 
     @Override
     public FluidsModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-      BlockModel model = ModelHelper.deserialize(deserializationContext, modelContents);
+      SimpleBlockModel model = SimpleBlockModel.deserialize(deserializationContext, modelContents);
       List<FluidCuboid> fluid = FluidCuboid.listFromJson(modelContents, "fluids");
       return new FluidsModel(model, fluid);
     }
