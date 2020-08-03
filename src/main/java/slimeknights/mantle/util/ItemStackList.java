@@ -9,16 +9,31 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Extension of {@link NonNullList} to better handle items in an inventory
+ */
+@SuppressWarnings("WeakerAccess")
 public class ItemStackList extends NonNullList<ItemStack> {
 
+  /**
+   * Creates a new ItemStackList with nothing
+   */
   protected ItemStackList() {
     this(new ArrayList<>());
   }
 
+  /**
+   * Creates a new list from the given stacks
+   * @param delegate  List of stacks
+   */
   protected ItemStackList(List<ItemStack> delegate) {
     super(delegate, ItemStack.EMPTY);
   }
 
+  /**
+   * Creates an empty item stack list no size
+   * @return  Empty list
+   */
   public static ItemStackList create() {
     return new ItemStackList();
   }

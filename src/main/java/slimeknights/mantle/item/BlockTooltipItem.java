@@ -9,6 +9,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.util.TranslationHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -21,7 +22,7 @@ public class BlockTooltipItem extends BlockItem {
   @Override
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    TooltipItem.addOptionalTooltip(stack, tooltip);
+    TranslationHelper.addOptionalTooltip(stack, tooltip);
     super.addInformation(stack, worldIn, tooltip, flagIn);
   }
 }

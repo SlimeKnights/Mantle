@@ -12,7 +12,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.tileentity.IRetexturedTileEntity;
-import slimeknights.mantle.util.TileEntityUtil;
+import slimeknights.mantle.util.TileEntityHelper;
 
 import javax.annotation.Nullable;
 
@@ -56,7 +56,7 @@ public abstract class RetexturedBlock extends Block {
    */
   public static void updateTextureBlock(World world, BlockPos pos, ItemStack stack) {
     if (stack.hasTag()) {
-      IRetexturedTileEntity te = TileEntityUtil.getTileEntity(IRetexturedTileEntity.class, world, pos);
+      IRetexturedTileEntity te = TileEntityHelper.getTileEntity(IRetexturedTileEntity.class, world, pos);
       if (te != null) {
         te.updateTexture(RetexturedBlockItem.getTextureName(stack));
       }
@@ -73,7 +73,7 @@ public abstract class RetexturedBlock extends Block {
   public static ItemStack getPickBlock(IBlockReader world, BlockPos pos, BlockState state) {
     Block block = state.getBlock();
     ItemStack stack = new ItemStack(block);
-    IRetexturedTileEntity te = TileEntityUtil.getTileEntity(IRetexturedTileEntity.class, world, pos);
+    IRetexturedTileEntity te = TileEntityHelper.getTileEntity(IRetexturedTileEntity.class, world, pos);
     if (te != null) {
       RetexturedBlockItem.setTexture(stack, te.getTextureName());
     }

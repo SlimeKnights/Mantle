@@ -15,8 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import slimeknights.mantle.util.SlimeknightException;
-import slimeknights.mantle.util.TileEntityUtil;
+import slimeknights.mantle.util.TileEntityHelper;
 
 import javax.annotation.Nullable;
 
@@ -158,7 +157,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   @Override
   protected Slot addSlot(Slot slotIn) {
     if (this.playerInventoryStart >= 0) {
-      throw new SlimeknightException("BaseContainer: Player inventory has to be last slots. Add all slots before adding the player inventory.");
+      throw new IllegalStateException("BaseContainer: Player inventory has to be last slots. Add all slots before adding the player inventory.");
     }
     return super.addSlot(slotIn);
   }
@@ -317,6 +316,6 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
       return null;
     }
 
-    return DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> TileEntityUtil.getTileEntity(type, Minecraft.getInstance().world, buf.readBlockPos()));
+    return DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTileEntity(type, Minecraft.getInstance().world, buf.readBlockPos()));
   }
 }

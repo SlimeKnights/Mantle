@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * This utility contains helpers to handle the NBT for retexturable blocks
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RetexturedUtil {
+public final class RetexturedHelper {
   /** Tag name for texture blocks. Should not be used directly, use the utils to interact */
   private static final String TAG_TEXTURE = "texture";
   /** Property for tile entities containing a texture block */

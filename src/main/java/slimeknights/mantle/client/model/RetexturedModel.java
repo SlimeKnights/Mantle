@@ -39,7 +39,7 @@ import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
 import slimeknights.mantle.item.RetexturedBlockItem;
-import slimeknights.mantle.util.RetexturedUtil;
+import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -51,7 +51,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * Model that dynamically retextures a list of textures based on data from {@link RetexturedUtil}.
+ * Model that dynamically retextures a list of textures based on data from {@link RetexturedHelper}.
  */
 @SuppressWarnings("WeakerAccess")
 public class RetexturedModel implements IModelGeometry<RetexturedModel> {
@@ -188,7 +188,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     public TextureAtlasSprite getParticleTexture(IModelData data) {
       // if particle is retextured, fetch particle from the cached model
       if (retextured.contains("particle")) {
-        Block block = data.getData(RetexturedUtil.BLOCK_PROPERTY);
+        Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
         if (block != null && block != Blocks.AIR) {
           return getCachedModel(block).getParticleTexture(data);
         }
@@ -198,7 +198,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
-      Block block = data.getData(RetexturedUtil.BLOCK_PROPERTY);
+      Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
       if (block == null || block == Blocks.AIR) {
         return originalModel.getQuads(state, direction, random, data);
       }

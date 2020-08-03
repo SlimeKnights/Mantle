@@ -14,13 +14,15 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.util.TranslationHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class EdibleItem extends Item {
 
-  private boolean displayEffectsTooltip; // set to false to not display effects of food in tooltip
+  /** if false, does not display effects of food in tooltip */
+  private boolean displayEffectsTooltip;
 
   public EdibleItem(Food foodIn, ItemGroup itemGroup) {
     this(foodIn, itemGroup, true);
@@ -34,7 +36,7 @@ public class EdibleItem extends Item {
   @Override
   @OnlyIn(Dist.CLIENT)
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    TooltipItem.addOptionalTooltip(stack, tooltip);
+    TranslationHelper.addOptionalTooltip(stack, tooltip);
 
     if (this.displayEffectsTooltip) {
       for (Pair<EffectInstance, Float> pair : stack.getItem().getFood().getEffects()) {

@@ -15,7 +15,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import slimeknights.mantle.util.RetexturedUtil;
+import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -57,7 +57,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @return  Texture, or empty string if none
    */
   public static String getTextureName(ItemStack stack) {
-    return RetexturedUtil.getTextureName(stack.getTag());
+    return RetexturedHelper.getTextureName(stack.getTag());
   }
 
   /**
@@ -66,7 +66,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @return  Texture, or {@link Blocks#AIR} if none
    */
   public static Block getTexture(ItemStack stack) {
-    return RetexturedUtil.getBlock(getTextureName(stack));
+    return RetexturedHelper.getBlock(getTextureName(stack));
   }
 
   /**
@@ -88,9 +88,9 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    */
   public static ItemStack setTexture(ItemStack stack, String name) {
     if (!name.isEmpty()) {
-      RetexturedUtil.setTexture(stack.getOrCreateTag(), name);
+      RetexturedHelper.setTexture(stack.getOrCreateTag(), name);
     } else if (stack.hasTag()) {
-      RetexturedUtil.setTexture(stack.getTag(), name);
+      RetexturedHelper.setTexture(stack.getTag(), name);
     }
     return stack;
   }

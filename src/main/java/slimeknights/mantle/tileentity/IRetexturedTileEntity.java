@@ -5,7 +5,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
-import slimeknights.mantle.util.RetexturedUtil;
+import slimeknights.mantle.util.RetexturedHelper;
 
 /**
  * Standard interface that should be used by retexturable tile entities, allows control over where the texture is saved.
@@ -21,14 +21,14 @@ public interface IRetexturedTileEntity {
    * @return Texture block name
    */
   default String getTextureName() {
-    return RetexturedUtil.getTextureName(getTileData());
+    return RetexturedHelper.getTextureName(getTileData());
   }
   /**
    * Gets the current texture block
    * @return Texture block
    */
   default Block getTexture() {
-    return RetexturedUtil.getBlock(getTextureName());
+    return RetexturedHelper.getBlock(getTextureName());
   }
 
   /**
@@ -36,7 +36,7 @@ public interface IRetexturedTileEntity {
    * @param name  Texture name
    */
   default void updateTexture(String name) {
-    RetexturedUtil.setTexture(getTileData(), name);
+    RetexturedHelper.setTexture(getTileData(), name);
   }
 
   /**
@@ -48,7 +48,7 @@ public interface IRetexturedTileEntity {
     ModelDataMap.Builder data = new ModelDataMap.Builder();
     Block block = getTexture();
     if (block != Blocks.AIR) {
-      data = data.withInitial(RetexturedUtil.BLOCK_PROPERTY, block);
+      data = data.withInitial(RetexturedHelper.BLOCK_PROPERTY, block);
     }
     return data.build();
   }

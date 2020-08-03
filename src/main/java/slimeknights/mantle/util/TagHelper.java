@@ -2,55 +2,43 @@ package slimeknights.mantle.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
 
+/**
+ * Helpers to aid in reading and writing of NBT
+ */
+@SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TagHelper {
-  /**
-   * Gets the tag from a stack, or an empty tag if the stack has none
-   * @param stack  Stack to fetch tag
-   * @return  Stack tag or an empty tag
-   */
-  @SuppressWarnings("ConstantConditions")
-  public static CompoundNBT getTagSafe(ItemStack stack) {
-    if (stack.isEmpty() || !stack.hasTag()) {
-      return new CompoundNBT();
-    }
+  /* BlockPos */
 
-    return stack.getTag();
+  /**
+   * Converts a block position to NBT
+   * @param pos Position
+   * @return NBT compound
+   */
+  public static CompoundNBT writePos(BlockPos pos) {
+    CompoundNBT tag = new CompoundNBT();
+    tag.putInt("X", pos.getX());
+    tag.putInt("Y", pos.getY());
+    tag.putInt("Z", pos.getZ());
+    return tag;
   }
 
   /**
-   * Gets the value from the given tag
-   * @param tag  Parent tag
-   * @param key  Key to get
-   * @return  Compound at the key, or empty tag if no value
+   * Reads a block position from a given tag compound
+   * @param tag Tag to read
+   * @return BlockPos, or null if invalid
    */
-  public static CompoundNBT getTagSafe(@Nullable CompoundNBT tag, String key) {
-    if (tag == null || !tag.contains(key, NBT.TAG_COMPOUND)) {
-      return new CompoundNBT();
+  @Nullable
+  public static BlockPos readPos(CompoundNBT tag) {
+    if (tag.contains("X", NBT.TAG_ANY_NUMERIC) && tag.contains("Y", NBT.TAG_ANY_NUMERIC) && tag.contains("Z", NBT.TAG_ANY_NUMERIC)) {
+      return new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
     }
-    return tag.getCompound(key);
-  }
-
-  /**
-   * Gets a tag list from an object, or an empty list if its missing
-   * @param tag   Parent tag
-   * @param key   List key
-   * @param type  List type
-   * @return  List at key, or empty list if missing
-   */
-  public static ListNBT getTagListSafe(@Nullable CompoundNBT tag, String key, int type) {
-    if (tag == null || !tag.contains(key, NBT.TAG_LIST)) {
-      return new ListNBT();
-    }
-    return tag.getList(key, type);
+    return null;
   }
 }
