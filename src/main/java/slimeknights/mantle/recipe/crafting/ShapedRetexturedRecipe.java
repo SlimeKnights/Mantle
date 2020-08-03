@@ -1,9 +1,11 @@
 package slimeknights.mantle.recipe.crafting;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
@@ -20,6 +22,8 @@ import javax.annotation.Nullable;
 
 @SuppressWarnings("WeakerAccess")
 public class ShapedRetexturedRecipe extends ShapedRecipe {
+  /** Ingredient used to determine the texture on the output */
+  @Getter
   private final Ingredient texture;
   private final boolean matchAll;
 
@@ -33,6 +37,15 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
     super(orig.getId(), orig.getGroup(), orig.getWidth(), orig.getHeight(), orig.getIngredients(), orig.getRecipeOutput());
     this.texture = texture;
     this.matchAll = matchAll;
+  }
+
+  /**
+   * Gets the output using the given texture
+   * @param texture  Texture to use
+   * @return  Output with texture. Will be blank if the input is not a block
+   */
+  public ItemStack getRecipeOutput(Item texture) {
+    return RetexturedBlockItem.setTexture(getRecipeOutput().copy(), Block.getBlockFromItem(texture));
   }
 
   @Override
