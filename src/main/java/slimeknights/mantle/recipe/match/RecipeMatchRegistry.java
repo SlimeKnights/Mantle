@@ -1,4 +1,4 @@
-package slimeknights.mantle.util;
+package slimeknights.mantle.recipe.match;
 
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -13,7 +13,11 @@ import java.util.PriorityQueue;
 
 /**
  * Contains a set of matches. Allows you to easily find if a set of itemstacks matches one of them.
+ *
+ * @deprecated Reevaluating whether we still need this
  */
+@SuppressWarnings("WeakerAccess")
+@Deprecated
 public class RecipeMatchRegistry {
 
   protected final PriorityQueue<RecipeMatch> items = new PriorityQueue<>(1, RecipeComparator.INSTANCE);
@@ -158,7 +162,7 @@ public class RecipeMatchRegistry {
 
     @Override
     public int compare(RecipeMatch o1, RecipeMatch o2) {
-      return o2.amountMatched - o1.amountMatched;
+      return o2.getAmountMatched() - o1.getAmountMatched();
     }
   }
 }

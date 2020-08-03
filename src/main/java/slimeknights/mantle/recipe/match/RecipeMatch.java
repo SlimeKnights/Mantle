@@ -1,8 +1,10 @@
-package slimeknights.mantle.util;
+package slimeknights.mantle.recipe.match;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -17,20 +19,19 @@ import java.util.Set;
  * Matches can be found through tags, simple nbt-independant item-meta combinations etc.
  *
  * The match returned by this class can then be used to remove the found recipe match from the items.
+ *
+ * @deprecated Reevaluating whether we still need this. May be removed in 1.17
  */
+@Deprecated
+@SuppressWarnings("WeakerAccess")
+@AllArgsConstructor
 public abstract class RecipeMatch {
-
-  public final int amountNeeded;
-  public final int amountMatched;
-
-  /**
-   * @param amountNeeded  How many of the itemstack are needed for the match
-   * @param amountMatched If amount needed itemstacks are present, as how many matches does this count?
-   */
-  public RecipeMatch(int amountMatched, int amountNeeded) {
-    this.amountMatched = amountMatched;
-    this.amountNeeded = amountNeeded;
-  }
+  /** How many of the itemstack are needed for the match */
+  @Getter
+  private final int amountNeeded;
+  /** If amount needed itemstacks are present, as how many matches does this count? */
+  @Getter
+  private final int amountMatched;
 
   /**
    * Return all possible inputs that are a single item, if applicable.
@@ -156,7 +157,7 @@ public abstract class RecipeMatch {
     @Override
     public Optional<Match> matches(NonNullList<ItemStack> stacks) {
       List<ItemStack> found = Lists.newLinkedList();
-      int stillNeeded = this.amountNeeded;
+      int stillNeeded = this.getAmountNeeded();
 
       for (ItemStack stack : stacks) {
         if (this.template.getItem() == stack.getItem()) {
@@ -168,7 +169,7 @@ public abstract class RecipeMatch {
 
           // we found enough
           if (stillNeeded <= 0) {
-            return Optional.of(new Match(found, this.amountMatched));
+            return Optional.of(new Match(found, this.getAmountMatched()));
           }
         }
       }
@@ -178,6 +179,7 @@ public abstract class RecipeMatch {
   }
 
   /** A combination of multiple items. NBT SENSITIVE! */
+  @SuppressWarnings("WeakerAccess")
   public static class ItemCombination extends RecipeMatch {
 
     protected final NonNullList<ItemStack> itemStacks;
@@ -231,13 +233,14 @@ public abstract class RecipeMatch {
       }
 
       if (needed.isEmpty()) {
-        return Optional.of(new Match(found, this.amountMatched));
+        return Optional.of(new Match(found, this.getAmountMatched()));
       }
       return Optional.empty();
     }
   }
 
   /** Represents a collection of items that match the recipies */
+  @SuppressWarnings("WeakerAccess")
   public static class Match {
 
     /** The stacks that have to be removed to apply this match */
