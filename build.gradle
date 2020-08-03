@@ -22,13 +22,11 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
         classpath 'io.freefair.gradle:lombok-plugin:4.1.6'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -126,7 +124,7 @@ minecraft {
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE,PULSAR'
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -143,10 +141,9 @@ minecraft {
 }
 
 configurations {
-    shadow
-    compile.extendsFrom shadow
+    deployerJars
 }
-
+               
 dependencies {
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
@@ -154,10 +151,6 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
-
-    // Configuration
-    shadow "ninja.leaping.configurate:configurate-hocon:${configurate_version}"
-    //shade "ninja.leaping.configurate:configurate-gson:${configurate_version}"
 }
 
 processResources {
@@ -187,22 +180,9 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-
-    dependsOn shadowJar
-    enabled = false
 }
 
 jar.finalizedBy('reobfJar')
-
-shadowJar {
-    archiveName = tasks.jar.archiveName
-    configurations = [project.configurations.shadow]
-    relocate 'ninja.leaping.configurate', 'slimeknights.mantle.configurate'
-    relocate 'com.typesafe', 'slimeknights.mantle.typesafe'
-    dependencies {
-        exclude(dependency('com.google.guava:guava:'))
-    }
-}
 
 // because the normal output has been made to be obfuscated
 task deobfJar(type: Jar) {
