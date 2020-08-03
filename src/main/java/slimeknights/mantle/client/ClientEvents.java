@@ -14,6 +14,7 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.model.FallbackModelLoader;
 import slimeknights.mantle.client.model.connected.ConnectedModel;
+import slimeknights.mantle.client.model.fluid.FluidsModel;
 import slimeknights.mantle.client.model.inventory.InventoryModel;
 
 @SuppressWarnings("unused")
@@ -27,6 +28,7 @@ public class ClientEvents {
       ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
       ModelLoaderRegistry.registerLoader(Mantle.getResource("inventory"), InventoryModel.Loader.INSTANCE);
       ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
+      ModelLoaderRegistry.registerLoader(Mantle.getResource("fluids"), FluidsModel.Loader.INSTANCE);
     }
   }
 
