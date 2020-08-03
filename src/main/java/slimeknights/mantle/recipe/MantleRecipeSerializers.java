@@ -15,4 +15,5 @@ import static slimeknights.mantle.registration.RegistrationHelper.injected;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MantleRecipeSerializers {
   public static final IRecipeSerializer<?> CRAFTING_SHAPED_FALLBACK = injected();
+  public static final IRecipeSerializer<?> CRAFTING_SHAPED_RETEXTURED = injected();
 }

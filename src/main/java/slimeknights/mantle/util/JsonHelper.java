@@ -19,6 +19,21 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonHelper {
   /**
+   * Gets an element from JSON, throwing an exception if missing
+   * @param json        Object parent
+   * @param memberName  Name to get
+   * @return  JsonElement found
+   * @throws JsonSyntaxException if element is missing
+   */
+  public static JsonElement getElement(JsonObject json, String memberName) {
+    if (json.has(memberName)) {
+      return json.get(memberName);
+    } else {
+      throw new JsonSyntaxException("Missing " + memberName + "");
+    }
+  }
+
+  /**
    * Parses a list from an JsonArray
    * @param array   Json array
    * @param name    Json key of the array

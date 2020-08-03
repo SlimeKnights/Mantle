@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -14,17 +15,30 @@ import net.minecraft.client.renderer.model.WeightedBakedModel;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
+import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.resource.VanillaResourceType;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utilities to help in custom models
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ModelHelper {
+  private static final Map<Block,ResourceLocation> TEXTURE_NAME_CACHE = new HashMap<>();
+  /** Listener instance to clear cache */
+  public static final ISelectiveResourceReloadListener LISTENER = (manager, predicate) -> {
+    if (predicate.test(VanillaResourceType.MODELS)) {
+      TEXTURE_NAME_CACHE.clear();
+    }
+  };
+
   /* Baked models */
 
   /**
@@ -65,6 +79,25 @@ public class ModelHelper {
       return clazz.cast(baked);
     }
     return null;
+  }
+
+  /**
+   * Gets the texture name for a block from the model manager
+   * @param block  Block to fetch
+   * @return Texture name for the block
+   */
+  @SuppressWarnings("deprecation")
+  private static ResourceLocation getParticleTextureInternal(Block block) {
+    return Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(block.getDefaultState()).getParticleTexture().getName();
+  }
+
+  /**
+   * Gets the name of a particle texture for a block, using the cached value if present
+   * @param block Block to fetch
+   * @return Texture name for the block
+   */
+  public static ResourceLocation getParticleTexture(Block block) {
+    return TEXTURE_NAME_CACHE.computeIfAbsent(block, ModelHelper::getParticleTextureInternal);
   }
 
   /* JSON */

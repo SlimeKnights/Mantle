@@ -12,8 +12,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.client.ClientEvents;
+import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
+import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
 /**
@@ -48,6 +50,10 @@ public class Mantle {
   private void registerRecipeSerializers(final RegistryEvent.Register<IRecipeSerializer<?>> event) {
     RegistryAdapter<IRecipeSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
     adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
+    adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
+
+    // done here as no dedicated event
+    MantleLoot.register();
   }
 
   /**
