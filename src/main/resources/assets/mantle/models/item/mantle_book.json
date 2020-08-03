@@ -1,7 +1,7 @@
 {
     "parent": "builtin/generated",
     "textures": {
-        "layer0": "mantle:items/mantlebook_blue"
+        "layer0": "mantle:item/mantlebook_blue"
     },
     "display": {
         "thirdperson": {
