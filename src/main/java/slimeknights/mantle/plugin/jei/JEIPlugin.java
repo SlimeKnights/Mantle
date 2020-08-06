@@ -7,6 +7,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -42,6 +43,12 @@ public class JEIPlugin implements IModPlugin {
         return guiContainer.getModuleAreas();
       }
     });
+  }
+
+  @Override
+  public void registerRecipes(IRecipeRegistration registry) {
+    vanillaCraftingHelper = registry.getJeiHelpers().getGuiHelper().createCraftingGridHelper(1);
+    modIdHelper = registry.getJeiHelpers().getModIdHelper();
   }
 
   @Override
