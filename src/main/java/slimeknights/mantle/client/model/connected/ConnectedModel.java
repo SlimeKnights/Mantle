@@ -36,12 +36,11 @@ import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
+import slimeknights.mantle.client.model.data.SinglePropertyData;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
 import slimeknights.mantle.client.model.util.ExtraTextureConfiguration;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
@@ -359,15 +358,20 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
 
     @Override
     public IModelData getModelData(IBlockDisplayReader world, BlockPos pos, BlockState state, IModelData tileData) {
-      // build model data
-      IModelData data = tileData;
-      if (data == EmptyModelData.INSTANCE) {
-        // going to simply add properties below
-        data = new ModelDataMap.Builder().build();
+      // if the data is already defined, return it, will happen in multipart models
+      if (tileData.getData(CONNECTIONS) != null) {
+        return tileData;
       }
+
+      // if the property is not supported, make new data instance
+      IModelData data = tileData;
+      if (!data.hasProperty(CONNECTIONS)) {
+        data = new SinglePropertyData<>(CONNECTIONS);
+      }
+
+      // gather connections data
       TransformationMatrix rotation = transforms.getRotation();
       data.setData(CONNECTIONS, getConnections((dir) -> parent.sides.contains(dir) && parent.connectionPredicate.test(state, world.getBlockState(pos.offset(rotation.rotateTransform(dir))))));
-
       return data;
     }
 
