@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
 
 /**
  * Used in {@link ConnectedModel} to workaround Forge #6841. Allows a multipart block like panes to have connected textures
+ * @deprecated Only use if the block model uses multipart or weighted random. Ideally Forge will fix the bug and this will no longer be needed
  */
+@Deprecated
 @SuppressWarnings({"unused", "JavadocReference"})
 public interface IMultipartConnectedBlock {
   /** Map of direction to boolean property for that direction */

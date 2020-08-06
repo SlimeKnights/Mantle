@@ -34,7 +34,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.world.IBlockDisplayReader;
-import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -43,6 +42,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
+import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
 import slimeknights.mantle.client.model.util.ExtraTextureConfiguration;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
@@ -137,7 +137,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   }
 
   @SuppressWarnings("WeakerAccess")
-  protected static class BakedModel extends BakedModelWrapper<IBakedModel> {
+  protected static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
     private final ConnectedModel parent;
     private final IModelConfiguration owner;
     private final IModelTransform transforms;
@@ -371,7 +371,6 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       return data;
     }
 
-
     /**
      * Shared logic to get quads from a connections array
      * @param connections  Byte with 6 bits for the 6 different sides
@@ -393,35 +392,27 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
-      // quick exit if no data
-      if (data == EmptyModelData.INSTANCE) {
-        return super.getQuads(state, side, rand, data);
-      }
-      // fetch connections byte from the model data, exit if missing
+      // try model data first
       Byte connections = data.getData(CONNECTIONS);
+      // if model data failed, try block state
+      // temporary fallback until Forge has model data in multipart/weighted random
       if (connections == null) {
-        return super.getQuads(state, side, rand, data);
-      }
-      // get quads
-      return getCachedQuads(connections, state, side, rand, data);
-    }
-
-    @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-      // quick exit if no state
-      if (state == null) {
-        return super.getQuads(null, side, rand);
-      }
-      // get data based on block state
-      TransformationMatrix rotation = transforms.getRotation();
-      byte connections = getConnections((dir) -> {
-        if (!parent.sides.contains(dir)) {
-          return false;
+        // no state? return original
+        if (state == null) {
+          return originalModel.getQuads(null, side, rand, data);
         }
-        BooleanProperty prop = IMultipartConnectedBlock.CONNECTED_DIRECTIONS.get(rotation.rotateTransform(dir));
-        return state.hasProperty(prop) && state.get(prop);
-      });
-      return getCachedQuads(connections, state, side, rand, EmptyModelData.INSTANCE);
+        // this will return original if the state is missing all properties
+        TransformationMatrix rotation = transforms.getRotation();
+        connections = getConnections((dir) -> {
+          if (!parent.sides.contains(dir)) {
+            return false;
+          }
+          BooleanProperty prop = IMultipartConnectedBlock.CONNECTED_DIRECTIONS.get(rotation.rotateTransform(dir));
+          return state.hasProperty(prop) && state.get(prop);
+        });
+      }
+      // get quads using connections
+      return getCachedQuads(connections, state, side, rand, data);
     }
   }
 
