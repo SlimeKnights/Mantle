@@ -19,7 +19,7 @@ public final class RetexturedHelper {
   /** Tag name for texture blocks. Should not be used directly, use the utils to interact */
   private static final String TAG_TEXTURE = "texture";
   /** Property for tile entities containing a texture block */
-  public static final ModelProperty<Block> BLOCK_PROPERTY = new ModelProperty<>();
+  public static final ModelProperty<Block> BLOCK_PROPERTY = new ModelProperty<>(block -> block != Blocks.AIR);
 
 
   /* Getting */

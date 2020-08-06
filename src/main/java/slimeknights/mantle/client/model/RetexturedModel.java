@@ -189,7 +189,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
       // if particle is retextured, fetch particle from the cached model
       if (retextured.contains("particle")) {
         Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
-        if (block != null && block != Blocks.AIR) {
+        if (block != null) {
           return getCachedModel(block).getParticleTexture(data);
         }
       }
@@ -199,7 +199,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
       Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
-      if (block == null || block == Blocks.AIR) {
+      if (block == null) {
         return originalModel.getQuads(state, direction, random, data);
       }
       return getCachedModel(block).getQuads(state, direction, random, data);
