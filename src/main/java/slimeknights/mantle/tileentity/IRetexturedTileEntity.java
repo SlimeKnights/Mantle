@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import slimeknights.mantle.client.model.data.SinglePropertyData;
 import slimeknights.mantle.util.RetexturedHelper;
 
 /**
@@ -45,11 +45,11 @@ public interface IRetexturedTileEntity {
    */
   default IModelData getRetexturedModelData() {
     // texture not loaded
-    ModelDataMap.Builder data = new ModelDataMap.Builder();
     Block block = getTexture();
-    if (block != Blocks.AIR) {
-      data = data.withInitial(RetexturedHelper.BLOCK_PROPERTY, block);
+    // cannot support air, saves a conditional on usage
+    if (block == Blocks.AIR) {
+      block = null;
     }
-    return data.build();
+    return new SinglePropertyData<>(RetexturedHelper.BLOCK_PROPERTY, block);
   }
 }
