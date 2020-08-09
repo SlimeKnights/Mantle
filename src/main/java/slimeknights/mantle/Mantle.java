@@ -2,16 +2,13 @@ package slimeknights.mantle;
 
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.client.ClientEvents;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
@@ -40,7 +37,6 @@ public class Mantle {
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(this::commonSetup);
     bus.addGenericListener(IRecipeSerializer.class, this::registerRecipeSerializers);
-    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientEvents::onConstruct);
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
