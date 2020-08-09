@@ -6,6 +6,9 @@ import net.minecraft.item.ItemStack;
  * Base inventory for inventories that do not use items
  */
 public interface IEmptyInventory extends IReadOnlyInventory {
+  /** Empty inventory instance, for cases where a nonnull inventory is required */
+  IEmptyInventory EMPTY = new IEmptyInventory() {};
+
   /** @deprecated unused method */
   @Deprecated
   @Override
