@@ -9,6 +9,7 @@ import net.minecraft.world.IWorldReader;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Utilities to help in handling of tile entities
@@ -16,7 +17,6 @@ import javax.annotation.Nullable;
 @SuppressWarnings("WeakerAccess")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TileEntityHelper {
-
   /**
    * Gets a tile entity if present and the right type
    * @param clazz  Tile entity class
@@ -24,10 +24,12 @@ public class TileEntityHelper {
    * @param pos    Tile entity position
    * @param <T>    Tile entity type
    * @return  Tile entity if it is the type, null if missing or wrong class
+   * @deprecated use {@link #getTile(Class, IBlockReader, BlockPos)}
    */
+  @Deprecated
   @Nullable
   public static <T> T getTileEntity(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos) {
-    return getTileEntity(clazz, world, pos, false);
+    return getTile(clazz, world, pos).orElse(null);
   }
 
   /**
@@ -38,26 +40,53 @@ public class TileEntityHelper {
    * @param logWrongType  If true, logs a warning if the type is wrong
    * @param <T>    Tile entity type
    * @return  Tile entity if it is the type, null if missing or wrong class
+   * @deprecated use {@link #getTile(Class, IBlockReader, BlockPos, boolean)}
    */
+  @Deprecated
   @Nullable
   public static <T> T getTileEntity(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos, boolean logWrongType) {
+    return getTile(clazz, world, pos, logWrongType).orElse(null);
+  }
+
+  /**
+   * Gets a tile entity if present and the right type
+   * @param clazz  Tile entity class
+   * @param world  World instance
+   * @param pos    Tile entity position
+   * @param <T>    Tile entity type
+   * @return  Optional of the tile entity, empty if missing or wrong class
+   */
+  public static <T> Optional<T> getTile(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos) {
+    return getTile(clazz, world, pos, false);
+  }
+
+  /**
+   * Gets a tile entity if present and the right type
+   * @param clazz         Tile entity class
+   * @param world         World instance
+   * @param pos           Tile entity position
+   * @param logWrongType  If true, logs a warning if the type is wrong
+   * @param <T>    Tile entity type
+   * @return  Optional of the tile entity, empty if missing or wrong class
+   */
+  public static <T> Optional<T>  getTile(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos, boolean logWrongType) {
     if (!isBlockLoaded(world, pos)) {
-      return null;
+      return Optional.empty();
     }
 
     //TODO: This causes freezes if being called from onLoad
     TileEntity tile = world.getTileEntity(pos);
     if (tile == null) {
-      return null;
+      return Optional.empty();
     }
 
     if (clazz.isInstance(tile)) {
-      return clazz.cast(tile);
+      return Optional.of(clazz.cast(tile));
     } else if (logWrongType) {
       Mantle.logger.warn("Unexpected TileEntity class at {}, expected {}, but found: {}", pos, clazz, tile.getClass());
     }
 
-    return null;
+    return Optional.empty();
   }
 
   /**

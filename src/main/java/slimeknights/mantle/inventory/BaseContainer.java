@@ -310,12 +310,18 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return flag1;
   }
 
+  /**
+   * Gets a tile entity from a packet buffer
+   * @param buf     Packet buffer instance
+   * @param type    Tile entity class
+   * @param <TILE>  Tile entity type
+   * @return Tile entity, or null if unable to find
+   */
   @Nullable
   public static <TILE extends TileEntity> TILE getTileEntityFromBuf(@Nullable PacketBuffer buf, Class<TILE> type) {
     if (buf == null) {
       return null;
     }
-
-    return DistExecutor.callWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTileEntity(type, Minecraft.getInstance().world, buf.readBlockPos()));
+    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTile(type, Minecraft.getInstance().world, buf.readBlockPos()).orElse(null));
   }
 }
