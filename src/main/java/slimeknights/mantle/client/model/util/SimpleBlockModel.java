@@ -23,11 +23,14 @@ import net.minecraft.client.renderer.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModelConfiguration;
+import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nonnull;
@@ -46,7 +49,9 @@ import java.util.stream.Collectors;
  * Simplier version of {@link BlockModel} for use in an {@link net.minecraftforge.client.model.IModelLoader}, as the owner handles most block model properties
  */
 @SuppressWarnings("WeakerAccess")
-public class SimpleBlockModel {
+public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
+  /** Model loader for vanilla block model, mainly intended for use in fallback registration */
+  public static final Loader LOADER = new Loader();
   /** Location used for baking dynamic models, name does not matter so just using a constant */
   private static final ResourceLocation BAKE_LOCATION = Mantle.getResource("dynamic_model_baking");
 
@@ -196,6 +201,7 @@ public class SimpleBlockModel {
    * @param missingTextureErrors  Missing texture set
    * @return  Textures dependencies
    */
+  @Override
   public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
     this.fetchParent(owner, modelGetter);
     return getTextures(owner, getElements(), missingTextureErrors);
@@ -260,6 +266,11 @@ public class SimpleBlockModel {
    */
   public IBakedModel bakeModel(IModelConfiguration owner, IModelTransform transform, ItemOverrideList overrides, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
     return bakeModel(owner, this.getElements(), transform, overrides, spriteGetter, location);
+  }
+
+  @Override
+  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
+    return bakeModel(owner, transform, overrides, spriteGetter, location);
   }
 
   /**
@@ -331,5 +342,16 @@ public class SimpleBlockModel {
     }
 
     throw new JsonSyntaxException("Missing " + name + ", expected to find a JsonArray or JsonObject");
+  }
+
+  /** Logic to implement a vanilla block model */
+  private static class Loader implements IModelLoader<SimpleBlockModel> {
+    @Override
+    public void onResourceManagerReload(IResourceManager resourceManager) {}
+
+    @Override
+    public SimpleBlockModel read(JsonDeserializationContext context, JsonObject json) {
+      return deserialize(context, json);
+    }
   }
 }
