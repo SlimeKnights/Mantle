@@ -32,7 +32,7 @@ public class MultiModuleContainer<TILE extends TileEntity & IInventory> extends 
   protected int subContainerSlotStart = -1;
   protected Set<Container> shiftClickContainers = Sets.newHashSet();
 
-  public MultiModuleContainer(ContainerType<?> containerType, int id, @Nullable PlayerInventory inv, TILE tile) {
+  public MultiModuleContainer(ContainerType<?> containerType, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
     super(containerType, id, inv, tile);
   }
 
