@@ -43,13 +43,29 @@ public class TranslationHelper {
    * @param tooltip  List of tooltips
    */
   public static void addOptionalTooltip(ItemStack stack, List<ITextComponent> tooltip) {
-    String translationKey = stack.getTranslationKey() + ".tooltip";
-    String translated = ForgeI18n.getPattern(translationKey);
-    if (canTranslate(translationKey, translated)) {
-      String[] strings = translated.split("\n");
-      for (String string : strings) {
-        tooltip.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
-      }
+    addOptionalTooltip(stack.getTranslationKey() + ".tooltip", tooltip);
+  }
+
+  /**
+   * Adds localized tooltip to a list of tooltips if present
+   * @param key      Translation key
+   * @param tooltip  List of tooltips
+   */
+  public static void addOptionalTooltip(String key, List<ITextComponent> tooltip) {
+    String translated = ForgeI18n.getPattern(key);
+    if (canTranslate(key, translated)) {
+      addEachLine(translated, tooltip);
+    }
+  }
+
+  /**
+   * Adds the text into the tooltip, splitting on newlines
+   * @param text     Translated text to split
+   * @param tooltip  List of tooltip strings to add to
+   */
+  public static void addEachLine(String text, List<ITextComponent> tooltip) {
+    for (String string : text.split("\n")) {
+      tooltip.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
     }
   }
 
