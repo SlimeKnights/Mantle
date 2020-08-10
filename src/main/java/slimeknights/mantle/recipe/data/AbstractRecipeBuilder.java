@@ -47,6 +47,14 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   }
 
   /**
+   * Gets the group, or an empty string if no group is set
+   * @return  Group string
+   */
+  protected String getGroup() {
+    return this.group == null ? "" : this.group;
+  }
+
+  /**
    * Builds the recipe with a default recipe ID, typically based on the output
    * @param consumerIn  Recipe consumer
    */
