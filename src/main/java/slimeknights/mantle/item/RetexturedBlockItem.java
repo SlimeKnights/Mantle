@@ -38,7 +38,9 @@ public class RetexturedBlockItem extends BlockTooltipItem {
 
   @Override
   public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-    addTagVariants(this.getBlock(), textureTag, items, true);
+    if (this.isInGroup(group)) {
+      addTagVariants(this.getBlock(), textureTag, items, true);
+    }
   }
 
   @OnlyIn(Dist.CLIENT)
