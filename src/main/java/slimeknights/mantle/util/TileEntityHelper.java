@@ -23,37 +23,6 @@ public class TileEntityHelper {
    * @param world  World instance
    * @param pos    Tile entity position
    * @param <T>    Tile entity type
-   * @return  Tile entity if it is the type, null if missing or wrong class
-   * @deprecated use {@link #getTile(Class, IBlockReader, BlockPos)}
-   */
-  @Deprecated
-  @Nullable
-  public static <T> T getTileEntity(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos) {
-    return getTile(clazz, world, pos).orElse(null);
-  }
-
-  /**
-   * Gets a tile entity if present and the right type
-   * @param clazz         Tile entity class
-   * @param world         World instance
-   * @param pos           Tile entity position
-   * @param logWrongType  If true, logs a warning if the type is wrong
-   * @param <T>    Tile entity type
-   * @return  Tile entity if it is the type, null if missing or wrong class
-   * @deprecated use {@link #getTile(Class, IBlockReader, BlockPos, boolean)}
-   */
-  @Deprecated
-  @Nullable
-  public static <T> T getTileEntity(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos, boolean logWrongType) {
-    return getTile(clazz, world, pos, logWrongType).orElse(null);
-  }
-
-  /**
-   * Gets a tile entity if present and the right type
-   * @param clazz  Tile entity class
-   * @param world  World instance
-   * @param pos    Tile entity position
-   * @param <T>    Tile entity type
    * @return  Optional of the tile entity, empty if missing or wrong class
    */
   public static <T> Optional<T> getTile(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos) {

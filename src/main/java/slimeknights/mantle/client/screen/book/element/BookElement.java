@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import slimeknights.mantle.client.render.RenderingHelper;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
@@ -65,7 +65,7 @@ public abstract class BookElement extends AbstractGui {
   }
 
   public void drawHoveringText(MatrixStack matrixStack, List<ITextComponent> textLines, int x, int y, FontRenderer font) {
-    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
+    RenderingHelper.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
     RenderHelper.disableStandardItemLighting();
   }
 }

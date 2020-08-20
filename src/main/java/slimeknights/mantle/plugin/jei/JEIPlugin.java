@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
+import slimeknights.mantle.inventory.MultiModuleContainer;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 
 import java.util.List;
@@ -34,15 +35,10 @@ public class JEIPlugin implements IModPlugin {
     registry.getCraftingCategory().addCategoryExtension(ShapedRetexturedRecipe.class, RetexturedRecipeExtension::new);
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-    registration.addGuiContainerHandler(MultiModuleScreen.class, new IGuiContainerHandler<MultiModuleScreen>() {
-      @SuppressWarnings("unchecked")
-      @Override
-      public List<Rectangle2d> getGuiExtraAreas(MultiModuleScreen guiContainer) {
-        return guiContainer.getModuleAreas();
-      }
-    });
+    registration.addGuiContainerHandler(MultiModuleScreen.class, new MultiModuleContainerHandler());
   }
 
   @Override
@@ -54,5 +50,12 @@ public class JEIPlugin implements IModPlugin {
   @Override
   public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
     recipeManager = jeiRuntime.getRecipeManager();
+  }
+
+  private static class MultiModuleContainerHandler<C extends MultiModuleContainer<?>> implements IGuiContainerHandler<MultiModuleScreen<C>> {
+    @Override
+    public List<Rectangle2d> getGuiExtraAreas(MultiModuleScreen<C> guiContainer) {
+      return guiContainer.getModuleAreas();
+    }
   }
 }

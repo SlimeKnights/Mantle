@@ -12,9 +12,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 // a sub-gui. Mostly the same as a separate ContainerScreen, but doesn't do the calls that affect the game as if this were the only gui
 @OnlyIn(Dist.CLIENT)
-public abstract class ModuleScreen extends ContainerScreen {
+public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Container> extends ContainerScreen<C> {
 
-  protected final MultiModuleScreen parent;
+  protected final P parent;
 
   // left or right of the parent
   protected final boolean right;
@@ -24,7 +24,7 @@ public abstract class ModuleScreen extends ContainerScreen {
   public int yOffset = 0;
   public int xOffset = 0;
 
-  public ModuleScreen(MultiModuleScreen parent, Container container, PlayerInventory playerInventory, ITextComponent title, boolean right, boolean bottom) {
+  public ModuleScreen(P parent, C container, PlayerInventory playerInventory, ITextComponent title, boolean right, boolean bottom) {
     super(container, playerInventory, title);
 
     this.parent = parent;
@@ -84,12 +84,25 @@ public abstract class ModuleScreen extends ContainerScreen {
     return false;
   }
 
+  /**
+   * Callback to draw background elements
+   */
   public void handleDrawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
     this.drawGuiContainerBackgroundLayer(matrixStack,partialTicks, mouseX, mouseY);
   }
 
+  /**
+   * Callback to draw foreground elements
+   */
   public void handleDrawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
     this.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
+  }
+
+  /**
+   * Callback to draw hovering tooltips
+   */
+  public void handleRenderHoveredTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    this.func_230459_a_(matrixStack, mouseX, mouseY);
   }
 
   /**
@@ -127,5 +140,4 @@ public abstract class ModuleScreen extends ContainerScreen {
   public boolean handleMouseScrolled(double mouseX, double mouseY, double delta) {
     return false;
   }
-
 }

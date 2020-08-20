@@ -64,6 +64,7 @@ public abstract class InventoryBlock extends Block {
     return true;
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
@@ -92,8 +93,10 @@ public abstract class InventoryBlock extends Block {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   @Nullable
+  @Deprecated
   public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
     TileEntity tileentity = worldIn.getTileEntity(pos);
     return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
@@ -102,6 +105,8 @@ public abstract class InventoryBlock extends Block {
 
   /* Inventory handling */
 
+  @SuppressWarnings("deprecation")
+  @Deprecated
   @Override
   public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
@@ -126,6 +131,7 @@ public abstract class InventoryBlock extends Block {
     InventoryHelper.dropInventoryItems(worldIn, pos, inventory);
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
   public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {

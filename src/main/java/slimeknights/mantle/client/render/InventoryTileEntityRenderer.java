@@ -28,12 +28,12 @@ public class InventoryTileEntityRenderer<T extends TileEntity & IInventory> exte
     InventoryModel.BakedModel model = ModelHelper.getBakedModel(state, InventoryModel.BakedModel.class);
     if (model != null) {
       // if the block is rotatable, rotate item display
-      boolean isRotated = RenderUtil.applyRotation(matrices, state);
+      boolean isRotated = RenderingHelper.applyRotation(matrices, state);
 
       // render items
       List<ModelItem> modelItems = model.getItems();
       for (int i = 0; i < modelItems.size(); i++) {
-        RenderUtil.renderItem(matrices, buffer, inventory.getStackInSlot(i), modelItems.get(i), light);
+        RenderingHelper.renderItem(matrices, buffer, inventory.getStackInSlot(i), modelItems.get(i), light);
       }
 
       // pop back rotation

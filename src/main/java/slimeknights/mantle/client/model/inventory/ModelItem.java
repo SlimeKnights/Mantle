@@ -62,10 +62,10 @@ public class ModelItem {
   }
 
   /**
-   * Returns true if this model item is empty, meaning no items should be rendered
-   * @return  True if empty
+   * Returns true if this model item is hidden, meaning no items should be rendered
+   * @return  True if hidden
    */
-  public boolean isEmpty() {
+  public boolean isHidden() {
     return size == 0;
   }
 

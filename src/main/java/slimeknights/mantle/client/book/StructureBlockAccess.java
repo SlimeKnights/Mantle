@@ -86,7 +86,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public Biome getNoiseBiomeRaw(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
+  public Biome getNoiseBiomeRaw(int x, int y, int z) {
     throw new UnsupportedOperationException();
   }
 
@@ -106,6 +106,7 @@ public class StructureBlockAccess implements IWorldReader {
     return null;
   }
 
+  @Deprecated
   @Override
   public boolean chunkExists(int chunkX, int chunkZ) {
     return false;
@@ -156,6 +157,7 @@ public class StructureBlockAccess implements IWorldReader {
     return false;
   }
 
+  @Deprecated
   @Override
   public int getSeaLevel() {
     return 0;

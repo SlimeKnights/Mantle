@@ -322,7 +322,7 @@ public abstract class FluidIngredient {
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", TagCollectionManager.func_232928_e_().func_232926_c_().func_232975_b_(this.tag).toString());
+      object.addProperty("tag", TagCollectionManager.func_242178_a().func_241837_c().func_232975_b_(this.tag).toString());
       object.addProperty("amount", amount);
       return object;
     }

@@ -24,6 +24,9 @@ public abstract class DynamicBakedWrapper<T extends IBakedModel> extends BakedMo
     super(originalModel);
   }
 
+  /**
+   * @deprecated use {@link #getQuads(BlockState, Direction, Random, IModelData)}
+   */
   @Override
   @Deprecated
   public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
