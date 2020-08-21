@@ -8,7 +8,7 @@ import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 /**
@@ -20,8 +20,8 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   /** Advancement builder for this class */
   protected final Advancement.Builder advancementBuilder = Advancement.Builder.builder();
   /** Group for this recipe */
-  @Nullable
-  protected String group;
+  @Nonnull
+  protected String group = "";
 
   /**
    * Adds a criteria to the recipe
@@ -47,11 +47,16 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   }
 
   /**
-   * Gets the group, or an empty string if no group is set
-   * @return  Group string
+   * Sets the group for this recipe
+   * @param group  Recipe resource location group
+   * @return  Builder
    */
-  protected String getGroup() {
-    return this.group == null ? "" : this.group;
+  public T setGroup(ResourceLocation group) {
+    // if minecraft, no namepsace. Groups are technically not namespaced so this is for consistency with vanilla
+    if ("minecraft".equals(group.getNamespace())) {
+      return setGroup(group.getPath());
+    }
+    return setGroup(group.toString());
   }
 
   /**
