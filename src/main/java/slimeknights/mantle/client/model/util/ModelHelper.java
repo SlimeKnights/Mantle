@@ -25,6 +25,7 @@ import net.minecraftforge.resource.VanillaResourceType;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Utilities to help in custom models
@@ -103,6 +104,28 @@ public class ModelHelper {
   /* JSON */
 
   /**
+   * Converts a JSON float array to the specified object
+   * @param json    JSON object
+   * @param name    Name of the array in the object to fetch
+   * @param size    Expected array size
+   * @param mapper  Functon to map from the array to the output type
+   * @param <T> Output type
+   * @return  Vector3f of data
+   * @throws JsonParseException  If there is no array or the length is wrong
+   */
+  public static <T> T arrayToObject(JsonObject json, String name, int size, Function<float[], T> mapper) {
+    JsonArray array = JSONUtils.getJsonArray(json, name);
+    if (array.size() != size) {
+      throw new JsonParseException("Expected " + size + " " + name + " values, found: " + array.size());
+    }
+    float[] vec = new float[size];
+    for(int i = 0; i < size; ++i) {
+      vec[i] = JSONUtils.getFloat(array.get(i), name + "[" + i + "]");
+    }
+    return mapper.apply(vec);
+  }
+
+  /**
    * Converts a JSON array with 3 elements into a Vector3f
    * @param json  JSON object
    * @param name  Name of the array in the object to fetch
@@ -110,16 +133,7 @@ public class ModelHelper {
    * @throws JsonParseException  If there is no array or the length is wrong
    */
   public static Vector3f arrayToVector(JsonObject json, String name) {
-    JsonArray array = JSONUtils.getJsonArray(json, name);
-    if (array.size() != 3) {
-      throw new JsonParseException("Expected 3 " + name + " values, found: " + array.size());
-    }
-    float[] vec = new float[3];
-    for(int i = 0; i < vec.length; ++i) {
-      vec[i] = JSONUtils.getFloat(array.get(i), name + "[" + i + "]");
-    }
-
-    return new Vector3f(vec[0], vec[1], vec[2]);
+    return arrayToObject(json, name, 3, arr -> new Vector3f(arr[0], arr[1], arr[2]));
   }
 
   /**
