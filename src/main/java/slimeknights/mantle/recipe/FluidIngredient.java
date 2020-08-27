@@ -18,6 +18,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -136,8 +137,17 @@ public abstract class FluidIngredient {
    * @throws JsonSyntaxException if syntax is invalid
    */
   public static FluidIngredient deserialize(JsonObject parent, String name) {
-    JsonElement json = parent.get(name);
+    return deserialize(JsonHelper.getElement(parent, name), name);
+  }
 
+  /**
+   * Deserializes the fluid ingredient from JSON
+   * @param json  Json element instance
+   * @param name  Name of the object for error messages
+   * @return  Fluid ingredient instance
+   * @throws JsonSyntaxException if syntax is invalid
+   */
+  public static FluidIngredient deserialize(JsonElement json, String name) {
     // single ingredient object
     if (json.isJsonObject()) {
       return deserializeObject(json.getAsJsonObject());
