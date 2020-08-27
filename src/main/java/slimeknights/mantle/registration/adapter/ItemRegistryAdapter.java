@@ -73,7 +73,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param name  Item name
    * @return  Registered item
    */
-  public TooltipItem register(String name) {
+  public TooltipItem registerDefault(String name) {
     return register(defaultProps, name);
   }
 
@@ -94,7 +94,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param <T>          Item type
    * @return  Registered item
    */
-  public <T extends Item> T register(Function<Properties,T> constructor, String name) {
+  public <T extends Item> T registerDefault(Function<Properties,T> constructor, String name) {
     return register(constructor.apply(defaultProps), name);
   }
 
@@ -111,7 +111,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param block The block you want to have an item for
    * @return The registered item for the block
    */
-  public BlockItem registerBlockItem(Block block) {
+  public BlockItem registerDefaultBlockItem(Block block) {
     return registerBlockItem(block, defaultProps);
   }
 
@@ -150,36 +150,36 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * Registers block items for all entries in a building block object
    * @param object  Building block object instance
    */
-  public void registerBlockItem(BuildingBlockObject object) {
-    registerBlockItem(object.get());
-    registerBlockItem(object.getSlab());
-    registerBlockItem(object.getStairs());
+  public void registerDefaultBlockItem(BuildingBlockObject object) {
+    registerDefaultBlockItem(object.get());
+    registerDefaultBlockItem(object.getSlab());
+    registerDefaultBlockItem(object.getStairs());
   }
 
   /**
    * Registers block items for all entries in a wall building block object
    * @param object  Building block object instance
    */
-  public void registerBlockItem(WallBuildingBlockObject object) {
-    registerBlockItem((BuildingBlockObject)object);
-    registerBlockItem(object.getWall());
+  public void registerDefaultBlockItem(WallBuildingBlockObject object) {
+    registerDefaultBlockItem((BuildingBlockObject)object);
+    registerDefaultBlockItem(object.getWall());
   }
 
   /**
    * Registers block items for all entries in a fence building block object
    * @param object  Building block object instance
    */
-  public void registerBlockItem(FenceBuildingBlockObject object) {
-    registerBlockItem((BuildingBlockObject)object);
-    registerBlockItem(object.getFence());
+  public void registerDefaultBlockItem(FenceBuildingBlockObject object) {
+    registerDefaultBlockItem((BuildingBlockObject)object);
+    registerDefaultBlockItem(object.getFence());
   }
 
   /**
    * Registers block items for an enum object
    * @param enumObject  Enum object instance
    */
-  public void registerBlockItem(EnumObject<?, ? extends Block> enumObject) {
-    enumObject.values().forEach(this::registerBlockItem);
+  public void registerDefaultBlockItem(EnumObject<?, ? extends Block> enumObject) {
+    enumObject.values().forEach(this::registerDefaultBlockItem);
   }
 
   /**
