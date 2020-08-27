@@ -88,7 +88,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     @Override
     public ShapedFallbackRecipe read(ResourceLocation id, JsonObject json) {
       ShapedRecipe base = super.read(id, json);
-      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", JSONUtils::getString, ResourceLocation::new);
+      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new ResourceLocation(JSONUtils.getString(element, name)));
       return new ShapedFallbackRecipe(base, alternatives);
     }
 

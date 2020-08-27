@@ -93,6 +93,6 @@ public class ModelItem {
    * @return  List of model items
    */
   public static List<ModelItem> listFromJson(JsonObject parent, String key) {
-    return JsonHelper.parseList(parent, key, JSONUtils::getJsonObject, ModelItem::fromJson);
+    return JsonHelper.parseList(parent, key, ModelItem::fromJson);
   }
 }

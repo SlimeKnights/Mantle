@@ -37,35 +37,55 @@ public class JsonHelper {
    * Parses a list from an JsonArray
    * @param array   Json array
    * @param name    Json key of the array
-   * @param parser  Function to get a raw type from the JsonElement, typically from {@link JSONUtils}
-   * @param mapper  Mapper from raw type to new object
-   * @param <R>     Element raw type
+   * @param mapper  Mapper from the element object and name to new object
    * @param <T>     Output type
    * @return  List of output objects
    */
-  public static <R,T> List<T> parseList(JsonArray array, String name, BiFunction<JsonElement,String,R> parser, Function<R, T> mapper) {
+  public static <T> List<T> parseList(JsonArray array, String name, BiFunction<JsonElement,String,T> mapper) {
     if (array.size() == 0) {
       throw new JsonSyntaxException(name + " must have at least 1 element");
     }
     // build the list
     ImmutableList.Builder<T> builder = ImmutableList.builder();
     for (int i = 0; i < array.size(); i++) {
-      builder.add(mapper.apply(parser.apply(array.get(i), name + "[" + i + "]")));
+      builder.add(mapper.apply(array.get(i), name + "[" + i + "]"));
     }
     return builder.build();
   }
 
   /**
    * Parses a list from an JsonArray
-   * @param object  Parent JSON object
+   * @param array   Json array
    * @param name    Json key of the array
-   * @param parser  Function to get a raw type from the JsonElement, typically from {@link JSONUtils}
-   * @param mapper  Mapper from raw type to new object
-   * @param <R>     Element raw type
+   * @param mapper  Mapper from the json object to new object
    * @param <T>     Output type
    * @return  List of output objects
    */
-  public static <R,T> List<T> parseList(JsonObject object, String name, BiFunction<JsonElement,String,R> parser, Function<R, T> mapper) {
-    return parseList(JSONUtils.getJsonArray(object, name), name, parser, mapper);
+  public static <T> List<T> parseList(JsonArray array, String name, Function<JsonObject,T> mapper) {
+    return parseList(array, name, (element, s) -> mapper.apply(JSONUtils.getJsonObject(element, s)));
+  }
+
+  /**
+   * Parses a list from an JsonArray
+   * @param parent  Parent JSON object
+   * @param name    Json key of the array
+   * @param mapper  Mapper from raw type to new object
+   * @param <T>     Output type
+   * @return  List of output objects
+   */
+  public static <T> List<T> parseList(JsonObject parent, String name, BiFunction<JsonElement,String,T> mapper) {
+    return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
+  }
+
+  /**
+   * Parses a list from an JsonArray
+   * @param parent  Parent JSON object
+   * @param name    Json key of the array
+   * @param mapper  Mapper from json object to new object
+   * @param <T>     Output type
+   * @return  List of output objects
+   */
+  public static <T> List<T> parseList(JsonObject parent, String name, Function<JsonObject,T> mapper) {
+    return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
   }
 }

@@ -115,7 +115,7 @@ public class FluidCuboid {
 
     // array: multiple cubes
     if (json.isJsonArray()) {
-      return JsonHelper.parseList(json.getAsJsonArray(), key, JSONUtils::getJsonObject, FluidCuboid::fromJson);
+      return JsonHelper.parseList(json.getAsJsonArray(), key, FluidCuboid::fromJson);
     }
 
     throw new JsonSyntaxException("Invalid fluid '" + key + "', must be an array or an object");
