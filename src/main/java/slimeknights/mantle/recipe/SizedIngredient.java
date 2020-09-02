@@ -4,9 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tags.ITag;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.JSONUtils;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -22,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(staticName = "of")
 public class SizedIngredient implements Predicate<ItemStack> {
   /** Empty sized ingredient wrapper. Matches only the empty stack of size o */
-  private static final SizedIngredient EMPTY = of(Ingredient.EMPTY, 0);
+  public static final SizedIngredient EMPTY = of(Ingredient.EMPTY, 0);
 
   /** Ingredient to use in recipe match */
   private final Ingredient ingredient;
@@ -42,6 +45,44 @@ public class SizedIngredient implements Predicate<ItemStack> {
    */
   public static SizedIngredient of(Ingredient ingredient) {
     return of(ingredient, 1);
+  }
+
+  /**
+   * Gets a new sized ingredient with a size of 1
+   * @param amountNeeded  Number that must match of this ingredient
+   * @param items         List of items
+   * @return  Sized ingredient matching any size
+   */
+  public static SizedIngredient fromItems(int amountNeeded, IItemProvider... items) {
+    return of(Ingredient.fromItems(items), 1);
+  }
+
+  /**
+   * Gets a new sized ingredient with a size of 1
+   * @param items  List of items
+   * @return  Sized ingredient matching any size
+   */
+  public static SizedIngredient fromItems(IItemProvider... items) {
+    return fromItems(1, items);
+  }
+
+  /**
+   * Gets a new sized ingredient with a size of 1
+   * @param tag           Tag to match
+   * @param amountNeeded  Number that must match of this ingredient
+   * @return  Sized ingredient matching any size
+   */
+  public static SizedIngredient fromTag(ITag<Item> tag, int amountNeeded) {
+    return of(Ingredient.fromTag(tag), 1);
+  }
+
+  /**
+   * Gets a new sized ingredient with a size of 1
+   * @param tag  Tag to match
+   * @return  Sized ingredient matching any size
+   */
+  public static SizedIngredient fromTag(ITag<Item> tag) {
+    return fromTag(tag, 1);
   }
 
   @Override
@@ -107,7 +148,9 @@ public class SizedIngredient implements Predicate<ItemStack> {
       json.add("ingredient", ingredient);
     }
     // add amount needed and return
-    json.addProperty("amount_needed", amountNeeded);
+    if (amountNeeded != 1) {
+      json.addProperty("amount_needed", amountNeeded);
+    }
     return json;
   }
 
@@ -128,7 +171,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient
    */
   public static SizedIngredient deserialize(JsonObject json) {
-    int amountNeeded = JSONUtils.getInt(json, "amount_needed");
+    int amountNeeded = JSONUtils.getInt(json, "amount_needed", 1);
     // if we have a nested value, read as nested
     Ingredient ingredient;
     if (json.has("ingredient")) {
