@@ -87,39 +87,44 @@ public class RecipeHelper {
 
   /**
    * Gets a list of all recipes from the manager, expanding multi recipes. Intended for use in recipe display such as JEI
-   * @param manager  Recipe manager
-   * @param type     Recipe type
+   * @param recipes  Stream of recipes
    * @param clazz    Preferred recipe class type
-   * @param <I>  Inventory interface type
-   * @param <T>  Recipe class
    * @param <C>  Return type
    * @return  List of flattened recipes from the manager
    */
-  public static <I extends IInventory, T extends IRecipe<I>, C extends T> List<C> getJEIRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz) {
-    return manager.getRecipes(type).values().stream()
-                  .sorted((r1, r2) -> {
-                    // if one is multi, and the other not, the multi recipe is larger
-                    boolean m1 = r1 instanceof IMultiRecipe<?>;
-                    boolean m2 = r2 instanceof IMultiRecipe<?>;
-                    if (m1 && !m2) {
-                      return 1;
-                    }
-                    if (!m1 && m2) {
-                      return -1;
-                    }
-                    // fall back to recipe ID
-                    return r1.getId().compareTo(r2.getId());
-                  })
-                  .flatMap((recipe) -> {
-                    // if its a multi recipe, extract child recipes and stream those
-                    if (recipe instanceof IMultiRecipe<?>) {
-                      return ((IMultiRecipe<?>)recipe).getRecipes().stream();
-                    }
-                    return Stream.of(recipe);
-                  })
-                  .filter(clazz::isInstance)
-                  .map(clazz::cast)
-                  .collect(Collectors.toList());
+  public static <C> List<C> getJEIRecipes(Stream<? extends IRecipe<?>> recipes, Class<C> clazz) {
+    return recipes
+        .sorted((r1, r2) -> {
+          // if one is multi, and the other not, the multi recipe is larger
+          boolean m1 = r1 instanceof IMultiRecipe<?>;
+          boolean m2 = r2 instanceof IMultiRecipe<?>;
+          if (m1 && !m2) return 1;
+          if (!m1 && m2) return -1;
+          // fall back to recipe ID
+          return r1.getId().compareTo(r2.getId());
+        })
+        .flatMap((recipe) -> {
+          // if its a multi recipe, extract child recipes and stream those
+          if (recipe instanceof IMultiRecipe<?>) {
+            return ((IMultiRecipe<?>)recipe).getRecipes().stream();
+          }
+          return Stream.of(recipe);
+        })
+        .filter(clazz::isInstance)
+        .map(clazz::cast)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets a list of all recipes from the manager, expanding multi recipes. Intended for use in recipe display such as JEI
+   * @param manager  Recipe manager
+   * @param type     Recipe type
+   * @param clazz    Preferred recipe class type
+   * @param <C>  Return type
+   * @return  List of flattened recipes from the manager
+   */
+  public static <I extends IInventory, T extends IRecipe<I>, C> List<C> getJEIRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz) {
+    return getJEIRecipes(manager.getRecipes(type).values().stream(), clazz);
   }
 
 
