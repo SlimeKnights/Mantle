@@ -54,7 +54,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient fromItems(int amountNeeded, IItemProvider... items) {
-    return of(Ingredient.fromItems(items), 1);
+    return of(Ingredient.fromItems(items), amountNeeded);
   }
 
   /**
@@ -73,7 +73,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient fromTag(ITag<Item> tag, int amountNeeded) {
-    return of(Ingredient.fromTag(tag), 1);
+    return of(Ingredient.fromTag(tag), amountNeeded);
   }
 
   /**
