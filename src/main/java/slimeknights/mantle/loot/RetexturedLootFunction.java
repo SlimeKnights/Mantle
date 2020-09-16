@@ -53,7 +53,7 @@ public class RetexturedLootFunction extends LootFunction {
   }
 
   @Override
-  public LootFunctionType func_230425_b_() {
+  public LootFunctionType getFunctionType() {
     return MantleLoot.RETEXTURED_FUNCTION;
   }
 

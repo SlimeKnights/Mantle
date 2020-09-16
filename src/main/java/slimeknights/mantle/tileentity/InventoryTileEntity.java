@@ -237,7 +237,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     this.readInventoryFromNBT(tags);
 
     if (tags.contains("CustomName", 8)) {
-      this.inventoryTitle = ITextComponent.Serializer.func_240643_a_(tags.getString("CustomName"));
+      this.inventoryTitle = ITextComponent.Serializer.getComponentFromJson(tags.getString("CustomName"));
     }
   }
   

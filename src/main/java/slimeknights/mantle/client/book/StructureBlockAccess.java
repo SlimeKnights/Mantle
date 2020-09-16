@@ -164,7 +164,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public DimensionType func_230315_m_() {
+  public DimensionType getDimensionType() {
     throw new UnsupportedOperationException();
   }
 

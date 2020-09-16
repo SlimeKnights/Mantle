@@ -99,8 +99,8 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  protected void func_230459_a_(MatrixStack matrixStack, int mouseX, int mouseY) {
-    super.func_230459_a_(matrixStack, mouseX, mouseY);
+  protected void renderHoveredTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    super.renderHoveredTooltip(matrixStack, mouseX, mouseY);
 
     for (ModuleScreen<?,?> module : this.modules) {
       module.handleRenderHoveredTooltip(matrixStack, mouseX, mouseY);
@@ -146,7 +146,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     this.xSize = this.realWidth;
     this.ySize = this.realHeight;
     super.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.func_230459_a_(matrixStack, mouseX, mouseY);
+    this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
     this.guiLeft = oldX;
     this.guiTop = oldY;
     this.xSize = oldW;

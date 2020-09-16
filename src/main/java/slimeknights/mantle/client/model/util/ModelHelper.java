@@ -162,7 +162,7 @@ public class ModelHelper {
     private final float r, g, b, a;
 
     public ColorTransformer(int color, BakedQuad quad) {
-      super(new BakedQuadBuilder(quad.func_187508_a()));
+      super(new BakedQuadBuilder(quad.getSprite()));
 
       int a = (color >> 24);
       if (a == 0) {
