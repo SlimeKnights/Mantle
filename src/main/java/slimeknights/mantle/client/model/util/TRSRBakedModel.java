@@ -80,7 +80,7 @@ public class TRSRBakedModel extends DynamicBakedWrapper<IBakedModel> {
           side = Direction.byHorizontalIndex((side.getHorizontalIndex() + this.faceOffset) % 4);
         }
         for (BakedQuad quad : this.originalModel.getQuads(state, side, rand, data)) {
-          Transformer transformer = new Transformer(this.transformation, quad.func_187508_a());
+          Transformer transformer = new Transformer(this.transformation, quad.getSprite());
           quad.pipe(transformer);
           builder.add(transformer.build());
         }
@@ -108,8 +108,8 @@ public class TRSRBakedModel extends DynamicBakedWrapper<IBakedModel> {
 
     @Nullable
     @Override
-    public IBakedModel func_239290_a_(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-      IBakedModel baked = this.model.originalModel.getOverrides().func_239290_a_(originalModel, stack, world, entity);
+    public IBakedModel getOverrideModel(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+      IBakedModel baked = this.model.originalModel.getOverrides().getOverrideModel(originalModel, stack, world, entity);
       if (baked == null) {
         return null;
       }

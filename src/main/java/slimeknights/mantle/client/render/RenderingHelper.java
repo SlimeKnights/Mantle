@@ -140,7 +140,7 @@ public class RenderingHelper {
     // get largest width
     int tooltipWidth = 0;
     for(ITextProperties processor : textLines) {
-      int width = font.func_238414_a_(processor);
+      int width = font.getStringPropertyWidth(processor);
       if (width > tooltipWidth) {
         tooltipWidth = width;
       }
@@ -173,7 +173,7 @@ public class RenderingHelper {
       List<IReorderingProcessor> wrappedTextLines = new ArrayList<>();
       for (int i = 0; i < textLines.size(); i++) {
         ITextProperties textLine = textLines.get(i);
-        List<IReorderingProcessor> wrappedLine = font.func_238425_b_(textLine, tooltipWidth);
+        List<IReorderingProcessor> wrappedLine = font.trimStringToWidth(textLine, tooltipWidth);
         if (i == 0)
           titleLinesCount = wrappedLine.size();
         for (IReorderingProcessor line : wrappedLine) {

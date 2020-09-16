@@ -102,7 +102,7 @@ public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Con
    * Callback to draw hovering tooltips
    */
   public void handleRenderHoveredTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
-    this.func_230459_a_(matrixStack, mouseX, mouseY);
+    this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
   }
 
   /**

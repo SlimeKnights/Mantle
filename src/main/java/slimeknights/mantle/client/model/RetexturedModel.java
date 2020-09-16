@@ -255,7 +255,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
 
     @Nullable
     @Override
-    public IBakedModel func_239290_a_(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+    public IBakedModel getOverrideModel(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
       if (stack.isEmpty() || !stack.hasTag()) {
         return originalModel;
       }
