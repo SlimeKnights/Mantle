@@ -53,13 +53,18 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
+  public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
     if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
       return this.itemHandlerCap.cast();
     }
     return super.getCapability(capability, facing);
+  }
+
+  @Override
+  protected void invalidateCaps() {
+    super.invalidateCaps();
+    this.itemHandlerCap.invalidate();
   }
 
   public IItemHandlerModifiable getItemHandler() {
