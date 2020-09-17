@@ -16,6 +16,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -241,7 +242,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
 
     this.readInventoryFromNBT(tags);
 
-    if (tags.contains("CustomName", 8)) {
+    if (tags.contains("CustomName", NBT.TAG_STRING)) {
       this.inventoryTitle = ITextComponent.Serializer.getComponentFromJson(tags.getString("CustomName"));
     }
   }
@@ -249,15 +250,23 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   @Override
   public CompoundNBT write(CompoundNBT tags) {
     super.write(tags);
-
     tags.putInt("InventorySize", this.inventory.size());
-
     this.writeInventoryToNBT(tags);
-
     if (this.hasCustomName()) {
       tags.putString("CustomName", ITextComponent.Serializer.toJson(this.inventoryTitle));
     }
     return tags;
+  }
+
+  @Override
+  public CompoundNBT getUpdateTag() {
+    // include inventory size and custom name in the data synced to client
+    CompoundNBT nbt = super.getUpdateTag();
+    nbt.putInt("InventorySize", this.getSizeInventory());
+    if (this.hasCustomName()) {
+      nbt.putString("CustomName", ITextComponent.Serializer.toJson(this.inventoryTitle));
+    }
+    return nbt;
   }
 
   /**
@@ -283,7 +292,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
    * Reads a an inventory from the tag. Overwrites current content
    */
   public void readInventoryFromNBT(CompoundNBT tag) {
-    ListNBT nbttaglist = tag.getList("Items", 10);
+    ListNBT nbttaglist = tag.getList("Items", NBT.TAG_COMPOUND);
 
     int limit = this.getInventoryStackLimit();
     ItemStack stack;
