@@ -344,7 +344,7 @@ public abstract class FluidIngredient {
      */
     private static TagMatch deserialize(JsonObject json) {
       String tagName = JSONUtils.getString(json, "tag");
-      ITag<Fluid> tag = FluidTags.getCollection().get(new ResourceLocation(tagName));
+      ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(new ResourceLocation(tagName));
       if (tag == null) {
         throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
       }
