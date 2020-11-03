@@ -82,6 +82,16 @@ if (System.getenv().ARTIFACT_VERSION != null) {
 
 version = "${minecraft_version}-${artifact_version}"
 
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/generated/resources"
+            //But exclude the cache of the generated data from what gets built
+            exclude '.cache'
+        }
+    }
+}
+
 minecraft {
     mappings channel: 'snapshot', version: mappings_version
 
