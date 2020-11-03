@@ -153,20 +153,51 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-1.16.2:${jei_version}")
 }
 
-processResources {
-    inputs.property "version", artifact_version
-    inputs.property "MCversion", minecraft_version
-
-    from(sourceSets.main.resources.srcDirs) {
+def modsTomlSpec = copySpec{
+    from(sourceSets.main.resources) {
         include 'META-INF/mods.toml'
-
-        expand 'version': artifact_version, 'minecraft_version_min': minecraft_version_min, 'minecraft_version_max': minecraft_version_max, 'forge_version_min': forge_version_min, 'forge_version_max': forge_version_max, 'javafml_min': javafml_min, 'javafml_max': javafml_max
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
+        expand 'version': artifact_version,
+                'minecraft_version_min': minecraft_version_min,
+                'minecraft_version_max': minecraft_version_max,
+                'forge_version_min': forge_version_min,
+                'forge_version_max': forge_version_max,
+                'javafml_min': javafml_min,
+                'javafml_max': javafml_max,
+                'MCversion': minecraft_version
     }
 }
+
+// need to copy into each build directory, unfortunately does not seem easy to do this automatically
+def buildPaths = [
+        "$rootDir/out/production/resources", // IDEA
+        "$rootDir/bin", // Eclipse
+]
+
+// task to add mods.toml to all relevant folders
+task replaceResources {
+    // copy for gradle
+    copy {
+        outputs.upToDateWhen { false }
+        with modsTomlSpec
+        into processResources.destinationDir
+    }
+    // copy for IDEs
+    buildPaths.each { path ->
+        if (new File(path).exists()) {
+            copy {
+                outputs.upToDateWhen { false }
+                with modsTomlSpec
+                into path
+            }
+        }
+    }
+}
+
+processResources {
+    exclude 'META-INF/mods.toml'
+    finalizedBy replaceResources
+}
+
 
 jar {
     manifest {
