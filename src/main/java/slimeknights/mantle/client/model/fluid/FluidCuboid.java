@@ -36,8 +36,8 @@ public class FluidCuboid {
   @Getter
   private final Vector3f to;
   /** Block faces for the fluid */
-  @Getter(value = AccessLevel.PROTECTED)
-  private Map<Direction, FluidFace> faces;
+  @Getter(value = AccessLevel.PUBLIC)
+  private final Map<Direction, FluidFace> faces;
 
   /** Cache for scaled from */
   @Nullable
