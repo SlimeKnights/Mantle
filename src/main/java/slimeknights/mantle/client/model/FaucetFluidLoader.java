@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.block.Block;
@@ -24,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.IWorld;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.fluid.FluidCuboid;
@@ -92,7 +94,11 @@ public class FaucetFluidLoader extends JsonReloadListener {
       Mantle.logger.warn("Found no default fluid model, this is likely a problem with the resource pack");
       defaultFluid = FaucetFluid.EMPTY;
     } else {
-      defaultFluid = FaucetFluid.parseDefault(def.getAsJsonObject());
+      try {
+        defaultFluid = FaucetFluid.parseDefault(def.getAsJsonObject());
+      } catch (Exception exception) {
+        Mantle.logger.error("Failed to load default faucet fluid model {}", DEFAULT_NAME, exception);
+      }
     }
 
     // parse remaining models
@@ -108,10 +114,10 @@ public class FaucetFluidLoader extends JsonReloadListener {
         continue;
       }
 
-      JsonObject json = JSONUtils.getJsonObject(entry.getValue(), "");
-      JsonObject variants = JSONUtils.getJsonObject(json, "variants");
       try {
         // all others are block
+        JsonObject json = JSONUtils.getJsonObject(entry.getValue(), "");
+        JsonObject variants = JSONUtils.getJsonObject(json, "variants");
         Block block = ForgeRegistries.BLOCKS.getValue(location);
         if(block != null && block != Blocks.AIR) {
           StateContainer<Block,BlockState> container = block.getStateContainer();
