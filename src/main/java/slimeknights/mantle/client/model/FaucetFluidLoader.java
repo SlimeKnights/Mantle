@@ -55,10 +55,18 @@ public class FaucetFluidLoader extends JsonReloadListener {
   /** Map of fluids */
   private final Map<BlockState,FaucetFluid> fluidMap = new HashMap<>();
 
+  /** Used to prevent being initialized multiple times */
+  private static boolean initialized = false;
+
   /**
    * Call during mod constructor to enable the faucet fluid loader system
    */
   public static void initialize() {
+    if (initialized) {
+      return;
+    }
+    initialized = true;
+
     Minecraft mc = Minecraft.getInstance();
     //noinspection ConstantConditions
     if (mc != null) {
