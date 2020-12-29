@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -41,6 +42,18 @@ public class FluidRenderer {
    */
   public static TextureAtlasSprite getBlockSprite(ResourceLocation sprite) {
     return Minecraft.getInstance().getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).getSprite(sprite);
+  }
+
+  /**
+   * Takes the larger light value between combinedLight and the passed block light
+   * @param combinedLight  Sky light/block light lightmap value
+   * @param blockLight     New 0-15 block light value
+   * @return  Updated packed light including the new light value
+   */
+  public static int withBlockLight(int combinedLight, int blockLight) {
+    // skylight from the combined plus larger block light between combined and parameter
+    // not using methods from LightTexture to reduce number of operations
+    return (combinedLight & 0xFFFF0000) | Math.max(blockLight << 4, combinedLight & 0xFFFF);
   }
 
   /* Fluid cuboids */
@@ -134,8 +147,8 @@ public class FluidRenderer {
         break;
     }
     // add quads
-    int light1 = brightness >> 0x10 & 0xFFFF;
-    int light2 = brightness & 0xFFFF;
+    int light1 = brightness & 0xFFFF;
+    int light2 = brightness >> 0x10 & 0xFFFF;
     int a = color >> 24 & 0xFF;
     int r = color >> 16 & 0xFF;
     int g = color >> 8 & 0xFF;
@@ -224,6 +237,7 @@ public class FluidRenderer {
     TextureAtlasSprite still = getBlockSprite(attributes.getStillTexture(fluid));
     TextureAtlasSprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
     int color = attributes.getColor(fluid);
+    light = withBlockLight(light,attributes.getLuminosity(fluid));
     boolean isGas = attributes.isGaseous(fluid);
 
     // render all given cuboids
@@ -277,6 +291,7 @@ public class FluidRenderer {
     TextureAtlasSprite still = getBlockSprite(attributes.getStillTexture(fluid));
     TextureAtlasSprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
     boolean isGas = attributes.isGaseous(fluid);
+    light = withBlockLight(light,attributes.getLuminosity(fluid));
 
     // determine height based on fluid amount
     Vector3f from = cube.getFromScaled();
