@@ -49,7 +49,7 @@ public class InventoryModel implements IModelGeometry<InventoryModel> {
   public static class BakedModel extends BakedModelWrapper<IBakedModel> {
     @Getter
     private final List<ModelItem> items;
-    protected BakedModel(IBakedModel originalModel, List<ModelItem> items) {
+    public BakedModel(IBakedModel originalModel, List<ModelItem> items) {
       super(originalModel);
       this.items = items;
     }

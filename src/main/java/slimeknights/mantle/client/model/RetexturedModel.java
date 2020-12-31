@@ -158,7 +158,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     /** List of texture names that are retextured */
     private final Set<String> retextured;
 
-    protected BakedModel(IBakedModel baked, IModelConfiguration owner, SimpleBlockModel model, IModelTransform transform, Set<String> retextured) {
+    public BakedModel(IBakedModel baked, IModelConfiguration owner, SimpleBlockModel model, IModelTransform transform, Set<String> retextured) {
       super(baked);
       this.model = model;
       this.owner = owner;

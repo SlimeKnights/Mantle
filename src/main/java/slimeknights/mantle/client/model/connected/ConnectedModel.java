@@ -143,7 +143,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     private final IBakedModel[] cache = new IBakedModel[64];
     private final Map<String,String> nameMappingCache = new HashMap<>();
     private final ModelTextureIteratable modelTextures;
-    protected BakedModel(ConnectedModel parent, IModelConfiguration owner, IModelTransform transforms, IBakedModel baked) {
+    public BakedModel(ConnectedModel parent, IModelConfiguration owner, IModelTransform transforms, IBakedModel baked) {
       super(baked);
       this.parent = parent;
       this.owner = owner;

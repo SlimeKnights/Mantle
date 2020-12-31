@@ -49,7 +49,7 @@ public class FluidsModel implements IModelGeometry<FluidsModel> {
   public static class BakedModel extends BakedModelWrapper<IBakedModel> {
     @Getter
     private final List<FluidCuboid> fluids;
-    private BakedModel(IBakedModel originalModel, List<FluidCuboid> fluids) {
+    public BakedModel(IBakedModel originalModel, List<FluidCuboid> fluids) {
       super(originalModel);
       this.fluids = fluids;
     }
