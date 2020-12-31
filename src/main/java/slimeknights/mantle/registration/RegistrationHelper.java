@@ -2,9 +2,13 @@ package slimeknights.mantle.registration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraftforge.event.RegistryEvent.MissingMappings;
+import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 
+import javax.annotation.Nullable;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -29,5 +33,22 @@ public class RegistrationHelper {
   @SuppressWarnings("unchecked")
   public static <I extends IForgeRegistryEntry<? super I>> Supplier<I> castDelegate(IRegistryDelegate<? super I> delegate) {
     return () -> (I) delegate.get();
+  }
+
+  /**
+   * Handles missing mappings for the given registry
+   * @param event    Mappings event
+   * @param handler  Mapping handler
+   * @param <T>      Event type
+   */
+  public static <T extends IForgeRegistryEntry<T>> void handleMissingMappings(MissingMappings<T> event, String modID, Function<String, T> handler) {
+    for (Mapping<T> mapping : event.getAllMappings()) {
+      if (modID.equals(mapping.key.getNamespace())) {
+        @Nullable T value = handler.apply(mapping.key.getPath());
+        if (value != null) {
+          mapping.remap(value);
+        }
+      }
+    }
   }
 }
