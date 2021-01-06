@@ -203,11 +203,15 @@ public class TextDataRenderer {
 
       if (s.charAt(i) == '\n' || (curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
         int oldI = i;
-        while (i >= 0 && s.charAt(i) != ' ') {
-          i--;
-        }
-        if (i <= 0) {
-          i = oldI;
+        if(s.charAt(i) != '\n') {
+          while (i >= 0 && s.charAt(i) != ' ') {
+            i--;
+          }
+          if (i <= 0) {
+            i = oldI;
+          }
+        } else {
+          oldI++;
         }
 
         s = s.substring(0, i) + "\r" + StringUtils.stripStart(s.substring(i + (i == oldI ? 0 : 1)), " ");

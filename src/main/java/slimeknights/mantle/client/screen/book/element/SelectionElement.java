@@ -7,8 +7,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.book.data.element.TextData;
+import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SelectionElement extends SizedBookElement {
@@ -55,13 +58,20 @@ public class SelectionElement extends SizedBookElement {
     this.iconRenderer.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);
 
     if (this.section.parent.appearance.drawSectionListText) {
-      int textW = fontRenderer.getStringWidth(this.section.getTitle());
-      int textX = this.x + WIDTH / 2 - textW / 2;
-      int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2;
-      fontRenderer.drawString(matrixStack, this.section.getTitle(),
-        textX,
-        textY,
-        hover ? 0xFF000000 : 0x7F000000);
+      String title = this.section.getTitle().replace("\\n", "\n");
+      String[] splitTitle = TextDataRenderer.cropStringBySize(title, "", WIDTH + 2,
+              fontRenderer.FONT_HEIGHT * 2 + 1, fontRenderer, 1F);
+
+      for(int i = 0; i < splitTitle.length; i++) {
+        int textW = fontRenderer.getStringWidth(splitTitle[i]);
+        int textX = this.x + WIDTH / 2 - textW / 2;
+        int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2 + fontRenderer.FONT_HEIGHT * i;
+
+        fontRenderer.drawString(matrixStack, splitTitle[i],
+                textX,
+                textY,
+                hover ? 0xFF000000 : 0x7F000000);
+      }
     }
   }
 
