@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -111,7 +109,7 @@ public abstract class FluidIngredient {
    * @param amount  Minimum fluid amount
    * @return  Fluid ingredient from a tag
    */
-  public static FluidIngredient of(Tag<Fluid> fluid, int amount) {
+  public static FluidIngredient of(ITag<Fluid> fluid, int amount) {
     return new FluidIngredient.TagMatch(fluid, amount);
   }
 
