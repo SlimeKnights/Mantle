@@ -26,11 +26,12 @@ import slimeknights.mantle.util.ItemStackList;
 import javax.annotation.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
-public abstract class InventoryTileEntity extends MantleTileEntity implements IInventory, INamedContainerProvider, INameable {
+public abstract class InventoryTileEntity extends NamableTileEntity implements IInventory, INamedContainerProvider, INameable {
+  private static final String TAG_INVENTORY_SIZE = "InventorySize";
+  private static final String TAG_ITEMS = "Items";
+  private static final String TAG_SLOT = "Slot";
 
   private NonNullList<ItemStack> inventory;
-  protected ITextComponent inventoryTitle;
-  protected boolean hasCustomName;
   protected int stackSizeLimit;
   protected IItemHandlerModifiable itemHandler;
   protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
@@ -46,10 +47,9 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
   public InventoryTileEntity(TileEntityType<?> tileEntityTypeIn, ITextComponent name, int inventorySize, int maxStackSize) {
-    super(tileEntityTypeIn);
+    super(tileEntityTypeIn, name);
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
-    this.inventoryTitle = name;
     this.itemHandler = new InvWrapper(this);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
   }
@@ -188,35 +188,6 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     }
   }
 
-  @Override
-  public ITextComponent getName() {
-    return this.inventoryTitle;
-  }
-
-  @Override
-  public boolean hasCustomName() {
-    return this.getCustomName() != null;
-  }
-
-  public void setCustomName(ITextComponent customName) {
-    this.inventoryTitle = customName;
-  }
-
-  @Nullable
-  @Override
-  public ITextComponent getCustomName() {
-    return this.inventoryTitle;
-  }
-
-  @Override
-  public ITextComponent getDisplayName() {
-    if (this.hasCustomName()) {
-      return new StringTextComponent(this.getName().getString());
-    }
-
-    return new TranslationTextComponent(this.getName().getString());
-  }
-
   /* Supporting methods */
   @Override
   public boolean isUsableByPlayer(PlayerEntity entityplayer) {
@@ -238,35 +209,23 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   @Override
   public void read(BlockState blockState, CompoundNBT tags) {
     super.read(blockState, tags);
-    this.resizeInternal(tags.getInt("InventorySize"));
+    this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
 
     this.readInventoryFromNBT(tags);
+  }
 
-    if (tags.contains("CustomName", NBT.TAG_STRING)) {
-      this.inventoryTitle = ITextComponent.Serializer.getComponentFromJson(tags.getString("CustomName"));
-    }
+  @Override
+  public void writeSynced(CompoundNBT tags) {
+    super.writeSynced(tags);
+    // only sync the size to the client by default
+    tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
   }
   
   @Override
   public CompoundNBT write(CompoundNBT tags) {
     super.write(tags);
-    tags.putInt("InventorySize", this.inventory.size());
     this.writeInventoryToNBT(tags);
-    if (this.hasCustomName()) {
-      tags.putString("CustomName", ITextComponent.Serializer.toJson(this.inventoryTitle));
-    }
     return tags;
-  }
-
-  @Override
-  public CompoundNBT getUpdateTag() {
-    // include inventory size and custom name in the data synced to client
-    CompoundNBT nbt = super.getUpdateTag();
-    nbt.putInt("InventorySize", this.getSizeInventory());
-    if (this.hasCustomName()) {
-      nbt.putString("CustomName", ITextComponent.Serializer.toJson(this.inventoryTitle));
-    }
-    return nbt;
   }
 
   /**
@@ -279,26 +238,26 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
     for (int i = 0; i < inventory.getSizeInventory(); i++) {
       if (!inventory.getStackInSlot(i).isEmpty()) {
         CompoundNBT itemTag = new CompoundNBT();
-        itemTag.putByte("Slot", (byte) i);
+        itemTag.putByte(TAG_SLOT, (byte) i);
         inventory.getStackInSlot(i).write(itemTag);
         nbttaglist.add(itemTag);
       }
     }
 
-    tag.put("Items", nbttaglist);
+    tag.put(TAG_ITEMS, nbttaglist);
   }
 
   /**
    * Reads a an inventory from the tag. Overwrites current content
    */
   public void readInventoryFromNBT(CompoundNBT tag) {
-    ListNBT nbttaglist = tag.getList("Items", NBT.TAG_COMPOUND);
+    ListNBT nbttaglist = tag.getList(TAG_ITEMS, NBT.TAG_COMPOUND);
 
     int limit = this.getInventoryStackLimit();
     ItemStack stack;
     for (int i = 0; i < nbttaglist.size(); ++i) {
       CompoundNBT itemTag = nbttaglist.getCompound(i);
-      int slot = itemTag.getByte("Slot") & 255;
+      int slot = itemTag.getByte(TAG_SLOT) & 255;
       if (slot < this.inventory.size()) {
         stack = ItemStack.read(itemTag);
         if (!stack.isEmpty() && stack.getCount() > limit) {
@@ -310,6 +269,7 @@ public abstract class InventoryTileEntity extends MantleTileEntity implements II
   }
 
   /* Default implementations of hardly used methods */
+  @Deprecated
   public ItemStack getStackInSlotOnClosing(int slot) {
     return ItemStack.EMPTY;
   }
