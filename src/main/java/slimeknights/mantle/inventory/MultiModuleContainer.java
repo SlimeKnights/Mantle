@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MultiModuleContainer<TILE extends TileEntity & IInventory> extends BaseContainer<TILE> {
+// TODO: cleanup
+public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer<TILE> {
 
   public List<Container> subContainers = Lists.newArrayList();
 
