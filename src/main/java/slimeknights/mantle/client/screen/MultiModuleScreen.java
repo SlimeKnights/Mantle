@@ -90,7 +90,11 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     this.drawPlayerInventoryName(matrixStack);
 
     for (ModuleScreen<?,?> module : this.modules) {
+      // set correct state for the module
+      matrixStack.push();
+      matrixStack.translate(module.guiLeft - this.guiLeft, module.guiTop - this.guiTop, 0.0F);
       module.handleDrawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
+      matrixStack.pop();
     }
   }
 
