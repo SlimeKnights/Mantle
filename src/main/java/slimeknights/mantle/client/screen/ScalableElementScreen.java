@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+// TODO: class needs some rewrites
 @OnlyIn(Dist.CLIENT)
 public class ScalableElementScreen extends ElementScreen {
 
@@ -37,6 +38,25 @@ public class ScalableElementScreen extends ElementScreen {
     int remainder = height % this.h;
     if (remainder > 0) {
       Screen.blit(matrixStack, xPos, yPos + height - remainder, this.x, this.y, this.w, remainder, this.texW, this.texH);
+    }
+
+    return this.w;
+  }
+
+  /**
+   * Draws this shape scaling upwards instead of downwards
+   * @param matrixStack  Matrix stack instance
+   * @param xPos         X position of top of image
+   * @param yPos         Y position of top of image
+   * @param height       Height to draw
+   * @return  Width for some reason
+   */
+  public int drawScaledYUp(MatrixStack matrixStack, int xPos, int yPos, int height) {
+    // remainder that doesn't fit total height
+    int remainder = height % this.h;
+    int offset = this.h - remainder;
+    if (remainder > 0) {
+      Screen.blit(matrixStack, xPos, yPos + offset, this.x, this.y + offset, this.w, remainder, this.texW, this.texH);
     }
 
     return this.w;
