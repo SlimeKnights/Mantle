@@ -93,10 +93,23 @@ public class FluidRenderer {
     }
 
     // wrap UV to be between 0 and 1, assumes none of the positions lie outside the 0,0,0 to 1,1,1 range
+    // however, one of them might be exactly on the 1.0 bound, that one should be set to 1 instead of left at 0
+    boolean bigger = u1 > u2;
     u1 = u1 % 1;
     u2 = u2 % 1;
+    if (bigger) {
+      if (u1 == 0) u1 = 1;
+    } else {
+      if (u2 == 0) u2 = 1;
+    }
+    bigger = v1 > v2;
     v1 = v1 % 1;
     v2 = v2 % 1;
+    if (bigger) {
+      if (v1 == 0) v1 = 1;
+    } else {
+      if (v2 == 0) v2 = 1;
+    }
 
     // flip V when relevant
     if (rotation == 0 || rotation == 270) {
