@@ -91,6 +91,13 @@ public class FluidRenderer {
         v1 = y1; v2 = y2;
         break;
     }
+
+    // wrap UV to be between 0 and 1, assumes none of the positions lie outside the 0,0,0 to 1,1,1 range
+    u1 = u1 % 1;
+    u2 = u2 % 1;
+    v1 = v1 % 1;
+    v2 = v2 % 1;
+
     // flip V when relevant
     if (rotation == 0 || rotation == 270) {
       float temp = v1;
