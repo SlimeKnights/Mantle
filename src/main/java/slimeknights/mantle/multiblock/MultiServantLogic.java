@@ -14,6 +14,10 @@ import slimeknights.mantle.tileentity.MantleTileEntity;
 
 import java.util.Objects;
 
+/**
+ * @deprecated  Slated for removal in 1.17. If you used this, talk to one of the devs and we can pull the updated verson from Tinkers Construct back
+ */
+@Deprecated
 public class MultiServantLogic extends MantleTileEntity implements IServantLogic {
 
   boolean hasMaster;
