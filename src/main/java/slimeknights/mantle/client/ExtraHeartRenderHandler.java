@@ -21,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.config.Config;
 
 import java.util.Random;
 
@@ -65,7 +66,8 @@ public class ExtraHeartRenderHandler {
   @SubscribeEvent(priority = EventPriority.LOW)
   public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
     Entity renderViewEnity = this.mc.getRenderViewEntity();
-    if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled() || !(renderViewEnity instanceof PlayerEntity)) {
+    if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()
+        || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof PlayerEntity)) {
       return;
     }
 
