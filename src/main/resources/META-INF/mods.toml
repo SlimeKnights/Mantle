@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${javafml_min},${javafml_max})"
+loaderVersion="${loader_range}"
 issueTrackerURL="https://github.com/SlimeKnights/Mantle/issues"
 logoFile="Mantle.png"
 license="MIT"
@@ -17,13 +17,13 @@ Shared code for Slime Knights mods and others.
 [[dependencies.mantle]]
     modId="forge"
     mandatory=true
-    versionRange="[${forge_version_min},${forge_version_max})"
+    versionRange="${forge_range}"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.mantle]]
     modId="minecraft"
     mandatory=true
-    versionRange="[${minecraft_version_min},${minecraft_version_max})"
+    versionRange="${minecraft_range}"
     ordering="NONE"
     side="BOTH"
