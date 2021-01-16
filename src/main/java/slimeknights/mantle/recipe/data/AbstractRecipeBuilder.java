@@ -125,7 +125,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   protected abstract class AbstractFinishedRecipe implements IFinishedRecipe {
     @Getter
     private final ResourceLocation ID;
-    @Getter
+    @Getter @Nullable
     private final ResourceLocation advancementID;
 
     @Nullable
