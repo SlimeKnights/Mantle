@@ -17,15 +17,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
 
 import java.util.Random;
 
+import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HEALTH;
+
 @OnlyIn(Dist.CLIENT)
 public class ExtraHeartRenderHandler {
-
   private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
   private static final ResourceLocation ICON_ABSORB = new ResourceLocation(Mantle.modId, "textures/gui/absorb.png");
   private static final ResourceLocation ICON_VANILLA = AbstractGui.GUI_ICONS_LOCATION;
@@ -36,35 +38,41 @@ public class ExtraHeartRenderHandler {
   private int lastPlayerHealth = 0;
   private long healthUpdateCounter = 0;
   private long lastSystemTime = 0;
-  private Random rand = new Random();
+  private final Random rand = new Random();
 
-  private int height;
-  private int width;
   private int regen;
 
-  private static int left_height = 39;
-
-  public void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
+  /**
+   * Draws a texture to the screen
+   * @param matrixStack  Matrix stack instance
+   * @param x            X position
+   * @param y            Y position
+   * @param textureX     Texture X
+   * @param textureY     Texture Y
+   * @param width        Width to draw
+   * @param height       Height to draw
+   */
+  private void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
     Minecraft.getInstance().ingameGUI.blit(matrixStack, x, y, textureX, textureY, width, height);
   }
 
   /* HUD */
+
+  /**
+   * Event listener
+   * @param event  Event instance
+   */
   @SubscribeEvent(priority = EventPriority.LOW)
   public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
     Entity renderViewEnity = this.mc.getRenderViewEntity();
-    if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH
-            || event.isCanceled()
-            || !(renderViewEnity instanceof PlayerEntity)) {
+    if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled() || !(renderViewEnity instanceof PlayerEntity)) {
       return;
     }
-    PlayerEntity player = (PlayerEntity) this.mc.getRenderViewEntity();
-    MatrixStack matrixStack = event.getMatrixStack();
 
     // extra setup stuff from us
-    left_height = ForgeIngameGui.left_height;
-    this.width = this.mc.getMainWindow().getScaledWidth();
-    this.height = this.mc.getMainWindow().getScaledHeight();
-    event.setCanceled(true);
+    int left_height = ForgeIngameGui.left_height;
+    int width = this.mc.getMainWindow().getScaledWidth();
+    int height = this.mc.getMainWindow().getScaledHeight();
     int updateCounter = this.mc.ingameGUI.getTicks();
 
     // start default forge/mc rendering
@@ -72,16 +80,17 @@ public class ExtraHeartRenderHandler {
     this.mc.getProfiler().startSection("health");
     RenderSystem.enableBlend();
 
+    PlayerEntity player = (PlayerEntity) renderViewEnity;
     int health = MathHelper.ceil(player.getHealth());
     boolean highlight = this.healthUpdateCounter > (long) updateCounter && (this.healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
 
     if (health < this.playerHealth && player.hurtResistantTime > 0) {
       this.lastSystemTime = Util.milliTime();
-      this.healthUpdateCounter = (long) (updateCounter + 20);
+      this.healthUpdateCounter = (updateCounter + 20);
     }
     else if (health > this.playerHealth && player.hurtResistantTime > 0) {
       this.lastSystemTime = Util.milliTime();
-      this.healthUpdateCounter = (long) (updateCounter + 10);
+      this.healthUpdateCounter = (updateCounter + 10);
     }
 
     if (Util.milliTime() - this.lastSystemTime > 1000L) {
@@ -94,7 +103,7 @@ public class ExtraHeartRenderHandler {
     int healthLast = this.lastPlayerHealth;
 
     ModifiableAttributeInstance attrMaxHealth = player.getAttribute(Attributes.MAX_HEALTH);
-    float healthMax = (float) attrMaxHealth.getValue();
+    float healthMax = attrMaxHealth == null ? 0 : (float) attrMaxHealth.getValue();
     float absorb = MathHelper.ceil(player.getAbsorptionAmount());
 
     // CHANGE: simulate 10 hearts max if there's more, so vanilla only renders one row max
@@ -105,43 +114,35 @@ public class ExtraHeartRenderHandler {
     int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
     int rowHeight = Math.max(10 - (healthRows - 2), 3);
 
-    this.rand.setSeed((long) (updateCounter * 312871));
+    this.rand.setSeed(updateCounter * 312871);
 
-    int left = this.width / 2 - 91;
-    int top = this.height - left_height;
-    left_height += (healthRows * rowHeight);
-    if (rowHeight != 10) {
-      left_height += 10 - rowHeight;
-    }
+    int left = width / 2 - 91;
+    int top = height - left_height;
+    // change: these are unused below, unneeded? should these adjust the Forge variable?
+    //left_height += (healthRows * rowHeight);
+    //if (rowHeight != 10) left_height += 10 - rowHeight;
 
     this.regen = -1;
     if (player.isPotionActive(Effects.REGENERATION)) {
       this.regen = updateCounter % 25;
     }
 
+    assert this.mc.world != null;
     final int TOP = 9 * (this.mc.world.getWorldInfo().isHardcore() ? 5 : 0);
     final int BACKGROUND = (highlight ? 25 : 16);
     int MARGIN = 16;
-    if (player.isPotionActive(Effects.POISON)) {
-      MARGIN += 36;
-    }
-    else if (player.isPotionActive(Effects.WITHER)) {
-      MARGIN += 72;
-    }
+    if      (player.isPotionActive(Effects.POISON)) MARGIN += 36;
+    else if (player.isPotionActive(Effects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
+    MatrixStack matrixStack = event.getMatrixStack();
     for (int i = MathHelper.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i) {
-      //int b0 = (highlight ? 1 : 0);
       int row = MathHelper.ceil((float) (i + 1) / 10.0F) - 1;
       int x = left + i % 10 * 8;
       int y = top - row * rowHeight;
 
-      if (health <= 4) {
-        y += this.rand.nextInt(2);
-      }
-      if (i == this.regen) {
-        y -= 2;
-      }
+      if (health <= 4) y += this.rand.nextInt(2);
+      if (i == this.regen) y -= 2;
 
       this.blit(matrixStack, x, y, BACKGROUND, TOP, 9, 9);
 
@@ -184,21 +185,83 @@ public class ExtraHeartRenderHandler {
     }
 
     event.setCanceled(true);
-
     RenderSystem.disableBlend();
     this.mc.getProfiler().endSection();
+    MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(matrixStack, event, HEALTH));
   }
 
+  /**
+   * Gets the texture from potion effects
+   * @param player  Player instance
+   * @return  Texture offset for potion effects
+   */
+  private int getPotionOffset(PlayerEntity player) {
+    int potionOffset = 0;
+    EffectInstance potion = player.getActivePotionEffect(Effects.WITHER);
+    if (potion != null) {
+      potionOffset = 18;
+    }
+    potion = player.getActivePotionEffect(Effects.POISON);
+    if (potion != null) {
+      potionOffset = 9;
+    }
+    assert this.mc.world != null;
+    if (this.mc.world.getWorldInfo().isHardcore()) {
+      potionOffset += 27;
+    }
+    return potionOffset;
+  }
+
+  /**
+   * Renders the health above 10 hearts
+   * @param matrixStack  Matrix stack instance
+   * @param xBasePos     Health bar top corner
+   * @param yBasePos     Health bar top corner
+   * @param player       Player instance
+   */
   private void renderExtraHearts(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
     this.mc.getTextureManager().bindTexture(ICON_HEARTS);
-
     int hp = MathHelper.ceil(player.getHealth());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, hp, false);
   }
 
+  /**
+   * Renders the absorption health above 10 hearts
+   * @param matrixStack  Matrix stack instance
+   * @param xBasePos     Health bar top corner
+   * @param yBasePos     Health bar top corner
+   * @param player       Player instance
+   */
+  private void renderExtraAbsorption(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
+    int potionOffset = this.getPotionOffset(player);
+
+    // Extra hearts
+    this.mc.getTextureManager().bindTexture(ICON_ABSORB);
+    int absorb = MathHelper.ceil(player.getAbsorptionAmount());
+    this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, absorb, true);
+  }
+
+  /**
+   * Gets the texture offset from the regen effect
+   * @param i       Heart index
+   * @param offset  Current offset
+   */
+  private int getYRegenOffset(int i, int offset) {
+    return i + offset == this.regen ? -2 : 0;
+  }
+
+  /**
+   * Shared logic to render custom hearts
+   * @param matrixStack  Matrix stack instance
+   * @param xBasePos     Health bar top corner
+   * @param yBasePos     Health bar top corner
+   * @param potionOffset Offset from the potion effect
+   * @param count        Number to render
+   * @param absorb       If true, render absorption hearts
+   */
   private void renderCustomHearts(MatrixStack matrixStack, int xBasePos, int yBasePos, int potionOffset, int count, boolean absorb) {
     int regenOffset = absorb ? 10 : 0;
     for (int iter = 0; iter < count / 20; iter++) {
@@ -222,35 +285,5 @@ public class ExtraHeartRenderHandler {
         this.blit(matrixStack, xBasePos + 8 * renderHearts, yBasePos + y, 9 + 18 * heartIndex, potionOffset, 9, 9);
       }
     }
-  }
-
-  private int getYRegenOffset(int i, int offset) {
-    return i + offset == this.regen ? -2 : 0;
-  }
-
-  private int getPotionOffset(PlayerEntity player) {
-    int potionOffset = 0;
-    EffectInstance potion = player.getActivePotionEffect(Effects.WITHER);
-    if (potion != null) {
-      potionOffset = 18;
-    }
-    potion = player.getActivePotionEffect(Effects.POISON);
-    if (potion != null) {
-      potionOffset = 9;
-    }
-    if (this.mc.world.getWorldInfo().isHardcore()) {
-      potionOffset += 27;
-    }
-    return potionOffset;
-  }
-
-  private void renderExtraAbsorption(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
-    int potionOffset = this.getPotionOffset(player);
-
-    // Extra hearts
-    this.mc.getTextureManager().bindTexture(ICON_ABSORB);
-
-    int absorb = MathHelper.ceil(player.getAbsorptionAmount());
-    this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, absorb, true);
   }
 }
