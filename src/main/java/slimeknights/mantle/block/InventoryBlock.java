@@ -15,8 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import slimeknights.mantle.inventory.BaseContainer;
+import slimeknights.mantle.inventory.EmptyItemHandler;
+import slimeknights.mantle.tileentity.IRenamableContainerProvider;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import javax.annotation.Nullable;
@@ -87,8 +92,8 @@ public abstract class InventoryBlock extends Block {
     // set custom name from named stack
     if (stack.hasDisplayName()) {
       TileEntity tileentity = worldIn.getTileEntity(pos);
-      if (tileentity instanceof InventoryTileEntity) {
-        ((InventoryTileEntity) tileentity).setCustomName(stack.getDisplayName());
+      if (tileentity instanceof IRenamableContainerProvider) {
+        ((IRenamableContainerProvider) tileentity).setCustomName(stack.getDisplayName());
       }
     }
   }
@@ -110,9 +115,15 @@ public abstract class InventoryBlock extends Block {
   @Override
   public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity tileentity = worldIn.getTileEntity(pos);
-      if (tileentity instanceof InventoryTileEntity) {
-        dropInventoryItems(state, worldIn, pos, (InventoryTileEntity) tileentity);
+      TileEntity te = worldIn.getTileEntity(pos);
+      if (te != null) {
+        // FIXME legacy support, switch to non-deprecated method in 1.17
+        if (te instanceof InventoryTileEntity) {
+          dropInventoryItems(state, worldIn, pos, (InventoryTileEntity) te);
+        } else {
+          te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+            .ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
+        }
         worldIn.updateComparatorOutputLevel(pos, this);
       }
     }
@@ -126,9 +137,42 @@ public abstract class InventoryBlock extends Block {
    * @param worldIn     Tile world
    * @param pos         Tile position
    * @param inventory   Tile entity instance
+   * @deprecated  Will remove in 1.17, use {@link #dropInventoryItems(BlockState, World, BlockPos, IItemHandler)}
    */
+  @Deprecated
   protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, InventoryTileEntity inventory) {
-    InventoryHelper.dropInventoryItems(worldIn, pos, inventory);
+    LazyOptional<IItemHandler> itemCapability = inventory.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+    if (itemCapability.isPresent()) {
+      dropInventoryItems(state, worldIn, pos, itemCapability.orElse(EmptyItemHandler.INSTANCE));
+    } else {
+      InventoryHelper.dropInventoryItems(worldIn, pos, inventory);
+    }
+  }
+
+  /**
+   * Called when the block is replaced to drop contained items.
+   * @param state       Block state
+   * @param worldIn     Tile world
+   * @param pos         Tile position
+   * @param inventory   Item handler
+   */
+  protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, IItemHandler inventory) {
+    dropInventoryItems(worldIn, pos, inventory);
+  }
+
+  /**
+   * Drops all items from the given inventory in world
+   * @param world      World instance
+   * @param pos        Position to drop
+   * @param inventory  Inventory instance
+   */
+  public static void dropInventoryItems(World world, BlockPos pos, IItemHandler inventory) {
+    double x = pos.getX();
+    double y = pos.getY();
+    double z = pos.getZ();
+    for(int i = 0; i < inventory.getSlots(); ++i) {
+      InventoryHelper.spawnItemStack(world, x, y, z, inventory.getStackInSlot(i));
+    }
   }
 
   @SuppressWarnings("deprecation")
