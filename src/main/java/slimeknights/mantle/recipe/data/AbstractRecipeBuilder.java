@@ -9,6 +9,8 @@ import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -73,6 +75,21 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   public abstract void build(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id);
 
   /**
+   * Base logic for advancement building
+   * @param id      Recipe ID
+   * @param folder  Group folder for saving recipes. Vanilla typically uses item groups, but for mods might as well base on the recipe
+   * @return Advancement ID
+   */
+  private ResourceLocation buildAdvancementInternal(ResourceLocation id, String folder) {
+    this.advancementBuilder
+        .withParentId(new ResourceLocation("recipes/root"))
+        .withCriterion("has_the_recipe", RecipeUnlockedTrigger.create(id))
+        .withRewards(AdvancementRewards.Builder.recipe(id))
+        .withRequirementsStrategy(IRequirementsStrategy.OR);
+    return new ResourceLocation(id.getNamespace(), "recipes/" + folder + "/" + id.getPath());
+  }
+
+  /**
    * Builds and validates the advancement, intended to be called in {@link #build(Consumer, ResourceLocation)}
    * @param id      Recipe ID
    * @param folder  Group folder for saving recipes. Vanilla typically uses item groups, but for mods might as well base on the recipe
@@ -82,11 +99,20 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
     if (this.advancementBuilder.getCriteria().isEmpty()) {
       throw new IllegalStateException("No way of obtaining recipe " + id);
     }
-    this.advancementBuilder
-      .withParentId(new ResourceLocation("recipes/root"))
-      .withCriterion("has_the_recipe", RecipeUnlockedTrigger.create(id))
-      .withRewards(AdvancementRewards.Builder.recipe(id))
-      .withRequirementsStrategy(IRequirementsStrategy.OR);
-    return new ResourceLocation(id.getNamespace(), "recipes/" + folder + "/" + id.getPath());
+    return buildAdvancementInternal(id, folder);
+  }
+
+  /**
+   * Builds an optional advancement, intended to be called in {@link #build(Consumer, ResourceLocation)}
+   * @param id        Recipe ID
+   * @param folder    Group folder for saving recipes. Vanilla typically uses item groups, but for mods might as well base on the recipe
+   * @return Advancement ID, or null if the advancement was not defined
+   */
+  @Nullable
+  protected ResourceLocation buildOptionalAdvancement(ResourceLocation id, String folder) {
+    if (this.advancementBuilder.getCriteria().isEmpty()) {
+      return null;
+    }
+    return buildAdvancementInternal(id, folder);
   }
 }
