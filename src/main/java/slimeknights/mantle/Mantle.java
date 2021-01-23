@@ -37,6 +37,7 @@ public class Mantle {
   /* Proxies for sides, used for graphics processing */
   public Mantle() {
     ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
+    ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
 
     instance = this;
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
