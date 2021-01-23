@@ -13,8 +13,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.LazyOptional;
@@ -35,6 +33,9 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   protected int stackSizeLimit;
   protected IItemHandlerModifiable itemHandler;
   protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
+  /** @deprecated Use {@link #getName()}, {@link #getDefaultName()}, or {@link #getCustomName()} */
+  @Deprecated
+  protected ITextComponent inventoryTitle;
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
@@ -52,6 +53,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
     this.stackSizeLimit = maxStackSize;
     this.itemHandler = new InvWrapper(this);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
+    this.inventoryTitle = name;
   }
 
   @Override
@@ -188,6 +190,12 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
     }
   }
 
+  @Override
+  public void setCustomName(ITextComponent customName) {
+    super.setCustomName(customName);
+    this.inventoryTitle = customName;
+  }
+
   /* Supporting methods */
   @Override
   public boolean isUsableByPlayer(PlayerEntity entityplayer) {
@@ -210,8 +218,8 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   public void read(BlockState blockState, CompoundNBT tags) {
     super.read(blockState, tags);
     this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
-
     this.readInventoryFromNBT(tags);
+    this.inventoryTitle = getName();
   }
 
   @Override
