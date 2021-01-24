@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
-  private final DeferredRegister<Item> itemRegister;
+  protected final DeferredRegister<Item> itemRegister;
   public BlockDeferredRegister(String modID) {
     super(ForgeRegistries.BLOCKS, modID);
     this.itemRegister = DeferredRegister.create(ForgeRegistries.ITEMS, modID);
