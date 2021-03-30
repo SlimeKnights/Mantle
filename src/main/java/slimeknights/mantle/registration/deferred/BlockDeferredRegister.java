@@ -17,6 +17,7 @@ import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.ItemObject;
+import slimeknights.mantle.registration.object.MetalItemObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
 import java.util.function.Function;
@@ -200,5 +201,59 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
   public <T extends Enum<T> & IStringSerializable, B extends Block> EnumObject<T,B> registerEnum(
       String name, T[] values, Function<T,? extends B> mapper, Function<? super B, ? extends BlockItem> item) {
     return registerEnum(name, values, (fullName, value) -> register(fullName, () -> mapper.apply(value), item));
+  }
+
+  /**
+   * Creates a new metal item object
+   * @param name           Metal name
+   * @param tagName        Name to use for tags for this block
+   * @param blockSupplier  Supplier for the block
+   * @param blockItem      Block item
+   * @param itemProps      Properties for the item
+   * @return  Metal item object
+   */
+  public MetalItemObject registerMetal(String name, String tagName, Supplier<Block> blockSupplier, Function<Block,? extends BlockItem> blockItem, Item.Properties itemProps) {
+    ItemObject<Block> block = register(name + "_block", blockSupplier, blockItem);
+    Supplier<Item> itemSupplier = () -> new Item(itemProps);
+    RegistryObject<Item> ingot = itemRegister.register(name + "_ingot", itemSupplier);
+    RegistryObject<Item> nugget = itemRegister.register(name + "_nugget", itemSupplier);
+    return new MetalItemObject(tagName, block, ingot, nugget);
+  }
+
+  /**
+   * Creates a new metal item object
+   * @param name           Metal name
+   * @param blockSupplier  Supplier for the block
+   * @param blockItem      Block item
+   * @param itemProps      Properties for the item
+   * @return  Metal item object
+   */
+  public MetalItemObject registerMetal(String name, Supplier<Block> blockSupplier, Function<Block,? extends BlockItem> blockItem, Item.Properties itemProps) {
+    return registerMetal(name, name, blockSupplier, blockItem, itemProps);
+  }
+
+  /**
+   * Creates a new metal item object
+   * @param name        Metal name
+   * @param tagName     Name to use for tags for this block
+   * @param blockProps  Properties for the block
+   * @param blockItem   Block item
+   * @param itemProps   Properties for the item
+   * @return  Metal item object
+   */
+  public MetalItemObject registerMetal(String name, String tagName, AbstractBlock.Properties blockProps, Function<Block,? extends BlockItem> blockItem, Item.Properties itemProps) {
+    return registerMetal(name, tagName, () -> new Block(blockProps), blockItem, itemProps);
+  }
+
+  /**
+   * Creates a new metal item object
+   * @param name        Metal name
+   * @param blockProps  Properties for the block
+   * @param blockItem   Block item
+   * @param itemProps   Properties for the item
+   * @return  Metal item object
+   */
+  public MetalItemObject registerMetal(String name, AbstractBlock.Properties blockProps, Function<Block,? extends BlockItem> blockItem, Item.Properties itemProps) {
+    return registerMetal(name, name, blockProps, blockItem, itemProps);
   }
 }
