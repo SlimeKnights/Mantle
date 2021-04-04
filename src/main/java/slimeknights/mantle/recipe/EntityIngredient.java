@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 /**
  * Ingredient accepting an entity or an entity tag as an input
+ * TODO: move to ingredient package in 1.17
  */
 public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /** Empty entity ingredient, matching nothing */

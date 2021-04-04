@@ -2,6 +2,7 @@ package slimeknights.mantle;
 
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -16,6 +17,8 @@ import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
+import slimeknights.mantle.recipe.ingredient.IngredientWithout;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
 /**
@@ -54,6 +57,9 @@ public class Mantle {
     RegistryAdapter<IRecipeSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
     adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
     adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
+
+    CraftingHelper.register(IngredientWithout.ID, IngredientWithout.SERIALIZER);
+    CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
 
     // done here as no dedicated event
     MantleLoot.register();
