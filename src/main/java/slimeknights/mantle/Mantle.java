@@ -3,6 +3,7 @@ package slimeknights.mantle;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -13,7 +14,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.config.Config;
+import slimeknights.mantle.loot.AddEntryLootModifier;
 import slimeknights.mantle.loot.MantleLoot;
+import slimeknights.mantle.loot.ReplaceItemLootModifier;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
@@ -47,6 +50,7 @@ public class Mantle {
     bus.addListener(this::commonSetup);
     bus.addListener(Config::configChanged);
     bus.addGenericListener(IRecipeSerializer.class, this::registerRecipeSerializers);
+    bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
@@ -63,6 +67,12 @@ public class Mantle {
 
     // done here as no dedicated event
     MantleLoot.register();
+  }
+
+  private void registerGlobalLootModifiers(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
+    RegistryAdapter<GlobalLootModifierSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
+    adapter.register(new AddEntryLootModifier.Serializer(), "add_entry");
+    adapter.register(new ReplaceItemLootModifier.Serializer(), "replace_item");
   }
 
   /**
