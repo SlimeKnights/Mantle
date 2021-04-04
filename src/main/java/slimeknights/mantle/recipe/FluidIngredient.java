@@ -31,6 +31,9 @@ public abstract class FluidIngredient {
   /** Empty fluid ingredient, matches nothing */
   public static final FluidIngredient EMPTY = new Empty();
 
+  /** Cached list of display fluids */
+  private List<FluidStack> displayFluids;
+
   /**
    * Checks if the given fluid matches this ingredient
    * @param fluid  Fluid to check
@@ -59,7 +62,21 @@ public abstract class FluidIngredient {
    * Gets a list of fluid stacks contained in this ingredient for display
    * @return  List of fluid stacks for this ingredient
    */
-  public abstract List<FluidStack> getFluids();
+  public List<FluidStack> getFluids() {
+    if (displayFluids == null) {
+      displayFluids = getAllFluids().stream().filter(stack -> {
+        Fluid fluid = stack.getFluid();
+        return fluid.isSource(fluid.getDefaultState());
+      }).collect(Collectors.toList());
+    }
+    return displayFluids;
+  }
+
+  /**
+   * Gets a list of fluid stacks contained in this ingredient for display, may include flowing fluids
+   * @return  List of fluid stacks for this ingredient
+   */
+  protected abstract List<FluidStack> getAllFluids();
 
   /**
    * Serializes the Fluid Ingredient into JSON
@@ -72,7 +89,7 @@ public abstract class FluidIngredient {
    * @param buffer Packet buffer instance
    */
   public void write(PacketBuffer buffer) {
-    Collection<FluidStack> fluids = getFluids();
+    Collection<FluidStack> fluids = getAllFluids();
     buffer.writeInt(fluids.size());
     for (FluidStack stack : fluids) {
       buffer.writeString(Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
@@ -239,7 +256,7 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public List<FluidStack> getFluids() {
+    public List<FluidStack> getAllFluids() {
       return Collections.emptyList();
     }
 
@@ -268,7 +285,7 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public List<FluidStack> getFluids() {
+    public List<FluidStack> getAllFluids() {
       return Collections.singletonList(new FluidStack(fluid, amount));
     }
 
@@ -324,7 +341,7 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public List<FluidStack> getFluids() {
+    public List<FluidStack> getAllFluids() {
       return tag.getAllElements().stream().map((fluid) -> new FluidStack(fluid, amount)).collect(Collectors.toList());
     }
 
@@ -381,7 +398,7 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public List<FluidStack> getFluids() {
+    public List<FluidStack> getAllFluids() {
       return ingredients.stream()
                         .flatMap(ingredient -> ingredient.getFluids().stream())
                         .collect(Collectors.toList());
