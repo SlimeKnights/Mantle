@@ -1,6 +1,7 @@
 package slimeknights.mantle.registration.deferred;
 
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -34,6 +35,15 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
   }
 
   /* Utilities */
+
+  /**
+   * Gets a resource location object for the given name
+   * @param name  Name
+   * @return  Resource location string
+   */
+  protected ResourceLocation resource(String name) {
+    return new ResourceLocation(modID, name);
+  }
 
   /**
    * Gets a resource location string for the given name
