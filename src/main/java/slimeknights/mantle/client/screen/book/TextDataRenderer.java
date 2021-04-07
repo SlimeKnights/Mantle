@@ -73,7 +73,9 @@ public class TextDataRenderer {
 
       String modifiers = "";
 
-      modifiers += TextFormatting.getValueByName(item.color);
+      if(item.useOldColor) {
+        modifiers += TextFormatting.getValueByName(item.color);
+      }
 
       if (item.bold) {
         modifiers += TextFormatting.BOLD;
@@ -107,7 +109,7 @@ public class TextDataRenderer {
         }
 
         String s = split[i];
-        drawScaledString(matrixStack, fr, modifiers + s, atX, atY, 0, item.dropshadow, item.scale);
+        drawScaledString(matrixStack, fr, modifiers + s, atX, atY, item.rgbColor, item.dropshadow, item.scale);
 
         if (i < split.length - 1) {
           atY += fr.FONT_HEIGHT;
