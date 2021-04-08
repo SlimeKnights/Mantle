@@ -7,22 +7,22 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.renderer.model.BlockModel;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.ModelBakeSettings;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.UnbakedModel;
+import net.minecraft.client.render.model.json.JsonUnbakedModel;
+import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import net.minecraftforge.fml.ModList;
-
+import slimeknights.mantle.client.model.FallbackModelLoader.BlockModelWrapper;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
@@ -36,11 +36,11 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
   public static final FallbackModelLoader INSTANCE = new FallbackModelLoader();
 
   @Override
-  public void onResourceManagerReload(IResourceManager resourceManager) {}
+  public void apply(ResourceManager resourceManager) {}
 
   @Override
   public BlockModelWrapper read(JsonDeserializationContext context, JsonObject data) {
-    JsonArray models = JSONUtils.getJsonArray(data, "models");
+    JsonArray models = JsonHelper.getArray(data, "models");
     if (models.size() < 2) {
       throw new JsonSyntaxException("Fallback model must contain at least 2 models");
     }
@@ -48,14 +48,14 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
     // try loading each model
     for (int i = 0; i < models.size(); i++) {
       String debugName = "models[" + i + "]";
-      JsonObject entry = JSONUtils.getJsonObject(models.get(i), debugName);
+      JsonObject entry = JsonHelper.asObject(models.get(i), debugName);
 
       // first, determine required mod ID
       String modId = null;
       if (entry.has("fallback_mod_id")) {
-        modId = JSONUtils.getString(entry, "fallback_mod_id");
+        modId = JsonHelper.getString(entry, "fallback_mod_id");
       } else if (entry.has("loader")) {
-        ResourceLocation loader = new ResourceLocation(JSONUtils.getString(entry, "loader"));
+        Identifier loader = new Identifier(JsonHelper.getString(entry, "loader"));
         modId = loader.getNamespace();
       }
 
@@ -64,7 +64,7 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
         try {
           // use a model wrapper to ensure the child model gets the proper context
           // this means its not possible to extend the fallback model, but that is not normally possible with loaders
-          return new BlockModelWrapper(context.deserialize(entry, BlockModel.class));
+          return new BlockModelWrapper(context.deserialize(entry, JsonUnbakedModel.class));
         } catch (JsonSyntaxException e) {
           // wrap exceptions to make it more clear what failed
           throw new JsonSyntaxException("Failed to parse fallback model " + debugName, e);
@@ -82,16 +82,16 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
    */
   @AllArgsConstructor
   static class BlockModelWrapper implements IModelGeometry<BlockModelWrapper> {
-    private final BlockModel model;
+    private final JsonUnbakedModel model;
 
     @Override
-    public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-      return model.bakeModel(bakery, model, spriteGetter, modelTransform, modelLocation, true);
+    public BakedModel bake(IModelConfiguration owner, ModelLoader bakery, Function<SpriteIdentifier,Sprite> spriteGetter, ModelBakeSettings modelTransform, ModelOverrideList overrides, Identifier modelLocation) {
+      return model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
     }
 
     @Override
-    public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-      return model.getTextures(modelGetter, missingTextureErrors);
+    public Collection<SpriteIdentifier> getTextures(IModelConfiguration owner, Function<Identifier,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+      return model.getTextureDependencies(modelGetter, missingTextureErrors);
     }
   }
 }

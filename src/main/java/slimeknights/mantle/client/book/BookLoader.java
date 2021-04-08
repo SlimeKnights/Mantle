@@ -2,9 +2,11 @@ package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,7 +38,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class BookLoader implements ISelectiveResourceReloadListener {
 
   /** GSON object to be used for book loading purposes */
@@ -136,7 +138,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     if (player == null) {
       return;
     }
-    if (player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
+    if (player.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
       return;
     }
 
@@ -148,7 +150,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
-  public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+  public void onResourceManagerReload(ResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
     books.forEach((s, bookData) -> bookData.reset());
   }
 }

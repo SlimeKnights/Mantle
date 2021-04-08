@@ -1,13 +1,12 @@
 package slimeknights.mantle.client.book.repository;
 
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
-
 import java.util.List;
 
 import slimeknights.mantle.client.book.data.SectionData;
 
 import javax.annotation.Nullable;
+import net.minecraft.resource.Resource;
+import net.minecraft.util.Identifier;
 
 public abstract class BookRepository {
 
@@ -17,15 +16,15 @@ public abstract class BookRepository {
   public abstract List<SectionData> getSections();
 
   @Nullable
-  public ResourceLocation getResourceLocation(@Nullable String path) {
+  public Identifier getResourceLocation(@Nullable String path) {
     return this.getResourceLocation(path, false);
   }
 
   @Nullable
-  public abstract ResourceLocation getResourceLocation(@Nullable String path, boolean safe);
+  public abstract Identifier getResourceLocation(@Nullable String path, boolean safe);
 
   @Nullable
-  public abstract IResource getResource(@Nullable ResourceLocation loc);
+  public abstract Resource getResource(@Nullable Identifier loc);
 
   @SuppressWarnings("unused") // API
   public boolean resourceExists(@Nullable String location) {
@@ -33,14 +32,14 @@ public abstract class BookRepository {
       return false;
     }
 
-    return this.resourceExists(new ResourceLocation(location));
+    return this.resourceExists(new Identifier(location));
   }
 
-  public abstract boolean resourceExists(@Nullable ResourceLocation location);
+  public abstract boolean resourceExists(@Nullable Identifier location);
 
-  public String resourceToString(@Nullable IResource resource) {
+  public String resourceToString(@Nullable Resource resource) {
     return this.resourceToString(resource, true);
   }
 
-  public abstract String resourceToString(@Nullable IResource resource, boolean skipCommments);
+  public abstract String resourceToString(@Nullable Resource resource, boolean skipCommments);
 }

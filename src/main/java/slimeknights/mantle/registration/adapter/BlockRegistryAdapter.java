@@ -1,13 +1,13 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.block.AbstractBlock.Properties;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.FenceBlock;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.block.Material;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallBlock;
-import net.minecraft.block.material.Material;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
@@ -40,8 +40,8 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @param <T>          Block type
    * @return  Registered block
    */
-  public <T extends Block> T registerOverride(Function<Properties, T> constructor, Block base) {
-    return register(constructor.apply(Block.Properties.from(base)), base);
+  public <T extends Block> T registerOverride(Function<Settings, T> constructor, Block base) {
+    return register(constructor.apply(Block.Properties.copy(base)), base);
   }
 
   /* Building */
@@ -58,8 +58,8 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public BuildingBlockObject registerBuilding(Block block, String name) {
     return new BuildingBlockObject(
       this.register(block, name),
-      this.register(new SlabBlock(Block.Properties.from(block)), name + "_slab"),
-      this.register(new StairsBlock(block::getDefaultState, Block.Properties.from(block)), name + "_stairs")
+      this.register(new SlabBlock(Block.Properties.copy(block)), name + "_slab"),
+      this.register(new StairsBlock(block::getDefaultState, Block.Properties.copy(block)), name + "_stairs")
     );
   }
 
@@ -73,7 +73,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public WallBuildingBlockObject registerWallBuilding(Block block, String name) {
     return new WallBuildingBlockObject(
       registerBuilding(block, name),
-      this.register(new WallBlock(Block.Properties.from(block)), name + "_wall")
+      this.register(new WallBlock(Block.Properties.copy(block)), name + "_wall")
     );
   }
 
@@ -87,7 +87,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public FenceBuildingBlockObject registerFenceBuilding(Block block, String name) {
     return new FenceBuildingBlockObject(
       registerBuilding(block, name),
-      this.register(new FenceBlock(Block.Properties.from(block)), name + "_fence")
+      this.register(new FenceBlock(Block.Properties.copy(block)), name + "_fence")
     );
   }
 
@@ -101,13 +101,13 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @param name        Fluid name, unfortunately no way to fetch from the fluid as it does not exist yet
    * @return  Fluid block instance
    */
-  public FlowingFluidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, Material material, int lightLevel, String name) {
+  public FluidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, Material material, int lightLevel, String name) {
     return register(
-        new FlowingFluidBlock(fluid, Block.Properties.create(material)
-                                                     .doesNotBlockMovement()
-                                                     .hardnessAndResistance(100.0F)
-                                                     .noDrops()
-                                                     .setLightLevel((state) -> lightLevel)),
+        new FluidBlock(fluid, Block.Properties.of(material)
+                                                     .noCollision()
+                                                     .strength(100.0F)
+                                                     .dropsNothing()
+                                                     .luminance((state) -> lightLevel)),
         name + "_fluid");
   }
 }

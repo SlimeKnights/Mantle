@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.book.data;
 
 import com.google.common.collect.Sets;
-import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.resources.IResource;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.resource.Resource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.BookLoader;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class SectionData implements IDataItem {
 
   public String name = null;
@@ -53,7 +55,7 @@ public class SectionData implements IDataItem {
     this.name = this.name.toLowerCase();
 
     if (!this.data.equals("no-load")) {
-      IResource pagesInfo = this.source.getResource(this.source.getResourceLocation(this.data));
+      Resource pagesInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if (pagesInfo != null) {
         String data = this.source.resourceToString(pagesInfo);
         if (!data.isEmpty()) {

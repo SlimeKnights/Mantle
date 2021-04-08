@@ -12,13 +12,13 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.util.Size2i;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
@@ -45,7 +45,7 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
     this.size = new Size2i(recipe.getRecipeWidth(), recipe.getRecipeHeight());
 
     // gets the outputs of this recipe
-    ItemStack output = this.recipe.getRecipeOutput();
+    ItemStack output = this.recipe.getOutput();
     // fetch all stacks from the ingredient, note any variants that are not blocks will get a blank shelf
     List<ItemStack> displayVariants = Arrays.stream(recipe.getTexture().getMatchingStacks())
                                             .map(stack -> recipe.getRecipeOutput(stack.getItem()))
@@ -64,13 +64,13 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
   }
 
   @Override
-  public ResourceLocation getRegistryName() {
+  public Identifier getRegistryName() {
     return this.recipe.getId();
   }
 
   @Override
   public void setIngredients(IIngredients ingredients) {
-    ingredients.setInputIngredients(this.recipe.getIngredients());
+    ingredients.setInputIngredients(this.recipe.getPreviewInputs());
     // use all list so textureless works for the lookup
     ingredients.setOutputLists(VanillaTypes.ITEM, allOutputs);
   }
@@ -103,7 +103,7 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
       else if (mode == IFocus.Mode.OUTPUT) {
         // the focus might not be the same count as the output
         ItemStack output = focus.copy();
-        output.setCount(recipe.getRecipeOutput().getCount());
+        output.setCount(recipe.getOutput().getCount());
         outputs = ImmutableList.of(output);
 
         // focus texture may be undefined for the mixed planks bookshelf or missing NBT
@@ -120,13 +120,13 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
   }
 
   @Override
-  public void onTooltip(int slotIndex, boolean input, ItemStack ingredient, List<ITextComponent> tooltip) {
-    ResourceLocation registryName = this.getRegistryName();
+  public void onTooltip(int slotIndex, boolean input, ItemStack ingredient, List<Text> tooltip) {
+    Identifier registryName = this.getRegistryName();
     if (slotIndex == 0 && registryName != null) {
       if (JEIPlugin.modIdHelper.isDisplayingModNameEnabled()) {
         String recipeModId = this.getRegistryName().getNamespace();
         boolean modIdDifferent = false;
-        ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
+        Identifier itemRegistryName = ingredient.getItem().getRegistryName();
         if (itemRegistryName != null) {
           String itemModId = itemRegistryName.getNamespace();
           modIdDifferent = !recipeModId.equals(itemModId);
@@ -134,13 +134,13 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
 
         if (modIdDifferent) {
           String modName = JEIPlugin.modIdHelper.getFormattedModNameForModId(recipeModId);
-          tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.by", modName).mergeStyle(TextFormatting.GRAY));
+          tooltip.add(new TranslatableText("jei.tooltip.recipe.by", modName).formatted(Formatting.GRAY));
         }
       }
 
-      boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
+      boolean showAdvanced = MinecraftClient.getInstance().options.advancedItemTooltips || Screen.hasShiftDown();
       if (showAdvanced) {
-        tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.id", registryName).mergeStyle(TextFormatting.DARK_GRAY));
+        tooltip.add(new TranslatableText("jei.tooltip.recipe.id", registryName).formatted(Formatting.DARK_GRAY));
       }
     }
   }

@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration.deferred;
 
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -41,8 +41,8 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
    * @param name  Name
    * @return  Resource location string
    */
-  protected ResourceLocation resource(String name) {
-    return new ResourceLocation(modID, name);
+  protected Identifier resource(String name) {
+    return new Identifier(modID, name);
   }
 
   /**
@@ -64,14 +64,14 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
    * @param register  Function to register an entry
    * @return  EnumObject mapping between different block types
    */
-  protected static <E extends Enum<E> & IStringSerializable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(E[] values, String name, BiFunction<String,E,Supplier<? extends V>> register) {
+  protected static <E extends Enum<E> & StringIdentifiable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(E[] values, String name, BiFunction<String,E,Supplier<? extends V>> register) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,V> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      builder.put(value, register.apply(value.getString() + "_" + name, value));
+      builder.put(value, register.apply(value.asString() + "_" + name, value));
     }
     return builder.build();
   }
@@ -83,14 +83,14 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
    * @param register  Function to register an entry
    * @return  EnumObject mapping between different block types
    */
-  protected static <E extends Enum<E> & IStringSerializable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(String name, E[] values, BiFunction<String,E,Supplier<? extends V>> register) {
+  protected static <E extends Enum<E> & StringIdentifiable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(String name, E[] values, BiFunction<String,E,Supplier<? extends V>> register) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,V> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      builder.put(value, register.apply(name + "_" + value.getString(), value));
+      builder.put(value, register.apply(name + "_" + value.asString(), value));
     }
     return builder.build();
   }

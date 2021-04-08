@@ -8,10 +8,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeItemHelper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.Mantle;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 /** Ingredient that matches anything that matches all of the sub ingredients */
 public class IngredientIntersection extends Ingredient {
-  public static final ResourceLocation ID = Mantle.getResource("intersection");
+  public static final Identifier ID = Mantle.getResource("intersection");
   public static final IIngredientSerializer<IngredientIntersection> SERIALIZER = new Serializer();
 
   private final List<Ingredient> ingredients;
@@ -53,13 +53,13 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public ItemStack[] getMatchingStacks() {
+  public ItemStack[] getMatchingStacksClient() {
     if (this.intersectedMatchingStacks == null) {
       if (ingredients.isEmpty()) {
         this.intersectedMatchingStacks = new ItemStack[0];
       } else {
         this.intersectedMatchingStacks = Arrays
-          .stream(ingredients.get(0).getMatchingStacks())
+          .stream(ingredients.get(0).getMatchingStacksClient())
           .filter(stack -> {
             for (int i = 1; i < ingredients.size(); i++) {
               if (!ingredients.get(i).test(stack)) {
@@ -74,8 +74,8 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public boolean hasNoMatchingItems() {
-    return getMatchingStacks().length == 0;
+  public boolean isEmpty() {
+    return getMatchingStacksClient().length == 0;
   }
 
   @Override
@@ -96,12 +96,12 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public IntList getValidItemStacksPacked() {
+  public IntList getIds() {
     if (this.packedMatchingStacks == null) {
-      ItemStack[] matchingStacks = getMatchingStacks();
+      ItemStack[] matchingStacks = getMatchingStacksClient();
       this.packedMatchingStacks = new IntArrayList(matchingStacks.length);
       for(ItemStack stack : matchingStacks) {
-        this.packedMatchingStacks.add(RecipeItemHelper.pack(stack));
+        this.packedMatchingStacks.add(RecipeFinder.getItemId(stack));
       }
       this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
     }
@@ -109,12 +109,12 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public JsonElement serialize() {
+  public JsonElement toJson() {
     JsonObject json = new JsonObject();
     json.addProperty("type", ID.toString());
     JsonArray array = new JsonArray();
     for (Ingredient ingredient : ingredients) {
-      array.add(ingredient.serialize());
+      array.add(ingredient.toJson());
     }
     json.add("ingredients", array);
     return json;
@@ -128,22 +128,22 @@ public class IngredientIntersection extends Ingredient {
   private static class Serializer implements IIngredientSerializer<IngredientIntersection> {
     @Override
     public IngredientIntersection parse(JsonObject json) {
-      List<Ingredient> ingredients = JsonHelper.parseList(json, "ingredients", (element, name) -> Ingredient.deserialize(element));
+      List<Ingredient> ingredients = JsonHelper.parseList(json, "ingredients", (element, name) -> Ingredient.fromJson(element));
       return new IngredientIntersection(ingredients);
     }
 
     @Override
-    public IngredientIntersection parse(PacketBuffer buffer) {
+    public IngredientIntersection parse(PacketByteBuf buffer) {
       int size = buffer.readVarInt();
       ImmutableList.Builder<Ingredient> builder = ImmutableList.builder();
       for (int i = 0; i < size; i++) {
-        builder.add(Ingredient.read(buffer));
+        builder.add(Ingredient.fromPacket(buffer));
       }
       return new IngredientIntersection(builder.build());
     }
 
     @Override
-    public void write(PacketBuffer buffer, IngredientIntersection intersection) {
+    public void write(PacketByteBuf buffer, IngredientIntersection intersection) {
       buffer.writeVarInt(intersection.ingredients.size());
       for (Ingredient ingredient : intersection.ingredients) {
         CraftingHelper.write(buffer, ingredient);

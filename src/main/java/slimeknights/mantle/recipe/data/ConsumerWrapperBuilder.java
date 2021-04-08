@@ -2,9 +2,9 @@ package slimeknights.mantle.recipe.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
@@ -19,9 +19,9 @@ import java.util.function.Consumer;
 public class ConsumerWrapperBuilder {
   private final List<ICondition> conditions = new ArrayList<>();
   @Nullable
-  private final IRecipeSerializer<?> override;
+  private final RecipeSerializer<?> override;
 
-  private ConsumerWrapperBuilder(@Nullable IRecipeSerializer<?> override) {
+  private ConsumerWrapperBuilder(@Nullable RecipeSerializer<?> override) {
     this.override = override;
   }
 
@@ -38,7 +38,7 @@ public class ConsumerWrapperBuilder {
    * @param override Serializer override
    * @return Default serializer builder
    */
-  public static ConsumerWrapperBuilder wrap(IRecipeSerializer<?> override) {
+  public static ConsumerWrapperBuilder wrap(RecipeSerializer<?> override) {
     return new ConsumerWrapperBuilder(override);
   }
 
@@ -57,17 +57,17 @@ public class ConsumerWrapperBuilder {
    * @param consumer Base consumer
    * @return Built wrapper consumer
    */
-  public Consumer<IFinishedRecipe> build(Consumer<IFinishedRecipe> consumer) {
+  public Consumer<RecipeJsonProvider> build(Consumer<RecipeJsonProvider> consumer) {
     return (recipe) -> consumer.accept(new Wrapped(recipe, conditions, override));
   }
 
-  private static class Wrapped implements IFinishedRecipe {
-    private final IFinishedRecipe original;
+  private static class Wrapped implements RecipeJsonProvider {
+    private final RecipeJsonProvider original;
     private final List<ICondition> conditions;
     @Nullable
-    private final IRecipeSerializer<?> override;
+    private final RecipeSerializer<?> override;
 
-    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override) {
+    private Wrapped(RecipeJsonProvider original, List<ICondition> conditions, @Nullable RecipeSerializer<?> override) {
       this.original = original;
       this.conditions = conditions;
       this.override = override;
@@ -86,12 +86,12 @@ public class ConsumerWrapperBuilder {
     }
 
     @Override
-    public ResourceLocation getID() {
-      return original.getID();
+    public Identifier getRecipeId() {
+      return original.getRecipeId();
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
       if (override != null) {
         return override;
       }
@@ -100,14 +100,14 @@ public class ConsumerWrapperBuilder {
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-      return original.getAdvancementJson();
+    public JsonObject toAdvancementJson() {
+      return original.toAdvancementJson();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
-      return original.getAdvancementID();
+    public Identifier getAdvancementId() {
+      return original.getAdvancementId();
     }
   }
 }

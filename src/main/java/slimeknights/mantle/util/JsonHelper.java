@@ -7,8 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.util.JSONUtils;
-
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -62,7 +60,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonArray array, String name, Function<JsonObject,T> mapper) {
-    return parseList(array, name, (element, s) -> mapper.apply(JSONUtils.getJsonObject(element, s)));
+    return parseList(array, name, (element, s) -> mapper.apply(net.minecraft.util.JsonHelper.asObject(element, s)));
   }
 
   /**
@@ -74,7 +72,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonObject parent, String name, BiFunction<JsonElement,String,T> mapper) {
-    return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
+    return parseList(net.minecraft.util.JsonHelper.getArray(parent, name), name, mapper);
   }
 
   /**
@@ -86,6 +84,6 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonObject parent, String name, Function<JsonObject,T> mapper) {
-    return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
+    return parseList(net.minecraft.util.JsonHelper.getArray(parent, name), name, mapper);
   }
 }

@@ -2,11 +2,11 @@ package slimeknights.mantle.multiblock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -25,7 +25,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   Block masterBlock;
   BlockState state;
 
-  public MultiServantLogic(TileEntityType<?> tileEntityTypeIn) {
+  public MultiServantLogic(BlockEntityType<?> tileEntityTypeIn) {
     super(tileEntityTypeIn);
   }
 
@@ -107,62 +107,62 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   public void notifyMasterOfChange() {
     if (this.hasValidMaster()) {
       assert this.world != null;
-      IMasterLogic logic = (IMasterLogic) this.world.getTileEntity(this.master);
+      IMasterLogic logic = (IMasterLogic) this.world.getBlockEntity(this.master);
       logic.notifyChange(this, this.pos);
     }
   }
 
-  public void readCustomNBT(CompoundNBT tags) {
+  public void readCustomNBT(CompoundTag tags) {
     this.hasMaster = tags.getBoolean("hasMaster");
     if (this.hasMaster) {
       int xCenter = tags.getInt("xCenter");
       int yCenter = tags.getInt("yCenter");
       int zCenter = tags.getInt("zCenter");
       this.master = new BlockPos(xCenter, yCenter, zCenter);
-      this.masterBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tags.getString("MasterBlockName")));
-      this.state = Block.getStateById(tags.getInt("masterState"));
+      this.masterBlock = ForgeRegistries.BLOCKS.getValue(new Identifier(tags.getString("MasterBlockName")));
+      this.state = Block.getStateFromRawId(tags.getInt("masterState"));
     }
   }
 
-  public CompoundNBT writeCustomNBT(CompoundNBT tags) {
+  public CompoundTag writeCustomNBT(CompoundTag tags) {
     tags.putBoolean("hasMaster", this.hasMaster);
     if (this.hasMaster) {
       tags.putInt("xCenter", this.master.getX());
       tags.putInt("yCenter", this.master.getY());
       tags.putInt("zCenter", this.master.getZ());
       tags.putString("MasterBlockName", Objects.requireNonNull(this.masterBlock.getRegistryName()).toString());
-      tags.putInt("masterState", Block.getStateId(this.state));
+      tags.putInt("masterState", Block.getRawIdFromState(this.state));
     }
     return tags;
   }
 
   @Override
-  public void read(BlockState blockState, CompoundNBT tags) {
-    super.read(blockState, tags);
+  public void fromTag(BlockState blockState, CompoundTag tags) {
+    super.fromTag(blockState, tags);
     this.readCustomNBT(tags);
   }
 
   @Override
-  public CompoundNBT write(CompoundNBT tags) {
-    tags = super.write(tags);
+  public CompoundTag toTag(CompoundTag tags) {
+    tags = super.toTag(tags);
     return this.writeCustomNBT(tags);
   }
 
   /* Packets */
   @Override
-  public CompoundNBT getUpdateTag() {
-    CompoundNBT tag = new CompoundNBT();
+  public CompoundTag toInitialChunkDataTag() {
+    CompoundTag tag = new CompoundTag();
     this.writeCustomNBT(tag);
     return tag;
   }
 
   @Override
-  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-    this.readCustomNBT(packet.getNbtCompound());
+  public void onDataPacket(ClientConnection net, BlockEntityUpdateS2CPacket packet) {
+    this.readCustomNBT(packet.getCompoundTag());
     //this.world.notifyLightSet(this.pos);
     assert world != null;
     BlockState state = world.getBlockState(this.pos);
-    this.world.notifyBlockUpdate(this.pos, state, state, 3);
+    this.world.updateListeners(this.pos, state, state, 3);
   }
 
   @Deprecated

@@ -1,15 +1,14 @@
 package slimeknights.mantle.client.book;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-
+import net.minecraft.nbt.CompoundTag;
 import java.util.Objects;
 
 public class BookHelper {
 
   public static String getSavedPage(ItemStack item) {
     if (!item.isEmpty() && item.hasTag()) {
-      CompoundNBT mantleBook = Objects.requireNonNull(item.getTag()).getCompound("mantle").getCompound("book");
+      CompoundTag mantleBook = Objects.requireNonNull(item.getTag()).getCompound("mantle").getCompound("book");
 
       if (mantleBook.contains("page", 8)) {
         return mantleBook.getString("page");
@@ -20,14 +19,14 @@ public class BookHelper {
   }
 
   public static void writeSavedPage(ItemStack item, String page) {
-    CompoundNBT compound = item.getTag();
+    CompoundTag compound = item.getTag();
 
     if (compound == null) {
-      compound = new CompoundNBT();
+      compound = new CompoundTag();
     }
 
-    CompoundNBT mantle = compound.getCompound("mantle");
-    CompoundNBT book = mantle.getCompound("book");
+    CompoundTag mantle = compound.getCompound("mantle");
+    CompoundTag book = mantle.getCompound("book");
 
     book.putString("page", page);
 

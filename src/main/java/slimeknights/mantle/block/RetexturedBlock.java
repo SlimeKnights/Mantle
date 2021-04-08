@@ -2,13 +2,13 @@ package slimeknights.mantle.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.tileentity.IRetexturedTileEntity;
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class RetexturedBlock extends Block {
-  public RetexturedBlock(Properties properties) {
+  public RetexturedBlock(Settings properties) {
     super(properties);
   }
 
@@ -32,16 +32,16 @@ public abstract class RetexturedBlock extends Block {
 
   @Nullable
   @Override
-  public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
+  public abstract BlockEntity createTileEntity(BlockState state, BlockView world);
 
   @Override
-  public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    super.onBlockPlacedBy(world, pos, state, placer, stack);
+  public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    super.onPlaced(world, pos, state, placer, stack);
     updateTextureBlock(world, pos, stack);
   }
 
   @Override
-  public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+  public ItemStack getPickBlock(BlockState state, HitResult target, BlockView world, BlockPos pos, PlayerEntity player) {
     return getPickBlock(world, pos, state);
   }
 
@@ -49,7 +49,7 @@ public abstract class RetexturedBlock extends Block {
   /* Utils */
 
   /**
-   * Call in {@link Block#onBlockPlacedBy(World, BlockPos, BlockState, LivingEntity, ItemStack)} to set the texture tag to the Tile Entity
+   * Call in {@link Block#onPlaced(World, BlockPos, BlockState, LivingEntity, ItemStack)} to set the texture tag to the Tile Entity
    * @param world World where the block was placed
    * @param pos   Block position
    * @param stack Item stack
@@ -67,7 +67,7 @@ public abstract class RetexturedBlock extends Block {
    * @param state State
    * @return Pickblock stack with proper NBT
    */
-  public static ItemStack getPickBlock(IBlockReader world, BlockPos pos, BlockState state) {
+  public static ItemStack getPickBlock(BlockView world, BlockPos pos, BlockState state) {
     Block block = state.getBlock();
     ItemStack stack = new ItemStack(block);
     TileEntityHelper.getTile(IRetexturedTileEntity.class, world, pos).ifPresent(te -> RetexturedBlockItem.setTexture(stack, te.getTextureName()));

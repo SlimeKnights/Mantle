@@ -6,15 +6,15 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
@@ -26,7 +26,7 @@ public class ItemStackData implements IDataElement {
   public String itemList = null;
   public String tag = null;
   public transient String action;
-  private transient NonNullList<ItemStack> items;
+  private transient DefaultedList<ItemStack> items;
 
   public String id = "";
   public byte amount = 1;
@@ -36,7 +36,7 @@ public class ItemStackData implements IDataElement {
   private transient boolean isTag;
   private transient int tagGeneration;
 
-  public NonNullList<ItemStack> getItems() {
+  public DefaultedList<ItemStack> getItems() {
     if(this.isTag && this.tagGeneration != 0) { //ItemTags.getGeneration()) {  TODO FIX
       this.loadTag();
     }
@@ -45,14 +45,14 @@ public class ItemStackData implements IDataElement {
       return this.items;
     }
 
-    return NonNullList.withSize(1, this.getItem());
+    return DefaultedList.ofSize(1, this.getItem());
   }
 
   private ItemStack getItem() {
     Item item;
     boolean isMissingItem = false;
     try {
-      item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.id));
+      item = ForgeRegistries.ITEMS.getValue(new Identifier(this.id));
     }
     catch (Exception e) {
       item = Items.BARRIER;
@@ -68,18 +68,18 @@ public class ItemStackData implements IDataElement {
 
     if (this.nbt != null) {
       try {
-        itemStack.setTag(JsonToNBT.getTagFromJson(filterJsonQuotes(this.nbt.toString())));
+        itemStack.setTag(StringNbtReader.parse(filterJsonQuotes(this.nbt.toString())));
       }
       catch (CommandSyntaxException ignored) {
       }
     }
 
     if (isMissingItem) {
-      CompoundNBT display = itemStack.getOrCreateChildTag("display");
+      CompoundTag display = itemStack.getOrCreateSubTag("display");
       display.putString("Name", "\u00A7rUnknown Item");
-      ListNBT lore = new ListNBT();
-      lore.add(StringNBT.valueOf("\u00A7r\u00A7eItem Name:"));
-      lore.add(StringNBT.valueOf("\u00A7r\u00A7e" + this.id));
+      ListTag lore = new ListTag();
+      lore.add(StringTag.of("\u00A7r\u00A7eItem Name:"));
+      lore.add(StringTag.of("\u00A7r\u00A7e" + this.id));
       display.put("Lore", lore);
     }
 
@@ -95,13 +95,13 @@ public class ItemStackData implements IDataElement {
     data.id = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
     data.amount = (byte) stack.getCount();
     if (!ignoreNbt && stack.getTag() != null) {
-      data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), CompoundNBT.class).getAsJsonObject();
+      data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), CompoundTag.class).getAsJsonObject();
     }
 
     return data;
   }
 
-  public static ItemStackData getItemStackData(NonNullList<ItemStack> items) {
+  public static ItemStackData getItemStackData(DefaultedList<ItemStack> items) {
     ItemStackData data = new ItemStackData();
     data.items = items;
     data.customData = true;
@@ -119,12 +119,12 @@ public class ItemStackData implements IDataElement {
     this.isTag = true;
     this.tagGeneration = 0;//ItemTags.getGeneration(); TODO FIX
 
-    ITag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
+    Tag<Item> values = ItemTags.getTagGroup().getTag(new Identifier(this.tag));
     if (values != null) {
-      this.items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
+      this.items = values.values().stream().map(ItemStack::new).collect(Collectors.toCollection(DefaultedList::of));
     }
     else {
-      this.items = NonNullList.create();
+      this.items = DefaultedList.of();
     }
   }
 
@@ -134,13 +134,13 @@ public class ItemStackData implements IDataElement {
       return;
     }
 
-    if (!StringUtils.isNullOrEmpty(this.tag) && ResourceLocation.isResouceNameValid(this.tag)) {
+    if (!ChatUtil.isEmpty(this.tag) && Identifier.isValid(this.tag)) {
       this.loadTag();
       this.id = "->itemList";
       return;
     }
 
-    ResourceLocation location = source.getResourceLocation(this.itemList);
+    Identifier location = source.getResourceLocation(this.itemList);
 
     if (location != null) {
       this.id = "->itemList";
@@ -149,7 +149,7 @@ public class ItemStackData implements IDataElement {
         try {
           ItemsList itemsList = BookLoader.GSON
                   .fromJson(source.resourceToString(source.getResource(location)), ItemsList.class);
-          this.items = NonNullList.withSize(itemsList.items.length, ItemStack.EMPTY);
+          this.items = DefaultedList.ofSize(itemsList.items.length, ItemStack.EMPTY);
 
           for (int i = 0; i < itemsList.items.length; i++) {
             this.items.set(i, itemsList.items[i].getItem());

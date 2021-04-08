@@ -7,11 +7,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import slimeknights.mantle.item.RetexturedBlockItem;
@@ -34,7 +34,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
    * @param matchAll   If true, all inputs must match for the recipe to match
    */
   protected ShapedRetexturedRecipe(ShapedRecipe orig, Ingredient texture, boolean matchAll) {
-    super(orig.getId(), orig.getGroup(), orig.getWidth(), orig.getHeight(), orig.getIngredients(), orig.getRecipeOutput());
+    super(orig.getId(), orig.getGroup(), orig.getWidth(), orig.getHeight(), orig.getPreviewInputs(), orig.getOutput());
     this.texture = texture;
     this.matchAll = matchAll;
   }
@@ -45,15 +45,15 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
    * @return  Output with texture. Will be blank if the input is not a block
    */
   public ItemStack getRecipeOutput(Item texture) {
-    return RetexturedBlockItem.setTexture(getRecipeOutput().copy(), Block.getBlockFromItem(texture));
+    return RetexturedBlockItem.setTexture(getOutput().copy(), Block.getBlockFromItem(texture));
   }
 
   @Override
-  public ItemStack getCraftingResult(CraftingInventory craftMatrix) {
-    ItemStack result = super.getCraftingResult(craftMatrix);
+  public ItemStack craft(CraftingInventory craftMatrix) {
+    ItemStack result = super.craft(craftMatrix);
     Block currentTexture = null;
-    for (int i = 0; i < craftMatrix.getSizeInventory(); i++) {
-      ItemStack stack = craftMatrix.getStackInSlot(i);
+    for (int i = 0; i < craftMatrix.size(); i++) {
+      ItemStack stack = craftMatrix.getStack(i);
       if (!stack.isEmpty() && texture.test(stack)) {
         // if the item is the same as the result, copy the texture over
         Block block;
@@ -91,14 +91,14 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
   }
 
-  public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapedRetexturedRecipe> {
+  public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ShapedRetexturedRecipe> {
     @Override
-    public ShapedRetexturedRecipe read(ResourceLocation recipeId, JsonObject json) {
-      ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, json);
+    public ShapedRetexturedRecipe read(Identifier recipeId, JsonObject json) {
+      ShapedRecipe recipe = SHAPED.read(recipeId, json);
       Ingredient texture = CraftingHelper.getIngredient(JsonHelper.getElement(json, "texture"));
       boolean matchAll = false;
       if (json.has("match_all")) {
@@ -109,14 +109,14 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
 
     @Nullable
     @Override
-    public ShapedRetexturedRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-      ShapedRecipe recipe = CRAFTING_SHAPED.read(recipeId, buffer);
-      return recipe == null ? null : new ShapedRetexturedRecipe(recipe, Ingredient.read(buffer), buffer.readBoolean());
+    public ShapedRetexturedRecipe read(Identifier recipeId, PacketByteBuf buffer) {
+      ShapedRecipe recipe = SHAPED.read(recipeId, buffer);
+      return recipe == null ? null : new ShapedRetexturedRecipe(recipe, Ingredient.fromPacket(buffer), buffer.readBoolean());
     }
 
     @Override
-    public void write(PacketBuffer buffer, ShapedRetexturedRecipe recipe) {
-      CRAFTING_SHAPED.write(buffer, recipe);
+    public void write(PacketByteBuf buffer, ShapedRetexturedRecipe recipe) {
+      SHAPED.write(buffer, recipe);
       recipe.texture.write(buffer);
       buffer.writeBoolean(recipe.matchAll);
     }

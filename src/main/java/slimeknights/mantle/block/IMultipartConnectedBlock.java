@@ -3,9 +3,9 @@ package slimeknights.mantle.block;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer.Builder;
-import net.minecraft.util.Direction;
+import net.minecraft.state.StateManager.Builder;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.math.Direction;
 import slimeknights.mantle.client.model.connected.ConnectedModel;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public interface IMultipartConnectedBlock {
   /** Map of direction to boolean property for that direction */
   Map<Direction,BooleanProperty> CONNECTED_DIRECTIONS = Arrays.stream(Direction.values())
-       .map(dir -> Pair.of(dir,BooleanProperty.create("connected_" + dir.getString())))
+       .map(dir -> Pair.of(dir,BooleanProperty.of("connected_" + dir.asString())))
       .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, (u,v) -> u, () -> new EnumMap<>(Direction.class)));
 
   /**
@@ -38,7 +38,7 @@ public interface IMultipartConnectedBlock {
   }
 
   /**
-   * Fills a state container, for use in {@link Block#fillStateContainer(Builder)}
+   * Fills a state container, for use in {@link Block#appendProperties(Builder)}
    * @param builder  State container builder
    */
   static void fillStateContainer(Builder<Block, BlockState> builder) {

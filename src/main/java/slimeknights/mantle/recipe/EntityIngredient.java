@@ -8,11 +8,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.entity.EntityType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.tag.ServerTagManagerHolder;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -47,7 +46,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   public abstract JsonElement serialize();
 
   /** Writes this ingredient to the packet buffer */
-  public void write(PacketBuffer buffer) {
+  public void write(PacketByteBuf buffer) {
     Collection<EntityType<?>> collection = getTypes();
     buffer.writeVarInt(collection.size());
     for (EntityType<?> type : collection) {
@@ -79,7 +78,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /**
    * Creates an ingredient to match a tags
    */
-  public static EntityIngredient of(ITag<EntityType<?>> tag) {
+  public static EntityIngredient of(Tag<EntityType<?>> tag) {
     return new TagMatch(tag);
   }
 
@@ -95,7 +94,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
    * @param buffer  Buffer instance
    * @return  Ingredient instnace
    */
-  public static EntityIngredient read(PacketBuffer buffer) {
+  public static EntityIngredient read(PacketByteBuf buffer) {
     int count = buffer.readVarInt();
     if (count == 1) {
       return new Single(buffer.readRegistryIdUnsafe(ForgeRegistries.ENTITIES));
@@ -112,7 +111,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
    * @param name  Entity type name
    * @return  Entity type
    */
-  private static EntityType<?> findEntityType(ResourceLocation name) {
+  private static EntityType<?> findEntityType(Identifier name) {
     if (ForgeRegistries.ENTITIES.containsKey(name)) {
       EntityType<?> type = ForgeRegistries.ENTITIES.getValue(name);
       if (type != null) {
@@ -143,13 +142,13 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
 
     // type is just a name
     if (json.has("type")) {
-      ResourceLocation name = new ResourceLocation(JSONUtils.getString(json, "type"));
+      Identifier name = new Identifier(net.minecraft.util.JsonHelper.getString(json, "type"));
       return new Single(findEntityType(name));
     }
     // tag is also a name
     if (json.has("tag")) {
-      ResourceLocation name = new ResourceLocation(JSONUtils.getString(json, "tag"));
-      ITag<EntityType<?>> tag = TagCollectionManager.getManager().getEntityTypeTags().get(name);
+      Identifier name = new Identifier(net.minecraft.util.JsonHelper.getString(json, "tag"));
+      Tag<EntityType<?>> tag = ServerTagManagerHolder.getTagManager().getEntityTypes().getTag(name);
       if (tag == null) {
         throw new JsonSyntaxException("Unknown entity type tag " + name);
       } else {
@@ -158,7 +157,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     }
     // types is a list
     if (json.has("types")) {
-      List<EntityType<?>> types = JsonHelper.parseList(json, "types", (element, key) -> findEntityType(new ResourceLocation(JSONUtils.getString(element, key))));
+      List<EntityType<?>> types = JsonHelper.parseList(json, "types", (element, key) -> findEntityType(new Identifier(net.minecraft.util.JsonHelper.asString(element, key))));
       return new SetMatch(ImmutableSet.copyOf(types));
     }
 
@@ -219,7 +218,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /** Ingredient that matches any entity from a tag */
   @RequiredArgsConstructor
   private static class TagMatch extends EntityIngredient {
-    private final ITag<EntityType<?>> tag;
+    private final Tag<EntityType<?>> tag;
 
     @Override
     public boolean test(EntityType<?> type) {
@@ -228,13 +227,13 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
 
     @Override
     public List<EntityType<?>> getTypes() {
-      return tag.getAllElements();
+      return tag.values();
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", TagCollectionManager.getManager().getEntityTypeTags().getValidatedIdFromTag(tag).toString());
+      object.addProperty("tag", ServerTagManagerHolder.getTagManager().getEntityTypes().getTagId(tag).toString());
       return object;
     }
   }

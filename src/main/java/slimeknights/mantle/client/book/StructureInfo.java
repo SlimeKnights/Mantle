@@ -3,12 +3,10 @@ package slimeknights.mantle.client.book;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-
+import net.minecraft.state.property.Property;
+import net.minecraft.util.Identifier;
 import java.util.Map;
 import java.util.Optional;
-
-import net.minecraft.state.Property;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.data.element.BlockData;
 
@@ -49,7 +47,7 @@ public class StructureInfo {
   }
 
   private BlockState convert(BlockData data) {
-    Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(data.block));
+    Block block = ForgeRegistries.BLOCKS.getValue(new Identifier(data.block));
     if (block == null) {
       return Blocks.AIR.getDefaultState();
     }
@@ -69,7 +67,7 @@ public class StructureInfo {
   }
 
   private <T extends Comparable<T>> BlockState setProperty(BlockState state, Property<T> prop, String valueString) {
-    java.util.Optional<T> value = prop.parseValue(valueString);
+    java.util.Optional<T> value = prop.parse(valueString);
     if (value.isPresent()) {
       state = state.with(prop, value.get());
     }

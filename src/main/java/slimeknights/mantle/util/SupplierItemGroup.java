@@ -1,5 +1,7 @@
 package slimeknights.mantle.util;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,11 +23,11 @@ public class SupplierItemGroup extends ItemGroup {
    */
   public SupplierItemGroup(String modId, String name, Supplier<ItemStack> supplier) {
     super(String.format("%s.%s", modId, name));
-    this.setTabPath(String.format("%s/%s", modId, name));
+    this.setName(String.format("%s/%s", modId, name));
     this.supplier = supplier;
   }
 
-  @OnlyIn(Dist.CLIENT)
+  @Environment(EnvType.CLIENT)
   @Override
   public ItemStack createIcon() {
     return supplier.get();

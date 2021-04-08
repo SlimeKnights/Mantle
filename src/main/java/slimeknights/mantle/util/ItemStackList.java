@@ -1,19 +1,18 @@
 package slimeknights.mantle.util;
 
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-
+import net.minecraft.util.collection.DefaultedList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Extension of {@link NonNullList} to better handle items in an inventory
+ * Extension of {@link DefaultedList} to better handle items in an inventory
  */
 @SuppressWarnings("WeakerAccess")
-public class ItemStackList extends NonNullList<ItemStack> {
+public class ItemStackList extends DefaultedList<ItemStack> {
 
   /**
    * Creates a new ItemStackList with nothing
@@ -34,7 +33,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * Creates an empty item stack list no size
    * @return  Empty list
    */
-  public static ItemStackList create() {
+  public static ItemStackList of() {
     return new ItemStackList();
   }
 
@@ -51,7 +50,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * Create an ItemStackList from the given elements.
    */
   public static ItemStackList of(ItemStack... element) {
-    ItemStackList itemStackList = create();
+    ItemStackList itemStackList = of();
     itemStackList.addAll(Arrays.asList(element));
     return itemStackList;
   }
@@ -60,7 +59,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * Create an ItemStackList from the given elements.
    */
   public static ItemStackList of(Collection<ItemStack> boringList) {
-    ItemStackList itemStackList = create();
+    ItemStackList itemStackList = of();
     itemStackList.addAll(boringList);
     return itemStackList;
   }
@@ -68,10 +67,10 @@ public class ItemStackList extends NonNullList<ItemStack> {
   /**
    * Create an ItemStackList from the given elements.
    */
-  public static ItemStackList of(IInventory inventory) {
-    ItemStackList itemStackList = withSize(inventory.getSizeInventory());
-    for (int i = 0; i < inventory.getSizeInventory(); i++) {
-      itemStackList.add(inventory.getStackInSlot(i));
+  public static ItemStackList of(Inventory inventory) {
+    ItemStackList itemStackList = withSize(inventory.size());
+    for (int i = 0; i < inventory.size(); i++) {
+      itemStackList.add(inventory.getStack(i));
     }
     return itemStackList;
   }
@@ -103,7 +102,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * @param fixed If true the list will have fixed size
    */
   public ItemStackList copy(boolean fixed) {
-    ItemStackList copy = fixed ? withSize(this.size()) : create();
+    ItemStackList copy = fixed ? withSize(this.size()) : of();
     for (int i = 0; i < size(); i++) {
       copy.set(i, get(i));
     }
@@ -116,7 +115,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    * @param fixed If true the list will have fixed size
    */
   public ItemStackList deepCopy(boolean fixed) {
-    ItemStackList copy = fixed ? withSize(this.size()) : create();
+    ItemStackList copy = fixed ? withSize(this.size()) : of();
     for (int i = 0; i < size(); i++) {
       copy.set(i, get(i).copy());
     }

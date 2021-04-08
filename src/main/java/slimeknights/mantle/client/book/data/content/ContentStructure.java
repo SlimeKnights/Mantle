@@ -1,7 +1,5 @@
 package slimeknights.mantle.client.book.data.content;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.BlockData;
@@ -14,6 +12,8 @@ import slimeknights.mantle.client.screen.book.element.StructureElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
+import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Identifier;
 
 public class ContentStructure extends PageContent {
 
@@ -32,7 +32,7 @@ public class ContentStructure extends PageContent {
       return;
     }
 
-    ResourceLocation location = repo.getResourceLocation(this.data);
+    Identifier location = repo.getResourceLocation(this.data);
 
     if (location != null && repo.resourceExists(location)) {
       ContentStructure structure = BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(location)), ContentStructure.class);
@@ -58,7 +58,7 @@ public class ContentStructure extends PageContent {
     int structureSizeX = BookScreen.PAGE_WIDTH;
     int structureSizeY = BookScreen.PAGE_HEIGHT - y - 10;
 
-    if (!StringUtils.isNullOrEmpty(this.text)) {
+    if (!ChatUtil.isEmpty(this.text)) {
       offset = 15;
       structureSizeX -= 2 * offset;
       structureSizeY -= 2 * offset;

@@ -1,10 +1,12 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public abstract class Widget {
 
   public int xPos;

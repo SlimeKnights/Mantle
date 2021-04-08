@@ -1,17 +1,17 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
@@ -143,9 +143,9 @@ public class StructureElement extends SizedBookElement {
   private int fullStructureSteps = 5;
 
   @Override
-  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, TextRenderer fontRenderer) {
     if (this.lastClick != null) {
-      if (Minecraft.getInstance().mouseHelper.isLeftDown() || Minecraft.getInstance().mouseHelper.isRightDown()) {
+      if (MinecraftClient.getInstance().mouse.wasLeftButtonClicked() || MinecraftClient.getInstance().mouse.wasRightButtonClicked()) {
         int dx = mouseX - this.lastClick[0];
         int dy = mouseY - this.lastClick[1];
         float maxSpeed = 10f;
@@ -183,14 +183,14 @@ public class StructureElement extends SizedBookElement {
 
     RenderSystem.enableRescaleNormal();
     RenderSystem.pushMatrix();
-    RenderHelper.disableStandardItemLighting();
+    DiffuseLighting.disable();
     //			GL11.glEnable(GL11.GL_DEPTH_TEST);
     //			GL11.glDepthFunc(GL11.GL_ALWAYS);
     //			GL11.glDisable(GL11.GL_CULL_FACE);
     int i = 0;
     ItemStack highlighted = null;
 
-    final BlockRendererDispatcher blockRender = Minecraft.getInstance().getBlockRendererDispatcher();
+    final BlockRenderManager blockRender = MinecraftClient.getInstance().getBlockRenderManager();
 
     float f = (float) Math.sqrt(structureHeight * structureHeight + structureWidth * structureWidth + structureLength * structureLength);
     yOffTotal = 10 + Math.max(10 + (structureHeight > 1 ? 36 : 0), (int) (f * this.scale));
@@ -205,7 +205,7 @@ public class StructureElement extends SizedBookElement {
 
     RenderSystem.disableLighting();
 
-    if (Minecraft.isAmbientOcclusionEnabled()) {
+    if (MinecraftClient.isAmbientOcclusionEnabled()) {
       RenderSystem.shadeModel(GL11.GL_SMOOTH);
     }
     else {
@@ -217,17 +217,17 @@ public class StructureElement extends SizedBookElement {
     }
     int iterator = 0;
 
-    this.mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+    this.mc.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
     MatrixStack matrixstack = new MatrixStack();
     for (int h = 0; h < this.structureData.structureHeight; h++) {
       for (int l = 0; l < this.structureData.structureLength; l++) {
         for (int w = 0; w < this.structureData.structureWidth; w++) {
           BlockPos pos = new BlockPos(l, h, w);
-          if (!this.blockAccess.isAirBlock(pos)) {
+          if (!this.blockAccess.isAir(pos)) {
             BlockState state = this.blockAccess.getBlockState(pos);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
-            buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+            buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
             Random random = new Random();
 
             matrixstack.push();
@@ -242,11 +242,11 @@ public class StructureElement extends SizedBookElement {
     //			GL11.glTranslated(0, 0, -i);
     RenderSystem.popMatrix();
 
-    RenderHelper.disableStandardItemLighting();
+    DiffuseLighting.disable();
     RenderSystem.disableRescaleNormal();
     RenderSystem.shadeModel(GL11.GL_FLAT);
     RenderSystem.enableBlend();
-    RenderHelper.disableStandardItemLighting();
+    DiffuseLighting.disable();
 /*
     fontRenderer.setUnicodeFlag(true);
     //if(localizedText!=null&&!localizedText.isEmpty())

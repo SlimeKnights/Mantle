@@ -2,9 +2,9 @@ package slimeknights.mantle.inventory;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.CraftingResultSlot;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraftforge.fml.hooks.BasicEventHooks;
 
 public class CraftingCustomSlot extends CraftingResultSlot {
@@ -18,7 +18,7 @@ public class CraftingCustomSlot extends CraftingResultSlot {
    * @param craftingInventory Inventory where the ingredients are taken from
    * @param craftResult       Inventory where the result is put
    */
-  public CraftingCustomSlot(IContainerCraftingCustom callback, PlayerEntity player, CraftingInventory craftingInventory, IInventory craftResult, int slotIndex, int xPosition, int yPosition) {
+  public CraftingCustomSlot(IContainerCraftingCustom callback, PlayerEntity player, CraftingInventory craftingInventory, Inventory craftResult, int slotIndex, int xPosition, int yPosition) {
     super(player, craftingInventory, craftResult, slotIndex, xPosition, yPosition);
 
     this.craftMatrix = craftingInventory;
@@ -26,9 +26,9 @@ public class CraftingCustomSlot extends CraftingResultSlot {
   }
 
   @Override
-  public ItemStack onTake(PlayerEntity playerIn, ItemStack stack) {
+  public ItemStack onTakeItem(PlayerEntity playerIn, ItemStack stack) {
     BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
-    this.onCrafting(stack);
+    this.onCrafted(stack);
 
     this.callback.onCrafting(playerIn, stack, this.craftMatrix);
 

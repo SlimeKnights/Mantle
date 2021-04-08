@@ -1,17 +1,19 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 
-@OnlyIn(Dist.CLIENT)
-public class ArrowButton extends Button {
+@Environment(EnvType.CLIENT)
+public class ArrowButton extends ButtonWidget {
 
   public static final int WIDTH = 18;
   public static final int HEIGHT = 10;
@@ -21,8 +23,8 @@ public class ArrowButton extends Button {
   public int color;
   public int hoverColor;
 
-  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
-    super(x, y, arrowType.w, arrowType.h, StringTextComponent.EMPTY, iPressable);
+  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, PressAction iPressable) {
+    super(x, y, arrowType.w, arrowType.h, LiteralText.EMPTY, iPressable);
 
     this.arrowType = arrowType;
     this.color = color;
@@ -31,19 +33,19 @@ public class ArrowButton extends Button {
 
   @Override
   public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-    Minecraft minecraft = Minecraft.getInstance();
+    MinecraftClient minecraft = MinecraftClient.getInstance();
     minecraft.getTextureManager().bindTexture(TEX_BOOK);
 
-    this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+    this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
-    int color = this.isHovered ? this.hoverColor : this.color;
+    int color = this.hovered ? this.hoverColor : this.color;
 
     float r = ((color >> 16) & 0xff) / 255.F;
     float g = ((color >> 8) & 0xff) / 255.F;
     float b = (color & 0xff) / 255.F;
 
     RenderSystem.color3f(r, g, b);
-    blit(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
+    drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
     this.renderBg(matrixStack, minecraft, mouseX, mouseY);
   }
 

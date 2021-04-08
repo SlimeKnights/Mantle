@@ -3,9 +3,9 @@ package slimeknights.mantle.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraftforge.fml.ForgeI18n;
 
 import javax.annotation.Nullable;
@@ -42,7 +42,7 @@ public class TranslationHelper {
    * @param stack    Stack
    * @param tooltip  List of tooltips
    */
-  public static void addOptionalTooltip(ItemStack stack, List<ITextComponent> tooltip) {
+  public static void addOptionalTooltip(ItemStack stack, List<Text> tooltip) {
     addOptionalTooltip(stack.getTranslationKey() + ".tooltip", tooltip);
   }
 
@@ -51,7 +51,7 @@ public class TranslationHelper {
    * @param key      Translation key
    * @param tooltip  List of tooltips
    */
-  public static void addOptionalTooltip(String key, List<ITextComponent> tooltip) {
+  public static void addOptionalTooltip(String key, List<Text> tooltip) {
     String translated = ForgeI18n.getPattern(key);
     if (canTranslate(key, translated)) {
       addEachLine(translated, tooltip);
@@ -63,9 +63,9 @@ public class TranslationHelper {
    * @param text     Translated text to split
    * @param tooltip  List of tooltip strings to add to
    */
-  public static void addEachLine(String text, List<ITextComponent> tooltip) {
+  public static void addEachLine(String text, List<Text> tooltip) {
     for (String string : text.split("\n")) {
-      tooltip.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
+      tooltip.add(new LiteralText(string).formatted(Formatting.GRAY));
     }
   }
 

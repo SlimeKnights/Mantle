@@ -1,9 +1,11 @@
 package slimeknights.mantle.client.book.data;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class AppearanceData implements IDataItem {
 
   public int coverColor = 0x8B4631;

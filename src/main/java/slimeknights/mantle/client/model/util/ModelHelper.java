@@ -7,16 +7,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.MultipartBakedModel;
-import net.minecraft.client.renderer.model.WeightedBakedModel;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexFormatElement;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.MultipartBakedModel;
+import net.minecraft.client.render.model.WeightedBakedModel;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
@@ -32,7 +32,7 @@ import java.util.function.Function;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ModelHelper {
-  private static final Map<Block,ResourceLocation> TEXTURE_NAME_CACHE = new HashMap<>();
+  private static final Map<Block,Identifier> TEXTURE_NAME_CACHE = new HashMap<>();
   /** Listener instance to clear cache */
   public static final ISelectiveResourceReloadListener LISTENER = (manager, predicate) -> {
     if (predicate.test(VanillaResourceType.MODELS)) {
@@ -50,14 +50,14 @@ public class ModelHelper {
    * @return  Block model, or null if its missing or the wrong class type
    */
   @Nullable
-  public static <T extends IBakedModel> T getBakedModel(BlockState state, Class<T> clazz) {
-    IBakedModel baked = Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(state);
+  public static <T extends BakedModel> T getBakedModel(BlockState state, Class<T> clazz) {
+    BakedModel baked = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(state);
     // map multipart and weighted random into the first variant
     if (baked instanceof MultipartBakedModel) {
-      baked = ((MultipartBakedModel)baked).selectors.get(0).getRight();
+      baked = ((MultipartBakedModel)baked).components.get(0).getRight();
     }
     if (baked instanceof WeightedBakedModel) {
-      baked = ((WeightedBakedModel) baked).baseModel;
+      baked = ((WeightedBakedModel) baked).defaultModel;
     }
     // final model should match the desired type
     if (clazz.isInstance(baked)) {
@@ -74,8 +74,8 @@ public class ModelHelper {
    * @return  Item model, or null if its missing or the wrong class type
    */
   @Nullable
-  public static <T extends IBakedModel> T getBakedModel(IItemProvider item, Class<T> clazz) {
-    IBakedModel baked = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(item.asItem());
+  public static <T extends BakedModel> T getBakedModel(ItemConvertible item, Class<T> clazz) {
+    BakedModel baked = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(item.asItem());
     if (clazz.isInstance(baked)) {
       return clazz.cast(baked);
     }
@@ -88,8 +88,8 @@ public class ModelHelper {
    * @return Texture name for the block
    */
   @SuppressWarnings("deprecation")
-  private static ResourceLocation getParticleTextureInternal(Block block) {
-    return Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(block.getDefaultState()).getParticleTexture().getName();
+  private static Identifier getParticleTextureInternal(Block block) {
+    return MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(block.getDefaultState()).getSprite().getId();
   }
 
   /**
@@ -97,7 +97,7 @@ public class ModelHelper {
    * @param block Block to fetch
    * @return Texture name for the block
    */
-  public static ResourceLocation getParticleTexture(Block block) {
+  public static Identifier getParticleTexture(Block block) {
     return TEXTURE_NAME_CACHE.computeIfAbsent(block, ModelHelper::getParticleTextureInternal);
   }
 
@@ -114,13 +114,13 @@ public class ModelHelper {
    * @throws JsonParseException  If there is no array or the length is wrong
    */
   public static <T> T arrayToObject(JsonObject json, String name, int size, Function<float[], T> mapper) {
-    JsonArray array = JSONUtils.getJsonArray(json, name);
+    JsonArray array = JsonHelper.getArray(json, name);
     if (array.size() != size) {
       throw new JsonParseException("Expected " + size + " " + name + " values, found: " + array.size());
     }
     float[] vec = new float[size];
     for(int i = 0; i < size; ++i) {
-      vec[i] = JSONUtils.getFloat(array.get(i), name + "[" + i + "]");
+      vec[i] = JsonHelper.asFloat(array.get(i), name + "[" + i + "]");
     }
     return mapper.apply(vec);
   }
@@ -142,7 +142,7 @@ public class ModelHelper {
    * @return  Integer of 0, 90, 180, or 270
    */
   public static int getRotation(JsonObject json, String key) {
-    int i = JSONUtils.getInt(json, key, 0);
+    int i = JsonHelper.getInt(json, key, 0);
     if (i >= 0 && i % 90 == 0 && i / 90 <= 3) {
       return i;
     } else {
@@ -162,7 +162,7 @@ public class ModelHelper {
     private final float r, g, b, a;
 
     public ColorTransformer(int color, BakedQuad quad) {
-      super(new BakedQuadBuilder(quad.getSprite()));
+      super(new BakedQuadBuilder(quad.a()));
 
       int a = (color >> 24);
       if (a == 0) {
@@ -180,10 +180,10 @@ public class ModelHelper {
 
     @Override
     public void put(int element, float... data) {
-      VertexFormatElement.Usage usage = this.parent.getVertexFormat().getElements().get(element).getUsage();
+      VertexFormatElement.Type usage = this.parent.getVertexFormat().getElements().get(element).getType();
 
       // transform normals and position
-      if (usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {
+      if (usage == VertexFormatElement.Type.COLOR && data.length >= 4) {
         data[0] = this.r;
         data[1] = this.g;
         data[2] = this.b;

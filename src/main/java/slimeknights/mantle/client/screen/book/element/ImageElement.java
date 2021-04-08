@@ -1,14 +1,16 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.element.ImageData;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ImageElement extends SizedBookElement {
 
   public ImageData image;
@@ -61,7 +63,7 @@ public class ImageElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, TextRenderer fontRenderer) {
     float r = ((this.colorMultiplier >> 16) & 0xff) / 255.F;
     float g = ((this.colorMultiplier >> 8) & 0xff) / 255.F;
     float b = (this.colorMultiplier & 0xff) / 255.F;
@@ -78,12 +80,12 @@ public class ImageElement extends SizedBookElement {
       RenderSystem.translatef(this.x, this.y, 0F);
       RenderSystem.scalef(this.width / 16F, this.height / 16F, 1F);
       this.itemElement.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);
-      RenderHelper.disableStandardItemLighting();
+      DiffuseLighting.disable();
       RenderSystem.popMatrix();
     }
   }
 
   public static void blitRaw(MatrixStack matrixStack, int x, int y, int w, int h, int minU, int maxU, int minV, int maxV, float tw, float th) {
-    innerBlit(matrixStack.getLast().getMatrix(), x, x + w, y, y + h, 0, minU / tw, maxU / tw, minV / th, maxV / th);
+    drawTexturedQuad(matrixStack.peek().getModel(), x, x + w, y, y + h, 0, minU / tw, maxU / tw, minV / th, maxV / th);
   }
 }

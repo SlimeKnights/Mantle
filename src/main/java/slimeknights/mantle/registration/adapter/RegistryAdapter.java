@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration.adapter;
 
 import lombok.RequiredArgsConstructor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -32,8 +32,8 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * Construct a resource location that belongs to the given namespace. Usually your mod.
    * @param name  Name for location
    */
-  public ResourceLocation getResource(String name) {
-    return new ResourceLocation(modId, name);
+  public Identifier getResource(String name) {
+    return new Identifier(modId, name);
   }
 
   /**
@@ -74,7 +74,7 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * @param location  Registry name
    * @return Registry entry
    */
-  public <I extends T> I register(I entry, ResourceLocation location) {
+  public <I extends T> I register(I entry, Identifier location) {
     entry.setRegistryName(location);
     registry.register(entry);
     return entry;

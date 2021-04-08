@@ -1,10 +1,12 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.util.text.ITextComponent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.text.Text;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class TextData {
 
   public static final TextData LINEBREAK = new TextData("\n");
@@ -20,7 +22,7 @@ public class TextData {
   public boolean dropshadow = false;
   public float scale = 1.F;
   public String action = "";
-  public ITextComponent[] tooltip = null;
+  public Text[] tooltip = null;
 
   public TextData() {
   }

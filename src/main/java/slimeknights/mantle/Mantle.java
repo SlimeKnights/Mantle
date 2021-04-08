@@ -1,7 +1,7 @@
 package slimeknights.mantle;
 
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
@@ -49,7 +49,7 @@ public class Mantle {
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(this::commonSetup);
     bus.addListener(Config::configChanged);
-    bus.addGenericListener(IRecipeSerializer.class, this::registerRecipeSerializers);
+    bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
     bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
   }
 
@@ -57,8 +57,8 @@ public class Mantle {
     MantleNetwork.registerPackets();
   }
 
-  private void registerRecipeSerializers(final RegistryEvent.Register<IRecipeSerializer<?>> event) {
-    RegistryAdapter<IRecipeSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
+  private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {
+    RegistryAdapter<RecipeSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
     adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
     adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
 
@@ -80,7 +80,7 @@ public class Mantle {
    * @param name  Name
    * @return  Resource location instance
    */
-  public static ResourceLocation getResource(String name) {
-    return new ResourceLocation(modId, name);
+  public static Identifier getResource(String name) {
+    return new Identifier(modId, name);
   }
 }

@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration.deferred;
 
 import net.minecraft.item.Item;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.ItemObject;
@@ -35,7 +35,7 @@ public class ItemDeferredRegister extends DeferredRegisterWrapper<Item> {
    * @param props  Item properties
    * @return  Item registry object
    */
-  public ItemObject<Item> register(String name, Item.Properties props) {
+  public ItemObject<Item> register(String name, Item.Settings props) {
     return register(name, () -> new Item(props));
   }
 
@@ -49,7 +49,7 @@ public class ItemDeferredRegister extends DeferredRegisterWrapper<Item> {
    * @param mapper   Function to get a item for the given enum value
    * @return  EnumObject mapping between different item types
    */
-  public <T extends Enum<T> & IStringSerializable, I extends Item> EnumObject<T,I> registerEnum(T[] values, String name, Function<T,? extends I> mapper) {
+  public <T extends Enum<T> & StringIdentifiable, I extends Item> EnumObject<T,I> registerEnum(T[] values, String name, Function<T,? extends I> mapper) {
     return registerEnum(values, name, (fullName, type) -> register(fullName, () -> mapper.apply(type)));
   }
 
@@ -60,7 +60,7 @@ public class ItemDeferredRegister extends DeferredRegisterWrapper<Item> {
    * @param mapper   Function to get a item for the given enum value
    * @return  EnumObject mapping between different item types
    */
-  public <T extends Enum<T> & IStringSerializable, I extends Item> EnumObject<T,I> registerEnum(String name, T[] values, Function<T,? extends I> mapper) {
+  public <T extends Enum<T> & StringIdentifiable, I extends Item> EnumObject<T,I> registerEnum(String name, T[] values, Function<T,? extends I> mapper) {
     return registerEnum(name, values, (fullName, type) -> register(fullName, () -> mapper.apply(type)));
   }
 }

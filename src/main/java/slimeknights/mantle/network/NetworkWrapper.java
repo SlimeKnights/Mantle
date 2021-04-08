@@ -1,13 +1,13 @@
 package slimeknights.mantle.network;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.chunk.WorldChunk;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -37,7 +37,7 @@ public class NetworkWrapper {
    * Creates a new network wrapper
    * @param channelName  Unique packet channel name
    */
-  public NetworkWrapper(ResourceLocation channelName) {
+  public NetworkWrapper(Identifier channelName) {
     this.network = NetworkRegistry.ChannelBuilder.named(channelName)
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
             .serverAcceptedVersions(PROTOCOL_VERSION::equals)
@@ -51,7 +51,7 @@ public class NetworkWrapper {
    * @param decoder  Packet decoder, typically the constructor
    * @param <MSG>  Packet class type
    */
-  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<PacketBuffer, MSG> decoder, @Nullable NetworkDirection direction) {
+  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<PacketByteBuf, MSG> decoder, @Nullable NetworkDirection direction) {
     registerPacket(clazz, ISimplePacket::encode, decoder, ISimplePacket::handle, direction);
   }
 
@@ -64,7 +64,7 @@ public class NetworkWrapper {
    * @param direction  Network direction for validation. Pass null for no direction
    * @param <MSG>  Packet class type
    */
-  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG,Supplier<Context>> consumer, @Nullable NetworkDirection direction) {
+  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, PacketByteBuf> encoder, Function<PacketByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<Context>> consumer, @Nullable NetworkDirection direction) {
     this.network.registerMessage(this.id++, clazz, encoder, decoder, consumer, Optional.ofNullable(direction));
   }
 
@@ -93,9 +93,9 @@ public class NetworkWrapper {
    * @param player  Player receiving the packet
    * @param packet  Packet
    */
-  public void sendVanillaPacket(IPacket<?> packet, Entity player) {
-    if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).connection != null) {
-      ((ServerPlayerEntity) player).connection.sendPacket(packet);
+  public void sendVanillaPacket(Packet<?> packet, Entity player) {
+    if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).networkHandler != null) {
+      ((ServerPlayerEntity) player).networkHandler.sendPacket(packet);
     }
   }
 
@@ -106,7 +106,7 @@ public class NetworkWrapper {
    */
   public void sendTo(Object msg, ServerPlayerEntity player) {
     if (!(player instanceof FakePlayer)) {
-      network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+      network.sendTo(msg, player.networkHandler.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
   }
 
@@ -117,7 +117,7 @@ public class NetworkWrapper {
    * @param position     Position within range
    */
   public void sendToClientsAround(Object msg, ServerWorld serverWorld, BlockPos position) {
-    Chunk chunk = serverWorld.getChunkAt(position);
+    WorldChunk chunk = serverWorld.getWorldChunk(position);
     network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
   }
 }

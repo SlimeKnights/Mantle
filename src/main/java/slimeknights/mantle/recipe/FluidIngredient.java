@@ -9,11 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.tag.ServerTagManagerHolder;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.util.JsonHelper;
@@ -66,7 +65,7 @@ public abstract class FluidIngredient {
     if (displayFluids == null) {
       displayFluids = getAllFluids().stream().filter(stack -> {
         Fluid fluid = stack.getFluid();
-        return fluid.isSource(fluid.getDefaultState());
+        return fluid.isStill(fluid.getDefaultState());
       }).collect(Collectors.toList());
     }
     return displayFluids;
@@ -88,7 +87,7 @@ public abstract class FluidIngredient {
    * Writes the ingredient into the packet buffer
    * @param buffer Packet buffer instance
    */
-  public void write(PacketBuffer buffer) {
+  public void write(PacketByteBuf buffer) {
     Collection<FluidStack> fluids = getAllFluids();
     buffer.writeInt(fluids.size());
     for (FluidStack stack : fluids) {
@@ -127,7 +126,7 @@ public abstract class FluidIngredient {
    * @param amount  Minimum fluid amount
    * @return  Fluid ingredient from a tag
    */
-  public static FluidIngredient of(ITag<Fluid> fluid, int amount) {
+  public static FluidIngredient of(Tag<Fluid> fluid, int amount) {
     return new FluidIngredient.TagMatch(fluid, amount);
   }
 
@@ -217,11 +216,11 @@ public abstract class FluidIngredient {
    * @param buffer  Buffer instance
    * @return  Fluid ingredient instance
    */
-  public static FluidIngredient read(PacketBuffer buffer) {
+  public static FluidIngredient read(PacketByteBuf buffer) {
     int count = buffer.readInt();
     FluidIngredient[] ingredients = new FluidIngredient[count];
     for (int i = 0; i < count; i++) {
-      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(buffer.readString(32767)));
+      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new Identifier(buffer.readString(32767)));
       if (fluid == null) {
         fluid = Fluids.EMPTY;
       }
@@ -298,7 +297,7 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(PacketByteBuf buffer) {
       // count
       buffer.writeInt(1);
       // single fluid
@@ -312,12 +311,12 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static FluidMatch deserialize(JsonObject json) {
-      String fluidName = JSONUtils.getString(json, "name");
-      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
+      String fluidName = net.minecraft.util.JsonHelper.getString(json, "name");
+      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new Identifier(fluidName));
       if (fluid == null || fluid == Fluids.EMPTY) {
         throw new JsonSyntaxException("Unknown fluid '" + fluidName + "'");
       }
-      int amount = JSONUtils.getInt(json, "amount");
+      int amount = net.minecraft.util.JsonHelper.getInt(json, "amount");
       return new FluidMatch(fluid, amount);
     }
   }
@@ -327,7 +326,7 @@ public abstract class FluidIngredient {
    */
   @AllArgsConstructor(access=AccessLevel.PRIVATE)
   private static class TagMatch extends FluidIngredient {
-    private final ITag<Fluid> tag;
+    private final Tag<Fluid> tag;
     private final int amount;
 
     @Override
@@ -342,13 +341,13 @@ public abstract class FluidIngredient {
 
     @Override
     public List<FluidStack> getAllFluids() {
-      return tag.getAllElements().stream().map((fluid) -> new FluidStack(fluid, amount)).collect(Collectors.toList());
+      return tag.values().stream().map((fluid) -> new FluidStack(fluid, amount)).collect(Collectors.toList());
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", TagCollectionManager.getManager().getFluidTags().getValidatedIdFromTag(this.tag).toString());
+      object.addProperty("tag", ServerTagManagerHolder.getTagManager().getFluids().getTagId(this.tag).toString());
       object.addProperty("amount", amount);
       return object;
     }
@@ -359,12 +358,12 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static TagMatch deserialize(JsonObject json) {
-      String tagName = JSONUtils.getString(json, "tag");
-      ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(new ResourceLocation(tagName));
+      String tagName = net.minecraft.util.JsonHelper.getString(json, "tag");
+      Tag<Fluid> tag = ServerTagManagerHolder.getTagManager().getFluids().getTag(new Identifier(tagName));
       if (tag == null) {
         throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
       }
-      int amount = JSONUtils.getInt(json, "amount");
+      int amount = net.minecraft.util.JsonHelper.getInt(json, "amount");
       return new TagMatch(tag, amount);
     }
   }
@@ -428,7 +427,7 @@ public abstract class FluidIngredient {
       FluidIngredient[] ingredients = new FluidIngredient[size];
       for (int i = 0; i < size; i++) {
         // no reason to an array in an array
-        ingredients[i] = deserializeObject(JSONUtils.getJsonObject(array.get(i), name + "[" + i + "]"));
+        ingredients[i] = deserializeObject(net.minecraft.util.JsonHelper.asObject(array.get(i), name + "[" + i + "]"));
       }
       return new Compound(ingredients);
     }

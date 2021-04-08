@@ -53,7 +53,7 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
    */
   public <T extends Entity> RegistryObject<EntityType<T>> registerWithEgg(String name, Supplier<EntityType.Builder<T>> sup, int primary, int secondary) {
     Lazy<EntityType<T>> lazy = Lazy.of(() -> sup.get().build(resourceName(name)));
-    itemRegistry.register(name + "_spawn_egg", () -> new SpawnEggItem(lazy.get(), primary, secondary, ItemProperties.EGG_PROPS));
+//    itemRegistry.register(name + "_spawn_egg", () -> new SpawnEggItem(lazy.get(), primary, secondary, ItemProperties.EGG_PROPS));
     return register.register(name, lazy);
   }
 }

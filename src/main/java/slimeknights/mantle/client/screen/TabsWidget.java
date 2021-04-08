@@ -1,28 +1,30 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class TabsWidget extends Widget {
 
-  private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+  private static final Identifier creativeInventoryTabs = new Identifier("textures/gui/container/creative_inventory/tabs.png");
 
   private final ElementScreen[] tabActive = new ElementScreen[3];
   private final ElementScreen[] tab = new ElementScreen[3];
 
   // change this if you need different tabs
-  public ResourceLocation tabsResource = creativeInventoryTabs;
+  public Identifier tabsResource = creativeInventoryTabs;
   // changes the y-offset of the tab row
   public int yOffset = 4;
   // space between 2 tabs
@@ -146,24 +148,24 @@ public class TabsWidget extends Widget {
       // todo: draw all the tabs first and then all the itemstacks so it doesn't have to switch texture in between all the time
 
       // rebind texture from drawing an itemstack
-      Minecraft.getInstance().getTextureManager().bindTexture(this.tabsResource);
+      MinecraftClient.getInstance().getTextureManager().bindTexture(this.tabsResource);
       actualTab.draw(matrixStack,x, y);
 
       ItemStack icon = this.icons.get(i);
       if (icon != null) {
         this.drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
-        RenderHelper.disableStandardItemLighting();
+        DiffuseLighting.disable();
       }
     }
   }
 
   // ContainerScreen.drawItemStack
   private void drawItemStack(ItemStack stack, int x, int y) {
-    ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
+    ItemRenderer itemRender = MinecraftClient.getInstance().getItemRenderer();
     RenderSystem.translatef(0.0F, 0.0F, 32.0F);
-    itemRender.zLevel = 200.0F;
+    itemRender.zOffset = 200.0F;
 
-    itemRender.renderItemAndEffectIntoGUI(stack, x, y);
-    itemRender.zLevel = 0.0F;
+    itemRender.renderInGuiWithOverrides(stack, x, y);
+    itemRender.zOffset = 0.0F;
   }
 }

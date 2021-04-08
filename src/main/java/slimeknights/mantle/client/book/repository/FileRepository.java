@@ -1,13 +1,13 @@
 package slimeknights.mantle.client.book.repository;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.SectionData;
 
 import javax.annotation.Nullable;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.Resource;
+import net.minecraft.util.Identifier;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -29,55 +29,55 @@ public class FileRepository extends BookRepository {
   }
 
   @Override
-  public ResourceLocation getResourceLocation(@Nullable String path, boolean safe) {
+  public Identifier getResourceLocation(@Nullable String path, boolean safe) {
     if (path == null) {
-      return safe ? new ResourceLocation("") : null;
+      return safe ? new Identifier("") : null;
     }
     if (!path.contains(":")) {
       String langPath = null;
 
       //noinspection ConstantConditions - this was proven to be null once
-      if (Minecraft.getInstance().getLanguageManager() != null && Minecraft.getInstance().getLanguageManager().getCurrentLanguage() != null) {
-        langPath = Minecraft.getInstance().getLanguageManager().getCurrentLanguage().getCode();
+      if (MinecraftClient.getInstance().getLanguageManager() != null && MinecraftClient.getInstance().getLanguageManager().getLanguage() != null) {
+        langPath = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
       }
 
       String defaultLangPath = "en_us";
 
-      ResourceLocation res;
+      Identifier res;
 
       //noinspection ConstantConditions - see above
       if (langPath != null) {
-        res = new ResourceLocation(this.location + "/" + langPath + "/" + path);
+        res = new Identifier(this.location + "/" + langPath + "/" + path);
         if (this.resourceExists(res)) {
           return res;
         }
       }
-      res = new ResourceLocation(this.location + "/" + defaultLangPath + "/" + path);
+      res = new Identifier(this.location + "/" + defaultLangPath + "/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
-      res = new ResourceLocation(this.location + "/" + path);
+      res = new Identifier(this.location + "/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
     }
     else {
-      ResourceLocation res = new ResourceLocation(path);
+      Identifier res = new Identifier(path);
       if (this.resourceExists(res)) {
         return res;
       }
     }
 
-    return safe ? new ResourceLocation("") : null;
+    return safe ? new Identifier("") : null;
   }
 
   @Override
-  public IResource getResource(@Nullable ResourceLocation loc) {
+  public Resource getResource(@Nullable Identifier loc) {
     if (loc == null) {
       return null;
     }
     try {
-      return Minecraft.getInstance().getResourceManager().getResource(loc);
+      return MinecraftClient.getInstance().getResourceManager().getResource(loc);
     }
     catch (IOException e) {
       return null;
@@ -85,12 +85,12 @@ public class FileRepository extends BookRepository {
   }
 
   @Override
-  public boolean resourceExists(@Nullable ResourceLocation location) {
+  public boolean resourceExists(@Nullable Identifier location) {
     if (location == null) {
       return false;
     }
     try {
-      Minecraft.getInstance().getResourceManager().getResource(location);
+      MinecraftClient.getInstance().getResourceManager().getResource(location);
       return true;
     }
     catch (IOException e) {
@@ -99,7 +99,7 @@ public class FileRepository extends BookRepository {
   }
 
   @Override
-  public String resourceToString(@Nullable IResource resource, boolean skipCommments) {
+  public String resourceToString(@Nullable Resource resource, boolean skipCommments) {
     if (resource == null) {
       return "";
     }

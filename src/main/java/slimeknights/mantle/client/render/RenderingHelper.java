@@ -1,26 +1,26 @@
 package slimeknights.mantle.client.render;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.model.json.ModelTransformation.Mode;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
+import net.minecraft.state.property.Properties;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import slimeknights.mantle.client.model.inventory.ModelItem;
 
@@ -34,12 +34,12 @@ public class RenderingHelper {
   /**
    * Applies horizontal rotation to the given TESR
    * @param matrices  Matrix stack
-   * @param state     Block state, checked for {@link BlockStateProperties#HORIZONTAL_FACING}
+   * @param state     Block state, checked for {@link Properties#HORIZONTAL_FACING}
    * @return  True if rotation was applied. Caller is expected to call {@link MatrixStack#pop()} if true
    */
   public static boolean applyRotation(MatrixStack matrices, BlockState state) {
-    if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-      return applyRotation(matrices, state.get(BlockStateProperties.HORIZONTAL_FACING));
+    if (state.contains(Properties.HORIZONTAL_FACING)) {
+      return applyRotation(matrices, state.get(Properties.HORIZONTAL_FACING));
     }
     return false;
   }
@@ -55,7 +55,7 @@ public class RenderingHelper {
     if (facing.getAxis().isHorizontal() && facing != Direction.SOUTH) {
       matrices.push();
       matrices.translate(0.5, 0, 0.5);
-      matrices.rotate(Vector3f.YP.rotationDegrees(-90f * (facing.getHorizontalIndex())));
+      matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90f * (facing.getHorizontal())));
       matrices.translate(-0.5, 0, -0.5);
       return true;
     }
@@ -73,7 +73,7 @@ public class RenderingHelper {
    * @param modelItem   Model items for render information
    * @param light       Model light
    */
-  public static void renderItem(MatrixStack matrices, IRenderTypeBuffer buffer, ItemStack item, ModelItem modelItem, int light) {
+  public static void renderItem(MatrixStack matrices, VertexConsumerProvider buffer, ItemStack item, ModelItem modelItem, int light) {
     // if the item says skip, skip
     if (modelItem.isHidden()) return;
     // if no stack, skip
@@ -91,15 +91,15 @@ public class RenderingHelper {
     // rotate X, then Y
     float x = modelItem.getX();
     if (x != 0) {
-      matrices.rotate(Vector3f.XP.rotationDegrees(x));
+      matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(x));
     }
     float y = modelItem.getY();
     if (y != 0) {
-      matrices.rotate(Vector3f.YP.rotationDegrees(y));
+      matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(y));
     }
 
     // render the actual item
-    Minecraft.getInstance().getItemRenderer().renderItem(item, TransformType.NONE, light, OverlayTexture.NO_OVERLAY, matrices, buffer);
+    MinecraftClient.getInstance().getItemRenderer().renderItem(item, Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, buffer);
     matrices.pop();
   }
 
@@ -122,25 +122,25 @@ public class RenderingHelper {
    * @deprecated   Remove when {@link GuiUtils} updates drawHoveringText
    */
   @Deprecated
-  public static void drawHoveringText(MatrixStack mStack, List<ITextComponent> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font) {
+  public static void drawHoveringText(MatrixStack mStack, List<Text> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, TextRenderer font) {
     drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth,
                      GuiUtils.DEFAULT_BACKGROUND_COLOR, GuiUtils.DEFAULT_BORDER_COLOR_START, GuiUtils.DEFAULT_BORDER_COLOR_END, font);
   }
 
   /**
-   * @deprecated remove with {@link #drawHoveringText(MatrixStack, List, int, int, int, int, int, FontRenderer)}
+   * @deprecated remove with {@link #drawHoveringText(MatrixStack, List, int, int, int, int, int, TextRenderer)}
    */
   @Deprecated
-  private static void drawHoveringText(MatrixStack mStack, List<ITextComponent> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth,
-                                       int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font) {
+  private static void drawHoveringText(MatrixStack mStack, List<Text> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth,
+                                       int backgroundColor, int borderColorStart, int borderColorEnd, TextRenderer font) {
     if (textLines.isEmpty()) {
       return;
     }
 
     // get largest width
     int tooltipWidth = 0;
-    for(ITextProperties processor : textLines) {
-      int width = font.getStringPropertyWidth(processor);
+    for(StringVisitable processor : textLines) {
+      int width = font.getWidth(processor);
       if (width > tooltipWidth) {
         tooltipWidth = width;
       }
@@ -167,17 +167,17 @@ public class RenderingHelper {
     }
 
     // uf wrap is needed, wrap text
-    List<IReorderingProcessor> finalText;
+    List<OrderedText> finalText;
     if (needsWrap) {
       int wrappedTooltipWidth = 0;
-      List<IReorderingProcessor> wrappedTextLines = new ArrayList<>();
+      List<OrderedText> wrappedTextLines = new ArrayList<>();
       for (int i = 0; i < textLines.size(); i++) {
-        ITextProperties textLine = textLines.get(i);
-        List<IReorderingProcessor> wrappedLine = font.trimStringToWidth(textLine, tooltipWidth);
+        StringVisitable textLine = textLines.get(i);
+        List<OrderedText> wrappedLine = font.wrapLines(textLine, tooltipWidth);
         if (i == 0)
           titleLinesCount = wrappedLine.size();
-        for (IReorderingProcessor line : wrappedLine) {
-          int lineWidth = font.func_243245_a(line);
+        for (OrderedText line : wrappedLine) {
+          int lineWidth = font.getWidth(line);
           if (lineWidth > wrappedTooltipWidth)
             wrappedTooltipWidth = lineWidth;
           wrappedTextLines.add(line);
@@ -190,7 +190,7 @@ public class RenderingHelper {
       else
         tooltipX = mouseX + 12;
     } else {
-      finalText = Lists.transform(textLines, ITextComponent::func_241878_f);
+      finalText = Lists.transform(textLines, Text::asOrderedText);
     }
 
     int tooltipY = mouseY - 12;
@@ -210,8 +210,8 @@ public class RenderingHelper {
 
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
-    buffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-    Matrix4f mat = mStack.getLast().getMatrix();
+    buffer.begin(7, VertexFormats.POSITION_COLOR);
+    Matrix4f mat = mStack.peek().getModel();
     fillGradient(mat, buffer, tooltipX - 3,                tooltipY - 4,                 tooltipX + tooltipWidth + 3, tooltipY - 3,                     400, backgroundColor,  backgroundColor);
     fillGradient(mat, buffer, tooltipX - 3,                tooltipY + tooltipHeight + 3, tooltipX + tooltipWidth + 3, tooltipY + tooltipHeight + 4,     400, backgroundColor,  backgroundColor);
     fillGradient(mat, buffer, tooltipX - 3,                tooltipY - 3,                 tooltipX + tooltipWidth + 3, tooltipY + tooltipHeight + 3,     400, backgroundColor,  backgroundColor);
@@ -226,18 +226,18 @@ public class RenderingHelper {
     RenderSystem.enableBlend();
     RenderSystem.defaultBlendFunc();
     RenderSystem.shadeModel(7425);
-    buffer.finishDrawing();
-    WorldVertexBufferUploader.draw(buffer);
+    buffer.end();
+    BufferRenderer.draw(buffer);
     RenderSystem.shadeModel(7424);
     RenderSystem.disableBlend();
     RenderSystem.enableTexture();
-    IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+    VertexConsumerProvider.Immediate renderType = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
     mStack.translate(0.0D, 0.0D, 400.0D);
 
     for(int line = 0; line < finalText.size(); ++line) {
-      IReorderingProcessor processor = finalText.get(line);
+      OrderedText processor = finalText.get(line);
       if (processor != null) {
-        font.func_238416_a_(processor, tooltipX, tooltipY, -1, true, mat, renderType, false, 0, 15728880);
+        font.draw(processor, tooltipX, tooltipY, -1, true, mat, renderType, false, 0, 15728880);
       }
       if (line == 0) {
         tooltipY += 2;
@@ -246,7 +246,7 @@ public class RenderingHelper {
       tooltipY += 10;
     }
 
-    renderType.finish();
+    renderType.draw();
     mStack.pop();
   }
 
@@ -261,7 +261,7 @@ public class RenderingHelper {
    * @param z        Z index
    * @param colorA   Start color
    * @param colorB   End color
-   * @deprecated remove with {@link #drawHoveringText(MatrixStack, List, int, int, int, int, int, FontRenderer)}
+   * @deprecated remove with {@link #drawHoveringText(MatrixStack, List, int, int, int, int, int, TextRenderer)}
    */
   @Deprecated
   private static void fillGradient(Matrix4f matrix, BufferBuilder builder, int x1, int y1, int x2, int y2, int z, int colorA, int colorB) {
@@ -273,9 +273,9 @@ public class RenderingHelper {
     float redB   = (float)(colorB >> 16 & 255) / 255F;
     float greenB = (float)(colorB >>  8 & 255) / 255F;
     float blueB  = (float)(colorB       & 255) / 255F;
-    builder.pos(matrix, (float)x2, (float)y1, (float)z).color(redA, greenA, blueA, alphaA).endVertex();
-    builder.pos(matrix, (float)x1, (float)y1, (float)z).color(redA, greenA, blueA, alphaA).endVertex();
-    builder.pos(matrix, (float)x1, (float)y2, (float)z).color(redB, greenB, blueB, alphaB).endVertex();
-    builder.pos(matrix, (float)x2, (float)y2, (float)z).color(redB, greenB, blueB, alphaB).endVertex();
+    builder.vertex(matrix, (float)x2, (float)y1, (float)z).color(redA, greenA, blueA, alphaA).next();
+    builder.vertex(matrix, (float)x1, (float)y1, (float)z).color(redA, greenA, blueA, alphaA).next();
+    builder.vertex(matrix, (float)x1, (float)y2, (float)z).color(redB, greenB, blueB, alphaB).next();
+    builder.vertex(matrix, (float)x2, (float)y2, (float)z).color(redB, greenB, blueB, alphaB).next();
   }
 }

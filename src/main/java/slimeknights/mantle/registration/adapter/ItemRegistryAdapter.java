@@ -6,7 +6,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.Item.Properties;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.BlockTooltipItem;
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue"})
 public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
-  private final Item.Properties defaultProps;
+  private final Item.Settings defaultProps;
 
   /**
    * Registers a new item registry adapter with default mod ID and item properties
@@ -42,10 +42,10 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param registry      Item registry instance
    * @param defaultProps  Default item properties
    */
-  public ItemRegistryAdapter(IForgeRegistry<Item> registry, @Nullable Item.Properties defaultProps) {
+  public ItemRegistryAdapter(IForgeRegistry<Item> registry, @Nullable Item.Settings defaultProps) {
     super(registry);
     if (defaultProps == null) {
-      this.defaultProps = new Item.Properties();
+      this.defaultProps = new Item.Settings();
     } else {
       this.defaultProps = defaultProps;
     }
@@ -57,10 +57,10 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param modid         Mod ID override
    * @param defaultProps  Default item properties
    */
-  public ItemRegistryAdapter(IForgeRegistry<Item> registry, String modid, @Nullable Item.Properties defaultProps) {
+  public ItemRegistryAdapter(IForgeRegistry<Item> registry, String modid, @Nullable Item.Settings defaultProps) {
     super(registry, modid);
     if (defaultProps == null) {
-      this.defaultProps = new Item.Properties();
+      this.defaultProps = new Item.Settings();
     } else {
       this.defaultProps = defaultProps;
     }
@@ -83,7 +83,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param name   Item name
    * @return  Registered item
    */
-  public TooltipItem register(Item.Properties props, String name) {
+  public TooltipItem register(Item.Settings props, String name) {
     return register(new TooltipItem(props), name);
   }
 
@@ -94,7 +94,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param <T>          Item type
    * @return  Registered item
    */
-  public <T extends Item> T registerDefault(Function<Properties,T> constructor, String name) {
+  public <T extends Item> T registerDefault(Function<Settings,T> constructor, String name) {
     return register(constructor.apply(defaultProps), name);
   }
 
@@ -122,7 +122,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param <T>          Result block item type
    * @return  Registered block item
    */
-  public <T extends BlockItem> T registerBlockItem(Block block, BiFunction<Block,Properties,T> constructor) {
+  public <T extends BlockItem> T registerBlockItem(Block block, BiFunction<Block,Settings,T> constructor) {
     return register(constructor.apply(block, defaultProps), block);
   }
 
@@ -131,7 +131,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param block  The block you want to have an item for
    * @param props  Item properties for the block
    */
-  public BlockItem registerBlockItem(Block block, Item.Properties props) {
+  public BlockItem registerBlockItem(Block block, Item.Settings props) {
     return register(new BlockTooltipItem(block, props), block);
   }
 
@@ -187,7 +187,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param enumObject  Enum object instance
    * @param props       Item properties to use
    */
-  public <B extends Block> void registerBlockItem(EnumObject<?, B> enumObject, Item.Properties props) {
+  public <B extends Block> void registerBlockItem(EnumObject<?, B> enumObject, Item.Settings props) {
     enumObject.values().forEach(block -> this.registerBlockItem(block, props));
   }
 
@@ -210,7 +210,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return  Bucket instance
    */
   public BucketItem registerBucket(Supplier<? extends Fluid> fluid, String baseName) {
-    return register(new BucketItem(fluid, ItemProperties.BUCKET_PROPS), baseName + "_bucket");
+//    return register(new BucketItem(fluid, ItemProperties.BUCKET_PROPS), baseName + "_bucket");
   }
 
   /**
@@ -222,6 +222,6 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return  Spawn egg item instance
    */
   public SpawnEggItem registerSpawnEgg(EntityType<?> entity, int primary, int secondary, String baseName) {
-    return register(new SpawnEggItem(entity, primary, secondary, ItemProperties.EGG_PROPS), baseName + "_spawn_egg");
+//    return register(new SpawnEggItem(entity, primary, secondary, ItemProperties.EGG_PROPS), baseName + "_spawn_egg");
   }
 }

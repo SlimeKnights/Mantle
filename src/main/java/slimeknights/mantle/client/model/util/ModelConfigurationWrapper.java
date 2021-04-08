@@ -1,9 +1,9 @@
 package slimeknights.mantle.client.model.util;
 
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.render.model.ModelBakeSettings;
+import net.minecraft.client.render.model.UnbakedModel;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.geometry.IModelGeometryPart;
 
@@ -26,7 +26,7 @@ public class ModelConfigurationWrapper implements IModelConfiguration {
 
   @Nullable
   @Override
-  public IUnbakedModel getOwnerModel() {
+  public UnbakedModel getOwnerModel() {
     return base.getOwnerModel();
   }
 
@@ -41,7 +41,7 @@ public class ModelConfigurationWrapper implements IModelConfiguration {
   }
 
   @Override
-  public RenderMaterial resolveTexture(String name) {
+  public SpriteIdentifier resolveTexture(String name) {
     return base.resolveTexture(name);
   }
 
@@ -61,12 +61,12 @@ public class ModelConfigurationWrapper implements IModelConfiguration {
   }
 
   @Override
-  public ItemCameraTransforms getCameraTransforms() {
+  public ModelTransformation getCameraTransforms() {
     return base.getCameraTransforms();
   }
 
   @Override
-  public IModelTransform getCombinedTransform() {
+  public ModelBakeSettings getCombinedTransform() {
     return base.getCombinedTransform();
   }
 

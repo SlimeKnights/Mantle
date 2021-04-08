@@ -1,16 +1,18 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
@@ -23,15 +25,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class TextDataRenderer {
 
   /**
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
   @Nullable
-  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr) {
-    List<ITextComponent> tooltip = new ArrayList<ITextComponent>();
+  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, TextRenderer fr) {
+    List<Text> tooltip = new ArrayList<Text>();
     String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
     if (tooltip.size() > 0) {
@@ -42,7 +44,7 @@ public class TextDataRenderer {
   }
 
   @Nullable
-  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, List<ITextComponent> tooltip) {
+  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, TextRenderer fr, List<Text> tooltip) {
     String action = "";
 
     int atX = x;
@@ -51,7 +53,7 @@ public class TextDataRenderer {
     float prevScale = 1.F;
 
     for (TextData item : data) {
-      int box1X, box1Y, box1W = 9999, box1H = y + fr.FONT_HEIGHT;
+      int box1X, box1Y, box1W = 9999, box1H = y + fr.fontHeight;
       int box2X, box2Y = 9999, box2W, box2H;
       int box3X = 9999, box3Y = 9999, box3W, box3H;
 
@@ -60,35 +62,35 @@ public class TextDataRenderer {
       }
       if (item.text.equals("\n")) {
         atX = x;
-        atY += fr.FONT_HEIGHT;
+        atY += fr.fontHeight;
         continue;
       }
 
       if (item.paragraph) {
         atX = x;
-        atY += fr.FONT_HEIGHT * 2 * prevScale;
+        atY += fr.fontHeight * 2 * prevScale;
       }
 
       prevScale = item.scale;
 
       String modifiers = "";
 
-      modifiers += TextFormatting.getValueByName(item.color);
+      modifiers += Formatting.byName(item.color);
 
       if (item.bold) {
-        modifiers += TextFormatting.BOLD;
+        modifiers += Formatting.BOLD;
       }
       if (item.italic) {
-        modifiers += TextFormatting.ITALIC;
+        modifiers += Formatting.ITALIC;
       }
       if (item.underlined) {
-        modifiers += TextFormatting.UNDERLINE;
+        modifiers += Formatting.UNDERLINE;
       }
       if (item.strikethrough) {
-        modifiers += TextFormatting.STRIKETHROUGH;
+        modifiers += Formatting.STRIKETHROUGH;
       }
       if (item.obfuscated) {
-        modifiers += TextFormatting.OBFUSCATED;
+        modifiers += Formatting.OBFUSCATED;
       }
 
       String text = translateString(item.text);
@@ -110,7 +112,7 @@ public class TextDataRenderer {
         drawScaledString(matrixStack, fr, modifiers + s, atX, atY, 0, item.dropshadow, item.scale);
 
         if (i < split.length - 1) {
-          atY += fr.FONT_HEIGHT;
+          atY += fr.fontHeight;
           atX = x;
         }
 
@@ -128,14 +130,14 @@ public class TextDataRenderer {
 
       box2H = atY;
 
-      atX += fr.getStringWidth(split[split.length - 1]) * item.scale;
+      atX += fr.getWidth(split[split.length - 1]) * item.scale;
       if (atX - x >= boxWidth) {
         atX = x;
-        atY += fr.FONT_HEIGHT * item.scale;
+        atY += fr.fontHeight * item.scale;
       }
 
       box3W = atX;
-      box3H = (int) (atY + fr.FONT_HEIGHT * item.scale);
+      box3H = (int) (atY + fr.fontHeight * item.scale);
 
       if (item.tooltip != null && item.tooltip.length > 0) {
         // Uncomment to render bounding boxes for event handling
@@ -157,10 +159,10 @@ public class TextDataRenderer {
 
       if (atY >= y + boxHeight) {
         if (item.dropshadow) {
-          fr.drawStringWithShadow(matrixStack, "...", atX, atY, 0);
+          fr.drawWithShadow(matrixStack, "...", atX, atY, 0);
         }
         else {
-          fr.drawString(matrixStack, "...", atX, atY, 0);
+          fr.draw(matrixStack, "...", atX, atY, 0);
         }
         break;
       }
@@ -168,8 +170,8 @@ public class TextDataRenderer {
     }
 
     if (BookScreen.debug && action != null && !action.isEmpty()) {
-      tooltip.add(StringTextComponent.EMPTY);
-      tooltip.add(new StringTextComponent("Action: " + action).mergeStyle(TextFormatting.GRAY));
+      tooltip.add(LiteralText.EMPTY);
+      tooltip.add(new LiteralText("Action: " + action).formatted(Formatting.GRAY));
     }
 
     return action;
@@ -180,7 +182,7 @@ public class TextDataRenderer {
 
     while (s.contains("$(") && s.contains(")$") && s.indexOf("$(") < s.indexOf(")$")) {
       String loc = s.substring(s.indexOf("$(") + 2, s.indexOf(")$"));
-      s = s.replace("$(" + loc + ")$", I18n.format(loc));
+      s = s.replace("$(" + loc + ")$", I18n.translate(loc));
     }
 
     if (s.indexOf("$(") > s.indexOf(")$") || s.contains(")$")) {
@@ -190,18 +192,18 @@ public class TextDataRenderer {
     return s.replace("$\0(", "$(").replace(")\0$", ")$");
   }
 
-  public static String[] cropStringBySize(String s, String modifiers, int width, int height, FontRenderer fr, float scale) {
+  public static String[] cropStringBySize(String s, String modifiers, int width, int height, TextRenderer fr, float scale) {
     return cropStringBySize(s, modifiers, width, height, width, fr, scale);
   }
 
-  public static String[] cropStringBySize(String s, String modifiers, int width, int height, int firstWidth, FontRenderer fr, float scale) {
+  public static String[] cropStringBySize(String s, String modifiers, int width, int height, int firstWidth, TextRenderer fr, float scale) {
     int curWidth = 0;
-    int curHeight = (int) (fr.FONT_HEIGHT * scale);
+    int curHeight = (int) (fr.fontHeight * scale);
 
     for (int i = 0; i < s.length(); i++) {
-      curWidth += fr.getStringWidth(modifiers + s.charAt(i)) * scale;
+      curWidth += fr.getWidth(modifiers + s.charAt(i)) * scale;
 
-      if (s.charAt(i) == '\n' || (curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
+      if (s.charAt(i) == '\n' || (curHeight == (int) (fr.fontHeight * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.fontHeight * scale) && curWidth > width)) {
         int oldI = i;
         if(s.charAt(i) != '\n') {
           while (i >= 0 && s.charAt(i) != ' ') {
@@ -218,7 +220,7 @@ public class TextDataRenderer {
 
         i++;
         curWidth = 0;
-        curHeight += fr.FONT_HEIGHT * scale;
+        curHeight += fr.fontHeight * scale;
 
         if (curHeight >= height) {
           return s.substring(0, i).split("\r");
@@ -230,20 +232,20 @@ public class TextDataRenderer {
   }
 
   //BEGIN METHODS FROM GUI
-  public static void drawTooltip(MatrixStack matrixStack, List<ITextComponent> textLines, int mouseX, int mouseY, FontRenderer font) {
+  public static void drawTooltip(MatrixStack matrixStack, List<Text> textLines, int mouseX, int mouseY, TextRenderer font) {
     RenderingHelper.drawHoveringText(matrixStack, textLines, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
-    RenderHelper.disableStandardItemLighting();
+    DiffuseLighting.disable();
   }
 
-  public static void drawScaledString(MatrixStack matrixStack, FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
+  public static void drawScaledString(MatrixStack matrixStack, TextRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
     RenderSystem.pushMatrix();
     RenderSystem.translatef(x, y, 0);
     RenderSystem.scalef(scale, scale, 1F);
     if (dropShadow) {
-      font.drawStringWithShadow(matrixStack, text, 0, 0, color);
+      font.drawWithShadow(matrixStack, text, 0, 0, color);
     }
     else {
-      font.drawString(matrixStack, text, 0, 0, color);
+      font.draw(matrixStack, text, 0, 0, color);
     }
     RenderSystem.popMatrix();
   }
@@ -263,11 +265,11 @@ public class TextDataRenderer {
     RenderSystem.shadeModel(7425);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder vertexBuffer = tessellator.getBuffer();
-    vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-    vertexBuffer.pos((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.pos((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.pos((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    vertexBuffer.pos((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
+    vertexBuffer.begin(7, VertexFormats.POSITION_COLOR);
+    vertexBuffer.vertex((double) right, (double) top, 0D).color(f1, f2, f3, f).next();
+    vertexBuffer.vertex((double) left, (double) top, 0D).color(f1, f2, f3, f).next();
+    vertexBuffer.vertex((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).next();
+    vertexBuffer.vertex((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).next();
     tessellator.draw();
     RenderSystem.shadeModel(7424);
     RenderSystem.enableAlphaTest();

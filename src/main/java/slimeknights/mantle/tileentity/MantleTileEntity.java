@@ -1,17 +1,17 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.nbt.CompoundTag;
 
-public class MantleTileEntity extends TileEntity {
+public class MantleTileEntity extends BlockEntity {
 
-  public MantleTileEntity(TileEntityType<?> tileEntityTypeIn) {
+  public MantleTileEntity(BlockEntityType<?> tileEntityTypeIn) {
     super(tileEntityTypeIn);
   }
 
   public boolean isClient() {
-    return this.getWorld() != null && this.getWorld().isRemote;
+    return this.getWorld() != null && this.getWorld().isClient;
   }
 
   /**
@@ -20,7 +20,7 @@ public class MantleTileEntity extends TileEntity {
    */
   public void markDirtyFast() {
     if (world != null) {
-      world.markChunkDirty(pos, this);
+      world.markDirty(pos, this);
     }
   }
   
@@ -28,20 +28,20 @@ public class MantleTileEntity extends TileEntity {
   /* Syncing */
 
   /**
-   * Write to NBT that is synced to the client in {@link #getUpdateTag()} and in {@link #write(CompoundNBT)}
+   * Write to NBT that is synced to the client in {@link #toInitialChunkDataTag()} and in {@link #toTag(CompoundTag)}
    * @param nbt  NBT
    */
-  protected void writeSynced(CompoundNBT nbt) {}
+  protected void writeSynced(CompoundTag nbt) {}
 
   @Override
-  public CompoundNBT getUpdateTag() {
-    CompoundNBT nbt = super.getUpdateTag();
+  public CompoundTag toInitialChunkDataTag() {
+    CompoundTag nbt = super.toInitialChunkDataTag();
     writeSynced(nbt);
     return nbt;
   }
 
-  public CompoundNBT write(CompoundNBT nbt) {
-    nbt = super.write(nbt);
+  public CompoundTag toTag(CompoundTag nbt) {
+    nbt = super.toTag(nbt);
     writeSynced(nbt);
     return nbt;
   }

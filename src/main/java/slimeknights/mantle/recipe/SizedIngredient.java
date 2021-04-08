@@ -5,12 +5,11 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.tag.Tag;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.lang.ref.WeakReference;
@@ -53,8 +52,8 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param items         List of items
    * @return  Sized ingredient matching any size
    */
-  public static SizedIngredient fromItems(int amountNeeded, IItemProvider... items) {
-    return of(Ingredient.fromItems(items), amountNeeded);
+  public static SizedIngredient fromItems(int amountNeeded, ItemConvertible... items) {
+    return of(Ingredient.ofItems(items), amountNeeded);
   }
 
   /**
@@ -62,7 +61,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param items  List of items
    * @return  Sized ingredient matching any size
    */
-  public static SizedIngredient fromItems(IItemProvider... items) {
+  public static SizedIngredient fromItems(ItemConvertible... items) {
     return fromItems(1, items);
   }
 
@@ -72,7 +71,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param amountNeeded  Number that must match of this ingredient
    * @return  Sized ingredient matching any size
    */
-  public static SizedIngredient fromTag(ITag<Item> tag, int amountNeeded) {
+  public static SizedIngredient fromTag(Tag<Item> tag, int amountNeeded) {
     return of(Ingredient.fromTag(tag), amountNeeded);
   }
 
@@ -81,7 +80,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param tag  Tag to match
    * @return  Sized ingredient matching any size
    */
-  public static SizedIngredient fromTag(ITag<Item> tag) {
+  public static SizedIngredient fromTag(Tag<Item> tag) {
     return fromTag(tag, 1);
   }
 
@@ -95,7 +94,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  True if the ingredient has no matching stacks
    */
   public boolean hasNoMatchingStacks() {
-    return ingredient.hasNoMatchingItems();
+    return ingredient.isEmpty();
   }
 
   /**
@@ -103,7 +102,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  List of matching stacks
    */
   public List<ItemStack> getMatchingStacks() {
-    ItemStack[] ingredientMatch = ingredient.getMatchingStacks();
+    ItemStack[] ingredientMatch = ingredient.getMatchingStacksClient();
     // if we never cached, or the array instance changed since we last cached, recache
     if (matchingStacks == null || lastIngredientMatch.get() != ingredientMatch) {
       matchingStacks = Arrays.stream(ingredientMatch).map(stack -> {
@@ -122,7 +121,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * Writes this ingredient to the packet buffer
    * @param buffer  Buffer instance
    */
-  public void write(PacketBuffer buffer) {
+  public void write(PacketByteBuf buffer) {
     buffer.writeVarInt(amountNeeded);
     ingredient.write(buffer);
   }
@@ -132,7 +131,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  JsonObject of sized ingredient
    */
   public JsonObject serialize() {
-    JsonElement ingredient = this.ingredient.serialize();
+    JsonElement ingredient = this.ingredient.toJson();
     JsonObject json = null;
     // try using the object itself as our JSON
     if (ingredient.isJsonObject()) {
@@ -159,9 +158,9 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param buffer  Buffer instance
    * @return  Sized ingredient
    */
-  public static SizedIngredient read(PacketBuffer buffer) {
+  public static SizedIngredient read(PacketByteBuf buffer) {
     int amountNeeded = buffer.readVarInt();
-    Ingredient ingredient = Ingredient.read(buffer);
+    Ingredient ingredient = Ingredient.fromPacket(buffer);
     return of(ingredient, amountNeeded);
   }
 
@@ -171,13 +170,13 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient
    */
   public static SizedIngredient deserialize(JsonObject json) {
-    int amountNeeded = JSONUtils.getInt(json, "amount_needed", 1);
+    int amountNeeded = net.minecraft.util.JsonHelper.getInt(json, "amount_needed", 1);
     // if we have a nested value, read as nested
     Ingredient ingredient;
     if (json.has("ingredient")) {
-      ingredient = Ingredient.deserialize(JsonHelper.getElement(json, "ingredient"));
+      ingredient = Ingredient.fromJson(JsonHelper.getElement(json, "ingredient"));
     } else {
-      ingredient = Ingredient.deserialize(json);
+      ingredient = Ingredient.fromJson(json);
     }
 
     // return ingredient

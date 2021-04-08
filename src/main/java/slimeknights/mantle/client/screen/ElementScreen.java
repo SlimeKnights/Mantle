@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -9,7 +11,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * Represents a GUI element INSIDE the graphics file.
  * The coordinates all refer to the coordinates inside the graphics!
  */
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ElementScreen {
 
   // this is totally completely ugly but it's a simple solution that doesn't clutter everything too much >_>
@@ -56,7 +58,7 @@ public class ElementScreen {
    * @param yPos Y-Coordinate on the screen
    */
   public int draw(MatrixStack matrixStack, int xPos, int yPos) {
-    Screen.blit(matrixStack, xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
+    Screen.drawTexture(matrixStack, xPos, yPos, this.x, this.y, this.w, this.h, this.texW, this.texH);
     return this.w;
   }
 

@@ -3,7 +3,7 @@ package slimeknights.mantle.inventory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.MantleTileEntity;
@@ -120,10 +120,10 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
    * Writes this module to NBT
    * @return  Module in NBT
    */
-  public CompoundNBT writeToNBT() {
-    CompoundNBT nbt = new CompoundNBT();
+  public CompoundTag writeToNBT() {
+    CompoundTag nbt = new CompoundTag();
     if (!stack.isEmpty()) {
-      stack.write(nbt);
+      stack.toTag(nbt);
     }
     return nbt;
   }
@@ -132,7 +132,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
    * Reads this module from NBT
    * @param nbt  NBT
    */
-  public void readFromNBT(CompoundNBT nbt) {
-    stack = ItemStack.read(nbt);
+  public void readFromNBT(CompoundTag nbt) {
+    stack = ItemStack.fromTag(nbt);
   }
 }

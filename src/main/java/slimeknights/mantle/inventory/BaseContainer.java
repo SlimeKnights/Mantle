@@ -1,25 +1,25 @@
 package slimeknights.mantle.inventory;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import slimeknights.mantle.util.TileEntityHelper;
 
 import javax.annotation.Nullable;
 
-public class BaseContainer<TILE extends TileEntity> extends Container {
+public class BaseContainer<TILE extends BlockEntity> extends ScreenHandler {
 
   public static double MAX_DISTANCE = 64;
   public static int BASE_Y_OFFSET = 84;
@@ -30,7 +30,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   @Nullable
   protected final PlayerInventory inv;
 
-  protected BaseContainer(ContainerType<?> type, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
+  protected BaseContainer(ScreenHandlerType<?> type, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
     super(type, id);
     this.inv = inv;
     this.tile = tile;
@@ -50,9 +50,9 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
         continue;
       }
 
-      if (player.openContainer instanceof BaseContainer) {
-        if (this.sameGui((BaseContainer) player.openContainer)) {
-          this.syncWithOtherContainer((BaseContainer) player.openContainer, playerOpened);
+      if (player.currentScreenHandler instanceof BaseContainer) {
+        if (this.sameGui((BaseContainer) player.currentScreenHandler)) {
+          this.syncWithOtherContainer((BaseContainer) player.currentScreenHandler, playerOpened);
           return;
         }
       }
@@ -85,7 +85,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   @Override
-  public boolean canInteractWith(PlayerEntity playerIn) {
+  public boolean canUse(PlayerEntity playerIn) {
     if (this.tile == null) {
       return true;
     }
@@ -98,15 +98,15 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
         return false;
       }
 
-      return world.isBlockPresent(tile.getPos());
+      return world.canSetBlock(tile.getPos());
     }
 
     return false;
   }
 
   @Override
-  public NonNullList<ItemStack> getInventory() {
-    return super.getInventory();
+  public DefaultedList<ItemStack> getStacks() {
+    return super.getStacks();
   }
 
   /*
@@ -138,7 +138,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     int yOffset = this.getInventoryYOffset();
     int xOffset = this.getInventoryXOffset();
 
-    int start = this.inventorySlots.size();
+    int start = this.slots.size();
 
     for (int slotY = 0; slotY < 3; slotY++) {
       for (int slotX = 0; slotX < 9; slotX++) {
@@ -163,7 +163,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   @Override
-  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+  public ItemStack transferSlot(PlayerEntity playerIn, int index) {
     // we can only support inventory <-> playerInventory
     if (this.playerInventoryStart < 0) {
       // so we don't do anything if no player inventory is present because we don't know what to do
@@ -171,30 +171,30 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     }
 
     ItemStack itemstack = ItemStack.EMPTY;
-    Slot slot = this.inventorySlots.get(index);
+    Slot slot = this.slots.get(index);
 
     // slot that was clicked on not empty?
-    if (slot != null && slot.getHasStack()) {
+    if (slot != null && slot.hasStack()) {
       ItemStack itemstack1 = slot.getStack();
       itemstack = itemstack1.copy();
-      int end = this.inventorySlots.size();
+      int end = this.slots.size();
 
       // Is it a slot in the main inventory? (aka not player inventory)
       if (index < this.playerInventoryStart) {
         // try to put it into the player inventory (if we have a player inventory)
-        if (!this.mergeItemStack(itemstack1, this.playerInventoryStart, end, true)) {
+        if (!this.insertItem(itemstack1, this.playerInventoryStart, end, true)) {
           return ItemStack.EMPTY;
         }
       }
       // Slot is in the player inventory (if it exists), transfer to main inventory
-      else if (!this.mergeItemStack(itemstack1, 0, this.playerInventoryStart, false)) {
+      else if (!this.insertItem(itemstack1, 0, this.playerInventoryStart, false)) {
         return ItemStack.EMPTY;
       }
 
       if (itemstack1.isEmpty()) {
-        slot.putStack(ItemStack.EMPTY);
+        slot.setStack(ItemStack.EMPTY);
       } else {
-        slot.onSlotChanged();
+        slot.markDirty();
       }
     }
 
@@ -203,7 +203,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
 
   // Fix for a vanilla bug: doesn't take Slot.getMaxStackSize into account
   @Override
-  protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
+  protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean useEndIndex) {
     boolean ret = this.mergeItemStackRefill(stack, startIndex, endIndex, useEndIndex);
     if (!stack.isEmpty() && stack.getCount() > 0) {
       ret |= this.mergeItemStackMove(stack, startIndex, endIndex, useEndIndex);
@@ -229,22 +229,22 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
 
     if (stack.isStackable()) {
       while (stack.getCount() > 0 && (!useEndIndex && k < endIndex || useEndIndex && k >= startIndex)) {
-        slot = this.inventorySlots.get(k);
+        slot = this.slots.get(k);
         itemstack1 = slot.getStack();
 
-        if (!itemstack1.isEmpty() && itemstack1.getItem() == stack.getItem() && ItemStack.areItemStackTagsEqual(stack, itemstack1) && this.canMergeSlot(stack, slot)) {
+        if (!itemstack1.isEmpty() && itemstack1.getItem() == stack.getItem() && ItemStack.areTagsEqual(stack, itemstack1) && this.canInsertIntoSlot(stack, slot)) {
           int l = itemstack1.getCount() + stack.getCount();
-          int limit = Math.min(stack.getMaxStackSize(), slot.getItemStackLimit(stack));
+          int limit = Math.min(stack.getMaxCount(), slot.getMaxItemCount(stack));
 
           if (l <= limit) {
             stack.setCount(0);
             itemstack1.setCount(l);
-            slot.onSlotChanged();
+            slot.markDirty();
             flag1 = true;
           } else if (itemstack1.getCount() < limit) {
-            stack.shrink(limit - itemstack1.getCount());
+            stack.decrement(limit - itemstack1.getCount());
             itemstack1.setCount(limit);
-            slot.onSlotChanged();
+            slot.markDirty();
             flag1 = true;
           }
         }
@@ -276,23 +276,23 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     }
 
     while (!useEndIndex && k < endIndex || useEndIndex && k >= startIndex) {
-      Slot slot = this.inventorySlots.get(k);
+      Slot slot = this.slots.get(k);
       ItemStack itemstack1 = slot.getStack();
 
       // Forge: Make sure to respect isItemValid in the slot.
-      if (itemstack1.isEmpty() && slot.isItemValid(stack) && this.canMergeSlot(stack, slot)) {
-        int limit = slot.getItemStackLimit(stack);
+      if (itemstack1.isEmpty() && slot.canInsert(stack) && this.canInsertIntoSlot(stack, slot)) {
+        int limit = slot.getMaxItemCount(stack);
         ItemStack stack2 = stack.copy();
 
         if (stack2.getCount() > limit) {
           stack2.setCount(limit);
-          stack.shrink(limit);
+          stack.decrement(limit);
         } else {
           stack.setCount(0);
         }
 
-        slot.putStack(stack2);
-        slot.onSlotChanged();
+        slot.setStack(stack2);
+        slot.markDirty();
         flag1 = true;
 
         if (stack.isEmpty()) {
@@ -318,10 +318,10 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
    * @return Tile entity, or null if unable to find
    */
   @Nullable
-  public static <TILE extends TileEntity> TILE getTileEntityFromBuf(@Nullable PacketBuffer buf, Class<TILE> type) {
+  public static <TILE extends BlockEntity> TILE getTileEntityFromBuf(@Nullable PacketByteBuf buf, Class<TILE> type) {
     if (buf == null) {
       return null;
     }
-    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTile(type, Minecraft.getInstance().world, buf.readBlockPos()).orElse(null));
+    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTile(type, MinecraftClient.getInstance().world, buf.readBlockPos()).orElse(null));
   }
 }

@@ -1,11 +1,13 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.util.ResourceLocation;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ImageData extends DataLocation {
 
   public static final ImageData MISSING = new ImageData();
@@ -26,19 +28,19 @@ public class ImageData extends DataLocation {
   public ImageData() {
   }
 
-  public ImageData(ResourceLocation location, int u, int v, int uw, int vh, int texWidth, int texHeight) {
+  public ImageData(Identifier location, int u, int v, int uw, int vh, int texWidth, int texHeight) {
     this(location, u, v, uw, vh, texWidth, texHeight, uw, vh, 0xFFFFFF);
   }
 
-  public ImageData(ResourceLocation location, int u, int v, int uw, int vh, int texWidth, int texHeight, int colorMultiplier) {
+  public ImageData(Identifier location, int u, int v, int uw, int vh, int texWidth, int texHeight, int colorMultiplier) {
     this(location, u, v, uw, vh, texWidth, texHeight, uw, vh);
   }
 
-  public ImageData(ResourceLocation location, int u, int v, int uw, int vh, int texWidth, int texHeight, int width, int height) {
+  public ImageData(Identifier location, int u, int v, int uw, int vh, int texWidth, int texHeight, int width, int height) {
     this(location, u, v, uw, vh, texWidth, texHeight, width, height, 0xFFFFFF);
   }
 
-  public ImageData(ResourceLocation location, int u, int v, int uw, int vh, int texWidth, int texHeight, int width, int height, int colorMultiplier) {
+  public ImageData(Identifier location, int u, int v, int uw, int vh, int texWidth, int texHeight, int width, int height, int colorMultiplier) {
     this.location = location;
     this.u = u;
     this.v = v;
@@ -52,7 +54,7 @@ public class ImageData extends DataLocation {
   }
 
   static {
-    MISSING.location = new ResourceLocation("mantle:textures/gui/missingno.png");
+    MISSING.location = new Identifier("mantle:textures/gui/missingno.png");
     MISSING.texWidth = 32;
     MISSING.texHeight = 32;
     MISSING.uw = 32;

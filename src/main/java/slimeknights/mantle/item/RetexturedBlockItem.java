@@ -1,17 +1,19 @@
 package slimeknights.mantle.item;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.Tag;
+import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,23 +32,23 @@ import java.util.Objects;
 public class RetexturedBlockItem extends BlockTooltipItem {
 
   /** Tag used for getting the texture */
-  protected final ITag<Item> textureTag;
-  public RetexturedBlockItem(Block block, ITag<Item> textureTag, Properties builder) {
+  protected final Tag<Item> textureTag;
+  public RetexturedBlockItem(Block block, Tag<Item> textureTag, Settings builder) {
     super(block, builder);
     this.textureTag = textureTag;
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-    if (this.isInGroup(group)) {
+  public void appendStacks(ItemGroup group, DefaultedList<ItemStack> items) {
+    if (this.isIn(group)) {
       addTagVariants(this.getBlock(), textureTag, items, true);
     }
   }
 
-  @OnlyIn(Dist.CLIENT)
+  @Environment(EnvType.CLIENT)
   @Override
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    super.addInformation(stack, worldIn, tooltip, flagIn);
+  public void appendTooltip(ItemStack stack, @Nullable World worldIn, List<Text> tooltip, TooltipContext flagIn) {
+    super.appendTooltip(stack, worldIn, tooltip, flagIn);
     addTooltip(stack, tooltip);
   }
 
@@ -76,10 +78,10 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @param stack    Stack instance
    * @param tooltip  Tooltip
    */
-  public static void addTooltip(ItemStack stack, List<ITextComponent> tooltip) {
+  public static void addTooltip(ItemStack stack, List<Text> tooltip) {
     Block block = getTexture(stack);
     if (block != Blocks.AIR) {
-      tooltip.add(block.getTranslatedName());
+      tooltip.add(block.getName());
     }
   }
   /**
@@ -117,12 +119,12 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @param list              List of texture blocks
    * @param showAllVariants   If true, shows all variants. If false, shows just the first
    */
-  public static void addTagVariants(IItemProvider block, ITag<Item> tag, NonNullList<ItemStack> list, boolean showAllVariants) {
+  public static void addTagVariants(ItemConvertible block, Tag<Item> tag, DefaultedList<ItemStack> list, boolean showAllVariants) {
     boolean added = false;
     // using item tags as that is what will be present in the recipe
     Class<?> clazz = block.getClass();
-    if (!ItemTags.getCollection().getRegisteredTags().isEmpty()) {
-      for (Item candidate : tag.getAllElements()) {
+    if (!ItemTags.getTagGroup().getTagIds().isEmpty()) {
+      for (Item candidate : tag.values()) {
         // non-block items don't have the textures we need
         if (!(candidate instanceof BlockItem)) {
           continue;

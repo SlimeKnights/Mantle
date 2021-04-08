@@ -4,11 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SixWayBlock;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-
+import net.minecraft.block.ConnectingBlock;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Direction;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -43,7 +42,7 @@ public class ConnectedModelRegistry {
    * @return  Connection predicate
    */
   public static BiPredicate<BlockState,BlockState> deserializePredicate(JsonObject json, String key) {
-    String name = JSONUtils.getString(json, key, "block");
+    String name = JsonHelper.getString(json, key, "block");
     if (!CONNECTION_PREDICATES.containsKey(name)) {
       throw new JsonSyntaxException("Unknown connection predicate " + name);
     }
@@ -67,7 +66,7 @@ public class ConnectedModelRegistry {
    * @return  True if the property exists and is true, false if false or missing
    */
   private static boolean safeGet(BlockState state, BooleanProperty prop) {
-    return state.hasProperty(prop) && state.get(prop);
+    return state.contains(prop) && state.get(prop);
   }
 
   static {
@@ -77,8 +76,8 @@ public class ConnectedModelRegistry {
     registerPredicate("pane", (state, neighbor) -> {
       // must be the same block, and either both blocks must be center only, or neither are center only
       return state.getBlock() == neighbor.getBlock()
-             && (safeGet(state, SixWayBlock.NORTH) || safeGet(state, SixWayBlock.EAST) || safeGet(state, SixWayBlock.SOUTH) || safeGet(state, SixWayBlock.WEST))
-                == (safeGet(neighbor, SixWayBlock.NORTH) || safeGet(neighbor, SixWayBlock.EAST) || safeGet(neighbor, SixWayBlock.SOUTH) || safeGet(neighbor, SixWayBlock.WEST));
+             && (safeGet(state, ConnectingBlock.NORTH) || safeGet(state, ConnectingBlock.EAST) || safeGet(state, ConnectingBlock.SOUTH) || safeGet(state, ConnectingBlock.WEST))
+                == (safeGet(neighbor, ConnectingBlock.NORTH) || safeGet(neighbor, ConnectingBlock.EAST) || safeGet(neighbor, ConnectingBlock.SOUTH) || safeGet(neighbor, ConnectingBlock.WEST));
 
     });
   }
@@ -101,7 +100,7 @@ public class ConnectedModelRegistry {
       for (int i = 0; i < 16; i++) {
         final int index = i;
         suffixes[i] = mapper.apply((dir) -> {
-          int flag = 1 << dir.getHorizontalIndex();
+          int flag = 1 << dir.getHorizontal();
           return (index & flag) == flag;
         });
       }
@@ -116,7 +115,7 @@ public class ConnectedModelRegistry {
    * @return  Connection predicate
    */
   public static String[] deserializeType(JsonElement json, String key) {
-    String name = JSONUtils.getString(json, key);
+    String name = JsonHelper.asString(json, key);
     if (!CONNECTION_TYPES.containsKey(name)) {
       throw new JsonSyntaxException("Unknown connection type " + name);
     }

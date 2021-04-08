@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.block.Block;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
-import net.minecraft.util.datafix.TypeReferences;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.object.EnumObject;
 
@@ -19,14 +19,14 @@ import java.util.function.Supplier;
  * Registry adapter for tile entity types with helpers for adding blocks
  */
 @SuppressWarnings("unused")
-public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityType<?>> {
+public class TileEntityTypeRegistryAdapter extends RegistryAdapter<BlockEntityType<?>> {
   /** @inheritDoc */
-  public TileEntityTypeRegistryAdapter(IForgeRegistry<TileEntityType<?>> registry, String modId) {
+  public TileEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry, String modId) {
     super(registry, modId);
   }
 
   /** @inheritDoc */
-  public TileEntityTypeRegistryAdapter(IForgeRegistry<TileEntityType<?>> registry) {
+  public TileEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry) {
     super(registry);
   }
 
@@ -37,7 +37,7 @@ public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityTyp
    */
   @Nullable
   private Type<?> getType(String name) {
-    return Util.attemptDataFix(TypeReferences.BLOCK_ENTITY, resourceName(name));
+    return Util.getChoiceType(TypeReferences.BLOCK_ENTITY, resourceName(name));
   }
 
   /**
@@ -49,8 +49,8 @@ public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityTyp
    * @return  Registry object instance
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends TileEntity> TileEntityType<T> register(Supplier<? extends T> factory, Block block, String name) {
-    return register(TileEntityType.Builder.<T>create(factory, block).build(getType(name)), name);
+  public <T extends BlockEntity> BlockEntityType<T> register(Supplier<? extends T> factory, Block block, String name) {
+    return register(BlockEntityType.Builder.<T>create(factory, block).build(getType(name)), name);
   }
 
   /**
@@ -62,8 +62,8 @@ public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityTyp
    * @return  Tile entity type registry object
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends TileEntity> TileEntityType<T> register(Supplier<? extends T> factory, EnumObject<?, ? extends Block> blocks, String name) {
-    return register(new TileEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)), name);
+  public <T extends BlockEntity> BlockEntityType<T> register(Supplier<? extends T> factory, EnumObject<?, ? extends Block> blocks, String name) {
+    return register(new BlockEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)), name);
   }
 
   /**
@@ -75,9 +75,9 @@ public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityTyp
    * @return  Tile entity type registry object
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends TileEntity> TileEntityType<T> register(Supplier<? extends T> factory, String name, Consumer<Builder<Block>> blockCollector) {
+  public <T extends BlockEntity> BlockEntityType<T> register(Supplier<? extends T> factory, String name, Consumer<Builder<Block>> blockCollector) {
     ImmutableSet.Builder<Block> blocks = new ImmutableSet.Builder<>();
     blockCollector.accept(blocks);
-    return register(new TileEntityType<>(factory, blocks.build(), getType(name)), name);
+    return register(new BlockEntityType<>(factory, blocks.build(), getType(name)), name);
   }
 }

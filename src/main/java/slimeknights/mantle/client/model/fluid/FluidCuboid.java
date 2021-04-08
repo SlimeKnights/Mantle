@@ -6,9 +6,8 @@ import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Direction;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -69,7 +68,7 @@ public class FluidCuboid {
   public Vector3f getFromScaled() {
     if (fromScaled == null) {
       fromScaled = from.copy();
-      fromScaled.mul(1 / 16f);
+      fromScaled.scale(1 / 16f);
     }
     return fromScaled;
   }
@@ -81,7 +80,7 @@ public class FluidCuboid {
   public Vector3f getToScaled() {
     if (toScaled == null) {
       toScaled = to.copy();
-      toScaled.mul(1 / 16f);
+      toScaled.scale(1 / 16f);
     }
     return toScaled;
   }
@@ -132,14 +131,14 @@ public class FluidCuboid {
     }
 
     Map<Direction, FluidFace> faces = new EnumMap<>(Direction.class);
-    JsonObject object = JSONUtils.getJsonObject(json, "faces");
+    JsonObject object = net.minecraft.util.JsonHelper.getObject(json, "faces");
     for (Entry<String, JsonElement> entry : object.entrySet()) {
       // if the direction is a face, add it
       String name = entry.getKey();
       Direction dir = Direction.byName(name);
       if (dir != null) {
-        JsonObject face = JSONUtils.getJsonObject(entry.getValue(), name);
-        boolean flowing = JSONUtils.getBoolean(face, "flowing", false);
+        JsonObject face = net.minecraft.util.JsonHelper.asObject(entry.getValue(), name);
+        boolean flowing = net.minecraft.util.JsonHelper.getBoolean(face, "flowing", false);
         int rotation = ModelHelper.getRotation(face, "rotation");
         faces.put(dir, new FluidFace(flowing, rotation));
       } else {

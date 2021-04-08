@@ -1,15 +1,17 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -18,17 +20,17 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ItemElement extends SizedBookElement {
 
   public static final int ITEM_SIZE_HARDCODED = 16;
   public static final int ITEM_SWITCH_TICKS = 90;
 
-  public NonNullList<ItemStack> itemCycle;
+  public DefaultedList<ItemStack> itemCycle;
   public float scale;
   @Nullable
   public String action;
-  public List<ITextComponent> tooltip;
+  public List<Text> tooltip;
 
   public int renderTick = 0;
   public int currentItem = 0;
@@ -60,7 +62,7 @@ public class ItemElement extends SizedBookElement {
   public ItemElement(int x, int y, float scale, ItemStack[] itemCycle, @Nullable String action) {
     super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
-    NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(itemCycle.length, ItemStack.EMPTY);
+    DefaultedList<ItemStack> nonNullStacks = DefaultedList.ofSize(itemCycle.length, ItemStack.EMPTY);
     for (int i = 0; i < itemCycle.length; i++) {
       if (!itemCycle[i].isEmpty()) {
         nonNullStacks.set(i, itemCycle[i].copy());
@@ -73,7 +75,7 @@ public class ItemElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, TextRenderer fontRenderer) {
     this.renderTick++;
 
     if (this.renderTick > ITEM_SWITCH_TICKS) {
@@ -90,15 +92,15 @@ public class ItemElement extends SizedBookElement {
     RenderSystem.scalef(this.scale, this.scale, 1.0F);
 
     if (this.currentItem < this.itemCycle.size()) {
-      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
+      this.mc.getItemRenderer().renderInGuiWithOverrides(this.itemCycle.get(this.currentItem), 0, 0);
     }
 
     RenderSystem.popMatrix();
-    RenderHelper.disableStandardItemLighting();
+    DiffuseLighting.disable();
   }
 
   @Override
-  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, TextRenderer fontRenderer) {
     if (this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
       if (this.tooltip != null) {
         this.drawHoveringText(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);

@@ -7,15 +7,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -44,8 +44,8 @@ public class RecipeHelper {
    * @param <C>      Return type
    * @return  Optional of the recipe, or empty if the recipe is missing
    */
-  public static <C extends IRecipe<?>> Optional<C> getRecipe(RecipeManager manager, ResourceLocation name, Class<C> clazz) {
-    return manager.getRecipe(name).filter(clazz::isInstance).map(clazz::cast);
+  public static <C extends Recipe<?>> Optional<C> getRecipe(RecipeManager manager, Identifier name, Class<C> clazz) {
+    return manager.get(name).filter(clazz::isInstance).map(clazz::cast);
   }
 
   /**
@@ -58,8 +58,8 @@ public class RecipeHelper {
    * @param <C>  Return type
    * @return  List of recipes from the manager
    */
-  public static <I extends IInventory, T extends IRecipe<I>, C extends T> List<C> getRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz) {
-    return manager.getRecipes(type).values().stream()
+  public static <I extends Inventory, T extends Recipe<I>, C extends T> List<C> getRecipes(RecipeManager manager, RecipeType<T> type, Class<C> clazz) {
+    return manager.getAllOfType(type).values().stream()
                   .filter(clazz::isInstance)
                   .map(clazz::cast)
                   .collect(Collectors.toList());
@@ -76,12 +76,12 @@ public class RecipeHelper {
    * @param <C>  Return type
    * @return  Recipe list
    */
-  public static <I extends IInventory, T extends IRecipe<I>, C extends T> List<C> getUIRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz, Predicate<? super C> filter) {
-    return manager.getRecipes(type).values().stream()
+  public static <I extends Inventory, T extends Recipe<I>, C extends T> List<C> getUIRecipes(RecipeManager manager, RecipeType<T> type, Class<C> clazz, Predicate<? super C> filter) {
+    return manager.getAllOfType(type).values().stream()
                   .filter(clazz::isInstance)
                   .map(clazz::cast)
                   .filter(filter)
-                  .sorted(Comparator.comparing(IRecipe::getId))
+                  .sorted(Comparator.comparing(Recipe::getId))
                   .collect(Collectors.toList());
   }
 
@@ -92,7 +92,7 @@ public class RecipeHelper {
    * @param <C>  Return type
    * @return  List of flattened recipes from the manager
    */
-  public static <C> List<C> getJEIRecipes(Stream<? extends IRecipe<?>> recipes, Class<C> clazz) {
+  public static <C> List<C> getJEIRecipes(Stream<? extends Recipe<?>> recipes, Class<C> clazz) {
     return recipes
         .sorted((r1, r2) -> {
           // if one is multi, and the other not, the multi recipe is larger
@@ -123,8 +123,8 @@ public class RecipeHelper {
    * @param <C>  Return type
    * @return  List of flattened recipes from the manager
    */
-  public static <I extends IInventory, T extends IRecipe<I>, C> List<C> getJEIRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz) {
-    return getJEIRecipes(manager.getRecipes(type).values().stream(), clazz);
+  public static <I extends Inventory, T extends Recipe<I>, C> List<C> getJEIRecipes(RecipeManager manager, RecipeType<T> type, Class<C> clazz) {
+    return getJEIRecipes(manager.getAllOfType(type).values().stream(), clazz);
   }
 
 
@@ -149,12 +149,12 @@ public class RecipeHelper {
    * @throws JsonSyntaxException if syntax is invalid
    */
   public static FluidStack deserializeFluidStack(JsonObject json) {
-    String fluidName = JSONUtils.getString(json, "fluid");
-    Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
+    String fluidName = JsonHelper.getString(json, "fluid");
+    Fluid fluid = ForgeRegistries.FLUIDS.getValue(new Identifier(fluidName));
     if (fluid == null || fluid == Fluids.EMPTY) {
       throw new JsonSyntaxException("Unknown fluid " + fluidName);
     }
-    int amount = JSONUtils.getInt(json, "amount");
+    int amount = JsonHelper.getInt(json, "amount");
     return new FluidStack(fluid, amount);
   }
 
@@ -168,7 +168,7 @@ public class RecipeHelper {
    * @throws JsonSyntaxException  If the key is missing, or the value is not the right class
    */
   public static <C> C deserializeItem(String name, String key, Class<C> clazz) {
-    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
+    Item item = ForgeRegistries.ITEMS.getValue(new Identifier(name));
     if (item == null) {
       throw new JsonSyntaxException("Invalid " + key + ": Unknown item " + name + "'");
     }
@@ -186,8 +186,8 @@ public class RecipeHelper {
    * @param buffer  Buffer instance
    * @return  Item read from the buffer
    */
-  public static Item readItem(PacketBuffer buffer) {
-    return Item.getItemById(buffer.readVarInt());
+  public static Item readItem(PacketByteBuf buffer) {
+    return Item.byRawId(buffer.readVarInt());
   }
 
   /**
@@ -198,7 +198,7 @@ public class RecipeHelper {
    * @return  Item read from the buffer with the given class type
    * @throws DecoderException  If the value is not the right class
    */
-  public static <T> T readItem(PacketBuffer buffer, Class<T> clazz) {
+  public static <T> T readItem(PacketByteBuf buffer, Class<T> clazz) {
     Item item = readItem(buffer);
     if (!clazz.isInstance(item)) {
       throw new DecoderException("Invalid item '" + item.getRegistryName() + "', must be " + clazz.getSimpleName());
@@ -211,7 +211,7 @@ public class RecipeHelper {
    * @param buffer  Buffer instance
    * @param item    Item to write
    */
-  public static void writeItem(PacketBuffer buffer, IItemProvider item) {
-    buffer.writeVarInt(Item.getIdFromItem(item.asItem()));
+  public static void writeItem(PacketByteBuf buffer, ItemConvertible item) {
+    buffer.writeVarInt(Item.getRawId(item.asItem()));
   }
 }

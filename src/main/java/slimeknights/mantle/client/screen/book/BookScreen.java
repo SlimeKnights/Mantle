@@ -1,19 +1,21 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.multiplayer.ClientAdvancementManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.network.ClientAdvancementManager;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -33,7 +35,7 @@ import java.util.List;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOKFRONT;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class BookScreen extends Screen {
 
   public static boolean debug = false;
@@ -77,18 +79,18 @@ public class BookScreen extends Screen {
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public BookScreen(ITextComponent title, BookData book, @Nullable ItemStack item) {
+  public BookScreen(Text title, BookData book, @Nullable ItemStack item) {
     super(title);
     this.book = book;
     this.item = item;
 
-    this.minecraft = Minecraft.getInstance();
-    this.font = this.minecraft.fontRenderer;
+    this.client = MinecraftClient.getInstance();
+    this.textRenderer = this.client.textRenderer;
 
     initWidthsAndHeights();
 
     this.advancementCache = new AdvancementCache();
-    this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
+    this.client.player.networkHandler.getAdvancementHandler().setListener(this.advancementCache);
 
     this.openPage(book.findPageNumber(BookHelper.getSavedPage(item), this.advancementCache));
   }
@@ -97,14 +99,14 @@ public class BookScreen extends Screen {
   @SuppressWarnings("ForLoopReplaceableByForEach")
   public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     initWidthsAndHeights();
-    FontRenderer fontRenderer = this.book.fontRenderer;
+    TextRenderer fontRenderer = this.book.fontRenderer;
     if (fontRenderer == null) {
-      fontRenderer = this.minecraft.fontRenderer;
+      fontRenderer = this.client.textRenderer;
     }
 
     if (debug) {
-      fill(matrixStack, 0, 0, fontRenderer.getStringWidth("DEBUG") + 4, fontRenderer.FONT_HEIGHT + 4, 0x55000000);
-      fontRenderer.drawString(matrixStack, "DEBUG", 2, 2, 0xFFFFFFFF);
+      fill(matrixStack, 0, 0, fontRenderer.getWidth("DEBUG") + 4, fontRenderer.fontHeight + 4, 0x55000000);
+      fontRenderer.draw(matrixStack, "DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
     RenderSystem.enableAlphaTest();
@@ -118,46 +120,46 @@ public class BookScreen extends Screen {
     float coverG = ((this.book.appearance.coverColor >> 8) & 0xff) / 255.F;
     float coverB = (this.book.appearance.coverColor & 0xff) / 255.F;
 
-    TextureManager render = this.minecraft.textureManager;
+    TextureManager render = this.client.textureManager;
 
     if (this.page == -1) {
       render.bindTexture(TEX_BOOKFRONT);
-      RenderHelper.disableStandardItemLighting();
+      DiffuseLighting.disable();
 
       RenderSystem.color3f(coverR, coverG, coverB);
-      blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      drawTexture(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
       RenderSystem.color3f(1F, 1F, 1F);
 
       if (!this.book.appearance.title.isEmpty()) {
-        blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        drawTexture(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
 
-        float scale = fontRenderer.getStringWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
+        float scale = fontRenderer.getWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
 
         RenderSystem.scalef(scale, scale, 1F);
-        fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer.getStringWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
+        fontRenderer.drawWithShadow(matrixStack, this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer.getWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.fontHeight / 2) / scale - 4, 0xAE8000);
         RenderSystem.popMatrix();
       }
 
       if (!this.book.appearance.subtitle.isEmpty()) {
         RenderSystem.pushMatrix();
         RenderSystem.scalef(1.5F, 1.5F, 1F);
-        fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
+        fontRenderer.drawWithShadow(matrixStack, this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.fontHeight * 2) / 1.5F, 0xAE8000);
         RenderSystem.popMatrix();
       }
     }
     else {
       render.bindTexture(TEX_BOOK);
-      RenderHelper.disableStandardItemLighting();
+      DiffuseLighting.disable();
 
       RenderSystem.color3f(coverR, coverG, coverB);
-      blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+      drawTexture(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
       RenderSystem.color3f(1F, 1F, 1F);
 
       if (this.page != 0) {
-        blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        drawTexture(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
         this.drawerTransform(false);
@@ -166,7 +168,7 @@ public class BookScreen extends Screen {
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 2 + "";
-          fontRenderer.drawString(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
+          fontRenderer.draw(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
         int mX = this.getMouseX(false);
@@ -195,11 +197,11 @@ public class BookScreen extends Screen {
       render.bindTexture(TEX_BOOK);
       // Set color back to white
       RenderSystem.color4f(1F, 1F, 1F, 1F);
-      RenderHelper.disableStandardItemLighting();
+      DiffuseLighting.disable();
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
       if (this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0) {
-        blit(matrixStack, this.width / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
+        drawTexture(matrixStack, this.width / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
         this.drawerTransform(true);
@@ -208,7 +210,7 @@ public class BookScreen extends Screen {
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 3 + "";
-          fontRenderer.drawString(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getStringWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
+          fontRenderer.draw(matrixStack, pNum, PAGE_WIDTH / 2 - fontRenderer.getWidth(pNum) / 2, PAGE_HEIGHT - 10, 0xFFAAAAAA);
         }
 
         int mX = this.getMouseX(true);
@@ -456,8 +458,8 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public void onClose() {
-    if (this.minecraft.player == null) {
+  public void removed() {
+    if (this.client.player == null) {
       return;
     }
 
@@ -468,10 +470,10 @@ public class BookScreen extends Screen {
     }
 
     if (this.page == -1) {
-      BookLoader.updateSavedPage(this.minecraft.player, this.item, "");
+      BookLoader.updateSavedPage(this.client.player, this.item, "");
     }
     else if (page != null && page.parent != null) {
-      BookLoader.updateSavedPage(this.minecraft.player, this.item, page.parent.name + "." + page.name);
+      BookLoader.updateSavedPage(this.client.player, this.item, page.parent.name + "." + page.name);
     }
   }
 
@@ -506,11 +508,11 @@ public class BookScreen extends Screen {
   }
 
   protected int getMouseX(boolean rightSide) {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
+    return (int) ((MinecraftClient.getInstance().mouse.getX() * this.width / this.client.getWindow().getFramebufferWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
-    return (int) ((Minecraft.getInstance().mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
+    return (int) ((MinecraftClient.getInstance().mouse.getY() * this.height / this.client.getWindow().getFramebufferHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
   public int openPage(int page) {
@@ -622,10 +624,10 @@ public class BookScreen extends Screen {
     }
   }
 
-  public class AdvancementCache implements ClientAdvancementManager.IListener {
+  public class AdvancementCache implements ClientAdvancementManager.Listener {
 
     private HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
-    private HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
+    private HashMap<Identifier, Advancement> nameCache = new HashMap<>();
 
     @Nullable
     public AdvancementProgress getProgress(String id) {
@@ -638,43 +640,43 @@ public class BookScreen extends Screen {
     }
 
     public Advancement getAdvancement(String id) {
-      return this.nameCache.get(new ResourceLocation(id));
+      return this.nameCache.get(new Identifier(id));
     }
 
     @Override
-    public void onUpdateAdvancementProgress(Advancement advancement, AdvancementProgress advancementProgress) {
+    public void setProgress(Advancement advancement, AdvancementProgress advancementProgress) {
       this.progress.put(advancement, advancementProgress);
     }
 
     @Override
-    public void setSelectedTab(@Nullable Advancement advancement) {
+    public void selectTab(@Nullable Advancement advancement) {
       // noop
     }
 
     @Override
-    public void rootAdvancementAdded(Advancement advancement) {
+    public void onRootAdded(Advancement advancement) {
       this.nameCache.put(advancement.getId(), advancement);
     }
 
     @Override
-    public void rootAdvancementRemoved(Advancement advancement) {
+    public void onRootRemoved(Advancement advancement) {
       this.progress.remove(advancement);
       this.nameCache.remove(advancement.getId());
     }
 
     @Override
-    public void nonRootAdvancementAdded(Advancement advancement) {
+    public void onDependentAdded(Advancement advancement) {
       this.nameCache.put(advancement.getId(), advancement);
     }
 
     @Override
-    public void nonRootAdvancementRemoved(Advancement advancement) {
+    public void onDependentRemoved(Advancement advancement) {
       this.progress.remove(advancement);
       this.nameCache.remove(advancement.getId());
     }
 
     @Override
-    public void advancementsCleared() {
+    public void onClear() {
       this.progress.clear();
       this.nameCache.clear();
     }

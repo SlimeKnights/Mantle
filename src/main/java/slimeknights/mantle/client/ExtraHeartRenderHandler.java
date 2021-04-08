@@ -1,16 +1,18 @@
 package slimeknights.mantle.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,13 +29,13 @@ import java.util.Random;
 
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HEALTH;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ExtraHeartRenderHandler {
-  private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
-  private static final ResourceLocation ICON_ABSORB = new ResourceLocation(Mantle.modId, "textures/gui/absorb.png");
-  private static final ResourceLocation ICON_VANILLA = AbstractGui.GUI_ICONS_LOCATION;
+  private static final Identifier ICON_HEARTS = new Identifier(Mantle.modId, "textures/gui/hearts.png");
+  private static final Identifier ICON_ABSORB = new Identifier(Mantle.modId, "textures/gui/absorb.png");
+  private static final Identifier ICON_VANILLA = DrawableHelper.GUI_ICONS_TEXTURE;
 
-  private final Minecraft mc = Minecraft.getInstance();
+  private final MinecraftClient mc = MinecraftClient.getInstance();
 
   private int playerHealth = 0;
   private int lastPlayerHealth = 0;
@@ -54,7 +56,7 @@ public class ExtraHeartRenderHandler {
    * @param height       Height to draw
    */
   private void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
-    Minecraft.getInstance().ingameGUI.blit(matrixStack, x, y, textureX, textureY, width, height);
+    MinecraftClient.getInstance().inGameHud.drawTexture(matrixStack, x, y, textureX, textureY, width, height);
   }
 
   /* HUD */
@@ -65,7 +67,7 @@ public class ExtraHeartRenderHandler {
    */
   @SubscribeEvent(priority = EventPriority.LOW)
   public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
-    Entity renderViewEnity = this.mc.getRenderViewEntity();
+    Entity renderViewEnity = this.mc.getCameraEntity();
     if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()
         || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof PlayerEntity)) {
       return;
@@ -73,38 +75,38 @@ public class ExtraHeartRenderHandler {
 
     // extra setup stuff from us
     int left_height = ForgeIngameGui.left_height;
-    int width = this.mc.getMainWindow().getScaledWidth();
-    int height = this.mc.getMainWindow().getScaledHeight();
-    int updateCounter = this.mc.ingameGUI.getTicks();
+    int width = this.mc.getWindow().getScaledWidth();
+    int height = this.mc.getWindow().getScaledHeight();
+    int updateCounter = this.mc.inGameHud.getTicks();
 
     // start default forge/mc rendering
     // changes are indicated by comment
-    this.mc.getProfiler().startSection("health");
+    this.mc.getProfiler().push("health");
     RenderSystem.enableBlend();
 
     PlayerEntity player = (PlayerEntity) renderViewEnity;
     int health = MathHelper.ceil(player.getHealth());
     boolean highlight = this.healthUpdateCounter > (long) updateCounter && (this.healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
 
-    if (health < this.playerHealth && player.hurtResistantTime > 0) {
-      this.lastSystemTime = Util.milliTime();
+    if (health < this.playerHealth && player.timeUntilRegen > 0) {
+      this.lastSystemTime = Util.getMeasuringTimeMs();
       this.healthUpdateCounter = (updateCounter + 20);
     }
-    else if (health > this.playerHealth && player.hurtResistantTime > 0) {
-      this.lastSystemTime = Util.milliTime();
+    else if (health > this.playerHealth && player.timeUntilRegen > 0) {
+      this.lastSystemTime = Util.getMeasuringTimeMs();
       this.healthUpdateCounter = (updateCounter + 10);
     }
 
-    if (Util.milliTime() - this.lastSystemTime > 1000L) {
+    if (Util.getMeasuringTimeMs() - this.lastSystemTime > 1000L) {
       this.playerHealth = health;
       this.lastPlayerHealth = health;
-      this.lastSystemTime = Util.milliTime();
+      this.lastSystemTime = Util.getMeasuringTimeMs();
     }
 
     this.playerHealth = health;
     int healthLast = this.lastPlayerHealth;
 
-    ModifiableAttributeInstance attrMaxHealth = player.getAttribute(Attributes.MAX_HEALTH);
+    EntityAttributeInstance attrMaxHealth = player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
     float healthMax = attrMaxHealth == null ? 0 : (float) attrMaxHealth.getValue();
     float absorb = MathHelper.ceil(player.getAbsorptionAmount());
 
@@ -125,16 +127,16 @@ public class ExtraHeartRenderHandler {
     //if (rowHeight != 10) left_height += 10 - rowHeight;
 
     this.regen = -1;
-    if (player.isPotionActive(Effects.REGENERATION)) {
+    if (player.hasStatusEffect(StatusEffects.REGENERATION)) {
       this.regen = updateCounter % 25;
     }
 
     assert this.mc.world != null;
-    final int TOP = 9 * (this.mc.world.getWorldInfo().isHardcore() ? 5 : 0);
+    final int TOP = 9 * (this.mc.world.getLevelProperties().isHardcore() ? 5 : 0);
     final int BACKGROUND = (highlight ? 25 : 16);
     int MARGIN = 16;
-    if      (player.isPotionActive(Effects.POISON)) MARGIN += 36;
-    else if (player.isPotionActive(Effects.WITHER)) MARGIN += 72;
+    if      (player.hasStatusEffect(StatusEffects.POISON)) MARGIN += 36;
+    else if (player.hasStatusEffect(StatusEffects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
     MatrixStack matrixStack = event.getMatrixStack();
@@ -188,7 +190,7 @@ public class ExtraHeartRenderHandler {
 
     event.setCanceled(true);
     RenderSystem.disableBlend();
-    this.mc.getProfiler().endSection();
+    this.mc.getProfiler().pop();
     MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(matrixStack, event, HEALTH));
   }
 
@@ -199,16 +201,16 @@ public class ExtraHeartRenderHandler {
    */
   private int getPotionOffset(PlayerEntity player) {
     int potionOffset = 0;
-    EffectInstance potion = player.getActivePotionEffect(Effects.WITHER);
+    StatusEffectInstance potion = player.getStatusEffect(StatusEffects.WITHER);
     if (potion != null) {
       potionOffset = 18;
     }
-    potion = player.getActivePotionEffect(Effects.POISON);
+    potion = player.getStatusEffect(StatusEffects.POISON);
     if (potion != null) {
       potionOffset = 9;
     }
     assert this.mc.world != null;
-    if (this.mc.world.getWorldInfo().isHardcore()) {
+    if (this.mc.world.getLevelProperties().isHardcore()) {
       potionOffset += 27;
     }
     return potionOffset;

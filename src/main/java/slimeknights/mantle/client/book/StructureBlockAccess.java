@@ -2,30 +2,29 @@ package slimeknights.mantle.client.book;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.LightType;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeManager;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.Heightmap.Type;
-import net.minecraft.world.lighting.WorldLightManager;
-
+import net.minecraft.world.chunk.light.LightingProvider;
+import net.minecraft.world.dimension.DimensionType;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class StructureBlockAccess implements IWorldReader {
+public class StructureBlockAccess implements WorldView {
 
   private final StructureInfo data;
   private final BlockState[][][] structure;
@@ -37,22 +36,22 @@ public class StructureBlockAccess implements IWorldReader {
 
   @Nullable
   @Override
-  public TileEntity getTileEntity(BlockPos pos) {
+  public BlockEntity getBlockEntity(BlockPos pos) {
     return null;
   }
 
   @Override
-  public float func_230487_a_(Direction p_230487_1_, boolean p_230487_2_) {
+  public float getBrightness(Direction p_230487_1_, boolean p_230487_2_) {
     return 0;
   }
 
   @Override
-  public WorldLightManager getLightManager() {
+  public LightingProvider getLightingProvider() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public int getLightFor(LightType type, BlockPos pos) {
+  public int getLightLevel(LightType type, BlockPos pos) {
     return 15 << 20 | 15 << 4;
   }
 
@@ -76,7 +75,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public boolean isAirBlock(BlockPos pos) {
+  public boolean isAir(BlockPos pos) {
     return this.getBlockState(pos).getBlock() == Blocks.AIR;
   }
 
@@ -86,54 +85,54 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public Biome getNoiseBiomeRaw(int x, int y, int z) {
+  public Biome getGeneratorStoredBiome(int x, int y, int z) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public int getStrongPower(BlockPos pos, Direction direction) {
+  public int getStrongRedstonePower(BlockPos pos, Direction direction) {
     return 0;
   }
 
   @Override
-  public int getLightSubtracted(BlockPos pos, int amount) {
+  public int getBaseLightLevel(BlockPos pos, int amount) {
     return 0;
   }
 
   @Nullable
   @Override
-  public IChunk getChunk(int x, int z, ChunkStatus requiredStatus, boolean nonnull) {
+  public Chunk getChunk(int x, int z, ChunkStatus requiredStatus, boolean nonnull) {
     return null;
   }
 
   @Deprecated
   @Override
-  public boolean chunkExists(int chunkX, int chunkZ) {
+  public boolean isChunkLoaded(int chunkX, int chunkZ) {
     return false;
   }
 
   @Override
-  public BlockPos getHeight(Type heightmapType, BlockPos pos) {
-    return BlockPos.ZERO;
+  public BlockPos getTopPosition(Type heightmapType, BlockPos pos) {
+    return BlockPos.ORIGIN;
   }
 
   @Override
-  public boolean canSeeSky(BlockPos pos) {
+  public boolean isSkyVisible(BlockPos pos) {
     return true;
   }
 
   @Override
-  public int getHeight(Type heightmapType, int x, int z) {
+  public int getTopY(Type heightmapType, int x, int z) {
     return 0;
   }
 
   @Override
-  public int getSkylightSubtracted() {
+  public int getAmbientDarkness() {
     return 0;
   }
 
   @Override
-  public BiomeManager getBiomeManager() {
+  public BiomeAccess getBiomeAccess() {
     throw new UnsupportedOperationException();
   }
 
@@ -143,17 +142,17 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public boolean checkNoEntityCollision(@Nullable Entity entityIn, VoxelShape shape) {
+  public boolean intersectsEntities(@Nullable Entity entityIn, VoxelShape shape) {
     return false;
   }
 
   @Override
-  public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
+  public Stream<VoxelShape> getEntityCollisions(@Nullable Entity p_230318_1_, Box p_230318_2_, Predicate<Entity> p_230318_3_) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public boolean isRemote() {
+  public boolean isClient() {
     return false;
   }
 
@@ -164,7 +163,7 @@ public class StructureBlockAccess implements IWorldReader {
   }
 
   @Override
-  public DimensionType getDimensionType() {
+  public DimensionType getDimension() {
     throw new UnsupportedOperationException();
   }
 

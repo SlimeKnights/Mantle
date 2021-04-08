@@ -11,7 +11,7 @@ public class ItemHandlerSlot extends SlotItemHandler {
 	}
 
 	@Override
-	public int getItemStackLimit(ItemStack stack) {
+	public int getMaxItemCount(ItemStack stack) {
 		return getItemHandler().getSlotLimit(getSlotIndex());
 	}
 }

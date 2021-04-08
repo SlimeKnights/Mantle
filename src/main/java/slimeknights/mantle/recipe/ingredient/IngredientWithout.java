@@ -6,10 +6,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeItemHelper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.Mantle;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * Ingredient that matches everything from another ingredient, without a second
  */
 public class IngredientWithout extends Ingredient {
-  public static final ResourceLocation ID = Mantle.getResource("without");
+  public static final Identifier ID = Mantle.getResource("without");
   public static final IIngredientSerializer<IngredientWithout> SERIALIZER = new Serializer();
 
   private final Ingredient base;
@@ -45,9 +45,9 @@ public class IngredientWithout extends Ingredient {
   }
 
   @Override
-  public ItemStack[] getMatchingStacks() {
+  public ItemStack[] getMatchingStacksClient() {
     if (this.filteredMatchingStacks == null) {
-      this.filteredMatchingStacks = Arrays.stream(base.getMatchingStacks())
+      this.filteredMatchingStacks = Arrays.stream(base.getMatchingStacksClient())
                                           .filter(stack -> !without.test(stack))
                                           .toArray(ItemStack[]::new);
     }
@@ -55,8 +55,8 @@ public class IngredientWithout extends Ingredient {
   }
 
   @Override
-  public boolean hasNoMatchingItems() {
-    return getMatchingStacks().length == 0;
+  public boolean isEmpty() {
+    return getMatchingStacksClient().length == 0;
   }
 
   @Override
@@ -72,12 +72,12 @@ public class IngredientWithout extends Ingredient {
   }
 
   @Override
-  public IntList getValidItemStacksPacked() {
+  public IntList getIds() {
     if (this.packedMatchingStacks == null) {
-      ItemStack[] matchingStacks = getMatchingStacks();
+      ItemStack[] matchingStacks = getMatchingStacksClient();
       this.packedMatchingStacks = new IntArrayList(matchingStacks.length);
       for(ItemStack stack : matchingStacks) {
-        this.packedMatchingStacks.add(RecipeItemHelper.pack(stack));
+        this.packedMatchingStacks.add(RecipeFinder.getItemId(stack));
       }
       this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
     }
@@ -85,11 +85,11 @@ public class IngredientWithout extends Ingredient {
   }
 
   @Override
-  public JsonElement serialize() {
+  public JsonElement toJson() {
     JsonObject json = new JsonObject();
     json.addProperty("type", ID.toString());
-    json.add("base", base.serialize());
-    json.add("without", without.serialize());
+    json.add("base", base.toJson());
+    json.add("without", without.toJson());
     return json;
   }
 
@@ -101,20 +101,20 @@ public class IngredientWithout extends Ingredient {
   private static class Serializer implements IIngredientSerializer<IngredientWithout> {
     @Override
     public IngredientWithout parse(JsonObject json) {
-      Ingredient base = Ingredient.deserialize(JsonHelper.getElement(json, "base"));
-      Ingredient without = Ingredient.deserialize(JsonHelper.getElement(json, "without"));
+      Ingredient base = Ingredient.fromJson(JsonHelper.getElement(json, "base"));
+      Ingredient without = Ingredient.fromJson(JsonHelper.getElement(json, "without"));
       return new IngredientWithout(base, without);
     }
 
     @Override
-    public IngredientWithout parse(PacketBuffer buffer) {
-      Ingredient base = Ingredient.read(buffer);
-      Ingredient without = Ingredient.read(buffer);
+    public IngredientWithout parse(PacketByteBuf buffer) {
+      Ingredient base = Ingredient.fromPacket(buffer);
+      Ingredient without = Ingredient.fromPacket(buffer);
       return new IngredientWithout(base, without);
     }
 
     @Override
-    public void write(PacketBuffer buffer, IngredientWithout ingredient) {
+    public void write(PacketByteBuf buffer, IngredientWithout ingredient) {
       CraftingHelper.write(buffer, ingredient.base);
       CraftingHelper.write(buffer, ingredient.without);
     }

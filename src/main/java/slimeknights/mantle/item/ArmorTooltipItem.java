@@ -1,11 +1,13 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.IArmorMaterial;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,14 +18,14 @@ import java.util.List;
 
 public class ArmorTooltipItem extends ArmorItem {
 
-  public ArmorTooltipItem(IArmorMaterial armorMaterial, EquipmentSlotType equipmentSlot, Properties builder) {
+  public ArmorTooltipItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Settings builder) {
     super(armorMaterial, equipmentSlot, builder);
   }
 
   @Override
-  @OnlyIn(Dist.CLIENT)
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+  @Environment(EnvType.CLIENT)
+  public void appendTooltip(ItemStack stack, @Nullable World worldIn, List<Text> tooltip, TooltipContext flagIn) {
     TranslationHelper.addOptionalTooltip(stack, tooltip);
-    super.addInformation(stack, worldIn, tooltip, flagIn);
+    super.appendTooltip(stack, worldIn, tooltip, flagIn);
   }
 }

@@ -4,16 +4,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.recipe.ShapelessRecipe;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 import slimeknights.mantle.util.JsonHelper;
@@ -26,8 +25,8 @@ import java.util.stream.Collectors;
 public class ShapedFallbackRecipe extends ShapedRecipe {
 
   /** Recipes to skip if they match */
-  private final List<ResourceLocation> alternatives;
-  private List<ICraftingRecipe> alternativeCache;
+  private final List<Identifier> alternatives;
+  private List<CraftingRecipe> alternativeCache;
 
   /**
    * Main constructor, creates a recipe from all parameters
@@ -39,7 +38,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
    * @param output         Recipe output
    * @param alternatives   List of recipe names to fail this match if they match
    */
-  public ShapedFallbackRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack output, List<ResourceLocation> alternatives) {
+  public ShapedFallbackRecipe(Identifier id, String group, int width, int height, DefaultedList<Ingredient> ingredients, ItemStack output, List<Identifier> alternatives) {
     super(id, group, width, height, ingredients, output);
     this.alternatives = alternatives;
   }
@@ -49,8 +48,8 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
    * @param base          Shaped recipe to copy data from
    * @param alternatives  List of recipe names to fail this match if they match
    */
-  public ShapedFallbackRecipe(ShapedRecipe base, List<ResourceLocation> alternatives) {
-    this(base.getId(), base.getGroup(), base.getWidth(), base.getHeight(), base.getIngredients(), base.getRecipeOutput(), alternatives);
+  public ShapedFallbackRecipe(ShapedRecipe base, List<Identifier> alternatives) {
+    this(base.getId(), base.getGroup(), base.getWidth(), base.getHeight(), base.getPreviewInputs(), base.getOutput(), alternatives);
   }
 
   @Override
@@ -65,7 +64,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     if (alternativeCache == null) {
       RecipeManager manager = world.getRecipeManager();
       alternativeCache = alternatives.stream()
-                                     .map(manager::getRecipe)
+                                     .map(manager::get)
                                      .filter(Optional::isPresent)
                                      .map(Optional::get)
                                      .filter(recipe -> {
@@ -73,47 +72,47 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
                                        Class<?> clazz = recipe.getClass();
                                        return clazz == ShapedRecipe.class || clazz == ShapelessRecipe.class;
                                      })
-                                     .map(recipe -> (ICraftingRecipe) recipe).collect(Collectors.toList());
+                                     .map(recipe -> (CraftingRecipe) recipe).collect(Collectors.toList());
     }
     // fail if any alterntaive matches
     return this.alternativeCache.stream().noneMatch(recipe -> recipe.matches(inv, world));
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
   }
 
   public static class Serializer extends ShapedRecipe.Serializer {
     @Override
-    public ShapedFallbackRecipe read(ResourceLocation id, JsonObject json) {
+    public ShapedFallbackRecipe read(Identifier id, JsonObject json) {
       ShapedRecipe base = super.read(id, json);
-      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new ResourceLocation(JSONUtils.getString(element, name)));
+      List<Identifier> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new Identifier(net.minecraft.util.JsonHelper.asString(element, name)));
       return new ShapedFallbackRecipe(base, alternatives);
     }
 
     @Override
-    public ShapedFallbackRecipe read(ResourceLocation id, PacketBuffer buffer) {
+    public ShapedFallbackRecipe read(Identifier id, PacketByteBuf buffer) {
       ShapedRecipe base = super.read(id, buffer);
       assert base != null;
       int size = buffer.readVarInt();
-      ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
+      ImmutableList.Builder<Identifier> builder = ImmutableList.builder();
       for (int i = 0; i < size; i++) {
-        builder.add(buffer.readResourceLocation());
+        builder.add(buffer.readIdentifier());
       }
       return new ShapedFallbackRecipe(base, builder.build());
     }
 
     @Override
-    public void write(PacketBuffer buffer, ShapedRecipe recipe) {
+    public void write(PacketByteBuf buffer, ShapedRecipe recipe) {
       // write base recipe
       super.write(buffer, recipe);
       // write extra data
       assert recipe instanceof ShapedFallbackRecipe;
-      List<ResourceLocation> alternatives = ((ShapedFallbackRecipe) recipe).alternatives;
+      List<Identifier> alternatives = ((ShapedFallbackRecipe) recipe).alternatives;
       buffer.writeVarInt(alternatives.size());
-      for (ResourceLocation alternative : alternatives) {
-        buffer.writeResourceLocation(alternative);
+      for (Identifier alternative : alternatives) {
+        buffer.writeIdentifier(alternative);
       }
     }
   }

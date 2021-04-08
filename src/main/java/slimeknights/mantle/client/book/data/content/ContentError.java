@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
@@ -11,7 +13,7 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ContentError extends PageContent {
 
   private final String errorStage;

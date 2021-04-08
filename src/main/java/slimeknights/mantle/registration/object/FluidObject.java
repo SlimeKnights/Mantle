@@ -1,11 +1,11 @@
 package slimeknights.mantle.registration.object;
 
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -18,22 +18,22 @@ import java.util.function.Supplier;
  * @param <F>  Fluid class
  */
 @SuppressWarnings("WeakerAccess")
-public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, IItemProvider {
+public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, ItemConvertible {
   // TODO: make final in 1.17
-  protected ResourceLocation id;
+  protected Identifier id;
   // TODO: make final in 1.17
   private IOptionalNamedTag<Fluid> localTag;
   private IOptionalNamedTag<Fluid> forgeTag;
   private final Supplier<? extends F> still;
   private final Supplier<? extends F> flowing;
   @Nullable
-  private final Supplier<? extends FlowingFluidBlock> block;
+  private final Supplier<? extends FluidBlock> block;
 
   /** Main constructor */
-  public FluidObject(ResourceLocation id, String tagName, Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends FlowingFluidBlock> block) {
+  public FluidObject(Identifier id, String tagName, Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends FluidBlock> block) {
     this.id = id;
     this.localTag = FluidTags.createOptional(id);
-    this.forgeTag = FluidTags.createOptional(new ResourceLocation("forge", tagName));
+    this.forgeTag = FluidTags.createOptional(new Identifier("forge", tagName));
     this.still = still;
     this.flowing = flowing;
     this.block = block;
@@ -41,14 +41,14 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
 
   /** @deprecated Use constructor with id and tag name parameter */
   @Deprecated
-  public FluidObject(Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends FlowingFluidBlock> block) {
+  public FluidObject(Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends FluidBlock> block) {
     this.still = still;
     this.flowing = flowing;
     this.block = block;
   }
 
   /** Gets the ID for this fluid object */
-  public ResourceLocation getId() {
+  public Identifier getId() {
     if (id == null) {
       id = Objects.requireNonNull(getStill().getRegistryName(), "Fluid has null ID");
     }
@@ -81,7 +81,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
    * @return  Block form
    */
   @Nullable
-  public FlowingFluidBlock getBlock() {
+  public FluidBlock getBlock() {
     if (block == null) {
       return null;
     }
@@ -94,7 +94,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
    */
   @Override
   public Item asItem() {
-    return still.get().getFilledBucket();
+    return still.get().getBucketItem();
   }
 
   /** Gets the mod local tag for this fluid object */
@@ -108,7 +108,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
   /** Gets the shared forge tag for this fluid object */
   public IOptionalNamedTag<Fluid> getForgeTag() {
     if (forgeTag == null) {
-      forgeTag = FluidTags.createOptional(new ResourceLocation("forge", getId().getPath()));
+      forgeTag = FluidTags.createOptional(new Identifier("forge", getId().getPath()));
     }
     return forgeTag;
   }

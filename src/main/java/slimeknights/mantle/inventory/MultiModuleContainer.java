@@ -3,15 +3,14 @@ package slimeknights.mantle.inventory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,17 +22,17 @@ import java.util.Map;
 import java.util.Set;
 
 // TODO: cleanup
-public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer<TILE> {
+public class MultiModuleContainer<TILE extends BlockEntity> extends BaseContainer<TILE> {
 
-  public List<Container> subContainers = Lists.newArrayList();
+  public List<ScreenHandler> subContainers = Lists.newArrayList();
 
   // lookup used to redirect slot specific things to the appropriate container
-  protected Map<Integer, Container> slotContainerMap = Maps.newHashMap();
-  protected Map<Container, Pair<Integer, Integer>> subContainerSlotRanges = Maps.newHashMap();
+  protected Map<Integer, ScreenHandler> slotContainerMap = Maps.newHashMap();
+  protected Map<ScreenHandler, Pair<Integer, Integer>> subContainerSlotRanges = Maps.newHashMap();
   protected int subContainerSlotStart = -1;
-  protected Set<Container> shiftClickContainers = Sets.newHashSet();
+  protected Set<ScreenHandler> shiftClickContainers = Sets.newHashSet();
 
-  public MultiModuleContainer(ContainerType<?> containerType, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
+  public MultiModuleContainer(ScreenHandlerType<?> containerType, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
     super(containerType, id, inv, tile);
   }
 
@@ -41,9 +40,9 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
    * @param subcontainer        The container to add
    * @param preferForShiftClick If true shift clicking on slots of the main-container will try to move to this module before the player inventory
    */
-  public void addSubContainer(Container subcontainer, boolean preferForShiftClick) {
+  public void addSubContainer(ScreenHandler subcontainer, boolean preferForShiftClick) {
     if (this.subContainers.isEmpty()) {
-      this.subContainerSlotStart = this.inventorySlots.size();
+      this.subContainerSlotStart = this.slots.size();
     }
     this.subContainers.add(subcontainer);
 
@@ -51,24 +50,24 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
       this.shiftClickContainers.add(subcontainer);
     }
 
-    int begin = this.inventorySlots.size();
-    for (Object slot : subcontainer.inventorySlots) {
+    int begin = this.slots.size();
+    for (Object slot : subcontainer.slots) {
       WrapperSlot wrapper = new WrapperSlot((Slot) slot);
       this.addSlot(wrapper);
-      this.slotContainerMap.put(wrapper.slotNumber, subcontainer);
+      this.slotContainerMap.put(wrapper.id, subcontainer);
     }
-    int end = this.inventorySlots.size();
+    int end = this.slots.size();
     this.subContainerSlotRanges.put(subcontainer, Pair.of(begin, end));
   }
 
   @Nullable
-  public <CONTAINER extends Container> CONTAINER getSubContainer(Class<CONTAINER> clazz) {
+  public <CONTAINER extends ScreenHandler> CONTAINER getSubContainer(Class<CONTAINER> clazz) {
     return this.getSubContainer(clazz, 0);
   }
 
   @Nullable
-  public <CONTAINER extends Container> CONTAINER getSubContainer(Class<CONTAINER> clazz, int index) {
-    for (Container sub : this.subContainers) {
+  public <CONTAINER extends ScreenHandler> CONTAINER getSubContainer(Class<CONTAINER> clazz, int index) {
+    for (ScreenHandler sub : this.subContainers) {
       if (clazz.isAssignableFrom(sub.getClass())) {
         index--;
       }
@@ -81,7 +80,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     return null;
   }
 
-  public Container getSlotContainer(int slotNumber) {
+  public ScreenHandler getSlotContainer(int slotNumber) {
     if (this.slotContainerMap.containsKey(slotNumber)) {
       return this.slotContainerMap.get(slotNumber);
     }
@@ -90,51 +89,51 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
   }
 
   @Override
-  public boolean canInteractWith(PlayerEntity playerIn) {
+  public boolean canUse(PlayerEntity playerIn) {
     // check if subcontainers are valid
-    for (Container sub : this.subContainers) {
-      if (!sub.canInteractWith(playerIn)) {
+    for (ScreenHandler sub : this.subContainers) {
+      if (!sub.canUse(playerIn)) {
         return false;
       }
     }
 
-    return super.canInteractWith(playerIn);
+    return super.canUse(playerIn);
   }
 
   @Override
-  public void onContainerClosed(PlayerEntity playerIn) {
-    for (Container sub : this.subContainers) {
-      sub.onContainerClosed(playerIn);
+  public void close(PlayerEntity playerIn) {
+    for (ScreenHandler sub : this.subContainers) {
+      sub.close(playerIn);
     }
 
-    super.onContainerClosed(playerIn);
+    super.close(playerIn);
   }
 
   @Override
-  public ItemStack slotClick(int slotId, int dragType, ClickType type, PlayerEntity player) {
-    if (slotId == -999 && type == ClickType.QUICK_CRAFT) {
-      for (Container container : this.subContainers) {
-        container.slotClick(slotId, dragType, type, player);
+  public ItemStack onSlotClick(int slotId, int dragType, SlotActionType type, PlayerEntity player) {
+    if (slotId == -999 && type == SlotActionType.QUICK_CRAFT) {
+      for (ScreenHandler container : this.subContainers) {
+        container.onSlotClick(slotId, dragType, type, player);
       }
     }
 
-    return super.slotClick(slotId, dragType, type, player);
+    return super.onSlotClick(slotId, dragType, type, player);
   }
 
   // More sophisticated version of the one in BaseContainer
   // Takes submodules into account when shiftclicking!
   @Override
-  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-    Slot slot = this.inventorySlots.get(index);
+  public ItemStack transferSlot(PlayerEntity playerIn, int index) {
+    Slot slot = this.slots.get(index);
 
-    if (slot == null || !slot.getHasStack()) {
+    if (slot == null || !slot.hasStack()) {
       return ItemStack.EMPTY;
     }
 
     ItemStack ret = slot.getStack().copy();
     ItemStack itemstack = slot.getStack().copy();
 
-    Container container = this.getSlotContainer(index);
+    ScreenHandler container = this.getSlotContainer(index);
     boolean nothingDone = true;
 
     // Is the slot from a module?
@@ -178,18 +177,18 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
 
   protected ItemStack notifySlotAfterTransfer(PlayerEntity player, ItemStack stack, ItemStack original, Slot slot) {
     // notify slot
-    slot.onSlotChange(stack, original);
+    slot.onStackChanged(stack, original);
 
     if (stack.getCount() == original.getCount()) {
       return ItemStack.EMPTY;
     }
 
     // update slot we pulled from
-    slot.putStack(stack);
-    slot.onTake(player, stack);
+    slot.setStack(stack);
+    slot.onTakeItem(player, stack);
 
-    if (slot.getHasStack() && slot.getStack().isEmpty()) {
-      slot.putStack(ItemStack.EMPTY);
+    if (slot.hasStack() && slot.getStack().isEmpty()) {
+      slot.setStack(ItemStack.EMPTY);
     }
 
     return original;
@@ -204,7 +203,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     if (end < 0) {
       end = this.playerInventoryStart;
     }
-    return !this.mergeItemStack(itemstack, 0, end, false);
+    return !this.insertItem(itemstack, 0, end, false);
   }
 
   protected boolean moveToPlayerInventory(ItemStack itemstack) {
@@ -212,15 +211,15 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
       return false;
     }
 
-    return this.playerInventoryStart > 0 && !this.mergeItemStack(itemstack, this.playerInventoryStart, this.inventorySlots.size(), true);
+    return this.playerInventoryStart > 0 && !this.insertItem(itemstack, this.playerInventoryStart, this.slots.size(), true);
   }
 
-  protected boolean moveToAnyContainer(ItemStack itemstack, Collection<Container> containers) {
+  protected boolean moveToAnyContainer(ItemStack itemstack, Collection<ScreenHandler> containers) {
     if (itemstack.isEmpty()) {
       return false;
     }
 
-    for (Container submodule : containers) {
+    for (ScreenHandler submodule : containers) {
       if (this.moveToContainer(itemstack, submodule)) {
         return true;
       }
@@ -229,17 +228,17 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     return false;
   }
 
-  protected boolean moveToContainer(ItemStack itemstack, Container container) {
+  protected boolean moveToContainer(ItemStack itemstack, ScreenHandler container) {
     Pair<Integer, Integer> range = this.subContainerSlotRanges.get(container);
-    return !this.mergeItemStack(itemstack, range.getLeft(), range.getRight(), false);
+    return !this.insertItem(itemstack, range.getLeft(), range.getRight(), false);
   }
 
-  protected boolean refillAnyContainer(ItemStack itemstack, Collection<Container> containers) {
+  protected boolean refillAnyContainer(ItemStack itemstack, Collection<ScreenHandler> containers) {
     if (itemstack.isEmpty()) {
       return false;
     }
 
-    for (Container submodule : containers) {
+    for (ScreenHandler submodule : containers) {
       if (this.refillContainer(itemstack, submodule)) {
         return true;
       }
@@ -248,7 +247,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     return false;
   }
 
-  protected boolean refillContainer(ItemStack itemstack, Container container) {
+  protected boolean refillContainer(ItemStack itemstack, ScreenHandler container) {
     Pair<Integer, Integer> range = this.subContainerSlotRanges.get(container);
     return !this.mergeItemStackRefill(itemstack, range.getLeft(), range.getRight(), false);
   }
@@ -257,7 +256,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
    * Searches for a sidechest to display in the UI
    */
   @Nullable
-  public <TE extends TileEntity> TE detectTE(Class<TE> clazz) {
+  public <TE extends BlockEntity> TE detectTE(Class<TE> clazz) {
     if (this.tile == null) {
       return null;
     } else {
@@ -269,14 +268,14 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
   }
 
   @Nullable
-  private <TE extends TileEntity> TE detectChest(BlockPos pos, Class<TE> clazz) {
+  private <TE extends BlockEntity> TE detectChest(BlockPos pos, Class<TE> clazz) {
     if (this.tile == null) {
       return null;
     } else {
       if (this.tile.getWorld() == null) {
         return null;
       } else {
-        TileEntity te = this.tile.getWorld().getTileEntity(pos);
+        BlockEntity te = this.tile.getWorld().getBlockEntity(pos);
         if (clazz.isInstance(te)) {
           return clazz.cast(te);
         }

@@ -1,12 +1,14 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 // TODO: class needs some rewrites
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ScalableElementScreen extends ElementScreen {
 
   public ScalableElementScreen(int x, int y, int w, int h, int texW, int texH) {
@@ -24,7 +26,7 @@ public class ScalableElementScreen extends ElementScreen {
     // remainder that doesn't fit total width
     int remainder = width % this.w;
     if (remainder > 0) {
-      Screen.blit(matrixStack, xPos + width - remainder, yPos, this.x, this.y, remainder, this.h, this.texW, this.texH);
+      Screen.drawTexture(matrixStack, xPos + width - remainder, yPos, this.x, this.y, remainder, this.h, this.texW, this.texH);
     }
 
     return width;
@@ -37,7 +39,7 @@ public class ScalableElementScreen extends ElementScreen {
     // remainder that doesn't fit total width
     int remainder = height % this.h;
     if (remainder > 0) {
-      Screen.blit(matrixStack, xPos, yPos + height - remainder, this.x, this.y, this.w, remainder, this.texW, this.texH);
+      Screen.drawTexture(matrixStack, xPos, yPos + height - remainder, this.x, this.y, this.w, remainder, this.texW, this.texH);
     }
 
     return this.w;
@@ -56,7 +58,7 @@ public class ScalableElementScreen extends ElementScreen {
     int remainder = height % this.h;
     int offset = this.h - remainder;
     if (remainder > 0) {
-      Screen.blit(matrixStack, xPos, yPos + offset, this.x, this.y + offset, this.w, remainder, this.texW, this.texH);
+      Screen.drawTexture(matrixStack, xPos, yPos + offset, this.x, this.y + offset, this.w, remainder, this.texW, this.texH);
     }
 
     return this.w;
@@ -82,7 +84,7 @@ public class ScalableElementScreen extends ElementScreen {
     int remainder = width % this.w;
 
     if (remainder > 0) {
-      Screen.blit(matrixStack, xPos + width - remainder, yPos, this.x, this.y, remainder, yRest, this.texW, this.texH);
+      Screen.drawTexture(matrixStack, xPos + width - remainder, yPos, this.x, this.y, remainder, yRest, this.texW, this.texH);
     }
 
     return width;

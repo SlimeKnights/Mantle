@@ -8,7 +8,7 @@ import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -105,8 +105,8 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
     ItemObject<Block> blockObj = register(name, block, item);
     return new BuildingBlockObject(
         blockObj,
-        this.register(name + "_slab", () -> new SlabBlock(AbstractBlock.Properties.from(blockObj.get())), item),
-        this.register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().getDefaultState(), AbstractBlock.Properties.from(blockObj.get())), item));
+        this.register(name + "_slab", () -> new SlabBlock(AbstractBlock.Settings.copy(blockObj.get())), item),
+        this.register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().getDefaultState(), AbstractBlock.Settings.copy(blockObj.get())), item));
   }
 
   /**
@@ -133,7 +133,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    */
   public WallBuildingBlockObject registerWallBuilding(String name, Supplier<? extends Block> block, Function<? super Block, ? extends BlockItem> item) {
     BuildingBlockObject obj = this.registerBuilding(name, block, item);
-    return new WallBuildingBlockObject(obj, this.register(name + "_wall", () -> new WallBlock(AbstractBlock.Properties.from(obj.get())), item));
+    return new WallBuildingBlockObject(obj, this.register(name + "_wall", () -> new WallBlock(AbstractBlock.Settings.copy(obj.get())), item));
   }
 
   /**
@@ -159,7 +159,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    */
   public FenceBuildingBlockObject registerFenceBuilding(String name, Supplier<? extends Block> block, Function<? super Block, ? extends BlockItem> item) {
     BuildingBlockObject obj = this.registerBuilding(name, block, item);
-    return new FenceBuildingBlockObject(obj, this.register(name + "_fence", () -> new FenceBlock(AbstractBlock.Properties.from(obj.get())), item));
+    return new FenceBuildingBlockObject(obj, this.register(name + "_fence", () -> new FenceBlock(AbstractBlock.Settings.copy(obj.get())), item));
   }
 
   /**
@@ -184,7 +184,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item      Function to get an item from the block
    * @return  EnumObject mapping between different block types
    */
-  public <T extends Enum<T> & IStringSerializable, B extends Block> EnumObject<T,B> registerEnum(
+  public <T extends Enum<T> & StringIdentifiable, B extends Block> EnumObject<T,B> registerEnum(
       T[] values, String name, Function<T,? extends B> mapper, Function<? super B, ? extends BlockItem> item) {
     return registerEnum(values, name, (fullName, value) -> register(fullName, () -> mapper.apply(value), item));
   }
@@ -197,7 +197,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item      Function to get an item from the block
    * @return  EnumObject mapping between different block types
    */
-  public <T extends Enum<T> & IStringSerializable, B extends Block> EnumObject<T,B> registerEnum(
+  public <T extends Enum<T> & StringIdentifiable, B extends Block> EnumObject<T,B> registerEnum(
       String name, T[] values, Function<T,? extends B> mapper, Function<? super B, ? extends BlockItem> item) {
     return registerEnum(name, values, (fullName, value) -> register(fullName, () -> mapper.apply(value), item));
   }

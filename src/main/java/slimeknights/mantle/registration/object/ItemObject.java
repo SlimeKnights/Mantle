@@ -2,8 +2,8 @@ package slimeknights.mantle.registration.object;
 
 import lombok.AllArgsConstructor;
 import net.minecraft.item.Item;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -15,16 +15,16 @@ import java.util.function.Supplier;
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
 /**
- * Registry object wrapper to implement {@link IItemProvider}
+ * Registry object wrapper to implement {@link ItemConvertible}
  * @param <I>  Item class
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor
-public class ItemObject<I extends IForgeRegistryEntry<? super I> & IItemProvider> implements Supplier<I>, IItemProvider {
+public class ItemObject<I extends IForgeRegistryEntry<? super I> & ItemConvertible> implements Supplier<I>, ItemConvertible {
   /** Supplier to the registry entry */
   private final Supplier<? extends I> entry;
   /** Supplier to the registry name for this entry, allows fetching the name before the entry resolves if registry object is used */
-  private final ResourceLocation name;
+  private final Identifier name;
 
   /**
    * Creates a new item object from a supplier instance. Registry name will be fetched from the supplier entry, so the entry must be present during construction
@@ -86,7 +86,7 @@ public class ItemObject<I extends IForgeRegistryEntry<? super I> & IItemProvider
    * Gets the resource location for the given item
    * @return  Resource location for the given item
    */
-  public ResourceLocation getRegistryName() {
+  public Identifier getRegistryName() {
     return name;
   }
 }

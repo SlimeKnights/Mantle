@@ -2,10 +2,10 @@ package slimeknights.mantle.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.WorldView;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
@@ -25,7 +25,7 @@ public class TileEntityHelper {
    * @param <T>    Tile entity type
    * @return  Optional of the tile entity, empty if missing or wrong class
    */
-  public static <T> Optional<T> getTile(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos) {
+  public static <T> Optional<T> getTile(Class<T> clazz, @Nullable BlockView world, BlockPos pos) {
     return getTile(clazz, world, pos, false);
   }
 
@@ -38,13 +38,13 @@ public class TileEntityHelper {
    * @param <T>    Tile entity type
    * @return  Optional of the tile entity, empty if missing or wrong class
    */
-  public static <T> Optional<T>  getTile(Class<T> clazz, @Nullable IBlockReader world, BlockPos pos, boolean logWrongType) {
+  public static <T> Optional<T>  getTile(Class<T> clazz, @Nullable BlockView world, BlockPos pos, boolean logWrongType) {
     if (!isBlockLoaded(world, pos)) {
       return Optional.empty();
     }
 
     //TODO: This causes freezes if being called from onLoad
-    TileEntity tile = world.getTileEntity(pos);
+    BlockEntity tile = world.getBlockEntity(pos);
     if (tile == null) {
       return Optional.empty();
     }
@@ -64,12 +64,12 @@ public class TileEntityHelper {
    * @param pos    Position to check
    * @return  True if its loaded
    */
-  public static boolean isBlockLoaded(@Nullable IBlockReader world, BlockPos pos) {
+  public static boolean isBlockLoaded(@Nullable BlockView world, BlockPos pos) {
     if (world == null) {
       return false;
     }
-    if (world instanceof IWorldReader) {
-      return ((IWorldReader) world).isBlockLoaded(pos);
+    if (world instanceof WorldView) {
+      return ((WorldView) world).isChunkLoaded(pos);
     }
     return true;
   }

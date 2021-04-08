@@ -3,10 +3,10 @@ package slimeknights.mantle.registration.deferred;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.block.Block;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
-import net.minecraft.util.datafix.TypeReferences;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.registration.object.EnumObject;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 /**
  * Deferred register to register tile entity instances
  */
-public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<TileEntityType<?>> {
+public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<BlockEntityType<?>> {
   public TileEntityTypeDeferredRegister(String modID) {
     super(ForgeRegistries.TILE_ENTITIES, modID);
   }
@@ -30,7 +30,7 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Tile
    */
   @Nullable
   private Type<?> getType(String name) {
-    return Util.attemptDataFix(TypeReferences.BLOCK_ENTITY, resourceName(name));
+    return Util.getChoiceType(TypeReferences.BLOCK_ENTITY, resourceName(name));
   }
 
   /**
@@ -42,8 +42,8 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Tile
    * @return  Registry object instance
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String name, Supplier<? extends T> factory, Supplier<? extends Block> block) {
-    return register.register(name, () ->  TileEntityType.Builder.<T>create(factory, block.get()).build(getType(name)));
+  public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<? extends T> factory, Supplier<? extends Block> block) {
+    return register.register(name, () ->  BlockEntityType.Builder.<T>create(factory, block.get()).build(getType(name)));
   }
 
   /**
@@ -55,8 +55,8 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Tile
    * @return  Tile entity type registry object
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String name, Supplier<? extends T> factory, EnumObject<?, ? extends Block> blocks) {
-    return register.register(name, () ->  new TileEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)));
+  public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<? extends T> factory, EnumObject<?, ? extends Block> blocks) {
+    return register.register(name, () ->  new BlockEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)));
   }
 
   /**
@@ -68,11 +68,11 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Tile
    * @return  Tile entity type registry object
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String name, Supplier<? extends T> factory, Consumer<ImmutableSet.Builder<Block>> blockCollector) {
+  public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<? extends T> factory, Consumer<ImmutableSet.Builder<Block>> blockCollector) {
     return register.register(name, () ->  {
       ImmutableSet.Builder<Block> blocks = new ImmutableSet.Builder<>();
       blockCollector.accept(blocks);
-      return new TileEntityType<>(factory, blocks.build(), getType(name));
+      return new BlockEntityType<>(factory, blocks.build(), getType(name));
     });
   }
 }

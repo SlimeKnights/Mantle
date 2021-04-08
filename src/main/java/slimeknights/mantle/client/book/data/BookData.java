@@ -1,11 +1,13 @@
 package slimeknights.mantle.client.book.data;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.resource.Resource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
@@ -26,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class BookData implements IDataItem {
 
   public transient int unnamedSectionCounter = 0;
@@ -34,7 +36,7 @@ public class BookData implements IDataItem {
   public transient AppearanceData appearance = new AppearanceData();
   public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
   public transient HashMap<String, String> strings = new HashMap<>();
-  public transient FontRenderer fontRenderer;
+  public transient TextRenderer fontRenderer;
   private transient boolean initialized = false;
 
   protected final transient ArrayList<BookTransformer> transformers = new ArrayList<>();
@@ -82,7 +84,7 @@ public class BookData implements IDataItem {
           e.printStackTrace();
         }
 
-        ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");
+        Identifier appearanceLocation = repo.getResourceLocation("appearance.json");
 
         if (repo.resourceExists(appearanceLocation)) {
           try {
@@ -96,7 +98,7 @@ public class BookData implements IDataItem {
 
         this.appearance.load();
 
-        ResourceLocation itemLinkLocation = repo.getResourceLocation("items.json");
+        Identifier itemLinkLocation = repo.getResourceLocation("items.json");
 
         if (repo.resourceExists(itemLinkLocation)) {
           try {
@@ -108,11 +110,11 @@ public class BookData implements IDataItem {
           }
         }
 
-        ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
+        Identifier languageLocation = repo.getResourceLocation("language.lang");
 
         if (repo.resourceExists(languageLocation)) {
           try {
-            IResource resource = repo.getResource(languageLocation);
+            Resource resource = repo.getResource(languageLocation);
             if (resource != null) {
               BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(),
                       StandardCharsets.UTF_8));
@@ -351,12 +353,12 @@ public class BookData implements IDataItem {
     return out != null ? out : string;
   }
 
-  public void openGui(ITextComponent title, @Nullable ItemStack item) {
+  public void openGui(Text title, @Nullable ItemStack item) {
     if (!this.initialized) {
       this.load();
     }
-    if (Minecraft.getInstance().player != null) {
-      Minecraft.getInstance().displayGuiScreen(new BookScreen(title, this, item));
+    if (MinecraftClient.getInstance().player != null) {
+      MinecraftClient.getInstance().openScreen(new BookScreen(title, this, item));
     }
   }
 

@@ -2,14 +2,14 @@ package slimeknights.mantle.client.book.data.content;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.crafting.AbstractCookingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_SMELTING;
 
 public class ContentSmelting extends PageContent {
-  private static final NonNullList<ItemStack> FUELS;
+  private static final DefaultedList<ItemStack> FUELS;
 
   public static final transient int TEX_SIZE = 128;
   public static final transient ImageData IMG_SMELTING = new ImageData(TEX_SMELTING, 0, 0, 110, 114, TEX_SIZE, TEX_SIZE);
@@ -58,7 +58,7 @@ public class ContentSmelting extends PageContent {
     tdTitle.underlined = true;
     list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
     list.add(new ImageElement(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
-    list.add(new TooltipElement(ImmutableList.of(new TranslationTextComponent("mantle:tooltip.cooktime", this.cookTime / 20)), x + 7, y + 42, 60, 28));
+    list.add(new TooltipElement(ImmutableList.of(new TranslatableText("mantle:tooltip.cooktime", this.cookTime / 20)), x + 7, y + 42, 60, 28));
 
     if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ItemElement(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
@@ -75,7 +75,7 @@ public class ContentSmelting extends PageContent {
     }
   }
 
-  public NonNullList<ItemStack> getFuelsList() {
+  public DefaultedList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
 
     if(this.fuel != null) {
@@ -89,19 +89,19 @@ public class ContentSmelting extends PageContent {
   public void load() {
     super.load();
 
-    if(!StringUtils.isEmpty(this.recipe) && ResourceLocation.isResouceNameValid(this.recipe)) {
-      IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
+    if(!StringUtils.isEmpty(this.recipe) && Identifier.isValid(this.recipe)) {
+      Recipe<?> recipe = MinecraftClient.getInstance().world.getRecipeManager().get(new Identifier(this.recipe)).orElse(null);
 
       if(recipe instanceof AbstractCookingRecipe) {
-        this.input = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
+        this.input = ItemStackData.getItemStackData(DefaultedList.copyOf(ItemStack.EMPTY, recipe.getPreviewInputs().get(0).getMatchingStacksClient()));
         this.cookTime = ((AbstractCookingRecipe)recipe).getCookTime();
-        this.result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
+        this.result = ItemStackData.getItemStackData(recipe.getOutput());
       }
     }
   }
 
   static {
-    FUELS = NonNullList.from(ItemStack.EMPTY,
+    FUELS = DefaultedList.copyOf(ItemStack.EMPTY,
             new ItemStack(Blocks.OAK_SLAB),
             new ItemStack(Blocks.SPRUCE_SLAB),
             new ItemStack(Blocks.BIRCH_SLAB),

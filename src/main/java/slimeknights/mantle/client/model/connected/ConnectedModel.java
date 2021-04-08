@@ -13,27 +13,26 @@ import com.mojang.datafixers.util.Pair;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.client.renderer.model.BlockPart;
-import net.minecraft.client.renderer.model.BlockPartFace;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.Direction.Plane;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.ModelBakeSettings;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.UnbakedModel;
+import net.minecraft.client.render.model.json.ModelElement;
+import net.minecraft.client.render.model.json.ModelElementFace;
+import net.minecraft.client.render.model.json.ModelElementTexture;
+import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.math.Direction.Type;
+import net.minecraft.world.BlockRenderView;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.IModelData;
@@ -80,13 +79,13 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   private final Set<Direction> sides;
 
   /** Map of full texture name to the resulting material, filled during {@link #getTextures(IModelConfiguration, Function, Set)} */
-  private Map<String,RenderMaterial> extraTextures;
+  private Map<String,SpriteIdentifier> extraTextures;
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    Collection<RenderMaterial> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
+  public Collection<SpriteIdentifier> getTextures(IModelConfiguration owner, Function<Identifier,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    Collection<SpriteIdentifier> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
     // for all connected textures, add suffix textures
-    Map<String, RenderMaterial> extraTextures = new HashMap<>();
+    Map<String, SpriteIdentifier> extraTextures = new HashMap<>();
     for (Entry<String,String[]> entry : connectedTextures.entrySet()) {
       // fetch data from the base texture
       String name = entry.getKey();
@@ -94,9 +93,9 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       if (!owner.isTexturePresent(name)) {
         continue;
       }
-      RenderMaterial base = owner.resolveTexture(name);
-      ResourceLocation atlas = base.getAtlasLocation();
-      ResourceLocation texture = base.getTextureLocation();
+      SpriteIdentifier base = owner.resolveTexture(name);
+      Identifier atlas = base.getAtlasId();
+      Identifier texture = base.getTextureId();
       String namespace = texture.getNamespace();
       String path = texture.getPath();
 
@@ -109,12 +108,12 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
         // skip running if we have seen it before
         String suffixedName = name + "_" + suffix;
         if (!extraTextures.containsKey(suffixedName)) {
-          RenderMaterial mat;
+          SpriteIdentifier mat;
           // allow overriding a specific texture
           if (owner.isTexturePresent(suffixedName)) {
             mat = owner.resolveTexture(suffixedName);
           } else {
-            mat = new RenderMaterial(atlas, new ResourceLocation(namespace, path + "/" + suffix));
+            mat = new SpriteIdentifier(atlas, new Identifier(namespace, path + "/" + suffix));
           }
           textures.add(mat);
           // cache the texture name, we use it a lot in rebaking
@@ -130,20 +129,20 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
-    IBakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
+  public net.minecraft.client.render.model.BakedModel bake(IModelConfiguration owner, ModelLoader bakery, Function<SpriteIdentifier,Sprite> spriteGetter, ModelBakeSettings transform, ModelOverrideList overrides, Identifier location) {
+    net.minecraft.client.render.model.BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
     return new BakedModel(this, new ExtraTextureConfiguration(owner, extraTextures), transform, baked);
   }
 
   @SuppressWarnings("WeakerAccess")
-  protected static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
+  protected static class BakedModel extends DynamicBakedWrapper<net.minecraft.client.render.model.BakedModel> {
     private final ConnectedModel parent;
     private final IModelConfiguration owner;
-    private final IModelTransform transforms;
-    private final IBakedModel[] cache = new IBakedModel[64];
+    private final ModelBakeSettings transforms;
+    private final net.minecraft.client.render.model.BakedModel[] cache = new net.minecraft.client.render.model.BakedModel[64];
     private final Map<String,String> nameMappingCache = new HashMap<>();
     private final ModelTextureIteratable modelTextures;
-    public BakedModel(ConnectedModel parent, IModelConfiguration owner, IModelTransform transforms, IBakedModel baked) {
+    public BakedModel(ConnectedModel parent, IModelConfiguration owner, ModelBakeSettings transforms, net.minecraft.client.render.model.BakedModel baked) {
       super(baked);
       this.parent = parent;
       this.owner = owner;
@@ -175,8 +174,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       switch(direction) {
         case NORTH: return Direction.UP;
         case SOUTH: return Direction.DOWN;
-        case EAST: return rotation.rotateYCCW();
-        case WEST: return rotation.rotateY();
+        case EAST: return rotation.rotateYCounterclockwise();
+        case WEST: return rotation.rotateYClockwise();
       }
       throw new IllegalArgumentException("Direction must be horizontal axis");
     }
@@ -187,7 +186,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      * @param uv     Block UV data
      * @return  Direction transform function
      */
-    private static Function<Direction,Direction> getTransform(Direction face, BlockFaceUV uv) {
+    private static Function<Direction,Direction> getTransform(Direction face, ModelElementTexture uv) {
       // TODO: how do I apply UV lock?
       // final transform switches from face (NSWE) to world direction, the rest are composed in to apply first
       Function<Direction,Direction> transform = (d) -> rotateDirection(d, face);
@@ -220,13 +219,13 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       switch (uv.rotation) {
         // 90 degrees
         case 90:
-          transform = transform.compose(Direction::rotateY);
+          transform = transform.compose(Direction::rotateYClockwise);
           break;
         case 180:
           transform = transform.compose(Direction::getOpposite);
           break;
         case 270:
-          transform = transform.compose(Direction::rotateYCCW);
+          transform = transform.compose(Direction::rotateYCounterclockwise);
           break;
       }
 
@@ -255,8 +254,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       // otherwise, iterate into the parent models, trying to find a match
       String check = key;
       String found = "";
-      for(Map<String, Either<RenderMaterial, String>> textures : modelTextures) {
-        Either<RenderMaterial, String> either = textures.get(check);
+      for(Map<String, Either<SpriteIdentifier, String>> textures : modelTextures) {
+        Either<SpriteIdentifier, String> either = textures.get(check);
         if (either != null) {
           // if no name, its not connected
           Optional<String> newName = either.right();
@@ -286,10 +285,10 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      */
     private String getTextureSuffix(String texture, byte connections, Function<Direction,Direction> transform) {
       int key = 0;
-      for (Direction dir : Plane.HORIZONTAL) {
-        int flag = 1 << transform.apply(dir).getIndex();
+      for (Direction dir : Type.HORIZONTAL) {
+        int flag = 1 << transform.apply(dir).getId();
         if ((connections & flag) == flag) {
-          key |= 1 << dir.getHorizontalIndex();
+          key |= 1 << dir.getHorizontal();
         }
       }
       // if empty, do not prefix
@@ -307,34 +306,34 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      * @param connections  Array of face connections, true at indexes of connected sides
      * @return  Model with connections applied
      */
-    private IBakedModel applyConnections(byte connections) {
+    private net.minecraft.client.render.model.BakedModel applyConnections(byte connections) {
       // copy each element with updated faces
-      List<BlockPart> elements = Lists.newArrayList();
-      for (BlockPart part : parent.model.getElements()) {
-        Map<Direction,BlockPartFace> partFaces = new EnumMap<>(Direction.class);
-        for (Map.Entry<Direction,BlockPartFace> entry : part.mapFaces.entrySet()) {
+      List<ModelElement> elements = Lists.newArrayList();
+      for (ModelElement part : parent.model.getElements()) {
+        Map<Direction,ModelElementFace> partFaces = new EnumMap<>(Direction.class);
+        for (Map.Entry<Direction,ModelElementFace> entry : part.faces.entrySet()) {
           // first, determine which texture to use on this side
           Direction dir = entry.getKey();
-          BlockPartFace original = entry.getValue();
-          BlockPartFace face = original;
+          ModelElementFace original = entry.getValue();
+          ModelElementFace face = original;
 
           // follow the texture name back to the original name
           // if it never reaches a connected texture, skip
-          String connectedTexture = getConnectedName(original.texture);
+          String connectedTexture = getConnectedName(original.textureId);
           if (!connectedTexture.isEmpty()) {
             // if empty string, we can keep the old face
-            String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, original.blockFaceUV));
+            String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, original.textureData));
             if (!suffix.isEmpty()) {
               // suffix the texture
               String fullTexture = connectedTexture + suffix;
-              face = new BlockPartFace(original.cullFace, original.tintIndex, "#" + fullTexture, original.blockFaceUV);
+              face = new ModelElementFace(original.cullFace, original.tintIndex, "#" + fullTexture, original.textureData);
             }
           }
           // add the updated face
           partFaces.put(dir, face);
         }
         // add the updated parts into a new model part
-        elements.add(new BlockPart(part.positionFrom, part.positionTo, partFaces, part.partRotation, part.shade));
+        elements.add(new ModelElement(part.from, part.to, partFaces, part.rotation, part.shade));
       }
 
       // bake the model
@@ -350,14 +349,14 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       byte connections = 0;
       for (Direction dir : Direction.values()) {
         if (predicate.test(dir)) {
-          connections |= 1 << dir.getIndex();
+          connections |= 1 << dir.getId();
         }
       }
       return connections;
     }
 
     @Override
-    public IModelData getModelData(IBlockDisplayReader world, BlockPos pos, BlockState state, IModelData tileData) {
+    public IModelData getModelData(BlockRenderView world, BlockPos pos, BlockState state, IModelData tileData) {
       // if the data is already defined, return it, will happen in multipart models
       if (tileData.getData(CONNECTIONS) != null) {
         return tileData;
@@ -370,7 +369,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       }
 
       // gather connections data
-      TransformationMatrix rotation = transforms.getRotation();
+      AffineTransformation rotation = transforms.getRotation();
       data.setData(CONNECTIONS, getConnections((dir) -> parent.sides.contains(dir) && parent.connectionPredicate.test(state, world.getBlockState(pos.offset(rotation.rotateTransform(dir))))));
       return data;
     }
@@ -406,13 +405,13 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
           return originalModel.getQuads(null, side, rand, data);
         }
         // this will return original if the state is missing all properties
-        TransformationMatrix rotation = transforms.getRotation();
+        AffineTransformation rotation = transforms.getRotation();
         connections = getConnections((dir) -> {
           if (!parent.sides.contains(dir)) {
             return false;
           }
           BooleanProperty prop = IMultipartConnectedBlock.CONNECTED_DIRECTIONS.get(rotation.rotateTransform(dir));
-          return state.hasProperty(prop) && state.get(prop);
+          return state.contains(prop) && state.get(prop);
         });
       }
       // get quads using connections
@@ -426,17 +425,17 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     public static final ConnectedModel.Loader INSTANCE = new ConnectedModel.Loader();
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void apply(ResourceManager resourceManager) {}
 
     @Override
     public ConnectedModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
 
       // root object for all model data
-      JsonObject data = JSONUtils.getJsonObject(json, "connection");
+      JsonObject data = JsonHelper.getObject(json, "connection");
 
       // need at least one connected texture
-      JsonObject connected = JSONUtils.getJsonObject(data, "textures");
+      JsonObject connected = JsonHelper.getObject(data, "textures");
       if (connected.size() == 0) {
         throw new JsonSyntaxException("Must have at least one texture in connected");
       }
@@ -453,10 +452,10 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       // get a list of sides to pay attention to
       Set<Direction> sides;
       if (data.has("sides")) {
-        JsonArray array = JSONUtils.getJsonArray(data, "sides");
+        JsonArray array = JsonHelper.getArray(data, "sides");
         sides = EnumSet.noneOf(Direction.class);
         for (int i = 0; i < array.size(); i++) {
-          String side = JSONUtils.getString(array.get(i), "sides[" + i + "]");
+          String side = JsonHelper.asString(array.get(i), "sides[" + i + "]");
           Direction dir = Direction.byName(side);
           if (dir == null) {
             throw new JsonParseException("Invalid side " + side);
