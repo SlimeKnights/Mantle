@@ -15,13 +15,8 @@ import java.util.function.Function;
 @SuppressWarnings("unused")
 public class FluidRegistryAdapter extends RegistryAdapter<Fluid> {
   /** @inheritDoc */
-  public FluidRegistryAdapter(IForgeRegistry<Fluid> registry) {
-    super(registry);
-  }
-
-  /** @inheritDoc */
-  public FluidRegistryAdapter(IForgeRegistry<Fluid> registry, String modId) {
-    super(registry, modId);
+  public FluidRegistryAdapter(String modId) {
+    super(modId);
   }
 
   /**
