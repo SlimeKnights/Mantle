@@ -5,12 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.json.ModelTransformation.Mode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -21,8 +16,6 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraftforge.fml.client.gui.GuiUtils;
-import slimeknights.mantle.client.model.inventory.ModelItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,34 +63,9 @@ public class RenderingHelper {
    * @param matrices    Matrix stack inst ance
    * @param buffer      Buffer instance
    * @param item        Item to render
-   * @param modelItem   Model items for render information
    * @param light       Model light
    */
-  public static void renderItem(MatrixStack matrices, VertexConsumerProvider buffer, ItemStack item, ModelItem modelItem, int light) {
-    // if the item says skip, skip
-    if (modelItem.isHidden()) return;
-    // if no stack, skip
-    if (item.isEmpty()) return;
-
-    // start rendering
-    matrices.push();
-    Vector3f center = modelItem.getCenterScaled();
-    matrices.translate(center.getX(), center.getY(), center.getZ());
-
-    // scale
-    float scale = modelItem.getSizeScaled();
-    matrices.scale(scale, scale, scale);
-
-    // rotate X, then Y
-    float x = modelItem.getX();
-    if (x != 0) {
-      matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(x));
-    }
-    float y = modelItem.getY();
-    if (y != 0) {
-      matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(y));
-    }
-
+  public static void renderItem(MatrixStack matrices, VertexConsumerProvider buffer, ItemStack item, int light) {
     // render the actual item
     MinecraftClient.getInstance().getItemRenderer().renderItem(item, Mode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, buffer);
     matrices.pop();
@@ -119,12 +87,13 @@ public class RenderingHelper {
    * @param screenHeight   Screen height
    * @param maxTextWidth   Max text width
    * @param font           Font
-   * @deprecated   Remove when {@link GuiUtils} updates drawHoveringText
    */
   @Deprecated
   public static void drawHoveringText(MatrixStack mStack, List<Text> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, TextRenderer font) {
     drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth,
-                     GuiUtils.DEFAULT_BACKGROUND_COLOR, GuiUtils.DEFAULT_BORDER_COLOR_START, GuiUtils.DEFAULT_BORDER_COLOR_END, font);
+            0xF0100010,
+            0x505000FF,
+            (0x505000FF & 0xFEFEFE) >> 1 | 0x505000FF & 0xFF000000, font);
   }
 
   /**

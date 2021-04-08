@@ -183,50 +183,50 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     }
   }
 
-  @Override
-  public void drawSlot(MatrixStack matrixStack, Slot slotIn) {
-    ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.id);
-
-    if (module != null) {
-      Slot slot = slotIn;
-      // unwrap for the call to the module
-      if (slotIn instanceof WrapperSlot) {
-        slot = ((WrapperSlot) slotIn).parent;
-      }
-
-      if (!module.shouldDrawSlot(slot)) {
-        return;
-      }
-    }
-
-    // update slot positions
-    if (slotIn instanceof WrapperSlot) {
-      slotIn.x = ((WrapperSlot) slotIn).parent.x;
-      slotIn.y = ((WrapperSlot) slotIn).parent.y;
-    }
-
-    super.drawSlot(matrixStack, slotIn);
-  }
-
-  @Override
-  public boolean isPointOverSlot(Slot slotIn, double mouseX, double mouseY) {
-    ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.id);
-
-    // mouse inside the module of the slot?
-    if (module != null) {
-      Slot slot = slotIn;
-      // unwrap for the call to the module
-      if (slotIn instanceof WrapperSlot) {
-        slot = ((WrapperSlot) slotIn).parent;
-      }
-
-      if (!module.shouldDrawSlot(slot)) {
-        return false;
-      }
-    }
-
-    return super.isPointOverSlot(slotIn, mouseX, mouseY);
-  }
+//  @Override
+//  public void drawSlot(MatrixStack matrixStack, Slot slotIn) {
+//    ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.id);
+//
+//    if (module != null) {
+//      Slot slot = slotIn;
+//      // unwrap for the call to the module
+//      if (slotIn instanceof WrapperSlot) {
+//        slot = ((WrapperSlot) slotIn).parent;
+//      }
+//
+//      if (!module.shouldDrawSlot(slot)) {
+//        return;
+//      }
+//    }
+//
+//    // update slot positions
+//    if (slotIn instanceof WrapperSlot) {
+//      slotIn.x = ((WrapperSlot) slotIn).parent.x;
+//      slotIn.y = ((WrapperSlot) slotIn).parent.y;
+//    }
+//
+//    super.drawSlot(matrixStack, slotIn);
+//  }
+//
+//  @Override
+//  public boolean isPointOverSlot(Slot slotIn, double mouseX, double mouseY) {
+//    ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.id);
+//
+//    // mouse inside the module of the slot?
+//    if (module != null) {
+//      Slot slot = slotIn;
+//      // unwrap for the call to the module
+//      if (slotIn instanceof WrapperSlot) {
+//        slot = ((WrapperSlot) slotIn).parent;
+//      }
+//
+//      if (!module.shouldDrawSlot(slot)) {
+//        return false;
+//      }
+//    }
+//
+//    return super.isPointOverSlot(slotIn, mouseX, mouseY);
+//  }
 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {

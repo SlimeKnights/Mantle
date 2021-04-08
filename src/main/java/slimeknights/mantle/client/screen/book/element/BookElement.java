@@ -22,7 +22,7 @@ public abstract class BookElement extends DrawableHelper {
   public BookScreen parent;
 
   protected MinecraftClient mc = MinecraftClient.getInstance();
-  protected TextureManager renderEngine = this.mc.textureManager;
+  protected TextureManager renderEngine = this.mc.getTextureManager();
 
   public int x, y;
 
@@ -55,12 +55,7 @@ public abstract class BookElement extends DrawableHelper {
   public void renderToolTip(MatrixStack matrixStack, TextRenderer fontRenderer, ItemStack stack, int x, int y) {
     List<Text> list = stack.getTooltip(this.mc.player, this.mc.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
 
-    TextRenderer font = stack.getItem().getFontRenderer(stack);
-    if (font == null) {
-      font = fontRenderer;
-    }
-
-    this.drawHoveringText(matrixStack, list, x, y, font);
+    this.drawHoveringText(matrixStack, list, x, y, fontRenderer);
     DiffuseLighting.disable();
   }
 

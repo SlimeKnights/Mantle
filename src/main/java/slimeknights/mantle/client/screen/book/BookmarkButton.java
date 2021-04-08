@@ -37,7 +37,7 @@ public class BookmarkButton extends ButtonWidget {
     MinecraftClient minecraft = MinecraftClient.getInstance();
     int tex_y = TEX_Y + HEIGHT * this.type;
 
-    minecraft.textureManager.bindTexture(TEX_BOOK);
+    minecraft.getTextureManager().bindTexture(TEX_BOOK);
 
     float r = ((this.data.color >> 16) & 0xff) / 255.F;
     float g = ((this.data.color >> 8) & 0xff) / 255.F;

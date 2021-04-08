@@ -10,3 +10,14 @@ accessible  field   net/minecraft/client/render/model/WeightedBakedModel   defau
 
 accessible  field   net/minecraft/client/gui/screen/ingame/HandledScreen   x I
 accessible  field   net/minecraft/client/gui/screen/ingame/HandledScreen   y I
+
+mutable field   net/minecraft/screen/slot/Slot x   I
+mutable field   net/minecraft/screen/slot/Slot y   I
+
+accessible  method  net/minecraft/client/gui/screen/ingame/HandledScreen   drawSlot    (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/screen/slot/Slot;)V
+
+accessible  method  net/minecraft/client/gui/screen/ingame/HandledScreen   isPointOverSlot   (Lnet/minecraft/screen/slot/Slot;DD)Z
+
+accessible class net/minecraft/client/gui/screen/ingame/HandledScreens$Provider
+
+accessible  method  net/minecraft/client/gui/DrawableHelper    drawTexturedQuad   (Lnet/minecraft/util/math/Matrix4f;IIIIIFFFF)V

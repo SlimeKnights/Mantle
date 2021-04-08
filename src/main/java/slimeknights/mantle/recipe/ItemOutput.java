@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -14,7 +13,8 @@ import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraft.util.registry.Registry;
+import slimeknights.mantle.util.CraftingHelper;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -109,9 +109,12 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   }
 
   /** Class for an output that is just a stack */
-  @RequiredArgsConstructor
   private static class OfStack extends ItemOutput {
     private final ItemStack stack;
+
+    public OfStack(ItemStack stack) {
+      this.stack = stack;
+    }
 
     @Override
     public ItemStack get() {
@@ -120,7 +123,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
     @Override
     public JsonElement serialize() {
-      String itemName = Objects.requireNonNull(stack.getItem().getRegistryName()).toString();
+      String itemName = Objects.requireNonNull(Registry.ITEM.getId(stack.getItem())).toString();
       int count = stack.getCount();
       // if the item has NBT or a count, write as object
       if (stack.hasTag() || stack.getCount() > 1) {
@@ -141,10 +144,14 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   }
 
   /** Class for an output from a tag preference */
-  @RequiredArgsConstructor
   private static class OfTagPreference extends ItemOutput {
     private final Tag<Item> tag;
     private final int count;
+
+    public OfTagPreference(Tag<Item> tag, int count) {
+      this.tag = tag;
+      this.count = count;
+    }
 
     @Override
     public ItemStack get() {

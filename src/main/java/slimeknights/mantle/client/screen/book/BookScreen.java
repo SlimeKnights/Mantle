@@ -118,7 +118,7 @@ public class BookScreen extends Screen {
     float coverG = ((this.book.appearance.coverColor >> 8) & 0xff) / 255.F;
     float coverB = (this.book.appearance.coverColor & 0xff) / 255.F;
 
-    TextureManager render = this.client.textureManager;
+    TextureManager render = this.client.getTextureManager();
 
     if (this.page == -1) {
       render.bindTexture(TEX_BOOKFRONT);

@@ -1,7 +1,6 @@
 package slimeknights.mantle.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens.Provider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -56,10 +55,14 @@ public class BackgroundContainerScreen<T extends ScreenHandler> extends HandledS
 		this.drawTexture(matrixStack, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 	}
 
-	@RequiredArgsConstructor(staticName = "of")
 	public static class Factory<T extends ScreenHandler> implements Provider<T,BackgroundContainerScreen<T>> {
 		private final Identifier background;
 		private final int height;
+
+		public Factory(Identifier background, int height) {
+			this.background = background;
+			this.height = height;
+		}
 
 		/**
 		 * Creates a factory from the container name
@@ -67,7 +70,7 @@ public class BackgroundContainerScreen<T extends ScreenHandler> extends HandledS
 		 * @param name   Name of this container
 		 */
 		public static <T extends ScreenHandler> Factory<T> ofName(int height, Identifier name) {
-			return of(new Identifier(name.getNamespace(), String.format("textures/gui/%s.png", name.getPath())), height);
+			return new Factory<>(new Identifier(name.getNamespace(), String.format("textures/gui/%s.png", name.getPath())), height);
 		}
 
 		@Override

@@ -233,8 +233,9 @@ public class StructureElement extends SizedBookElement {
             matrixstack.push();
             matrixstack.translate((double) (pos.getX() & 15), (double) (pos.getY() & 15), (double) (pos.getZ() & 15));
 
-            blockRender.renderModel(state, pos, this.blockAccess, matrixstack, buffer, false, random, slimeknights.mantle.model.EmptyModelData.INSTANCE);
-            tessellator.draw();
+            throw new RuntimeException("Rendering is crob");
+//            blockRender.renderModel(state, pos, this.blockAccess, matrixstack, buffer, false, random, slimeknights.mantle.model.EmptyModelData.INSTANCE);
+//            tessellator.draw();
           }
         }
       }
