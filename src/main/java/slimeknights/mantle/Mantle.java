@@ -1,9 +1,12 @@
 package slimeknights.mantle;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import slimeknights.mantle.config.MantleConfig;
 import slimeknights.mantle.network.MantleNetwork;
 
 /**
@@ -20,9 +23,13 @@ public class Mantle implements ModInitializer {
 
   /* Instance of this mod, used for grabbing prototype fields */
   public static Mantle instance;
+  public static MantleConfig config;
 
   @Override
   public void onInitialize() {
+    AutoConfig.register(MantleConfig.class, GsonConfigSerializer::new);
+    config = AutoConfig.getConfigHolder(MantleConfig.class).getConfig();
+
     MantleNetwork.registerPackets();
   }
 
