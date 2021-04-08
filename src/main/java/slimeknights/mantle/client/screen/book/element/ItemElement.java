@@ -22,7 +22,7 @@ import java.util.List;
 public class ItemElement extends SizedBookElement {
 
   public static final int ITEM_SIZE_HARDCODED = 16;
-  public static final int ITEM_SWITCH_TICKS = 90;
+  public static final int ITEM_SWITCH_TICKS = 175;
 
   public NonNullList<ItemStack> itemCycle;
   public float scale;
