@@ -3,10 +3,12 @@ package slimeknights.mantle.registration.deferred;
 import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
-import slimeknights.mantle.registration.object.*;
+import slimeknights.mantle.registration.object.BuildingBlockObject;
+import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
+import slimeknights.mantle.registration.object.ItemObject;
+import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -149,9 +151,9 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper {
    * @param item   Item block, used for all variants
    * @return  Building block object
    */
-  public FenceBuildingBlockObject registerFenceBuilding(String name, Supplier<? extends Block> block, Function<? super Block, ? extends BlockItem> item) {
+  public FenceBuildingBlockObject registerFenceBuilding(String name, Supplier<Block> block, Function<Block, BlockItem> item) {
     BuildingBlockObject obj = this.registerBuilding(name, block, item);
-    return new FenceBuildingBlockObject(obj, this.register(name + "_fence", () -> new FenceBlock(AbstractBlock.Settings.copy(obj.get())), item));
+    return new FenceBuildingBlockObject(obj, (FenceBlock) this.register(name + "_fence", () -> new FenceBlock(AbstractBlock.Settings.copy(obj.get())), item).get());
   }
 
   /**

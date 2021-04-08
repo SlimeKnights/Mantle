@@ -1,30 +1,28 @@
 package slimeknights.mantle.registration.deferred;
 
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.network.IContainerFactory;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.Identifier;
 
 /**
  * Deferred register for container types, automatically mapping a factory argument in IForgeContainerType
  */
 @SuppressWarnings("unused")
-public class ContainerTypeDeferredRegister extends DeferredRegisterWrapper<ScreenHandlerType<?>> {
+public class ContainerTypeDeferredRegister extends DeferredRegisterWrapper {
 
   public ContainerTypeDeferredRegister(String modID) {
-    super(ForgeRegistries.CONTAINERS, modID);
+    super(modID);
   }
 
   /**
    * Registers a container type
+   * @param <C>      Container type
    * @param name     Container name
    * @param factory  Container factory
-   * @param <C>      Container type
    * @return  Registry object containing the container type
    */
-  public <C extends ScreenHandler> RegistryObject<ScreenHandlerType<C>> register(String name, IContainerFactory<C> factory) {
-    return register.register(name, () -> IForgeContainerType.create(factory));
+  public <C extends ScreenHandler> ScreenHandlerType<C> register(Identifier name, ScreenHandlerRegistry.SimpleClientHandlerFactory<C> factory) {
+    return ScreenHandlerRegistry.registerSimple(name, factory);
   }
 }

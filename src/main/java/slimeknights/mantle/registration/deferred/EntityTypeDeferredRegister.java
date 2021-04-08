@@ -2,14 +2,7 @@ package slimeknights.mantle.registration.deferred;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.registration.ItemProperties;
+import net.minecraft.util.registry.Registry;
 
 import java.util.function.Supplier;
 
@@ -17,18 +10,10 @@ import java.util.function.Supplier;
  * Deferred register for an entity, building the type from a builder instance and adding an egg
  */
 @SuppressWarnings("unused")
-public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityType<?>> {
+public class EntityTypeDeferredRegister extends DeferredRegisterWrapper {
 
-  private final DeferredRegister<Item> itemRegistry;
   public EntityTypeDeferredRegister(String modID) {
-    super(ForgeRegistries.ENTITIES, modID);
-    itemRegistry = DeferredRegister.create(ForgeRegistries.ITEMS, modID);
-  }
-
-  @Override
-  public void register(IEventBus bus) {
-    super.register(bus);
-    itemRegistry.register(bus);
+    super(modID);
   }
 
   /**
@@ -38,8 +23,8 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
    * @param <T>   Entity class type
    * @return  Entity registry object
    */
-  public <T extends Entity> RegistryObject<EntityType<T>> register(String name, Supplier<EntityType.Builder<T>> sup) {
-    return register.register(name, () -> sup.get().build(resourceName(name)));
+  public <T extends Entity> EntityType<T> register(String name, Supplier<EntityType.Builder<T>> sup) {
+    return Registry.register(Registry.ENTITY_TYPE, name, sup);
   }
 
   /**

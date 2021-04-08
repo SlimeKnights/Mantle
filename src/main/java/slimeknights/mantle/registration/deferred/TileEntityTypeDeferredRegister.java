@@ -7,20 +7,18 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Util;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.registration.object.EnumObject;
-
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Deferred register to register tile entity instances
  */
-public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<BlockEntityType<?>> {
+public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper {
   public TileEntityTypeDeferredRegister(String modID) {
-    super(ForgeRegistries.TILE_ENTITIES, modID);
+    super(modID);
   }
 
   /**
@@ -41,22 +39,8 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Bloc
    * @param <T>      Tile entity type
    * @return  Registry object instance
    */
-  @SuppressWarnings("ConstantConditions")
-  public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<? extends T> factory, Supplier<? extends Block> block) {
-    return register.register(name, () ->  BlockEntityType.Builder.<T>create(factory, block.get()).build(getType(name)));
-  }
-
-  /**
-   * Registers a new tile entity type using a tile entity factory and a block supplier
-   * @param name     Tile entity name
-   * @param factory  Tile entity factory
-   * @param blocks   Enum object
-   * @param <T>      Tile entity type
-   * @return  Tile entity type registry object
-   */
-  @SuppressWarnings("ConstantConditions")
-  public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<? extends T> factory, EnumObject<?, ? extends Block> blocks) {
-    return register.register(name, () ->  new BlockEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)));
+  public <T extends BlockEntity> BlockEntityType<T> register(String name, Supplier<? extends T> factory, Supplier<? extends Block> block) {
+    throw new RuntimeException("WHAT THE FUCK FRWHYTRJYTJSDFWHRYJKTYETRHTR");
   }
 
   /**
@@ -68,11 +52,7 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Bloc
    * @return  Tile entity type registry object
    */
   @SuppressWarnings("ConstantConditions")
-  public <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, Supplier<? extends T> factory, Consumer<ImmutableSet.Builder<Block>> blockCollector) {
-    return register.register(name, () ->  {
-      ImmutableSet.Builder<Block> blocks = new ImmutableSet.Builder<>();
-      blockCollector.accept(blocks);
-      return new BlockEntityType<>(factory, blocks.build(), getType(name));
-    });
+  public <T extends BlockEntity> BlockEntityType<T> register(String name, Supplier<? extends T> factory, Consumer<ImmutableSet.Builder<Block>> blockCollector) {
+    throw new RuntimeException("WHAT THE FUCK FRWHYTRJYTJSDFWHRYJKTYETRHTR");
   }
 }
