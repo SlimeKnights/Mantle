@@ -1,20 +1,18 @@
 package slimeknights.mantle.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants.NBT;
-
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Helpers to aid in reading and writing of NBT
  */
 @SuppressWarnings("unused")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TagHelper {
-  /* BlockPos */
+
+  private TagHelper() {
+  }
 
   /**
    * Converts a block position to NBT
@@ -36,7 +34,7 @@ public class TagHelper {
    */
   @Nullable
   public static BlockPos readPos(CompoundTag tag) {
-    if (tag.contains("X", NBT.TAG_ANY_NUMERIC) && tag.contains("Y", NBT.TAG_ANY_NUMERIC) && tag.contains("Z", NBT.TAG_ANY_NUMERIC)) {
+    if (tag.contains("X", NbtType.NUMBER) && tag.contains("Y", NbtType.NUMBER) && tag.contains("Z", NbtType.NUMBER)) {
       return new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
     }
     return null;

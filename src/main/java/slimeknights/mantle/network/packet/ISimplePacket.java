@@ -1,9 +1,7 @@
 package slimeknights.mantle.network.packet;
 
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 /**
  * Packet interface to add common methods for registration
@@ -17,7 +15,7 @@ public interface ISimplePacket {
 
   /**
    * Handles receiving the packet
-   * @param context  Packet context
+   * @param sender the packet sender
    */
-  void handle(Supplier<NetworkEvent.Context> context);
+  void handle(PacketSender sender);
 }

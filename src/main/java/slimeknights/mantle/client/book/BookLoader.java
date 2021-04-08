@@ -144,7 +144,7 @@ public class BookLoader implements ResourceReloadListener {
     }
 
     BookHelper.writeSavedPage(item, page);
-    MantleNetwork.INSTANCE.network.sendToServer(new UpdateSavedPagePacket(page));
+    MantleNetwork.INSTANCE.sendToServer(new UpdateSavedPagePacket(page));
   }
 
   /**

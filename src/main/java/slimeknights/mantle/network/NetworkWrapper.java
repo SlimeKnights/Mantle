@@ -1,23 +1,24 @@
 package slimeknights.mantle.network;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.NetworkSide;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import org.jetbrains.annotations.Nullable;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
-import org.jetbrains.annotations.Nullable;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -28,31 +29,14 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class NetworkWrapper {
-  /** Network instance */
-  public final SimpleChannel network;
-  private int id = 0;
-  private static final String PROTOCOL_VERSION = Integer.toString(1);
+  private static final String PROTOCOL_VERSION = "1";
+
+  private final List<BiConsumer<Object, PacketByteBuf>> encoders = new ArrayList<>();
 
   /**
    * Creates a new network wrapper
-   * @param channelName  Unique packet channel name
    */
-  public NetworkWrapper(Identifier channelName) {
-    this.network = NetworkRegistry.ChannelBuilder.named(channelName)
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
-            .simpleChannel();
-  }
-
-  /**
-   * Registers a new {@link ISimplePacket}
-   * @param clazz    Packet class
-   * @param decoder  Packet decoder, typically the constructor
-   * @param <MSG>  Packet class type
-   */
-  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<PacketByteBuf, MSG> decoder, @Nullable NetworkDirection direction) {
-    registerPacket(clazz, ISimplePacket::encode, decoder, ISimplePacket::handle, direction);
+  public NetworkWrapper() {
   }
 
   /**
@@ -60,12 +44,20 @@ public class NetworkWrapper {
    * @param clazz      Packet class
    * @param encoder    Encodes a packet to the buffer
    * @param decoder    Packet decoder, typically the constructor
-   * @param consumer   Logic to handle a packet
    * @param direction  Network direction for validation. Pass null for no direction
-   * @param <MSG>  Packet class type
    */
-  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, PacketByteBuf> encoder, Function<PacketByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<Context>> consumer, @Nullable NetworkDirection direction) {
-    this.network.registerMessage(this.id++, clazz, encoder, decoder, consumer, Optional.ofNullable(direction));
+  public void registerPacket(Class<Object> clazz, BiConsumer<Object, PacketByteBuf> encoder, Function<PacketByteBuf, Object> decoder, BiConsumer<Object, PacketSender> consumer, @Nullable NetworkSide direction) {
+    //Workaround for the current system
+    Identifier channelName = Mantle.getResource(clazz.getSimpleName());
+
+    encoders.add(encoder);
+
+    if(direction == NetworkSide.SERVERBOUND) {
+      ServerPlayNetworking.registerGlobalReceiver(channelName, (minecraftServer, serverPlayerEntity, serverPlayNetworkHandler, packetByteBuf, packetSender) -> consumer.accept(decoder.apply(packetByteBuf), packetSender));
+    }
+    if(direction == NetworkSide.CLIENTBOUND) {
+      ClientPlayNetworking.registerGlobalReceiver(channelName, (minecraftClient, clientPlayNetworkHandler, packetByteBuf, packetSender) -> consumer.accept(decoder.apply(packetByteBuf), packetSender));
+    }
   }
 
 
@@ -76,16 +68,27 @@ public class NetworkWrapper {
    * @param msg  Packet to send
    */
   public void sendToServer(Object msg) {
-    this.network.sendToServer(msg);
+    PacketByteBuf packetByteBuf = PacketByteBufs.create();
+    Identifier channelName = Mantle.getResource(msg.getClass().getSimpleName());
+    for (BiConsumer<Object, PacketByteBuf> encoder : encoders) {
+      encoder.accept(msg, packetByteBuf);
+    }
+    ClientPlayNetworking.send(channelName, packetByteBuf);
   }
 
   /**
    * Sends a packet to the given packet distributor
    * @param target   Packet target
-   * @param message  Packet to send
+   * @param msg  Packet to send
    */
-  public void send(PacketDistributor.PacketTarget target, Object message) {
-    network.send(target, message);
+  public void send(ServerPlayerEntity target, Object msg) {
+    PacketByteBuf packetByteBuf = PacketByteBufs.create();
+    Identifier channelName = Mantle.getResource(msg.getClass().getSimpleName());
+    for (BiConsumer<Object, PacketByteBuf> encoder : encoders) {
+      encoder.accept(msg, packetByteBuf);
+    }
+
+    ServerPlayNetworking.send(target, channelName, packetByteBuf);
   }
 
   /**
@@ -105,9 +108,7 @@ public class NetworkWrapper {
    * @param player  Player to send
    */
   public void sendTo(Object msg, ServerPlayerEntity player) {
-    if (!(player instanceof FakePlayer)) {
-      network.sendTo(msg, player.networkHandler.connection, NetworkDirection.PLAY_TO_CLIENT);
-    }
+    send(player, msg);
   }
 
   /**
@@ -117,7 +118,8 @@ public class NetworkWrapper {
    * @param position     Position within range
    */
   public void sendToClientsAround(Object msg, ServerWorld serverWorld, BlockPos position) {
-    WorldChunk chunk = serverWorld.getWorldChunk(position);
-    network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
+    for (ServerPlayerEntity playerEntity : PlayerLookup.around(serverWorld, position, 16)) {
+      send(playerEntity, msg);
+    }
   }
 }

@@ -1,10 +1,10 @@
 package slimeknights.mantle.network.packet;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
 import slimeknights.mantle.client.book.BookHelper;
 
 public class UpdateSavedPagePacket implements IThreadsafePacket {
@@ -25,8 +25,8 @@ public class UpdateSavedPagePacket implements IThreadsafePacket {
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
-    PlayerEntity player = context.getSender();
+  public void handleThreadsafe(PacketSender sender) {
+    ServerPlayerEntity player = (ServerPlayerEntity) sender;
     if (player != null && this.pageName != null) {
       ItemStack is = player.getStackInHand(Hand.MAIN_HAND);
       if (!is.isEmpty()) {
