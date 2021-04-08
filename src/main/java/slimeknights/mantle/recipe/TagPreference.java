@@ -86,12 +86,11 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * @return  Sort index for that entry
    */
   private static int getSortIndex(IForgeRegistryEntry<?> entry) {
-    List<String> entries = MantleConfig.TAG_PREFERENCES.get();
     // check the index of the namespace in the preference list
-    int index = entries.indexOf(Objects.requireNonNull(entry.getRegistryName()).getNamespace());
+    int index = MantleConfig.TAG_PREFERENCES.indexOf(Objects.requireNonNull(entry.getRegistryName()).getNamespace());
     // if missing, declare last
     if (index == -1) {
-      return entries.size();
+      return MantleConfig.TAG_PREFERENCES.size();
     }
     return index;
   }
