@@ -35,7 +35,7 @@ import net.minecraft.util.math.Direction.Type;
 import net.minecraft.world.BlockRenderView;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.data.IModelData;
+import slimeknights.mantle.model.IModelData;
 import slimeknights.mantle.util.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;

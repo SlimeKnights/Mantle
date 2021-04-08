@@ -30,7 +30,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.client.model.data.IModelData;
+import slimeknights.mantle.model.IModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
 import slimeknights.mantle.client.model.util.ModelConfigurationWrapper;

@@ -3,8 +3,6 @@ package slimeknights.mantle.tileentity;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.client.model.data.IModelData;
-import slimeknights.mantle.client.model.data.SinglePropertyData;
 import slimeknights.mantle.util.RetexturedHelper;
 
 /**
@@ -43,13 +41,15 @@ public interface IRetexturedTileEntity {
    * Gets the model data instance with the relevant texture block
    * @return  Model data for the TE
    */
-  default IModelData getRetexturedModelData() {
+  default CompoundTag getRetexturedModelData() {
     // texture not loaded
     Block block = getTexture();
     // cannot support air, saves a conditional on usage
     if (block == Blocks.AIR) {
       block = null;
     }
-    return new SinglePropertyData<>(RetexturedHelper.BLOCK_PROPERTY, block);
+    return new CompoundTag();
+//    TODO: e
+//    return new SinglePropertyData<>(RetexturedHelper.BLOCK_PROPERTY, block);
   }
 }

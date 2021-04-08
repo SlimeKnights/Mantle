@@ -233,7 +233,7 @@ public class StructureElement extends SizedBookElement {
             matrixstack.push();
             matrixstack.translate((double) (pos.getX() & 15), (double) (pos.getY() & 15), (double) (pos.getZ() & 15));
 
-            blockRender.renderModel(state, pos, this.blockAccess, matrixstack, buffer, false, random, net.minecraftforge.client.model.data.EmptyModelData.INSTANCE);
+            blockRender.renderModel(state, pos, this.blockAccess, matrixstack, buffer, false, random, slimeknights.mantle.model.EmptyModelData.INSTANCE);
             tessellator.draw();
           }
         }
