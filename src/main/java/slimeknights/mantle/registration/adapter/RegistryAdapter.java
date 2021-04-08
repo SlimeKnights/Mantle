@@ -1,22 +1,14 @@
 package slimeknights.mantle.registration.adapter;
 
-import lombok.RequiredArgsConstructor;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-
-import java.util.Objects;
 
 /**
- * A convenience wrapper for forge registries, to be used in combination with the {@link net.minecraftforge.event.RegistryEvent.Register} event.
+ * A convenience wrapper for forge registries, to be used in combination with the RegistryEvent.Register event.
  * Simply put it allows you to register things by passing (thing, name) instead of having to set the name inline.
  * There also is a convenience variant for items and itemblocks, see {@link ItemRegistryAdapter}.
  */
 @SuppressWarnings("WeakerAccess")
-@RequiredArgsConstructor
-public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
-  private final IForgeRegistry<T> registry;
+public class RegistryAdapter<T> {
   private final String modId;
 
   /**
@@ -24,8 +16,8 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * If this results in the wrong namespace, use the other constructor where you can provide the modid.
    * The modid is used as the namespace for resource locations, so if your mods id is "foo" it will register an item "bar" as "foo:bar".
    */
-  public RegistryAdapter(IForgeRegistry<T> registry) {
-    this(registry, ModLoadingContext.get().getActiveContainer().getModId());
+  public RegistryAdapter(String modId) {
+    this.modId = modId;
   }
 
   /**
@@ -55,17 +47,6 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
   }
 
   /**
-   * Registers an entry using the name from another entry
-   * @param entry  Entry to register
-   * @param name   Entry name to copy
-   * @param <I>    Value type
-   * @return  Registered entry
-   */
-  public <I extends T> I register(I entry, IForgeRegistryEntry<?> name) {
-    return this.register(entry, Objects.requireNonNull(name.getRegistryName()));
-  }
-
-  /**
    * General purpose backup registration method. In case you want to set a very specific resource location.
    * You should probably use the special purpose methods instead of this.
    * <p>
@@ -75,8 +56,6 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * @return Registry entry
    */
   public <I extends T> I register(I entry, Identifier location) {
-    entry.setRegistryName(location);
-    registry.register(entry);
-    return entry;
+    throw new RuntimeException("what the fuck do i even do here?");
   }
 }

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
- * Deferred register for container types, automatically mapping a factory argument in {@link IForgeContainerType}
+ * Deferred register for container types, automatically mapping a factory argument in IForgeContainerType
  */
 @SuppressWarnings("unused")
 public class ContainerTypeDeferredRegister extends DeferredRegisterWrapper<ScreenHandlerType<?>> {
