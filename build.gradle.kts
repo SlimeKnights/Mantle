@@ -17,6 +17,11 @@ repositories {
         name = "Curseforge Maven"
         url = uri("https://www.cursemaven.com")
     }
+
+    maven {
+        name = "BuildCraft"
+        url = uri("https://mod-buildcraft.com/maven")
+    }
 }
 
 val modImplementationAndInclude by configurations.register("modImplementationAndInclude")
@@ -29,11 +34,16 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api", "fabric-api", "0.32.5+1.16")
 
     modApi("me.shedaniel.cloth", "cloth-config-fabric", "4.11.19")
+    modApi("alexiil.mc.lib", "libblockattributes-core", "0.8.4")
+    modApi("alexiil.mc.lib", "libblockattributes-fluids", "0.8.4")
 
     modRuntime("me.shedaniel", "RoughlyEnoughItems", "5.8.10")
     modRuntime("curse.maven", "worldedit-225608", "3135186")
     modRuntime("curse.maven", "appleskin-248787", "2987255")
     modRuntime("curse.maven", "hwyla-253449", "3033613")
+
+
+
 
     add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationAndInclude)
     add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationAndInclude)
