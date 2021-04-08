@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;

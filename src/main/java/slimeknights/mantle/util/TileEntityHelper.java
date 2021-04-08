@@ -8,7 +8,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 import slimeknights.mantle.Mantle;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 /**

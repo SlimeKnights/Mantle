@@ -24,7 +24,7 @@ import slimeknights.mantle.inventory.EmptyItemHandler;
 import slimeknights.mantle.tileentity.IRenamableContainerProvider;
 import slimeknights.mantle.tileentity.InventoryTileEntity;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Base class for blocks with an inventory

@@ -8,7 +8,7 @@ import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 

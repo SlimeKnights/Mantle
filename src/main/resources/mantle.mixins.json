@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "",
+  "package": "slimeknights.mantle.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
   ],

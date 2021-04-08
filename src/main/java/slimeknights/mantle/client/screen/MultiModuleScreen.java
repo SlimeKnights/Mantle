@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 import slimeknights.mantle.inventory.WrapperSlot;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

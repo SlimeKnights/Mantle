@@ -21,7 +21,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
 public abstract class InventoryTileEntity extends NamableTileEntity implements Inventory, NamedScreenHandlerFactory, Nameable {

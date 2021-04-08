@@ -16,7 +16,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;

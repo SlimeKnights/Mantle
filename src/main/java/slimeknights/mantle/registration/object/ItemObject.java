@@ -8,7 +8,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
 

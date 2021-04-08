@@ -7,7 +7,7 @@ import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

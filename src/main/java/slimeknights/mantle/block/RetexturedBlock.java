@@ -14,7 +14,7 @@ import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.tileentity.IRetexturedTileEntity;
 import slimeknights.mantle.util.TileEntityHelper;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Logic for a retexturable block. Use alongside {@link slimeknights.mantle.tileentity.IRetexturedTileEntity} and {@link slimeknights.mantle.item.RetexturedBlockItem}

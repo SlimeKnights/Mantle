@@ -7,7 +7,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.geometry.IModelGeometryPart;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper around a {@link IModelConfiguration} instance to allow easier extending, mostly for dynamic textures

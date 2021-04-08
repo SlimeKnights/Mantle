@@ -21,7 +21,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "slimeknights.mantle.Mantle"
     ]
   },
   "mixins": [

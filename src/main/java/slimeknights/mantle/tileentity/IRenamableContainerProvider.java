@@ -1,6 +1,6 @@
 package slimeknights.mantle.tileentity;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;

@@ -17,7 +17,7 @@ import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;

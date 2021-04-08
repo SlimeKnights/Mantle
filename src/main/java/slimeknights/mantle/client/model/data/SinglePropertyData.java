@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * IModelData instance that holds a single model data property. Will be more efficient than the map implementation in cases without more properties.

@@ -45,7 +45,7 @@ import slimeknights.mantle.client.model.util.ExtraTextureConfiguration;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;

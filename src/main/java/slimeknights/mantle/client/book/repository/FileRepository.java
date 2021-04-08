@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.SectionData;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;

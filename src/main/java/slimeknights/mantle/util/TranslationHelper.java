@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraftforge.fml.ForgeI18n;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**

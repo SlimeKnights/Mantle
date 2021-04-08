@@ -4,15 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Hand;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraft.util.profiler.Profiler;
+import org.jetbrains.annotations.Nullable;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
@@ -34,12 +34,13 @@ import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.UpdateSavedPagePacket;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
-public class BookLoader implements ISelectiveResourceReloadListener {
+public class BookLoader implements ResourceReloadListener {
 
   /** GSON object to be used for book loading purposes */
   public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer())
@@ -122,7 +123,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   public static BookData registerBook(String name, boolean appendIndex, boolean appendContentTable, BookRepository... repositories) {
     BookData info = new BookData(repositories);
 
-    books.put(name.contains(":") ? name : ModLoadingContext.get().getActiveContainer().getNamespace() + ":" + name, info);
+    books.put(name.contains(":") ? name : Mantle.modId + ":" + name, info);
 
     if (appendIndex) {
       info.addTransformer(BookTransformer.indexTranformer());
@@ -150,7 +151,8 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
-  public void onResourceManagerReload(ResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+  public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
     books.forEach((s, bookData) -> bookData.reset());
+    return null;
   }
 }

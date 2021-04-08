@@ -7,7 +7,7 @@ import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraftforge.client.model.IModelConfiguration;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;

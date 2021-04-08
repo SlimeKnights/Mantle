@@ -17,7 +17,7 @@ import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;

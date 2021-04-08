@@ -1,6 +1,6 @@
 package slimeknights.mantle.util;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nonnull;
 import java.util.function.BiConsumer;
 
 /**

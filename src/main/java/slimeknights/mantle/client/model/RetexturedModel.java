@@ -40,7 +40,7 @@ import slimeknights.mantle.client.model.util.SimpleBlockModel;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.RetexturedHelper;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

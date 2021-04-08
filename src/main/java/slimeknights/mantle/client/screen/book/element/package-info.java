@@ -4,4 +4,4 @@ package slimeknights.mantle.client.screen.book.element;
 
 import mcp.MethodsReturnNonnullByDefault;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.ParametersAreNonnullByDefault;

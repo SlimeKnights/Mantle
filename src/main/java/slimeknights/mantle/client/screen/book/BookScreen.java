@@ -27,7 +27,7 @@ import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

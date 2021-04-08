@@ -11,7 +11,7 @@ import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 import slimeknights.mantle.recipe.RecipeHelper;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This utility contains helpers to handle the NBT for retexturable blocks

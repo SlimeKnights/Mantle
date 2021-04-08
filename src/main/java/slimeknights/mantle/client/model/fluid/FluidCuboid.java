@@ -11,7 +11,7 @@ import net.minecraft.util.math.Direction;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;

@@ -3,7 +3,7 @@ package slimeknights.mantle.client.book.action;
 import slimeknights.mantle.client.book.action.protocol.ActionProtocol;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 
 public class StringActionProcessor {

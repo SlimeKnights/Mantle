@@ -3,15 +3,6 @@ package slimeknights.mantle;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig.Type;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.config.Config;
@@ -51,29 +42,28 @@ public class Mantle implements ModInitializer {
 
     instance = this;
 //    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-    bus.addListener(this::commonSetup);
-    bus.addListener(Config::configChanged);
-    bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
-    bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
+//    bus.addListener(Config::configChanged);
+//    bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
+//    bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
   }
-
-  private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {
-    RegistryAdapter<RecipeSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
-    adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
-    adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
-
-    CraftingHelper.register(IngredientWithout.ID, IngredientWithout.SERIALIZER);
-    CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
-
-    // done here as no dedicated event
-    MantleLoot.register();
-  }
-
-  private void registerGlobalLootModifiers(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-    RegistryAdapter<GlobalLootModifierSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
-    adapter.register(new AddEntryLootModifier.Serializer(), "add_entry");
-    adapter.register(new ReplaceItemLootModifier.Serializer(), "replace_item");
-  }
+//
+//  private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {
+//    RegistryAdapter<RecipeSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
+//    adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
+//    adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
+//
+//    CraftingHelper.register(IngredientWithout.ID, IngredientWithout.SERIALIZER);
+//    CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
+//
+//    // done here as no dedicated event
+//    MantleLoot.register();
+//  }
+//
+//  private void registerGlobalLootModifiers(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
+//    RegistryAdapter<GlobalLootModifierSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
+//    adapter.register(new AddEntryLootModifier.Serializer(), "add_entry");
+//    adapter.register(new ReplaceItemLootModifier.Serializer(), "replace_item");
+//  }
 
   /**
    * Gets a resource location for Mantle

@@ -14,7 +14,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nonnull;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;

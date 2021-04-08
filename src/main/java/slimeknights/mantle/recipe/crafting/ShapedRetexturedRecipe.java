@@ -18,7 +18,7 @@ import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 import slimeknights.mantle.util.JsonHelper;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("WeakerAccess")
 public class ShapedRetexturedRecipe extends ShapedRecipe {
