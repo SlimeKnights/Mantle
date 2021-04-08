@@ -26,25 +26,10 @@ public abstract class RetexturedBlock extends Block {
   }
 
   @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
-  @Nullable
-  @Override
-  public abstract BlockEntity createTileEntity(BlockState state, BlockView world);
-
-  @Override
   public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
     super.onPlaced(world, pos, state, placer, stack);
     updateTextureBlock(world, pos, stack);
   }
-
-  @Override
-  public ItemStack getPickBlock(BlockState state, HitResult target, BlockView world, BlockPos pos, PlayerEntity player) {
-    return getPickBlock(world, pos, state);
-  }
-
 
   /* Utils */
 

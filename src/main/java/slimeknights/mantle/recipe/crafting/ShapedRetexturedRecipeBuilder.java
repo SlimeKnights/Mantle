@@ -1,7 +1,6 @@
 package slimeknights.mantle.recipe.crafting;
 
 import com.google.gson.JsonObject;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonFactory;
 import net.minecraft.item.Item;
@@ -9,17 +8,20 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
-@RequiredArgsConstructor(staticName = "fromShaped")
 public class ShapedRetexturedRecipeBuilder {
   private final ShapedRecipeJsonFactory parent;
   private Ingredient texture;
   private boolean matchAll;
+
+  public ShapedRetexturedRecipeBuilder(ShapedRecipeJsonFactory parent) {
+    this.parent = parent;
+  }
 
   /**
    * Sets the texture source to the given ingredient

@@ -38,7 +38,7 @@ java {
 }
 
 loom {
-//    accessWidener = file("src/main/resources/mantle.aw")
+    accessWidener = file("src/main/resources/mantle.aw")
 }
 
 license {

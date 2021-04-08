@@ -1,29 +1,19 @@
 package slimeknights.mantle.recipe.crafting;
 
-import com.google.gson.JsonObject;
-import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
-import net.minecraft.util.Identifier;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
-import slimeknights.mantle.util.JsonHelper;
-
-import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("WeakerAccess")
 public class ShapedRetexturedRecipe extends ShapedRecipe {
   /** Ingredient used to determine the texture on the output */
-  @Getter
   private final Ingredient texture;
   private final boolean matchAll;
 
@@ -95,30 +85,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
     return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
   }
 
-  public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ShapedRetexturedRecipe> {
-    @Override
-    public ShapedRetexturedRecipe read(Identifier recipeId, JsonObject json) {
-      ShapedRecipe recipe = SHAPED.read(recipeId, json);
-      Ingredient texture = CraftingHelper.getIngredient(JsonHelper.getElement(json, "texture"));
-      boolean matchAll = false;
-      if (json.has("match_all")) {
-        matchAll = json.get("match_all").getAsBoolean();
-      }
-      return new ShapedRetexturedRecipe(recipe, texture, matchAll);
-    }
-
-    @Nullable
-    @Override
-    public ShapedRetexturedRecipe read(Identifier recipeId, PacketByteBuf buffer) {
-      ShapedRecipe recipe = SHAPED.read(recipeId, buffer);
-      return recipe == null ? null : new ShapedRetexturedRecipe(recipe, Ingredient.fromPacket(buffer), buffer.readBoolean());
-    }
-
-    @Override
-    public void write(PacketByteBuf buffer, ShapedRetexturedRecipe recipe) {
-      SHAPED.write(buffer, recipe);
-      recipe.texture.write(buffer);
-      buffer.writeBoolean(recipe.matchAll);
-    }
+  public Ingredient getTexture() {
+    return texture;
   }
 }

@@ -1,20 +1,10 @@
 package slimeknights.mantle;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.config.Config;
-import slimeknights.mantle.loot.AddEntryLootModifier;
-import slimeknights.mantle.loot.MantleLoot;
-import slimeknights.mantle.loot.ReplaceItemLootModifier;
 import slimeknights.mantle.network.MantleNetwork;
-import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
-import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
-import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
-import slimeknights.mantle.recipe.ingredient.IngredientWithout;
-import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
 /**
  * Mantle

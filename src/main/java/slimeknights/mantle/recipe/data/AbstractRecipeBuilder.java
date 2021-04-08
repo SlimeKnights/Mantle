@@ -1,8 +1,6 @@
 package slimeknights.mantle.recipe.data;
 
 import com.google.gson.JsonObject;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
@@ -10,9 +8,9 @@ import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Objects;
+
 import java.util.function.Consumer;
 
 /**
@@ -119,12 +117,16 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   }
 
   /** Class to implement basic finished recipe methods */
-  @RequiredArgsConstructor
   protected abstract class AbstractFinishedRecipe implements RecipeJsonProvider {
-    @Getter
+
     private final Identifier ID;
-    @Getter @Nullable
+    @Nullable
     private final Identifier advancementID;
+
+    public AbstractFinishedRecipe(Identifier ID, @Nullable Identifier advancementID) {
+      this.ID = ID;
+      this.advancementID = advancementID;
+    }
 
     @Nullable
     @Override
@@ -133,6 +135,14 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
         return null;
       }
       return advancementBuilder.toJson();
+    }
+
+    public Identifier getID() {
+      return ID;
+    }
+
+    public @Nullable Identifier getAdvancementID() {
+      return advancementID;
     }
   }
 }

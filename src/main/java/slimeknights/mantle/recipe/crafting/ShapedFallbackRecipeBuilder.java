@@ -2,24 +2,25 @@ package slimeknights.mantle.recipe.crafting;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonFactory;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-@RequiredArgsConstructor(staticName = "fallback")
 public class ShapedFallbackRecipeBuilder {
   private final ShapedRecipeJsonFactory base;
   private final List<Identifier> alternatives = new ArrayList<>();
+
+  public ShapedFallbackRecipeBuilder(ShapedRecipeJsonFactory base) {
+    this.base = base;
+  }
 
   /**
    * Adds a single alternative to this recipe. Any matching alternative causes this recipe to fail
@@ -58,10 +59,14 @@ public class ShapedFallbackRecipeBuilder {
     base.offerTo(base -> consumer.accept(new Result(base, alternatives)), id);
   }
 
-  @AllArgsConstructor
   public class Result implements RecipeJsonProvider {
     private final RecipeJsonProvider base;
     private final List<Identifier> alternatives;
+
+    public Result(RecipeJsonProvider base, List<Identifier> alternatives) {
+      this.base = base;
+      this.alternatives = alternatives;
+    }
 
     @Override
     public void serialize(JsonObject json) {

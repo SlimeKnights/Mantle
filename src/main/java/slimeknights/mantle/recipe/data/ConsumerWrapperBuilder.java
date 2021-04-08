@@ -5,10 +5,9 @@ import com.google.gson.JsonObject;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-
 import org.jetbrains.annotations.Nullable;
+import slimeknights.mantle.recipe.ICondition;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -75,14 +74,15 @@ public class ConsumerWrapperBuilder {
 
     @Override
     public void serialize(JsonObject json) {
-      // add conditions on top
-      JsonArray conditionsArray = new JsonArray();
-      for (ICondition condition : conditions) {
-        conditionsArray.add(CraftingHelper.serialize(condition));
-      }
-      json.add("conditions", conditionsArray);
-      // serialize the normal recipe
-      original.serialize(json);
+      throw new RuntimeException("Crafting Helper needs help!");
+//       add conditions on top
+//      JsonArray conditionsArray = new JsonArray();
+//      for (ICondition condition : conditions) {
+//        conditionsArray.add(CraftingHelper.serialize(condition));
+//      }
+//      json.add("conditions", conditionsArray);
+//       serialize the normal recipe
+//      original.serialize(json);
     }
 
     @Override

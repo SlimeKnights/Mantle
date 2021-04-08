@@ -3,7 +3,8 @@ package slimeknights.mantle.recipe.data;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraft.util.registry.Registry;
+import slimeknights.mantle.recipe.ICondition;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -59,7 +60,7 @@ public interface IRecipeBuilderUtils {
    * @return Prefixed resource location
    */
   default Identifier prefix(ItemConvertible item, String prefix) {
-    return resource(prefix + Objects.requireNonNull(item.asItem().getRegistryName()).getPath());
+    return resource(prefix + Objects.requireNonNull(Registry.ITEM.getId(item.asItem())).getPath());
   }
 
   /**
@@ -70,7 +71,7 @@ public interface IRecipeBuilderUtils {
    * @return Prefixed resource location
    */
   default Identifier wrap(ItemConvertible item, String prefix, String suffix) {
-    return resource(prefix + Objects.requireNonNull(item.asItem().getRegistryName()).getPath() + suffix);
+    return resource(prefix + Objects.requireNonNull(Registry.ITEM.getId(item.asItem())).getPath() + suffix);
   }
 
   /**
