@@ -1,5 +1,6 @@
 package slimeknights.mantle;
 
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -31,8 +32,7 @@ import slimeknights.mantle.registration.adapter.RegistryAdapter;
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
-@Mod(Mantle.modId)
-public class Mantle {
+public class Mantle implements ModInitializer {
 
   public static final String modId = "mantle";
   public static final Logger logger = LogManager.getLogger("Mantle");
@@ -40,21 +40,21 @@ public class Mantle {
   /* Instance of this mod, used for grabbing prototype fields */
   public static Mantle instance;
 
-  /* Proxies for sides, used for graphics processing */
+  @Override
+  public void onInitialize() {
+    MantleNetwork.registerPackets();
+  }
+
   public Mantle() {
-    ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
-    ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
+//    ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
+//    ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
 
     instance = this;
-    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+//    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(this::commonSetup);
     bus.addListener(Config::configChanged);
     bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
     bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
-  }
-
-  private void commonSetup(final FMLCommonSetupEvent event) {
-    MantleNetwork.registerPackets();
   }
 
   private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {
@@ -77,8 +77,8 @@ public class Mantle {
 
   /**
    * Gets a resource location for Mantle
-   * @param name  Name
-   * @return  Resource location instance
+   * @param name Name
+   * @return Identifier instance
    */
   public static Identifier getResource(String name) {
     return new Identifier(modId, name);

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "mantle",
+  "version": "${version}",
+
+  "name": "Mantle",
+  "description": "Shared code for Slime Knights mods and others.",
+  "authors": [
+    "Slime Knights",
+    "hydos",
+    "waterpicker"
+  ],
+  "contact": {
+    "homepage": "https://minecraft.curseforge.com/projects/mantle",
+    "sources": "https://github.com/SlimeKnights/Mantle"
+  },
+
+  "license": "MIT",
+  "icon": "assets/mantle/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.fabricmc.example.ExampleMod"
+    ]
+  },
+  "mixins": [
+    "mantle.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+  }
+}
