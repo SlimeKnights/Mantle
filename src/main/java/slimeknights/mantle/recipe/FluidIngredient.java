@@ -4,25 +4,27 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.util.JsonHelper;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import net.minecraft.fluid.Fluid;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.tag.ServerTagManagerHolder;
+import net.minecraft.tag.Tag;
+import net.minecraft.util.Identifier;
+
+import alexiil.mc.lib.attributes.fluid.amount.FluidAmount;
+import alexiil.mc.lib.attributes.fluid.volume.FluidKey;
+import alexiil.mc.lib.attributes.fluid.volume.FluidKeys;
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
+import slimeknights.mantle.util.JsonHelper;
 
 // TODO: move to ingredient package in 1.17
 @SuppressWarnings("unused")
@@ -31,42 +33,39 @@ public abstract class FluidIngredient {
   public static final FluidIngredient EMPTY = new Empty();
 
   /** Cached list of display fluids */
-  private List<FluidStack> displayFluids;
+  private List<FluidVolume> displayFluids;
 
   /**
    * Checks if the given fluid matches this ingredient
    * @param fluid  Fluid to check
    * @return  True if the fluid matches
    */
-  public abstract boolean test(Fluid fluid);
+  public abstract boolean test(FluidKey fluid);
 
   /**
    * Gets the amount of the given fluid needed for the recipe
    * @param fluid  Fluid to check
    * @return  Amount of the fluid needed
    */
-  public abstract int getAmount(Fluid fluid);
+  public abstract FluidAmount getAmount(FluidKey fluid);
 
   /**
    * Checks if the given fluid stack argument matches this ingredient
    * @param stack  Fluid stack to check
    * @return  True if the fluid matches this ingredient and the amount is equal or greater than this
    */
-  public boolean test(FluidStack stack) {
-    Fluid fluid = stack.getFluid();
-    return stack.getAmount() >= getAmount(fluid) && test(stack.getFluid());
+  public boolean test(FluidVolume stack) {
+    FluidKey fluid = stack.getFluidKey();
+    return stack.amount().isGreaterThanOrEqual(getAmount(fluid)) && test(fluid);
   }
 
   /**
    * Gets a list of fluid stacks contained in this ingredient for display
    * @return  List of fluid stacks for this ingredient
    */
-  public List<FluidStack> getFluids() {
+  public List<FluidVolume> getFluids() {
     if (displayFluids == null) {
-      displayFluids = getAllFluids().stream().filter(stack -> {
-        Fluid fluid = stack.getFluid();
-        return fluid.isStill(fluid.getDefaultState());
-      }).collect(Collectors.toList());
+      displayFluids = new ArrayList<>(getAllFluids());
     }
     return displayFluids;
   }
@@ -75,7 +74,7 @@ public abstract class FluidIngredient {
    * Gets a list of fluid stacks contained in this ingredient for display, may include flowing fluids
    * @return  List of fluid stacks for this ingredient
    */
-  protected abstract List<FluidStack> getAllFluids();
+  protected abstract List<FluidVolume> getAllFluids();
 
   /**
    * Serializes the Fluid Ingredient into JSON
@@ -88,11 +87,11 @@ public abstract class FluidIngredient {
    * @param buffer Packet buffer instance
    */
   public void write(PacketByteBuf buffer) {
-    Collection<FluidStack> fluids = getAllFluids();
+    Collection<FluidVolume> fluids = getAllFluids();
     buffer.writeInt(fluids.size());
-    for (FluidStack stack : fluids) {
-      buffer.writeString(Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
-      buffer.writeInt(stack.getAmount());
+    for (FluidVolume stack : fluids) {
+      stack.fluidKey.toMcBuffer(buffer);
+      stack.amount().toMcBuffer(buffer);
     }
   }
 
@@ -107,17 +106,17 @@ public abstract class FluidIngredient {
    * @param amount  Minimum fluid amount
    * @return  Fluid ingredient for this fluid
    */
-  public static FluidIngredient of(Fluid fluid, int amount) {
+  public static FluidIngredient of(FluidKey fluid, FluidAmount amount) {
     return new FluidIngredient.FluidMatch(fluid, amount);
   }
 
   /**
-   * Creates a new ingredient using the given fluidstack
+   * Creates a new ingredient using the given FluidVolume
    * @param stack  Fluid stack
    * @return  Fluid ingredient for this fluid stack
    */
-  public static FluidIngredient of(FluidStack stack) {
-    return of(stack.getFluid(), stack.getAmount());
+  public static FluidIngredient of(FluidVolume stack) {
+    return of(stack.getFluidKey(), stack.amount());
   }
 
   /**
@@ -126,7 +125,7 @@ public abstract class FluidIngredient {
    * @param amount  Minimum fluid amount
    * @return  Fluid ingredient from a tag
    */
-  public static FluidIngredient of(Tag<Fluid> fluid, int amount) {
+  public static FluidIngredient of(Tag<Fluid> fluid, FluidAmount amount) {
     return new FluidIngredient.TagMatch(fluid, amount);
   }
 
@@ -220,12 +219,11 @@ public abstract class FluidIngredient {
     int count = buffer.readInt();
     FluidIngredient[] ingredients = new FluidIngredient[count];
     for (int i = 0; i < count; i++) {
-      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new Identifier(buffer.readString(32767)));
-      if (fluid == null) {
-        fluid = Fluids.EMPTY;
+      try {
+        ingredients[i] = of(FluidVolume.fromMcBuffer(buffer));
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-      int amount = buffer.readInt();
-      ingredients[i] = of(fluid, amount);
     }
     // if a single ingredient, do not wrap in compound
     if (count == 1) {
@@ -238,24 +236,23 @@ public abstract class FluidIngredient {
   /**
    * Empty fluid ingredient, matches only empty fluid stacks
    */
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
   private static class Empty extends FluidIngredient {
     @Override
-    public boolean test(Fluid fluid) {
-      return fluid == Fluids.EMPTY;
+    public boolean test(FluidKey fluid) {
+      return fluid.isEmpty();
     }
     @Override
-    public boolean test(FluidStack fluid) {
+    public boolean test(FluidVolume fluid) {
       return fluid.isEmpty();
     }
 
     @Override
-    public int getAmount(Fluid fluid) {
-      return 0;
+    public FluidAmount getAmount(FluidKey fluid) {
+      return FluidAmount.ZERO;
     }
 
     @Override
-    public List<FluidStack> getAllFluids() {
+    public List<FluidVolume> getAllFluids() {
       return Collections.emptyList();
     }
 
@@ -268,31 +265,35 @@ public abstract class FluidIngredient {
   /**
    * Fluid ingredient that matches a single fluid
    */
-  @AllArgsConstructor(access=AccessLevel.PRIVATE)
   private static class FluidMatch extends FluidIngredient {
-    private final Fluid fluid;
-    private final int amount;
+    private final FluidKey fluid;
+    private final FluidAmount amount;
 
-    @Override
-    public boolean test(Fluid fluid) {
-      return fluid == this.fluid;
+    private FluidMatch(FluidKey fluid, FluidAmount amount) {
+      this.fluid = fluid;
+      this.amount = amount;
     }
 
     @Override
-    public int getAmount(Fluid fluid) {
+    public boolean test(FluidKey fluid) {
+      return fluid.equals(this.fluid);
+    }
+
+    @Override
+    public FluidAmount getAmount(FluidKey fluid) {
       return amount;
     }
 
     @Override
-    public List<FluidStack> getAllFluids() {
-      return Collections.singletonList(new FluidStack(fluid, amount));
+    public List<FluidVolume> getAllFluids() {
+      return Collections.singletonList(fluid.withAmount(amount));
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("name", Objects.requireNonNull(fluid.getRegistryName()).toString());
-      object.addProperty("amount", amount);
+      object.add("name", fluid.toJson());
+      object.add("amount", amount.toJson());
       return object;
     }
 
@@ -301,8 +302,8 @@ public abstract class FluidIngredient {
       // count
       buffer.writeInt(1);
       // single fluid
-      buffer.writeString(Objects.requireNonNull(fluid.getRegistryName()).toString());
-      buffer.writeInt(amount);
+      fluid.toMcBuffer(buffer);
+      amount.toMcBuffer(buffer);
     }
 
     /**
@@ -311,12 +312,11 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static FluidMatch deserialize(JsonObject json) {
-      String fluidName = net.minecraft.util.JsonHelper.getString(json, "name");
-      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new Identifier(fluidName));
-      if (fluid == null || fluid == Fluids.EMPTY) {
-        throw new JsonSyntaxException("Unknown fluid '" + fluidName + "'");
+      FluidKey fluid = FluidKey.fromJson(json.get("name").getAsJsonObject());
+      if (fluid == null || fluid.isEmpty()) {
+        throw new JsonSyntaxException("Unknown fluid '" + fluid.name + "'");
       }
-      int amount = net.minecraft.util.JsonHelper.getInt(json, "amount");
+      FluidAmount amount = FluidAmount.fromJson(json.get("amount"));
       return new FluidMatch(fluid, amount);
     }
   }
@@ -324,31 +324,35 @@ public abstract class FluidIngredient {
   /**
    * Fluid ingredient that matches a tag
    */
-  @AllArgsConstructor(access=AccessLevel.PRIVATE)
   private static class TagMatch extends FluidIngredient {
     private final Tag<Fluid> tag;
-    private final int amount;
+    private final FluidAmount amount;
 
-    @Override
-    public boolean test(Fluid fluid) {
-      return tag.contains(fluid);
+    private TagMatch(Tag<Fluid> tag, FluidAmount amount) {
+      this.tag = tag;
+      this.amount = amount;
     }
 
     @Override
-    public int getAmount(Fluid fluid) {
+    public boolean test(FluidKey fluid) {
+      return tag.contains(fluid.getRawFluid());
+    }
+
+    @Override
+    public FluidAmount getAmount(FluidKey fluid) {
       return amount;
     }
 
     @Override
-    public List<FluidStack> getAllFluids() {
-      return tag.values().stream().map((fluid) -> new FluidStack(fluid, amount)).collect(Collectors.toList());
+    public List<FluidVolume> getAllFluids() {
+      return tag.values().stream().map(FluidKeys::get).map((fluid) -> fluid.withAmount(amount)).collect(Collectors.toList());
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
       object.addProperty("tag", ServerTagManagerHolder.getTagManager().getFluids().getTagId(this.tag).toString());
-      object.addProperty("amount", amount);
+      object.add("amount", amount.toJson());
       return object;
     }
 
@@ -363,7 +367,7 @@ public abstract class FluidIngredient {
       if (tag == null) {
         throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
       }
-      int amount = net.minecraft.util.JsonHelper.getInt(json, "amount");
+      FluidAmount amount = FluidAmount.fromJson(json.get("amount"));
       return new TagMatch(tag, amount);
     }
   }
@@ -378,26 +382,26 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public boolean test(Fluid fluid) {
+    public boolean test(FluidKey fluid) {
       return ingredients.stream().anyMatch(ingredient -> ingredient.test(fluid));
     }
 
     @Override
-    public boolean test(FluidStack stack) {
+    public boolean test(FluidVolume stack) {
       return ingredients.stream().anyMatch(ingredient -> ingredient.test(stack));
     }
 
     @Override
-    public int getAmount(Fluid fluid) {
+    public FluidAmount getAmount(FluidKey fluid) {
       return ingredients.stream()
                         .filter(ingredient -> ingredient.test(fluid))
-                        .mapToInt(ingredient -> ingredient.getAmount(fluid))
+                        .map(ingredient -> ingredient.getAmount(fluid))
                         .findFirst()
-                        .orElse(0);
+                        .orElse(FluidAmount.ZERO);
     }
 
     @Override
-    public List<FluidStack> getAllFluids() {
+    public List<FluidVolume> getAllFluids() {
       return ingredients.stream()
                         .flatMap(ingredient -> ingredient.getFluids().stream())
                         .collect(Collectors.toList());
