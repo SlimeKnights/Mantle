@@ -1,0 +1,7 @@
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+package slimeknights.mantle.registration.adapter;
+
+import mcp.MethodsReturnNonnullByDefault;
+
+import org.jetbrains.annotations.ParametersAreNonnullByDefault;

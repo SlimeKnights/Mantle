@@ -23,3 +23,5 @@ accessible class net/minecraft/client/gui/screen/ingame/HandledScreens$Provider
 accessible  method  net/minecraft/client/gui/DrawableHelper    drawTexturedQuad   (Lnet/minecraft/util/math/Matrix4f;IIIIIFFFF)V
 
 accessible method net/minecraft/recipe/RecipeManager getAllOfType (Lnet/minecraft/recipe/RecipeType;)Ljava/util/Map;
+
+accessible method   net/minecraft/block/StairsBlock    <init> (Lnet/minecraft/block/BlockState;Lnet/minecraft/block/AbstractBlock$Settings;)V
