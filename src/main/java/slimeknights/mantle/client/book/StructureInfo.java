@@ -5,9 +5,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
 import java.util.Map;
 import java.util.Optional;
-import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.data.element.BlockData;
 
 public class StructureInfo {
@@ -47,7 +48,7 @@ public class StructureInfo {
   }
 
   private BlockState convert(BlockData data) {
-    Block block = ForgeRegistries.BLOCKS.getValue(new Identifier(data.block));
+    Block block = Registry.BLOCK.get(new Identifier(data.block));
     if (block == null) {
       return Blocks.AIR.getDefaultState();
     }

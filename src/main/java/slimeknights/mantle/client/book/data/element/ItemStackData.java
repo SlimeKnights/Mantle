@@ -15,7 +15,8 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.registry.Registry;
+
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
@@ -52,7 +53,7 @@ public class ItemStackData implements IDataElement {
     Item item;
     boolean isMissingItem = false;
     try {
-      item = ForgeRegistries.ITEMS.getValue(new Identifier(this.id));
+      item = Registry.ITEM.get(new Identifier(this.id));
     }
     catch (Exception e) {
       item = Items.BARRIER;
@@ -92,7 +93,7 @@ public class ItemStackData implements IDataElement {
 
   public static ItemStackData getItemStackData(ItemStack stack, boolean ignoreNbt) {
     ItemStackData data = new ItemStackData();
-    data.id = ForgeRegistries.ITEMS.getKey(stack.getItem()).toString();
+    data.id = Registry.ITEM.getId(stack.getItem()).toString();
     data.amount = (byte) stack.getCount();
     if (!ignoreNbt && stack.getTag() != null) {
       data.nbt = BookLoader.GSON.toJsonTree(stack.getTag(), CompoundTag.class).getAsJsonObject();

@@ -5,9 +5,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.BookLoadException;
@@ -118,10 +118,10 @@ public class ContentCrafting extends PageContent {
 
         DefaultedList<Ingredient> ingredients = recipe.getPreviewInputs();
 
-        if(recipe instanceof IShapedRecipe) {
-          IShapedRecipe shaped = (IShapedRecipe) recipe;
+        if(recipe instanceof ShapedRecipe) {
+          ShapedRecipe shaped = (ShapedRecipe) recipe;
 
-          grid = new ItemStackData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
+          grid = new ItemStackData[shaped.getHeight()][shaped.getWidth()];
 
           for(int y = 0; y < grid.length; y++) {
             for(int x = 0; x < grid[y].length; x++){
