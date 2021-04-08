@@ -15,16 +15,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
 
 import java.util.Random;
-
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HEALTH;
 
 @Environment(EnvType.CLIENT)
 public class ExtraHeartRenderHandler {
@@ -42,36 +35,11 @@ public class ExtraHeartRenderHandler {
 
   private int regen;
 
-  /**
-   * Draws a texture to the screen
-   * @param matrixStack  Matrix stack instance
-   * @param x            X position
-   * @param y            Y position
-   * @param textureX     Texture X
-   * @param textureY     Texture Y
-   * @param width        Width to draw
-   * @param height       Height to draw
-   */
-  private void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
-    MinecraftClient.getInstance().inGameHud.drawTexture(matrixStack, x, y, textureX, textureY, width, height);
-  }
-
-  /* HUD */
-
-  /**
-   * Event listener
-   * @param event  Event instance
-   */
-  @SubscribeEvent(priority = EventPriority.LOW)
-  public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
+  public void renderHealthbar(MatrixStack matrices) {
     Entity renderViewEnity = this.mc.getCameraEntity();
-    if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()
-        || !Mantle.config.renderExtraHeartsColored || !(renderViewEnity instanceof PlayerEntity)) {
-      return;
-    }
 
     // extra setup stuff from us
-    int left_height = ForgeIngameGui.left_height;
+    int left_height = 39;
     int width = this.mc.getWindow().getScaledWidth();
     int height = this.mc.getWindow().getScaledHeight();
     int updateCounter = this.mc.inGameHud.getTicks();
@@ -115,7 +83,7 @@ public class ExtraHeartRenderHandler {
     int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
     int rowHeight = Math.max(10 - (healthRows - 2), 3);
 
-    this.rand.setSeed(updateCounter * 312871);
+    this.rand.setSeed(updateCounter * 312871L);
 
     int left = width / 2 - 91;
     int top = height - left_height;
@@ -136,7 +104,6 @@ public class ExtraHeartRenderHandler {
     else if (player.hasStatusEffect(StatusEffects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
-    MatrixStack matrixStack = event.getMatrixStack();
     for (int i = MathHelper.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i) {
       int row = MathHelper.ceil((float) (i + 1) / 10.0F) - 1;
       int x = left + i % 10 * 8;
@@ -145,50 +112,58 @@ public class ExtraHeartRenderHandler {
       if (health <= 4) y += this.rand.nextInt(2);
       if (i == this.regen) y -= 2;
 
-      this.blit(matrixStack, x, y, BACKGROUND, TOP, 9, 9);
+      this.blit(matrices, x, y, BACKGROUND, TOP, 9, 9);
 
       if (highlight) {
         if (i * 2 + 1 < healthLast) {
-          this.blit(matrixStack, x, y, MARGIN + 54, TOP, 9, 9); //6
+          this.blit(matrices, x, y, MARGIN + 54, TOP, 9, 9); //6
         }
         else if (i * 2 + 1 == healthLast) {
-          this.blit(matrixStack, x, y, MARGIN + 63, TOP, 9, 9); //7
+          this.blit(matrices, x, y, MARGIN + 63, TOP, 9, 9); //7
         }
       }
 
       if (absorbRemaining > 0.0F) {
         if (absorbRemaining == absorb && absorb % 2.0F == 1.0F) {
-          this.blit(matrixStack, x, y, MARGIN + 153, TOP, 9, 9); //17
+          this.blit(matrices, x, y, MARGIN + 153, TOP, 9, 9); //17
           absorbRemaining -= 1.0F;
         }
         else {
-          this.blit(matrixStack, x, y, MARGIN + 144, TOP, 9, 9); //16
+          this.blit(matrices, x, y, MARGIN + 144, TOP, 9, 9); //16
           absorbRemaining -= 2.0F;
         }
       }
       else {
         if (i * 2 + 1 < health) {
-          this.blit(matrixStack, x, y, MARGIN + 36, TOP, 9, 9); //4
+          this.blit(matrices, x, y, MARGIN + 36, TOP, 9, 9); //4
         }
         else if (i * 2 + 1 == health) {
-          this.blit(matrixStack, x, y, MARGIN + 45, TOP, 9, 9); //5
+          this.blit(matrices, x, y, MARGIN + 45, TOP, 9, 9); //5
         }
       }
     }
 
-    this.renderExtraHearts(matrixStack, left, top, player);
-    this.renderExtraAbsorption(matrixStack, left, top - rowHeight, player);
+    this.renderExtraHearts(matrices, left, top, player);
+    this.renderExtraAbsorption(matrices, left, top - rowHeight, player);
 
     this.mc.getTextureManager().bindTexture(ICON_VANILLA);
-    ForgeIngameGui.left_height += 10;
-    if (absorb > 0) {
-      ForgeIngameGui.left_height += 10;
-    }
 
-    event.setCanceled(true);
     RenderSystem.disableBlend();
     this.mc.getProfiler().pop();
-    MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(matrixStack, event, HEALTH));
+  }
+
+  /**
+   * Draws a texture to the screen
+   * @param matrixStack  Matrix stack instance
+   * @param x            X position
+   * @param y            Y position
+   * @param textureX     Texture X
+   * @param textureY     Texture Y
+   * @param width        Width to draw
+   * @param height       Height to draw
+   */
+  private void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
+    MinecraftClient.getInstance().inGameHud.drawTexture(matrixStack, x, y, textureX, textureY, width, height);
   }
 
   /**

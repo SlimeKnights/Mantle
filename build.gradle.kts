@@ -29,7 +29,6 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api", "fabric-api", "0.32.5+1.16")
 
     modApi("me.shedaniel.cloth", "cloth-config-fabric", "4.11.19")
-    modApi("alexiil.mc.lib", "libblockattributes-fluids", "0.8.4")
 
     modRuntime("me.shedaniel", "RoughlyEnoughItems", "5.8.10")
     modRuntime("curse.maven", "worldedit-225608", "3135186")

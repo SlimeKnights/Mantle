@@ -4,6 +4,7 @@
   "package": "slimeknights.mantle.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "client.InGameHudMixin"
   ],
   "client": [
   ],

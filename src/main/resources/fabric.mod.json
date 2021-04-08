@@ -22,6 +22,9 @@
   "entrypoints": {
     "main": [
       "slimeknights.mantle.Mantle"
+    ],
+    "client": [
+      "slimeknights.mantle.client.MantleClient"
     ]
   },
   "mixins": [
