@@ -5,8 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -14,8 +12,10 @@ import java.util.function.Function;
 /**
  * Utilities to help in parsing JSON
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonHelper {
+  private JsonHelper() {
+  }
+
   /**
    * Gets an element from JSON, throwing an exception if missing
    * @param json        Object parent

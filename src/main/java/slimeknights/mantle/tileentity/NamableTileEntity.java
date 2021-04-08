@@ -1,12 +1,11 @@
 package slimeknights.mantle.tileentity;
 
-import lombok.Getter;
-import lombok.Setter;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
-import net.minecraftforge.common.util.Constants.NBT;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Extension of tile entity to make it namable
@@ -15,10 +14,8 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 	private static final String TAG_CUSTOM_NAME = "CustomName";
 
 	/** Default title for this tile entity */
-	@Getter
 	private final Text defaultName;
 	/** Title set to this tile entity */
-	@Getter @Setter
 	private Text customName;
 
 	public NamableTileEntity(BlockEntityType<?> tileEntityTypeIn, Text defaultTitle) {
@@ -29,7 +26,7 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 	@Override
 	public void fromTag(BlockState blockState, CompoundTag tags) {
 		super.fromTag(blockState, tags);
-		if (tags.contains(TAG_CUSTOM_NAME, NBT.TAG_STRING)) {
+		if (tags.contains(TAG_CUSTOM_NAME, NbtType.STRING)) {
 			this.customName = Text.Serializer.fromJson(tags.getString(TAG_CUSTOM_NAME));
 		}
 	}
@@ -40,5 +37,21 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 		if (this.hasCustomName()) {
 			tags.putString(TAG_CUSTOM_NAME, Text.Serializer.toJson(this.customName));
 		}
+	}
+
+	@Override
+	public Text getDefaultName() {
+		return defaultName;
+	}
+
+	@Nullable
+	@Override
+	public Text getCustomName() {
+		return customName;
+	}
+
+	@Override
+	public void setCustomName(Text customName) {
+		this.customName = customName;
 	}
 }

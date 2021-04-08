@@ -161,7 +161,7 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
    * @param modelGetter  Model getter function
    * @return  Missing model as a {@link JsonUnbakedModel}
    */
-  @Nonnull
+  @NotNull
   private static JsonUnbakedModel getMissing(Function<Identifier,UnbakedModel> modelGetter) {
     UnbakedModel model = modelGetter.apply(net.minecraft.client.render.model.ModelLoader.MISSING);
     if (!(model instanceof JsonUnbakedModel)) {

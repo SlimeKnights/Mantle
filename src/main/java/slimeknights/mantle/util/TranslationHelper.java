@@ -1,22 +1,21 @@
 package slimeknights.mantle.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraftforge.fml.ForgeI18n;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
  * Helpers for working with translations
  */
 @SuppressWarnings("WeakerAccess")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TranslationHelper {
+  private TranslationHelper() {
+  }
 
   /**
    * Checks if a key can be translated
@@ -24,7 +23,7 @@ public class TranslationHelper {
    * @return  True if its translatable
    */
   public static boolean canTranslate(String key) {
-    return !key.equals(ForgeI18n.getPattern(key));
+    return !key.equals(I18n.translate(key));
   }
 
   /**
@@ -52,7 +51,7 @@ public class TranslationHelper {
    * @param tooltip  List of tooltips
    */
   public static void addOptionalTooltip(String key, List<Text> tooltip) {
-    String translated = ForgeI18n.getPattern(key);
+    String translated = I18n.translate(key);
     if (canTranslate(key, translated)) {
       addEachLine(translated, tooltip);
     }

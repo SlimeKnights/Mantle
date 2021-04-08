@@ -1,21 +1,19 @@
 package slimeknights.mantle.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.registries.ForgeRegistries;
-
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * This utility contains helpers to handle the NBT for retexturable blocks
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RetexturedHelper {
+  private RetexturedHelper() {
+  }
+
   /** Tag name for texture blocks. Should not be used directly, use the utils to interact */
   private static final String TAG_TEXTURE = "texture";
   /** Property for tile entities containing a texture block */
@@ -31,10 +29,7 @@ public final class RetexturedHelper {
    */
   public static Block getBlock(String name) {
     if (!name.isEmpty()) {
-      Block block = ForgeRegistries.BLOCKS.getValue(new Identifier(name));
-      if (block != null) {
-        return block;
-      }
+      return Registry.BLOCK.get(new Identifier(name));
     }
     return Blocks.AIR;
   }

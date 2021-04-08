@@ -1,6 +1,7 @@
 package slimeknights.mantle.util;
 
-import org.jetbrains.annotations.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.BiConsumer;
 
 /**
@@ -10,5 +11,5 @@ import java.util.function.BiConsumer;
  */
 @FunctionalInterface
 public interface NonnullBiConsumer<T,U> {
-  void accept(@Nonnull T t, @Nonnull U u);
+  void accept(@NotNull T t, @NotNull U u);
 }

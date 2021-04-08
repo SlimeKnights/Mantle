@@ -35,7 +35,7 @@ public class AddEntryLootModifier extends LootModifier {
 		this.requireEmpty = requireEmpty;
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
 		if (!requireEmpty || generatedLoot.isEmpty()) {

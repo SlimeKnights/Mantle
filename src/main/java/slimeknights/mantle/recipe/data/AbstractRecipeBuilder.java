@@ -24,7 +24,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   /** Advancement builder for this class */
   protected final Advancement.Task advancementBuilder = Advancement.Task.create();
   /** Group for this recipe */
-  @Nonnull
+  @NotNull
   protected String group = "";
 
   /**

@@ -1,22 +1,22 @@
 package slimeknights.mantle.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
+import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.Mantle;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 /**
  * Utilities to help in handling of tile entities
  */
 @SuppressWarnings("WeakerAccess")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TileEntityHelper {
+  private TileEntityHelper() {
+  }
+
   /**
    * Gets a tile entity if present and the right type
    * @param clazz  Tile entity class

@@ -26,7 +26,7 @@ public class ReplaceItemLootModifier extends LootModifier {
     this.replacement = replacement;
   }
 
-  @Nonnull
+  @NotNull
   @Override
   protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
     return generatedLoot.stream().map(stack -> {
