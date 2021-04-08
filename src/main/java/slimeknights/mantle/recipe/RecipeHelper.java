@@ -2,11 +2,14 @@ package slimeknights.mantle.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -15,23 +18,15 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.registry.Registry;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
+import io.netty.handler.codec.DecoderException;
 
 /**
  * Helpers used in creation of recipes
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RecipeHelper {
 
   /* Recipe manager utils */
@@ -135,11 +130,8 @@ public class RecipeHelper {
    * @param stack  Stack to serialize
    * @return  JSON data
    */
-  public static JsonObject serializeFluidStack(FluidStack stack) {
-    JsonObject json = new JsonObject();
-    json.addProperty("fluid", Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
-    json.addProperty("amount", stack.getAmount());
-    return json;
+  public static JsonObject serializeFluidStack(FluidVolume stack) {
+    return stack.toJson();
   }
 
   /**
@@ -148,14 +140,8 @@ public class RecipeHelper {
    * @return  Fluid stack instance
    * @throws JsonSyntaxException if syntax is invalid
    */
-  public static FluidStack deserializeFluidStack(JsonObject json) {
-    String fluidName = JsonHelper.getString(json, "fluid");
-    Fluid fluid = ForgeRegistries.FLUIDS.getValue(new Identifier(fluidName));
-    if (fluid == null || fluid == Fluids.EMPTY) {
-      throw new JsonSyntaxException("Unknown fluid " + fluidName);
-    }
-    int amount = JsonHelper.getInt(json, "amount");
-    return new FluidStack(fluid, amount);
+  public static FluidVolume deserializeFluidStack(JsonObject json) {
+    return FluidVolume.fromJson(json);
   }
 
   /**
@@ -168,7 +154,7 @@ public class RecipeHelper {
    * @throws JsonSyntaxException  If the key is missing, or the value is not the right class
    */
   public static <C> C deserializeItem(String name, String key, Class<C> clazz) {
-    Item item = ForgeRegistries.ITEMS.getValue(new Identifier(name));
+    Item item = Registry.ITEM.get(new Identifier(name));
     if (item == null) {
       throw new JsonSyntaxException("Invalid " + key + ": Unknown item " + name + "'");
     }
@@ -201,7 +187,7 @@ public class RecipeHelper {
   public static <T> T readItem(PacketByteBuf buffer, Class<T> clazz) {
     Item item = readItem(buffer);
     if (!clazz.isInstance(item)) {
-      throw new DecoderException("Invalid item '" + item.getRegistryName() + "', must be " + clazz.getSimpleName());
+      throw new DecoderException("Invalid item '" + Registry.ITEM.getId(item) + "', must be " + clazz.getSimpleName());
     }
     return clazz.cast(item);
   }

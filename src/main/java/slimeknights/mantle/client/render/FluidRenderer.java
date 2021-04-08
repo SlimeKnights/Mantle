@@ -9,6 +9,9 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
+
+import alexiil.mc.lib.attributes.fluid.volume.FluidKey;
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.fluid.FluidCuboid;
 
@@ -219,16 +222,16 @@ public class FluidRenderer {
    * @param isGas     If true, fluid is a gas
    */
   public static void renderCuboid(MatrixStack matrices, VertexConsumer buffer, FluidCuboid cube, Sprite still, Sprite flowing, Vector3f from, Vector3f to, int color, int light, boolean isGas) {
-//    Matrix4f matrix = matrices.peek().getModel();
-//    int rotation = isGas ? 180 : 0;
-//    for (Direction dir : Direction.values()) {
-//      FluidFace face = cube.getFace(dir);
-//      if (face != null) {
-//        boolean isFlowing = face.isFlowing();
-//        int faceRot = (rotation + face.getRotation()) % 360;
-//        putTexturedQuad(buffer, matrix, isFlowing ? flowing : still, from, to, dir, color, light, faceRot, isFlowing);
-//      }
-//    }
+    Matrix4f matrix = matrices.peek().getModel();
+    int rotation = isGas ? 180 : 0;
+    for (Direction dir : Direction.values()) {
+      FluidCuboid.FluidFace face = cube.getFace(dir);
+      if (face != null) {
+        boolean isFlowing = face.isFlowing();
+        int faceRot = (rotation + face.getRotation()) % 360;
+        putTexturedQuad(buffer, matrix, isFlowing ? flowing : still, from, to, dir, color, light, faceRot, isFlowing);
+      }
+    }
   }
 
   /**
@@ -239,23 +242,23 @@ public class FluidRenderer {
    * @param fluid     Fluid to use in rendering
    * @param light     Light level from TER
    */
-  public static void renderCuboids(MatrixStack matrices, VertexConsumer buffer, List<FluidCuboid> cubes, FluidStack fluid, int light) {
-//    if (fluid.isEmpty()) {
-//      return;
-//    }
-//
-//    // fluid attributes, fetch once for all fluids to save effort
-//    FluidAttributes attributes = fluid.getFluid().getAttributes();
-//    Sprite still = getBlockSprite(attributes.getStillTexture(fluid));
-//    Sprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
-//    int color = attributes.getColor(fluid);
-//    light = withBlockLight(light,attributes.getLuminosity(fluid));
-//    boolean isGas = attributes.isGaseous(fluid);
-//
-//    // render all given cuboids
-//    for (FluidCuboid cube : cubes) {
-//      renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, isGas);
-//    }
+  public static void renderCuboids(MatrixStack matrices, VertexConsumer buffer, List<FluidCuboid> cubes, FluidVolume fluid, int light) {
+    if (fluid.isEmpty()) {
+      return;
+    }
+
+    // fluid attributes, fetch once for all fluids to save effort
+    FluidKey fluidKey = fluid.getFluidKey();
+    Sprite still = getBlockSprite(fluidKey.spriteId);
+    Sprite flowing = getBlockSprite(fluidKey.flowingSpriteId);
+    int color = fluidKey.renderColor;
+    light = withBlockLight(light, fluidKey.luminosity);
+    boolean isGas = fluidKey.gaseous;
+
+    // render all given cuboids
+    for (FluidCuboid cube : cubes) {
+      renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, isGas);
+    }
   }
 
   /**
@@ -292,35 +295,35 @@ public class FluidRenderer {
    * @param cube      Fluid cuboid instance
    * @param flipGas   If true, flips gas cubes
    */
-  public static void renderScaledCuboid(MatrixStack matrices, VertexConsumerProvider buffer, FluidCuboid cube, FluidStack fluid, float offset, int capacity, int light, boolean flipGas) {
+  public static void renderScaledCuboid(MatrixStack matrices, VertexConsumerProvider buffer, FluidCuboid cube, FluidVolume fluid, float offset, int capacity, int light, boolean flipGas) {
     // nothing to render
-//    if (fluid.isEmpty() || capacity <= 0) {
-//      return;
-//    }
-//
-//    // fluid attributes
-//    FluidAttributes attributes = fluid.getFluid().getAttributes();
-//    Sprite still = getBlockSprite(attributes.getStillTexture(fluid));
-//    Sprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
-//    boolean isGas = attributes.isGaseous(fluid);
-//    light = withBlockLight(light,attributes.getLuminosity(fluid));
-//
-//    // determine height based on fluid amount
-//    Vector3f from = cube.getFromScaled();
-//    Vector3f to = cube.getToScaled();
-//    // gas renders upside down
-//    float minY = from.getY();
-//    float maxY = to.getY();
-//    float height = (fluid.getAmount() - offset) / capacity;
-//    if (isGas && flipGas) {
-//      from = from.copy();
-//      from.setY(maxY + (height * (minY - maxY)));
-//    } else {
-//      to = to.copy();
-//      to.setY(minY + (height * (maxY - minY)));
-//    }
-//
-//    // draw cuboid
-//    renderCuboid(matrices, buffer.getBuffer(RENDER_TYPE), cube, still, flowing, from, to, attributes.getColor(fluid), light, isGas);
+    if (fluid.isEmpty() || capacity <= 0) {
+      return;
+    }
+
+    // fluid attributes
+    FluidKey fluidKey = fluid.getFluidKey();
+    Sprite still = getBlockSprite(fluidKey.spriteId);
+    Sprite flowing = getBlockSprite(fluidKey.flowingSpriteId);
+    boolean isGas = fluidKey.gaseous;
+    light = withBlockLight(light, fluidKey.luminosity);
+
+    // determine height based on fluid amount
+    Vector3f from = cube.getFromScaled();
+    Vector3f to = cube.getToScaled();
+    // gas renders upside down
+    float minY = from.getY();
+    float maxY = to.getY();
+    float height = (fluid.getAmount() - offset) / capacity;
+    if (isGas && flipGas) {
+      from = from.copy();
+      from.set(from.getX(),maxY + (height * (minY - maxY)), from.getZ());
+    } else {
+      to = to.copy();
+      to.set(to.getX(), minY + (height * (maxY - minY)), to.getZ());
+    }
+
+    // draw cuboid
+    renderCuboid(matrices, buffer.getBuffer(RENDER_TYPE), cube, still, flowing, from, to, fluidKey.renderColor, light, isGas);
   }
 }

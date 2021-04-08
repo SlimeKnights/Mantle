@@ -21,3 +21,5 @@ accessible  method  net/minecraft/client/gui/screen/ingame/HandledScreen   isPoi
 accessible class net/minecraft/client/gui/screen/ingame/HandledScreens$Provider
 
 accessible  method  net/minecraft/client/gui/DrawableHelper    drawTexturedQuad   (Lnet/minecraft/util/math/Matrix4f;IIIIIFFFF)V
+
+accessible method net/minecraft/recipe/RecipeManager getAllOfType (Lnet/minecraft/recipe/RecipeType;)Ljava/util/Map;
