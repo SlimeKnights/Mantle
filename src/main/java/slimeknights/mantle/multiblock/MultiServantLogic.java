@@ -8,8 +8,8 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.tileentity.MantleTileEntity;
 
 import java.util.Objects;
@@ -119,7 +119,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       int yCenter = tags.getInt("yCenter");
       int zCenter = tags.getInt("zCenter");
       this.master = new BlockPos(xCenter, yCenter, zCenter);
-      this.masterBlock = ForgeRegistries.BLOCKS.getValue(new Identifier(tags.getString("MasterBlockName")));
+      this.masterBlock = Registry.BLOCK.get(new Identifier(tags.getString("MasterBlockName")));
       this.state = Block.getStateFromRawId(tags.getInt("masterState"));
     }
   }
@@ -130,7 +130,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       tags.putInt("xCenter", this.master.getX());
       tags.putInt("yCenter", this.master.getY());
       tags.putInt("zCenter", this.master.getZ());
-      tags.putString("MasterBlockName", Objects.requireNonNull(this.masterBlock.getRegistryName()).toString());
+      tags.putString("MasterBlockName", Objects.requireNonNull(Registry.BLOCK.getId(this.masterBlock)).toString());
       tags.putInt("masterState", Block.getRawIdFromState(this.state));
     }
     return tags;
@@ -156,14 +156,14 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
     return tag;
   }
 
-  @Override
-  public void onDataPacket(ClientConnection net, BlockEntityUpdateS2CPacket packet) {
-    this.readCustomNBT(packet.getCompoundTag());
-    //this.world.notifyLightSet(this.pos);
-    assert world != null;
-    BlockState state = world.getBlockState(this.pos);
-    this.world.updateListeners(this.pos, state, state, 3);
-  }
+//  @Override
+//  public void onDataPacket(ClientConnection net, BlockEntityUpdateS2CPacket packet) {
+//    this.readCustomNBT(packet.getCompoundTag());
+//    //this.world.notifyLightSet(this.pos);
+//    assert world != null;
+//    BlockState state = world.getBlockState(this.pos);
+//    this.world.updateListeners(this.pos, state, state, 3);
+//  }
 
   @Deprecated
   public boolean setMaster(BlockPos pos) {

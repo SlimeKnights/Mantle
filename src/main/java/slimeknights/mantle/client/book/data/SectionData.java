@@ -5,8 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.resource.Resource;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;

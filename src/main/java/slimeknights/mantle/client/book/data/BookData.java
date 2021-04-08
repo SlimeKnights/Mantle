@@ -8,8 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resource.Resource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;

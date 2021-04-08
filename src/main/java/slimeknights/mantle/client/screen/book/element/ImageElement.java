@@ -6,8 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.element.ImageData;
 
 @Environment(EnvType.CLIENT)

@@ -14,9 +14,8 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.util.RetexturedHelper;
 
 import org.jetbrains.annotations.Nullable;
@@ -109,7 +108,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
     if (block == null || block == Blocks.AIR) {
       return setTexture(stack, "");
     }
-    return setTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
+    return setTexture(stack, Objects.requireNonNull(Registry.BLOCK.getId(block)).toString());
   }
 
   /**

@@ -13,11 +13,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import slimeknights.mantle.util.TileEntityHelper;
-
 import org.jetbrains.annotations.Nullable;
+import slimeknights.mantle.util.TileEntityHelper;
 
 public class BaseContainer<TILE extends BlockEntity> extends ScreenHandler {
 
@@ -322,6 +319,7 @@ public class BaseContainer<TILE extends BlockEntity> extends ScreenHandler {
     if (buf == null) {
       return null;
     }
-    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTile(type, MinecraftClient.getInstance().world, buf.readBlockPos()).orElse(null));
+    throw new RuntimeException("Fuck");
+//    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTile(type, MinecraftClient.getInstance().world, buf.readBlockPos()).orElse(null));
   }
 }

@@ -5,7 +5,6 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.CraftingResultSlot;
-import net.minecraftforge.fml.hooks.BasicEventHooks;
 
 public class CraftingCustomSlot extends CraftingResultSlot {
 
@@ -27,7 +26,7 @@ public class CraftingCustomSlot extends CraftingResultSlot {
 
   @Override
   public ItemStack onTakeItem(PlayerEntity playerIn, ItemStack stack) {
-    BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
+//    BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix); what the fuck is a firePlayerCraftingEvent?
     this.onCrafted(stack);
 
     this.callback.onCrafting(playerIn, stack, this.craftMatrix);

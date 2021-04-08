@@ -7,8 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Used to wrap the slots inside Modules/Subcontainers
@@ -18,7 +16,7 @@ public class WrapperSlot extends Slot {
   public final Slot parent;
 
   public WrapperSlot(Slot slot) {
-    super(slot.inventory, slot.getSlotIndex(), slot.x, slot.y);
+    super(slot.inventory, slot.id, slot.x, slot.y);
     this.parent = slot;
   }
 
@@ -78,11 +76,6 @@ public class WrapperSlot extends Slot {
   @Environment(EnvType.CLIENT)
   public Pair<Identifier, Identifier> getBackgroundSprite() {
     return this.parent.getBackgroundSprite();
-  }
-
-  @Override
-  public Slot setBackground(Identifier atlas, Identifier sprite) {
-    return this.parent.setBackground(atlas, sprite);
   }
 
   @Override
