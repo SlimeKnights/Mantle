@@ -11,7 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import slimeknights.mantle.config.Config;
+import slimeknights.mantle.config.MantleConfig;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -86,7 +86,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * @return  Sort index for that entry
    */
   private static int getSortIndex(IForgeRegistryEntry<?> entry) {
-    List<String> entries = Config.TAG_PREFERENCES.get();
+    List<String> entries = MantleConfig.TAG_PREFERENCES.get();
     // check the index of the namespace in the preference list
     int index = entries.indexOf(Objects.requireNonNull(entry.getRegistryName()).getNamespace());
     // if missing, declare last

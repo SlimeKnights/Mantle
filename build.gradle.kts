@@ -9,6 +9,11 @@ version = "1.6-SNAPSHOT"
 
 repositories {
     maven {
+        name = "Shedaniel's Maven"
+        url = uri("https://maven.shedaniel.me/")
+    }
+
+    maven {
         name = "Curseforge Maven"
         url = uri("https://www.cursemaven.com")
     }
@@ -22,6 +27,8 @@ dependencies {
 
     modImplementation("net.fabricmc", "fabric-loader", "0.11.3")
     modImplementation("net.fabricmc.fabric-api", "fabric-api", "0.32.5+1.16")
+
+    modApi("me.shedaniel.cloth", "cloth-config-fabric", "4.11.19")
 
     modRuntime("me.shedaniel", "RoughlyEnoughItems", "5.8.10")
     modRuntime("curse.maven", "worldedit-225608", "3135186")
