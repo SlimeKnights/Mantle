@@ -24,7 +24,8 @@ public class Config {
 	public static final CachedBoolean EXTRA_HEART_RENDERER;
 
 	/** List of preferences for tag outputs */
-	public static final CachedValue<List<String>> TAG_PREFERENCES;
+	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "create", "immersiveengineering", "mekanism", "thermalfoundation", "thermalexpansion");
+	public static final CachedValue<List<? extends String>> TAG_PREFERENCES;
 
 	private static final ForgeConfigSpec.Builder CLIENT_BUILDER, SERVER_BUILDER;
 	public static final ForgeConfigSpec CLIENT_SPEC, SERVER_SPEC;
@@ -43,9 +44,9 @@ public class Config {
 
 		// server options
 		TAG_PREFERENCES = server(builder ->
-				builder.comment("Preferences for outputs from tags used in automatic compat in recipes")
-				.translation("config.mantle.tagPreferences")
-				.define("tagPreferences", Arrays.asList("minecraft", "tconstruct", "tmechworks", "immersiveengineering", "mekanism", "thermalfoundation", "thermalexpansion")));
+		  builder.comment("Preferences for outputs from tags used in automatic compat in recipes")
+						 .translation("config.mantle.tagPreferences")
+						 .defineList("tagPreferences", DEFAULT_TAG_PREFERENCES, str -> true));
 
 		CLIENT_SPEC = CLIENT_BUILDER.build();
 		SERVER_SPEC = SERVER_BUILDER.build();
