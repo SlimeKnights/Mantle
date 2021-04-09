@@ -1,30 +1,20 @@
 package slimeknights.mantle.client.render;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import slimeknights.mantle.client.model.inventory.ModelItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
@@ -103,9 +93,29 @@ public class RenderingHelper {
     matrices.pop();
   }
 
-  /* Tooltips */
-  private static final int BACKGROUND_COLOR = 0xF0100010;
-  private static final int START_COLOR = 0x505000FF;
-  private static final int END_COLOR = 0x5028007F;
-  private static final int Z_INDEX = 400;
+  /**
+   * Draws hovering text on the screen
+   * @param mStack         Matrix stack instance
+   * @param textLines      Tooltip lines
+   * @param mouseX         Mouse X position
+   * @param mouseY         Mouse Y position
+   * @param screenWidth    Screen width
+   * @param screenHeight   Screen height
+   * @param maxTextWidth   Max text width
+   * @param font           Font
+   * @deprecated   Remove in 1.17, use {@link GuiUtils#drawHoveringText(MatrixStack, List, int, int, int, int, int, FontRenderer)}
+   */
+  @Deprecated
+  public static void drawHoveringText(MatrixStack mStack, List<ITextComponent> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font) {
+    GuiUtils.drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, GuiUtils.DEFAULT_BACKGROUND_COLOR, GuiUtils.DEFAULT_BORDER_COLOR_START, GuiUtils.DEFAULT_BORDER_COLOR_END, font);
+  }
+
+  /**
+   * @deprecated   Remove in 1.17, use {@link GuiUtils#drawHoveringText(MatrixStack, List, int, int, int, int, int, int, int, int, FontRenderer)}
+   */
+  @Deprecated
+  private static void drawHoveringText(MatrixStack mStack, List<ITextComponent> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth,
+                                       int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font) {
+    GuiUtils.drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, backgroundColor, borderColorStart, borderColorEnd, font);
+  }
 }
