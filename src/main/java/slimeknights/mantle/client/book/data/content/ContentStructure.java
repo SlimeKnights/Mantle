@@ -49,8 +49,7 @@ public class ContentStructure extends PageContent {
     int y = TITLE_HEIGHT;
     if (this.title == null || this.title.isEmpty()) {
       y = 0;
-    }
-    else {
+    } else {
       this.addTitle(list, this.title);
     }
 

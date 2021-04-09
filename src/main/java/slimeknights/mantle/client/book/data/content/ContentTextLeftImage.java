@@ -26,15 +26,13 @@ public class ContentTextLeftImage extends PageContent {
 
     if (this.title == null || this.title.isEmpty()) {
       y = 0;
-    }
-    else {
+    } else {
       this.addTitle(list, this.title);
     }
 
     if (this.image != null && this.image.location != null) {
       list.add(new ImageElement(0, y, 50, 50, this.image));
-    }
-    else {
+    } else {
       list.add(new ImageElement(0, y, 50, 50, ImageData.MISSING));
     }
 

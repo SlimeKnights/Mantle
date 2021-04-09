@@ -154,8 +154,7 @@ public class StructureElement extends SizedBookElement {
 
         this.rotY += changeX;
         this.rotX += changeY;
-      }
-      else {
+      } else {
         this.lastClick = null;
       }
     }
@@ -167,8 +166,7 @@ public class StructureElement extends SizedBookElement {
           this.fullStructureSteps = 0;
         }
       }
-    }
-    else {
+    } else {
       this.structureData.reset();
       this.structureData.setShowLayer(9);
     }
@@ -207,8 +205,7 @@ public class StructureElement extends SizedBookElement {
 
     if (Minecraft.isAmbientOcclusionEnabled()) {
       RenderSystem.shadeModel(GL11.GL_SMOOTH);
-    }
-    else {
+    } else {
       RenderSystem.shadeModel(GL11.GL_FLAT);
     }
 
@@ -271,7 +268,7 @@ public class StructureElement extends SizedBookElement {
 
     //lastX = mouseX;
     //lastY = mouseY;
-    this.lastClick = new int[] { (int) mouseX, (int) mouseY };
+    this.lastClick = new int[]{(int) mouseX, (int) mouseY};
   }
 
   @Override

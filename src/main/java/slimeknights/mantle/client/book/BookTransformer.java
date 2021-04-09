@@ -115,11 +115,10 @@ public abstract class BookTransformer {
         for (int i = 0; i < pages.length; i++) {
           pages[i] = new PageData(true);
           pages[i].name = "tableofcontents" + i;
-          TextData[] text = new TextData[i > pages.length - 1 ? ENTRIES_PER_PAGE : section
-                  .getPageCount() - (genPages - 1) * ENTRIES_PER_PAGE];
+          TextData[] text = new TextData[i > pages.length - 1 ? ENTRIES_PER_PAGE : section.getPageCount() - (genPages - 1) * ENTRIES_PER_PAGE];
+
           for (int j = 0; j < text.length; j++) {
-            text[j] = new TextData((i * ENTRIES_PER_PAGE + j + 1) + ". " + section.pages.get(i * ENTRIES_PER_PAGE + j)
-                    .getTitle());
+            text[j] = new TextData((i * ENTRIES_PER_PAGE + j + 1) + ". " + section.pages.get(i * ENTRIES_PER_PAGE + j).getTitle());
             text[j].action = "go-to-page-rtn:" + section.name + "." + section.pages.get(i * ENTRIES_PER_PAGE + j).name;
           }
 

@@ -37,7 +37,6 @@ public class LinkedSectionData extends SectionData {
       this.name = data.name;
       this.icon = data.icon;
       this.hideWhenLocked = data.hideWhenLocked;
-
     }
 
     this.requirements.addAll(data.requirements);

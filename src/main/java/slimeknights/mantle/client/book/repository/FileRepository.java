@@ -33,6 +33,7 @@ public class FileRepository extends BookRepository {
     if (path == null) {
       return safe ? new ResourceLocation("") : null;
     }
+
     if (!path.contains(":")) {
       String langPath = null;
 
@@ -60,8 +61,7 @@ public class FileRepository extends BookRepository {
       if (this.resourceExists(res)) {
         return res;
       }
-    }
-    else {
+    } else {
       ResourceLocation res = new ResourceLocation(path);
       if (this.resourceExists(res)) {
         return res;
@@ -76,10 +76,10 @@ public class FileRepository extends BookRepository {
     if (loc == null) {
       return null;
     }
+
     try {
       return Minecraft.getInstance().getResourceManager().getResource(loc);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return null;
     }
   }
@@ -89,20 +89,21 @@ public class FileRepository extends BookRepository {
     if (location == null) {
       return false;
     }
+
     try {
       Minecraft.getInstance().getResourceManager().getResource(location);
       return true;
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
 
   @Override
-  public String resourceToString(@Nullable IResource resource, boolean skipCommments) {
+  public String resourceToString(@Nullable IResource resource, boolean skipComments) {
     if (resource == null) {
       return "";
     }
+
     try {
       Iterator<String> iterator = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8).iterator();
       StringBuilder builder = new StringBuilder();
@@ -113,14 +114,13 @@ public class FileRepository extends BookRepository {
         String s = iterator.next().trim() + "\n";
 
         // Comment skipper
-        if (skipCommments) {
+        if (skipComments) {
           if (isLongComment) {
             if (s.endsWith("*/")) {
               isLongComment = false;
             }
             continue;
-          }
-          else {
+          } else {
             if (s.startsWith("/*")) {
               isLongComment = true;
               continue;
@@ -135,8 +135,7 @@ public class FileRepository extends BookRepository {
       }
 
       return builder.toString().trim();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
 

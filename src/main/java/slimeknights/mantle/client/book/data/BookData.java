@@ -54,7 +54,9 @@ public class BookData implements IDataItem {
     if (this.initialized) {
       return;
     }
+
     Mantle.logger.info("Started loading book...");
+
     try {
       this.initialized = true;
       this.sections.clear();
@@ -69,8 +71,7 @@ public class BookData implements IDataItem {
           for (SectionData section : repoContents) {
             section.source = repo;
           }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           SectionData error = new SectionData();
           error.name = "errorenous";
           PageData page = new PageData(true);
@@ -86,10 +87,8 @@ public class BookData implements IDataItem {
 
         if (repo.resourceExists(appearanceLocation)) {
           try {
-            this.appearance = BookLoader.GSON
-                    .fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
-          }
-          catch (Exception e) {
+            this.appearance = BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
+          } catch (Exception e) {
             e.printStackTrace();
           }
         }
@@ -100,10 +99,8 @@ public class BookData implements IDataItem {
 
         if (repo.resourceExists(itemLinkLocation)) {
           try {
-            this.itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON
-                    .fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
-          }
-          catch (Exception e) {
+            this.itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
+          } catch (Exception e) {
             e.printStackTrace();
           }
         }
@@ -114,9 +111,7 @@ public class BookData implements IDataItem {
           try {
             IResource resource = repo.getResource(languageLocation);
             if (resource != null) {
-              BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(),
-                      StandardCharsets.UTF_8));
-
+              BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
               String next = br.readLine();
 
               while (next != null) {
@@ -130,19 +125,20 @@ public class BookData implements IDataItem {
                 next = br.readLine();
               }
             }
-          }
-          catch (Exception ignored) {
+          } catch (Exception ignored) {
           }
         }
       }
 
       for (int i = 0; i < this.sections.size(); i++) {
         SectionData section = this.sections.get(i);
+
         if (section.name == null) {
           continue;
         }
 
         List<SectionData> matchingSections = this.sections.stream().filter(sect -> section.name.equalsIgnoreCase(sect.name)).collect(Collectors.toList());
+
         if (matchingSections.size() < 2) {
           continue;
         }
@@ -184,8 +180,7 @@ public class BookData implements IDataItem {
           section.load();
         }
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       this.sections.clear();
       SectionData section = new SectionData(true);
       section.name = "errorenous";
@@ -221,6 +216,7 @@ public class BookData implements IDataItem {
 
   public int getFirstPageNumber(SectionData section, @Nullable BookScreen.AdvancementCache advancementCache) {
     int pages = 0;
+
     for (SectionData sect : this.sections) {
       sect.update(advancementCache);
 
@@ -245,6 +241,7 @@ public class BookData implements IDataItem {
     }
 
     int pages = 0;
+
     for (SectionData section : this.sections) {
       section.update(advancementCache);
 
@@ -254,8 +251,7 @@ public class BookData implements IDataItem {
 
       if (pages + section.getPageCount() > number) {
         return section.pages.get(number - pages);
-      }
-      else {
+      } else {
         pages += section.getPageCount();
       }
     }

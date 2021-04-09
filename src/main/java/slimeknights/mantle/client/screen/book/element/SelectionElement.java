@@ -47,8 +47,7 @@ public class SelectionElement extends SizedBookElement {
     }
     if (unlocked) {
       RenderSystem.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
-    }
-    else {
+    } else {
       float r = ((this.parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
       float g = ((this.parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
       float b = (this.parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
@@ -60,17 +59,17 @@ public class SelectionElement extends SizedBookElement {
     if (this.section.parent.appearance.drawSectionListText) {
       String title = this.section.getTitle().replace("\\n", "\n");
       String[] splitTitle = TextDataRenderer.cropStringBySize(title, "", WIDTH + 2,
-              fontRenderer.FONT_HEIGHT * 2 + 1, fontRenderer, 1F);
+        fontRenderer.FONT_HEIGHT * 2 + 1, fontRenderer, 1F);
 
-      for(int i = 0; i < splitTitle.length; i++) {
+      for (int i = 0; i < splitTitle.length; i++) {
         int textW = fontRenderer.getStringWidth(splitTitle[i]);
         int textX = this.x + WIDTH / 2 - textW / 2;
         int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2 + fontRenderer.FONT_HEIGHT * i;
 
         fontRenderer.drawString(matrixStack, splitTitle[i],
-                textX,
-                textY,
-                hover ? 0xFF000000 : 0x7F000000);
+          textX,
+          textY,
+          hover ? 0xFF000000 : 0x7F000000);
       }
     }
   }

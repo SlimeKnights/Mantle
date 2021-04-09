@@ -41,8 +41,7 @@ public class ContentSmithing extends PageContent {
 
     if (this.title == null || this.title.isEmpty()) {
       y = 0;
-    }
-    else {
+    } else {
       this.addTitle(list, this.title);
     }
 

@@ -25,15 +25,13 @@ public class ContentTextImage extends PageContent {
 
     if (this.title == null || this.title.isEmpty()) {
       y = 0;
-    }
-    else {
+    } else {
       this.addTitle(list, this.title);
     }
 
     if (this.title == null || this.title.isEmpty()) {
       y = 0;
-    }
-    else {
+    } else {
       this.addTitle(list, this.title);
     }
 
@@ -43,8 +41,7 @@ public class ContentTextImage extends PageContent {
 
     if (this.image != null && this.image.location != null) {
       list.add(new ImageElement(0, y + BookScreen.PAGE_HEIGHT - 100, BookScreen.PAGE_WIDTH, 100 - y, this.image));
-    }
-    else {
+    } else {
       list.add(new ImageElement(0, y + BookScreen.PAGE_HEIGHT - 100, BookScreen.PAGE_WIDTH, 100 - y, ImageData.MISSING));
     }
   }

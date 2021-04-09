@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_SMELTING;
 
 public class ContentSmelting extends PageContent {
+
   private static final NonNullList<ItemStack> FUELS;
 
   public static final transient int TEX_SIZE = 128;
@@ -77,8 +78,7 @@ public class ContentSmelting extends PageContent {
 
   public NonNullList<ItemStack> getFuelsList() {
     //TODO ask JEI for fuel list if it is present
-
-    if(this.fuel != null) {
+    if (this.fuel != null) {
       return this.fuel.getItems();
     }
 
@@ -89,12 +89,12 @@ public class ContentSmelting extends PageContent {
   public void load() {
     super.load();
 
-    if(!StringUtils.isEmpty(this.recipe) && ResourceLocation.isResouceNameValid(this.recipe)) {
+    if (!StringUtils.isEmpty(this.recipe) && ResourceLocation.isResouceNameValid(this.recipe)) {
       IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
 
-      if(recipe instanceof AbstractCookingRecipe) {
+      if (recipe instanceof AbstractCookingRecipe) {
         this.input = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
-        this.cookTime = ((AbstractCookingRecipe)recipe).getCookTime();
+        this.cookTime = ((AbstractCookingRecipe) recipe).getCookTime();
         this.result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
       }
     }
@@ -102,33 +102,33 @@ public class ContentSmelting extends PageContent {
 
   static {
     FUELS = NonNullList.from(ItemStack.EMPTY,
-            new ItemStack(Blocks.OAK_SLAB),
-            new ItemStack(Blocks.SPRUCE_SLAB),
-            new ItemStack(Blocks.BIRCH_SLAB),
-            new ItemStack(Blocks.JUNGLE_SLAB),
-            new ItemStack(Blocks.ACACIA_SLAB),
-            new ItemStack(Blocks.DARK_OAK_SLAB),
-            new ItemStack(Blocks.OAK_PLANKS),
-            new ItemStack(Blocks.SPRUCE_PLANKS),
-            new ItemStack(Blocks.BIRCH_PLANKS),
-            new ItemStack(Blocks.JUNGLE_PLANKS),
-            new ItemStack(Blocks.ACACIA_PLANKS),
-            new ItemStack(Blocks.DARK_OAK_PLANKS),
-            new ItemStack(Blocks.COAL_BLOCK),
-            new ItemStack(Items.WOODEN_PICKAXE),
-            new ItemStack(Items.WOODEN_SWORD),
-            new ItemStack(Items.WOODEN_HOE),
-            new ItemStack(Items.STICK),
-            new ItemStack(Items.COAL),
-            new ItemStack(Items.LAVA_BUCKET),
-            new ItemStack(Blocks.OAK_SAPLING),
-            new ItemStack(Blocks.SPRUCE_SAPLING),
-            new ItemStack(Blocks.BIRCH_SAPLING),
-            new ItemStack(Blocks.JUNGLE_SAPLING),
-            new ItemStack(Blocks.ACACIA_SAPLING),
-            new ItemStack(Blocks.DARK_OAK_SAPLING),
-            new ItemStack(Items.BLAZE_ROD),
-            new ItemStack(Items.WOODEN_SHOVEL),
-            new ItemStack(Items.WOODEN_AXE));
+      new ItemStack(Blocks.OAK_SLAB),
+      new ItemStack(Blocks.SPRUCE_SLAB),
+      new ItemStack(Blocks.BIRCH_SLAB),
+      new ItemStack(Blocks.JUNGLE_SLAB),
+      new ItemStack(Blocks.ACACIA_SLAB),
+      new ItemStack(Blocks.DARK_OAK_SLAB),
+      new ItemStack(Blocks.OAK_PLANKS),
+      new ItemStack(Blocks.SPRUCE_PLANKS),
+      new ItemStack(Blocks.BIRCH_PLANKS),
+      new ItemStack(Blocks.JUNGLE_PLANKS),
+      new ItemStack(Blocks.ACACIA_PLANKS),
+      new ItemStack(Blocks.DARK_OAK_PLANKS),
+      new ItemStack(Blocks.COAL_BLOCK),
+      new ItemStack(Items.WOODEN_PICKAXE),
+      new ItemStack(Items.WOODEN_SWORD),
+      new ItemStack(Items.WOODEN_HOE),
+      new ItemStack(Items.STICK),
+      new ItemStack(Items.COAL),
+      new ItemStack(Items.LAVA_BUCKET),
+      new ItemStack(Blocks.OAK_SAPLING),
+      new ItemStack(Blocks.SPRUCE_SAPLING),
+      new ItemStack(Blocks.BIRCH_SAPLING),
+      new ItemStack(Blocks.JUNGLE_SAPLING),
+      new ItemStack(Blocks.ACACIA_SAPLING),
+      new ItemStack(Blocks.DARK_OAK_SAPLING),
+      new ItemStack(Items.BLAZE_ROD),
+      new ItemStack(Items.WOODEN_SHOVEL),
+      new ItemStack(Items.WOODEN_AXE));
   }
 }

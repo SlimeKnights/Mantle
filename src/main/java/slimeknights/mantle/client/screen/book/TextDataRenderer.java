@@ -42,7 +42,6 @@ public class TextDataRenderer {
     return action;
   }
 
-  @Nullable
   public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, FontRenderer fr, List<ITextComponent> tooltip) {
     String action = "";
 
@@ -74,7 +73,7 @@ public class TextDataRenderer {
 
       String modifiers = "";
 
-      if(item.useOldColor) {
+      if (item.useOldColor) {
         modifiers += TextFormatting.getValueByName(item.color);
       }
 
@@ -122,8 +121,7 @@ public class TextDataRenderer {
 
           if (atX == x) {
             box1W = x + boxWidth;
-          }
-          else {
+          } else {
             box1W = atX;
           }
         }
@@ -161,8 +159,7 @@ public class TextDataRenderer {
       if (atY >= y + boxHeight) {
         if (item.dropshadow) {
           fr.drawStringWithShadow(matrixStack, "...", atX, atY, 0);
-        }
-        else {
+        } else {
           fr.drawString(matrixStack, "...", atX, atY, 0);
         }
         break;
@@ -206,7 +203,7 @@ public class TextDataRenderer {
 
       if (s.charAt(i) == '\n' || (curHeight == (int) (fr.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.FONT_HEIGHT * scale) && curWidth > width)) {
         int oldI = i;
-        if(s.charAt(i) != '\n') {
+        if (s.charAt(i) != '\n') {
           while (i >= 0 && s.charAt(i) != ' ') {
             i--;
           }
@@ -244,8 +241,7 @@ public class TextDataRenderer {
     RenderSystem.scalef(scale, scale, 1F);
     if (dropShadow) {
       font.drawStringWithShadow(matrixStack, text, 0, 0, color);
-    }
-    else {
+    } else {
       font.drawString(matrixStack, text, 0, 0, color);
     }
     RenderSystem.popMatrix();

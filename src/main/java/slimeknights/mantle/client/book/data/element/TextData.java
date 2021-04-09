@@ -11,6 +11,7 @@ public class TextData {
 
   public String text;
   public String color = "black";
+
   public int rgbColor = 0;
   public boolean useOldColor = true;
   public boolean bold = false;

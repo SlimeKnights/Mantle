@@ -30,7 +30,7 @@ public class ContentError extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     this.addTitle(list, "Error");
 
-    if(exception instanceof BookLoadException) {
+    if (exception instanceof BookLoadException) {
       buildSimple(list);
       return;
     }

@@ -90,7 +90,7 @@ public class BookScreen extends Screen {
     this.advancementCache = new AdvancementCache();
     this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
 
-    this.openPage(book.findPageNumber(BookHelper.getSavedPage(item), this.advancementCache));
+    this.openPage(book.findPageNumber(BookHelper.getCurrentSavedPage(item), this.advancementCache));
   }
 
   @Override
@@ -146,8 +146,7 @@ public class BookScreen extends Screen {
         fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
         RenderSystem.popMatrix();
       }
-    }
-    else {
+    } else {
       render.bindTexture(TEX_BOOK);
       RenderHelper.disableStandardItemLighting();
 
@@ -307,8 +306,7 @@ public class BookScreen extends Screen {
     if (this.page == -1) {
       this.nextArrow.x = this.width / 2 + 80;
       this.indexArrow.visible = false;
-    }
-    else {
+    } else {
       this.previousArrow.x = this.width / 2 - 184;
       this.nextArrow.x = this.width / 2 + 165;
 
@@ -318,16 +316,6 @@ public class BookScreen extends Screen {
     this.previousArrow.y = this.height / 2 + 75;
     this.nextArrow.y = this.height / 2 + 75;
   }
-
-  /*@Override
-  TODO: REMOVE
-  public void actionPerformed(GuiButton button) {
-    if(button instanceof GuiBookmark) {
-      openPage(book.findPageNumber(((GuiBookmark) button).data.page, advancementCache));
-
-      return;
-    }
-  }*/
 
   @Override
   public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -374,8 +362,7 @@ public class BookScreen extends Screen {
       this.buildPages();
 
       return true;
-    }
-    else if (scrollDelta > 0.0D) {
+    } else if (scrollDelta > 0.0D) {
       this.page--;
       if (this.page < -1) {
         this.page = -1;
@@ -469,8 +456,7 @@ public class BookScreen extends Screen {
 
     if (this.page == -1) {
       BookLoader.updateSavedPage(this.minecraft.player, this.item, "");
-    }
-    else if (page != null && page.parent != null) {
+    } else if (page != null && page.parent != null) {
       BookLoader.updateSavedPage(this.minecraft.player, this.item, page.parent.name + "." + page.name);
     }
   }
@@ -483,8 +469,7 @@ public class BookScreen extends Screen {
   public void drawerTransform(boolean rightSide) {
     if (rightSide) {
       RenderSystem.translatef(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
-    }
-    else {
+    } else {
       RenderSystem.translatef(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
   }
@@ -494,8 +479,7 @@ public class BookScreen extends Screen {
     if (rightSide) {
       // from center: go padding + margin to the right
       return this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN;
-    }
-    else {
+    } else {
       // from center: go page width left, then right with padding and margin
       return this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN;
     }
@@ -525,11 +509,9 @@ public class BookScreen extends Screen {
     int bookPage;
     if (page == 1) {
       bookPage = 0;
-    }
-    else if (page % 2 == 0) {
+    } else if (page % 2 == 0) {
       bookPage = (page - 1) / 2 + 1;
-    }
-    else {
+    } else {
       bookPage = (page - 2) / 2 + 1;
     }
 
@@ -552,17 +534,13 @@ public class BookScreen extends Screen {
   public int getPage(int side) {
     if (this.page == 0 && side == 0) {
       return -1;
-    }
-    else if (this.page == 0 && side == 1) {
+    } else if (this.page == 0 && side == 1) {
       return 0;
-    }
-    else if (side == 0) {
+    } else if (side == 0) {
       return (this.page - 1) * 2 + 1;
-    }
-    else if (side == 1) {
+    } else if (side == 1) {
       return (this.page - 2) * 2 + 2;
-    }
-    else {
+    } else {
       return -1;
     }
   }
@@ -601,8 +579,7 @@ public class BookScreen extends Screen {
       if (page != null) {
         page.content.build(this.book, this.rightElements, false);
       }
-    }
-    else {
+    } else {
       PageData leftPage = this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
       PageData rightPage = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
 
@@ -622,10 +599,10 @@ public class BookScreen extends Screen {
     }
   }
 
-  public class AdvancementCache implements ClientAdvancementManager.IListener {
+  public static class AdvancementCache implements ClientAdvancementManager.IListener {
 
-    private HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
-    private HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
+    private final HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
+    private final HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
 
     @Nullable
     public AdvancementProgress getProgress(String id) {

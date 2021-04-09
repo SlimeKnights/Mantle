@@ -59,8 +59,7 @@ public class SectionData implements IDataItem {
         if (!data.isEmpty()) {
           try {
             this.pages = this.getPages(data);
-          }
-          catch (Exception e) {
+          } catch (Exception e) {
             this.pages = new ArrayList<>();
             PageData pdError = new PageData(true);
             pdError.name = "errorrenous";
@@ -84,7 +83,8 @@ public class SectionData implements IDataItem {
 
   /**
    * Gets a list of pages from the given data
-   * @param data  JSON data
+   *
+   * @param data JSON data
    * @return ArrayList of pages for the book
    */
   protected ArrayList<PageData> getPages(String data) {

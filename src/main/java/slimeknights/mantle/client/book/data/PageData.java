@@ -71,24 +71,23 @@ public class PageData implements IDataItem {
     }
 
     if (this.content == null) {
-        Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
+      Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
 
-        if(ctype != null) {
-          try {
-            this.content = ctype.newInstance();
-          } catch (InstantiationException | IllegalAccessException | NullPointerException e) {
-            this.content = new ContentError("Failed to create a page of type \"" + this.type + "\".", e);
-          }
-        } else {
-          this.content = new ContentError("Failed to create a page of type \"" + this.type + "\" as it is not registered.");
+      if (ctype != null) {
+        try {
+          this.content = ctype.newInstance();
+        } catch (InstantiationException | IllegalAccessException | NullPointerException e) {
+          this.content = new ContentError("Failed to create a page of type \"" + this.type + "\".", e);
         }
+      } else {
+        this.content = new ContentError("Failed to create a page of type \"" + this.type + "\" as it is not registered.");
+      }
     }
 
     try {
       this.content.parent = this;
       this.content.load();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       this.content = new ContentError("Failed to load page " + this.parent.name + "." + this.name + ".", e);
       e.printStackTrace();
     }
@@ -104,7 +103,7 @@ public class PageData implements IDataItem {
     f.setAccessible(true);
 
     if (Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
-            .isFinal(f.getModifiers())) {
+      .isFinal(f.getModifiers())) {
       return;
     }
 
@@ -119,20 +118,20 @@ public class PageData implements IDataItem {
   }
 
   private void processObject(@Nullable Object o, final int depth) {
-    if(depth > 4 || o == null)
+    if (depth > 4 || o == null)
       return;
 
     Class<?> c = o.getClass();
     boolean isArray = c.isArray();
 
-    if(!isArray) {
-      if(IDataElement.class.isAssignableFrom(c)) {
-        ((IDataElement)o).load(this.source);
+    if (!isArray) {
+      if (IDataElement.class.isAssignableFrom(c)) {
+        ((IDataElement) o).load(this.source);
       }
       return;
     }
 
-    for(int i = 0; i < Array.getLength(o); i++){
+    for (int i = 0; i < Array.getLength(o); i++) {
       this.processObject(Array.get(o, i), depth + 1);
     }
   }

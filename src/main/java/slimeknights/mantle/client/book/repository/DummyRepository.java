@@ -31,7 +31,7 @@ public class DummyRepository extends BookRepository {
   }
 
   @Override
-  public String resourceToString(@Nullable IResource resource, boolean skipCommments) {
+  public String resourceToString(@Nullable IResource resource, boolean skipComments) {
     return "";
   }
 }

@@ -37,7 +37,7 @@ public class ItemStackData implements IDataElement {
   private transient int tagGeneration;
 
   public NonNullList<ItemStack> getItems() {
-    if(this.isTag && this.tagGeneration != 0) { //ItemTags.getGeneration()) {  TODO FIX
+    if (this.isTag && this.tagGeneration != 0) { //ItemTags.getGeneration()) {  TODO FIX
       this.loadTag();
     }
 
@@ -53,8 +53,7 @@ public class ItemStackData implements IDataElement {
     boolean isMissingItem = false;
     try {
       item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.id));
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       item = Items.BARRIER;
       isMissingItem = true;
     }
@@ -69,8 +68,7 @@ public class ItemStackData implements IDataElement {
     if (this.nbt != null) {
       try {
         itemStack.setTag(JsonToNBT.getTagFromJson(filterJsonQuotes(this.nbt.toString())));
-      }
-      catch (CommandSyntaxException ignored) {
+      } catch (CommandSyntaxException ignored) {
       }
     }
 
@@ -122,8 +120,7 @@ public class ItemStackData implements IDataElement {
     ITag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
     if (values != null) {
       this.items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
-    }
-    else {
+    } else {
       this.items = NonNullList.create();
     }
   }
@@ -148,7 +145,7 @@ public class ItemStackData implements IDataElement {
       if (source.resourceExists(location)) {
         try {
           ItemsList itemsList = BookLoader.GSON
-                  .fromJson(source.resourceToString(source.getResource(location)), ItemsList.class);
+            .fromJson(source.resourceToString(source.getResource(location)), ItemsList.class);
           this.items = NonNullList.withSize(itemsList.items.length, ItemStack.EMPTY);
 
           for (int i = 0; i < itemsList.items.length; i++) {
@@ -156,8 +153,7 @@ public class ItemStackData implements IDataElement {
           }
 
           this.action = itemsList.action;
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
         }
       }
     }

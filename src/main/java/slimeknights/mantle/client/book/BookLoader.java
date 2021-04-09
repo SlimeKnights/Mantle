@@ -39,14 +39,19 @@ import java.util.function.Predicate;
 @OnlyIn(Dist.CLIENT)
 public class BookLoader implements ISelectiveResourceReloadListener {
 
-  /** GSON object to be used for book loading purposes */
-  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer())
-          .create();
+  /**
+   * GSON object to be used for book loading purposes
+   */
+  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer()).create();
 
-  /** Maps page content presets to names */
+  /**
+   * Maps page content presets to names
+   */
   private static final HashMap<String, Class<? extends PageContent>> typeToContentMap = new HashMap<>();
 
-  /** Internal registry of all books for the purposes of the reloader, maps books to name */
+  /**
+   * Internal registry of all books for the purposes of the reloader, maps books to name
+   */
   private static final HashMap<String, BookData> books = new HashMap<>();
 
   public BookLoader() {
@@ -140,7 +145,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
       return;
     }
 
-    BookHelper.writeSavedPage(item, page);
+    BookHelper.writeSavedPageToBook(item, page);
     MantleNetwork.INSTANCE.network.sendToServer(new UpdateSavedPagePacket(page));
   }
 

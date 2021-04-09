@@ -16,6 +16,7 @@ public class StringActionProcessor {
     if (protocol == null || protocol.protocol == null || protocol.protocol.isEmpty()) {
       throw new IllegalArgumentException("Protocol must be defined and must not have an empty protocol identifier.");
     }
+
     if (protocols.containsKey(protocol.protocol)) {
       throw new IllegalArgumentException("Protocol " + protocol.protocol + " already registered.");
     }

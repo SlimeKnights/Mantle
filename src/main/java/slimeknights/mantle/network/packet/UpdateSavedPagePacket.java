@@ -30,7 +30,7 @@ public class UpdateSavedPagePacket implements IThreadsafePacket {
     if (player != null && this.pageName != null) {
       ItemStack is = player.getHeldItem(Hand.MAIN_HAND);
       if (!is.isEmpty()) {
-        BookHelper.writeSavedPage(is, this.pageName);
+        BookHelper.writeSavedPageToBook(is, this.pageName);
       }
     }
   }

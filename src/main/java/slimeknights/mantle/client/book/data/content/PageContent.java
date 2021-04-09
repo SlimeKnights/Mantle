@@ -28,7 +28,7 @@ public abstract class PageContent {
   public void addTitle(ArrayList<BookElement> list, String title) {
     TextData tdTitle = new TextData(title);
     tdTitle.underlined = true;
-    this.addTitle(list, new TextData[] { tdTitle });
+    this.addTitle(list, new TextData[]{tdTitle});
   }
 
   public void addTitle(ArrayList<BookElement> list, TextData[] title) {
