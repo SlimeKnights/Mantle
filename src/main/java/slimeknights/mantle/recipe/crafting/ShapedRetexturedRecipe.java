@@ -9,7 +9,6 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import slimeknights.mantle.item.RetexturedBlockItem;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
 @SuppressWarnings("WeakerAccess")
 public class ShapedRetexturedRecipe extends ShapedRecipe {
@@ -82,7 +81,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
+    return RecipeSerializer.SHAPED;
   }
 
   public Ingredient getTexture() {

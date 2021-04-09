@@ -9,7 +9,6 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
 import java.util.function.Consumer;
 
@@ -95,7 +94,7 @@ public class ShapedRetexturedRecipeBuilder {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-      return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
+      return RecipeSerializer.SHAPED;
     }
 
     @Override

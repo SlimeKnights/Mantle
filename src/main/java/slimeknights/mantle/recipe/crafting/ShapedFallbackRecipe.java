@@ -14,7 +14,6 @@ import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.List;
@@ -80,7 +79,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
+    return RecipeSerializer.SHAPED;
   }
 
   public static class Serializer extends ShapedRecipe.Serializer {

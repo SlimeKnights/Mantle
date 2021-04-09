@@ -7,7 +7,6 @@ import net.minecraft.data.server.recipe.ShapedRecipeJsonFactory;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +77,7 @@ public class ShapedFallbackRecipeBuilder {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-      return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
+      return RecipeSerializer.SHAPED;
     }
 
     @Override

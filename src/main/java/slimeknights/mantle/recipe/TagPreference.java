@@ -7,58 +7,32 @@ import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.util.registry.DefaultedRegistry;
 import slimeknights.mantle.Mantle;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
  * Utility that helps get the preferred item from a tag based on mod ID.
- * @param <T>  Registry type
+ * @param <T>  block/item tag
  */
-public class TagPreference<T extends IForgeRegistryEntry<T>> {
+public class TagPreference<T> {
   /** Map of each tag type to the preference instance for that type */
   private static final Map<Class<?>, TagPreference<?>> PREFERENCE_MAP = new IdentityHashMap<>();
   // cached tag supplier lambdas
   private static final Supplier<TagGroup<Item>> ITEM_TAG_COLLECTION_SUPPLIER = () -> ServerTagManagerHolder.getTagManager().getItems();
   private static final Supplier<TagGroup<Fluid>> FLUID_TAG_COLLECTION_SUPPLIER = () -> ServerTagManagerHolder.getTagManager().getFluids();
+  private DefaultedRegistry<T> registry;
 
-  /**
-   * Gets the tag preference instance associated with the given tag collection
-   * @param clazz  Tag class
-   * @param <T>    Tag value type
-   * @return  Tag preference instance
-   */
-  @SuppressWarnings("unchecked")
-  public static <T extends IForgeRegistryEntry<T>> TagPreference<T> getInstance(Class<T> clazz, Supplier<TagGroup<T>> collection) {
-    // should always be the right instance as only we add entries to the map
-    return (TagPreference<T>) PREFERENCE_MAP.computeIfAbsent(clazz, c -> new TagPreference<>(collection));
-  }
 
   /**
    * Gets an instance for item tags
    * @return  Instance for item tags
    */
   public static TagPreference<Item> getItems() {
-    return getInstance(Item.class, ITEM_TAG_COLLECTION_SUPPLIER);
-  }
-
-  /**
-   * Gets an instance for fluid tags
-   * @return  Instance for fluid tags
-   */
-  public static TagPreference<Fluid> getFluids() {
-    return getInstance(Fluid.class, FLUID_TAG_COLLECTION_SUPPLIER);
+    throw new RuntimeException("No known way of getting all item tags on fabric.");
+//    return getInstance(Item.class, ITEM_TAG_COLLECTION_SUPPLIER);
   }
 
   /** Supplier to tag collection */
@@ -69,15 +43,6 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
 
   private TagPreference(Supplier<TagGroup<T>> collection) {
     this.collection = collection;
-    MinecraftForge.EVENT_BUS.addListener(this::clearCache);
-  }
-
-  /**
-   * Clears the tag cache from the event
-   * @param event  Tag event
-   */
-  private void clearCache(TagsUpdatedEvent.VanillaTagTypes event) {
-    preferenceCache.clear();
   }
 
   /**
@@ -85,9 +50,9 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * @param entry  Registry entry to check
    * @return  Sort index for that entry
    */
-  private static int getSortIndex(IForgeRegistryEntry<?> entry) {
+  private int getSortIndex(T entry) {
     // check the index of the namespace in the preference list
-    int index = Mantle.config.tagPreferences.indexOf(Objects.requireNonNull(entry.getRegistryName()).getNamespace());
+    int index = Mantle.config.tagPreferences.indexOf(Objects.requireNonNull(registry.getId(entry)).getNamespace());
     // if missing, declare last
     if (index == -1) {
       return Mantle.config.tagPreferences.size();
@@ -105,7 +70,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
     Identifier tagName = collection.get().getTagId(tag);
     return preferenceCache.computeIfAbsent(tagName, name -> {
       // if no items, empty optional
-      if (tag instanceof IOptionalNamedTag && ((IOptionalNamedTag<?>) tag).isDefaulted()) {
+      if (tag.values().size() == 0) {
         return Optional.empty();
       }
       List<? extends T> elements = tag.values();
@@ -120,7 +85,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
 
       // copy and sort list
       List<? extends T> sortedElements = Lists.newArrayList(elements);
-      sortedElements.sort(Comparator.comparingInt(TagPreference::getSortIndex));
+      sortedElements.sort(Comparator.comparingInt(this::getSortIndex));
       // return first element, its the preference
       return Optional.of(sortedElements.get(0));
     });

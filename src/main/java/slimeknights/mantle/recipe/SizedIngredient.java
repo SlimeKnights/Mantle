@@ -2,8 +2,6 @@ package slimeknights.mantle.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -21,15 +19,13 @@ import java.util.stream.Collectors;
 /**
  * Extension of the vanilla ingredient to make stack size checks
  */
-@RequiredArgsConstructor(staticName = "of")
 public class SizedIngredient implements Predicate<ItemStack> {
   /** Empty sized ingredient wrapper. Matches only the empty stack of size o */
-  public static final SizedIngredient EMPTY = of(Ingredient.EMPTY, 0);
+  public static final SizedIngredient EMPTY = new SizedIngredient(Ingredient.EMPTY, 0);
 
   /** Ingredient to use in recipe match */
   private final Ingredient ingredient;
   /** Amount of this ingredient needed */
-  @Getter
   private final int amountNeeded;
 
   /** Last list of matching stacks from the ingredient */
@@ -37,13 +33,18 @@ public class SizedIngredient implements Predicate<ItemStack> {
   /** Cached matching stacks from last time it was requested */
   private List<ItemStack> matchingStacks;
 
+  public SizedIngredient(Ingredient ingredient, int amountNeeded) {
+    this.ingredient = ingredient;
+    this.amountNeeded = amountNeeded;
+  }
+
   /**
    * Gets a new sized ingredient with a size of 1
    * @param ingredient  Ingredient
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient of(Ingredient ingredient) {
-    return of(ingredient, 1);
+    return new SizedIngredient(ingredient, 1);
   }
 
   /**
@@ -53,7 +54,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient fromItems(int amountNeeded, ItemConvertible... items) {
-    return of(Ingredient.ofItems(items), amountNeeded);
+    return new SizedIngredient(Ingredient.ofItems(items), amountNeeded);
   }
 
   /**
@@ -72,7 +73,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient fromTag(Tag<Item> tag, int amountNeeded) {
-    return of(Ingredient.fromTag(tag), amountNeeded);
+    return new SizedIngredient(Ingredient.fromTag(tag), amountNeeded);
   }
 
   /**
@@ -161,7 +162,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
   public static SizedIngredient read(PacketByteBuf buffer) {
     int amountNeeded = buffer.readVarInt();
     Ingredient ingredient = Ingredient.fromPacket(buffer);
-    return of(ingredient, amountNeeded);
+    return new SizedIngredient(ingredient, amountNeeded);
   }
 
   /**
@@ -180,6 +181,10 @@ public class SizedIngredient implements Predicate<ItemStack> {
     }
 
     // return ingredient
-    return of(ingredient, amountNeeded);
+    return new SizedIngredient(ingredient, amountNeeded);
+  }
+
+  public int getAmountNeeded() {
+    return amountNeeded;
   }
 }
