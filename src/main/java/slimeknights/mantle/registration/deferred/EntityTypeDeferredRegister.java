@@ -1,7 +1,10 @@
 package slimeknights.mantle.registration.deferred;
 
+import slimeknights.mantle.registration.ItemProperties;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.registry.Registry;
 
 import java.util.function.Supplier;
@@ -24,7 +27,7 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper {
    * @return  Entity registry object
    */
   public <T extends Entity> EntityType<T> register(String name, Supplier<EntityType.Builder<T>> sup) {
-    return Registry.register(Registry.ENTITY_TYPE, name, sup);
+    return Registry.register(Registry.ENTITY_TYPE, name, sup.get().build(resourceName(name)));
   }
 
   /**
@@ -36,9 +39,9 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper {
    * @param <T>   Entity class type
    * @return  Entity registry object
    */
-  public <T extends Entity> RegistryObject<EntityType<T>> registerWithEgg(String name, Supplier<EntityType.Builder<T>> sup, int primary, int secondary) {
-    Lazy<EntityType<T>> lazy = Lazy.of(() -> sup.get().build(resourceName(name)));
-//    itemRegistry.register(name + "_spawn_egg", () -> new SpawnEggItem(lazy.get(), primary, secondary, ItemProperties.EGG_PROPS));
-    return register.register(name, lazy);
+  public <T extends Entity> EntityType<T> registerWithEgg(String name, Supplier<EntityType.Builder<T>> sup, int primary, int secondary) {
+    EntityType<T> entityType = sup.get().build(resourceName(name));
+    Registry.register(Registry.ITEM, resource(name), new SpawnEggItem(entityType,primary,secondary, ItemProperties.EGG_PROPS));
+    return Registry.register(Registry.ENTITY_TYPE,resource(name),entityType);
   }
 }
