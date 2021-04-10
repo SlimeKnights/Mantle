@@ -71,6 +71,9 @@ public class BookScreen extends Screen {
 
   public AdvancementCache advancementCache;
 
+  private double[] lastClick;
+  private double[] lastDrag;
+
   //TODO: new name as vanilla now uses init
   public static void initWidthsAndHeights() {
     PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
@@ -389,6 +392,8 @@ public class BookScreen extends Screen {
       right = true;
     }
 
+    lastClick = new double[]{mouseX, mouseY};
+
     // Not foreach to prevent conmodification crashes
     int oldPage = this.page;
     List<BookElement> elementList = ImmutableList.copyOf(right ? this.rightElements : this.leftElements);
@@ -419,11 +424,15 @@ public class BookScreen extends Screen {
       BookElement element = right ? this.rightElements.get(i) : this.leftElements.get(i);
       element.mouseReleased(mouseX, mouseY, mouseButton);
     }
+
+    lastClick = null;
+    lastDrag = null;
+
     return super.mouseReleased(originalMouseX, originalMouseY, mouseButton);
   }
 
   @Override
-  public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double timeSinceLaslick, double unknown) {
+  public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
     boolean right = false;
     mouseX = this.getMouseX(false);
     mouseY = this.getMouseY();
@@ -433,11 +442,19 @@ public class BookScreen extends Screen {
       right = true;
     }
 
-    // Not foreach to prevent conmodification crashes
-    for (int i = 0; right ? i < this.rightElements.size() : i < this.leftElements.size(); i++) {
-      BookElement element = right ? this.rightElements.get(i) : this.leftElements.get(i);
-      element.mouseClickMove(mouseX, mouseY, clickedMouseButton);
+    if (lastClick != null) {
+      if (lastDrag == null)
+        lastDrag = new double[]{mouseX, mouseY};
+
+      // Not foreach to prevent conmodification crashes
+      for (int i = 0; right ? i < this.rightElements.size() : i < this.leftElements.size(); i++) {
+        BookElement element = right ? this.rightElements.get(i) : this.leftElements.get(i);
+        element.mouseDragged(lastClick[0], lastClick[1], mouseX, mouseY, lastDrag[0], lastDrag[1], button);
+      }
+
+      lastDrag = new double[]{mouseX, mouseY};
     }
+
 
     return true;
   }

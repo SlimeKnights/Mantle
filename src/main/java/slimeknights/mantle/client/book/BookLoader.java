@@ -67,7 +67,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     registerPageType("smelting", ContentSmelting.class);
     registerPageType("smithing", ContentSmithing.class);
     registerPageType("block interaction", ContentBlockInteraction.class);
-    registerPageType("structure", ContentStructure.class);
+    registerPageType(ContentStructure.ID, ContentStructure.class);
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());

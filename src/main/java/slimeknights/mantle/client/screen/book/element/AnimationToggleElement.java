@@ -9,8 +9,9 @@ public class AnimationToggleElement extends ArrowElement {
   private boolean toggled = false;
 
   public AnimationToggleElement(int x, int y, ArrowButton.ArrowType arrowType, int arrowColor, int arrowColorHover, int arrowColorActive, StructureElement structureElement) {
-    super(x, y, arrowType, arrowColor, arrowColorHover, (p_212998_1_) -> {
+    super(x, y, arrowType, arrowColor, arrowColorHover, (button) -> {
       structureElement.canTick = !structureElement.canTick;
+      structureElement.lastStep = -1;
     });
 
     this.arrowColorInactive = arrowColor;
