@@ -6,16 +6,14 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.LanguageMap;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.apache.commons.lang3.StringUtils;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
 
 import java.util.ArrayList;
@@ -70,30 +68,28 @@ public class TextComponentDataRenderer {
 
       prevScale = item.scale;
 
-      ITextComponent text = translateTextComponent(item.text);
-
-      ITextComponent[] split = cropTextComponentsBySize(text, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
+      List<ITextProperties> textLines = splitTextComponentBySize(item.text, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
 
       box1X = atX;
       box1Y = atY;
       box2X = x;
       box2W = x + boxWidth;
 
-      for (int i = 0; i < split.length; i++) {
-        if (i == split.length - 1) {
+      for (int lineNumber = 0; lineNumber < textLines.size(); ++lineNumber) {
+        if (lineNumber == textLines.size() - 1) {
           box3X = atX;
           box3Y = atY;
         }
 
-        ITextComponent textComponent = split[i];
+        ITextProperties textComponent = textLines.get(lineNumber);
         drawScaledTextComponent(matrixStack, fr, textComponent, atX, atY, item.dropShadow, item.scale);
 
-        if (i < split.length - 1) {
+        if (lineNumber < textLines.size() - 1) {
           atY += fr.FONT_HEIGHT;
           atX = x;
         }
 
-        if (i == 0) {
+        if (lineNumber == 0) {
           box2Y = atY;
 
           if (atX == x) {
@@ -106,7 +102,7 @@ public class TextComponentDataRenderer {
 
       box2H = atY;
 
-      atX += fr.func_243245_a(split[split.length - 1].func_241878_f()) * item.scale;
+      atX += fr.func_243245_a(LanguageMap.getInstance().func_241870_a(textLines.get(textLines.size() - 1))) * item.scale;
       if (atX - x >= boxWidth) {
         atX = x;
         atY += fr.FONT_HEIGHT * item.scale;
@@ -158,135 +154,32 @@ public class TextComponentDataRenderer {
   }
 
   /**
-   * Translates the text inside of the given text component
-   * Works with the siblings of the text component also.
-   *
-   * @param text the given text component to translate
-   * @return the translated text component
-   * @deprecated Remove since the text components passed to this method should be using TranslationTextComponent
+   * @param textComponent the actual text component to split
+   * @param width         the width of the text
+   * @param height        the height of the text
+   * @param firstWidth    the first with of the text
+   * @param fontRenderer  the font renderer to use
+   * @param scale         the scale to use
+   * @return the list of split text components based on the given size
    */
-  @Deprecated
-  private static ITextComponent translateTextComponent(ITextComponent text) {
-    IFormattableTextComponent iformattabletextcomponent = text.copyRaw().setStyle(text.getStyle());
+  public static List<ITextProperties> splitTextComponentBySize(ITextComponent textComponent, int width, int height, int firstWidth, FontRenderer fontRenderer, float scale) {
+    int curWidth = (int) (fontRenderer.getStringPropertyWidth(textComponent) * scale);
 
-    String s = iformattabletextcomponent.getString();
-
-    s = s.replace("$$(", "$\0(").replace(")$$", ")\0$");
-
-    while (s.contains("$(") && s.contains(")$") && s.indexOf("$(") < s.indexOf(")$")) {
-      String loc = s.substring(s.indexOf("$(") + 2, s.indexOf(")$"));
-      s = s.replace("$(" + loc + ")$", I18n.format(loc));
-    }
-
-    if (s.indexOf("$(") > s.indexOf(")$") || s.contains(")$")) {
-      Mantle.logger.error("[Books] [TextDataRenderer] Detected unbalanced localization symbols \"$(\" and \")$\" in string: \"" + s + "\".");
-    }
-
-    iformattabletextcomponent = new StringTextComponent(s).setStyle(text.getStyle());
-
-    for (ITextComponent itextcomponent : text.getSiblings()) {
-      iformattabletextcomponent.append(translateTextComponent(itextcomponent));
-    }
-
-    return iformattabletextcomponent;
-  }
-
-  /**
-   * Crops text components to the given size for rendering
-   *
-   * @param textComponent the text component to crop
-   * @param width         the width to use
-   * @param height        the height to use
-   * @param fr            the font renderer
-   * @param scale         the scale of text to use
-   * @return a list of text components that are cropped.
-   */
-  // TODO this does not actually crop the text components, fix?
-  public static ITextComponent[] cropTextComponentsBySize(ITextComponent textComponent, int width, int height, FontRenderer fr, float scale) {
-    return cropTextComponentsBySize(textComponent, width, height, width, fr, scale);
-  }
-
-  /**
-   * Crops text components to the given size for rendering
-   *
-   * @param textComponent the text component to crop
-   * @param width         the width to use
-   * @param height        the height to use
-   * @param firstWidth    the actual width to use
-   * @param fontRenderer  the font renderer
-   * @param scale         the scale of text to use
-   * @return a list of text components which is what got clipped due to sizes
-   */
-  // TODO this does not actually crop the text components, fix?
-  public static ITextComponent[] cropTextComponentsBySize(ITextComponent textComponent, int width, int height, int firstWidth, FontRenderer fontRenderer, float scale) {
-    IFormattableTextComponent iformattabletextcomponent = cropTextComponentBySize(textComponent, width, height, firstWidth, fontRenderer, scale);
-
-    for (ITextComponent itextcomponent : textComponent.getSiblings()) {
-      iformattabletextcomponent.append(cropTextComponentBySize(itextcomponent, width, height, firstWidth, fontRenderer, scale));
-    }
-
-    List<ITextComponent> textComponents = new ArrayList<>();
-
-    textComponents.add(iformattabletextcomponent);
-
-    return textComponents.toArray(new ITextComponent[0]);
-  }
-
-  /**
-   * Crops text components to the given size for rendering
-   *
-   * @param textComponent the text component to crop
-   * @param width         the width to use
-   * @param height        the height to use
-   * @param firstWidth    the actual width to use
-   * @param fontRenderer  the font renderer
-   * @param scale         the scale of text to use
-   * @return a text components which is what got clipped due to sizes
-   */
-  // TODO this does not actually crop the text components, fix?
-  public static IFormattableTextComponent cropTextComponentBySize(ITextComponent textComponent, int width, int height, int firstWidth, FontRenderer fontRenderer, float scale) {
-    int curWidth = 0;
     int curHeight = (int) (fontRenderer.FONT_HEIGHT * scale);
-    IFormattableTextComponent iformattabletextcomponent = textComponent.copyRaw().setStyle(textComponent.getStyle());
-    String text = iformattabletextcomponent.getString();
+    boolean needsWrap = false;
+    List<ITextProperties> textLines = new ArrayList<>();
 
-    for (int i = 0; i < text.length(); i++) {
-      curWidth += fontRenderer.getStringWidth(String.valueOf(text.charAt(i))) * scale;
-
-      if (text.charAt(i) == '\n' || (curHeight == (int) (fontRenderer.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fontRenderer.FONT_HEIGHT * scale) && curWidth > width)) {
-        int oldI = i;
-        if (text.charAt(i) != '\n') {
-          while (i >= 0 && text.charAt(i) != ' ') {
-            i--;
-          }
-          if (i <= 0) {
-            i = oldI;
-          }
-        } else {
-          oldI++;
-        }
-
-        text = text.substring(0, i) + "\r" + StringUtils.stripStart(text.substring(i + (i == oldI ? 0 : 1)), " ");
-
-        i++;
-        curWidth = 0;
-        curHeight += fontRenderer.FONT_HEIGHT * scale;
-      }
+    if ((curHeight == (int) (fontRenderer.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fontRenderer.FONT_HEIGHT * scale) && curWidth > width)) {
+      needsWrap = true;
     }
 
-    IFormattableTextComponent splitTextComponent = null;
-
-    for (String s : text.split("\r")) {
-      if (splitTextComponent == null)
-        splitTextComponent = new StringTextComponent(s).setStyle(textComponent.getStyle());
-      else
-        splitTextComponent.append(new StringTextComponent(s).setStyle(textComponent.getStyle()));
+    if (needsWrap) {
+      textLines = new ArrayList<>(fontRenderer.getCharacterManager().func_238362_b_(textComponent, firstWidth, Style.EMPTY));
+    } else {
+      textLines.add(textComponent);
     }
 
-    if (splitTextComponent != null)
-      return splitTextComponent;
-    else
-      return iformattabletextcomponent;
+    return textLines;
   }
 
   /**
@@ -300,16 +193,15 @@ public class TextComponentDataRenderer {
    * @param dropShadow    if there should be a shadow on the text
    * @param scale         the scale to render as
    */
-  public static void drawScaledTextComponent(MatrixStack matrixStack, FontRenderer font, ITextComponent textComponent, float x, float y, boolean dropShadow, float scale) {
+  public static void drawScaledTextComponent(MatrixStack matrixStack, FontRenderer font, ITextProperties textComponent, float x, float y, boolean dropShadow, float scale) {
     RenderSystem.pushMatrix();
     RenderSystem.translatef(x, y, 0);
     RenderSystem.scalef(scale, scale, 1F);
 
     if (dropShadow) {
-      IReorderingProcessor ireorderingprocessor = textComponent.func_241878_f();
-      font.func_238407_a_(matrixStack, ireorderingprocessor, 0, 0, 0);
+      font.func_238407_a_(matrixStack, LanguageMap.getInstance().func_241870_a(textComponent), 0, 0, 0);
     } else {
-      font.func_243246_a(matrixStack, textComponent, 0, 0, 0);
+      font.func_238422_b_(matrixStack, LanguageMap.getInstance().func_241870_a(textComponent), 0, 0, 0);
     }
 
     RenderSystem.popMatrix();
