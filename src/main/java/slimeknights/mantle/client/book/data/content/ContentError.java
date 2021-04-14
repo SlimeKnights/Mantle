@@ -1,5 +1,8 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
@@ -28,7 +31,7 @@ public class ContentError extends PageContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
-    this.addTitle(list, "Error");
+    this.addTitle(list, new StringTextComponent("Error"));
 
     if (exception instanceof BookLoadException) {
       buildSimple(list);
@@ -41,28 +44,24 @@ public class ContentError extends PageContent {
     }
 
     TextData[] text = new TextData[1 + (this.exception != null ? 2 : 0) + (stackTrace != null ? 1 + Math.min(stackTrace.length * 2, 8) : 0)];
-    text[0] = new TextData(this.errorStage);
-    text[0].color = "dark_red";
-    text[0].underlined = true;
-    text[0].paragraph = true;
+    text[0] = new TextData(new StringTextComponent(this.errorStage).mergeStyle(TextFormatting.DARK_RED, TextFormatting.UNDERLINE));
+    text[0].isParagraph = true;
 
     if (this.exception != null) {
-      text[1] = new TextData("The following error has occured:");
-      text[1].color = "dark_red";
-      text[1].paragraph = true;
+      text[1] = new TextData(new TranslationTextComponent("mantle.book.error_occurred").mergeStyle(TextFormatting.DARK_RED));
+      text[1].isParagraph = true;
 
-      text[2] = new TextData(this.exception.getMessage() != null ? this.exception.getMessage() : this.exception.getClass().getSimpleName());
-      text[2].color = "dark_red";
-      text[2].paragraph = true;
+      String textMessage = this.exception.getMessage() != null ? this.exception.getMessage() : this.exception.getClass().getSimpleName();
+
+      text[2] = new TextData(new StringTextComponent(textMessage).mergeStyle(TextFormatting.RED));
+      text[2].isParagraph = true;
     }
 
     text[3] = TextData.LINEBREAK;
 
     if (stackTrace != null) {
       for (int i = 0; i < stackTrace.length && 5 + i * 2 < text.length; i++) {
-        text[4 + i * 2] = new TextData(stackTrace[i].toString());
-        text[4 + i * 2].text += "\n";
-        text[4 + i * 2].color = "dark_red";
+        text[4 + i * 2] = new TextData(new StringTextComponent(stackTrace[i].toString() + "\n").mergeStyle(TextFormatting.DARK_RED));
         text[5 + i * 2] = TextData.LINEBREAK;
       }
     }
@@ -73,8 +72,7 @@ public class ContentError extends PageContent {
   public void buildSimple(ArrayList<BookElement> list) {
     TextData[] text = new TextData[1];
 
-    text[0] = new TextData(exception.getMessage());
-    text[0].color = "dark_red";
+    text[0] = new TextData(new StringTextComponent(exception.getMessage()).mergeStyle(TextFormatting.DARK_RED));
 
     list.add(new TextElement(0, TITLE_HEIGHT, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - TITLE_HEIGHT, text));
   }

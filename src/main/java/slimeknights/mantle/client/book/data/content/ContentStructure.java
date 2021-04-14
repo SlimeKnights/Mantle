@@ -7,13 +7,12 @@ import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.world.gen.feature.template.Template;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
-import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.ArrowButton;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -31,10 +30,10 @@ public class ContentStructure extends PageContent {
 
   public static final transient String ID = "structure";
 
-  public String title;
+  public IFormattableTextComponent title;
   public String data;
 
-  public String text;
+  public IFormattableTextComponent text;
 
   public final transient Template template = new Template();
   public transient List<Template.BlockInfo> templateBlocks = new ArrayList<>();
@@ -79,7 +78,7 @@ public class ContentStructure extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = TITLE_HEIGHT;
 
-    if (this.title == null || this.title.isEmpty()) {
+    if (this.title == null || this.title.getString().isEmpty()) {
       y = 0;
     } else {
       this.addTitle(list, this.title);
@@ -89,7 +88,7 @@ public class ContentStructure extends PageContent {
     int structureSizeX = BookScreen.PAGE_WIDTH;
     int structureSizeY = BookScreen.PAGE_HEIGHT - y - 10;
 
-    if (!StringUtils.isNullOrEmpty(this.text)) {
+    if (this.text != null && !StringUtils.isNullOrEmpty(this.text.getString())) {
       offset = 15;
       structureSizeX -= 2 * offset;
       structureSizeY -= 2 * offset;

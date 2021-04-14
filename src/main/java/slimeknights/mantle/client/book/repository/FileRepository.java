@@ -53,10 +53,12 @@ public class FileRepository extends BookRepository {
           return res;
         }
       }
+
       res = new ResourceLocation(this.location + "/" + defaultLangPath + "/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
+
       res = new ResourceLocation(this.location + "/" + path);
       if (this.resourceExists(res)) {
         return res;

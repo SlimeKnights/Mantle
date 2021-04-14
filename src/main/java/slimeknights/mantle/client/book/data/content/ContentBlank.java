@@ -10,6 +10,8 @@ import java.util.ArrayList;
 @OnlyIn(Dist.CLIENT)
 public class ContentBlank extends PageContent {
 
+  public static final transient String ID = "blank";
+
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
   }

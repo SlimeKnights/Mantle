@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.LanguageMap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -29,9 +30,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOKFRONT;
 
 @OnlyIn(Dist.CLIENT)
 public class BookScreen extends Screen {
@@ -62,12 +60,12 @@ public class BookScreen extends Screen {
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
 
   public final BookData book;
-  private ItemStack item;
+  private final ItemStack item;
 
   private int page = -1;
   private int oldPage = -2;
-  private ArrayList<BookElement> leftElements = new ArrayList<>();
-  private ArrayList<BookElement> rightElements = new ArrayList<>();
+  private final ArrayList<BookElement> leftElements = new ArrayList<>();
+  private final ArrayList<BookElement> rightElements = new ArrayList<>();
 
   public AdvancementCache advancementCache;
 
@@ -101,7 +99,9 @@ public class BookScreen extends Screen {
   public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     initWidthsAndHeights();
     FontRenderer fontRenderer = this.book.fontRenderer;
+
     if (fontRenderer == null) {
+      assert this.minecraft != null;
       fontRenderer = this.minecraft.fontRenderer;
     }
 
@@ -121,36 +121,37 @@ public class BookScreen extends Screen {
     float coverG = ((this.book.appearance.coverColor >> 8) & 0xff) / 255.F;
     float coverB = (this.book.appearance.coverColor & 0xff) / 255.F;
 
+    assert this.minecraft != null;
     TextureManager render = this.minecraft.textureManager;
 
     if (this.page == -1) {
-      render.bindTexture(TEX_BOOKFRONT);
+      render.bindTexture(this.book.appearance.bookFrontTexture);
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
       blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
       RenderSystem.color3f(1F, 1F, 1F);
 
-      if (!this.book.appearance.title.isEmpty()) {
+      if (this.book.appearance.title != null && !this.book.appearance.title.getString().isEmpty()) {
         blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
         RenderSystem.pushMatrix();
 
-        float scale = fontRenderer.getStringWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
+        float scale = fontRenderer.getStringPropertyWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
 
         RenderSystem.scalef(scale, scale, 1F);
-        fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer.getStringWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
+        fontRenderer.func_238407_a_(matrixStack, LanguageMap.getInstance().func_241870_a(this.book.appearance.title), (this.width / 2) / scale + 3 - fontRenderer.getStringPropertyWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
         RenderSystem.popMatrix();
       }
 
-      if (!this.book.appearance.subtitle.isEmpty()) {
+      if (this.book.appearance.subtitle != null && !this.book.appearance.subtitle.getString().isEmpty()) {
         RenderSystem.pushMatrix();
         RenderSystem.scalef(1.5F, 1.5F, 1F);
-        fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
+        fontRenderer.func_238407_a_(matrixStack, LanguageMap.getInstance().func_241870_a(this.book.appearance.subtitle), (this.width / 2) / 1.5F + 7 - fontRenderer.getStringPropertyWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
         RenderSystem.popMatrix();
       }
     } else {
-      render.bindTexture(TEX_BOOK);
+      render.bindTexture(this.book.appearance.bookTexture);
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
@@ -194,7 +195,7 @@ public class BookScreen extends Screen {
       }
 
       // Rebind texture as the font renderer binds its own texture
-      render.bindTexture(TEX_BOOK);
+      render.bindTexture(this.book.appearance.bookTexture);
       // Set color back to white
       RenderSystem.color4f(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
@@ -255,7 +256,7 @@ public class BookScreen extends Screen {
     this.buttons.clear();
     this.children.clear();
 
-    this.previousArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.previousArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, this.book.appearance.bookTexture, (button) -> {
       this.page--;
 
       if (this.page < -1) {
@@ -266,7 +267,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.nextArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.nextArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, this.book.appearance.bookTexture, (button) -> {
       this.page++;
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
@@ -279,7 +280,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.backArrow = this.addButton(new ArrowButton(this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.backArrow = this.addButton(new ArrowButton(this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, this.book.appearance.bookTexture, (button) -> {
       if (this.oldPage >= -1) {
         this.page = this.oldPage;
       }
@@ -288,7 +289,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.indexArrow = this.addButton(new ArrowButton(this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.indexArrow = this.addButton(new ArrowButton(this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, this.book.appearance.bookTexture, (button) -> {
       this.openPage(this.book.findPageNumber("index.page1"));
 
       this.oldPage = -2;
@@ -397,9 +398,11 @@ public class BookScreen extends Screen {
     // Not foreach to prevent conmodification crashes
     int oldPage = this.page;
     List<BookElement> elementList = ImmutableList.copyOf(right ? this.rightElements : this.leftElements);
+
     for (BookElement element : elementList) {
       element.mouseClicked(mouseX, mouseY, mouseButton);
       // if we changed page stop so we don't act on the new page
+
       if (this.page != oldPage) {
         return true;
       }

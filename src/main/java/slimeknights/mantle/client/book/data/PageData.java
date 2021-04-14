@@ -1,8 +1,12 @@
 package slimeknights.mantle.client.book.data;
 
 import net.minecraft.resources.IResource;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.ModLoadingContext;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.PageContent;
@@ -35,11 +39,6 @@ public class PageData implements IDataItem {
     if (custom) {
       this.data = "no-load";
     }
-  }
-
-  @SuppressWarnings("unused") // utility
-  public String translate(String string) {
-    return this.parent.translate(string);
   }
 
   @Override
@@ -136,8 +135,7 @@ public class PageData implements IDataItem {
     }
   }
 
-  public String getTitle() {
-    String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
-    return title == null ? this.name : title;
+  public IFormattableTextComponent getTitle() {
+    return new TranslationTextComponent(ModLoadingContext.get().getActiveContainer().getNamespace() + "." + this.parent.name + "." + this.name);
   }
 }

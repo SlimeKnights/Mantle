@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
@@ -16,6 +18,8 @@ import static slimeknights.mantle.client.screen.book.Textures.TEX_MISC;
 
 public class ContentSmithing extends PageContent {
 
+  public static final transient String ID = "smithing";
+
   public static final transient int TEX_SIZE = 512;
   public static final transient ImageData IMG_SMITHING = new ImageData(TEX_MISC, 88, 0, 210, 42, TEX_SIZE, TEX_SIZE);
 
@@ -28,7 +32,7 @@ public class ContentSmithing extends PageContent {
 
   public static final transient float ITEM_SCALE = 2.0F;
 
-  public String title = "Smithing";
+  public IFormattableTextComponent title = new StringTextComponent("Smithing");
   public ItemStackData input;
   public ItemStackData modifier;
   public ItemStackData result;
@@ -39,7 +43,7 @@ public class ContentSmithing extends PageContent {
     int x = BookScreen.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2;
     int y = TITLE_HEIGHT;
 
-    if (this.title == null || this.title.isEmpty()) {
+    if (this.title == null || this.title.getString().isEmpty()) {
       y = 0;
     } else {
       this.addTitle(list, this.title);

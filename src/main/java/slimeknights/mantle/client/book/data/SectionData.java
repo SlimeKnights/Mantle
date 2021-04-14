@@ -3,8 +3,12 @@ package slimeknights.mantle.client.book.data;
 import com.google.common.collect.Sets;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.IResource;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.ModLoadingContext;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -38,10 +42,6 @@ public class SectionData implements IDataItem {
     if (custom) {
       this.data = "no-load";
     }
-  }
-
-  public String translate(String string) {
-    return this.parent.translate(string);
   }
 
   @Override
@@ -94,9 +94,8 @@ public class SectionData implements IDataItem {
   public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
   }
 
-  public String getTitle() {
-    String title = this.parent.strings.get(this.name);
-    return title == null ? this.name : title;
+  public IFormattableTextComponent getTitle() {
+    return new TranslationTextComponent(ModLoadingContext.get().getActiveContainer().getNamespace() + "." + "book.section." + this.name);
   }
 
   public int getPageCount() {

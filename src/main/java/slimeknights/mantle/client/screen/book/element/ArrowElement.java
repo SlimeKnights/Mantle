@@ -12,7 +12,7 @@ public class ArrowElement extends ButtonElement {
   public ArrowElement(int x, int y, ArrowButton.ArrowType arrowType, int arrowColor, int arrowColorHover, IPressable iPressable) {
     super(x, y, arrowType.w, arrowType.h);
 
-    this.button = new ArrowButton(x, y, arrowType, arrowColor, arrowColorHover, iPressable);
+    this.button = new ArrowButton(x, y, arrowType, arrowColor, arrowColorHover, this.parent.book.appearance.bookTexture, iPressable);
   }
 
   @Override

@@ -33,7 +33,6 @@ public class BookData implements IDataItem {
   public transient ArrayList<SectionData> sections = new ArrayList<>();
   public transient AppearanceData appearance = new AppearanceData();
   public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
-  public transient HashMap<String, String> strings = new HashMap<>();
   public transient FontRenderer fontRenderer;
   private transient boolean initialized = false;
 
@@ -102,30 +101,6 @@ public class BookData implements IDataItem {
             this.itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
           } catch (Exception e) {
             e.printStackTrace();
-          }
-        }
-
-        ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
-
-        if (repo.resourceExists(languageLocation)) {
-          try {
-            IResource resource = repo.getResource(languageLocation);
-            if (resource != null) {
-              BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-              String next = br.readLine();
-
-              while (next != null) {
-                if (!next.startsWith("//") && next.contains("=")) {
-                  String key = next.substring(0, next.indexOf('='));
-                  String value = next.substring(next.indexOf('=') + 1);
-
-                  this.strings.put(key, value);
-                }
-
-                next = br.readLine();
-              }
-            }
-          } catch (Exception ignored) {
           }
         }
       }
@@ -340,11 +315,6 @@ public class BookData implements IDataItem {
     }
 
     return visible;
-  }
-
-  public String translate(String string) {
-    String out = this.strings.get(string);
-    return out != null ? out : string;
   }
 
   public void openGui(ITextComponent title, @Nullable ItemStack item) {

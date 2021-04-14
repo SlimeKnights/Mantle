@@ -7,6 +7,8 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.client.book.data.BookData;
@@ -26,6 +28,8 @@ import static slimeknights.mantle.client.screen.book.Textures.TEX_CRAFTING;
 
 public class ContentCrafting extends PageContent {
 
+  public static final transient String ID = "crafting";
+
   public static final transient int TEX_SIZE = 256;
   public static final transient ImageData IMG_CRAFTING_LARGE = new ImageData(TEX_CRAFTING, 0, 0, 183, 114, TEX_SIZE, TEX_SIZE);
   public static final transient ImageData IMG_CRAFTING_SMALL = new ImageData(TEX_CRAFTING, 0, 114, 155, 78, TEX_SIZE, TEX_SIZE);
@@ -39,7 +43,7 @@ public class ContentCrafting extends PageContent {
   public static final transient int SLOT_MARGIN = 5;
   public static final transient int SLOT_PADDING = 4;
 
-  public String title = "Crafting";
+  public IFormattableTextComponent title = new StringTextComponent("Crafting");
   public String grid_size = "large";
   public ItemStackData[][] grid;
   public ItemStackData result;
@@ -54,8 +58,7 @@ public class ContentCrafting extends PageContent {
     int resultX = 100;
     int resultY = 50;
 
-    TextData tdTitle = new TextData(this.title);
-    tdTitle.underlined = true;
+    TextData tdTitle = new TextData(this.title.modifyStyle(style -> style.setUnderlined(true)));
     list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
 
     if (this.grid_size.equalsIgnoreCase("small")) {

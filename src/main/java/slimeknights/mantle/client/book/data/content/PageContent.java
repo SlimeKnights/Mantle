@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
@@ -25,9 +27,9 @@ public abstract class PageContent {
 
   public abstract void build(BookData book, ArrayList<BookElement> list, boolean rightSide);
 
-  public void addTitle(ArrayList<BookElement> list, String title) {
-    TextData tdTitle = new TextData(title);
-    tdTitle.underlined = true;
+  public void addTitle(ArrayList<BookElement> list, IFormattableTextComponent title) {
+    IFormattableTextComponent formattedTitle = title.modifyStyle(style -> style.setUnderlined(true));
+    TextData tdTitle = new TextData(formattedTitle);
     this.addTitle(list, new TextData[]{tdTitle});
   }
 

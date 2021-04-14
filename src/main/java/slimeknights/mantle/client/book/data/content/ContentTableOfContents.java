@@ -1,6 +1,8 @@
 package slimeknights.mantle.client.book.data.content;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -11,10 +13,10 @@ import java.util.ArrayList;
 
 public class ContentTableOfContents extends PageContent {
 
-  public String title;
+  public IFormattableTextComponent title;
   public TextData[] data;
 
-  public ContentTableOfContents(String title, TextData... contents) {
+  public ContentTableOfContents(IFormattableTextComponent title, TextData... contents) {
     this.title = title;
     this.data = contents;
   }
@@ -23,7 +25,7 @@ public class ContentTableOfContents extends PageContent {
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int y = 0;
 
-    if (this.title != null && !this.title.trim().isEmpty()) {
+    if (this.title != null && !this.title.getString().trim().isEmpty()) {
       this.addTitle(list, this.title);
       y += TITLE_HEIGHT;
     }

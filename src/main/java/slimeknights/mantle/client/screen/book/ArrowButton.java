@@ -4,11 +4,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 
 @OnlyIn(Dist.CLIENT)
 public class ArrowButton extends Button {
@@ -20,19 +19,21 @@ public class ArrowButton extends Button {
   public ArrowType arrowType;
   public int color;
   public int hoverColor;
+  public ResourceLocation bookTexture;
 
-  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
+  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, ResourceLocation bookTexture, IPressable iPressable) {
     super(x, y, arrowType.w, arrowType.h, StringTextComponent.EMPTY, iPressable);
 
     this.arrowType = arrowType;
     this.color = color;
     this.hoverColor = hoverColor;
+    this.bookTexture = bookTexture;
   }
 
   @Override
   public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     Minecraft minecraft = Minecraft.getInstance();
-    minecraft.getTextureManager().bindTexture(TEX_BOOK);
+    minecraft.getTextureManager().bindTexture(this.bookTexture);
 
     this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 

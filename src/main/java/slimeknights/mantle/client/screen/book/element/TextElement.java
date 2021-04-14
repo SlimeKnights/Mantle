@@ -2,6 +2,7 @@ package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -10,18 +11,19 @@ import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class TextElement extends SizedBookElement {
 
-  public TextData[] text;
+  public List<TextData> text;
   private final List<ITextComponent> tooltip = new ArrayList<ITextComponent>();
 
   private boolean doAction = false;
 
-  public TextElement(int x, int y, int width, int height, String text) {
+  public TextElement(int x, int y, int width, int height, IFormattableTextComponent text) {
     this(x, y, width, height, new TextData(text));
   }
 
@@ -32,7 +34,7 @@ public class TextElement extends SizedBookElement {
   public TextElement(int x, int y, int width, int height, TextData... text) {
     super(x, y, width, height);
 
-    this.text = text;
+    this.text = Arrays.asList(text);
   }
 
   @Override

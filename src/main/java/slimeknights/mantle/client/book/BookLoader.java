@@ -5,7 +5,11 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.util.EnumTypeAdapterFactory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -42,7 +46,13 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * GSON object to be used for book loading purposes
    */
-  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer()).create();
+  public static final Gson GSON = new GsonBuilder()
+    .disableHtmlEscaping()
+    .registerTypeAdapter(int.class, new HexStringDeserializer())
+    .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+    .registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer())
+    .registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
+    .registerTypeAdapterFactory(new EnumTypeAdapterFactory()).create();
 
   /**
    * Maps page content presets to names
@@ -56,17 +66,17 @@ public class BookLoader implements ISelectiveResourceReloadListener {
 
   public BookLoader() {
     // Register page types
-    registerPageType("blank", ContentBlank.class);
-    registerPageType("text", ContentText.class);
-    registerPageType("image", ContentImage.class);
-    registerPageType("image with text below", ContentImageText.class);
-    registerPageType("text with image below", ContentTextImage.class);
-    registerPageType("text with left image etch", ContentTextLeftImage.class);
-    registerPageType("text with right image etch", ContentTextRightImage.class);
-    registerPageType("crafting", ContentCrafting.class);
-    registerPageType("smelting", ContentSmelting.class);
-    registerPageType("smithing", ContentSmithing.class);
-    registerPageType("block interaction", ContentBlockInteraction.class);
+    registerPageType(ContentBlank.ID, ContentBlank.class);
+    registerPageType(ContentText.ID, ContentText.class);
+    registerPageType(ContentImage.ID, ContentImage.class);
+    registerPageType(ContentImageText.ID, ContentImageText.class);
+    registerPageType(ContentTextImage.ID, ContentTextImage.class);
+    registerPageType(ContentTextLeftImage.ID, ContentTextLeftImage.class);
+    registerPageType(ContentTextRightImage.ID, ContentTextRightImage.class);
+    registerPageType(ContentCrafting.ID, ContentCrafting.class);
+    registerPageType(ContentSmelting.ID, ContentSmelting.class);
+    registerPageType(ContentSmithing.ID, ContentSmithing.class);
+    registerPageType(ContentBlockInteraction.ID, ContentBlockInteraction.class);
     registerPageType(ContentStructure.ID, ContentStructure.class);
 
     // Register action protocols

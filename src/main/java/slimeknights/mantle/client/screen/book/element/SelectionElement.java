@@ -4,8 +4,11 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.LanguageMap;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
@@ -21,8 +24,8 @@ public class SelectionElement extends SizedBookElement {
   public static final int WIDTH = 42;
   public static final int HEIGHT = 42;
 
-  private SectionData section;
-  private ImageElement iconRenderer;
+  private final SectionData section;
+  private final ImageElement iconRenderer;
 
   private final int iconX;
   private final int iconY;
@@ -45,6 +48,7 @@ public class SelectionElement extends SizedBookElement {
     if (hover) {
       fill(matrixStack, this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
     }
+
     if (unlocked) {
       RenderSystem.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
     } else {
@@ -57,16 +61,15 @@ public class SelectionElement extends SizedBookElement {
     this.iconRenderer.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);
 
     if (this.section.parent.appearance.drawSectionListText) {
-      String title = this.section.getTitle().replace("\\n", "\n");
-      String[] splitTitle = TextDataRenderer.cropStringBySize(title, "", WIDTH + 2,
-        fontRenderer.FONT_HEIGHT * 2 + 1, fontRenderer, 1F);
+      ITextComponent title = this.section.getTitle();
+      List<ITextProperties> splitTitle = TextDataRenderer.splitTextComponentBySize(title, WIDTH + 2, fontRenderer.FONT_HEIGHT * 2 + 1, fontRenderer, 1F);
 
-      for (int i = 0; i < splitTitle.length; i++) {
-        int textW = fontRenderer.getStringWidth(splitTitle[i]);
+      for (int i = 0; i < splitTitle.size(); i++) {
+        int textW = fontRenderer.getStringPropertyWidth(splitTitle.get(i));
         int textX = this.x + WIDTH / 2 - textW / 2;
         int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2 + fontRenderer.FONT_HEIGHT * i;
 
-        fontRenderer.drawString(matrixStack, splitTitle[i],
+        fontRenderer.func_238422_b_(matrixStack, LanguageMap.getInstance().func_241870_a(splitTitle.get(i)),
           textX,
           textY,
           hover ? 0xFF000000 : 0x7F000000);
@@ -79,11 +82,11 @@ public class SelectionElement extends SizedBookElement {
     if (this.section != null && this.isHovered(mouseX, mouseY)) {
       List<ITextComponent> text = new ArrayList<>();
 
-      text.add(new StringTextComponent(this.section.getTitle()));
+      text.add(this.section.getTitle());
 
       if (!this.section.isUnlocked(this.parent.advancementCache)) {
-        text.add(new StringTextComponent("Locked").mergeStyle(TextFormatting.RED));
-        text.add(new StringTextComponent("Requirements:"));
+        text.add(new TranslationTextComponent("mantle.book.section.locked").mergeStyle(TextFormatting.RED));
+        text.add(new TranslationTextComponent("mantle.book.section.requirements"));
 
         for (String requirement : this.section.requirements) {
           text.add(new StringTextComponent(requirement));
