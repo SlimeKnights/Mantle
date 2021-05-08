@@ -1,8 +1,14 @@
 package slimeknights.mantle.tileentity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
 
 public class MantleTileEntity extends TileEntity {
 
@@ -28,6 +34,26 @@ public class MantleTileEntity extends TileEntity {
   /* Syncing */
 
   /**
+   * If true, this TE syncs when {@link net.minecraft.world.World#notifyBlockUpdate(BlockPos, BlockState, BlockState, int)} is called
+   * Syncs data from {@link #writeSynced(CompoundNBT)}
+   */
+  protected boolean shouldSyncOnUpdate() {
+    return false;
+  }
+
+  @Override
+  @Nullable
+  public SUpdateTileEntityPacket getUpdatePacket() {
+    // number is just used for vanilla, -1 ensures it skips all instanceof checks as its not a vanilla TE
+    return shouldSyncOnUpdate() ? new SUpdateTileEntityPacket(this.pos, -1, this.getUpdateTag()) : null;
+  }
+
+  @Override
+  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+    this.read(this.getBlockState(), pkt.getNbtCompound());
+  }
+
+  /**
    * Write to NBT that is synced to the client in {@link #getUpdateTag()} and in {@link #write(CompoundNBT)}
    * @param nbt  NBT
    */
@@ -40,6 +66,7 @@ public class MantleTileEntity extends TileEntity {
     return nbt;
   }
 
+  @Override
   public CompoundNBT write(CompoundNBT nbt) {
     nbt = super.write(nbt);
     writeSynced(nbt);
