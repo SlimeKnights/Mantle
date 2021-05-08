@@ -3,7 +3,9 @@ package slimeknights.mantle.tileentity;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.common.util.Constants.NBT;
 import slimeknights.mantle.client.model.data.SinglePropertyData;
 import slimeknights.mantle.util.RetexturedHelper;
 
@@ -51,5 +53,16 @@ public interface IRetexturedTileEntity {
       block = null;
     }
     return new SinglePropertyData<>(RetexturedHelper.BLOCK_PROPERTY, block);
+  }
+
+  /** Adds the NBT to the update tag, intended to be called in {@link TileEntity#getUpdateTag()} */
+  default void writeTextureToUpdateTag(CompoundNBT nbt) {
+    String textureName = getTextureName();
+    if (!textureName.isEmpty()) {
+      if (!nbt.contains("ForgeData", NBT.TAG_COMPOUND)) {
+        nbt.put("ForgeData", new CompoundNBT());
+      }
+      RetexturedHelper.setTexture(nbt.getCompound("ForgeData"), textureName);
+    }
   }
 }
