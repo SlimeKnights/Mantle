@@ -7,6 +7,7 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
 
@@ -62,6 +63,14 @@ public class MantleTileEntity extends TileEntity {
   @Override
   public CompoundNBT getUpdateTag() {
     CompoundNBT nbt = super.getUpdateTag();
+    // forge just directly puts the data into the update tag, which on dedicated server can lead to client and server both writing to the same tag object
+    // fix that by copying forge data before syncing it
+    if (nbt.contains("ForgeData", NBT.TAG_COMPOUND)) {
+      CompoundNBT forgeData = nbt.getCompound("ForgeData");
+      if (forgeData == this.getTileData()) {
+        nbt.put("ForgeData", forgeData.copy());
+      }
+    }
     writeSynced(nbt);
     return nbt;
   }
