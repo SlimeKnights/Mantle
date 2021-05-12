@@ -13,6 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
 import slimeknights.mantle.loot.AddEntryLootModifier;
 import slimeknights.mantle.loot.MantleLoot;
@@ -55,6 +56,7 @@ public class Mantle {
 
   private void commonSetup(final FMLCommonSetupEvent event) {
     MantleNetwork.registerPackets();
+    MantleCommand.init();
   }
 
   private void registerRecipeSerializers(final RegistryEvent.Register<IRecipeSerializer<?>> event) {
