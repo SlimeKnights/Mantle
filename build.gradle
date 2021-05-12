@@ -9,7 +9,8 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://libraries.minecraft.net/' }
         jcenter()
         mavenCentral()
         maven {
@@ -34,9 +35,13 @@ apply plugin: 'io.freefair.lombok'
 
 repositories {
     mavenLocal()
-    maven {
+    maven { // Vanilla
+        name 'Vanilla'
+        url 'https://libraries.minecraft.net/'
+    }
+    maven { // Forge
         name 'ForgeFS'
-        url 'https://files.minecraftforge.net/maven'
+        url 'https://maven.minecraftforge.net/'
     }
     maven {
         name 'DVS1 Maven FS'
