@@ -30,7 +30,7 @@ import java.util.List;
 
 /** Command that dumps a tag into a JSON object */
 public class DumpTagCommand {
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
   private static final Dynamic2CommandExceptionType ERROR_READING_TAG = new Dynamic2CommandExceptionType((type, name) -> new TranslationTextComponent("command.mantle.dump_tag.read_error", type, name));
 
   /**
@@ -46,6 +46,7 @@ public class DumpTagCommand {
 
   /**
    * Runs the view-tag command
+   *
    * @param context  Tag context
    * @return  Integer return
    * @throws CommandSyntaxException  If invalid values are passed

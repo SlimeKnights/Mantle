@@ -49,7 +49,7 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
   private static Result getVanillaTags(ForgeRegistry<?> registry, ResourceLocation name) {
     for (VanillaTagType type : VanillaTagType.values()) {
       if (name.equals(type.getName())) {
-        return Result.of(name, name.getPath() + "s", registry, type.getCollection());
+        return Result.of(name, type.getTagFolder(), registry, type.getCollection());
       }
     }
     return null;
@@ -98,7 +98,7 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
 
   /** Enum containing all vanilla tag collection types */
   @AllArgsConstructor
-  private enum VanillaTagType {
+  protected enum VanillaTagType {
     BLOCK(Registry.BLOCK_KEY.getLocation(),             () -> TagCollectionManager.getManager().getBlockTags()),
     ITEM(Registry.ITEM_KEY.getLocation(),               () -> TagCollectionManager.getManager().getItemTags()),
     FLUID(Registry.FLUID_KEY.getLocation(),             () -> TagCollectionManager.getManager().getFluidTags()),
@@ -110,6 +110,10 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
 
     public ITagCollection<?> getCollection() {
       return supplier.get();
+    }
+
+    public String getTagFolder() {
+      return name.getPath() + "s";
     }
   }
 
