@@ -83,7 +83,7 @@ public class TagsForCommand {
               .then(Commands.literal("held")
                             .then(Commands.literal("item").executes(TagsForCommand::heldItem))
                             .then(Commands.literal("block").executes(TagsForCommand::heldBlock))
-                            .then(Commands.literal("enchantments").executes(TagsForCommand::heldEnchantments))
+                            .then(Commands.literal("enchantment").executes(TagsForCommand::heldEnchantments))
                             .then(Commands.literal("fluid").executes(TagsForCommand::heldFluid))
                             .then(Commands.literal("entity").executes(TagsForCommand::heldEntity))
                             .then(Commands.literal("potion").executes(TagsForCommand::heldPotion)))
