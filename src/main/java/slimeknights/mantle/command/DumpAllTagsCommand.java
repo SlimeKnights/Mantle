@@ -13,7 +13,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ITag.Builder;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.ClickEvent.Action;
 import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -59,6 +63,15 @@ public class DumpAllTagsCommand {
     return context.getSource().getServer().getFile(TAG_DUMP_PATH);
   }
 
+  /**
+   * Makes a clickable text component for the output folder
+   * @param file  File
+   * @return  Clickable text component
+   */
+  private static ITextComponent getOutputComponent(File file) {
+    return new StringTextComponent(file.getAbsolutePath()).modifyStyle(style -> style.setUnderlined(true).setClickEvent(new ClickEvent(Action.OPEN_FILE, file.getAbsolutePath())));
+  }
+
   /** Dumps all tags to the game directory */
   private static int runAll(CommandContext<CommandSource> context) throws CommandSyntaxException {
     File output = getOutputFile(context);
@@ -74,7 +87,7 @@ public class DumpAllTagsCommand {
       }
     }
     // print the output path
-    context.getSource().sendFeedback(new TranslationTextComponent("command.mantle.dump_all_tags.success", output.getAbsolutePath()), true);
+    context.getSource().sendFeedback(new TranslationTextComponent("command.mantle.dump_all_tags.success", getOutputComponent(output)), true);
     return tagsDumped;
   }
 
@@ -84,7 +97,7 @@ public class DumpAllTagsCommand {
     TagCollectionArgument.Result type = context.getArgument("type", TagCollectionArgument.Result.class);
     int result = runForFolder(context, type.getName(), type.getTagFolder(), output);
     // print result
-    context.getSource().sendFeedback(new TranslationTextComponent("command.mantle.dump_all_tags.type_success", type.getName(), output.getAbsolutePath()), true);
+    context.getSource().sendFeedback(new TranslationTextComponent("command.mantle.dump_all_tags.type_success", type.getName(), getOutputComponent(output)), true);
     return result;
   }
 
