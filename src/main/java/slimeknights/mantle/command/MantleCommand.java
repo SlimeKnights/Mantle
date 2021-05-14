@@ -1,13 +1,17 @@
 package slimeknights.mantle.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.ArgumentSerializer;
 import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.command.arguments.SuggestionProviders;
 import net.minecraft.world.GameRules;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import slimeknights.mantle.Mantle;
 
 import java.util.function.Consumer;
 
@@ -24,10 +28,24 @@ public class MantleCommand {
   /** Permission level for the server owner, server console, or the player in single player */
   public static final int PERMISSION_OWNER = 4;
 
+  /** Suggestion provider that lists tags for this type */
+  public static SuggestionProvider<CommandSource> VALID_TAGS;
+  /** Suggestion provider that lists tags values for this registry */
+  public static SuggestionProvider<CommandSource> REGISTRY_VALUES;
+
   /** Registers all Mantle command related content */
   public static void init() {
     // register arguments
     ArgumentTypes.register("mantle:tag_collection", TagCollectionArgument.class, new ArgumentSerializer<>(TagCollectionArgument::collection));
+    VALID_TAGS = SuggestionProviders.register(Mantle.getResource("valid_tags"), (context, builder) -> {
+      TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
+      return ISuggestionProvider.suggestIterable(result.getCollection().getRegisteredTags(), builder);
+    });
+    REGISTRY_VALUES = SuggestionProviders.register(Mantle.getResource("registry_values"), (context, builder) -> {
+      TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
+      return ISuggestionProvider.suggestIterable(result.getRegistry().getKeys(), builder);
+    });
+
     // add command listener
     MinecraftForge.EVENT_BUS.addListener(MantleCommand::registerCommand);
   }

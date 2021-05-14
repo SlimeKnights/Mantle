@@ -40,7 +40,7 @@ public class DumpTagCommand {
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
     subCommand.requires(sender -> sender.hasPermissionLevel(MantleCommand.PERMISSION_EDIT_SPAWN))
               .then(Commands.argument("type", TagCollectionArgument.collection())
-                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation())
+                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.VALID_TAGS)
                                           .executes(DumpTagCommand::run)));
   }
 

@@ -31,7 +31,7 @@ public class ViewTagCommand {
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
     subCommand.requires(source -> MantleCommand.requiresDebugInfoOrOp(source, MantleCommand.PERMISSION_GAME_COMMANDS))
               .then(Commands.argument("type", TagCollectionArgument.collection())
-                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation())
+                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.VALID_TAGS)
                                           .executes(ViewTagCommand::run)));
   }
 

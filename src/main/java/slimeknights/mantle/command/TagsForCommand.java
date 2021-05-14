@@ -77,7 +77,7 @@ public class TagsForCommand {
               // by registry ID
               .then(Commands.literal("id")
                             .then(Commands.argument("type", TagCollectionArgument.collection())
-                                          .then(Commands.argument("name", ResourceLocationArgument.resourceLocation())
+                                          .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.REGISTRY_VALUES)
                                                         .executes(TagsForCommand::runForId))))
               // held item
               .then(Commands.literal("held")
