@@ -64,6 +64,7 @@ public class MantleCommand {
     // sub commands
     register(builder, "view_tag", ViewTagCommand::register);
     register(builder, "dump_tag", DumpTagCommand::register);
+    register(builder, "dump_loot_modifiers", DumpLootModifiers::register);
     register(builder, "dump_all_tags", DumpAllTagsCommand::register);
     register(builder, "tags_for", TagsForCommand::register);
 

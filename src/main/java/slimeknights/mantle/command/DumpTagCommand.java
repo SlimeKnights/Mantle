@@ -89,7 +89,7 @@ public class DumpTagCommand {
       context.getSource().sendFeedback(message, true);
       Mantle.logger.info("Tag dump of {} tag '{}':\n{}", type.getName(), name, GSON.toJson(builder.serialize()));
       return tagsProcessed;
-    } catch (IOException ex) {
+    } catch (IOException | RuntimeException ex) {
       // if the tag does not exist in the collect, probably an invalid tag name
       if (type.getCollection().get(name) == null) {
         throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);
