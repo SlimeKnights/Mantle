@@ -51,7 +51,12 @@ public class ModelHelper {
    */
   @Nullable
   public static <T extends IBakedModel> T getBakedModel(BlockState state, Class<T> clazz) {
-    IBakedModel baked = Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(state);
+    Minecraft minecraft = Minecraft.getInstance();
+    //noinspection ConstantConditions  null during run data
+    if (minecraft == null) {
+      return null;
+    }
+    IBakedModel baked = minecraft.getModelManager().getBlockModelShapes().getModel(state);
     // map multipart and weighted random into the first variant
     if (baked instanceof MultipartBakedModel) {
       baked = ((MultipartBakedModel)baked).selectors.get(0).getRight();
@@ -75,7 +80,12 @@ public class ModelHelper {
    */
   @Nullable
   public static <T extends IBakedModel> T getBakedModel(IItemProvider item, Class<T> clazz) {
-    IBakedModel baked = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(item.asItem());
+    Minecraft minecraft = Minecraft.getInstance();
+    //noinspection ConstantConditions  null during run data
+    if (minecraft == null) {
+      return null;
+    }
+    IBakedModel baked = minecraft.getItemRenderer().getItemModelMesher().getItemModel(item.asItem());
     if (clazz.isInstance(baked)) {
       return clazz.cast(baked);
     }
