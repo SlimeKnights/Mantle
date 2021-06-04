@@ -11,18 +11,23 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * Builds a recipe consumer wrapper, which adds some extra properties to wrap the result of another recipe
  */
+@SuppressWarnings("UnusedReturnValue")
 public class ConsumerWrapperBuilder {
   private final List<ICondition> conditions = new ArrayList<>();
   @Nullable
   private final IRecipeSerializer<?> override;
+  @Nullable
+  private final ResourceLocation overrideName;
 
-  private ConsumerWrapperBuilder(@Nullable IRecipeSerializer<?> override) {
+  private ConsumerWrapperBuilder(@Nullable IRecipeSerializer<?> override, @Nullable ResourceLocation overrideName) {
     this.override = override;
+    this.overrideName = overrideName;
   }
 
   /**
@@ -30,7 +35,7 @@ public class ConsumerWrapperBuilder {
    * @return Default serializer builder
    */
   public static ConsumerWrapperBuilder wrap() {
-    return new ConsumerWrapperBuilder(null);
+    return new ConsumerWrapperBuilder(null, null);
   }
 
   /**
@@ -39,7 +44,16 @@ public class ConsumerWrapperBuilder {
    * @return Default serializer builder
    */
   public static ConsumerWrapperBuilder wrap(IRecipeSerializer<?> override) {
-    return new ConsumerWrapperBuilder(override);
+    return new ConsumerWrapperBuilder(override, null);
+  }
+
+  /**
+   * Creates a wrapper builder with a serializer name override
+   * @param override Serializer override
+   * @return Default serializer builder
+   */
+  public static ConsumerWrapperBuilder wrap(ResourceLocation override) {
+    return new ConsumerWrapperBuilder(null, override);
   }
 
   /**
@@ -58,7 +72,7 @@ public class ConsumerWrapperBuilder {
    * @return Built wrapper consumer
    */
   public Consumer<IFinishedRecipe> build(Consumer<IFinishedRecipe> consumer) {
-    return (recipe) -> consumer.accept(new Wrapped(recipe, conditions, override));
+    return (recipe) -> consumer.accept(new Wrapped(recipe, conditions, override, overrideName));
   }
 
   private static class Wrapped implements IFinishedRecipe {
@@ -66,11 +80,26 @@ public class ConsumerWrapperBuilder {
     private final List<ICondition> conditions;
     @Nullable
     private final IRecipeSerializer<?> override;
+    @Nullable
+    private final ResourceLocation overrideName;
 
-    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override) {
+    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override, ResourceLocation overrideName) {
       this.original = original;
       this.conditions = conditions;
       this.override = override;
+      this.overrideName = overrideName;
+    }
+
+    @Override
+    public JsonObject getRecipeJson() {
+      JsonObject json = new JsonObject();
+      if (overrideName != null) {
+        json.addProperty("type", overrideName.toString());
+      } else {
+        json.addProperty("type", Objects.requireNonNull(getSerializer().getRegistryName()).toString());
+      }
+      this.serialize(json);
+      return json;
     }
 
     @Override
