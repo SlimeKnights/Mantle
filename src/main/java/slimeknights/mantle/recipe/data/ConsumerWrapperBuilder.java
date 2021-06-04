@@ -83,7 +83,7 @@ public class ConsumerWrapperBuilder {
     @Nullable
     private final ResourceLocation overrideName;
 
-    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override, ResourceLocation overrideName) {
+    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override, @Nullable ResourceLocation overrideName) {
       this.original = original;
       this.conditions = conditions;
       this.override = override;
@@ -105,11 +105,13 @@ public class ConsumerWrapperBuilder {
     @Override
     public void serialize(JsonObject json) {
       // add conditions on top
-      JsonArray conditionsArray = new JsonArray();
-      for (ICondition condition : conditions) {
-        conditionsArray.add(CraftingHelper.serialize(condition));
+      if (!conditions.isEmpty()) {
+        JsonArray conditionsArray = new JsonArray();
+        for (ICondition condition : conditions) {
+          conditionsArray.add(CraftingHelper.serialize(condition));
+        }
+        json.add("conditions", conditionsArray);
       }
-      json.add("conditions", conditionsArray);
       // serialize the normal recipe
       original.serialize(json);
     }
