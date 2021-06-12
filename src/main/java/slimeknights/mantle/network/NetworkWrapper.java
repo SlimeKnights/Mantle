@@ -1,6 +1,7 @@
 package slimeknights.mantle.network;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -96,6 +97,17 @@ public class NetworkWrapper {
   public void sendVanillaPacket(IPacket<?> packet, Entity player) {
     if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).connection != null) {
       ((ServerPlayerEntity) player).connection.sendPacket(packet);
+    }
+  }
+
+  /**
+   * Sends a packet to a player
+   * @param msg     Packet
+   * @param player  Player to send
+   */
+  public void sendTo(Object msg, PlayerEntity player) {
+    if (player instanceof ServerPlayerEntity) {
+      sendTo(msg, (ServerPlayerEntity) player);
     }
   }
 

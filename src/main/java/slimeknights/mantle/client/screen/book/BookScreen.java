@@ -17,8 +17,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
-import slimeknights.mantle.client.book.BookHelper;
-import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
@@ -29,6 +27,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOKFRONT;
@@ -62,12 +61,13 @@ public class BookScreen extends Screen {
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
 
   public final BookData book;
-  private ItemStack item;
+  @Nullable
+  private Consumer<String> pageUpdater;
 
   private int page = -1;
   private int oldPage = -2;
-  private ArrayList<BookElement> leftElements = new ArrayList<>();
-  private ArrayList<BookElement> rightElements = new ArrayList<>();
+  private final ArrayList<BookElement> leftElements = new ArrayList<>();
+  private final ArrayList<BookElement> rightElements = new ArrayList<>();
 
   public AdvancementCache advancementCache;
 
@@ -80,10 +80,10 @@ public class BookScreen extends Screen {
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public BookScreen(ITextComponent title, BookData book, @Nullable ItemStack item) {
+  public BookScreen(ITextComponent title, BookData book, String page, @Nullable Consumer<String> pageUpdater) {
     super(title);
     this.book = book;
-    this.item = item;
+    this.pageUpdater = pageUpdater;
 
     this.minecraft = Minecraft.getInstance();
     this.font = this.minecraft.fontRenderer;
@@ -91,14 +91,18 @@ public class BookScreen extends Screen {
     initWidthsAndHeights();
 
     this.advancementCache = new AdvancementCache();
-    this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
-
-    this.openPage(book.findPageNumber(BookHelper.getCurrentSavedPage(item), this.advancementCache));
+    if (this.minecraft.player != null) {
+      this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
+    }
+    this.openPage(book.findPageNumber(page, this.advancementCache));
   }
 
   @Override
   @SuppressWarnings("ForLoopReplaceableByForEach")
   public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    if (this.minecraft == null) {
+      return;
+    }
     initWidthsAndHeights();
     FontRenderer fontRenderer = this.book.fontRenderer;
     if (fontRenderer == null) {
@@ -461,20 +465,22 @@ public class BookScreen extends Screen {
 
   @Override
   public void onClose() {
-    if (this.minecraft.player == null) {
+    if (this.minecraft == null || this.minecraft.player == null) {
       return;
     }
-
-    PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
-
-    if (page == null) {
-      page = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
-    }
-
-    if (this.page == -1) {
-      BookLoader.updateSavedPage(this.minecraft.player, this.item, "");
-    } else if (page != null && page.parent != null) {
-      BookLoader.updateSavedPage(this.minecraft.player, this.item, page.parent.name + "." + page.name);
+    // find what page to update
+    if (pageUpdater != null) {
+      String pageStr = "";
+      if (this.page >= 0) {
+        PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
+        if (page == null) {
+          page = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
+        }
+        if (page != null && page.parent != null) {
+          pageStr = page.parent.name + "." + page.name;
+        }
+      }
+      pageUpdater.accept(pageStr);
     }
   }
 

@@ -2,6 +2,7 @@ package slimeknights.mantle;
 
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
@@ -15,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
+import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.AddEntryLootModifier;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.loot.ReplaceItemLootModifier;
@@ -52,6 +54,7 @@ public class Mantle {
     bus.addListener(Config::configChanged);
     bus.addGenericListener(IRecipeSerializer.class, this::registerRecipeSerializers);
     bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
+    MinecraftForge.EVENT_BUS.addListener(LecternBookItem::interactWithBlock);
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {

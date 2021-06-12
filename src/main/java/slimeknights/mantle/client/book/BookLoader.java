@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -30,7 +31,8 @@ import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.MantleNetwork;
-import slimeknights.mantle.network.packet.UpdateSavedPagePacket;
+import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
+import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -137,16 +139,29 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     return info;
   }
 
-  public static void updateSavedPage(@Nullable PlayerEntity player, ItemStack item, String page) {
-    if (player == null) {
-      return;
+  /**
+   * Updates the saved page of a held book
+   * @param player  Player instance
+   * @param hand    Hand
+   * @param page    New page
+   */
+  public static void updateSavedPage(@Nullable PlayerEntity player, Hand hand, String page) {
+    if (player != null) {
+      ItemStack item = player.getHeldItem(hand);
+      if (!item.isEmpty()) {
+        BookHelper.writeSavedPageToBook(item, page);
+        MantleNetwork.INSTANCE.network.sendToServer(new UpdateHeldPagePacket(hand, page));
+      }
     }
-    if (player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
-      return;
-    }
+  }
 
-    BookHelper.writeSavedPageToBook(item, page);
-    MantleNetwork.INSTANCE.network.sendToServer(new UpdateSavedPagePacket(page));
+  /**
+   * Updates the saved page of a held book
+   * @param pos     Position being changed
+   * @param page    New page
+   */
+  public static void updateSavedPage(BlockPos pos, String page) {
+    MantleNetwork.INSTANCE.network.sendToServer(new UpdateLecternPagePacket(pos, page));
   }
 
   /**
