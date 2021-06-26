@@ -38,6 +38,11 @@ public class DropLecternBookPacket implements IThreadsafePacket {
     }
 
     ServerWorld world = player.getServerWorld();
+
+    if(!world.isBlockLoaded(pos)) {
+      return;
+    }
+
     BlockState state = world.getBlockState(pos);
 
     if(state.getBlock() instanceof LecternBlock && state.get(LecternBlock.HAS_BOOK)) {
