@@ -8,12 +8,14 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.multiplayer.ClientAdvancementManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -63,6 +65,8 @@ public class BookScreen extends Screen {
   public final BookData book;
   @Nullable
   private Consumer<String> pageUpdater;
+  @Nullable
+  private Consumer<?> bookPickup;
 
   private int page = -1;
   private int oldPage = -2;
@@ -80,10 +84,11 @@ public class BookScreen extends Screen {
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public BookScreen(ITextComponent title, BookData book, String page, @Nullable Consumer<String> pageUpdater) {
+  public BookScreen(ITextComponent title, BookData book, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
     super(title);
     this.book = book;
     this.pageUpdater = pageUpdater;
+    this.bookPickup = bookPickup;
 
     this.minecraft = Minecraft.getInstance();
     this.font = this.minecraft.fontRenderer;
@@ -298,6 +303,18 @@ public class BookScreen extends Screen {
       this.oldPage = -2;
       this.buildPages();
     }));
+
+    if(this.bookPickup != null) {
+      int margin = 10;
+      if(this.height / 2 + PAGE_HEIGHT_UNSCALED / 2 + margin + 20 >= this.height) {
+        margin = 0;
+      }
+
+      this.addButton(new Button(this.width / 2 - 196 / 2, this.height / 2 + PAGE_HEIGHT_UNSCALED / 2 + margin, 196, 20, new TranslationTextComponent("lectern.take_book"), (p_212998_1_) -> {
+        this.closeScreen();
+        this.bookPickup.accept(null);
+      }));
+    }
 
     this.buildPages();
   }

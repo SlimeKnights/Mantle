@@ -18,6 +18,8 @@ import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.network.MantleNetwork;
+import slimeknights.mantle.network.packet.DropLecternBookPacket;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -371,8 +373,18 @@ public class BookData implements IDataItem {
    * @param pageUpdater  Function to call to save the page
    */
   public void openGui(ITextComponent title, String page, @Nullable Consumer<String> pageUpdater) {
+    this.openGui(title, page, pageUpdater, null);
+  }
+
+  /**
+   * Generic method to open the book GUI in a situation when the book can be picked up (i.e. lectern)
+   * @param title        Screen title
+   * @param page         Starting page
+   * @param pageUpdater  Function to call to save the page
+   */
+  public void openGui(ITextComponent title, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
     this.load();
-    Minecraft.getInstance().displayGuiScreen(new BookScreen(title, this, page, pageUpdater));
+    Minecraft.getInstance().displayGuiScreen(new BookScreen(title, this, page, pageUpdater, bookPickup));
   }
 
   /**
@@ -403,7 +415,12 @@ public class BookData implements IDataItem {
   @SuppressWarnings("unused") // API
   public void openGui(BlockPos pos, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
-    openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage));
+
+    Consumer<?> bookPickup = (v) -> {
+      MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
+    };
+
+    openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
   }
 
   /**
