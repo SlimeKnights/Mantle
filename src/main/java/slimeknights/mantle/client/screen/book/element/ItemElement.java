@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,7 +23,7 @@ import java.util.List;
 public class ItemElement extends SizedBookElement {
 
   public static final int ITEM_SIZE_HARDCODED = 16;
-  public static final int ITEM_SWITCH_TICKS = 175;
+  public static final long ITEM_SWITCH_TIME = 3000000000L; // 3 seconds
 
   public NonNullList<ItemStack> itemCycle;
   public float scale;
@@ -30,7 +31,7 @@ public class ItemElement extends SizedBookElement {
   public String action;
   public List<ITextComponent> tooltip;
 
-  public int renderTick = 0;
+  public long lastTime;
   public int currentItem = 0;
 
   public ItemElement(int x, int y, float scale, Item item) {
@@ -60,6 +61,8 @@ public class ItemElement extends SizedBookElement {
   public ItemElement(int x, int y, float scale, ItemStack[] itemCycle, @Nullable String action) {
     super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
+    lastTime = Util.nanoTime();
+
     NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(itemCycle.length, ItemStack.EMPTY);
     for (int i = 0; i < itemCycle.length; i++) {
       if (!itemCycle[i].isEmpty()) {
@@ -74,10 +77,10 @@ public class ItemElement extends SizedBookElement {
 
   @Override
   public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    this.renderTick++;
+    long nano = Util.nanoTime();
 
-    if (this.renderTick > ITEM_SWITCH_TICKS) {
-      this.renderTick = 0;
+    if(nano > lastTime + ITEM_SWITCH_TIME) {
+      this.lastTime = nano;
       this.currentItem++;
 
       if (this.currentItem >= this.itemCycle.size()) {
