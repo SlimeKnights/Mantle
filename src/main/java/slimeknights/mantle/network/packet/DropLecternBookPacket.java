@@ -15,7 +15,7 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 import slimeknights.mantle.item.ILecternBookItem;
 
 /**
- * Packet to open a book on a lectern
+ * Packet to drop the book as item from lectern
  */
 @AllArgsConstructor
 public class DropLecternBookPacket implements IThreadsafePacket {
