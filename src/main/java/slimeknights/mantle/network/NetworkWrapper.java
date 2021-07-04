@@ -132,4 +132,22 @@ public class NetworkWrapper {
     Chunk chunk = serverWorld.getChunkAt(position);
     network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
   }
+
+  /**
+   * Sends a packet to all entities tracking the given entity
+   * @param msg     Packet
+   * @param entity  Entity to check
+   */
+  public void sendToTrackingAndSelf(Object msg, Entity entity) {
+    this.network.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), msg);
+  }
+
+  /**
+   * Sends a packet to all entities tracking the given entity
+   * @param msg     Packet
+   * @param entity  Entity to check
+   */
+  public void sendToTracking(Object msg, Entity entity) {
+    this.network.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg);
+  }
 }

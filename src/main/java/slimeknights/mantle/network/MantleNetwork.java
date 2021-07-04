@@ -4,6 +4,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.packet.DropLecternBookPacket;
 import slimeknights.mantle.network.packet.OpenLecternBookPacket;
+import slimeknights.mantle.network.packet.SwingArmPacket;
 import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
 import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
 
@@ -19,5 +20,6 @@ public class MantleNetwork {
     INSTANCE.registerPacket(UpdateHeldPagePacket.class, UpdateHeldPagePacket::new, NetworkDirection.PLAY_TO_SERVER);
     INSTANCE.registerPacket(UpdateLecternPagePacket.class, UpdateLecternPagePacket::new, NetworkDirection.PLAY_TO_SERVER);
     INSTANCE.registerPacket(DropLecternBookPacket.class, DropLecternBookPacket::new, NetworkDirection.PLAY_TO_SERVER);
+    INSTANCE.registerPacket(SwingArmPacket.class, SwingArmPacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 }
