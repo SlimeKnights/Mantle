@@ -2,17 +2,27 @@ package slimeknights.mantle.registration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.block.Block;
+import net.minecraft.block.WoodType;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
 import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RegistrationHelper {
+  /** Wood types to register with the texture atlas */
+  private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
+  /** Sign blocks to inject into the sign tile entity */
+  private static final List<Supplier<? extends Block>> SIGN_BLOCKS = new ArrayList<>();
+
   /**
    * Used to mark injected registry objects, as despite being set to null they will be nonnull at runtime.
    * @param <T>  Class type
@@ -50,5 +60,32 @@ public class RegistrationHelper {
         }
       }
     }
+  }
+
+  /** Registers a wood type to be injected into the atlas, should be called before client setup */
+  public static void registerWoodType(WoodType type) {
+    synchronized (WOOD_TYPES) {
+      WOOD_TYPES.add(type);
+    }
+  }
+
+  /**
+   * Registers a sign block to be injected into the tile entity, should be called before common setup
+   * @param sign  Sign block supplier
+   */
+  public static void registerSignBlock(Supplier<? extends Block> sign) {
+    synchronized (SIGN_BLOCKS) {
+      SIGN_BLOCKS.add(sign);
+    }
+  }
+
+  /** Runs the given consumer for each wood type registered */
+  public static void forEachWoodType(Consumer<WoodType> consumer) {
+    WOOD_TYPES.forEach(consumer);
+  }
+
+  /** Runs the given consumer for each wood type registered */
+  public static void forEachSignBlock(Consumer<? super Block> consumer) {
+    SIGN_BLOCKS.forEach(block -> consumer.accept(block.get()));
   }
 }

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.settings.AttackIndicatorStatus;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IReloadableResourceManager;
@@ -34,6 +35,7 @@ import slimeknights.mantle.client.model.fluid.FluidsModel;
 import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.MantleTags;
+import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
 @SuppressWarnings("unused")
@@ -46,6 +48,7 @@ public class ClientEvents {
     if (manager instanceof IReloadableResourceManager) {
       ((IReloadableResourceManager)manager).addReloadListener(ModelHelper.LISTENER);
     }
+    event.enqueueWork(() -> RegistrationHelper.forEachWoodType(Atlases::addWoodType));
   }
 
   @SubscribeEvent

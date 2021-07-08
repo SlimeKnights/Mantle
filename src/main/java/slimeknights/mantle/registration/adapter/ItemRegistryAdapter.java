@@ -1,21 +1,28 @@
 package slimeknights.mantle.registration.adapter;
 
 import net.minecraft.block.Block;
+import net.minecraft.data.BlockStateVariantBuilder.ITriFunction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
+import net.minecraft.item.SignItem;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.item.TallBlockItem;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.BlockTooltipItem;
+import slimeknights.mantle.item.BurnableBlockItem;
+import slimeknights.mantle.item.BurnableSignItem;
+import slimeknights.mantle.item.BurnableTallBlockItem;
 import slimeknights.mantle.item.TooltipItem;
 import slimeknights.mantle.registration.ItemProperties;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
+import slimeknights.mantle.registration.object.WoodBlockObject;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -172,6 +179,47 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
   public void registerDefaultBlockItem(FenceBuildingBlockObject object) {
     registerDefaultBlockItem((BuildingBlockObject)object);
     registerDefaultBlockItem(object.getFence());
+  }
+
+  /**
+   * Registers block items for all entries in a fence building block object
+   * @param object  Building block object instance
+   */
+  @SuppressWarnings("ConstantConditions")
+  public void registerDefaultBlockItem(WoodBlockObject object, boolean isBurnable) {
+    // many of these are already burnable via tags, but simplier to set them all here
+    BiFunction<? super Block, Integer, ? extends BlockItem> burnableItem;
+    Function<? super Block, ? extends BlockItem> burnableTallItem;
+    ITriFunction<Item.Properties, ? super Block, ? super Block, ? extends BlockItem> burnableSignItem;
+    if (isBurnable) {
+      burnableItem     = (block, burnTime) -> new BurnableBlockItem(block, defaultProps, burnTime);
+      burnableTallItem = (block) -> new BurnableTallBlockItem(block, defaultProps, 200);
+      burnableSignItem = (props, standing, wall) -> new BurnableSignItem(props, standing, wall, 200);
+    } else {
+      burnableItem = (block, burnTime) -> new BlockItem(block, defaultProps);
+      burnableTallItem = (block) -> new TallBlockItem(block, defaultProps);
+      burnableSignItem = SignItem::new;
+    }
+
+    // planks
+    BlockItem planks = registerBlockItem(burnableItem.apply(object.get(), 300));
+    registerBlockItem(burnableItem.apply(object.getSlab(), 150));
+    registerBlockItem(burnableItem.apply(object.getStairs(), 300));
+    registerBlockItem(burnableItem.apply(object.getFence(), 300));
+    // logs and wood
+    registerBlockItem(burnableItem.apply(object.getLog(), 300));
+    registerBlockItem(burnableItem.apply(object.getWood(), 300));
+    registerBlockItem(burnableItem.apply(object.getStrippedLog(), 300));
+    registerBlockItem(burnableItem.apply(object.getStrippedWood(), 300));
+    // doors
+    registerBlockItem(burnableTallItem.apply(object.getDoor()));
+    registerBlockItem(burnableItem.apply(object.getTrapdoor(), 300));
+    registerBlockItem(burnableItem.apply(object.getFenceGate(), 300));
+    // redstone
+    registerBlockItem(burnableItem.apply(object.getPressurePlate(), 300));
+    registerBlockItem(burnableItem.apply(object.getButton(), 100));
+    // sign
+    registerBlockItem(burnableSignItem.apply(new Item.Properties().maxStackSize(16).group(planks.getGroup()), object.getSign(), object.getWallSign()));
   }
 
   /**

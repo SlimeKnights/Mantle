@@ -6,8 +6,11 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.StandingSignBlock;
 import net.minecraft.block.TrapDoorBlock;
+import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.WoodButtonBlock;
+import net.minecraft.block.WoodType;
 import net.minecraft.item.Item;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -16,11 +19,12 @@ import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
 import java.util.function.Supplier;
 
+import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
+
 /** Extension of the fence object with all other wood blocks */
-@SuppressWarnings("unused")
 public class WoodBlockObject extends FenceBuildingBlockObject {
-  //@Getter
-  //private final WoodType woodType;
+  @Getter
+  private final WoodType woodType;
   // basic
   private final Supplier<? extends Block> log;
   private final Supplier<? extends Block> strippedLog;
@@ -34,21 +38,21 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
   private final Supplier<? extends PressurePlateBlock> pressurePlate;
   private final Supplier<? extends WoodButtonBlock> button;
   // signs
-  //private final Supplier<? extends StandingSignBlock> sign;
-  //private final Supplier<? extends WallSignBlock> wallSign;
+  private final Supplier<? extends StandingSignBlock> sign;
+  private final Supplier<? extends WallSignBlock> wallSign;
   // tags
   @Getter
   private final IOptionalNamedTag<Block> logBlockTag;
   @Getter
   private final IOptionalNamedTag<Item> logItemTag;
 
-  public WoodBlockObject(ResourceLocation name, /*WoodType woodType,*/ BuildingBlockObject planks,
+  public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
                          Supplier<? extends Block> log, Supplier<? extends Block> strippedLog, Supplier<? extends Block> wood, Supplier<? extends Block> strippedWood,
                          Supplier<? extends FenceBlock> fence, Supplier<? extends FenceGateBlock> fenceGate, Supplier<? extends DoorBlock> door, Supplier<? extends TrapDoorBlock> trapdoor,
-                         Supplier<? extends PressurePlateBlock> pressurePlate, Supplier<? extends WoodButtonBlock> button/*,
-                         Supplier<? extends StandingSignBlock> sign, Supplier<? extends WallSignBlock> wallSign*/) {
+                         Supplier<? extends PressurePlateBlock> pressurePlate, Supplier<? extends WoodButtonBlock> button,
+                         Supplier<? extends StandingSignBlock> sign, Supplier<? extends WallSignBlock> wallSign) {
     super(planks, fence);
-    //this.woodType = woodType;
+    this.woodType = woodType;
     this.log = log;
     this.strippedLog = strippedLog;
     this.wood = wood;
@@ -58,8 +62,30 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
     this.trapdoor = trapdoor;
     this.pressurePlate = pressurePlate;
     this.button = button;
-    //this.sign = sign;
-    //this.wallSign = wallSign;
+    this.sign = sign;
+    this.wallSign = wallSign;
+    ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
+    this.logBlockTag = BlockTags.createOptional(tagName);
+    this.logItemTag = ItemTags.createOptional(tagName);
+  }
+
+  public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
+                         Block log, Block strippedLog, Block wood, Block strippedWood,
+                         Block fence, Block fenceGate, Block door, Block trapdoor,
+                         Block pressurePlate, Block button, Block sign, Block wallSign) {
+    super(planks, fence);
+    this.woodType = woodType;
+    this.log = castDelegate(log.delegate);
+    this.strippedLog = castDelegate(strippedLog.delegate);
+    this.wood = castDelegate(wood.delegate);
+    this.strippedWood = castDelegate(strippedWood.delegate);
+    this.fenceGate = castDelegate(fenceGate.delegate);
+    this.door = castDelegate(door.delegate);
+    this.trapdoor = castDelegate(trapdoor.delegate);
+    this.pressurePlate = castDelegate(pressurePlate.delegate);
+    this.button = castDelegate(button.delegate);
+    this.sign = castDelegate(sign.delegate);
+    this.wallSign = castDelegate(wallSign.delegate);
     ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
     this.logBlockTag = BlockTags.createOptional(tagName);
     this.logItemTag = ItemTags.createOptional(tagName);
@@ -116,13 +142,13 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
 
   /* Signs */
 
-  /* Gets the sign for this wood type, can also be used to get the item /
+  /* Gets the sign for this wood type, can also be used to get the item */
   public StandingSignBlock getSign() {
     return sign.get();
-  }*/
+  }
 
-  /* Gets the wall sign for this wood type /
+  /* Gets the wall sign for this wood type */
   public WallSignBlock getWallSign() {
     return wallSign.get();
-  }*/
+  }
 }

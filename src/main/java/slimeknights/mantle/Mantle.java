@@ -1,7 +1,10 @@
 package slimeknights.mantle;
 
+import com.google.common.collect.ImmutableSet;
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -32,6 +35,7 @@ import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
 import slimeknights.mantle.recipe.ingredient.IngredientWithout;
+import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
@@ -44,7 +48,6 @@ import slimeknights.mantle.util.OffhandCooldownTracker;
  */
 @Mod(Mantle.modId)
 public class Mantle {
-
   public static final String modId = "mantle";
   public static final Logger logger = LogManager.getLogger("Mantle");
 
@@ -71,6 +74,14 @@ public class Mantle {
     MantleCommand.init();
     OffhandCooldownTracker.register();
     MantleTags.init();
+
+    // inject our new signs into the tile entity type
+    event.enqueueWork(() -> {
+      ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+      builder.addAll(TileEntityType.SIGN.validBlocks);
+      RegistrationHelper.forEachSignBlock(builder::add);
+      TileEntityType.SIGN.validBlocks = builder.build();
+    });
   }
 
   private void gatherData(final GatherDataEvent event) {
