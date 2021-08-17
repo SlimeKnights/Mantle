@@ -1,6 +1,5 @@
 package slimeknights.mantle.recipe;
 
-import com.google.common.collect.Lists;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.tags.ITag;
@@ -11,14 +10,15 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.config.Config;
+import slimeknights.mantle.util.LogicHelper;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -27,11 +27,30 @@ import java.util.function.Supplier;
  * @param <T>  Registry type
  */
 public class TagPreference<T extends IForgeRegistryEntry<T>> {
+  /** Just an alphabetically late RL to simplify null checks */
+  private static final ResourceLocation DEFAULT_ID = new ResourceLocation("zzzzz:zzzzz"); // simplfies null checks
   /** Map of each tag type to the preference instance for that type */
   private static final Map<Class<?>, TagPreference<?>> PREFERENCE_MAP = new IdentityHashMap<>();
   // cached tag supplier lambdas
   private static final Supplier<ITagCollection<Item>> ITEM_TAG_COLLECTION_SUPPLIER = () -> TagCollectionManager.getManager().getItemTags();
   private static final Supplier<ITagCollection<Fluid>> FLUID_TAG_COLLECTION_SUPPLIER = () -> TagCollectionManager.getManager().getFluidTags();
+
+  /** Comparator to decide which registry entry is preferred */
+  private static final Comparator<IForgeRegistryEntry<?>> ENTRY_COMPARATOR = (a, b) -> {
+    // first get registry names, use default ID if null (unlikely)
+    ResourceLocation idA = LogicHelper.defaultIfNull(a.getRegistryName(), DEFAULT_ID);
+    ResourceLocation idB = LogicHelper.defaultIfNull(b.getRegistryName(), DEFAULT_ID);
+    // first compare preferences
+    List<? extends String> entries = Config.TAG_PREFERENCES.get();
+    int size = entries.size();
+    int indexA = LogicHelper.defaultIf(entries.indexOf(idA.getNamespace()), -1, size);
+    int indexB = LogicHelper.defaultIf(entries.indexOf(idB.getNamespace()), -1, size);
+    if (indexA != indexB) {
+      return Integer.compare(indexA, indexB);
+    }
+    // for stability, fallback to registry name compare
+    return idA.compareNamespaced(idB);
+  };
 
   /**
    * Gets the tag preference instance associated with the given tag collection
@@ -80,20 +99,25 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
     preferenceCache.clear();
   }
 
-  /**
-   * Gets the sort index of an entry based on the tag preference list
-   * @param entry  Registry entry to check
-   * @return  Sort index for that entry
-   */
-  private static int getSortIndex(IForgeRegistryEntry<?> entry) {
-    List<? extends String> entries = Config.TAG_PREFERENCES.get();
-    // check the index of the namespace in the preference list
-    int index = entries.indexOf(Objects.requireNonNull(entry.getRegistryName()).getNamespace());
-    // if missing, declare last
-    if (index == -1) {
-      return entries.size();
+  /** Gets the preference from a tag without going through the cache, internal logic behind {@link #getPreference(ITag)} */
+  private Optional<T> getUncachedPreference(ITag<T> tag) {
+    // if no items, empty optional
+    if (tag instanceof IOptionalNamedTag && ((IOptionalNamedTag<?>) tag).isDefaulted()) {
+      return Optional.empty();
     }
-    return index;
+    List<? extends T> elements = tag.getAllElements();
+    if (elements.isEmpty()) {
+      return Optional.empty();
+    }
+
+    // if size 1, quick exit
+    if (elements.size() == 1) {
+      return Optional.of(elements.get(0));
+    }
+    // streams have a lovely function to get the minimum element based on a comparator
+    return elements.stream()
+                   .min(ENTRY_COMPARATOR)
+                   .map(t -> (T) t); // required for generics to be happy
   }
 
   /**
@@ -103,27 +127,12 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    */
   public Optional<T> getPreference(ITag<T> tag) {
     // fetch cached value if we have one
-    ResourceLocation tagName = collection.get().getValidatedIdFromTag(tag);
-    return preferenceCache.computeIfAbsent(tagName, name -> {
-      // if no items, empty optional
-      if (tag instanceof IOptionalNamedTag && ((IOptionalNamedTag<?>) tag).isDefaulted()) {
-        return Optional.empty();
-      }
-      List<? extends T> elements = tag.getAllElements();
-      if (elements.isEmpty()) {
-        return Optional.empty();
-      }
-
-      // if size 1, quick exit
-      if (elements.size() == 1) {
-        return Optional.of(elements.get(0));
-      }
-
-      // copy and sort list
-      List<? extends T> sortedElements = Lists.newArrayList(elements);
-      sortedElements.sort(Comparator.comparingInt(TagPreference::getSortIndex));
-      // return first element, its the preference
-      return Optional.of(sortedElements.get(0));
-    });
+    try {
+      ResourceLocation tagName = collection.get().getValidatedIdFromTag(tag);
+      return preferenceCache.computeIfAbsent(tagName, name -> getUncachedPreference(tag));
+    } catch (Exception e) {
+      Mantle.logger.warn("Attempting to get tag preference for unregistered tag {}", tag, e);
+      return getUncachedPreference(tag);
+    }
   }
 }

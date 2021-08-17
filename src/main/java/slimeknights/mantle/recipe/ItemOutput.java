@@ -145,12 +145,18 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   private static class OfTagPreference extends ItemOutput {
     private final ITag<Item> tag;
     private final int count;
+    private ItemStack cachedResult = null;
 
     @Override
     public ItemStack get() {
-      return TagPreference.getItems().getPreference(tag)
-                          .map(item -> new ItemStack(item, count))
-                          .orElse(ItemStack.EMPTY);
+      // cache the result from the tag preference to save effort, especially helpful if the tag becomes invalid
+      // this object should only exist in recipes so no need to invalidate the cache
+      if (cachedResult == null) {
+        cachedResult = TagPreference.getItems().getPreference(tag)
+                                    .map(item -> new ItemStack(item, count))
+                                    .orElse(ItemStack.EMPTY);
+      }
+      return cachedResult;
     }
 
     @Override
