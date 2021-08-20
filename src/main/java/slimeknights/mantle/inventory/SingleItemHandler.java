@@ -71,22 +71,36 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
       setStack(stack);
     }
   }
-
+  
   @Override
   public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
     if (stack.isEmpty()) {
       return ItemStack.EMPTY;
     }
-    if (slot != 0 || !this.stack.isEmpty()) {
-      return stack;
+    if (slot == 0) {
+      ItemStack current = getStack();
+      if (current.isEmpty()) {
+        if (this.isItemValid(slot, stack)) {
+          // insert up to the stack limit
+          int size = Math.min(stack.getCount(), getSlotLimit(0));
+          if (!simulate) {
+            this.setStack(ItemHandlerHelper.copyStackWithSize(stack, size));
+          }
+          return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - size);
+        }
+      } else if (ItemHandlerHelper.canItemStacksStack(current, stack)) {
+        // increase up to the stack limit
+        int added = Math.min(stack.getCount(), getSlotLimit(0) - current.getCount());
+        if (added > 0) {
+          if (!simulate) {
+            current.grow(added);
+            setStack(current);
+          }
+          return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - added);
+        }
+      }
     }
-    if (!isItemValid(slot, stack)) {
-      return stack;
-    }
-    if (!simulate) {
-      setStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
-    }
-    return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - 1);
+    return stack;
   }
 
   @Override
