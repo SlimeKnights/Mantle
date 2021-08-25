@@ -28,6 +28,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.model.FallbackModelLoader;
+import slimeknights.mantle.client.model.MantleItemLayerModel;
+import slimeknights.mantle.client.model.NBTKeyModel;
 import slimeknights.mantle.client.model.RetexturedModel;
 import slimeknights.mantle.client.model.connected.ConnectedModel;
 import slimeknights.mantle.client.model.fluid.FluidTextureModel;
@@ -59,6 +61,8 @@ public class ClientEvents {
     ModelLoaderRegistry.registerLoader(Mantle.getResource("fluids"), FluidsModel.Loader.INSTANCE);
     ModelLoaderRegistry.registerLoader(Mantle.getResource("retextured"), RetexturedModel.Loader.INSTANCE);
     ModelLoaderRegistry.registerLoader(Mantle.getResource("fluid_texture"), FluidTextureModel.LOADER);
+    ModelLoaderRegistry.registerLoader(Mantle.getResource("nbt_key"), NBTKeyModel.LOADER);
+    ModelLoaderRegistry.registerLoader(Mantle.getResource("item_layer"), MantleItemLayerModel.LOADER);
   }
 
   @SubscribeEvent
