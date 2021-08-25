@@ -1,4 +1,4 @@
-package slimeknights.mantle.client.model;
+package slimeknights.mantle.client.model.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
