@@ -157,7 +157,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * @param sprite      Sprite for the face
    * @param facing      Direction of the face
    * @param transform   Transform for the face
-   * @param color       Hard tint for the part, use -1 for no tint
+   * @param color       Hard tint for the part in AARRGGBB format, use -1 for no tint
    * @param luminosity  Lighting for the part, 0 for no extra lighting
    * @param location    Model location for errors
    */
@@ -175,7 +175,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * @param transform      Transform for the face
    * @param partRotation   Rotation for the part
    * @param shade          If true, shades the part
-   * @param color          Hard tint for the part, use -1 for no tint
+   * @param color          Hard tint for the part in AARRGGBB format, use -1 for no tint
    * @param luminosity     Lighting for the part, 0 for no extra lighting
    * @param location       Model location for errors
    * @return  Baked quad
@@ -224,6 +224,18 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
     fillVertexData(vertexData, vertexIndex, vector3f, sprite, blockFaceUVIn, color, luminosity);
   }
 
+  /**
+   * Converts an ARGB color to an ABGR color, as the commonly used color format is not the format colors end up packed into.
+   * This function doubles as its own inverse, not that its needed.
+   * @param color  ARGB color
+   * @return  ABGR color
+   */
+  private static int swapColorRedBlue(int color) {
+    return (color & 0xFF00FF00) // alpha and green same spot
+           | ((color >> 16) & 0x000000FF) // red moves to blue
+           | ((color << 16) & 0x00FF0000); // blue moves to red
+  }
+
   /** Clone of the vanilla method with 2 extra parameters, major logic changes are in this code */
   private static void fillVertexData(int[] vertexData, int vertexIndex, Vector3f vector, TextureAtlasSprite sprite, BlockFaceUV blockFaceUV, int color, int luminosity) {
     int i = vertexIndex * 8;
@@ -231,8 +243,8 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
     vertexData[i] = Float.floatToRawIntBits(vector.getX());
     vertexData[i + 1] = Float.floatToRawIntBits(vector.getY());
     vertexData[i + 2] = Float.floatToRawIntBits(vector.getZ());
-    // color - 1 int. vanilla uses -1 here
-    vertexData[i + 3] = color;
+    // color - 1 int in ABGR format, we use ARGB format as that is used everywhere else. vanilla uses -1 here
+    vertexData[i + 3] = swapColorRedBlue(color);
     // UV - 2 ints
     vertexData[i + 4] = Float.floatToRawIntBits(sprite.getInterpolatedU((double)blockFaceUV.getVertexU(vertexIndex) * .999 + blockFaceUV.getVertexU((vertexIndex + 2) % 4) * .001));
     vertexData[i + 5] = Float.floatToRawIntBits(sprite.getInterpolatedV((double)blockFaceUV.getVertexV(vertexIndex) * .999 + blockFaceUV.getVertexV((vertexIndex + 2) % 4) * .001));
