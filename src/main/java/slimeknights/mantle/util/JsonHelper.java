@@ -116,14 +116,16 @@ public class JsonHelper {
       return -1;
     }
     // two options, 6 character or 8 character, must not start with - sign
-    int length = color.length();
     if (color.charAt(0) != '-') {
       try {
-        // length of 8 must parse as long
+        // length of 8 must parse as long, supports transparency
+        int length = color.length();
         if (length == 8) {
           return (int)Long.parseLong(color, 16);
         }
-        return Integer.parseInt(color, 16);
+        if (length == 6) {
+          return 0xFF000000 | Integer.parseInt(color, 16);
+        }
       } catch (NumberFormatException ex) {
         // NO-OP
       }
