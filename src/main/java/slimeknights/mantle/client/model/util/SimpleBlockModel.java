@@ -10,6 +10,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
+import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockModel;
 import net.minecraft.client.renderer.model.BlockPart;
 import net.minecraft.client.renderer.model.BlockPartFace;
@@ -211,6 +212,35 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
   /* Baking */
 
   /**
+   * Bakes a single part of the model into the builder
+   * @param builder       Baked model builder
+   * @param owner         Model owner
+   * @param part          Part to bake
+   * @param transform     Model transforms
+   * @param spriteGetter  Sprite getter
+   * @param location      Model location
+   */
+  public static void bakePart(SimpleBakedModel.Builder builder, IModelConfiguration owner, BlockPart part, IModelTransform transform, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+    for(Direction direction : part.mapFaces.keySet()) {
+      BlockPartFace face = part.mapFaces.get(direction);
+      // ensure the name is not prefixed (it always is)
+      String texture = face.texture;
+      if (texture.charAt(0) == '#') {
+        texture = texture.substring(1);
+      }
+      // bake the face
+      TextureAtlasSprite sprite = spriteGetter.apply(owner.resolveTexture(texture));
+      BakedQuad bakedQuad = BlockModel.bakeFace(part, face, sprite, direction, transform, location);
+      // apply cull face
+      if (face.cullFace == null) {
+        builder.addGeneralQuad(bakedQuad);
+      } else {
+        builder.addFaceQuad(Direction.rotateFace(transform.getRotation().getMatrix(), face.cullFace), bakedQuad);
+      }
+    }
+  }
+
+  /**
    * Bakes a list of block part elements into a model
    * @param owner         Model configuration
    * @param elements      Model elements
@@ -225,21 +255,7 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
     TextureAtlasSprite particle = spriteGetter.apply(owner.resolveTexture("particle"));
     SimpleBakedModel.Builder builder = new SimpleBakedModel.Builder(owner, overrides).setTexture(particle);
     for(BlockPart part : elements) {
-      for(Direction direction : part.mapFaces.keySet()) {
-        BlockPartFace face = part.mapFaces.get(direction);
-        // ensure the name is not prefixed (it always is)
-        String texture = face.texture;
-        if (texture.charAt(0) == '#') {
-          texture = texture.substring(1);
-        }
-        TextureAtlasSprite sprite = spriteGetter.apply(owner.resolveTexture(texture));
-        // apply cull face
-        if (face.cullFace == null) {
-          builder.addGeneralQuad(BlockModel.bakeFace(part, face, sprite, direction, transform, location));
-        } else {
-          builder.addFaceQuad(Direction.rotateFace(transform.getRotation().getMatrix(), face.cullFace), BlockModel.bakeFace(part, face, sprite, direction, transform, location));
-        }
-      }
+      bakePart(builder, owner, part, transform, spriteGetter, location);
     }
     return builder.build();
   }
