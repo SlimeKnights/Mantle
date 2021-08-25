@@ -34,6 +34,7 @@ import slimeknights.mantle.client.model.connected.ConnectedModel;
 import slimeknights.mantle.client.model.fluid.FluidTextureModel;
 import slimeknights.mantle.client.model.fluid.FluidsModel;
 import slimeknights.mantle.client.model.inventory.InventoryModel;
+import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.MantleTags;
@@ -58,7 +59,7 @@ public class ClientEvents {
     // standard models - useful in resource packs for any model
     ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
     ModelLoaderRegistry.registerLoader(Mantle.getResource("item_layer"), MantleItemLayerModel.LOADER);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("colored_block"), MantleItemLayerModel.LOADER);
+    ModelLoaderRegistry.registerLoader(Mantle.getResource("colored_block"), ColoredBlockModel.LOADER);
     ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
 
     // NBT dynamic models - require specific data defined in the block/item to use
