@@ -35,8 +35,11 @@ import net.minecraftforge.client.model.geometry.IModelGeometry;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 import net.minecraftforge.client.model.pipeline.TRSRTransformer;
+import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.ReversedListBuilder;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
@@ -86,12 +89,14 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
     // determine particle texture
     TextureAtlasSprite particle = spriteGetter.apply(owner.isTexturePresent("particle") ? owner.resolveTexture("particle") : textures.get(0));
     // bake in special properties
-    ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
+    ReversedListBuilder<BakedQuad> builder = new ReversedListBuilder<>();
+    // skip the pixel tracking if using a single texture only
+    ItemLayerPixels pixels = textures.size() == 1 ? null : new ItemLayerPixels();
     TransformationMatrix transform = modelTransform.getRotation();
-    for(int i = 0; i < textures.size(); i++) {
+    for (int i = textures.size() - 1; i >= 0; i--) {
       TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
       LayerData data = getLayer(i);
-      builder.addAll(getQuadsForSprite(data.getColor(), data.isNoTint() ? -1 : i, sprite, transform, data.getLuminosity()));
+      builder.addAll(getQuadsForSprite(data.getColor(), data.isNoTint() ? -1 : i, sprite, transform, data.getLuminosity(), pixels));
     }
     // transform data
     ImmutableMap<TransformType,TransformationMatrix> transformMap = PerspectiveMapWrapper.getTransforms(new ModelTransformComposition(owner.getCombinedTransform(), modelTransform));
@@ -108,6 +113,20 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
    * @return  List of baked quads
    */
   public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, TransformationMatrix transform, int luminosity) {
+    return getQuadsForSprite(color, tint, sprite, transform, luminosity, null);
+  }
+
+  /**
+   * Gets all quads for an item layer for the given sprite
+   * @param color       Color for the sprite in AARRGGBB format.
+   * @param tint        Tint index for {@link net.minecraft.client.renderer.color.BlockColors} and {@link net.minecraft.client.renderer.color.ItemColors}. Generally unused
+   * @param sprite      Sprite to convert into quads
+   * @param transform   Transforms to apply
+   * @param luminosity  Extra light to add to the quad from 0-15, makes it appear to glow a bit
+   * @param pixels      Object to keep track of used pixels across multiple layers to help prevent z-fighting. To effective use, sprites must be built in reverse order. Use null to skip this logic
+   * @return  List of baked quads
+   */
+  public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, TransformationMatrix transform, int luminosity, @Nullable ItemLayerPixels pixels) {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
     int uMax = sprite.getWidth();
@@ -163,24 +182,24 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
         int uStart = 0, uEnd = uMax;
         boolean building = false;
         for (int u = 0; u < uMax; u++) {
-          boolean face = faceData.get(facing, u, v);
-          if (!translucent) {
-            if (face) {
-              if (!building) {
-                building = true;
-                uStart = u;
-              }
-              uEnd = u + 1;
-            }
-          } else {
-            if (building && !face) { // finish current quad
-              // make quad [uStart, u]
-              int off = facing == Direction.DOWN ? 1 : 0;
-              builder.add(buildSideQuad(transform, facing, color, tint, sprite, uStart, v+off, u-uStart, luminosity));
-              building = false;
-            } else if (!building && face) { // start new quad
+          boolean canDraw = pixels == null || !pixels.get(u, v, uMax, vMax);
+          boolean face = canDraw && faceData.get(facing, u, v);
+          // set the end for translucent to draw right after this pixel
+          if (face) {
+            uEnd = u + 1;
+            // if not currently building and we have data, start new quad
+            if (!building) {
               building = true;
               uStart = u;
+            }
+          }
+          // make quad [uStart, u]
+          else if (building) {
+            // finish current quad if translucent (minimize overdraw) or we are forbidden from touching this pixel (previous layer drew here)
+            if (!canDraw || translucent) {
+              int off = facing == Direction.DOWN ? 1 : 0;
+              builder.add(buildSideQuad(transform, facing, color, tint, sprite, uStart, v + off, uEnd - uStart, luminosity));
+              building = false;
             }
           }
         }
@@ -198,24 +217,24 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
         int vStart = 0, vEnd = vMax;
         boolean building = false;
         for (int v = 0; v < vMax; v++) {
-          boolean face = faceData.get(facing, u, v);
-          if (!translucent) {
-            if (face) {
-              if (!building) {
-                building = true;
-                vStart = v;
-              }
-              vEnd = v + 1;
-            }
-          } else {
-            if (building && !face) { // finish current quad
-              // make quad [vStart, v]
-              int off = facing == Direction.EAST ? 1 : 0;
-              builder.add(buildSideQuad(transform, facing, color, tint, sprite, u+off, vStart, v-vStart, luminosity));
-              building = false;
-            } else if (!building && face) { // start new quad
+          boolean canDraw = pixels == null || !pixels.get(u, v, uMax, vMax);
+          boolean face = canDraw && faceData.get(facing, u, v);
+          // set the end for translucent to draw right after this pixel
+          if (face) {
+            vEnd = v + 1;
+            // if not currently building and we have data, start new quad
+            if (!building) {
               building = true;
               vStart = v;
+            }
+          }
+          // make quad [vStart, v]
+          else if (building) {
+            // finish current quad if translucent (minimize overdraw) or we are forbidden from touching this pixel (future layer drew here)
+            if (!canDraw || translucent) {
+              int off = facing == Direction.EAST ? 1 : 0;
+              builder.add(buildSideQuad(transform, facing, color, tint, sprite, u + off, vStart, vEnd - vStart, luminosity));
+              building = false;
             }
           }
         }
@@ -241,6 +260,26 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
                           1, 1, 8.5f / 16f, sprite.getMaxU(), sprite.getMinV(),
                           0, 1, 8.5f / 16f, sprite.getMinU(), sprite.getMinV()
                          ));
+
+    // fill in the pixel map with new pixels from the sprite
+    if (pixels != null) {
+      // animated textures are tricky, as we have three choices:
+      //  1. if a pixel is only potentially there, don't draw lower layers - leads to gaps
+      //  2. if a pixel is only potentially there, always draw lower layers - leads to z-fighting
+      //  3. only use the first frame
+      // of these, 2 would give the most accurate result. However, its also the hardest to calculate
+      // of the remaining methods, 3 is both more accurate and easier to calculate than 1, so I opted for that approach
+      if (sprite.getFrameCount() > 0) {
+        for(int v = 0; v < vMax; v++) {
+          for(int u = 0; u < uMax; u++) {
+            int alpha = sprite.getPixelRGBA(0, u, vMax - v - 1) >> 24 & 0xFF;
+            if (alpha / 255f > 0.1f) {
+              pixels.set(u, v, uMax, vMax);
+            }
+          }
+        }
+      }
+    }
 
     return builder.build();
   }
