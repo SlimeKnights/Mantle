@@ -23,6 +23,9 @@ public class StrippableLogBlock extends RotatedPillarBlock {
   @Nullable
   @Override
   public BlockState getToolModifiedState(BlockState state, World world, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType) {
-    return stripped.get().getDefaultState().with(AXIS, state.get(AXIS));
+    if (toolType == ToolType.AXE) {
+      return stripped.get().getDefaultState().with(AXIS, state.get(AXIS));
+    }
+    return null;
   }
 }
