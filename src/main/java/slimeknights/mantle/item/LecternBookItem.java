@@ -39,7 +39,7 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
   public static void interactWithBlock(PlayerInteractEvent.RightClickBlock event) {
     World world = event.getWorld();
     // client side has no access to the book, so just skip
-    if (world.isRemote()) {
+    if (world.isRemote() || event.getPlayer().isSneaking()) {
       return;
     }
     // must be a lectern, and have the TE
