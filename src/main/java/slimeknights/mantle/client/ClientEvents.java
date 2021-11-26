@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.Atlases;
 import net.minecraft.client.settings.AttackIndicatorStatus;
-import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.HandSide;
@@ -41,9 +40,12 @@ import slimeknights.mantle.data.MantleTags;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
+import java.util.function.Function;
+
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = Bus.MOD)
 public class ClientEvents {
+  private static final Function<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
@@ -90,13 +92,10 @@ public class ClientEvents {
     if (minecraft.player == null || minecraft.playerController == null || minecraft.playerController.getCurrentGameType() == GameType.SPECTATOR || settings.attackIndicator == AttackIndicatorStatus.OFF) {
       return;
     }
-    // must be holding something that can duel wield
-    ItemStack held = minecraft.player.getHeldItemOffhand();
-    if (!MantleTags.Items.OFFHAND_COOLDOWN.contains(held.getItem())) {
-      return;
-    }
-    // check if we have cooldown
-    float cooldown = OffhandCooldownTracker.getCooldown(minecraft.player);
+
+    // enabled if either in the tag, or if force enabled
+    boolean tagEnabled = minecraft.player.getHeldItemOffhand().getItem().isIn(MantleTags.Items.OFFHAND_COOLDOWN);
+    float cooldown = minecraft.player.getCapability(OffhandCooldownTracker.CAPABILITY).filter(tracker -> tagEnabled || tracker.isForceEnable()).map(COOLDOWN_TRACKER).orElse(1.0f);
     if (cooldown >= 1.0f) {
       return;
     }

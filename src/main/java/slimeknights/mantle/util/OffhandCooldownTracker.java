@@ -1,6 +1,8 @@
 package slimeknights.mantle.util;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,7 +32,7 @@ import javax.annotation.Nullable;
 @RequiredArgsConstructor
 public class OffhandCooldownTracker implements ICapabilityProvider {
   public static final ResourceLocation KEY = Mantle.getResource("offhand_cooldown");
-  private static final NonNullFunction<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
+  public static final NonNullFunction<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
   private static final NonNullFunction<OffhandCooldownTracker,Boolean> ATTACK_READY = OffhandCooldownTracker::isAttackReady;
 
   /**
@@ -76,6 +78,10 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
   private int lastCooldown = 0;
   /** Time in ticks when the player can next attack for full power */
   private int attackReady = 0;
+
+  /** Forces the cooldown tracker to enable even if the offhand is not in {@link slimeknights.mantle.data.MantleTags.Items#OFFHAND_COOLDOWN}. Intended to be set in equipment change events, not serialized */
+  @Getter @Setter
+  private boolean forceEnable = false;
 
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
