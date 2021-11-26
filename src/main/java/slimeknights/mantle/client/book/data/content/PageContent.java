@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
@@ -23,9 +25,11 @@ public abstract class PageContent {
   public transient BookRepository source;
 
   /** If true, the title will be centered */
-  protected boolean centerTitle = false;
+  @Setter @Getter
+  private boolean centerTitle = false;
   /** If true, the title will be large */
-  protected boolean largeTitle = false;
+  @Setter @Getter
+  private boolean largeTitle = false;
 
   /**
    * Call when the GUI is opened to initialize content

@@ -16,8 +16,12 @@ import java.util.List;
  * Extended version of {@link ContentListingSectionTransformer} which supports putting entries in subgroups
  */
 public class ContentGroupingSectionTransformer extends SectionTransformer {
-  public ContentGroupingSectionTransformer(String sectionName) {
+  private final boolean largeTitle;
+  private final boolean centerTitle;
+  public ContentGroupingSectionTransformer(String sectionName, boolean largeTitle, boolean centerTitle) {
     super(sectionName);
+    this.largeTitle = largeTitle;
+    this.centerTitle = centerTitle;
   }
 
   @Override
@@ -30,7 +34,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
     }
 
     // start building the listing
-    GroupingBuilder builder = new GroupingBuilder(data, title, subText);
+    GroupingBuilder builder = new GroupingBuilder(data, title, subText, largeTitle, centerTitle);
     data.pages.removeIf(sectionPage -> !processPage(book, builder, sectionPage));
 
     // create pages for each listing if any exist
@@ -94,10 +98,12 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
     @Getter
     private final List<ContentListing> finishedListings = Lists.newArrayList(currentListing);
 
-    public GroupingBuilder(SectionData section, @Nullable String title, @Nullable String subText) {
+    public GroupingBuilder(SectionData section, @Nullable String title, @Nullable String subText, boolean largeTitle, boolean centerTitle) {
       this.section = section;
       currentListing.title = title;
       currentListing.subText = subText;
+      currentListing.setLargeTitle(largeTitle);
+      currentListing.setCenterTitle(centerTitle);
       maxInColumn = currentListing.getEntriesInColumn(section);
     }
 
@@ -116,7 +122,10 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       // already have 3 columns? start a new one
       if (columns == 3) {
         currentListing = new ContentListing();
-        currentListing.title = finishedListings.get(0).title;
+        ContentListing firstListing = finishedListings.get(0);
+        currentListing.title = firstListing.title;
+        currentListing.setLargeTitle(firstListing.isLargeTitle());
+        currentListing.setCenterTitle(firstListing.isCenterTitle());
         maxInColumn = currentListing.getEntriesInColumn(section);
         finishedListings.add(currentListing);
         columns = 1;

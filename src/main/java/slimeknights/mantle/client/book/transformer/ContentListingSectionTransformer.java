@@ -9,13 +9,19 @@ import slimeknights.mantle.client.book.data.content.ContentListing;
  * Transformer to create a simple list of elements
  */
 public class ContentListingSectionTransformer extends SectionTransformer {
-  public ContentListingSectionTransformer(String sectionName) {
+  private final boolean largeTitle;
+  private final boolean centerTitle;
+  public ContentListingSectionTransformer(String sectionName, boolean largeTitle, boolean centerTitle) {
     super(sectionName);
+    this.largeTitle = largeTitle;
+    this.centerTitle = centerTitle;
   }
 
   @Override
   public void transform(BookData book, SectionData data) {
     ContentListing listing = new ContentListing();
+    listing.setLargeTitle(largeTitle);
+    listing.setCenterTitle(centerTitle);
     listing.title = book.translate(sectionName);
     String subtextKey = sectionName + ".subtext";
     if (book.strings.containsKey(subtextKey)) {
