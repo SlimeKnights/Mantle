@@ -9,20 +9,22 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 @OnlyIn(Dist.CLIENT)
 public class ContentError extends PageContent {
 
   private final String errorStage;
-  private Exception exception;
+  @Nullable
+  private final Exception exception;
 
   public ContentError(String errorStage) {
-    this.errorStage = errorStage;
+    this(errorStage, null);
   }
 
-  public ContentError(String errorStage, Exception e) {
-    this(errorStage);
+  public ContentError(String errorStage, @Nullable Exception e) {
+    this.errorStage = errorStage;
     this.exception = e;
   }
 
@@ -54,9 +56,9 @@ public class ContentError extends PageContent {
       text[2] = new TextData(this.exception.getMessage() != null ? this.exception.getMessage() : this.exception.getClass().getSimpleName());
       text[2].color = "dark_red";
       text[2].paragraph = true;
-    }
 
-    text[3] = TextData.LINEBREAK;
+      text[3] = TextData.LINEBREAK;
+    }
 
     if (stackTrace != null) {
       for (int i = 0; i < stackTrace.length && 5 + i * 2 < text.length; i++) {
