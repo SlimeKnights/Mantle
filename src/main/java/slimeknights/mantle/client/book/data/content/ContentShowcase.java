@@ -32,11 +32,13 @@ public class ContentShowcase extends PageContent {
     }
 
     if (this.item != null && (!this.item.id.isEmpty() || !this.item.itemList.isEmpty())) {
-      list.add(new ItemElement(BookScreen.PAGE_WIDTH / 2 - 15, 15, 2.5f, this.item.getItems(), this.item.action));
+      ItemElement element = new ItemElement(BookScreen.PAGE_WIDTH / 2 - 15, y, 2.5f, this.item.getItems(), this.item.action);
+      list.add(element);
+      y += element.height;
     }
 
     if (this.text != null && this.text.length > 0) {
-      list.add(new TextElement(0, y + 20, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 20 - y, this.text));
+      list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.text));
     }
   }
 }

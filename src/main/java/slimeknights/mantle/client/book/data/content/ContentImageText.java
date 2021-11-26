@@ -46,7 +46,7 @@ public class ContentImageText extends PageContent {
     }
 
     if (this.text != null && this.text.length > 0) {
-      list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 105 - y, this.text));
+      list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.text));
     }
   }
 }
