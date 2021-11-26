@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -44,7 +45,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * GSON object to be used for book loading purposes
    */
-  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer()).create();
+  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).registerTypeAdapter(int.class, new HexStringDeserializer()).create();
 
   /**
    * Maps page content presets to names

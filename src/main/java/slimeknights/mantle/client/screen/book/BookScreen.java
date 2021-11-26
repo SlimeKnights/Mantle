@@ -31,9 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOKFRONT;
-
 @OnlyIn(Dist.CLIENT)
 public class BookScreen extends Screen {
 
@@ -133,7 +130,7 @@ public class BookScreen extends Screen {
     TextureManager render = this.minecraft.textureManager;
 
     if (this.page == -1) {
-      render.bindTexture(TEX_BOOKFRONT);
+      render.bindTexture(book.appearance.getCoverTexture());
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
@@ -159,7 +156,7 @@ public class BookScreen extends Screen {
         RenderSystem.popMatrix();
       }
     } else {
-      render.bindTexture(TEX_BOOK);
+      render.bindTexture(book.appearance.getBookTexture());
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
@@ -203,7 +200,7 @@ public class BookScreen extends Screen {
       }
 
       // Rebind texture as the font renderer binds its own texture
-      render.bindTexture(TEX_BOOK);
+      render.bindTexture(book.appearance.getBookTexture());
       // Set color back to white
       RenderSystem.color4f(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
@@ -264,7 +261,7 @@ public class BookScreen extends Screen {
     this.buttons.clear();
     this.children.clear();
 
-    this.previousArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.previousArrow = this.addButton(new ArrowButton(book, 50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.page--;
 
       if (this.page < -1) {
@@ -275,7 +272,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.nextArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.nextArrow = this.addButton(new ArrowButton(book, -50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.page++;
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
@@ -288,7 +285,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.backArrow = this.addButton(new ArrowButton(this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.backArrow = this.addButton(new ArrowButton(book, this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       if (this.oldPage >= -1) {
         this.page = this.oldPage;
       }
@@ -297,7 +294,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.indexArrow = this.addButton(new ArrowButton(this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.indexArrow = this.addButton(new ArrowButton(book, this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.openPage(this.book.findPageNumber("index.page1"));
 
       this.oldPage = -2;
