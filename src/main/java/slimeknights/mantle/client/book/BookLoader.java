@@ -21,6 +21,7 @@ import slimeknights.mantle.client.book.data.content.ContentBlockInteraction;
 import slimeknights.mantle.client.book.data.content.ContentCrafting;
 import slimeknights.mantle.client.book.data.content.ContentImage;
 import slimeknights.mantle.client.book.data.content.ContentImageText;
+import slimeknights.mantle.client.book.data.content.ContentPadding;
 import slimeknights.mantle.client.book.data.content.ContentSmelting;
 import slimeknights.mantle.client.book.data.content.ContentSmithing;
 import slimeknights.mantle.client.book.data.content.ContentStructure;
@@ -61,6 +62,8 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     // Register page types
     registerPageType("blank", ContentBlank.class);
     registerPageType("text", ContentText.class);
+    registerPageType(ContentPadding.LEFT_ID, ContentPadding.ContentLeftPadding.class);
+    registerPageType(ContentPadding.RIGHT_ID, ContentPadding.ContentRightPadding.class);
     registerPageType("image", ContentImage.class);
     registerPageType("image with text below", ContentImageText.class);
     registerPageType("text with image below", ContentTextImage.class);

@@ -3,29 +3,37 @@ package slimeknights.mantle.client.book;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.book.data.content.ContentBlank;
+import slimeknights.mantle.client.book.data.content.ContentPadding.PaddingBookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentSectionList;
 import slimeknights.mantle.client.book.data.content.ContentTableOfContents;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class BookTransformer {
-
+  /** Adds a transformer which builds a visual index */
   public static BookTransformer indexTranformer() {
     return IndexTranformer.INSTANCE;
   }
 
+  /** Adds a transformer which builds a table of contents */
   public static BookTransformer contentTableTransformer() {
     return ContentTableTransformer.INSTANCE;
   }
 
+  /** Adds a transformer which builds a table of contents for a specific section name */
   @SuppressWarnings("unused") // API
   public static BookTransformer contentTableTransformerForSection(String sectionName) {
     return new ContentTableTransformer(sectionName);
+  }
+
+  /** Adds a transformer which removes padding pages if unneeded, should be added to the book last */
+  public static BookTransformer paddingTransformer() {
+    return PaddingBookTransformer.INSTANCE;
   }
 
   /**
@@ -39,6 +47,13 @@ public abstract class BookTransformer {
 
     public static final IndexTranformer INSTANCE = new IndexTranformer();
 
+    /** Gets the pages needed for the given section count, essentially a ceiling divide by 9 */
+    private static int getIndexPagesNeeded(int sectionCount) {
+      int needed = sectionCount / 9;
+      if (sectionCount % 9 == 0) needed++;
+      return needed;
+    }
+
     @Override
     public void transform(BookData book) {
       SectionData index = new SectionData(true) {
@@ -46,16 +61,13 @@ public abstract class BookTransformer {
         public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
           this.pages.clear();
 
+          // find how many other sections to draw
           List<SectionData> visibleSections = this.parent.getVisibleSections(advancementCache);
-
           if (visibleSections.isEmpty()) {
             return;
           }
-
           visibleSections.remove(0);
-
-          PageData[] pages = new PageData[(int) Math.ceil(visibleSections.size() / 9F)];
-
+          PageData[] pages = new PageData[getIndexPagesNeeded(visibleSections.size())];
           for (int i = 0; i < pages.length; i++) {
             pages[i] = new PageData(true);
 
@@ -69,9 +81,20 @@ public abstract class BookTransformer {
             }
           }
 
-          this.pages = new ArrayList<>(Arrays.asList(pages));
+          this.pages.addAll(Arrays.asList(pages));
         }
       };
+      // add in some blank pages so the padding transformer has an accurate count
+      List<SectionData> visibleSections = book.getVisibleSections(null);
+      if (!visibleSections.isEmpty()) {
+        PageData[] pages = new PageData[getIndexPagesNeeded(visibleSections.size() - 1)];
+        for (int i = 0; i < pages.length; i++) {
+          pages[i] = new PageData(true);
+          pages[i].name = "page" + (i + 1);
+          pages[i].content = new ContentBlank();
+        }
+        index.pages.addAll(Arrays.asList(pages));
+      }
 
       index.name = "index";
       book.sections.add(0, index);
