@@ -30,13 +30,16 @@ public class ContentImageText extends PageContent {
     }
 
     if (this.image != null && this.image.location != null) {
-      list.add(new ImageElement(0, y, BookScreen.PAGE_WIDTH, 100, this.image));
+      ImageElement element = new ImageElement(0, y, BookScreen.PAGE_WIDTH, 100, this.image);
+      list.add(element);
+      y += element.height + 5;
     } else {
       list.add(new ImageElement(0, y, 32, 32, ImageData.MISSING));
+      y += 37;
     }
 
     if (this.text != null && this.text.length > 0) {
-      list.add(new TextElement(0, y + 105, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 105 - y, this.text));
+      list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 105 - y, this.text));
     }
   }
 }
