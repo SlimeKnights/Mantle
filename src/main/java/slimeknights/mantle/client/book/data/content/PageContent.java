@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public abstract class PageContent {
 
   public static final transient int TITLE_HEIGHT = 16;
-  public static final transient int LARGE_TITLE_HEIGHT = 28;
+  public static final transient int LARGE_TITLE_HEIGHT = 20;
 
   public transient PageData parent;
   public transient BookRepository source;
@@ -104,7 +104,7 @@ public abstract class PageContent {
       w = (int)Math.ceil(this.parent.parent.parent.fontRenderer.getStringWidth(titleText) * title.scale);
       x = (BookScreen.PAGE_WIDTH - w) / 2;
     }
-    list.add(new TextElement(x, y, w, largeTitle ? 24 : 9, title));
+    list.add(new TextElement(x, y, w, largeTitle ? 11 : 9, title));
   }
 
   /** Adds text to the book at the top */

@@ -18,6 +18,7 @@ public class ContentImageText extends PageContent {
   public String title = null;
   public ImageData image;
   public TextData[] text;
+  public boolean centerImage = true;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
@@ -30,7 +31,13 @@ public class ContentImageText extends PageContent {
     }
 
     if (this.image != null && this.image.location != null) {
-      ImageElement element = new ImageElement(0, y, BookScreen.PAGE_WIDTH, 100, this.image);
+      int x = 0;
+      int width = BookScreen.PAGE_WIDTH;
+      if (centerImage && this.image.width != -1) {
+        x = (BookScreen.PAGE_WIDTH - this.image.width) / 2;
+        width = this.image.width;
+      }
+      ImageElement element = new ImageElement(x, y, width, 100, this.image);
       list.add(element);
       y += element.height + 5;
     } else {

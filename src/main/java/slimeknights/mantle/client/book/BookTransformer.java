@@ -50,7 +50,7 @@ public abstract class BookTransformer {
     /** Gets the pages needed for the given section count, essentially a ceiling divide by 9 */
     private static int getIndexPagesNeeded(int sectionCount) {
       int needed = sectionCount / 9;
-      if (sectionCount % 9 == 0) needed++;
+      if (sectionCount % 9 != 0) needed++;
       return needed;
     }
 
