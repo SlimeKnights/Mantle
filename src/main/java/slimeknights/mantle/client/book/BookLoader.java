@@ -21,6 +21,7 @@ import slimeknights.mantle.client.book.data.content.ContentBlockInteraction;
 import slimeknights.mantle.client.book.data.content.ContentCrafting;
 import slimeknights.mantle.client.book.data.content.ContentImage;
 import slimeknights.mantle.client.book.data.content.ContentImageText;
+import slimeknights.mantle.client.book.data.content.ContentIndex;
 import slimeknights.mantle.client.book.data.content.ContentPadding;
 import slimeknights.mantle.client.book.data.content.ContentSmelting;
 import slimeknights.mantle.client.book.data.content.ContentSmithing;
@@ -74,6 +75,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     registerPageType("smithing", ContentSmithing.class);
     registerPageType("block interaction", ContentBlockInteraction.class);
     registerPageType(ContentStructure.ID, ContentStructure.class);
+    registerPageType(ContentIndex.ID, ContentIndex.class);
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());
