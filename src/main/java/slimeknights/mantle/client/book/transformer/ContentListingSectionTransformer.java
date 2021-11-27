@@ -5,16 +5,21 @@ import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentListing;
 
+import javax.annotation.Nullable;
+
 /**
  * Transformer to create a simple list of elements
  */
 public class ContentListingSectionTransformer extends SectionTransformer {
-  private final boolean largeTitle;
-  private final boolean centerTitle;
-  public ContentListingSectionTransformer(String sectionName, boolean largeTitle, boolean centerTitle) {
+  private final Boolean largeTitle;
+  private final Boolean centerTitle;
+  public ContentListingSectionTransformer(String sectionName, @Nullable Boolean largeTitle, @Nullable Boolean centerTitle) {
     super(sectionName);
     this.largeTitle = largeTitle;
     this.centerTitle = centerTitle;
+  }
+  public ContentListingSectionTransformer(String sectionName) {
+    this(sectionName, null, null);
   }
 
   @Override

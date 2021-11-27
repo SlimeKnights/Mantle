@@ -16,12 +16,16 @@ import java.util.List;
  * Extended version of {@link ContentListingSectionTransformer} which supports putting entries in subgroups
  */
 public class ContentGroupingSectionTransformer extends SectionTransformer {
-  private final boolean largeTitle;
-  private final boolean centerTitle;
-  public ContentGroupingSectionTransformer(String sectionName, boolean largeTitle, boolean centerTitle) {
+  private final Boolean largeTitle;
+  private final Boolean centerTitle;
+  public ContentGroupingSectionTransformer(String sectionName, @Nullable Boolean largeTitle, @Nullable Boolean centerTitle) {
     super(sectionName);
     this.largeTitle = largeTitle;
     this.centerTitle = centerTitle;
+  }
+
+  public ContentGroupingSectionTransformer(String sectionName) {
+    this(sectionName, null, null);
   }
 
   @Override
@@ -98,7 +102,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
     @Getter
     private final List<ContentListing> finishedListings = Lists.newArrayList(currentListing);
 
-    public GroupingBuilder(SectionData section, @Nullable String title, @Nullable String subText, boolean largeTitle, boolean centerTitle) {
+    public GroupingBuilder(SectionData section, @Nullable String title, @Nullable String subText, @Nullable Boolean largeTitle, @Nullable Boolean centerTitle) {
       this.section = section;
       currentListing.title = title;
       currentListing.subText = subText;
@@ -124,8 +128,8 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
         currentListing = new ContentListing();
         ContentListing firstListing = finishedListings.get(0);
         currentListing.title = firstListing.title;
-        currentListing.setLargeTitle(firstListing.isLargeTitle());
-        currentListing.setCenterTitle(firstListing.isCenterTitle());
+        currentListing.setLargeTitle(firstListing.getLargeTitle());
+        currentListing.setCenterTitle(firstListing.getCenterTitle());
         maxInColumn = currentListing.getEntriesInColumn(section);
         finishedListings.add(currentListing);
         columns = 1;

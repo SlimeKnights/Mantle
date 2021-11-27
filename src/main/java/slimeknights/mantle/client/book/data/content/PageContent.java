@@ -12,6 +12,7 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /** Base for all page content */
@@ -25,11 +26,11 @@ public abstract class PageContent {
   public transient BookRepository source;
 
   /** If true, the title will be centered */
-  @Setter @Getter
-  private boolean centerTitle = false;
+  @Setter @Getter @Nullable
+  private Boolean centerTitle;
   /** If true, the title will be large */
-  @Setter @Getter
-  private boolean largeTitle = false;
+  @Setter @Getter @Nullable
+  private Boolean largeTitle;
 
   /**
    * Call when the GUI is opened to initialize content
@@ -41,11 +42,33 @@ public abstract class PageContent {
    */
   public abstract void build(BookData book, ArrayList<BookElement> list, boolean rightSide);
 
+  /** Returns true if the title should be large */
+  private boolean isLarge() {
+    if (largeTitle != null) {
+      return largeTitle;
+    }
+    else if (parent != null && parent.parent != null && parent.parent.parent != null) {
+      return parent.parent.parent.appearance.largePageTitles;
+    }
+    return false;
+  }
+
+  /** Returns true if the title should be centered */
+  private boolean isCentered() {
+    if (centerTitle != null) {
+      return centerTitle;
+    }
+    else if (parent != null && parent.parent != null && parent.parent.parent != null) {
+      return parent.parent.parent.appearance.centerPageTitles;
+    }
+    return false;
+  }
+
   /**
    * Gets the title height for the given page
    */
   protected int getTitleHeight() {
-    return largeTitle ? LARGE_TITLE_HEIGHT : TITLE_HEIGHT;
+    return isLarge() ? LARGE_TITLE_HEIGHT : TITLE_HEIGHT;
   }
 
   /**
@@ -89,7 +112,8 @@ public abstract class PageContent {
   public void addTitle(ArrayList<BookElement> list, String titleText, boolean dropShadow, int color, int y) {
     TextData title = new TextData(titleText);
 
-    title.scale = largeTitle ? 1.2f : 1.0f;
+    boolean isLarge = isLarge();
+    title.scale = isLarge ? 1.2f : 1.0f;
     title.underlined = true;
     title.dropshadow = dropShadow;
 
@@ -100,11 +124,11 @@ public abstract class PageContent {
 
     int x = 0;
     int w = BookScreen.PAGE_WIDTH;
-    if (centerTitle) {
+    if (isCentered()) {
       w = (int)Math.ceil(this.parent.parent.parent.fontRenderer.getStringWidth(titleText) * title.scale);
       x = (BookScreen.PAGE_WIDTH - w) / 2;
     }
-    list.add(new TextElement(x, y, w, largeTitle ? 11 : 9, title));
+    list.add(new TextElement(x, y, w, isLarge ? 11 : 9, title));
   }
 
   /** Adds text to the book at the top */
