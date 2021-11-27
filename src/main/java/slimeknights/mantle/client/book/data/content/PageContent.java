@@ -125,7 +125,7 @@ public abstract class PageContent {
     int x = 0;
     int w = BookScreen.PAGE_WIDTH;
     if (isCentered()) {
-      w = (int)Math.ceil(this.parent.parent.parent.fontRenderer.getStringWidth(titleText) * title.scale);
+      w = (int)Math.ceil(this.parent.parent.parent.fontRenderer.getStringWidth(titleText) * title.scale) + 1;
       x = (BookScreen.PAGE_WIDTH - w) / 2;
     }
     list.add(new TextElement(x, y, w, isLarge ? 11 : 9, title));
