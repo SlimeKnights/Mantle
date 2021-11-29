@@ -1,8 +1,6 @@
 package slimeknights.mantle.util;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,8 +78,7 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
   private int attackReady = 0;
 
   /** Forces the cooldown tracker to enable even if the offhand is not in {@link slimeknights.mantle.data.MantleTags.Items#OFFHAND_COOLDOWN}. Intended to be set in equipment change events, not serialized */
-  @Getter @Setter
-  private boolean forceEnable = false;
+  private int forceEnable = 0;
 
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
@@ -94,6 +91,23 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
       return 0;
     }
     return player.ticksExisted;
+  }
+
+  /** If true, the tracker is enabled despite a cooldown item not being held */
+  public boolean isForceEnable() {
+    return forceEnable > 0;
+  }
+
+  /**
+   * Call this method when your item causing offhand cooldown to be needed is enabled and disabled. If multiple placces call this, the tracker will automatically keep enabled until all places disable
+   * @param force  If true, enable. If false, disable
+   */
+  public void setForceEnable(boolean force) {
+    if (force) {
+      forceEnable++;
+    } else {
+      forceEnable--;
+    }
   }
 
   /**
