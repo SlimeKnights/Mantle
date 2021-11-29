@@ -133,6 +133,10 @@ public class ContentListing extends PageContent {
     for (List<TextData> column : this.entries) {
       // add each page to the column
       for (TextData data : column) {
+        if (y >= columnHeight) {
+          x += width;
+          y = 0;
+        }
         String text = data.text;
         if (text.isEmpty()) {
           y += LINE_HEIGHT;
@@ -141,10 +145,6 @@ public class ContentListing extends PageContent {
           int height = this.parent.parent.parent.fontRenderer.getWordWrappedHeight(text, width) * LINE_HEIGHT / 9;
           list.add(new ListingLeftElement(x, y + yOff, width, height, data.bold, data));
           y += height;
-        }
-        if (y >= columnHeight) {
-          x += width;
-          y = 0;
         }
       }
       // reset column
