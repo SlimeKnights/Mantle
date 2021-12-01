@@ -47,15 +47,16 @@ public abstract class BookTransformer {
 
     public static final IndexTranformer INSTANCE = new IndexTranformer();
 
-    /** Gets the pages needed for the given section count, essentially a ceiling divide by 9 */
-    private static int getIndexPagesNeeded(int sectionCount) {
-      int needed = sectionCount / 9;
-      if (sectionCount % 9 != 0) needed++;
-      return needed;
+    /** Divides a number by the given divisor, rounding up */
+    private static int ceilingDivide(int value, int divisor) {
+      int result = value / divisor;
+      if (value % divisor != 0) result++;
+      return result;
     }
 
     @Override
     public void transform(BookData book) {
+      int sectionsPerPage = book.appearance.drawFourColumnIndex ? 12 : 9;
       SectionData index = new SectionData(true) {
         @Override
         public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
@@ -67,7 +68,7 @@ public abstract class BookTransformer {
             return;
           }
           visibleSections.remove(0);
-          PageData[] pages = new PageData[getIndexPagesNeeded(visibleSections.size())];
+          PageData[] pages = new PageData[ceilingDivide(visibleSections.size(), sectionsPerPage)];
           for (int i = 0; i < pages.length; i++) {
             pages[i] = new PageData(true);
 
@@ -76,7 +77,8 @@ public abstract class BookTransformer {
             ContentSectionList content = new ContentSectionList();
             pages[i].content = content;
 
-            for (int j = i * 9; j - i * 9 < 9 && j < visibleSections.size(); j++) {
+            int pageStart = i * sectionsPerPage;
+            for (int j = pageStart; j - pageStart < 16 && j < visibleSections.size(); j++) {
               content.addSection(visibleSections.get(j));
             }
           }
@@ -87,7 +89,7 @@ public abstract class BookTransformer {
       // add in some blank pages so the padding transformer has an accurate count
       List<SectionData> visibleSections = book.getVisibleSections(null);
       if (!visibleSections.isEmpty()) {
-        PageData[] pages = new PageData[getIndexPagesNeeded(visibleSections.size() - 1)];
+        PageData[] pages = new PageData[ceilingDivide(visibleSections.size() - 1, sectionsPerPage)];
         for (int i = 0; i < pages.length; i++) {
           pages[i] = new PageData(true);
           pages[i].name = "page" + (i + 1);

@@ -35,6 +35,8 @@ public class AppearanceData implements IDataItem {
   public boolean drawPageNumbers = true;
   /** If true, draws the text below elements in selection lists such as indexes */
   public boolean drawSectionListText = false;
+  /** If true, draws the index with 4 columns. False draws with 3 */
+  public boolean drawFourColumnIndex = false;
 
   /** If true, titles on pages will be centered */
   public boolean centerPageTitles = false;
