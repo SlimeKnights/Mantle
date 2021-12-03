@@ -27,7 +27,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class ContentStructure extends PageContent {
 
-  public static final transient String ID = "structure";
+  public static final transient ResourceLocation ID = Mantle.getResource("structure");
 
   public String title;
   public String data;

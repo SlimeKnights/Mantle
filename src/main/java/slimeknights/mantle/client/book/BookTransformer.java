@@ -144,7 +144,7 @@ public abstract class BookTransformer {
 
           for (int j = 0; j < text.length; j++) {
             text[j] = new TextData((i * ENTRIES_PER_PAGE + j + 1) + ". " + section.pages.get(i * ENTRIES_PER_PAGE + j).getTitle());
-            text[j].action = "go-to-page-rtn:" + section.name + "." + section.pages.get(i * ENTRIES_PER_PAGE + j).name;
+            text[j].action = "mantle:go-to-page-rtn " + section.name + "." + section.pages.get(i * ENTRIES_PER_PAGE + j).name;
           }
 
           pages[i].content = new ContentTableOfContents(i == 0 ? section.getTitle() : "", text);

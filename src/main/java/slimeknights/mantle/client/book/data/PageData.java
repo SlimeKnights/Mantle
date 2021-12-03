@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.book.data;
 
 import net.minecraft.resources.IResource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.PageContent;
@@ -18,7 +20,7 @@ import java.lang.reflect.Modifier;
 public class PageData implements IDataItem {
 
   public String name = null;
-  public String type = "";
+  public ResourceLocation type = Mantle.getResource("blank");
   public String data = "";
   public float scale = 1.0F;
 
@@ -46,6 +48,11 @@ public class PageData implements IDataItem {
   public void load() {
     if (this.name == null) {
       this.name = "page" + this.parent.unnamedPageCounter++;
+    }
+
+    // Redirect all minecraft:page to mantle:page as that would usually mean the namespace was left unspecified
+    if (this.type.getNamespace().equals("minecraft")) {
+      this.type = new ResourceLocation("mantle", this.type.getPath());
     }
 
     this.name = this.name.toLowerCase();

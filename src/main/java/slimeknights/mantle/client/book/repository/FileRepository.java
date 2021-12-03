@@ -17,9 +17,9 @@ import java.util.List;
 
 public class FileRepository extends BookRepository {
 
-  public final String location;
+  public final ResourceLocation location;
 
-  public FileRepository(String location) {
+  public FileRepository(ResourceLocation location) {
     this.location = location;
   }
 

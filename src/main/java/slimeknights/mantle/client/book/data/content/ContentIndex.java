@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data.content;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.Data;
+import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -26,7 +27,7 @@ import java.util.Set;
  * </ul>
  */
 public class ContentIndex extends ContentListing {
-  public static final transient String ID = "index";
+  public static final transient ResourceLocation ID = Mantle.getResource("index");
 
   private transient boolean loaded = false;
   private String[] hidden;

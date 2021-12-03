@@ -2,7 +2,6 @@ package slimeknights.mantle.client.book.data.content;
 
 import net.minecraft.util.Util;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -42,7 +41,7 @@ public class ContentListing extends PageContent {
     TextData data = new TextData(text);
     data.bold = subSection;
     if (link != null) {
-      data.action = ProtocolGoToPage.GO_TO_RTN + ":" + link.parent.name + "." + link.name;
+      data.action = "mantle:go-to-page-rtn " + link.parent.name + "." + link.name;
     }
     this.entries.get(this.entries.size() - 1).add(data);
   }

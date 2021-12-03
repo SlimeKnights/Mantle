@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
 import slimeknights.mantle.client.book.data.BookData;
@@ -53,50 +54,50 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * Maps page content presets to names
    */
-  private static final HashMap<String, Class<? extends PageContent>> typeToContentMap = new HashMap<>();
+  private static final HashMap<ResourceLocation, Class<? extends PageContent>> typeToContentMap = new HashMap<>();
 
   /**
    * Internal registry of all books for the purposes of the reloader, maps books to name
    */
-  private static final HashMap<String, BookData> books = new HashMap<>();
+  private static final HashMap<ResourceLocation, BookData> books = new HashMap<>();
 
   public BookLoader() {
     // Register page types
-    registerPageType("blank", ContentBlank.class);
-    registerPageType("text", ContentText.class);
+    registerPageType(ContentBlank.ID, ContentBlank.class);
+    registerPageType(ContentText.ID, ContentText.class);
     registerPageType(ContentPadding.LEFT_ID, ContentPadding.ContentLeftPadding.class);
     registerPageType(ContentPadding.RIGHT_ID, ContentPadding.ContentRightPadding.class);
-    registerPageType("image", ContentImage.class);
-    registerPageType("image with text below", ContentImageText.class);
-    registerPageType("text with image below", ContentTextImage.class);
-    registerPageType("text with left image etch", ContentTextLeftImage.class);
-    registerPageType("text with right image etch", ContentTextRightImage.class);
-    registerPageType("crafting", ContentCrafting.class);
-    registerPageType("smelting", ContentSmelting.class);
-    registerPageType("smithing", ContentSmithing.class);
-    registerPageType("block interaction", ContentBlockInteraction.class);
+    registerPageType(ContentImage.ID, ContentImage.class);
+    registerPageType(ContentImageText.ID, ContentImageText.class);
+    registerPageType(ContentTextImage.ID, ContentTextImage.class);
+    registerPageType(ContentTextLeftImage.ID, ContentTextLeftImage.class);
+    registerPageType(ContentTextRightImage.ID, ContentTextRightImage.class);
+    registerPageType(ContentCrafting.ID, ContentCrafting.class);
+    registerPageType(ContentSmelting.ID, ContentSmelting.class);
+    registerPageType(ContentSmithing.ID, ContentSmithing.class);
+    registerPageType(ContentBlockInteraction.ID, ContentBlockInteraction.class);
     registerPageType(ContentStructure.ID, ContentStructure.class);
     registerPageType(ContentIndex.ID, ContentIndex.class);
     registerPageType(ContentShowcase.ID, ContentShowcase.class);
 
     // Register action protocols
-    StringActionProcessor.registerProtocol(new ProtocolGoToPage());
-    StringActionProcessor.registerProtocol(new ProtocolGoToPage(true, ProtocolGoToPage.GO_TO_RTN));
+    StringActionProcessor.registerProtocol(Mantle.getResource("go-to-page"), new ProtocolGoToPage(false));
+    StringActionProcessor.registerProtocol(Mantle.getResource("go-to-page-rtn"), new ProtocolGoToPage(true));
   }
 
   /**
    * Registers a type of page prefabricate
    *
-   * @param name  The name of the page type
+   * @param id    The name of the page type
    * @param clazz The PageContent class for this page type
    * @RecommendedInvoke init
    */
-  public static void registerPageType(String name, Class<? extends PageContent> clazz) {
-    if (typeToContentMap.containsKey(name)) {
-      throw new IllegalArgumentException("Page type " + name + " already in use.");
+  public static void registerPageType(ResourceLocation id, Class<? extends PageContent> clazz) {
+    if (typeToContentMap.containsKey(id)) {
+      throw new IllegalArgumentException("Page type " + id + " already in use.");
     }
 
-    typeToContentMap.put(name, clazz);
+    typeToContentMap.put(id, clazz);
   }
 
   /**
@@ -106,7 +107,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    * @return The class of the page type, ContentError.class if page type not registered
    */
   @Nullable
-  public static Class<? extends PageContent> getPageType(String name) {
+  public static Class<? extends PageContent> getPageType(ResourceLocation name) {
     return typeToContentMap.get(name);
   }
 
@@ -114,28 +115,26 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    * Adds a book to the loader, and returns a reference object
    * Be warned that the returned BookData object is not immediately populated, and is instead populated when the resources are loaded/reloaded
    *
-   * @param name         The name of the book, modid: will be automatically appended to the front of the name unless that is already added
+   * @param id           The ID of the book
    * @param repositories All the repositories the book will load the sections from
    * @return The book object, not immediately populated
    */
-  public static BookData registerBook(String name, BookRepository... repositories) {
-    return registerBook(name, true, true, repositories);
+  public static BookData registerBook(ResourceLocation id, BookRepository... repositories) {
+    return registerBook(id, true, true, repositories);
   }
 
   /**
    * Adds a book to the loader, and returns a reference object
    * Be warned that the returned BookData object is not immediately populated, and is instead populated when the resources are loaded/reloaded
    *
-   * @param name               The name of the book, modid: will be automatically appended to the front of the name unless that is already added
+   * @param id                 The ID of the book
    * @param appendIndex        Whether an index should be added to the front of the book using a BookTransformer
    * @param appendContentTable Whether a table of contents should be added to the front of each section using a BookTransformer
    * @param repositories       All the repositories the book will load the sections from
    * @return The book object, not immediately populated
    */
-  public static BookData registerBook(String name, boolean appendIndex, boolean appendContentTable, BookRepository... repositories) {
+  public static BookData registerBook(ResourceLocation id, boolean appendIndex, boolean appendContentTable, BookRepository... repositories) {
     BookData info = new BookData(repositories);
-
-    books.put(name.contains(":") ? name : ModLoadingContext.get().getActiveContainer().getNamespace() + ":" + name, info);
 
     if (appendIndex) {
       info.addTransformer(BookTransformer.indexTranformer());
@@ -144,6 +143,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
       info.addTransformer(BookTransformer.contentTableTransformer());
     }
 
+    books.put(id, info);
     return info;
   }
 

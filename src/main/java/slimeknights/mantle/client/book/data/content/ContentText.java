@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 
 @OnlyIn(Dist.CLIENT)
 public class ContentText extends PageContent {
+  public static final ResourceLocation ID = Mantle.getResource("text");
 
   public String title = null;
   public TextData[] text;

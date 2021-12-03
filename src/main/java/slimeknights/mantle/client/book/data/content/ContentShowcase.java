@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 
 /** Page that showcases an item with text below */
 public class ContentShowcase extends PageContent {
-  public static final transient String ID = "showcase";
+  public static final transient ResourceLocation ID = Mantle.getResource("showcase");
 
   /** Title of the page */
   public String title = null;

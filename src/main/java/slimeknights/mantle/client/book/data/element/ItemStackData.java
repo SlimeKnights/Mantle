@@ -2,7 +2,6 @@ package slimeknights.mantle.client.book.data.element;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class ItemStackData implements IDataElement {
 
   public String itemList = null;
-  public String tag = null;
+  public ResourceLocation tag = null;
   public transient String action;
   private transient NonNullList<ItemStack> items;
 
@@ -117,7 +116,7 @@ public class ItemStackData implements IDataElement {
     this.isTag = true;
     this.tagLoaded = true;
 
-    ITag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
+    ITag<Item> values = ItemTags.getCollection().get(this.tag);
     if (values != null) {
       this.items = values.getAllElements().stream().map(ItemStack::new).collect(Collectors.toCollection(NonNullList::create));
     } else {
@@ -131,7 +130,7 @@ public class ItemStackData implements IDataElement {
       return;
     }
 
-    if (!StringUtils.isNullOrEmpty(this.tag) && ResourceLocation.isResouceNameValid(this.tag)) {
+    if (this.tag != null) {
       this.loadTag();
       this.id = "->itemList";
       return;
