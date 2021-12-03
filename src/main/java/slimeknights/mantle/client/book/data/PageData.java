@@ -4,6 +4,8 @@ import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
@@ -17,12 +19,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 @OnlyIn(Dist.CLIENT)
-public class PageData implements IDataItem {
+public class PageData implements IDataItem, IConditional {
 
   public String name = null;
   public ResourceLocation type = Mantle.getResource("blank");
   public String data = "";
   public float scale = 1.0F;
+  public ICondition condition = TrueCondition.INSTANCE;
 
   public transient SectionData parent;
   public transient BookRepository source;
@@ -146,5 +149,10 @@ public class PageData implements IDataItem {
   public String getTitle() {
     String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
     return title == null ? this.name : title;
+  }
+
+  @Override
+  public boolean isConditionMet() {
+    return condition.test();
   }
 }

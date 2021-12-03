@@ -73,7 +73,7 @@ public class BookData implements IDataItem {
       for (BookRepository repo : this.repositories) {
         try {
           List<SectionData> repoContents = repo.getSections();
-          this.sections.addAll(repoContents);
+          this.sections.addAll(repoContents.stream().filter(SectionData::isConditionMet).collect(Collectors.toList()));
 
           for (SectionData section : repoContents) {
             section.source = repo;

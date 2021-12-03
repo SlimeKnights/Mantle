@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import slimeknights.mantle.Mantle;
@@ -33,6 +33,7 @@ import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
 import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
+import slimeknights.mantle.client.book.data.deserializer.ConditionDeserializer;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.MantleNetwork;
@@ -49,7 +50,11 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * GSON object to be used for book loading purposes
    */
-  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).registerTypeAdapter(int.class, new HexStringDeserializer()).create();
+  public static final Gson GSON = new GsonBuilder()
+    .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+    .registerTypeAdapter(int.class, new HexStringDeserializer())
+    .registerTypeAdapter(ICondition.class, new ConditionDeserializer())
+    .create();
 
   /**
    * Maps page content presets to names
