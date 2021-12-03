@@ -68,7 +68,7 @@ public class PageData implements IDataItem, IConditional {
         String data = this.source.resourceToString(pageInfo);
         if (!data.isEmpty()) {
           // Test if the page type is specified within the content iteself
-          PageTypeOverrider overrider = BookLoader.GSON.fromJson(data, PageTypeOverrider.class);
+          PageTypeOverrider overrider = BookLoader.getGson().fromJson(data, PageTypeOverrider.class);
           if (overrider.type != null) {
             if (overrider.type.getNamespace().equals("minecraft")) {
               overrider.type = new ResourceLocation("mantle", overrider.type.getPath());
@@ -83,7 +83,7 @@ public class PageData implements IDataItem, IConditional {
 
           if (ctype != null) {
             try {
-              this.content = BookLoader.GSON.fromJson(data, ctype);
+              this.content = BookLoader.getGson().fromJson(data, ctype);
             } catch (Exception e) {
               this.content = new ContentError("Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
             }

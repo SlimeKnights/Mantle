@@ -35,12 +35,14 @@ import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.book.data.deserializer.ConditionDeserializer;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
+import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
 import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
@@ -50,11 +52,9 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * GSON object to be used for book loading purposes
    */
-  public static final Gson GSON = new GsonBuilder()
-    .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-    .registerTypeAdapter(int.class, new HexStringDeserializer())
-    .registerTypeAdapter(ICondition.class, new ConditionDeserializer())
-    .create();
+  private static Gson gson;
+  private static boolean gsonDirty = true;
+  private static final HashMap<Type, Object> gsonTypeAdapters = new HashMap<>();
 
   /**
    * Maps page content presets to names
@@ -88,6 +88,12 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     // Register action protocols
     StringActionProcessor.registerProtocol(Mantle.getResource("go-to-page"), new ProtocolGoToPage(false));
     StringActionProcessor.registerProtocol(Mantle.getResource("go-to-page-rtn"), new ProtocolGoToPage(true));
+
+    // Register GSON type adapters
+    registerGsonTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+    registerGsonTypeAdapter(int.class, new HexStringDeserializer());
+    registerGsonTypeAdapter(ICondition.class, new ConditionDeserializer());
+    registerGsonTypeAdapter(IngredientData.class, new IngredientData.Deserializer());
   }
 
   /**
@@ -175,6 +181,26 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    */
   public static void updateSavedPage(BlockPos pos, String page) {
     MantleNetwork.INSTANCE.network.sendToServer(new UpdateLecternPagePacket(pos, page));
+  }
+
+  public static Gson getGson() {
+    if(gson == null || gsonDirty) {
+      GsonBuilder builder = new GsonBuilder();
+
+      for(Type type : gsonTypeAdapters.keySet()) {
+        builder.registerTypeAdapter(type, gsonTypeAdapters.get(type));
+      }
+
+      gson = builder.create();
+      gsonDirty = false;
+    }
+
+    return gson;
+  }
+
+  public static void registerGsonTypeAdapter(Type type, Object adapter) {
+    gsonTypeAdapters.put(type, adapter);
+    gsonDirty = true;
   }
 
   /**

@@ -25,7 +25,7 @@ public class FileRepository extends BookRepository {
 
   @Override
   public List<SectionData> getSections() {
-    return new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionData[].class)));
+    return new ArrayList<>(Arrays.asList(BookLoader.getGson().fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionData[].class)));
   }
 
   @Override

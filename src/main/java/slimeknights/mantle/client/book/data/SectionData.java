@@ -93,7 +93,7 @@ public class SectionData implements IDataItem, IConditional {
    * @return ArrayList of pages for the book
    */
   protected ArrayList<PageData> getPages(String data) {
-    List<PageData> pages = Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class));
+    List<PageData> pages = Arrays.asList(BookLoader.getGson().fromJson(data, PageData[].class));
 
     return pages.stream().filter(PageData::isConditionMet).collect(Collectors.toCollection(ArrayList::new));
   }

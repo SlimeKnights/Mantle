@@ -15,7 +15,6 @@ import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentError;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.network.MantleNetwork;
@@ -38,7 +37,6 @@ public class BookData implements IDataItem {
   public transient int unnamedSectionCounter = 0;
   public transient ArrayList<SectionData> sections = new ArrayList<>();
   public transient AppearanceData appearance = new AppearanceData();
-  public transient ArrayList<ItemStackData.ItemLink> itemLinks = new ArrayList<>();
   public transient HashMap<String, String> strings = new HashMap<>();
   public transient FontRenderer fontRenderer;
   private transient boolean initialized = false;
@@ -68,7 +66,6 @@ public class BookData implements IDataItem {
       this.initialized = true;
       this.sections.clear();
       this.appearance = new AppearanceData();
-      this.itemLinks.clear();
 
       for (BookRepository repo : this.repositories) {
         try {
@@ -94,23 +91,13 @@ public class BookData implements IDataItem {
 
         if (repo.resourceExists(appearanceLocation)) {
           try {
-            this.appearance = BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
+            this.appearance = BookLoader.getGson().fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
           } catch (Exception e) {
             e.printStackTrace();
           }
         }
 
         this.appearance.load();
-
-        ResourceLocation itemLinkLocation = repo.getResourceLocation("items.json");
-
-        if (repo.resourceExists(itemLinkLocation)) {
-          try {
-            this.itemLinks = new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(repo.resourceToString(repo.getResource(itemLinkLocation)), ItemStackData.ItemLink[].class)));
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
 
         ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
 
@@ -336,17 +323,6 @@ public class BookData implements IDataItem {
     return (int) Math.ceil((this.getPageCount(advancementCache) - 1) / 2F) + 1;
   }
 
-  /** Gets the action to perform when clicking the item */
-  public String getItemAction(ItemStackData item) {
-    for (ItemStackData.ItemLink link : this.itemLinks) {
-      if (item.id.equals(link.item.id) && (!link.damageSensitive)) {
-        return link.action;
-      }
-    }
-
-    return "";
-  }
-
   /** Gets a list of all visible sections, sensitive to current advancements */
   public List<SectionData> getVisibleSections(@Nullable BookScreen.AdvancementCache advancementCache) {
     List<SectionData> visible = new ArrayList<>();
@@ -416,9 +392,7 @@ public class BookData implements IDataItem {
   public void openGui(BlockPos pos, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
 
-    Consumer<?> bookPickup = (v) -> {
-      MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
-    };
+    Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
 
     openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
   }

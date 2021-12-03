@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -115,11 +116,8 @@ public class ItemElement extends SizedBookElement {
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if (mouseButton == 0 && this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
-      if (this.action != null) {
+      if (!StringUtils.isNullOrEmpty(this.action)) {
         StringActionProcessor.process(this.action, this.parent);
-      }
-      else {
-        this.parent.itemClicked(this.itemCycle.get(this.currentItem));
       }
     }
   }

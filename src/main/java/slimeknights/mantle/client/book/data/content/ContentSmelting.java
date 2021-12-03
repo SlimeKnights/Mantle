@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
+import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -45,9 +45,9 @@ public class ContentSmelting extends PageContent {
   public static final transient float ITEM_SCALE = 2.0F;
 
   public String title = "Smelting";
-  public ItemStackData input;
-  public ItemStackData result;
-  public ItemStackData fuel;
+  public IngredientData input;
+  public IngredientData result;
+  public IngredientData fuel;
   public int cookTime = 200;
   public TextData[] description;
   public String recipe;
@@ -99,9 +99,9 @@ public class ContentSmelting extends PageContent {
       IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
 
       if (recipe instanceof AbstractCookingRecipe) {
-        this.input = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
+        this.input = IngredientData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
         this.cookTime = ((AbstractCookingRecipe) recipe).getCookTime();
-        this.result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
+        this.result = IngredientData.getItemStackData(recipe.getRecipeOutput());
       }
     }
   }

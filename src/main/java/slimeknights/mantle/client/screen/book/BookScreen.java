@@ -12,17 +12,14 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.multiplayer.ClientAdvancementManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
-import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 
 import javax.annotation.Nullable;
@@ -596,10 +593,6 @@ public class BookScreen extends Screen {
     this.leftElements.clear();
     this.rightElements.clear();
     this.buildPages();
-  }
-
-  public void itemClicked(ItemStack item) {
-    StringActionProcessor.process(this.book.getItemAction(ItemStackData.getItemStackData(item, true)), this);
   }
 
   private void buildPages() {
