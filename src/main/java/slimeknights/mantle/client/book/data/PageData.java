@@ -53,11 +53,6 @@ public class PageData implements IDataItem, IConditional {
       this.name = "page" + this.parent.unnamedPageCounter++;
     }
 
-    // Redirect all minecraft:page to mantle:page as that would usually mean the namespace was left unspecified
-    if (this.type.getNamespace().equals("minecraft")) {
-      this.type = new ResourceLocation("mantle", this.type.getPath());
-    }
-
     this.name = this.name.toLowerCase();
 
     Class<? extends PageContent> ctype = null;
@@ -70,10 +65,6 @@ public class PageData implements IDataItem, IConditional {
           // Test if the page type is specified within the content iteself
           PageTypeOverrider overrider = BookLoader.getGson().fromJson(data, PageTypeOverrider.class);
           if (overrider.type != null) {
-            if (overrider.type.getNamespace().equals("minecraft")) {
-              overrider.type = new ResourceLocation("mantle", overrider.type.getPath());
-            }
-
             ctype = BookLoader.getPageType(overrider.type);
           }
 

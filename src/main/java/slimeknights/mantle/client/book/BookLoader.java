@@ -37,6 +37,7 @@ import slimeknights.mantle.client.book.data.deserializer.ConditionDeserializer;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.repository.BookRepository;
+import slimeknights.mantle.data.ResourceLocationSerializer;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
 import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
@@ -90,7 +91,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     StringActionProcessor.registerProtocol(Mantle.getResource("go-to-page-rtn"), new ProtocolGoToPage(true));
 
     // Register GSON type adapters
-    registerGsonTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+    registerGsonTypeAdapter(ResourceLocation.class, ResourceLocationSerializer.resourceLocation("mantle"));
     registerGsonTypeAdapter(int.class, new HexStringDeserializer());
     registerGsonTypeAdapter(ICondition.class, new ConditionDeserializer());
     registerGsonTypeAdapter(IngredientData.class, new IngredientData.Deserializer());
