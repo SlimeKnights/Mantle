@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data;
 
+import com.google.gson.JsonElement;
 import net.minecraft.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +18,8 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class PageData implements IDataItem, IConditional {
@@ -26,6 +29,9 @@ public class PageData implements IDataItem, IConditional {
   public String data = "";
   public float scale = 1.0F;
   public ICondition condition = TrueCondition.INSTANCE;
+
+  /** Contains arbitrary data to be used by custom transformers and other things */
+  public Map<ResourceLocation, JsonElement> extraData = Collections.emptyMap();
 
   public transient SectionData parent;
   public transient BookRepository source;

@@ -1,8 +1,11 @@
 package slimeknights.mantle.client.book.data;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.IResource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -16,7 +19,9 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,9 @@ public class SectionData implements IDataItem, IConditional {
   public boolean hideWhenLocked = false;
   public String data = "";
   public ICondition condition = TrueCondition.INSTANCE;
+
+  /** Contains arbitrary data to be used by custom transformers and other things */
+  public Map<ResourceLocation, JsonElement> extraData = Collections.emptyMap();
 
   public transient int unnamedPageCounter = 0;
   public transient BookData parent;
