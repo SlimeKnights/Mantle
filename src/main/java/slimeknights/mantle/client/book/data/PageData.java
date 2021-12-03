@@ -60,12 +60,26 @@ public class PageData implements IDataItem, IConditional {
 
     this.name = this.name.toLowerCase();
 
-    if (!this.data.equals("no-load")) {
+    Class<? extends PageContent> ctype = null;
+
+    if (!this.data.isEmpty() && !this.data.equals("no-load")) {
       IResource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if (pageInfo != null) {
         String data = this.source.resourceToString(pageInfo);
         if (!data.isEmpty()) {
-          Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
+          // Test if the page type is specified within the content iteself
+          PageTypeOverrider overrider = BookLoader.GSON.fromJson(data, PageTypeOverrider.class);
+          if (overrider.type != null) {
+            if (overrider.type.getNamespace().equals("minecraft")) {
+              overrider.type = new ResourceLocation("mantle", overrider.type.getPath());
+            }
+
+            ctype = BookLoader.getPageType(overrider.type);
+          }
+
+          if (ctype == null) {
+            ctype = BookLoader.getPageType(this.type);
+          }
 
           if (ctype != null) {
             try {
@@ -81,8 +95,6 @@ public class PageData implements IDataItem, IConditional {
     }
 
     if (this.content == null) {
-      Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
-
       if (ctype != null) {
         try {
           this.content = ctype.newInstance();
@@ -154,5 +166,9 @@ public class PageData implements IDataItem, IConditional {
   @Override
   public boolean isConditionMet() {
     return condition.test();
+  }
+
+  private static class PageTypeOverrider {
+    public ResourceLocation type;
   }
 }
