@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
-import slimeknights.mantle.client.book.BookTransformer;
+import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;

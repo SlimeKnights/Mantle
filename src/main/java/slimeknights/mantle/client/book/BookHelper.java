@@ -19,19 +19,6 @@ public class BookHelper {
    *
    * @param item The book to check for a saved page on
    * @return The current saved page
-   * @deprecated Remove after book rework
-   */
-  @Deprecated
-  public static String getSavedPage(ItemStack item) {
-    return getCurrentSavedPage(item);
-  }
-
-  /**
-   * Returns the current saved page on the book
-   * Returns an empty string is one is not found
-   *
-   * @param item The book to check for a saved page on
-   * @return The current saved page
    */
   public static String getCurrentSavedPage(@Nullable ItemStack item) {
     if (item != null) {
@@ -45,18 +32,6 @@ public class BookHelper {
     }
 
     return "";
-  }
-
-  /**
-   * Saves the current open page to the given book ItemStack.
-   *
-   * @param item the current book
-   * @param page the current open page
-   * @deprecated Remove after book rework
-   */
-  @Deprecated
-  public static void writeSavedPage(ItemStack item, String page) {
-    writeSavedPageToBook(item, page);
   }
 
   /**
