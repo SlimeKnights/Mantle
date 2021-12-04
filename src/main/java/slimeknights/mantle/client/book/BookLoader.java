@@ -38,6 +38,7 @@ import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.book.transformer.BookTransformer;
+import slimeknights.mantle.client.book.transformer.IndexTransformer;
 import slimeknights.mantle.data.ResourceLocationSerializer;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
@@ -96,6 +97,12 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     registerGsonTypeAdapter(int.class, new HexStringDeserializer());
     registerGsonTypeAdapter(ICondition.class, new ConditionDeserializer());
     registerGsonTypeAdapter(IngredientData.class, new IngredientData.Deserializer());
+
+    // Register page types that are implicitly hidden from indexes
+    IndexTransformer.addHiddenPageType(ContentBlank.ID);
+    IndexTransformer.addHiddenPageType(ContentPadding.LEFT_ID);
+    IndexTransformer.addHiddenPageType(ContentPadding.RIGHT_ID);
+    IndexTransformer.addHiddenPageType(ContentIndex.ID);
   }
 
   /**

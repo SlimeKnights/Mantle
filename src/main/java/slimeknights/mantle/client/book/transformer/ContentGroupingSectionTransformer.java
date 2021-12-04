@@ -2,6 +2,8 @@ package slimeknights.mantle.client.book.transformer;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -16,6 +18,8 @@ import java.util.List;
  * Extended version of {@link ContentListingSectionTransformer} which supports putting entries in subgroups
  */
 public class ContentGroupingSectionTransformer extends SectionTransformer {
+  private static final ResourceLocation INDEX_EXTRA_DATA = Mantle.getResource("index");
+
   private final Boolean largeTitle;
   private final Boolean centerTitle;
   public ContentGroupingSectionTransformer(String sectionName, @Nullable Boolean largeTitle, @Nullable Boolean centerTitle) {
@@ -78,7 +82,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
 
   /** Overridable method to process a single page */
   protected boolean processPage(BookData book, GroupingBuilder builder, PageData page) {
-    if (!page.name.equals("hidden")) {
+    if (!IndexTransformer.isPageHidden(page) && !page.name.equals("hidden")) {
       builder.addPage(page.getTitle(), page);
     }
     return true;

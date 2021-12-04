@@ -61,7 +61,7 @@ public class PageData implements IDataItem, IConditional {
 
     this.name = this.name.toLowerCase();
 
-    Class<? extends PageContent> ctype = null;
+    Class<? extends PageContent> ctype = BookLoader.getPageType(type);
 
     if (!this.data.isEmpty() && !this.data.equals("no-load")) {
       IResource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
@@ -71,11 +71,12 @@ public class PageData implements IDataItem, IConditional {
           // Test if the page type is specified within the content iteself
           PageTypeOverrider overrider = BookLoader.getGson().fromJson(data, PageTypeOverrider.class);
           if (overrider.type != null) {
-            ctype = BookLoader.getPageType(overrider.type);
-          }
-
-          if (ctype == null) {
-            ctype = BookLoader.getPageType(this.type);
+            Class<? extends PageContent> overriddenType = BookLoader.getPageType(overrider.type);
+            if(overriddenType != null) {
+              ctype = BookLoader.getPageType(overrider.type);
+              // Also override the type on the page so that we can read it out in transformers
+              type = overrider.type;
+            }
           }
 
           if (ctype != null) {
