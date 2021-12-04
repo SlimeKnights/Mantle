@@ -90,12 +90,13 @@ public class ConsumerWrapperBuilder {
         Wrapped toMerge = (Wrapped) original;
         this.original = toMerge.original;
         this.conditions = ImmutableList.<ICondition>builder().addAll(toMerge.conditions).addAll(conditions).build();
-        if (overrideName != null || override != null) {
-          this.override = override;
-          this.overrideName = overrideName;
-        } else {
+        // consumer wrappers are processed inside out, so the innermost wrapped recipe is the one with the most recent serializer override
+        if (toMerge.override != null || toMerge.overrideName != null) {
           this.override = toMerge.override;
           this.overrideName = toMerge.overrideName;
+        } else {
+          this.override = override;
+          this.overrideName = overrideName;
         }
       } else {
         this.original = original;
