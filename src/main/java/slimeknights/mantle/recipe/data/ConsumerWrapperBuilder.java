@@ -1,5 +1,6 @@
 package slimeknights.mantle.recipe.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.data.IFinishedRecipe;
@@ -84,10 +85,24 @@ public class ConsumerWrapperBuilder {
     private final ResourceLocation overrideName;
 
     private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override, @Nullable ResourceLocation overrideName) {
-      this.original = original;
-      this.conditions = conditions;
-      this.override = override;
-      this.overrideName = overrideName;
+      // if wrapping another wrapper result, merge the two together
+      if (original instanceof Wrapped) {
+        Wrapped toMerge = (Wrapped) original;
+        this.original = toMerge.original;
+        this.conditions = ImmutableList.<ICondition>builder().addAll(toMerge.conditions).addAll(conditions).build();
+        if (overrideName != null || override != null) {
+          this.override = override;
+          this.overrideName = overrideName;
+        } else {
+          this.override = toMerge.override;
+          this.overrideName = toMerge.overrideName;
+        }
+      } else {
+        this.original = original;
+        this.conditions = conditions;
+        this.override = override;
+        this.overrideName = overrideName;
+      }
     }
 
     @Override
