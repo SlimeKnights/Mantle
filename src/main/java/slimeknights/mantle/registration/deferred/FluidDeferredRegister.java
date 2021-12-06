@@ -115,7 +115,7 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
   public <F extends ForgeFlowingFluid> FluidObject<F> register(String name, String tagName, FluidAttributes.Builder builder,
       Function<Properties,? extends F> still, Function<Properties,? extends F> flowing, Material material, int lightLevel) {
     return register(
-      name, tagName, new FluidBuilder(builder).explosionResistance(100f), still, flowing,
+      name, tagName, new FluidBuilder(builder.luminosity(lightLevel)).explosionResistance(100f), still, flowing,
       (fluid) -> new FlowingFluidBlock(fluid, Block.Properties.create(material).doesNotBlockMovement().hardnessAndResistance(100.0F).noDrops().setLightLevel((state) -> lightLevel))
     );
   }
