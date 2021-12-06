@@ -33,6 +33,7 @@ import slimeknights.mantle.loot.ReplaceItemLootModifier;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
 import slimeknights.mantle.recipe.ingredient.IngredientWithout;
 import slimeknights.mantle.registration.RegistrationHelper;
@@ -98,6 +99,7 @@ public class Mantle {
 
     CraftingHelper.register(IngredientWithout.ID, IngredientWithout.SERIALIZER);
     CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
+    CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
 
     // done here as no dedicated event
     MantleLoot.register();

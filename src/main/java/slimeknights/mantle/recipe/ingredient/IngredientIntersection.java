@@ -39,6 +39,15 @@ public class IngredientIntersection extends Ingredient {
     this(ImmutableList.copyOf(ingredients));
   }
 
+  /**
+   * Gets an intersection ingredient
+   * @param ingredients  List of ingredients to match
+   * @return  Ingredient that only matches if all the passed ingredients match
+   */
+  public static IngredientIntersection intersection(Ingredient... ingredients) {
+    return new IngredientIntersection(ingredients);
+  }
+
   @Override
   public boolean test(@Nullable ItemStack stack) {
     if (stack == null || stack.isEmpty()) {
