@@ -17,7 +17,6 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
-import slimeknights.mantle.client.render.RenderingHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -236,15 +235,17 @@ public class TextDataRenderer {
   }
 
   public static void drawScaledString(MatrixStack matrixStack, FontRenderer font, String text, float x, float y, int color, boolean dropShadow, float scale) {
-    RenderSystem.pushMatrix();
-    RenderSystem.translatef(x, y, 0);
-    RenderSystem.scalef(scale, scale, 1F);
+    matrixStack.push();
+    matrixStack.translate(x, y, 0);
+    matrixStack.scale(scale, scale, 1F);
+
     if (dropShadow) {
       font.drawStringWithShadow(matrixStack, text, 0, 0, color);
     } else {
       font.drawString(matrixStack, text, 0, 0, color);
     }
-    RenderSystem.popMatrix();
+
+    matrixStack.pop();
   }
 
   private static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {

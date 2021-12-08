@@ -194,9 +194,9 @@ public class TextComponentDataRenderer {
    * @param scale         the scale to render as
    */
   public static void drawScaledTextComponent(MatrixStack matrixStack, FontRenderer font, ITextProperties textComponent, float x, float y, boolean dropShadow, float scale) {
-    RenderSystem.pushMatrix();
-    RenderSystem.translatef(x, y, 0);
-    RenderSystem.scalef(scale, scale, 1F);
+    matrixStack.push();
+    matrixStack.translate(x, y, 0);
+    matrixStack.scale(scale, scale, 1F);
 
     if (dropShadow) {
       font.func_238407_a_(matrixStack, LanguageMap.getInstance().func_241870_a(textComponent), 0, 0, 0);
@@ -204,7 +204,7 @@ public class TextComponentDataRenderer {
       font.func_238422_b_(matrixStack, LanguageMap.getInstance().func_241870_a(textComponent), 0, 0, 0);
     }
 
-    RenderSystem.popMatrix();
+    matrixStack.pop();
   }
 
   /**

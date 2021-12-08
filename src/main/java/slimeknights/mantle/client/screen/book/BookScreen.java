@@ -20,6 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
+import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 
 import javax.annotation.Nullable;
@@ -58,9 +59,9 @@ public class BookScreen extends Screen {
 
   public final BookData book;
   @Nullable
-  private Consumer<String> pageUpdater;
+  private final Consumer<String> pageUpdater;
   @Nullable
-  private Consumer<?> bookPickup;
+  private final Consumer<?> bookPickup;
 
   private int page = -1;
   private int oldPage = -2;
@@ -102,7 +103,9 @@ public class BookScreen extends Screen {
     if (this.minecraft == null) {
       return;
     }
+
     initWidthsAndHeights();
+
     FontRenderer fontRenderer = this.book.fontRenderer;
     if (fontRenderer == null) {
       fontRenderer = this.minecraft.fontRenderer;
@@ -117,7 +120,7 @@ public class BookScreen extends Screen {
     RenderSystem.enableBlend();
 
     // The books are unreadable at Gui Scale set to small, so we'll double the scale
-    RenderSystem.pushMatrix();
+    matrixStack.push();
     RenderSystem.color3f(1F, 1F, 1F);
 
     float coverR = ((this.book.appearance.coverColor >> 16) & 0xff) / 255.F;
@@ -137,20 +140,20 @@ public class BookScreen extends Screen {
       if (!this.book.appearance.title.isEmpty()) {
         blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-        RenderSystem.pushMatrix();
+        matrixStack.push();
 
         float scale = fontRenderer.getStringWidth(this.book.appearance.title) <= 67 ? 2.5F : 2F;
 
-        RenderSystem.scalef(scale, scale, 1F);
+        matrixStack.scale(scale, scale, 1F);
         fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.title, (this.width / 2) / scale + 3 - fontRenderer.getStringWidth(this.book.appearance.title) / 2, (this.height / 2 - fontRenderer.FONT_HEIGHT / 2) / scale - 4, 0xAE8000);
-        RenderSystem.popMatrix();
+        matrixStack.pop();
       }
 
       if (!this.book.appearance.subtitle.isEmpty()) {
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(1.5F, 1.5F, 1F);
+        matrixStack.push();
+        matrixStack.scale(1.5F, 1.5F, 1F);
         fontRenderer.drawStringWithShadow(matrixStack, this.book.appearance.subtitle, (this.width / 2) / 1.5F + 7 - fontRenderer.getStringWidth(this.book.appearance.subtitle) / 2, (this.height / 2 + 100 - fontRenderer.FONT_HEIGHT * 2) / 1.5F, 0xAE8000);
-        RenderSystem.popMatrix();
+        matrixStack.pop();
       }
     } else {
       render.bindTexture(book.appearance.getBookTexture());
@@ -164,8 +167,8 @@ public class BookScreen extends Screen {
       if (this.page != 0) {
         blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-        RenderSystem.pushMatrix();
-        this.drawerTransform(false);
+        matrixStack.push();
+        this.drawerTransform(matrixStack, false);
 
         RenderSystem.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
 
@@ -193,7 +196,7 @@ public class BookScreen extends Screen {
           element.drawOverlay(matrixStack, mX, mY, partialTicks, fontRenderer);
         }
 
-        RenderSystem.popMatrix();
+        matrixStack.pop();
       }
 
       // Rebind texture as the font renderer binds its own texture
@@ -206,10 +209,10 @@ public class BookScreen extends Screen {
       if (this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0) {
         blit(matrixStack, this.width / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, PAGE_WIDTH_UNSCALED, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
 
-        RenderSystem.pushMatrix();
-        this.drawerTransform(true);
+        matrixStack.push();
+        this.drawerTransform(matrixStack, true);
 
-        RenderSystem.scalef(PAGE_SCALE, PAGE_SCALE, 1F);
+        matrixStack.scale(PAGE_SCALE, PAGE_SCALE, 1F);
 
         if (this.book.appearance.drawPageNumbers) {
           String pNum = (this.page - 1) * 2 + 3 + "";
@@ -235,13 +238,13 @@ public class BookScreen extends Screen {
           element.drawOverlay(matrixStack, mX, mY, partialTicks, fontRenderer);
         }
 
-        RenderSystem.popMatrix();
+        matrixStack.pop();
       }
     }
 
     super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-    RenderSystem.popMatrix();
+    matrixStack.pop();
   }
 
   @Override
@@ -328,7 +331,8 @@ public class BookScreen extends Screen {
       this.previousArrow.x = this.width / 2 - 184;
       this.nextArrow.x = this.width / 2 + 165;
 
-      this.indexArrow.visible = this.book.findSection("index") != null && (this.page - 1) * 2 + 2 > this.book.findSection("index").getPageCount();
+      SectionData index = this.book.findSection("index");
+      this.indexArrow.visible = index != null && (this.page - 1) * 2 + 2 > index.getPageCount();
     }
 
     this.previousArrow.y = this.height / 2 + 75;
@@ -500,11 +504,11 @@ public class BookScreen extends Screen {
     return false;
   }
 
-  public void drawerTransform(boolean rightSide) {
+  public void drawerTransform(MatrixStack matrixStack, boolean rightSide) {
     if (rightSide) {
-      RenderSystem.translatef(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      matrixStack.translate(this.width / 2 + PAGE_PADDING_RIGHT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     } else {
-      RenderSystem.translatef(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
+      matrixStack.translate(this.width / 2 - PAGE_WIDTH_UNSCALED + PAGE_PADDING_LEFT + PAGE_MARGIN, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2 + PAGE_PADDING_TOP + PAGE_MARGIN, 0);
     }
   }
 
