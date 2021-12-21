@@ -27,9 +27,7 @@ import slimeknights.mantle.config.Config;
 import slimeknights.mantle.data.MantleItemTagProvider;
 import slimeknights.mantle.data.MantleTags;
 import slimeknights.mantle.item.LecternBookItem;
-import slimeknights.mantle.loot.AddEntryLootModifier;
 import slimeknights.mantle.loot.MantleLoot;
-import slimeknights.mantle.loot.ReplaceItemLootModifier;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
@@ -66,7 +64,7 @@ public class Mantle {
     bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     bus.addListener(EventPriority.NORMAL, false, ModConfig.ModConfigEvent.class, Config::configChanged);
     bus.addGenericListener(IRecipeSerializer.class, this::registerRecipeSerializers);
-    bus.addGenericListener(GlobalLootModifierSerializer.class, this::registerGlobalLootModifiers);
+    bus.addGenericListener(GlobalLootModifierSerializer.class, MantleLoot::registerGlobalLootModifiers);
     MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
   }
 
@@ -100,15 +98,6 @@ public class Mantle {
     CraftingHelper.register(IngredientWithout.ID, IngredientWithout.SERIALIZER);
     CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
     CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
-
-    // done here as no dedicated event
-    MantleLoot.register();
-  }
-
-  private void registerGlobalLootModifiers(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-    RegistryAdapter<GlobalLootModifierSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
-    adapter.register(new AddEntryLootModifier.Serializer(), "add_entry");
-    adapter.register(new ReplaceItemLootModifier.Serializer(), "replace_item");
   }
 
   /**
