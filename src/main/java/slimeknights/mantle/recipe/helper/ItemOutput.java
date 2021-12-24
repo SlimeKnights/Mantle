@@ -1,4 +1,4 @@
-package slimeknights.mantle.recipe;
+package slimeknights.mantle.recipe.helper;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

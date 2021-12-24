@@ -1,7 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-@Deprecated
-package slimeknights.mantle.multiblock;
+package slimeknights.mantle.recipe.helper;
 
 import mcp.MethodsReturnNonnullByDefault;
 

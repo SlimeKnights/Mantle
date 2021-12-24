@@ -39,18 +39,6 @@ public abstract class BookElement extends AbstractGui {
 
   }
 
-  /**
-   *
-   * @param mouseX mouse x position
-   * @param mouseY mouse y position
-   * @param clickedMouseButton the clicked button
-   * @deprecated Goes unused and should be removed in 1.17 or book reworking
-   */
-  @Deprecated
-  public void mouseClickMove(double mouseX, double mouseY, int clickedMouseButton) {
-
-  }
-
   public void mouseReleased(double mouseX, double mouseY, int clickedMouseButton) {
 
   }

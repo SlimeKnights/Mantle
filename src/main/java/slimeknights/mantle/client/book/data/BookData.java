@@ -373,16 +373,6 @@ public class BookData implements IDataItem {
     openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, hand, newPage));
   }
 
-  /** @deprecated Use {@link #openGui(Hand, ItemStack)} */
-  @Deprecated
-  public void openGui(ITextComponent title, @Nullable ItemStack item) {
-    if (item == null) {
-      openGui(title, "", newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, Hand.MAIN_HAND, newPage));
-    } else {
-      openGui(Hand.MAIN_HAND, item);
-    }
-  }
-
   /**
    * Opens the GUI for a lectern containing the book
    * @param pos    Position of the lectern

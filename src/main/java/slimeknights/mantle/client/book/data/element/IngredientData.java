@@ -19,7 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.repository.BookRepository;
-import slimeknights.mantle.recipe.SizedIngredient;
+import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

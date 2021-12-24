@@ -49,12 +49,6 @@ public class AddEntryLootModifier extends LootModifier {
 		this.combinedFunctions = LootFunctionManager.compose(functions);
 	}
 
-  /** @deprecated use {@link #AddEntryLootModifier(ILootCondition[], ILootModifierCondition[], LootEntry, ILootFunction[])}} */
-  @Deprecated
-  protected AddEntryLootModifier(ILootCondition[] conditionsIn, LootEntry entry, ILootFunction[] functions, boolean requireEmpty) {
-    this(conditionsIn, requireEmpty ? new ILootModifierCondition[]{ EmptyModifierLootCondition.INSTANCE } : new ILootModifierCondition[0], entry, functions);
-  }
-
   /** Creates a builder for this loot modifier */
   public static Builder builder(LootEntry entry) {
     return new Builder(entry);
@@ -92,12 +86,7 @@ public class AddEntryLootModifier extends LootModifier {
       } else {
         modifierConditions = new ILootModifierCondition[0];
       }
-      // backwards compat
-      if (JSONUtils.getAsBoolean(object, "require_empty", false)) {
-        Mantle.logger.warn("Using deprecated Loot Modifier property require_empty, use the mantle:empty post_condition instead");
-        modifierConditions = Arrays.copyOf(modifierConditions, modifierConditions.length + 1);
-        modifierConditions[modifierConditions.length - 1] = EmptyModifierLootCondition.INSTANCE;
-      }
+
       // functions
       ILootFunction[] functions;
 			if (object.has("functions")) {

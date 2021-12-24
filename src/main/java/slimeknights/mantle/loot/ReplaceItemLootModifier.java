@@ -18,8 +18,8 @@ import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.loot.builder.AbstractLootModifierBuilder;
-import slimeknights.mantle.recipe.ItemOutput;
-import slimeknights.mantle.recipe.RecipeHelper;
+import slimeknights.mantle.recipe.helper.ItemOutput;
+import slimeknights.mantle.recipe.helper.RecipeHelper;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nonnull;
@@ -45,12 +45,6 @@ public class ReplaceItemLootModifier extends LootModifier {
     this.replacement = replacement;
     this.functions = functions;
     this.combinedFunctions = LootFunctionManager.compose(functions);
-  }
-
-  /** @deprecated use {@link #ReplaceItemLootModifier(ILootCondition[], Ingredient, ItemOutput, ILootFunction[])} */
-  @Deprecated
-  protected ReplaceItemLootModifier(ILootCondition[] conditionsIn, Item original, Item replacement) {
-    this(conditionsIn, Ingredient.of(original), ItemOutput.fromItem(replacement), new ILootFunction[0]);
   }
 
   /** Creates a builder to create a loot modifier */

@@ -1,4 +1,4 @@
-package slimeknights.mantle.recipe;
+package slimeknights.mantle.recipe.helper;
 
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;

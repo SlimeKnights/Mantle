@@ -164,10 +164,4 @@ public abstract class PageContent {
     list.add(new TextElement(5, y, BookScreen.PAGE_WIDTH, height, subText));
     return height;
   }
-
-  /** @deprecated Trivial implementation, use {@link #addTitle(ArrayList, String, boolean, int, int)}  */
-  @Deprecated
-  public void addTitle(ArrayList<BookElement> list, TextData[] title) {
-    list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, title));
-  }
 }

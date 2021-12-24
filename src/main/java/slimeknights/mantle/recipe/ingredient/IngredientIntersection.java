@@ -30,13 +30,18 @@ public class IngredientIntersection extends Ingredient {
   private final List<Ingredient> ingredients;
   private ItemStack[] intersectedMatchingStacks;
   private IntList packedMatchingStacks;
-  public IngredientIntersection(List<Ingredient> ingredients) {
+  protected IngredientIntersection(List<Ingredient> ingredients) {
     super(Stream.empty());
     this.ingredients = ingredients;
   }
 
-  public IngredientIntersection(Ingredient... ingredients) {
-    this(ImmutableList.copyOf(ingredients));
+  /**
+   * Gets an intersection ingredient
+   * @param ingredients  List of ingredients to match
+   * @return  Ingredient that only matches if all the passed ingredients match
+   */
+  public static IngredientIntersection intersection(List<Ingredient> ingredients) {
+    return new IngredientIntersection(ingredients);
   }
 
   /**
@@ -45,7 +50,7 @@ public class IngredientIntersection extends Ingredient {
    * @return  Ingredient that only matches if all the passed ingredients match
    */
   public static IngredientIntersection intersection(Ingredient... ingredients) {
-    return new IngredientIntersection(ingredients);
+    return intersection(ImmutableList.copyOf(ingredients));
   }
 
   @Override

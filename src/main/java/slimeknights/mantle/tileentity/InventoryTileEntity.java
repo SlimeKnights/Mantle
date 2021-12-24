@@ -1,5 +1,6 @@
 package slimeknights.mantle.tileentity;
 
+import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,11 +32,9 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
 
   private NonNullList<ItemStack> inventory;
   protected int stackSizeLimit;
+  @Getter
   protected IItemHandlerModifiable itemHandler;
   protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
-  /** @deprecated Use {@link #getName()}, {@link #getDefaultName()}, or {@link #getCustomName()} */
-  @Deprecated
-  protected ITextComponent inventoryTitle;
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
@@ -53,7 +52,6 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
     this.stackSizeLimit = maxStackSize;
     this.itemHandler = new InvWrapper(this);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
-    this.inventoryTitle = name;
   }
 
   @Override
@@ -68,10 +66,6 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   protected void invalidateCaps() {
     super.invalidateCaps();
     this.itemHandlerCap.invalidate();
-  }
-
-  public IItemHandlerModifiable getItemHandler() {
-    return this.itemHandler;
   }
 
   /* Inventory management */
@@ -190,12 +184,6 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
     }
   }
 
-  @Override
-  public void setCustomName(ITextComponent customName) {
-    super.setCustomName(customName);
-    this.inventoryTitle = customName;
-  }
-
   /* Supporting methods */
   @Override
   public boolean stillValid(PlayerEntity entityplayer) {
@@ -219,7 +207,6 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
     super.load(blockState, tags);
     this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
     this.readInventoryFromNBT(tags);
-    this.inventoryTitle = getName();
   }
 
   @Override
@@ -274,12 +261,6 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
         this.inventory.set(slot, stack);
       }
     }
-  }
-
-  /* Default implementations of hardly used methods */
-  @Deprecated
-  public ItemStack getStackInSlotOnClosing(int slot) {
-    return ItemStack.EMPTY;
   }
 
   @Override

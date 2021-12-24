@@ -20,31 +20,31 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
- * Ingredient that matches everything from another ingredient, without a second
+ * Ingredient that matches everything from another ingredient, minus a second ingredient
  */
-public class IngredientWithout extends Ingredient {
-  public static final ResourceLocation ID = Mantle.getResource("without");
-  public static final IIngredientSerializer<IngredientWithout> SERIALIZER = new Serializer();
+public class IngredientDifference extends Ingredient {
+  public static final ResourceLocation ID = Mantle.getResource("difference");
+  public static final IIngredientSerializer<IngredientDifference> SERIALIZER = new Serializer();
 
   private final Ingredient base;
-  private final Ingredient without;
+  private final Ingredient subtracted;
   private ItemStack[] filteredMatchingStacks;
   private IntList packedMatchingStacks;
 
-  public IngredientWithout(Ingredient base, Ingredient without) {
+  protected IngredientDifference(Ingredient base, Ingredient subtracted) {
     super(Stream.empty());
     this.base = base;
-    this.without = without;
+    this.subtracted = subtracted;
   }
 
   /**
    * Gets the set difference from the two ingredients
    * @param base     Base ingredient
-   * @param without  Ingredient to subtract
+   * @param subtracted  Ingredient to subtract
    * @return  Ingredient that {@code base} anything in base that is not in {@code without}
    */
-  public static IngredientWithout without(Ingredient base, Ingredient without) {
-    return new IngredientWithout(base, without);
+  public static IngredientDifference without(Ingredient base, Ingredient subtracted) {
+    return new IngredientDifference(base, subtracted);
   }
 
   @Override
@@ -52,14 +52,14 @@ public class IngredientWithout extends Ingredient {
     if (stack == null || stack.isEmpty()) {
       return false;
     }
-    return base.test(stack) && !without.test(stack);
+    return base.test(stack) && !subtracted.test(stack);
   }
 
   @Override
   public ItemStack[] getItems() {
     if (this.filteredMatchingStacks == null) {
       this.filteredMatchingStacks = Arrays.stream(base.getItems())
-                                          .filter(stack -> !without.test(stack))
+                                          .filter(stack -> !subtracted.test(stack))
                                           .toArray(ItemStack[]::new);
     }
     return filteredMatchingStacks;
@@ -72,7 +72,7 @@ public class IngredientWithout extends Ingredient {
 
   @Override
   public boolean isSimple() {
-    return base.isSimple() && without.isSimple();
+    return base.isSimple() && subtracted.isSimple();
   }
 
   @Override
@@ -100,34 +100,34 @@ public class IngredientWithout extends Ingredient {
     JsonObject json = new JsonObject();
     json.addProperty("type", ID.toString());
     json.add("base", base.toJson());
-    json.add("without", without.toJson());
+    json.add("subtracted", subtracted.toJson());
     return json;
   }
 
   @Override
-  public IIngredientSerializer<IngredientWithout> getSerializer() {
+  public IIngredientSerializer<IngredientDifference> getSerializer() {
     return SERIALIZER;
   }
 
-  private static class Serializer implements IIngredientSerializer<IngredientWithout> {
+  private static class Serializer implements IIngredientSerializer<IngredientDifference> {
     @Override
-    public IngredientWithout parse(JsonObject json) {
+    public IngredientDifference parse(JsonObject json) {
       Ingredient base = Ingredient.fromJson(JsonHelper.getElement(json, "base"));
-      Ingredient without = Ingredient.fromJson(JsonHelper.getElement(json, "without"));
-      return new IngredientWithout(base, without);
+      Ingredient without = Ingredient.fromJson(JsonHelper.getElement(json, "subtracted"));
+      return new IngredientDifference(base, without);
     }
 
     @Override
-    public IngredientWithout parse(PacketBuffer buffer) {
+    public IngredientDifference parse(PacketBuffer buffer) {
       Ingredient base = Ingredient.fromNetwork(buffer);
       Ingredient without = Ingredient.fromNetwork(buffer);
-      return new IngredientWithout(base, without);
+      return new IngredientDifference(base, without);
     }
 
     @Override
-    public void write(PacketBuffer buffer, IngredientWithout ingredient) {
+    public void write(PacketBuffer buffer, IngredientDifference ingredient) {
       CraftingHelper.write(buffer, ingredient.base);
-      CraftingHelper.write(buffer, ingredient.without);
+      CraftingHelper.write(buffer, ingredient.subtracted);
     }
   }
 }

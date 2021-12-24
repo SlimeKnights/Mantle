@@ -19,6 +19,7 @@ import slimeknights.mantle.loot.condition.ContainsItemModifierLootCondition;
 import slimeknights.mantle.loot.condition.EmptyModifierLootCondition;
 import slimeknights.mantle.loot.condition.ILootModifierCondition;
 import slimeknights.mantle.loot.condition.InvertedModifierLootCondition;
+import slimeknights.mantle.loot.function.RetexturedLootFunction;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
@@ -30,7 +31,7 @@ public class MantleLoot {
   /** Condition to match a block tag and property predicate */
   public static LootConditionType BLOCK_TAG_CONDITION;
   /** Function to add block entity texture to a dropped item */
-  static LootFunctionType RETEXTURED_FUNCTION;
+  public static LootFunctionType RETEXTURED_FUNCTION;
   /** Function to add a fluid to an item fluid capability */
   public static LootFunctionType SET_FLUID_FUNCTION;
 
@@ -48,7 +49,7 @@ public class MantleLoot {
     adapter.register(new ReplaceItemLootModifier.Serializer(), "replace_item");
 
     // functions
-    RETEXTURED_FUNCTION = registerFunction("fill_retextured_block", new RetexturedLootFunction.Serializer());
+    RETEXTURED_FUNCTION = registerFunction("fill_retextured_block", RetexturedLootFunction.SERIALIZER);
     SET_FLUID_FUNCTION = registerFunction("set_fluid", SetFluidLootFunction.SERIALIZER);
 
     // conditions

@@ -1,4 +1,4 @@
-package slimeknights.mantle.recipe;
+package slimeknights.mantle.recipe.helper;
 
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;

@@ -1,4 +1,4 @@
-package slimeknights.mantle.loot;
+package slimeknights.mantle.loot.function;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
@@ -13,6 +13,7 @@ import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.tileentity.TileEntity;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.item.RetexturedBlockItem;
+import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.tileentity.IRetexturedTileEntity;
 
 import java.util.Set;
@@ -22,6 +23,8 @@ import java.util.Set;
  */
 @SuppressWarnings("WeakerAccess")
 public class RetexturedLootFunction extends LootFunction {
+  public static final Serializer SERIALIZER = new Serializer();
+
   /**
    * Creates a new instance from the given conditions
    * @param conditions Conditions list
@@ -57,7 +60,7 @@ public class RetexturedLootFunction extends LootFunction {
     return MantleLoot.RETEXTURED_FUNCTION;
   }
 
-  public static class Serializer extends LootFunction.Serializer<RetexturedLootFunction> {
+  private static class Serializer extends LootFunction.Serializer<RetexturedLootFunction> {
     @Override
     public RetexturedLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, ILootCondition[] conditions) {
       return new RetexturedLootFunction(conditions);

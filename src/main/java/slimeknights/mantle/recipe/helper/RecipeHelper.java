@@ -1,4 +1,4 @@
-package slimeknights.mantle.recipe;
+package slimeknights.mantle.recipe.helper;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -18,6 +18,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import slimeknights.mantle.recipe.IMultiRecipe;
 
 import java.util.Comparator;
 import java.util.List;

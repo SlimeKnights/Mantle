@@ -119,36 +119,13 @@ public abstract class InventoryBlock extends Block {
     if (state.getBlock() != newState.getBlock()) {
       TileEntity te = worldIn.getBlockEntity(pos);
       if (te != null) {
-        // FIXME legacy support, switch to non-deprecated method in 1.17
-        if (te instanceof InventoryTileEntity) {
-          dropInventoryItems(state, worldIn, pos, (InventoryTileEntity) te);
-        } else {
-          te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            .ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
-        }
+        te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+          .ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
         worldIn.updateNeighbourForOutputSignal(pos, this);
       }
     }
 
     super.onRemove(state, worldIn, pos, newState, isMoving);
-  }
-
-  /**
-   * Called when the block is replaced to drop contained items.
-   * @param state       Block state
-   * @param worldIn     Tile world
-   * @param pos         Tile position
-   * @param inventory   Tile entity instance
-   * @deprecated  Will remove in 1.17, use {@link #dropInventoryItems(BlockState, World, BlockPos, IItemHandler)}
-   */
-  @Deprecated
-  protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, InventoryTileEntity inventory) {
-    LazyOptional<IItemHandler> itemCapability = inventory.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-    if (itemCapability.isPresent()) {
-      dropInventoryItems(state, worldIn, pos, itemCapability.orElse(EmptyItemHandler.INSTANCE));
-    } else {
-      InventoryHelper.dropContents(worldIn, pos, inventory);
-    }
   }
 
   /**

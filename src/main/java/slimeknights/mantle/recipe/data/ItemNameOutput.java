@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import slimeknights.mantle.recipe.ItemOutput;
+import slimeknights.mantle.recipe.helper.ItemOutput;
 
 import javax.annotation.Nullable;
 

@@ -13,9 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import slimeknights.mantle.loot.MantleLoot;
-import slimeknights.mantle.recipe.RecipeHelper;
-
-import net.minecraft.loot.LootFunction.Builder;
+import slimeknights.mantle.recipe.helper.RecipeHelper;
 
 /**
  * Loot function to set the fluid on a dropped item

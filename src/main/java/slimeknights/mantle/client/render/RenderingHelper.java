@@ -91,30 +91,4 @@ public class RenderingHelper {
     Minecraft.getInstance().getItemRenderer().renderStatic(item, modelItem.getTransform(), light, OverlayTexture.NO_OVERLAY, matrices, buffer);
     matrices.popPose();
   }
-
-  /**
-   * Draws hovering text on the screen
-   * @param mStack         Matrix stack instance
-   * @param textLines      Tooltip lines
-   * @param mouseX         Mouse X position
-   * @param mouseY         Mouse Y position
-   * @param screenWidth    Screen width
-   * @param screenHeight   Screen height
-   * @param maxTextWidth   Max text width
-   * @param font           Font
-   * @deprecated   Remove in 1.17, use {@link GuiUtils#drawHoveringText(MatrixStack, List, int, int, int, int, int, FontRenderer)}
-   */
-  @Deprecated
-  public static void drawHoveringText(MatrixStack mStack, List<ITextComponent> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font) {
-    GuiUtils.drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, GuiUtils.DEFAULT_BACKGROUND_COLOR, GuiUtils.DEFAULT_BORDER_COLOR_START, GuiUtils.DEFAULT_BORDER_COLOR_END, font);
-  }
-
-  /**
-   * @deprecated   Remove in 1.17, use {@link GuiUtils#drawHoveringText(MatrixStack, List, int, int, int, int, int, int, int, int, FontRenderer)}
-   */
-  @Deprecated
-  private static void drawHoveringText(MatrixStack mStack, List<ITextComponent> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth,
-                                       int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font) {
-    GuiUtils.drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, backgroundColor, borderColorStart, borderColorEnd, font);
-  }
 }
