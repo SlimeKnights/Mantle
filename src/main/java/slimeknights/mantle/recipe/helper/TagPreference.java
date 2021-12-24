@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,8 +36,8 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
   /** Comparator to decide which registry entry is preferred */
   private static final Comparator<IForgeRegistryEntry<?>> ENTRY_COMPARATOR = (a, b) -> {
     // first get registry names, use default ID if null (unlikely)
-    ResourceLocation idA = LogicHelper.defaultIfNull(a.getRegistryName(), DEFAULT_ID);
-    ResourceLocation idB = LogicHelper.defaultIfNull(b.getRegistryName(), DEFAULT_ID);
+    ResourceLocation idA = Objects.requireNonNullElse(a.getRegistryName(), DEFAULT_ID);
+    ResourceLocation idB = Objects.requireNonNullElse(b.getRegistryName(), DEFAULT_ID);
     // first compare preferences
     List<? extends String> entries = Config.TAG_PREFERENCES.get();
     int size = entries.size();

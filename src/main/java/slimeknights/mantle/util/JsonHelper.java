@@ -7,8 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -99,6 +99,21 @@ public class JsonHelper {
    */
   public static ResourceLocation getResourceLocation(JsonObject json, String key) {
     String text = GsonHelper.getAsString(json, key);
+    ResourceLocation location = ResourceLocation.tryParse(text);
+    if (location == null) {
+      throw new JsonSyntaxException("Expected " + key + " to be a Resource location, was '" + text + "'");
+    }
+    return location;
+  }
+
+  /**
+   * Gets a resource location from JSON, throwing a nice exception if invalid
+   * @param json  JSON object
+   * @param key   Key to fetch
+   * @return  Resource location parsed
+   */
+  public static ResourceLocation convertToResourceLocation(JsonElement json, String key) {
+    String text = GsonHelper.convertToString(json, key);
     ResourceLocation location = ResourceLocation.tryParse(text);
     if (location == null) {
       throw new JsonSyntaxException("Expected " + key + " to be a Resource location, was '" + text + "'");

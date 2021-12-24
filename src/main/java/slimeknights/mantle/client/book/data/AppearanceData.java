@@ -6,9 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.screen.book.Textures;
-import slimeknights.mantle.util.LogicHelper;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /** This class represents the JSON structure of book appearance */
 @OnlyIn(Dist.CLIENT)
@@ -67,12 +67,12 @@ public class AppearanceData implements IDataItem {
 
   /** Gets the book cover texture */
   public ResourceLocation getCoverTexture() {
-    return LogicHelper.defaultIfNull(coverTexture, Textures.TEX_BOOKFRONT);
+    return Objects.requireNonNullElse(coverTexture, Textures.TEX_BOOKFRONT);
   }
 
   /** Gets texture for book pages and elements */
   public ResourceLocation getBookTexture() {
-    return LogicHelper.defaultIfNull(bookTexture, Textures.TEX_BOOK);
+    return Objects.requireNonNullElse(bookTexture, Textures.TEX_BOOK);
   }
 
   @Override

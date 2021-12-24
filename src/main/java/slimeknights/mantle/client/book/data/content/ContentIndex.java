@@ -6,9 +6,9 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.transformer.IndexTransformer;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.util.LogicHelper;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -44,7 +44,7 @@ public class ContentIndex extends ContentListing {
                               ? ImmutableSet.of("hidden")
                               : ImmutableSet.<String>builder().add("hidden").add(hidden).build();
       // allow performing other operations, adding group headers and breaks
-      Operation[] operations = LogicHelper.defaultIfNull(this.operations, new Operation[0]);
+      Operation[] operations = Objects.requireNonNullElse(this.operations, new Operation[0]);
       parent.parent.pages.forEach(page -> {
         // no support for splitting into multiple indexes, if you need two, just create two pages and tell it to hide everything from the other
         if (page != parent && !IndexTransformer.isPageHidden(page) && !hiddenSet.contains(page.name)) {

@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
+
 /**
  * Item handler that contains no items. Use similarly to {@link net.minecraftforge.fluids.capability.templates.EmptyFluidHandler}
  */
@@ -22,6 +24,7 @@ public class EmptyItemHandler implements IItemHandler {
     return 0;
   }
 
+  @Nonnull
   @Override
   public ItemStack getStackInSlot(int slot) {
     return ItemStack.EMPTY;
@@ -32,11 +35,13 @@ public class EmptyItemHandler implements IItemHandler {
     return false;
   }
 
+  @Nonnull
   @Override
   public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
     return stack;
   }
 
+  @Nonnull
   @Override
   public ItemStack extractItem(int slot, int amount, boolean simulate) {
     return ItemStack.EMPTY;

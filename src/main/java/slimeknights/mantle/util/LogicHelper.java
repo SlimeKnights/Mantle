@@ -1,24 +1,9 @@
 package slimeknights.mantle.util;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class LogicHelper {
   private LogicHelper() {}
-
-  /**
-   * Replaces check with a default value if null
-   * @param check      Value to check
-   * @param fallback   Fallback to return if the value is undesired
-   * @param <T>  Type of data
-   * @return  Value if not undesired, fallback
-   */
-  public static <T> T defaultIfNull(@Nullable T check, T fallback) {
-    if (check == null) {
-      return fallback;
-    }
-    return check;
-  }
 
   /**
    * Replaces check with a default value if null
