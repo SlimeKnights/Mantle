@@ -27,7 +27,6 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
-import slimeknights.mantle.data.MantleTags;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
@@ -87,8 +86,7 @@ public class ClientEvents {
     }
 
     // enabled if either in the tag, or if force enabled
-    boolean tagEnabled = minecraft.player.getOffhandItem().getItem().is(MantleTags.Items.OFFHAND_COOLDOWN);
-    float cooldown = minecraft.player.getCapability(OffhandCooldownTracker.CAPABILITY).filter(tracker -> tagEnabled || tracker.isForceEnable()).map(COOLDOWN_TRACKER).orElse(1.0f);
+    float cooldown = minecraft.player.getCapability(OffhandCooldownTracker.CAPABILITY).filter(OffhandCooldownTracker::isEnabled).map(COOLDOWN_TRACKER).orElse(1.0f);
     if (cooldown >= 1.0f) {
       return;
     }

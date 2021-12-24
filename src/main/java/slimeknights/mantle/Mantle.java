@@ -1,7 +1,6 @@
 package slimeknights.mantle;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
@@ -19,14 +18,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
-import slimeknights.mantle.data.MantleItemTagProvider;
-import slimeknights.mantle.data.MantleTags;
 import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
@@ -62,7 +58,6 @@ public class Mantle {
     instance = this;
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, this::commonSetup);
-    bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     bus.addListener(EventPriority.NORMAL, false, ModConfigEvent.class, Config::configChanged);
     bus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
     bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
@@ -77,7 +72,6 @@ public class Mantle {
   private void commonSetup(final FMLCommonSetupEvent event) {
     MantleNetwork.registerPackets();
     MantleCommand.init();
-    MantleTags.init();
     OffhandCooldownTracker.init();
 
     // inject our new signs into the tile entity type
@@ -87,13 +81,6 @@ public class Mantle {
       RegistrationHelper.forEachSignBlock(builder::add);
       BlockEntityType.SIGN.validBlocks = builder.build();
     });
-  }
-
-  private void gatherData(final GatherDataEvent event) {
-    if (event.includeServer()) {
-      DataGenerator dataGenerator = event.getGenerator();
-      dataGenerator.addProvider(new MantleItemTagProvider(dataGenerator, event.getExistingFileHelper()));
-    }
   }
 
   private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {
