@@ -162,6 +162,8 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
 
+    // runtimeOnly fg.deobf("slimeknights.tconstruct:TConstruct:1.16.5-3.3.2.326")
+
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     // at runtime, use the full JEI jar
