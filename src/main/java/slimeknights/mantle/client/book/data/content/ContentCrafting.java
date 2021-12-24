@@ -9,10 +9,11 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.ImageData;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
+import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_CRAFTING;
 
 public class ContentCrafting extends PageContent {
+  public static final ResourceLocation ID = Mantle.getResource("crafting");
 
   public static final transient int TEX_SIZE = 256;
   public static final transient ImageData IMG_CRAFTING_LARGE = new ImageData(TEX_CRAFTING, 0, 0, 183, 114, TEX_SIZE, TEX_SIZE);
@@ -41,8 +43,8 @@ public class ContentCrafting extends PageContent {
 
   public String title = "Crafting";
   public String grid_size = "large";
-  public ItemStackData[][] grid;
-  public ItemStackData result;
+  public IngredientData[][] grid;
+  public IngredientData result;
   public TextData[] description;
   public String recipe;
 
@@ -117,27 +119,27 @@ public class ContentCrafting extends PageContent {
           throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
         }
 
-        result = ItemStackData.getItemStackData(recipe.getRecipeOutput());
+        result = IngredientData.getItemStackData(recipe.getRecipeOutput());
 
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
 
         if (recipe instanceof IShapedRecipe) {
           IShapedRecipe<?> shaped = (IShapedRecipe<?>) recipe;
 
-          grid = new ItemStackData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
+          grid = new IngredientData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
 
           for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
-              grid[y][x] = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getMatchingStacks()));
+              grid[y][x] = IngredientData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getMatchingStacks()));
             }
           }
 
           return;
         }
 
-        grid = new ItemStackData[h][w];
+        grid = new IngredientData[h][w];
         for (int i = 0; i < ingredients.size(); i++) {
-          grid[i / h][i % w] = ItemStackData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(i).getMatchingStacks()));
+          grid[i / h][i % w] = IngredientData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(i).getMatchingStacks()));
         }
       }
     }

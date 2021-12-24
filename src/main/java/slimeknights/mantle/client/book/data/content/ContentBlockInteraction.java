@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
+import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_MISC;
 
 public class ContentBlockInteraction extends PageContent {
+  public static final ResourceLocation ID = Mantle.getResource("block_interaction");
 
   public static final transient int TEX_SIZE = 512;
   public static final transient ImageData IMG_SMITHING = new ImageData(TEX_MISC, 0, 0, 88, 55, TEX_SIZE, TEX_SIZE);
@@ -28,8 +31,8 @@ public class ContentBlockInteraction extends PageContent {
   public static final transient float BLOCK_SCALE = 5.0F;
 
   public String title = "Block Interaction";
-  public ItemStackData input;
-  public ItemStackData block;
+  public IngredientData input;
+  public IngredientData block;
   public TextData[] description;
 
   @Override

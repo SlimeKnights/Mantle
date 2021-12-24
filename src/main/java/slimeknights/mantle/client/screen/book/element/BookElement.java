@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -69,12 +68,10 @@ public abstract class BookElement extends AbstractGui {
     }
 
     this.drawHoveringText(matrixStack, list, x, y, font);
-    RenderHelper.disableStandardItemLighting();
   }
 
   public void drawHoveringText(MatrixStack matrixStack, List<ITextComponent> textLines, int x, int y, FontRenderer font) {
     //    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
     GuiUtils.drawHoveringText(matrixStack, textLines, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
-    RenderHelper.disableStandardItemLighting();
   }
 }

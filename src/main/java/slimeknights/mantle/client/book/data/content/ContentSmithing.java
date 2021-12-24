@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
-import slimeknights.mantle.client.book.data.element.ItemStackData;
+import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import static slimeknights.mantle.client.screen.book.Textures.TEX_MISC;
 
 public class ContentSmithing extends PageContent {
+  public static final ResourceLocation ID = Mantle.getResource("smithing");
 
   public static final transient int TEX_SIZE = 512;
   public static final transient ImageData IMG_SMITHING = new ImageData(TEX_MISC, 88, 0, 210, 42, TEX_SIZE, TEX_SIZE);
@@ -29,9 +32,9 @@ public class ContentSmithing extends PageContent {
   public static final transient float ITEM_SCALE = 2.0F;
 
   public String title = "Smithing";
-  public ItemStackData input;
-  public ItemStackData modifier;
-  public ItemStackData result;
+  public IngredientData input;
+  public IngredientData modifier;
+  public IngredientData result;
   public TextData[] description;
 
   @Override
@@ -47,15 +50,15 @@ public class ContentSmithing extends PageContent {
 
     list.add(new ImageElement(x, y, IMG_SMITHING.width, IMG_SMITHING.height, IMG_SMITHING, book.appearance.slotColor));
 
-    if (this.input != null && !this.input.id.equals("")) {
+    if (this.input != null && !this.input.getItems().isEmpty()) {
       list.add(new ItemElement(x + INPUT_X, y + INPUT_Y, ITEM_SCALE, this.input.getItems(), this.input.action));
     }
 
-    if (this.modifier != null && !this.modifier.id.equals("")) {
+    if (this.modifier != null && !this.modifier.getItems().isEmpty()) {
       list.add(new ItemElement(x + MODIFIER_X, y + MODIFIER_Y, ITEM_SCALE, this.modifier.getItems(), this.modifier.action));
     }
 
-    if (this.result != null && !this.result.id.equals("")) {
+    if (this.result != null && !this.result.getItems().isEmpty()) {
       list.add(new ItemElement(x + RESULT_X, y + RESULT_Y, ITEM_SCALE, this.result.getItems(), this.result.action));
     }
 

@@ -1,21 +1,13 @@
 package slimeknights.mantle.client.book.action.protocol;
 
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 public class ProtocolGoToPage extends ActionProtocol {
-
-  public static final String GO_TO = "go-to-page";
-  public static final String GO_TO_RTN = GO_TO + "-rtn";
-
   private final boolean returner;
 
-  public ProtocolGoToPage() {
-    this(false, GO_TO);
-  }
-
-  public ProtocolGoToPage(boolean returner, String string) {
-    super(string);
-
+  public ProtocolGoToPage(boolean returner) {
     this.returner = returner;
   }
 

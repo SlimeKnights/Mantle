@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.client.book.repository.BookRepository;

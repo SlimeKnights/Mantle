@@ -2,8 +2,10 @@ package slimeknights.mantle.client.book.data.content;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.Data;
+import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.client.book.transformer.IndexTransformer;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.util.LogicHelper;
 
@@ -26,7 +28,7 @@ import java.util.Set;
  * </ul>
  */
 public class ContentIndex extends ContentListing {
-  public static final transient String ID = "index";
+  public static final transient ResourceLocation ID = Mantle.getResource("index");
 
   private transient boolean loaded = false;
   private String[] hidden;
@@ -45,7 +47,7 @@ public class ContentIndex extends ContentListing {
       Operation[] operations = LogicHelper.defaultIfNull(this.operations, new Operation[0]);
       parent.parent.pages.forEach(page -> {
         // no support for splitting into multiple indexes, if you need two, just create two pages and tell it to hide everything from the other
-        if (page != parent && !hiddenSet.contains(page.name)) {
+        if (page != parent && !IndexTransformer.isPageHidden(page) && !hiddenSet.contains(page.name)) {
           // perform extra action if anything happens before this page
           for (Operation operation : operations) {
             if (page.name.equals(operation.getBefore())) {

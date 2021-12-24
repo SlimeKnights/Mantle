@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.transformer;
 
 import lombok.RequiredArgsConstructor;
-import slimeknights.mantle.client.book.BookTransformer;
+import net.minecraft.util.ResourceLocation;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -32,7 +32,7 @@ public abstract class SectionTransformer extends BookTransformer {
   public abstract void transform(BookData book, SectionData section);
 
   /** Helper to add a page to the section */
-  protected PageData addPage(SectionData data, String name, String type, PageContent content) {
+  protected PageData addPage(SectionData data, String name, ResourceLocation type, PageContent content) {
     PageData page = new PageData(true);
     page.source = data.source;
     page.parent = data;

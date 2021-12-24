@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,6 +23,9 @@ public class AppearanceData implements IDataItem {
   public String subtitle = "";
   /** Color to tint the cover background */
   public int coverColor = 0x8B4631;
+  /** Color of the cover text */
+  @Setter @Getter
+  private int coverTextColor = 0xAE8000;
 
   // general book
   @Nullable
@@ -31,6 +36,8 @@ public class AppearanceData implements IDataItem {
   public int arrowColorHover = 0xFF541C;
   /** Color used when hovering over a selectable element */
   public int hoverColor = 0x77EE541C;
+  @Setter @Getter
+  private int pageTint = 0xFFFFFF;
   /** If true, page numbers are drawn below each page */
   public boolean drawPageNumbers = true;
   /** If true, draws the text below elements in selection lists such as indexes */

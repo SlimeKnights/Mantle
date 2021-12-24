@@ -1,10 +1,15 @@
 package slimeknights.mantle.client.book.data;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.IResource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -14,16 +19,24 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
-public class SectionData implements IDataItem {
+public class SectionData implements IDataItem, IConditional {
 
   public String name = null;
   public ImageData icon = new ImageData();
   public Set<String> requirements = Sets.newHashSet();
   public boolean hideWhenLocked = false;
   public String data = "";
+  public ICondition condition = TrueCondition.INSTANCE;
+
+  /** Contains arbitrary data to be used by custom transformers and other things */
+  public Map<ResourceLocation, JsonElement> extraData = Collections.emptyMap();
 
   public transient int unnamedPageCounter = 0;
   public transient BookData parent;
@@ -88,7 +101,9 @@ public class SectionData implements IDataItem {
    * @return ArrayList of pages for the book
    */
   protected ArrayList<PageData> getPages(String data) {
-    return new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(data, PageData[].class)));
+    List<PageData> pages = Arrays.asList(BookLoader.getGson().fromJson(data, PageData[].class));
+
+    return pages.stream().filter(PageData::isConditionMet).collect(Collectors.toCollection(ArrayList::new));
   }
 
   public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
@@ -126,5 +141,10 @@ public class SectionData implements IDataItem {
 
     return progress != null && progress.isDone();
 
+  }
+
+  @Override
+  public boolean isConditionMet() {
+    return condition.test();
   }
 }

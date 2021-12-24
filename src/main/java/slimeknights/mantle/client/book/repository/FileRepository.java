@@ -17,15 +17,15 @@ import java.util.List;
 
 public class FileRepository extends BookRepository {
 
-  public final String location;
+  public final ResourceLocation location;
 
-  public FileRepository(String location) {
+  public FileRepository(ResourceLocation location) {
     this.location = location;
   }
 
   @Override
   public List<SectionData> getSections() {
-    return new ArrayList<>(Arrays.asList(BookLoader.GSON.fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionData[].class)));
+    return new ArrayList<>(Arrays.asList(BookLoader.getGson().fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionData[].class)));
   }
 
   @Override

@@ -51,7 +51,7 @@ public class ContentListingSectionTransformer extends SectionTransformer {
    * @return true if the page should be removed
    */
   protected boolean processPage(BookData book, ContentListing listing, PageData page) {
-    if (!page.name.equals("hidden")) {
+    if (!IndexTransformer.isPageHidden(page) && !page.name.equals("hidden")) {
       listing.addEntry(book.translate(page.getTitle()), page);
     }
     return true;

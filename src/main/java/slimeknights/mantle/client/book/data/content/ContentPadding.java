@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
-import slimeknights.mantle.client.book.BookTransformer;
+import net.minecraft.util.ResourceLocation;
+import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -13,8 +15,8 @@ import java.util.Iterator;
  */
 @Getter
 public abstract class ContentPadding extends ContentBlank {
-  public static final String LEFT_ID = "left_padding";
-  public static final String RIGHT_ID = "right_padding";
+  public static final ResourceLocation LEFT_ID = Mantle.getResource("left_padding");
+  public static final ResourceLocation RIGHT_ID = Mantle.getResource("right_padding");
 
   /** If true, this page is padding the left side, false pads the right side */
   public abstract boolean isLeft();

@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -88,16 +89,23 @@ public class ItemElement extends SizedBookElement {
       }
     }
 
-    RenderSystem.pushMatrix();
-    RenderSystem.translatef(this.x, this.y, 0);
-    RenderSystem.scalef(this.scale, this.scale, 1.0F);
-
     if (this.currentItem < this.itemCycle.size()) {
-      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
-    }
+      RenderHelper.enableStandardItemLighting();
 
-    RenderSystem.popMatrix();
-    RenderHelper.disableStandardItemLighting();
+      matrixStack.push();
+      matrixStack.translate(x, y, 0);
+      matrixStack.scale(scale, scale, 1.0F);
+
+      // Matrix stack -> old system
+      RenderSystem.pushMatrix();
+      RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
+
+      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
+
+      matrixStack.pop();
+      RenderSystem.popMatrix();
+      RenderHelper.disableStandardItemLighting();
+    }
   }
 
   @Override
@@ -115,11 +123,8 @@ public class ItemElement extends SizedBookElement {
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
     if (mouseButton == 0 && this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
-      if (this.action != null) {
+      if (!StringUtils.isNullOrEmpty(this.action)) {
         StringActionProcessor.process(this.action, this.parent);
-      }
-      else {
-        this.parent.itemClicked(this.itemCycle.get(this.currentItem));
       }
     }
   }

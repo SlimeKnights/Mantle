@@ -4,12 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.client.book.data.AppearanceData;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
+import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
+import slimeknights.mantle.client.screen.book.element.ImageElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import javax.annotation.Nullable;

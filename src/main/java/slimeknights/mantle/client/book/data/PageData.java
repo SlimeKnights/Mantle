@@ -1,8 +1,13 @@
 package slimeknights.mantle.client.book.data;
 
+import com.google.gson.JsonElement;
 import net.minecraft.resources.IResource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.common.crafting.conditions.TrueCondition;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.PageContent;
@@ -13,14 +18,20 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-public class PageData implements IDataItem {
+public class PageData implements IDataItem, IConditional {
 
   public String name = null;
-  public String type = "";
+  public ResourceLocation type = Mantle.getResource("blank");
   public String data = "";
   public float scale = 1.0F;
+  public ICondition condition = TrueCondition.INSTANCE;
+
+  /** Contains arbitrary data to be used by custom transformers and other things */
+  public Map<ResourceLocation, JsonElement> extraData = Collections.emptyMap();
 
   public transient SectionData parent;
   public transient BookRepository source;
@@ -50,16 +61,27 @@ public class PageData implements IDataItem {
 
     this.name = this.name.toLowerCase();
 
-    if (!this.data.equals("no-load")) {
+    Class<? extends PageContent> ctype = BookLoader.getPageType(type);
+
+    if (!this.data.isEmpty() && !this.data.equals("no-load")) {
       IResource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if (pageInfo != null) {
         String data = this.source.resourceToString(pageInfo);
         if (!data.isEmpty()) {
-          Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
+          // Test if the page type is specified within the content iteself
+          PageTypeOverrider overrider = BookLoader.getGson().fromJson(data, PageTypeOverrider.class);
+          if (overrider.type != null) {
+            Class<? extends PageContent> overriddenType = BookLoader.getPageType(overrider.type);
+            if(overriddenType != null) {
+              ctype = BookLoader.getPageType(overrider.type);
+              // Also override the type on the page so that we can read it out in transformers
+              type = overrider.type;
+            }
+          }
 
           if (ctype != null) {
             try {
-              this.content = BookLoader.GSON.fromJson(data, ctype);
+              this.content = BookLoader.getGson().fromJson(data, ctype);
             } catch (Exception e) {
               this.content = new ContentError("Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
             }
@@ -71,8 +93,6 @@ public class PageData implements IDataItem {
     }
 
     if (this.content == null) {
-      Class<? extends PageContent> ctype = BookLoader.getPageType(this.type);
-
       if (ctype != null) {
         try {
           this.content = ctype.newInstance();
@@ -139,5 +159,14 @@ public class PageData implements IDataItem {
   public String getTitle() {
     String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
     return title == null ? this.name : title;
+  }
+
+  @Override
+  public boolean isConditionMet() {
+    return condition.test();
+  }
+
+  private static class PageTypeOverrider {
+    public ResourceLocation type;
   }
 }
