@@ -7,11 +7,11 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeItemHelper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.Mantle;
@@ -115,7 +115,7 @@ public class IngredientIntersection extends Ingredient {
       ItemStack[] matchingStacks = getItems();
       this.packedMatchingStacks = new IntArrayList(matchingStacks.length);
       for(ItemStack stack : matchingStacks) {
-        this.packedMatchingStacks.add(RecipeItemHelper.getStackingIndex(stack));
+        this.packedMatchingStacks.add(StackedContents.getStackingIndex(stack));
       }
       this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
     }
@@ -147,7 +147,7 @@ public class IngredientIntersection extends Ingredient {
     }
 
     @Override
-    public IngredientIntersection parse(PacketBuffer buffer) {
+    public IngredientIntersection parse(FriendlyByteBuf buffer) {
       int size = buffer.readVarInt();
       ImmutableList.Builder<Ingredient> builder = ImmutableList.builder();
       for (int i = 0; i < size; i++) {
@@ -157,7 +157,7 @@ public class IngredientIntersection extends Ingredient {
     }
 
     @Override
-    public void write(PacketBuffer buffer, IngredientIntersection intersection) {
+    public void write(FriendlyByteBuf buffer, IngredientIntersection intersection) {
       buffer.writeVarInt(intersection.ingredients.size());
       for (Ingredient ingredient : intersection.ingredients) {
         CraftingHelper.write(buffer, ingredient);

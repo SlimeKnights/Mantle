@@ -1,14 +1,14 @@
 package slimeknights.mantle.network;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
@@ -52,7 +52,7 @@ public class NetworkWrapper {
    * @param decoder  Packet decoder, typically the constructor
    * @param <MSG>  Packet class type
    */
-  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<PacketBuffer, MSG> decoder, @Nullable NetworkDirection direction) {
+  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<FriendlyByteBuf, MSG> decoder, @Nullable NetworkDirection direction) {
     registerPacket(clazz, ISimplePacket::encode, decoder, ISimplePacket::handle, direction);
   }
 
@@ -65,7 +65,7 @@ public class NetworkWrapper {
    * @param direction  Network direction for validation. Pass null for no direction
    * @param <MSG>  Packet class type
    */
-  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG,Supplier<Context>> consumer, @Nullable NetworkDirection direction) {
+  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<Context>> consumer, @Nullable NetworkDirection direction) {
     this.network.registerMessage(this.id++, clazz, encoder, decoder, consumer, Optional.ofNullable(direction));
   }
 
@@ -94,9 +94,9 @@ public class NetworkWrapper {
    * @param player  Player receiving the packet
    * @param packet  Packet
    */
-  public void sendVanillaPacket(IPacket<?> packet, Entity player) {
-    if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).connection != null) {
-      ((ServerPlayerEntity) player).connection.send(packet);
+  public void sendVanillaPacket(Packet<?> packet, Entity player) {
+    if (player instanceof ServerPlayer && ((ServerPlayer) player).connection != null) {
+      ((ServerPlayer) player).connection.send(packet);
     }
   }
 
@@ -105,9 +105,9 @@ public class NetworkWrapper {
    * @param msg     Packet
    * @param player  Player to send
    */
-  public void sendTo(Object msg, PlayerEntity player) {
-    if (player instanceof ServerPlayerEntity) {
-      sendTo(msg, (ServerPlayerEntity) player);
+  public void sendTo(Object msg, Player player) {
+    if (player instanceof ServerPlayer) {
+      sendTo(msg, (ServerPlayer) player);
     }
   }
 
@@ -116,7 +116,7 @@ public class NetworkWrapper {
    * @param msg     Packet
    * @param player  Player to send
    */
-  public void sendTo(Object msg, ServerPlayerEntity player) {
+  public void sendTo(Object msg, ServerPlayer player) {
     if (!(player instanceof FakePlayer)) {
       network.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
@@ -128,8 +128,8 @@ public class NetworkWrapper {
    * @param serverWorld  World instance
    * @param position     Position within range
    */
-  public void sendToClientsAround(Object msg, ServerWorld serverWorld, BlockPos position) {
-    Chunk chunk = serverWorld.getChunkAt(position);
+  public void sendToClientsAround(Object msg, ServerLevel serverWorld, BlockPos position) {
+    LevelChunk chunk = serverWorld.getChunkAt(position);
     network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
   }
 

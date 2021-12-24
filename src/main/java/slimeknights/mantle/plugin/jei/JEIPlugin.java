@@ -10,8 +10,8 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
 import slimeknights.mantle.inventory.MultiModuleContainer;
@@ -54,7 +54,7 @@ public class JEIPlugin implements IModPlugin {
 
   private static class MultiModuleContainerHandler<C extends MultiModuleContainer<?>> implements IGuiContainerHandler<MultiModuleScreen<C>> {
     @Override
-    public List<Rectangle2d> getGuiExtraAreas(MultiModuleScreen<C> guiContainer) {
+    public List<Rect2i> getGuiExtraAreas(MultiModuleScreen<C> guiContainer) {
       return guiContainer.getModuleAreas();
     }
   }

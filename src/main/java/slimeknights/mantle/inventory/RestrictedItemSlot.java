@@ -1,15 +1,15 @@
 package slimeknights.mantle.inventory;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class RestrictedItemSlot extends Slot {
 
   private final Item allowedItem;
 
-  public RestrictedItemSlot(Item item, IInventory inventoryIn, int index, int xPosition, int yPosition) {
+  public RestrictedItemSlot(Item item, Container inventoryIn, int index, int xPosition, int yPosition) {
     super(inventoryIn, index, xPosition, yPosition);
     this.allowedItem = item;
   }

@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.repository;
 
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public abstract class BookRepository {
   public abstract ResourceLocation getResourceLocation(@Nullable String path, boolean safe);
 
   @Nullable
-  public abstract IResource getResource(@Nullable ResourceLocation loc);
+  public abstract Resource getResource(@Nullable ResourceLocation loc);
 
   @SuppressWarnings("unused") // API
   public boolean resourceExists(@Nullable String location) {
@@ -38,9 +38,9 @@ public abstract class BookRepository {
 
   public abstract boolean resourceExists(@Nullable ResourceLocation location);
 
-  public String resourceToString(@Nullable IResource resource) {
+  public String resourceToString(@Nullable Resource resource) {
     return this.resourceToString(resource, true);
   }
 
-  public abstract String resourceToString(@Nullable IResource resource, boolean skipComments);
+  public abstract String resourceToString(@Nullable Resource resource, boolean skipComments);
 }

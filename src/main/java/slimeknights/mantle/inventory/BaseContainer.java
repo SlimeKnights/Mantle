@@ -1,25 +1,25 @@
 package slimeknights.mantle.inventory;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import slimeknights.mantle.util.TileEntityHelper;
 
 import javax.annotation.Nullable;
 
-public class BaseContainer<TILE extends TileEntity> extends Container {
+public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMenu {
 
   public static double MAX_DISTANCE = 64;
   public static int BASE_Y_OFFSET = 84;
@@ -28,9 +28,9 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   protected final TILE tile;
 
   @Nullable
-  protected final PlayerInventory inv;
+  protected final Inventory inv;
 
-  protected BaseContainer(ContainerType<?> type, int id, @Nullable PlayerInventory inv, @Nullable TILE tile) {
+  protected BaseContainer(MenuType<?> type, int id, @Nullable Inventory inv, @Nullable TILE tile) {
     super(type, id);
     this.inv = inv;
     this.tile = tile;
@@ -41,11 +41,11 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return this.tile;
   }
 
-  public void syncOnOpen(ServerPlayerEntity playerOpened) {
+  public void syncOnOpen(ServerPlayer playerOpened) {
     // find another player that already has the gui for this tile open
-    ServerWorld server = playerOpened.getLevel();
+    ServerLevel server = playerOpened.getLevel();
 
-    for (PlayerEntity player : server.players()) {
+    for (Player player : server.players()) {
       if (player == playerOpened) {
         continue;
       }
@@ -66,14 +66,14 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
    * Called when the container is opened and another player already has a container for this tile open
    * Sync to the same state here.
    */
-  protected void syncWithOtherContainer(BaseContainer otherContainer, ServerPlayerEntity player) {
+  protected void syncWithOtherContainer(BaseContainer otherContainer, ServerPlayer player) {
   }
 
   /**
    * Called when the container is opened and no other player has it open.
    * Set the default state here.
    */
-  protected void syncNewContainer(ServerPlayerEntity player) {
+  protected void syncNewContainer(ServerPlayer player) {
   }
 
   public boolean sameGui(BaseContainer otherContainer) {
@@ -85,14 +85,14 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   @Override
-  public boolean stillValid(PlayerEntity playerIn) {
+  public boolean stillValid(Player playerIn) {
     if (this.tile == null) {
       return true;
     }
 
     if (!tile.isRemoved()) {
       //prevent Containers from remaining valid after the chunk has unloaded;
-      World world = tile.getLevel();
+      Level world = tile.getLevel();
 
       if (world == null) {
         return false;
@@ -134,7 +134,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
     return BASE_Y_OFFSET;
   }
 
-  protected void addInventorySlots(PlayerInventory inv) {
+  protected void addInventorySlots(Inventory inv) {
     int yOffset = this.getInventoryYOffset();
     int xOffset = this.getInventoryXOffset();
 
@@ -163,7 +163,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
   }
 
   @Override
-  public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+  public ItemStack quickMoveStack(Player playerIn, int index) {
     // we can only support inventory <-> playerInventory
     if (this.playerInventoryStart < 0) {
       // so we don't do anything if no player inventory is present because we don't know what to do
@@ -318,7 +318,7 @@ public class BaseContainer<TILE extends TileEntity> extends Container {
    * @return Tile entity, or null if unable to find
    */
   @Nullable
-  public static <TILE extends TileEntity> TILE getTileEntityFromBuf(@Nullable PacketBuffer buf, Class<TILE> type) {
+  public static <TILE extends BlockEntity> TILE getTileEntityFromBuf(@Nullable FriendlyByteBuf buf, Class<TILE> type) {
     if (buf == null) {
       return null;
     }

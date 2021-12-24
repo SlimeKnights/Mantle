@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.repository;
 
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.data.SectionData;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ public class DummyRepository extends BookRepository {
   }
 
   @Override
-  public IResource getResource(@Nullable ResourceLocation loc) {
+  public Resource getResource(@Nullable ResourceLocation loc) {
     return null;
   }
 
@@ -31,7 +31,7 @@ public class DummyRepository extends BookRepository {
   }
 
   @Override
-  public String resourceToString(@Nullable IResource resource, boolean skipComments) {
+  public String resourceToString(@Nullable Resource resource, boolean skipComments) {
     return "";
   }
 }

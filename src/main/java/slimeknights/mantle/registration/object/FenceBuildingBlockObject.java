@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration.object;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.FenceBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FenceBlock;
 
 import java.util.Arrays;
 import java.util.List;

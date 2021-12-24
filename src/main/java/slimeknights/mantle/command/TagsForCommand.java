@@ -6,8 +6,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.command.arguments.ResourceLocationArgument;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -34,8 +34,8 @@ import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.ForgeTagHandler;
@@ -55,24 +55,24 @@ import java.util.Objects;
  */
 public class TagsForCommand {
   /** Tag type cannot be found */
-  protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> new TranslationTextComponent("command.mantle.tags_for.not_found", type, name));
+  protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> new TranslatableComponent("command.mantle.tags_for.not_found", type, name));
 
   /* Missing target errors */
-  private static final ITextComponent NO_HELD_BLOCK = new TranslationTextComponent("command.mantle.tags_for.no_held_block");
-  private static final ITextComponent NO_HELD_ENTITY = new TranslationTextComponent("command.mantle.tags_for.no_held_entity");
-  private static final ITextComponent NO_HELD_POTION = new TranslationTextComponent("command.mantle.tags_for.no_held_potion");
-  private static final ITextComponent NO_HELD_FLUID = new TranslationTextComponent("command.mantle.tags_for.no_held_fluid");
-  private static final ITextComponent NO_HELD_ENCHANTMENT = new TranslationTextComponent("command.mantle.tags_for.no_held_enchantment");
-  private static final ITextComponent NO_TARGETED_ENTITY = new TranslationTextComponent("command.mantle.tags_for.no_targeted_entity");
-  private static final ITextComponent NO_TARGETED_TILE_ENTITY = new TranslationTextComponent("command.mantle.tags_for.no_targeted_tile_entity");
+  private static final Component NO_HELD_BLOCK = new TranslatableComponent("command.mantle.tags_for.no_held_block");
+  private static final Component NO_HELD_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_held_entity");
+  private static final Component NO_HELD_POTION = new TranslatableComponent("command.mantle.tags_for.no_held_potion");
+  private static final Component NO_HELD_FLUID = new TranslatableComponent("command.mantle.tags_for.no_held_fluid");
+  private static final Component NO_HELD_ENCHANTMENT = new TranslatableComponent("command.mantle.tags_for.no_held_enchantment");
+  private static final Component NO_TARGETED_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_entity");
+  private static final Component NO_TARGETED_TILE_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_tile_entity");
   /** Value has no tags */
-  private static final ITextComponent NO_TAGS = new TranslationTextComponent("command.mantle.tags_for.no_tags");
+  private static final Component NO_TAGS = new TranslatableComponent("command.mantle.tags_for.no_tags");
 
   /**
    * Registers this sub command with the root command
    * @param subCommand  Command builder
    */
-  public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
+  public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(source -> MantleCommand.requiresDebugInfoOrOp(source, MantleCommand.PERMISSION_GAME_COMMANDS))
               // by registry ID
               .then(Commands.literal("id")

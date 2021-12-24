@@ -1,6 +1,6 @@
 package slimeknights.mantle.data;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import slimeknights.mantle.Mantle;

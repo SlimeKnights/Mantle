@@ -1,12 +1,12 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * @param <F>  Fluid class
  */
 @SuppressWarnings("WeakerAccess")
-public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, IItemProvider {
+public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, ItemLike {
   /** Fluid name, used for tag creation */
   @Getter @Nonnull
   protected final ResourceLocation id;
@@ -33,10 +33,10 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
   private final Supplier<? extends F> still;
   private final Supplier<? extends F> flowing;
   @Nullable
-  private final Supplier<? extends FlowingFluidBlock> block;
+  private final Supplier<? extends LiquidBlock> block;
 
   /** Main constructor */
-  public FluidObject(ResourceLocation id, String tagName, Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends FlowingFluidBlock> block) {
+  public FluidObject(ResourceLocation id, String tagName, Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends LiquidBlock> block) {
     this.id = id;
     this.localTag = FluidTags.createOptional(id);
     this.forgeTag = FluidTags.createOptional(new ResourceLocation("forge", tagName));
@@ -71,7 +71,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
    * @return  Block form
    */
   @Nullable
-  public FlowingFluidBlock getBlock() {
+  public LiquidBlock getBlock() {
     if (block == null) {
       return null;
     }

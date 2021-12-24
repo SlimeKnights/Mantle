@@ -1,19 +1,19 @@
 package slimeknights.mantle.tileentity;
 
 import lombok.Getter;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.INameable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.Nameable;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.LazyOptional;
@@ -25,7 +25,7 @@ import slimeknights.mantle.util.ItemStackList;
 import javax.annotation.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
-public abstract class InventoryTileEntity extends NamableTileEntity implements IInventory, INamedContainerProvider, INameable {
+public abstract class InventoryTileEntity extends NamableTileEntity implements Container, MenuProvider, Nameable {
   private static final String TAG_INVENTORY_SIZE = "InventorySize";
   private static final String TAG_ITEMS = "Items";
   private static final String TAG_SLOT = "Slot";
@@ -39,14 +39,14 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryTileEntity(TileEntityType<?> tileEntityTypeIn, ITextComponent name, int inventorySize) {
+  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, Component name, int inventorySize) {
     this(tileEntityTypeIn, name, inventorySize, 64);
   }
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryTileEntity(TileEntityType<?> tileEntityTypeIn, ITextComponent name, int inventorySize, int maxStackSize) {
+  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, Component name, int inventorySize, int maxStackSize) {
     super(tileEntityTypeIn, name);
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
@@ -186,7 +186,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
 
   /* Supporting methods */
   @Override
-  public boolean stillValid(PlayerEntity entityplayer) {
+  public boolean stillValid(Player entityplayer) {
     // block changed/got broken?
     if (level == null || this.level.getBlockEntity(this.worldPosition) != this || this.getBlockState().getBlock() == Blocks.AIR) {
       return false;
@@ -196,28 +196,28 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   }
 
   @Override
-  public void startOpen(PlayerEntity player) {}
+  public void startOpen(Player player) {}
 
   @Override
-  public void stopOpen(PlayerEntity player) {}
+  public void stopOpen(Player player) {}
 
   /* NBT */
   @Override
-  public void load(BlockState blockState, CompoundNBT tags) {
+  public void load(BlockState blockState, CompoundTag tags) {
     super.load(blockState, tags);
     this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
     this.readInventoryFromNBT(tags);
   }
 
   @Override
-  public void writeSynced(CompoundNBT tags) {
+  public void writeSynced(CompoundTag tags) {
     super.writeSynced(tags);
     // only sync the size to the client by default
     tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
   }
   
   @Override
-  public CompoundNBT save(CompoundNBT tags) {
+  public CompoundTag save(CompoundTag tags) {
     super.save(tags);
     this.writeInventoryToNBT(tags);
     return tags;
@@ -226,13 +226,13 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   /**
    * Writes the contents of the inventory to the tag
    */
-  public void writeInventoryToNBT(CompoundNBT tag) {
-    IInventory inventory = this;
-    ListNBT nbttaglist = new ListNBT();
+  public void writeInventoryToNBT(CompoundTag tag) {
+    Container inventory = this;
+    ListTag nbttaglist = new ListTag();
 
     for (int i = 0; i < inventory.getContainerSize(); i++) {
       if (!inventory.getItem(i).isEmpty()) {
-        CompoundNBT itemTag = new CompoundNBT();
+        CompoundTag itemTag = new CompoundTag();
         itemTag.putByte(TAG_SLOT, (byte) i);
         inventory.getItem(i).save(itemTag);
         nbttaglist.add(itemTag);
@@ -245,13 +245,13 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements I
   /**
    * Reads a an inventory from the tag. Overwrites current content
    */
-  public void readInventoryFromNBT(CompoundNBT tag) {
-    ListNBT nbttaglist = tag.getList(TAG_ITEMS, NBT.TAG_COMPOUND);
+  public void readInventoryFromNBT(CompoundTag tag) {
+    ListTag nbttaglist = tag.getList(TAG_ITEMS, NBT.TAG_COMPOUND);
 
     int limit = this.getMaxStackSize();
     ItemStack stack;
     for (int i = 0; i < nbttaglist.size(); ++i) {
-      CompoundNBT itemTag = nbttaglist.getCompound(i);
+      CompoundTag itemTag = nbttaglist.getCompound(i);
       int slot = itemTag.getByte(TAG_SLOT) & 255;
       if (slot < this.inventory.size()) {
         stack = ItemStack.of(itemTag);

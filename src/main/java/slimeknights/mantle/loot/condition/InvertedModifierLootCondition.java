@@ -5,10 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 
 import java.lang.reflect.Type;
@@ -42,8 +42,8 @@ public class InvertedModifierLootCondition implements ILootModifierCondition {
 
   /** Deserializes this condition from JSON */
   public static InvertedModifierLootCondition deserialize(JsonElement object, Type typeOfT, JsonDeserializationContext context) {
-    JsonObject json = JSONUtils.convertToJsonObject(object, "condition");
-    ILootModifierCondition condition = ILootModifierCondition.MODIFIER_CONDITIONS.deserialize(JSONUtils.getAsJsonObject(json, "condition"), ILootModifierCondition.class, context);
+    JsonObject json = GsonHelper.convertToJsonObject(object, "condition");
+    ILootModifierCondition condition = ILootModifierCondition.MODIFIER_CONDITIONS.deserialize(GsonHelper.getAsJsonObject(json, "condition"), ILootModifierCondition.class, context);
     return new InvertedModifierLootCondition(condition);
   }
 }

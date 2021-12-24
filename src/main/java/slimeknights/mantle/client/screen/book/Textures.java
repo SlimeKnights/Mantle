@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.screen.book;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
 

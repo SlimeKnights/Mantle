@@ -3,13 +3,13 @@ package slimeknights.mantle.loot;
 import com.google.gson.JsonDeserializer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.loot.ILootSerializer;
-import net.minecraft.loot.LootConditionType;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.functions.ILootFunction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.level.storage.loot.Serializer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ObjectHolder;
@@ -29,11 +29,11 @@ import static slimeknights.mantle.registration.RegistrationHelper.injected;
 @ObjectHolder(value = Mantle.modId)
 public class MantleLoot {
   /** Condition to match a block tag and property predicate */
-  public static LootConditionType BLOCK_TAG_CONDITION;
+  public static LootItemConditionType BLOCK_TAG_CONDITION;
   /** Function to add block entity texture to a dropped item */
-  public static LootFunctionType RETEXTURED_FUNCTION;
+  public static LootItemFunctionType RETEXTURED_FUNCTION;
   /** Function to add a fluid to an item fluid capability */
-  public static LootFunctionType SET_FLUID_FUNCTION;
+  public static LootItemFunctionType SET_FLUID_FUNCTION;
 
   /** Loot modifier to get loot from an entry for generated loot */
   public static final AddEntryLootModifier.Serializer ADD_ENTRY = injected();
@@ -67,8 +67,8 @@ public class MantleLoot {
    * @param serializer  Loot function serializer
    * @return  Registered loot function
    */
-  private static LootFunctionType registerFunction(String name, ILootSerializer<? extends ILootFunction> serializer) {
-    return Registry.register(Registry.LOOT_FUNCTION_TYPE, Mantle.getResource(name), new LootFunctionType(serializer));
+  private static LootItemFunctionType registerFunction(String name, Serializer<? extends LootItemFunction> serializer) {
+    return Registry.register(Registry.LOOT_FUNCTION_TYPE, Mantle.getResource(name), new LootItemFunctionType(serializer));
   }
 
   /**
@@ -77,8 +77,8 @@ public class MantleLoot {
    * @param serializer  Loot function serializer
    * @return  Registered loot function
    */
-  private static LootConditionType registerCondition(String name, ILootSerializer<? extends ILootCondition> serializer) {
-    return Registry.register(Registry.LOOT_CONDITION_TYPE, Mantle.getResource(name), new LootConditionType(serializer));
+  private static LootItemConditionType registerCondition(String name, Serializer<? extends LootItemCondition> serializer) {
+    return Registry.register(Registry.LOOT_CONDITION_TYPE, Mantle.getResource(name), new LootItemConditionType(serializer));
   }
 
   /**

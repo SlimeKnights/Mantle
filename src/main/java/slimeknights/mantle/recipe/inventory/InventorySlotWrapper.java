@@ -1,15 +1,15 @@
 package slimeknights.mantle.recipe.inventory;
 
 import lombok.AllArgsConstructor;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Implementation of {@link ISingleItemInventory} to wrap another {@link IInventory}
  */
 @AllArgsConstructor
 public class InventorySlotWrapper implements ISingleItemInventory {
-  private final IInventory parent;
+  private final Container parent;
   private final int index;
 
   @Override

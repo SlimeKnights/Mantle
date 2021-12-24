@@ -2,7 +2,7 @@ package slimeknights.mantle.client.book.data;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.screen.book.Textures;

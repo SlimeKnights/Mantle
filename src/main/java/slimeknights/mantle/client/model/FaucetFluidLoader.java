@@ -5,26 +5,26 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.IWorld;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import com.mojang.math.Vector3f;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.Mantle;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Shared logic for fluids rendering in blocks below between Ceramics and Tinkers Construct
  */
-public class FaucetFluidLoader extends JsonReloadListener {
+public class FaucetFluidLoader extends SimpleJsonResourceReloadListener {
   /** GSON instance for this */
   private static final Gson GSON = new GsonBuilder()
     .setPrettyPrinting()
@@ -72,9 +72,9 @@ public class FaucetFluidLoader extends JsonReloadListener {
     Minecraft mc = Minecraft.getInstance();
     //noinspection ConstantConditions
     if (mc != null) {
-      IResourceManager manager = mc.getResourceManager();
-      if (manager instanceof IReloadableResourceManager) {
-        ((IReloadableResourceManager) manager).registerReloadListener(FaucetFluidLoader.INSTANCE);
+      ResourceManager manager = mc.getResourceManager();
+      if (manager instanceof ReloadableResourceManager) {
+        ((ReloadableResourceManager) manager).registerReloadListener(FaucetFluidLoader.INSTANCE);
       }
     }
   }
@@ -87,7 +87,7 @@ public class FaucetFluidLoader extends JsonReloadListener {
   }
 
   @Override
-  protected void apply(Map<ResourceLocation,JsonElement> map, IResourceManager resourceManager, IProfiler profiler) {
+  protected void apply(Map<ResourceLocation,JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler) {
     // parse default first
     JsonElement def = map.get(DEFAULT_NAME);
     if (def == null || !def.isJsonObject()) {
@@ -116,15 +116,15 @@ public class FaucetFluidLoader extends JsonReloadListener {
 
       try {
         // all others are block
-        JsonObject json = JSONUtils.convertToJsonObject(entry.getValue(), "");
-        JsonObject variants = JSONUtils.getAsJsonObject(json, "variants");
+        JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), "");
+        JsonObject variants = GsonHelper.getAsJsonObject(json, "variants");
         Block block = ForgeRegistries.BLOCKS.getValue(location);
         if(block != null && block != Blocks.AIR) {
-          StateContainer<Block,BlockState> container = block.getStateDefinition();
+          StateDefinition<Block,BlockState> container = block.getStateDefinition();
           List<BlockState> validStates = container.getPossibleStates();
           for (Entry<String, JsonElement> variant : variants.entrySet()) {
             // parse fluid
-            FaucetFluid fluid = FaucetFluid.fromJson(JSONUtils.convertToJsonObject(variant.getValue(), variant.getKey()), defaultFluid);
+            FaucetFluid fluid = FaucetFluid.fromJson(GsonHelper.convertToJsonObject(variant.getValue(), variant.getKey()), defaultFluid);
             validStates.stream().filter(ModelBakery.predicate(container, variant.getKey())).forEach(state -> fluidMap.put(state, fluid));
           }
         } else {
@@ -157,7 +157,7 @@ public class FaucetFluidLoader extends JsonReloadListener {
    * @param color       Color to tint fluid
    * @param light       Fluid light value
    */
-  public static void renderFaucetFluids(IWorld world, BlockPos pos, Direction direction, MatrixStack matrices, IVertexBuilder buffer, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light) {
+  public static void renderFaucetFluids(LevelAccessor world, BlockPos pos, Direction direction, PoseStack matrices, VertexConsumer buffer, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light) {
     int i = 0;
     FaucetFluid faucetFluid;
     do {
@@ -232,7 +232,7 @@ public class FaucetFluidLoader extends JsonReloadListener {
     protected static FaucetFluid fromJson(JsonObject json, FaucetFluid def) {
       List<FluidCuboid> side = parseFluids(json, "side", def.side);
       List<FluidCuboid> center = parseFluids(json, "center", def.center);
-      boolean cont = JSONUtils.getAsBoolean(json, "continue", false);
+      boolean cont = GsonHelper.getAsBoolean(json, "continue", false);
       return new FaucetFluid(side, center, cont);
     }
 

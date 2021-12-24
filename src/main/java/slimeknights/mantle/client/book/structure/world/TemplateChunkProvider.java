@@ -3,16 +3,16 @@
 package slimeknights.mantle.client.book.structure.world;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.AbstractChunkProvider;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.EmptyChunk;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.feature.template.Template.BlockInfo;
-import net.minecraft.world.lighting.WorldLightManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.EmptyLevelChunk;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,18 +23,18 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TemplateChunkProvider extends AbstractChunkProvider {
+public class TemplateChunkProvider extends ChunkSource {
 
-  private final Map<ChunkPos, IChunk> chunks;
-  private final World world;
-  private final WorldLightManager lightManager;
+  private final Map<ChunkPos, ChunkAccess> chunks;
+  private final Level world;
+  private final LevelLightEngine lightManager;
 
-  public TemplateChunkProvider(List<BlockInfo> blocks, World world, Predicate<BlockPos> shouldShow) {
+  public TemplateChunkProvider(List<StructureBlockInfo> blocks, Level world, Predicate<BlockPos> shouldShow) {
     this.world = world;
-    this.lightManager = new WorldLightManager(this, true, true);
-    Map<ChunkPos, List<BlockInfo>> byChunk = new HashMap<>();
+    this.lightManager = new LevelLightEngine(this, true, true);
+    Map<ChunkPos, List<StructureBlockInfo>> byChunk = new HashMap<>();
 
-    for (BlockInfo info : blocks) {
+    for (StructureBlockInfo info : blocks) {
       byChunk.computeIfAbsent(new ChunkPos(info.pos), $ -> new ArrayList<>()).add(info);
     }
 
@@ -45,8 +45,8 @@ public class TemplateChunkProvider extends AbstractChunkProvider {
 
   @Nullable
   @Override
-  public IChunk getChunk(int chunkX, int chunkZ, @Nonnull ChunkStatus requiredStatus, boolean load) {
-    return this.chunks.computeIfAbsent(new ChunkPos(chunkX, chunkZ), p -> new EmptyChunk(world, p));
+  public ChunkAccess getChunk(int chunkX, int chunkZ, @Nonnull ChunkStatus requiredStatus, boolean load) {
+    return this.chunks.computeIfAbsent(new ChunkPos(chunkX, chunkZ), p -> new EmptyLevelChunk(world, p));
   }
 
   @Nonnull
@@ -57,13 +57,13 @@ public class TemplateChunkProvider extends AbstractChunkProvider {
 
   @Nonnull
   @Override
-  public WorldLightManager getLightEngine() {
+  public LevelLightEngine getLightEngine() {
     return this.lightManager;
   }
 
   @Nonnull
   @Override
-  public IBlockReader getLevel() {
+  public BlockGetter getLevel() {
     return this.world;
   }
 }

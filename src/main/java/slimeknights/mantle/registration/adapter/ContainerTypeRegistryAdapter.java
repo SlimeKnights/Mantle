@@ -1,20 +1,20 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.IForgeRegistry;
 
 @SuppressWarnings("unused")
-public class ContainerTypeRegistryAdapter extends RegistryAdapter<ContainerType<?>> {
+public class ContainerTypeRegistryAdapter extends RegistryAdapter<MenuType<?>> {
   /** @inheritDoc */
-  public ContainerTypeRegistryAdapter(IForgeRegistry<ContainerType<?>> registry, String modId) {
+  public ContainerTypeRegistryAdapter(IForgeRegistry<MenuType<?>> registry, String modId) {
     super(registry, modId);
   }
 
   /** @inheritDoc */
-  public ContainerTypeRegistryAdapter(IForgeRegistry<ContainerType<?>> registry) {
+  public ContainerTypeRegistryAdapter(IForgeRegistry<MenuType<?>> registry) {
     super(registry);
   }
 
@@ -25,7 +25,7 @@ public class ContainerTypeRegistryAdapter extends RegistryAdapter<ContainerType<
    * @param <C>      Container type
    * @return  Registry object containing the container type
    */
-  public <C extends Container> ContainerType<C> registerType(IContainerFactory<C> factory, String name) {
+  public <C extends AbstractContainerMenu> MenuType<C> registerType(IContainerFactory<C> factory, String name) {
     return register(IForgeContainerType.create(factory), name);
   }
 }

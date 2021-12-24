@@ -1,8 +1,8 @@
 package slimeknights.mantle.registration.object;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 @SuppressWarnings("WeakerAccess")
 public class BuildingBlockObject extends ItemObject<Block> {
   private final Supplier<? extends SlabBlock> slab;
-  private final Supplier<? extends StairsBlock> stairs;
+  private final Supplier<? extends StairBlock> stairs;
 
   /**
    * Creates a new building block object from three blocks
@@ -37,7 +37,7 @@ public class BuildingBlockObject extends ItemObject<Block> {
    * @param slab    Slab block
    * @param stairs  Stairs block
    */
-  public BuildingBlockObject(ItemObject<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairsBlock> stairs) {
+  public BuildingBlockObject(ItemObject<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairBlock> stairs) {
     super(block);
     this.slab = slab;
     this.stairs = stairs;
@@ -59,7 +59,7 @@ public class BuildingBlockObject extends ItemObject<Block> {
   }
 
   /** Gets the stairs for this block */
-  public StairsBlock getStairs() {
+  public StairBlock getStairs() {
     return Objects.requireNonNull(stairs.get(), "Building Block Object missing stairs");
   }
 

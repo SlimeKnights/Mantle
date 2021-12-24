@@ -1,7 +1,7 @@
 package slimeknights.mantle.util.sync;
 
-import net.minecraft.util.IIntArray;
-import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.DataSlot;
 
 import java.util.function.Consumer;
 
@@ -9,11 +9,11 @@ import java.util.function.Consumer;
  * Int reference holder that starts the "lastKnownValue" at an invalid value.
  * Fixes a bug where a non-zero value on the client is not updated on UI open as the new value is 0
  */
-public class ValidZeroIntReference extends IntReferenceHolder {
-  private final IIntArray data;
+public class ValidZeroIntReference extends DataSlot {
+  private final ContainerData data;
   private final int idx;
 
-  public ValidZeroIntReference(IIntArray data, int idx) {
+  public ValidZeroIntReference(ContainerData data, int idx) {
     this.prevValue = Integer.MIN_VALUE;
     this.data = data;
     this.idx = idx;
@@ -34,7 +34,7 @@ public class ValidZeroIntReference extends IntReferenceHolder {
    * @param consumer  Consumer for reference holders
    * @param array     Array source
    */
-  public static void trackIntArray(Consumer<IntReferenceHolder> consumer, IIntArray array) {
+  public static void trackIntArray(Consumer<DataSlot> consumer, ContainerData array) {
     for(int i = 0; i < array.getCount(); ++i) {
       consumer.accept(new ValidZeroIntReference(array, i));
     }

@@ -8,8 +8,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.util.GenericRegisteredSerializer.IJsonSerializable;
 
 import java.lang.reflect.Type;
@@ -31,7 +31,7 @@ public class GenericRegisteredSerializer<T extends IJsonSerializable> implements
 
   @Override
   public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-    JsonObject object = JSONUtils.convertToJsonObject(json, "transformer");
+    JsonObject object = GsonHelper.convertToJsonObject(json, "transformer");
     ResourceLocation type = JsonHelper.getResourceLocation(object, "type");
     JsonDeserializer<? extends T> deserializer = deserializers.get(type);
     if (deserializer == null) {
@@ -46,7 +46,7 @@ public class GenericRegisteredSerializer<T extends IJsonSerializable> implements
     if (!serialized.has("type")) {
       throw new IllegalArgumentException("Invalid serialized sprite transformer, missing type");
     }
-    String typeStr = JSONUtils.getAsString(serialized, "type");
+    String typeStr = GsonHelper.getAsString(serialized, "type");
     ResourceLocation typeRL = ResourceLocation.tryParse(typeStr);
     if (typeRL == null) {
       throw new IllegalArgumentException("Invalid sprite transformer type '" + typeStr + '\'');

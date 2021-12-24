@@ -5,12 +5,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.ICriterionInstance;
-import net.minecraft.advancements.IRequirementsStrategy;
-import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
-import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,7 +36,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @return  Builder
    */
   @SuppressWarnings("unchecked")
-  public T addCriterion(String name, ICriterionInstance criteria) {
+  public T addCriterion(String name, CriterionTriggerInstance criteria) {
     this.advancementBuilder.addCriterion(name, criteria);
     return (T)this;
   }
@@ -69,14 +69,14 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * Builds the recipe with a default recipe ID, typically based on the output
    * @param consumerIn  Recipe consumer
    */
-  public abstract void build(Consumer<IFinishedRecipe> consumerIn);
+  public abstract void build(Consumer<FinishedRecipe> consumerIn);
 
   /**
    * Builds the recipe
    * @param consumerIn  Recipe consumer
    * @param id          Recipe ID
    */
-  public abstract void build(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id);
+  public abstract void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id);
 
   /**
    * Base logic for advancement building
@@ -89,7 +89,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
         .parent(new ResourceLocation("recipes/root"))
         .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
         .rewards(AdvancementRewards.Builder.recipe(id))
-        .requirements(IRequirementsStrategy.OR);
+        .requirements(RequirementsStrategy.OR);
     return new ResourceLocation(id.getNamespace(), "recipes/" + folder + "/" + id.getPath());
   }
 
@@ -122,7 +122,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
 
   /** Class to implement basic finished recipe methods */
   @RequiredArgsConstructor
-  protected abstract class AbstractFinishedRecipe implements IFinishedRecipe {
+  protected abstract class AbstractFinishedRecipe implements FinishedRecipe {
     @Getter
     private final ResourceLocation ID;
     @Getter @Nullable

@@ -4,8 +4,8 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -66,7 +66,7 @@ public class SectionData implements IDataItem, IConditional {
     this.name = this.name.toLowerCase();
 
     if (!this.data.equals("no-load")) {
-      IResource pagesInfo = this.source.getResource(this.source.getResourceLocation(this.data));
+      Resource pagesInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if (pagesInfo != null) {
         String data = this.source.resourceToString(pagesInfo);
         if (!data.isEmpty()) {

@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -10,19 +10,19 @@ public class TextComponentData {
 
   public static final TextComponentData LINEBREAK = new TextComponentData("\n");
 
-  public ITextComponent text;
+  public Component text;
 
   public boolean isParagraph = false;
   public boolean dropShadow = false;
   public float scale = 1.F;
   public String action = "";
-  public ITextComponent[] tooltips = null;
+  public Component[] tooltips = null;
 
   public TextComponentData(String text) {
-    this(new StringTextComponent(text));
+    this(new TextComponent(text));
   }
 
-  public TextComponentData(ITextComponent text) {
+  public TextComponentData(Component text) {
     this.text = text;
   }
 

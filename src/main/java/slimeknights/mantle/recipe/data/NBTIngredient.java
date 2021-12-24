@@ -1,6 +1,6 @@
 package slimeknights.mantle.recipe.data;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Simply an extension of the Forge ingredient because the constructor is not public for some dumb reason

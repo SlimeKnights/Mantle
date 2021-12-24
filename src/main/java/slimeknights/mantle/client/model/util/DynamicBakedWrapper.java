@@ -1,9 +1,9 @@
 package slimeknights.mantle.client.model.util;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.util.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
@@ -18,7 +18,7 @@ import java.util.Random;
  * @param <T>  Baked model parent
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class DynamicBakedWrapper<T extends IBakedModel> extends BakedModelWrapper<T> {
+public abstract class DynamicBakedWrapper<T extends BakedModel> extends BakedModelWrapper<T> {
 
   protected DynamicBakedWrapper(T originalModel) {
     super(originalModel);

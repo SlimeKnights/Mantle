@@ -7,16 +7,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringUtil;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
@@ -67,7 +67,7 @@ public class IngredientData implements IDataElement {
       stacks.addAll(ingredient.getMatchingStacks());
     }
 
-    if(ingredients == null || stacks.isEmpty() || !StringUtils.isNullOrEmpty(error)) {
+    if(ingredients == null || stacks.isEmpty() || !StringUtil.isNullOrEmpty(error)) {
       items = NonNullList.withSize(1, getMissingItem());
       return;
     }
@@ -82,12 +82,12 @@ public class IngredientData implements IDataElement {
   private ItemStack getMissingItem(String error) {
     ItemStack missingItem = new ItemStack(Items.BARRIER);
 
-    CompoundNBT display = missingItem.getOrCreateTagElement("display");
+    CompoundTag display = missingItem.getOrCreateTagElement("display");
     display.putString("Name", "\u00A7rError Loading Item");
-    ListNBT lore = new ListNBT();
-    if(!StringUtils.isNullOrEmpty(error)) {
-      lore.add(StringNBT.valueOf("\u00A7r\u00A7eError:"));
-      lore.add(StringNBT.valueOf("\u00A7r\u00A7e" + error));
+    ListTag lore = new ListTag();
+    if(!StringUtil.isNullOrEmpty(error)) {
+      lore.add(StringTag.valueOf("\u00A7r\u00A7eError:"));
+      lore.add(StringTag.valueOf("\u00A7r\u00A7e" + error));
     }
     display.put("Lore", lore);
 

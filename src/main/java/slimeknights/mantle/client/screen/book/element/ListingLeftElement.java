@@ -1,8 +1,8 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.FontRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Font;
 import slimeknights.mantle.client.book.data.element.TextData;
 
 /** Element within a {@link slimeknights.mantle.client.book.data.content.ContentListing} */
@@ -30,7 +30,7 @@ public class ListingLeftElement extends TextElement {
   }
 
   @Override
-  public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(PoseStack matrices, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (isClickable) {
       if (this.isHovered(mouseX, mouseY)) {
         // update bullet

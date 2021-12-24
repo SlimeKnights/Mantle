@@ -2,10 +2,10 @@ package slimeknights.mantle.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -44,7 +44,7 @@ public final class RetexturedHelper {
    * @param nbt  NBT tag
    * @return  Name of the texture, or empty if no texture
    */
-  public static String getTextureName(@Nullable CompoundNBT nbt) {
+  public static String getTextureName(@Nullable CompoundTag nbt) {
     if (nbt == null) {
       return "";
     }
@@ -59,7 +59,7 @@ public final class RetexturedHelper {
    * @param nbt      Tag instance
    * @param texture  Texture to set
    */
-  public static void setTexture(@Nullable CompoundNBT nbt, String texture) {
+  public static void setTexture(@Nullable CompoundTag nbt, String texture) {
     if (nbt != null) {
       if (texture.isEmpty()) {
         nbt.remove(TAG_TEXTURE);

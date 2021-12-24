@@ -1,8 +1,8 @@
 package slimeknights.mantle.recipe.data;
 
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public interface IRecipeBuilderUtils {
    * Gets the base recipe consumer
    * @return Base recipe consumer
    */
-  Consumer<IFinishedRecipe> getConsumer();
+  Consumer<FinishedRecipe> getConsumer();
 
   /**
    * Gets the base condition for the condition utility
@@ -58,7 +58,7 @@ public interface IRecipeBuilderUtils {
    * @param prefix Name to prefix location with
    * @return Prefixed resource location
    */
-  default ResourceLocation prefix(IItemProvider item, String prefix) {
+  default ResourceLocation prefix(ItemLike item, String prefix) {
     return resource(prefix + Objects.requireNonNull(item.asItem().getRegistryName()).getPath());
   }
 
@@ -69,7 +69,7 @@ public interface IRecipeBuilderUtils {
    * @param suffix Suffix for location
    * @return Prefixed resource location
    */
-  default ResourceLocation wrap(IItemProvider item, String prefix, String suffix) {
+  default ResourceLocation wrap(ItemLike item, String prefix, String suffix) {
     return resource(prefix + Objects.requireNonNull(item.asItem().getRegistryName()).getPath() + suffix);
   }
 
@@ -78,7 +78,7 @@ public interface IRecipeBuilderUtils {
    * @param conditions Conditions to add
    * @return Consumer with condition
    */
-  default Consumer<IFinishedRecipe> withCondition(ICondition... conditions) {
+  default Consumer<FinishedRecipe> withCondition(ICondition... conditions) {
     ConsumerWrapperBuilder builder = ConsumerWrapperBuilder.wrap();
     ICondition base = baseCondition();
     if (base != null) {

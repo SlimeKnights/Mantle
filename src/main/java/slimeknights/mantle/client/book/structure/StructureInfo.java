@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.structure;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.feature.template.Template.BlockInfo;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 //Stolen back from Blu stealing back boni's stolen code
 public class StructureInfo implements Predicate<BlockPos> {
 
-  public Map<BlockPos, BlockInfo> data = new HashMap<>();
+  public Map<BlockPos, StructureBlockInfo> data = new HashMap<>();
   public final int structureHeight;
   public final int structureLength;
   public final int structureWidth;
@@ -20,12 +20,12 @@ public class StructureInfo implements Predicate<BlockPos> {
   public int showLayer = -1;
   public int blockIndex;
 
-  public StructureInfo(List<BlockInfo> structure) {
+  public StructureInfo(List<StructureBlockInfo> structure) {
     int structureHeight = 0;
     int structureWidth = 0;
     int structureLength = 0;
 
-    for (BlockInfo block : structure) {
+    for (StructureBlockInfo block : structure) {
       structureHeight = Math.max(structureHeight, block.pos.getY() + 1);
       structureWidth = Math.max(structureWidth, block.pos.getZ() + 1);
       structureLength = Math.max(structureLength, block.pos.getX() + 1);

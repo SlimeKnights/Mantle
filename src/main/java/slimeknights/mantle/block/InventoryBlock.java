@@ -1,20 +1,20 @@
 package slimeknights.mantle.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -26,7 +26,7 @@ import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
  * Base class for blocks with an inventory
@@ -34,7 +34,7 @@ import net.minecraft.block.AbstractBlock;
 @SuppressWarnings("WeakerAccess")
 public abstract class InventoryBlock extends Block {
 
-  protected InventoryBlock(AbstractBlock.Properties builder) {
+  protected InventoryBlock(BlockBehaviour.Properties builder) {
     super(builder);
   }
 
@@ -47,7 +47,7 @@ public abstract class InventoryBlock extends Block {
   }
 
   @Override
-  public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
+  public abstract BlockEntity createTileEntity(BlockState state, BlockGetter world);
 
   /**
    * Called when the block is activated to open the UI. Override to return false for blocks with no inventory
@@ -56,11 +56,11 @@ public abstract class InventoryBlock extends Block {
    * @param pos    Block position
    * @return true if the GUI opened, false if not
    */
-  protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
+  protected boolean openGui(Player player, Level world, BlockPos pos) {
     if (!world.isClientSide()) {
-      INamedContainerProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
-      if (container != null && player instanceof ServerPlayerEntity) {
-        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+      MenuProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
+      if (container != null && player instanceof ServerPlayer) {
+        ServerPlayer serverPlayer = (ServerPlayer) player;
         NetworkHooks.openGui(serverPlayer, container, pos);
         if (player.containerMenu instanceof BaseContainer<?>) {
           ((BaseContainer<?>) player.containerMenu).syncOnOpen(serverPlayer);
@@ -74,26 +74,26 @@ public abstract class InventoryBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
     if (player.isSuppressingBounce()) {
-      return ActionResultType.PASS;
+      return InteractionResult.PASS;
     }
     if (!world.isClientSide) {
-      return this.openGui(player, world, pos) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+      return this.openGui(player, world, pos) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
-    return ActionResultType.SUCCESS;
+    return InteractionResult.SUCCESS;
   }
 
 
   /* Naming */
 
   @Override
-  public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+  public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
     super.setPlacedBy(worldIn, pos, state, placer, stack);
 
     // set custom name from named stack
     if (stack.hasCustomHoverName()) {
-      TileEntity tileentity = worldIn.getBlockEntity(pos);
+      BlockEntity tileentity = worldIn.getBlockEntity(pos);
       if (tileentity instanceof IRenamableContainerProvider) {
         ((IRenamableContainerProvider) tileentity).setCustomName(stack.getHoverName());
       }
@@ -104,9 +104,9 @@ public abstract class InventoryBlock extends Block {
   @Override
   @Nullable
   @Deprecated
-  public INamedContainerProvider getMenuProvider(BlockState state, World worldIn, BlockPos pos) {
-    TileEntity tileentity = worldIn.getBlockEntity(pos);
-    return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
+  public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
+    BlockEntity tileentity = worldIn.getBlockEntity(pos);
+    return tileentity instanceof MenuProvider ? (MenuProvider) tileentity : null;
   }
 
 
@@ -115,9 +115,9 @@ public abstract class InventoryBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity te = worldIn.getBlockEntity(pos);
+      BlockEntity te = worldIn.getBlockEntity(pos);
       if (te != null) {
         te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
           .ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
@@ -135,7 +135,7 @@ public abstract class InventoryBlock extends Block {
    * @param pos         Tile position
    * @param inventory   Item handler
    */
-  protected void dropInventoryItems(BlockState state, World worldIn, BlockPos pos, IItemHandler inventory) {
+  protected void dropInventoryItems(BlockState state, Level worldIn, BlockPos pos, IItemHandler inventory) {
     dropInventoryItems(worldIn, pos, inventory);
   }
 
@@ -145,21 +145,21 @@ public abstract class InventoryBlock extends Block {
    * @param pos        Position to drop
    * @param inventory  Inventory instance
    */
-  public static void dropInventoryItems(World world, BlockPos pos, IItemHandler inventory) {
+  public static void dropInventoryItems(Level world, BlockPos pos, IItemHandler inventory) {
     double x = pos.getX();
     double y = pos.getY();
     double z = pos.getZ();
     for(int i = 0; i < inventory.getSlots(); ++i) {
-      InventoryHelper.dropItemStack(world, x, y, z, inventory.getStackInSlot(i));
+      Containers.dropItemStack(world, x, y, z, inventory.getStackInSlot(i));
     }
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean triggerEvent(BlockState state, World worldIn, BlockPos pos, int id, int param) {
+  public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
     super.triggerEvent(state, worldIn, pos, id, param);
-    TileEntity tileentity = worldIn.getBlockEntity(pos);
+    BlockEntity tileentity = worldIn.getBlockEntity(pos);
     return tileentity != null && tileentity.triggerEvent(id, param);
   }
 }

@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.tags.ITagCollection;
 import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -38,7 +38,7 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
   private static final Iterable<ResourceLocation> ALL_COLLECTIONS_ITERABLE = CollectionIterator::new;
   // errors
   /* Tag collection name is invalid */
-  private static final DynamicCommandExceptionType TAG_COLLECTION_NOT_FOUND = new DynamicCommandExceptionType(name -> new TranslationTextComponent("command.mantle.tag_collection.not_found", name));
+  private static final DynamicCommandExceptionType TAG_COLLECTION_NOT_FOUND = new DynamicCommandExceptionType(name -> new TranslatableComponent("command.mantle.tag_collection.not_found", name));
 
   /**
    * Gets the tag type for a vanilla tag

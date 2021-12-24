@@ -6,18 +6,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.advancements.criterion.StatePropertiesPredicate;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.loot.ILootSerializer;
-import net.minecraft.loot.LootConditionType;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameter;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.Serializer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -25,40 +25,40 @@ import java.util.Set;
 
 /** Variant of {@link net.minecraft.loot.conditions.BlockStateProperty} that allows using a tag for block type instead of a block */
 @RequiredArgsConstructor
-public class BlockTagLootCondition implements ILootCondition {
+public class BlockTagLootCondition implements LootItemCondition {
   public static final Serializer SERIALIZER = new Serializer();
 
-  private final ITag<Block> tag;
+  private final Tag<Block> tag;
   private final StatePropertiesPredicate properties;
 
-  public BlockTagLootCondition(ITag<Block> tag) {
+  public BlockTagLootCondition(Tag<Block> tag) {
     this(tag, StatePropertiesPredicate.ANY);
   }
 
-  public BlockTagLootCondition(ITag<Block> tag, StatePropertiesPredicate.Builder builder) {
+  public BlockTagLootCondition(Tag<Block> tag, StatePropertiesPredicate.Builder builder) {
     this(tag, builder.build());
   }
 
   @Override
   public boolean test(LootContext context) {
-    BlockState state = context.getParamOrNull(LootParameters.BLOCK_STATE);
+    BlockState state = context.getParamOrNull(LootContextParams.BLOCK_STATE);
     return state != null && state.is(tag) && this.properties.matches(state);
   }
 
   @Override
-  public Set<LootParameter<?>> getReferencedContextParams() {
-    return ImmutableSet.of(LootParameters.BLOCK_STATE);
+  public Set<LootContextParam<?>> getReferencedContextParams() {
+    return ImmutableSet.of(LootContextParams.BLOCK_STATE);
   }
 
   @Override
-  public LootConditionType getType() {
+  public LootItemConditionType getType() {
     return MantleLoot.BLOCK_TAG_CONDITION;
   }
 
-  private static class Serializer implements ILootSerializer<BlockTagLootCondition> {
+  private static class Serializer implements Serializer<BlockTagLootCondition> {
     @Override
     public void serialize(JsonObject json, BlockTagLootCondition loot, JsonSerializationContext context) {
-      json.addProperty("tag", TagCollectionManager.getInstance().getBlocks().getIdOrThrow(loot.tag).toString());
+      json.addProperty("tag", SerializationTags.getInstance().getBlocks().getIdOrThrow(loot.tag).toString());
       if (loot.properties != StatePropertiesPredicate.ANY) {
         json.add("properties", loot.properties.serializeToJson());
       }
@@ -67,7 +67,7 @@ public class BlockTagLootCondition implements ILootCondition {
     @Override
     public BlockTagLootCondition deserialize(JsonObject json, JsonDeserializationContext context) {
       ResourceLocation id = JsonHelper.getResourceLocation(json, "tag");
-      ITag<Block> tag = TagCollectionManager.getInstance().getBlocks().getTag(id);
+      Tag<Block> tag = SerializationTags.getInstance().getBlocks().getTag(id);
       if (tag == null) {
         throw new JsonSyntaxException("Unknown block tag '" + id + "'");
       }

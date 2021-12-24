@@ -1,7 +1,7 @@
 package slimeknights.mantle.loot.condition;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
 import slimeknights.mantle.util.GenericRegisteredSerializer;
 import slimeknights.mantle.util.GenericRegisteredSerializer.IJsonSerializable;
 

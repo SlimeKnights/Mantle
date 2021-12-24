@@ -1,14 +1,14 @@
 package slimeknights.mantle.recipe.inventory;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * IInventory extension for a recipe that only needs read access.
  * Used to control which slots an recipe gets and to prevent the need to implement IInventory to get the recipe.
  */
-public interface IReadOnlyInventory extends IInventory {
+public interface IReadOnlyInventory extends Container {
   /* Unsupported operations */
 
   /** @deprecated unsupported method */
@@ -49,7 +49,7 @@ public interface IReadOnlyInventory extends IInventory {
   /** @deprecated unused method */
   @Deprecated
   @Override
-  default boolean stillValid(PlayerEntity player) {
+  default boolean stillValid(Player player) {
     return true;
   }
 }

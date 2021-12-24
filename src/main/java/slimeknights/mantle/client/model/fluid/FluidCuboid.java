@@ -6,9 +6,9 @@ import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.core.Direction;
+import net.minecraft.util.GsonHelper;
+import com.mojang.math.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -132,14 +132,14 @@ public class FluidCuboid {
     }
 
     Map<Direction, FluidFace> faces = new EnumMap<>(Direction.class);
-    JsonObject object = JSONUtils.getAsJsonObject(json, "faces");
+    JsonObject object = GsonHelper.getAsJsonObject(json, "faces");
     for (Entry<String, JsonElement> entry : object.entrySet()) {
       // if the direction is a face, add it
       String name = entry.getKey();
       Direction dir = Direction.byName(name);
       if (dir != null) {
-        JsonObject face = JSONUtils.convertToJsonObject(entry.getValue(), name);
-        boolean flowing = JSONUtils.getAsBoolean(face, "flowing", false);
+        JsonObject face = GsonHelper.convertToJsonObject(entry.getValue(), name);
+        boolean flowing = GsonHelper.getAsBoolean(face, "flowing", false);
         int rotation = ModelHelper.getRotation(face, "rotation");
         faces.put(dir, new FluidFace(flowing, rotation));
       } else {

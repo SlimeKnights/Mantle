@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -12,7 +12,7 @@ public abstract class Widget {
   public int height;
   public int width;
 
-  public abstract void draw(MatrixStack matrixStack);
+  public abstract void draw(PoseStack matrixStack);
 
   /**
    * Where the part will be drawn. Upper left corner.

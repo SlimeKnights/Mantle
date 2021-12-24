@@ -1,8 +1,8 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.client.model.data.SinglePropertyData;
 import slimeknights.mantle.util.RetexturedHelper;
@@ -14,7 +14,7 @@ import slimeknights.mantle.util.RetexturedHelper;
  */
 public interface IRetexturedTileEntity {
   /* Gets the Forge tile data for the tile entity */
-  CompoundNBT getTileData();
+  CompoundTag getTileData();
 
   /**
    * Gets the current texture block name

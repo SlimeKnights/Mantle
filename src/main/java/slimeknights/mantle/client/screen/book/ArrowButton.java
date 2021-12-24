@@ -1,10 +1,10 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 
-import net.minecraft.client.gui.widget.button.Button.IPressable;
+import net.minecraft.client.gui.components.Button.OnPress;
 
 @OnlyIn(Dist.CLIENT)
 public class ArrowButton extends Button {
@@ -28,8 +28,8 @@ public class ArrowButton extends Button {
   public int color;
   public int hoverColor;
 
-  public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
-    super(x, y, arrowType.w, arrowType.h, StringTextComponent.EMPTY, iPressable);
+  public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress iPressable) {
+    super(x, y, arrowType.w, arrowType.h, TextComponent.EMPTY, iPressable);
 
     this.arrowType = arrowType;
     this.color = color;
@@ -37,11 +37,11 @@ public class ArrowButton extends Button {
     this.bookData = bookData;
   }
 
-  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
+  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress iPressable) {
     this(null, x, y, arrowType, color, hoverColor, iPressable);
   }
 
-  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, @Nullable BookData bookData) {
+  public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, @Nullable BookData bookData) {
     Minecraft minecraft = Minecraft.getInstance();
     if (bookData != null) {
       minecraft.getTextureManager().bind(bookData.appearance.getBookTexture());
@@ -63,7 +63,7 @@ public class ArrowButton extends Button {
   }
 
   @Override
-  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     renderButton(matrixStack, mouseX, mouseY, partialTicks, bookData);
   }
 

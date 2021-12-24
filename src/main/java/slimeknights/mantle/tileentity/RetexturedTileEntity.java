@@ -1,9 +1,9 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.LazyValue;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.util.LazyLoadedValue;
 import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.util.RetexturedHelper;
 
@@ -13,8 +13,8 @@ import slimeknights.mantle.util.RetexturedHelper;
 public class RetexturedTileEntity extends MantleTileEntity implements IRetexturedTileEntity {
 
   /** Lazy value of model data as it will not change after first fetch */
-  private final LazyValue<IModelData> data = new LazyValue<>(this::getRetexturedModelData);
-  public RetexturedTileEntity(TileEntityType<?> type) {
+  private final LazyLoadedValue<IModelData> data = new LazyLoadedValue<>(this::getRetexturedModelData);
+  public RetexturedTileEntity(BlockEntityType<?> type) {
     super(type);
   }
 
@@ -29,7 +29,7 @@ public class RetexturedTileEntity extends MantleTileEntity implements IRetexture
   }
 
   @Override
-  public void load(BlockState blockState, CompoundNBT tags) {
+  public void load(BlockState blockState, CompoundTag tags) {
     String oldName = getTextureName();
     super.load(blockState, tags);
     String newName = getTextureName();

@@ -1,9 +1,9 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.AllArgsConstructor;
-import net.minecraft.item.Item;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -20,7 +20,7 @@ import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor
-public class ItemObject<I extends IForgeRegistryEntry<? super I> & IItemProvider> implements Supplier<I>, IItemProvider {
+public class ItemObject<I extends IForgeRegistryEntry<? super I> & ItemLike> implements Supplier<I>, ItemLike {
   /** Supplier to the registry entry */
   private final Supplier<? extends I> entry;
   /** Supplier to the registry name for this entry, allows fetching the name before the entry resolves if registry object is used */

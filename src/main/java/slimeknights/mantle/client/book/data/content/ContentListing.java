@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;

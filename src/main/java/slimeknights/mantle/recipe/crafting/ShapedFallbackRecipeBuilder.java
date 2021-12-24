@@ -4,10 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public class ShapedFallbackRecipeBuilder {
    * Builds the recipe using the output as the name
    * @param consumer  Recipe consumer
    */
-  public void build(Consumer<IFinishedRecipe> consumer) {
+  public void build(Consumer<FinishedRecipe> consumer) {
     base.save(base -> consumer.accept(new Result(base, alternatives)));
   }
 
@@ -54,13 +54,13 @@ public class ShapedFallbackRecipeBuilder {
    * @param consumer  Recipe consumer
    * @param id        Recipe ID
    */
-  public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
+  public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
     base.save(base -> consumer.accept(new Result(base, alternatives)), id);
   }
 
   @AllArgsConstructor
-  public class Result implements IFinishedRecipe {
-    private final IFinishedRecipe base;
+  public class Result implements FinishedRecipe {
+    private final FinishedRecipe base;
     private final List<ResourceLocation> alternatives;
 
     @Override
@@ -72,7 +72,7 @@ public class ShapedFallbackRecipeBuilder {
     }
 
     @Override
-    public IRecipeSerializer<?> getType() {
+    public RecipeSerializer<?> getType() {
       return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
     }
 

@@ -1,10 +1,10 @@
 package slimeknights.mantle.network.packet;
 
 import lombok.RequiredArgsConstructor;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import slimeknights.mantle.client.book.BookHelper;
 
@@ -13,22 +13,22 @@ import slimeknights.mantle.client.book.BookHelper;
  */
 @RequiredArgsConstructor
 public class UpdateHeldPagePacket implements IThreadsafePacket {
-  private final Hand hand;
+  private final InteractionHand hand;
   private final String page;
-  public UpdateHeldPagePacket(PacketBuffer buffer) {
-    this.hand = buffer.readEnum(Hand.class);
+  public UpdateHeldPagePacket(FriendlyByteBuf buffer) {
+    this.hand = buffer.readEnum(InteractionHand.class);
     this.page = buffer.readUtf(100);
   }
 
   @Override
-  public void encode(PacketBuffer buf) {
+  public void encode(FriendlyByteBuf buf) {
     buf.writeEnum(hand);
     buf.writeUtf(this.page);
   }
 
   @Override
   public void handleThreadsafe(Context context) {
-    PlayerEntity player = context.getSender();
+    Player player = context.getSender();
     if (player != null && this.page != null) {
       ItemStack stack = player.getItemInHand(hand);
       if (!stack.isEmpty()) {

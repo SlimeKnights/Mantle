@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.object.EnumObject;
@@ -31,7 +31,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
    * @param name      Name of the block
    * @return  EnumObject mapping between different block types
    */
-  public <E extends Enum<E> & IStringSerializable,I extends T> EnumObject<E,I> registerEnum(Function<E,I> mapper, E[] values, String name) {
+  public <E extends Enum<E> & StringRepresentable,I extends T> EnumObject<E,I> registerEnum(Function<E,I> mapper, E[] values, String name) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
@@ -51,7 +51,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
    * @param values    Enum values to use for this block
    * @return  EnumObject mapping between different block types
    */
-  public <E extends Enum<E> & IStringSerializable,I extends T> EnumObject<E,I> registerEnum(Function<E,I> mapper, String name, E[] values) {
+  public <E extends Enum<E> & StringRepresentable,I extends T> EnumObject<E,I> registerEnum(Function<E,I> mapper, String name, E[] values) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }

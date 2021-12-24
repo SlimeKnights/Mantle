@@ -1,22 +1,22 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.multiplayer.ClientAdvancementManager;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ColorHelper;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.Mth;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -81,7 +81,7 @@ public class BookScreen extends Screen {
     BookElement::drawOverlay
   };
 
-  public BookScreen(ITextComponent title, BookData book, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
+  public BookScreen(Component title, BookData book, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
     super(title);
     this.book = book;
     this.pageUpdater = pageUpdater;
@@ -97,8 +97,8 @@ public class BookScreen extends Screen {
     this.openPage(book.findPageNumber(page, this.advancementCache));
   }
 
-  public FontRenderer getFontRenderer() {
-    FontRenderer fontRenderer = this.book.fontRenderer;
+  public Font getFontRenderer() {
+    Font fontRenderer = this.book.fontRenderer;
     if (fontRenderer == null) {
       fontRenderer = Objects.requireNonNull(this.minecraft).font;
     }
@@ -107,29 +107,29 @@ public class BookScreen extends Screen {
   }
 
   private Vector3f splitRGB(int color) {
-    float r = ColorHelper.PackedColor.red(color) / 255.F;
-    float g = ColorHelper.PackedColor.green(color)  / 255.F;
-    float b = ColorHelper.PackedColor.blue(color)  / 255.F;
+    float r = FastColor.ARGB32.red(color) / 255.F;
+    float g = FastColor.ARGB32.green(color)  / 255.F;
+    float b = FastColor.ARGB32.blue(color)  / 255.F;
 
     return new Vector3f(r, g, b);
   }
 
   private Vector4f splitRGBA(int color) {
-    float r = ColorHelper.PackedColor.red(color) / 255.F;
-    float g = ColorHelper.PackedColor.green(color)  / 255.F;
-    float b = ColorHelper.PackedColor.blue(color)  / 255.F;
-    float a = ColorHelper.PackedColor.alpha(color)  / 255.F;
+    float r = FastColor.ARGB32.red(color) / 255.F;
+    float g = FastColor.ARGB32.green(color)  / 255.F;
+    float b = FastColor.ARGB32.blue(color)  / 255.F;
+    float a = FastColor.ARGB32.alpha(color)  / 255.F;
 
     return new Vector4f(r, g, b, a);
   }
 
   @Override
-  public void render(MatrixStack matrixStack, int mouseX ,int mouseY, float partialTicks) {
+  public void render(PoseStack matrixStack, int mouseX ,int mouseY, float partialTicks) {
     if(this.minecraft == null) {
       return;
     }
 
-    FontRenderer fontRenderer = getFontRenderer();
+    Font fontRenderer = getFontRenderer();
 
     if (debug) {
       fill(matrixStack, 0, 0, fontRenderer.width("DEBUG") + 4, fontRenderer.lineHeight + 4, 0x55000000);
@@ -147,11 +147,11 @@ public class BookScreen extends Screen {
       this.renderCover(matrixStack, coverColor, render);
     } else {
       // Jank way to copy last matrix in matrix stack, as no proper way is provided
-      MatrixStack leftMatrix = new MatrixStack();
+      PoseStack leftMatrix = new PoseStack();
       leftMatrix.last().pose().multiply(matrixStack.last().pose());
       leftMatrix.last().normal().mul(matrixStack.last().normal());
 
-      MatrixStack rightMatrix = new MatrixStack();
+      PoseStack rightMatrix = new PoseStack();
       rightMatrix.last().pose().multiply(matrixStack.last().pose());
       rightMatrix.last().normal().mul(matrixStack.last().normal());
 
@@ -201,8 +201,8 @@ public class BookScreen extends Screen {
     return this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0;
   }
 
-  private void renderCover(MatrixStack matrixStack, Vector3f coverColor, TextureManager render) {
-    FontRenderer fontRenderer = getFontRenderer();
+  private void renderCover(PoseStack matrixStack, Vector3f coverColor, TextureManager render) {
+    Font fontRenderer = getFontRenderer();
 
     render.bind(book.appearance.getCoverTexture());
 
@@ -219,7 +219,7 @@ public class BookScreen extends Screen {
       matrixStack.pushPose();
 
       int width = fontRenderer.width(this.book.appearance.title);
-      float scale = MathHelper.clamp((float)PAGE_WIDTH / width, 0F, 2.5F);
+      float scale = Mth.clamp((float)PAGE_WIDTH / width, 0F, 2.5F);
 
       matrixStack.scale(scale, scale, 1F);
 

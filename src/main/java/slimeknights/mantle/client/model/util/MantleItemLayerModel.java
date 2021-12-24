@@ -8,23 +8,23 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.math.Transformation;
 import net.minecraftforge.client.model.BakedItemModel;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
@@ -64,7 +64,7 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
   /** Layers in the model */
   private final List<LayerData> layers;
   /** Textures fetched during baking */
-  private List<RenderMaterial> textures = Collections.emptyList();
+  private List<Material> textures = Collections.emptyList();
 
   /** Gets the layer at the given index */
   private LayerData getLayer(int index) {
@@ -75,8 +75,8 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
   }
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    ImmutableList.Builder<RenderMaterial> builder = ImmutableList.builder();
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    ImmutableList.Builder<Material> builder = ImmutableList.builder();
     for (int i = 0; owner.isTexturePresent("layer" + i); i++) {
       builder.add(owner.resolveTexture("layer" + i));
     }
@@ -85,14 +85,14 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
     // determine particle texture
     TextureAtlasSprite particle = spriteGetter.apply(owner.isTexturePresent("particle") ? owner.resolveTexture("particle") : textures.get(0));
     // bake in special properties
     ReversedListBuilder<BakedQuad> builder = new ReversedListBuilder<>();
     // skip the pixel tracking if using a single texture only
     ItemLayerPixels pixels = textures.size() == 1 ? null : new ItemLayerPixels();
-    TransformationMatrix transform = modelTransform.getRotation();
+    Transformation transform = modelTransform.getRotation();
     for (int i = textures.size() - 1; i >= 0; i--) {
       TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
       LayerData data = getLayer(i);

@@ -5,15 +5,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import java.util.Objects;
@@ -51,7 +51,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @param count Stack count
    * @return  Output
    */
-  public static ItemOutput fromItem(IItemProvider item, int count) {
+  public static ItemOutput fromItem(ItemLike item, int count) {
     return new OfItem(item.asItem(), count);
   }
 
@@ -60,7 +60,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @param item  Item
    * @return  Output
    */
-  public static ItemOutput fromItem(IItemProvider item) {
+  public static ItemOutput fromItem(ItemLike item) {
     return fromItem(item, 1);
   }
 
@@ -69,7 +69,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @param tag  Tag
    * @return Output
    */
-  public static ItemOutput fromTag(ITag<Item> tag, int count) {
+  public static ItemOutput fromTag(Tag<Item> tag, int count) {
     return new OfTagPreference(tag, count);
   }
 
@@ -80,7 +80,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    */
   public static ItemOutput fromJson(JsonElement element) {
     if (element.isJsonPrimitive()) {
-      return fromItem(JSONUtils.convertToItem(element, "item"));
+      return fromItem(GsonHelper.convertToItem(element, "item"));
     }
     if (!element.isJsonObject()) {
       throw new JsonSyntaxException("Invalid item output, must be a string or an object");
@@ -88,12 +88,12 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     // if it has a tag, parse as tag
     JsonObject json = element.getAsJsonObject();
     if (json.has("tag")) {
-      String name = JSONUtils.getAsString(json, "tag");
-      ITag<Item> tag = TagCollectionManager.getInstance().getItems().getTag(new ResourceLocation(name));
+      String name = GsonHelper.getAsString(json, "tag");
+      Tag<Item> tag = SerializationTags.getInstance().getItems().getTag(new ResourceLocation(name));
       if (tag == null) {
         throw new JsonSyntaxException("Unknown tag " + name + " for item output");
       }
-      int count = JSONUtils.getAsInt(json, "count", 1);
+      int count = GsonHelper.getAsInt(json, "count", 1);
       return fromTag(tag, count);
     }
 
@@ -105,7 +105,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * Writes this output to the packet buffer
    * @param buffer  Packet buffer instance
    */
-  public void write(PacketBuffer buffer) {
+  public void write(FriendlyByteBuf buffer) {
     buffer.writeItem(get());
   }
 
@@ -114,7 +114,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @param buffer  Buffer instance
    * @return  Item output
    */
-  public static ItemOutput read(PacketBuffer buffer) {
+  public static ItemOutput read(FriendlyByteBuf buffer) {
     return fromStack(buffer.readItem());
   }
 
@@ -168,7 +168,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
         if (count > 1) {
           jsonResult.addProperty("count", count);
         }
-        CompoundNBT nbt = stack.getTag();
+        CompoundTag nbt = stack.getTag();
         if (nbt != null) {
           jsonResult.addProperty("nbt", nbt.toString());
         }
@@ -182,7 +182,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   /** Class for an output from a tag preference */
   @RequiredArgsConstructor
   private static class OfTagPreference extends ItemOutput {
-    private final ITag<Item> tag;
+    private final Tag<Item> tag;
     private final int count;
     private ItemStack cachedResult = null;
 
@@ -201,7 +201,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     @Override
     public JsonElement serialize() {
       JsonObject json = new JsonObject();
-      json.addProperty("tag", TagCollectionManager.getInstance().getItems().getIdOrThrow(tag).toString());
+      json.addProperty("tag", SerializationTags.getInstance().getItems().getIdOrThrow(tag).toString());
       if (count != 1) {
         json.addProperty("count", count);
       }

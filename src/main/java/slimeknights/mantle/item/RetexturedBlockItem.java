@@ -1,18 +1,18 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ITag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.tags.Tag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.util.RetexturedHelper;
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 /**
  * Logic for a dynamically retexturable block item. This will ensure all the NBT is in the expected format on the item NBT.
@@ -32,14 +32,14 @@ import net.minecraft.item.Item.Properties;
 public class RetexturedBlockItem extends BlockTooltipItem {
 
   /** Tag used for getting the texture */
-  protected final ITag<Item> textureTag;
-  public RetexturedBlockItem(Block block, ITag<Item> textureTag, Properties builder) {
+  protected final Tag<Item> textureTag;
+  public RetexturedBlockItem(Block block, Tag<Item> textureTag, Properties builder) {
     super(block, builder);
     this.textureTag = textureTag;
   }
 
   @Override
-  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
     if (this.allowdedIn(group)) {
       addTagVariants(this.getBlock(), textureTag, items, true);
     }
@@ -47,7 +47,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
 
   @OnlyIn(Dist.CLIENT)
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
     super.appendHoverText(stack, worldIn, tooltip, flagIn);
     addTooltip(stack, tooltip);
   }
@@ -78,7 +78,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @param stack    Stack instance
    * @param tooltip  Tooltip
    */
-  public static void addTooltip(ItemStack stack, List<ITextComponent> tooltip) {
+  public static void addTooltip(ItemStack stack, List<Component> tooltip) {
     Block block = getTexture(stack);
     if (block != Blocks.AIR) {
       tooltip.add(block.getName());
@@ -119,7 +119,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @param list              List of texture blocks
    * @param showAllVariants   If true, shows all variants. If false, shows just the first
    */
-  public static void addTagVariants(IItemProvider block, ITag<Item> tag, NonNullList<ItemStack> list, boolean showAllVariants) {
+  public static void addTagVariants(ItemLike block, Tag<Item> tag, NonNullList<ItemStack> list, boolean showAllVariants) {
     boolean added = false;
     // using item tags as that is what will be present in the recipe
     Class<?> clazz = block.getClass();

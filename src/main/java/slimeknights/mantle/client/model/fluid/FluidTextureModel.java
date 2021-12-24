@@ -6,19 +6,19 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.model.SimpleBakedModel;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
@@ -43,13 +43,13 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
   private final int color;
 
   /** Checks if a texture is missing */
-  private static boolean isMissing(RenderMaterial material) {
-    return MissingTextureSprite.getLocation().equals(material.texture());
+  private static boolean isMissing(Material material) {
+    return MissingTextureAtlasSprite.getLocation().equals(material.texture());
   }
 
   /** Gets the texture, or null if missing */
-  private static void getTexture(IModelConfiguration owner, String name, Collection<RenderMaterial> textures, Set<Pair<String,String>> missingTextureErrors) {
-    RenderMaterial material = owner.resolveTexture(name);
+  private static void getTexture(IModelConfiguration owner, String name, Collection<Material> textures, Set<Pair<String,String>> missingTextureErrors) {
+    Material material = owner.resolveTexture(name);
     if (isMissing(material)) {
       missingTextureErrors.add(Pair.of(name, owner.getModelName()));
     }
@@ -57,11 +57,11 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
   }
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    Set<RenderMaterial> textures = new HashSet<>();
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    Set<Material> textures = new HashSet<>();
     getTexture(owner, "still", textures, missingTextureErrors);
     getTexture(owner, "flowing", textures, missingTextureErrors);
-    RenderMaterial overlay = owner.resolveTexture("overlay");
+    Material overlay = owner.resolveTexture("overlay");
     if (!isMissing(overlay)) {
       textures.add(overlay);
     }
@@ -69,17 +69,17 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-    RenderMaterial still = owner.resolveTexture("still");
-    RenderMaterial flowing = owner.resolveTexture("flowing");
-    RenderMaterial overlay = owner.resolveTexture("overlay");
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+    Material still = owner.resolveTexture("still");
+    Material flowing = owner.resolveTexture("flowing");
+    Material overlay = owner.resolveTexture("overlay");
     ResourceLocation overlayLocation = isMissing(overlay) ? null : overlay.texture();
-    IBakedModel baked = new SimpleBakedModel.Builder(owner, overrides).particle(spriteGetter.apply(still)).build();
+    BakedModel baked = new SimpleBakedModel.Builder(owner, overrides).particle(spriteGetter.apply(still)).build();
     return new BakedModel(baked, still.texture(), flowing.texture(), overlayLocation, color);
   }
 
   /** Data holder class, has no quads */
-  private static class BakedModel extends BakedModelWrapper<IBakedModel> {
+  private static class BakedModel extends BakedModelWrapper<BakedModel> {
     @Getter
     private final ResourceLocation still;
     @Getter
@@ -88,7 +88,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     private final ResourceLocation overlay;
     @Getter
     private final int color;
-    public BakedModel(IBakedModel originalModel, ResourceLocation still, ResourceLocation flowing, @Nullable ResourceLocation overlay, int color) {
+    public BakedModel(BakedModel originalModel, ResourceLocation still, ResourceLocation flowing, @Nullable ResourceLocation overlay, int color) {
       super(originalModel);
       this.still = still;
       this.flowing = flowing;

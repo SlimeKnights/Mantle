@@ -2,16 +2,16 @@ package slimeknights.mantle.recipe.crafting;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import slimeknights.mantle.item.RetexturedBlockItem;
@@ -49,7 +49,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
   }
 
   @Override
-  public ItemStack assemble(CraftingInventory craftMatrix) {
+  public ItemStack assemble(CraftingContainer craftMatrix) {
     ItemStack result = super.assemble(craftMatrix);
     Block currentTexture = null;
     for (int i = 0; i < craftMatrix.getContainerSize(); i++) {
@@ -91,11 +91,11 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
   }
 
-  public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapedRetexturedRecipe> {
+  public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ShapedRetexturedRecipe> {
     @Override
     public ShapedRetexturedRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
       ShapedRecipe recipe = SHAPED_RECIPE.fromJson(recipeId, json);
@@ -109,13 +109,13 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
 
     @Nullable
     @Override
-    public ShapedRetexturedRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+    public ShapedRetexturedRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
       ShapedRecipe recipe = SHAPED_RECIPE.fromNetwork(recipeId, buffer);
       return recipe == null ? null : new ShapedRetexturedRecipe(recipe, Ingredient.fromNetwork(buffer), buffer.readBoolean());
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, ShapedRetexturedRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, ShapedRetexturedRecipe recipe) {
       SHAPED_RECIPE.toNetwork(buffer, recipe);
       recipe.texture.toNetwork(buffer);
       buffer.writeBoolean(recipe.matchAll);

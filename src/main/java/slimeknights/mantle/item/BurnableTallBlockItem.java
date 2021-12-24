@@ -1,12 +1,12 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.TallBlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DoubleHighBlockItem;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
-public class BurnableTallBlockItem extends TallBlockItem {
+public class BurnableTallBlockItem extends DoubleHighBlockItem {
   private final int burnTime;
   public BurnableTallBlockItem(Block blockIn, Properties builder, int burnTime) {
     super(blockIn, builder);

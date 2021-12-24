@@ -5,11 +5,11 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeItemHelper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.Mantle;
@@ -88,7 +88,7 @@ public class IngredientDifference extends Ingredient {
       ItemStack[] matchingStacks = getItems();
       this.packedMatchingStacks = new IntArrayList(matchingStacks.length);
       for(ItemStack stack : matchingStacks) {
-        this.packedMatchingStacks.add(RecipeItemHelper.getStackingIndex(stack));
+        this.packedMatchingStacks.add(StackedContents.getStackingIndex(stack));
       }
       this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
     }
@@ -118,14 +118,14 @@ public class IngredientDifference extends Ingredient {
     }
 
     @Override
-    public IngredientDifference parse(PacketBuffer buffer) {
+    public IngredientDifference parse(FriendlyByteBuf buffer) {
       Ingredient base = Ingredient.fromNetwork(buffer);
       Ingredient without = Ingredient.fromNetwork(buffer);
       return new IngredientDifference(base, without);
     }
 
     @Override
-    public void write(PacketBuffer buffer, IngredientDifference ingredient) {
+    public void write(FriendlyByteBuf buffer, IngredientDifference ingredient) {
       CraftingHelper.write(buffer, ingredient.base);
       CraftingHelper.write(buffer, ingredient.subtracted);
     }

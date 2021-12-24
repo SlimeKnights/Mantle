@@ -7,13 +7,13 @@ import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.util.JsonHelper;
@@ -88,7 +88,7 @@ public abstract class FluidIngredient {
    * Writes the ingredient into the packet buffer
    * @param buffer Packet buffer instance
    */
-  public void write(PacketBuffer buffer) {
+  public void write(FriendlyByteBuf buffer) {
     Collection<FluidStack> fluids = getAllFluids();
     buffer.writeInt(fluids.size());
     for (FluidStack stack : fluids) {
@@ -127,7 +127,7 @@ public abstract class FluidIngredient {
    * @param amount  Minimum fluid amount
    * @return  Fluid ingredient from a tag
    */
-  public static FluidIngredient of(ITag<Fluid> fluid, int amount) {
+  public static FluidIngredient of(Tag<Fluid> fluid, int amount) {
     return new FluidIngredient.TagMatch(fluid, amount);
   }
 
@@ -217,7 +217,7 @@ public abstract class FluidIngredient {
    * @param buffer  Buffer instance
    * @return  Fluid ingredient instance
    */
-  public static FluidIngredient read(PacketBuffer buffer) {
+  public static FluidIngredient read(FriendlyByteBuf buffer) {
     int count = buffer.readInt();
     FluidIngredient[] ingredients = new FluidIngredient[count];
     for (int i = 0; i < count; i++) {
@@ -298,7 +298,7 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
       // count
       buffer.writeInt(1);
       // single fluid
@@ -312,12 +312,12 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static FluidMatch deserialize(JsonObject json) {
-      String fluidName = JSONUtils.getAsString(json, "name");
+      String fluidName = GsonHelper.getAsString(json, "name");
       Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
       if (fluid == null || fluid == Fluids.EMPTY) {
         throw new JsonSyntaxException("Unknown fluid '" + fluidName + "'");
       }
-      int amount = JSONUtils.getAsInt(json, "amount");
+      int amount = GsonHelper.getAsInt(json, "amount");
       return new FluidMatch(fluid, amount);
     }
   }
@@ -327,7 +327,7 @@ public abstract class FluidIngredient {
    */
   @AllArgsConstructor(access=AccessLevel.PRIVATE)
   private static class TagMatch extends FluidIngredient {
-    private final ITag<Fluid> tag;
+    private final Tag<Fluid> tag;
     private final int amount;
 
     @Override
@@ -348,7 +348,7 @@ public abstract class FluidIngredient {
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", TagCollectionManager.getInstance().getFluids().getIdOrThrow(this.tag).toString());
+      object.addProperty("tag", SerializationTags.getInstance().getFluids().getIdOrThrow(this.tag).toString());
       object.addProperty("amount", amount);
       return object;
     }
@@ -359,12 +359,12 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static TagMatch deserialize(JsonObject json) {
-      String tagName = JSONUtils.getAsString(json, "tag");
-      ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(new ResourceLocation(tagName));
+      String tagName = GsonHelper.getAsString(json, "tag");
+      Tag<Fluid> tag = SerializationTags.getInstance().getFluids().getTag(new ResourceLocation(tagName));
       if (tag == null) {
         throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
       }
-      int amount = JSONUtils.getAsInt(json, "amount");
+      int amount = GsonHelper.getAsInt(json, "amount");
       return new TagMatch(tag, amount);
     }
   }
@@ -428,7 +428,7 @@ public abstract class FluidIngredient {
       FluidIngredient[] ingredients = new FluidIngredient[size];
       for (int i = 0; i < size; i++) {
         // no reason to an array in an array
-        ingredients[i] = deserializeObject(JSONUtils.convertToJsonObject(array.get(i), name + "[" + i + "]"));
+        ingredients[i] = deserializeObject(GsonHelper.convertToJsonObject(array.get(i), name + "[" + i + "]"));
       }
       return new Compound(ingredients);
     }

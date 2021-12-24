@@ -1,31 +1,31 @@
 package slimeknights.mantle.network.packet;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
 /** Packet to tell a client to swing an entity arm, as the vanilla one resets cooldown */
 public class SwingArmPacket implements IThreadsafePacket {
   private final int entityId;
-  private final Hand hand;
+  private final InteractionHand hand;
 
-  public SwingArmPacket(Entity entity, Hand hand) {
+  public SwingArmPacket(Entity entity, InteractionHand hand) {
     this.entityId = entity.getId();
     this.hand = hand;
   }
 
-  public SwingArmPacket(PacketBuffer buffer) {
+  public SwingArmPacket(FriendlyByteBuf buffer) {
     this.entityId = buffer.readVarInt();
-    this.hand = buffer.readEnum(Hand.class);
+    this.hand = buffer.readEnum(InteractionHand.class);
   }
 
   @Override
-  public void encode(PacketBuffer buffer) {
+  public void encode(FriendlyByteBuf buffer) {
     buffer.writeVarInt(entityId);
     buffer.writeEnum(hand);
   }
@@ -37,7 +37,7 @@ public class SwingArmPacket implements IThreadsafePacket {
 
   private static class HandleClient {
     private static void handle(SwingArmPacket packet) {
-      World world = Minecraft.getInstance().level;
+      Level world = Minecraft.getInstance().level;
       if (world != null) {
         Entity entity = world.getEntity(packet.entityId);
         if (entity instanceof LivingEntity) {

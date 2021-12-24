@@ -1,20 +1,20 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.client.book.structure.StructureInfo;
@@ -31,14 +31,14 @@ public class StructureElement extends SizedBookElement {
   public float scale = 50f;
   public float transX = 0;
   public float transY = 0;
-  public TransformationMatrix additionalTransform;
+  public Transformation additionalTransform;
   public final StructureInfo renderInfo;
   public final TemplateWorld structureWorld;
 
   public long lastStep = -1;
   public long lastPrintedErrorTimeMs = -1;
 
-  public StructureElement(int x, int y, int width, int height, Template template, List<Template.BlockInfo> structure) {
+  public StructureElement(int x, int y, int width, int height, StructureTemplate template, List<StructureTemplate.StructureBlockInfo> structure) {
     super(x, y, width, height);
 
     int[] size = {template.getSize().getX(), template.getSize().getY(), template.getSize().getZ()};
@@ -57,13 +57,13 @@ public class StructureElement extends SizedBookElement {
     this.transX = x + width / 2F;
     this.transY = y + height / 2F;
 
-    this.additionalTransform = new TransformationMatrix(null, new Quaternion(25, 0, 0, true), null, new Quaternion(0, -45, 0, true));
+    this.additionalTransform = new Transformation(null, new Quaternion(25, 0, 0, true), null, new Quaternion(0, -45, 0, true));
   }
 
   @Override
-  public void draw(MatrixStack transform, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
-    MatrixStack.Entry lastEntryBeforeTry = transform.last();
+  public void draw(PoseStack transform, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
+    MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+    PoseStack.Pose lastEntryBeforeTry = transform.last();
 
     try {
       long currentTime = System.currentTimeMillis();
@@ -85,7 +85,7 @@ public class StructureElement extends SizedBookElement {
 
       transform.pushPose();
 
-      final BlockRendererDispatcher blockRender = Minecraft.getInstance().getBlockRenderer();
+      final BlockRenderDispatcher blockRender = Minecraft.getInstance().getBlockRenderer();
 
       transform.translate(this.transX, this.transY, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
       transform.scale(this.scale, -this.scale, 1);
@@ -112,7 +112,7 @@ public class StructureElement extends SizedBookElement {
                 overlay = OverlayTexture.NO_OVERLAY;
 
               IModelData modelData = EmptyModelData.INSTANCE;
-              TileEntity te = structureWorld.getBlockEntity(pos);
+              BlockEntity te = structureWorld.getBlockEntity(pos);
 
               if (te != null)
                 modelData = te.getModelData();
@@ -161,13 +161,13 @@ public class StructureElement extends SizedBookElement {
     super.mouseReleased(mouseX, mouseY, clickedMouseButton);
   }
 
-  private TransformationMatrix forRotation(double rX, double rY) {
+  private Transformation forRotation(double rX, double rY) {
     Vector3f axis = new Vector3f((float) rY, (float) rX, 0);
     float angle = (float) Math.sqrt(axis.dot(axis));
 
     if (!axis.normalize())
-      return TransformationMatrix.identity();
+      return Transformation.identity();
 
-    return new TransformationMatrix(null, new Quaternion(axis, angle, true), null, null);
+    return new Transformation(null, new Quaternion(axis, angle, true), null, null);
   }
 }

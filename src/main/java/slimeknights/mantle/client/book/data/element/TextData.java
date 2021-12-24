@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -23,7 +23,7 @@ public class TextData {
   public boolean dropshadow = false;
   public float scale = 1.F;
   public String action = "";
-  public ITextComponent[] tooltip = null;
+  public Component[] tooltip = null;
 
   public TextData() {
   }

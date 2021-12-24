@@ -2,7 +2,7 @@ package slimeknights.mantle.client.book.transformer;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;

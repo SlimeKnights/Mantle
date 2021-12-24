@@ -1,13 +1,13 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.gui.GuiUtils;
@@ -16,7 +16,7 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class BookElement extends AbstractGui {
+public abstract class BookElement extends GuiComponent {
 
   public BookScreen parent;
 
@@ -30,9 +30,9 @@ public abstract class BookElement extends AbstractGui {
     this.y = y;
   }
 
-  public abstract void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer);
+  public abstract void draw(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer);
 
-  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
   }
 
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
@@ -47,10 +47,10 @@ public abstract class BookElement extends AbstractGui {
 
   }
 
-  public void renderToolTip(MatrixStack matrixStack, FontRenderer fontRenderer, ItemStack stack, int x, int y) {
-    List<ITextComponent> list = stack.getTooltipLines(this.mc.player, this.mc.options.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+  public void renderToolTip(PoseStack matrixStack, Font fontRenderer, ItemStack stack, int x, int y) {
+    List<Component> list = stack.getTooltipLines(this.mc.player, this.mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
 
-    FontRenderer font = stack.getItem().getFontRenderer(stack);
+    Font font = stack.getItem().getFontRenderer(stack);
     if (font == null) {
       font = fontRenderer;
     }
@@ -58,7 +58,7 @@ public abstract class BookElement extends AbstractGui {
     this.drawHoveringText(matrixStack, list, x, y, font);
   }
 
-  public void drawHoveringText(MatrixStack matrixStack, List<ITextComponent> textLines, int x, int y, FontRenderer font) {
+  public void drawHoveringText(PoseStack matrixStack, List<Component> textLines, int x, int y, Font font) {
     //    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
     GuiUtils.drawHoveringText(matrixStack, textLines, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
   }

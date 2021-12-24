@@ -3,14 +3,14 @@ package slimeknights.mantle.loot.function;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.LootParameter;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.loot.MantleLoot;
@@ -22,30 +22,30 @@ import java.util.Set;
  * Applies the data for a retextured block to the dropped item. No configuration needed.
  */
 @SuppressWarnings("WeakerAccess")
-public class RetexturedLootFunction extends LootFunction {
+public class RetexturedLootFunction extends LootItemConditionalFunction {
   public static final Serializer SERIALIZER = new Serializer();
 
   /**
    * Creates a new instance from the given conditions
    * @param conditions Conditions list
    */
-  public RetexturedLootFunction(ILootCondition[] conditions) {
+  public RetexturedLootFunction(LootItemCondition[] conditions) {
     super(conditions);
   }
 
   /** Creates a new instance with no conditions */
   public RetexturedLootFunction() {
-    super(new ILootCondition[0]);
+    super(new LootItemCondition[0]);
   }
 
   @Override
-  public Set<LootParameter<?>> getReferencedContextParams() {
-    return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
+  public Set<LootContextParam<?>> getReferencedContextParams() {
+    return ImmutableSet.of(LootContextParams.BLOCK_ENTITY);
   }
 
   @Override
   protected ItemStack run(ItemStack stack, LootContext context) {
-    TileEntity te = context.getParamOrNull(LootParameters.BLOCK_ENTITY);
+    BlockEntity te = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
     if (te instanceof IRetexturedTileEntity) {
       RetexturedBlockItem.setTexture(stack, ((IRetexturedTileEntity)te).getTextureName());
     } else {
@@ -56,13 +56,13 @@ public class RetexturedLootFunction extends LootFunction {
   }
 
   @Override
-  public LootFunctionType getType() {
+  public LootItemFunctionType getType() {
     return MantleLoot.RETEXTURED_FUNCTION;
   }
 
-  private static class Serializer extends LootFunction.Serializer<RetexturedLootFunction> {
+  private static class Serializer extends LootItemConditionalFunction.Serializer<RetexturedLootFunction> {
     @Override
-    public RetexturedLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, ILootCondition[] conditions) {
+    public RetexturedLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, LootItemCondition[] conditions) {
       return new RetexturedLootFunction(conditions);
     }
   }

@@ -7,17 +7,17 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.renderer.model.BlockModel;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
@@ -36,11 +36,11 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
   public static final FallbackModelLoader INSTANCE = new FallbackModelLoader();
 
   @Override
-  public void onResourceManagerReload(IResourceManager resourceManager) {}
+  public void onResourceManagerReload(ResourceManager resourceManager) {}
 
   @Override
   public BlockModelWrapper read(JsonDeserializationContext context, JsonObject data) {
-    JsonArray models = JSONUtils.getAsJsonArray(data, "models");
+    JsonArray models = GsonHelper.getAsJsonArray(data, "models");
     if (models.size() < 2) {
       throw new JsonSyntaxException("Fallback model must contain at least 2 models");
     }
@@ -48,14 +48,14 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
     // try loading each model
     for (int i = 0; i < models.size(); i++) {
       String debugName = "models[" + i + "]";
-      JsonObject entry = JSONUtils.convertToJsonObject(models.get(i), debugName);
+      JsonObject entry = GsonHelper.convertToJsonObject(models.get(i), debugName);
 
       // first, determine required mod ID
       String modId = null;
       if (entry.has("fallback_mod_id")) {
-        modId = JSONUtils.getAsString(entry, "fallback_mod_id");
+        modId = GsonHelper.getAsString(entry, "fallback_mod_id");
       } else if (entry.has("loader")) {
-        ResourceLocation loader = new ResourceLocation(JSONUtils.getAsString(entry, "loader"));
+        ResourceLocation loader = new ResourceLocation(GsonHelper.getAsString(entry, "loader"));
         modId = loader.getNamespace();
       }
 
@@ -85,12 +85,12 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
     private final BlockModel model;
 
     @Override
-    public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+    public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
       return model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
     }
 
     @Override
-    public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
       return model.getMaterials(modelGetter, missingTextureErrors);
     }
   }

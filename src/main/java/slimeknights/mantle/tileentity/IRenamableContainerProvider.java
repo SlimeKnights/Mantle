@@ -1,21 +1,21 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.util.INameable;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.Nameable;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 
 /**
  * Interface for containers that can be renamed. Used in {@link slimeknights.mantle.block.InventoryBlock} to set the name on placement
  */
-public interface IRenamableContainerProvider extends INamedContainerProvider, INameable {
+public interface IRenamableContainerProvider extends MenuProvider, Nameable {
 
 	/**
 	 * Gets the default name of this tile entity
 	 * @return  Default name
 	 */
-	ITextComponent getDefaultName();
+	Component getDefaultName();
 
 	/**
 	 * Gets the custom name for this tile entity
@@ -23,22 +23,22 @@ public interface IRenamableContainerProvider extends INamedContainerProvider, IN
 	 */
 	@Override
 	@Nullable
-	ITextComponent getCustomName();
+	Component getCustomName();
 
 	/**
 	 * Sets the name for this tile entity
 	 * @param name  New custom name
 	 */
-	void setCustomName(ITextComponent name);
+	void setCustomName(Component name);
 
 	@Override
-	default ITextComponent getName() {
-		ITextComponent customTitle = getCustomName();
+	default Component getName() {
+		Component customTitle = getCustomName();
 		return customTitle != null ? customTitle : getDefaultName();
 	}
 
 	@Override
-	default ITextComponent getDisplayName() {
+	default Component getDisplayName() {
 		return getName();
 	}
 }

@@ -2,10 +2,10 @@ package slimeknights.mantle.tileentity;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.util.Constants.NBT;
 
 /**
@@ -16,29 +16,29 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 
 	/** Default title for this tile entity */
 	@Getter
-	private final ITextComponent defaultName;
+	private final Component defaultName;
 	/** Title set to this tile entity */
 	@Getter @Setter
-	private ITextComponent customName;
+	private Component customName;
 
-	public NamableTileEntity(TileEntityType<?> tileEntityTypeIn, ITextComponent defaultTitle) {
+	public NamableTileEntity(BlockEntityType<?> tileEntityTypeIn, Component defaultTitle) {
 		super(tileEntityTypeIn);
 		this.defaultName = defaultTitle;
 	}
 
 	@Override
-	public void load(BlockState blockState, CompoundNBT tags) {
+	public void load(BlockState blockState, CompoundTag tags) {
 		super.load(blockState, tags);
 		if (tags.contains(TAG_CUSTOM_NAME, NBT.TAG_STRING)) {
-			this.customName = ITextComponent.Serializer.fromJson(tags.getString(TAG_CUSTOM_NAME));
+			this.customName = Component.Serializer.fromJson(tags.getString(TAG_CUSTOM_NAME));
 		}
 	}
 
 	@Override
-	public void writeSynced(CompoundNBT tags) {
+	public void writeSynced(CompoundTag tags) {
 		super.writeSynced(tags);
 		if (this.hasCustomName()) {
-			tags.putString(TAG_CUSTOM_NAME, ITextComponent.Serializer.toJson(this.customName));
+			tags.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(this.customName));
 		}
 	}
 }

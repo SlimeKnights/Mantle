@@ -1,19 +1,19 @@
 package slimeknights.mantle.tileentity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
 
-public class MantleTileEntity extends TileEntity {
+public class MantleTileEntity extends BlockEntity {
 
-  public MantleTileEntity(TileEntityType<?> tileEntityTypeIn) {
+  public MantleTileEntity(BlockEntityType<?> tileEntityTypeIn) {
     super(tileEntityTypeIn);
   }
 
@@ -44,13 +44,13 @@ public class MantleTileEntity extends TileEntity {
 
   @Override
   @Nullable
-  public SUpdateTileEntityPacket getUpdatePacket() {
+  public ClientboundBlockEntityDataPacket getUpdatePacket() {
     // number is just used for vanilla, -1 ensures it skips all instanceof checks as its not a vanilla TE
-    return shouldSyncOnUpdate() ? new SUpdateTileEntityPacket(this.worldPosition, -1, this.getUpdateTag()) : null;
+    return shouldSyncOnUpdate() ? new ClientboundBlockEntityDataPacket(this.worldPosition, -1, this.getUpdateTag()) : null;
   }
 
   @Override
-  public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+  public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
     this.load(this.getBlockState(), pkt.getTag());
   }
 
@@ -58,15 +58,15 @@ public class MantleTileEntity extends TileEntity {
    * Write to NBT that is synced to the client in {@link #getUpdateTag()} and in {@link #write(CompoundNBT)}
    * @param nbt  NBT
    */
-  protected void writeSynced(CompoundNBT nbt) {}
+  protected void writeSynced(CompoundTag nbt) {}
 
   @Override
-  public CompoundNBT getUpdateTag() {
-    CompoundNBT nbt = super.getUpdateTag();
+  public CompoundTag getUpdateTag() {
+    CompoundTag nbt = super.getUpdateTag();
     // forge just directly puts the data into the update tag, which on dedicated server can lead to client and server both writing to the same tag object
     // fix that by copying forge data before syncing it
     if (nbt.contains("ForgeData", NBT.TAG_COMPOUND)) {
-      CompoundNBT forgeData = nbt.getCompound("ForgeData");
+      CompoundTag forgeData = nbt.getCompound("ForgeData");
       if (forgeData == this.getTileData()) {
         nbt.put("ForgeData", forgeData.copy());
       }
@@ -76,7 +76,7 @@ public class MantleTileEntity extends TileEntity {
   }
 
   @Override
-  public CompoundNBT save(CompoundNBT nbt) {
+  public CompoundTag save(CompoundTag nbt) {
     nbt = super.save(nbt);
     writeSynced(nbt);
     return nbt;

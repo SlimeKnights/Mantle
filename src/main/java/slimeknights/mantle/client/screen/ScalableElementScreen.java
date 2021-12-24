@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.screen.Screen;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -17,7 +17,7 @@ public class ScalableElementScreen extends ElementScreen {
     super(x, y, w, h);
   }
 
-  public int drawScaledX(MatrixStack matrixStack, int xPos, int yPos, int width) {
+  public int drawScaledX(PoseStack matrixStack, int xPos, int yPos, int width) {
     for (int i = 0; i < width / this.w; i++) {
       this.draw(matrixStack, xPos + i * this.w, yPos);
     }
@@ -30,7 +30,7 @@ public class ScalableElementScreen extends ElementScreen {
     return width;
   }
 
-  public int drawScaledY(MatrixStack matrixStack, int xPos, int yPos, int height) {
+  public int drawScaledY(PoseStack matrixStack, int xPos, int yPos, int height) {
     for (int i = 0; i < height / this.h; i++) {
       this.draw(matrixStack, xPos, yPos + i * this.h);
     }
@@ -51,7 +51,7 @@ public class ScalableElementScreen extends ElementScreen {
    * @param height       Height to draw
    * @return  Width for some reason
    */
-  public int drawScaledYUp(MatrixStack matrixStack, int xPos, int yPos, int height) {
+  public int drawScaledYUp(PoseStack matrixStack, int xPos, int yPos, int height) {
     // remainder that doesn't fit total height
     int remainder = height % this.h;
     int offset = this.h - remainder;
@@ -62,7 +62,7 @@ public class ScalableElementScreen extends ElementScreen {
     return this.w;
   }
 
-  public int drawScaled(MatrixStack matrixStack, int xPos, int yPos, int width, int height) {
+  public int drawScaled(PoseStack matrixStack, int xPos, int yPos, int width, int height) {
     // we draw full height row-wise
     int full = height / this.h;
     for (int i = 0; i < full; i++) {

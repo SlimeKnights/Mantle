@@ -1,14 +1,14 @@
 package slimeknights.mantle.recipe;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 
 /**
  * Extension of {@link IRecipe} to set some methods that always set.
  * @param <C>  Inventory type
  */
-public interface ICommonRecipe<C extends IInventory> extends IRecipe<C> {
+public interface ICommonRecipe<C extends Container> extends Recipe<C> {
   @Override
   default ItemStack assemble(C inv) {
     return getResultItem().copy();

@@ -1,18 +1,18 @@
 package slimeknights.mantle.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.Util;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -31,7 +31,7 @@ import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType
 public class ExtraHeartRenderHandler {
   private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
   private static final ResourceLocation ICON_ABSORB = new ResourceLocation(Mantle.modId, "textures/gui/absorb.png");
-  private static final ResourceLocation ICON_VANILLA = AbstractGui.GUI_ICONS_LOCATION;
+  private static final ResourceLocation ICON_VANILLA = GuiComponent.GUI_ICONS_LOCATION;
 
   private final Minecraft mc = Minecraft.getInstance();
 
@@ -53,7 +53,7 @@ public class ExtraHeartRenderHandler {
    * @param width        Width to draw
    * @param height       Height to draw
    */
-  private void blit(MatrixStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
+  private void blit(PoseStack matrixStack, int x, int y, int textureX, int textureY, int width, int height) {
     Minecraft.getInstance().gui.blit(matrixStack, x, y, textureX, textureY, width, height);
   }
 
@@ -67,7 +67,7 @@ public class ExtraHeartRenderHandler {
   public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
     Entity renderViewEnity = this.mc.getCameraEntity();
     if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()
-        || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof PlayerEntity)) {
+        || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof Player)) {
       return;
     }
 
@@ -82,8 +82,8 @@ public class ExtraHeartRenderHandler {
     this.mc.getProfiler().push("health");
     RenderSystem.enableBlend();
 
-    PlayerEntity player = (PlayerEntity) renderViewEnity;
-    int health = MathHelper.ceil(player.getHealth());
+    Player player = (Player) renderViewEnity;
+    int health = Mth.ceil(player.getHealth());
     boolean highlight = this.healthUpdateCounter > (long) updateCounter && (this.healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
 
     if (health < this.playerHealth && player.invulnerableTime > 0) {
@@ -104,16 +104,16 @@ public class ExtraHeartRenderHandler {
     this.playerHealth = health;
     int healthLast = this.lastPlayerHealth;
 
-    ModifiableAttributeInstance attrMaxHealth = player.getAttribute(Attributes.MAX_HEALTH);
+    AttributeInstance attrMaxHealth = player.getAttribute(Attributes.MAX_HEALTH);
     float healthMax = attrMaxHealth == null ? 0 : (float) attrMaxHealth.getValue();
-    float absorb = MathHelper.ceil(player.getAbsorptionAmount());
+    float absorb = Mth.ceil(player.getAbsorptionAmount());
 
     // CHANGE: simulate 10 hearts max if there's more, so vanilla only renders one row max
     healthMax = Math.min(healthMax, 20f);
     health = Math.min(health, 20);
     absorb = Math.min(absorb, 20);
 
-    int healthRows = MathHelper.ceil((healthMax + absorb) / 2.0F / 10.0F);
+    int healthRows = Mth.ceil((healthMax + absorb) / 2.0F / 10.0F);
     int rowHeight = Math.max(10 - (healthRows - 2), 3);
 
     this.rand.setSeed(updateCounter * 312871);
@@ -125,7 +125,7 @@ public class ExtraHeartRenderHandler {
     //if (rowHeight != 10) left_height += 10 - rowHeight;
 
     this.regen = -1;
-    if (player.hasEffect(Effects.REGENERATION)) {
+    if (player.hasEffect(MobEffects.REGENERATION)) {
       this.regen = updateCounter % 25;
     }
 
@@ -133,13 +133,13 @@ public class ExtraHeartRenderHandler {
     final int TOP = 9 * (this.mc.level.getLevelData().isHardcore() ? 5 : 0);
     final int BACKGROUND = (highlight ? 25 : 16);
     int MARGIN = 16;
-    if      (player.hasEffect(Effects.POISON)) MARGIN += 36;
-    else if (player.hasEffect(Effects.WITHER)) MARGIN += 72;
+    if      (player.hasEffect(MobEffects.POISON)) MARGIN += 36;
+    else if (player.hasEffect(MobEffects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
-    MatrixStack matrixStack = event.getMatrixStack();
-    for (int i = MathHelper.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i) {
-      int row = MathHelper.ceil((float) (i + 1) / 10.0F) - 1;
+    PoseStack matrixStack = event.getMatrixStack();
+    for (int i = Mth.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i) {
+      int row = Mth.ceil((float) (i + 1) / 10.0F) - 1;
       int x = left + i % 10 * 8;
       int y = top - row * rowHeight;
 
@@ -197,13 +197,13 @@ public class ExtraHeartRenderHandler {
    * @param player  Player instance
    * @return  Texture offset for potion effects
    */
-  private int getPotionOffset(PlayerEntity player) {
+  private int getPotionOffset(Player player) {
     int potionOffset = 0;
-    EffectInstance potion = player.getEffect(Effects.WITHER);
+    MobEffectInstance potion = player.getEffect(MobEffects.WITHER);
     if (potion != null) {
       potionOffset = 18;
     }
-    potion = player.getEffect(Effects.POISON);
+    potion = player.getEffect(MobEffects.POISON);
     if (potion != null) {
       potionOffset = 9;
     }
@@ -221,12 +221,12 @@ public class ExtraHeartRenderHandler {
    * @param yBasePos     Health bar top corner
    * @param player       Player instance
    */
-  private void renderExtraHearts(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
+  private void renderExtraHearts(PoseStack matrixStack, int xBasePos, int yBasePos, Player player) {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
     this.mc.getTextureManager().bind(ICON_HEARTS);
-    int hp = MathHelper.ceil(player.getHealth());
+    int hp = Mth.ceil(player.getHealth());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, hp, false);
   }
 
@@ -237,12 +237,12 @@ public class ExtraHeartRenderHandler {
    * @param yBasePos     Health bar top corner
    * @param player       Player instance
    */
-  private void renderExtraAbsorption(MatrixStack matrixStack, int xBasePos, int yBasePos, PlayerEntity player) {
+  private void renderExtraAbsorption(PoseStack matrixStack, int xBasePos, int yBasePos, Player player) {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
     this.mc.getTextureManager().bind(ICON_ABSORB);
-    int absorb = MathHelper.ceil(player.getAbsorptionAmount());
+    int absorb = Mth.ceil(player.getAbsorptionAmount());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, absorb, true);
   }
 
@@ -264,7 +264,7 @@ public class ExtraHeartRenderHandler {
    * @param count        Number to render
    * @param absorb       If true, render absorption hearts
    */
-  private void renderCustomHearts(MatrixStack matrixStack, int xBasePos, int yBasePos, int potionOffset, int count, boolean absorb) {
+  private void renderCustomHearts(PoseStack matrixStack, int xBasePos, int yBasePos, int potionOffset, int count, boolean absorb) {
     int regenOffset = absorb ? 10 : 0;
     for (int iter = 0; iter < count / 20; iter++) {
       int renderHearts = (count - 20 * (iter + 1)) / 2;

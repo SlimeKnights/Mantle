@@ -3,9 +3,9 @@ package slimeknights.mantle.registration;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -21,7 +21,7 @@ public class FluidBuilder {
   private final FluidAttributes.Builder attributes;
   private boolean canMultiply = false;
   private Supplier<? extends Item> bucket;
-  private Supplier<? extends FlowingFluidBlock> block;
+  private Supplier<? extends LiquidBlock> block;
   private int slopeFindDistance = 4;
   private int levelDecreasePerBlock = 1;
   private float explosionResistance = 1;

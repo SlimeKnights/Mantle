@@ -1,7 +1,7 @@
 package slimeknights.mantle.loot.builder;
 
 import lombok.RequiredArgsConstructor;
-import net.minecraft.loot.conditions.ILootCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
@@ -14,7 +14,7 @@ public class GenericLootModifierBuilder<T extends LootModifier> extends Abstract
   /** Serializer instance for this loot modifier */
   private final GlobalLootModifierSerializer<T> serializer;
   /** Constructor for the loot modifier */
-  private final Function<ILootCondition[],T> constructor;
+  private final Function<LootItemCondition[],T> constructor;
 
   @Override
   public void build(String name, GlobalLootModifierProvider provider) {

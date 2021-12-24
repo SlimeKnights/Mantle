@@ -1,7 +1,7 @@
 package slimeknights.mantle.util;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * Item group that sets its item based on an item supplier
  */
-public class SupplierItemGroup extends ItemGroup {
+public class SupplierItemGroup extends CreativeModeTab {
   private final Supplier<ItemStack> supplier;
 
   /**

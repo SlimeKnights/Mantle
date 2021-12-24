@@ -1,8 +1,8 @@
 package slimeknights.mantle.client.book.data;
 
 import com.google.gson.JsonElement;
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -64,7 +64,7 @@ public class PageData implements IDataItem, IConditional {
     Class<? extends PageContent> ctype = BookLoader.getPageType(type);
 
     if (!this.data.isEmpty() && !this.data.equals("no-load")) {
-      IResource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
+      Resource pageInfo = this.source.getResource(this.source.getResourceLocation(this.data));
       if (pageInfo != null) {
         String data = this.source.resourceToString(pageInfo);
         if (!data.isEmpty()) {

@@ -1,16 +1,16 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 import slimeknights.mantle.inventory.WrapperSlot;
 
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extends ContainerScreen<CONTAINER> {
+public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extends AbstractContainerScreen<CONTAINER> {
 
   protected List<ModuleScreen<?,?>> modules = Lists.newArrayList();
 
@@ -27,7 +27,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   public int realWidth;
   public int realHeight;
 
-  public MultiModuleScreen(CONTAINER container, PlayerInventory playerInventory, ITextComponent title) {
+  public MultiModuleScreen(CONTAINER container, Inventory playerInventory, Component title) {
     super(container, playerInventory, title);
 
     this.realWidth = -1;
@@ -39,8 +39,8 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     this.modules.add(module);
   }
 
-  public List<Rectangle2d> getModuleAreas() {
-    List<Rectangle2d> areas = new ArrayList<>(this.modules.size());
+  public List<Rect2i> getModuleAreas() {
+    List<Rect2i> areas = new ArrayList<>(this.modules.size());
     for (ModuleScreen<?,?> module : this.modules) {
       areas.add(module.getArea());
     }
@@ -78,14 +78,14 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+  protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
     for (ModuleScreen<?,?> module : this.modules) {
       module.handleDrawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
     }
   }
 
   @Override
-  protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+  protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
     this.drawContainerName(matrixStack);
     this.drawPlayerInventoryName(matrixStack);
 
@@ -99,7 +99,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  protected void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
+  protected void renderTooltip(PoseStack matrixStack, int mouseX, int mouseY) {
     super.renderTooltip(matrixStack, mouseX, mouseY);
 
     for (ModuleScreen<?,?> module : this.modules) {
@@ -107,19 +107,19 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     }
   }
 
-  protected void drawBackground(MatrixStack matrixStack, ResourceLocation background) {
+  protected void drawBackground(PoseStack matrixStack, ResourceLocation background) {
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
     this.minecraft.getTextureManager().bind(background);
     this.blit(matrixStack, this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }
 
-  protected void drawContainerName(MatrixStack matrixStack) {
+  protected void drawContainerName(PoseStack matrixStack) {
     this.font.draw(matrixStack, this.getTitle().getVisualOrderText(), 8, 6, 0x404040);
   }
 
-  protected void drawPlayerInventoryName(MatrixStack matrixStack) {
+  protected void drawPlayerInventoryName(PoseStack matrixStack) {
     assert Minecraft.getInstance().player != null;
-    ITextComponent localizedName = Minecraft.getInstance().player.inventory.getDisplayName();
+    Component localizedName = Minecraft.getInstance().player.inventory.getDisplayName();
     this.font.draw(matrixStack, localizedName.getVisualOrderText(), 8, this.imageHeight - 96 + 2, 0x404040);
   }
 
@@ -134,7 +134,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     this.renderBackground(matrixStack);
     int oldX = this.leftPos;
     int oldY = this.topPos;
@@ -184,7 +184,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void renderSlot(MatrixStack matrixStack, Slot slotIn) {
+  public void renderSlot(PoseStack matrixStack, Slot slotIn) {
     ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.index);
 
     if (module != null) {
@@ -297,7 +297,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Nullable
-  protected ModuleScreen<?,?> getModuleForContainer(Container container) {
+  protected ModuleScreen<?,?> getModuleForContainer(AbstractContainerMenu container) {
     for (ModuleScreen<?,?> module : this.modules) {
       if (module.getMenu() == container) {
         return module;

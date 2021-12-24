@@ -2,19 +2,19 @@ package slimeknights.mantle.recipe.crafting;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -27,7 +27,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
 
   /** Recipes to skip if they match */
   private final List<ResourceLocation> alternatives;
-  private List<ICraftingRecipe> alternativeCache;
+  private List<CraftingRecipe> alternativeCache;
 
   /**
    * Main constructor, creates a recipe from all parameters
@@ -54,7 +54,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
   }
 
   @Override
-  public boolean matches(CraftingInventory inv, World world) {
+  public boolean matches(CraftingContainer inv, Level world) {
     // if this recipe does not match, fail it
     if (!super.matches(inv, world)) {
       return false;
@@ -73,14 +73,14 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
                                        Class<?> clazz = recipe.getClass();
                                        return clazz == ShapedRecipe.class || clazz == ShapelessRecipe.class;
                                      })
-                                     .map(recipe -> (ICraftingRecipe) recipe).collect(Collectors.toList());
+                                     .map(recipe -> (CraftingRecipe) recipe).collect(Collectors.toList());
     }
     // fail if any alterntaive matches
     return this.alternativeCache.stream().noneMatch(recipe -> recipe.matches(inv, world));
   }
 
   @Override
-  public IRecipeSerializer<?> getSerializer() {
+  public RecipeSerializer<?> getSerializer() {
     return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
   }
 
@@ -88,12 +88,12 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     @Override
     public ShapedFallbackRecipe fromJson(ResourceLocation id, JsonObject json) {
       ShapedRecipe base = super.fromJson(id, json);
-      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new ResourceLocation(JSONUtils.convertToString(element, name)));
+      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new ResourceLocation(GsonHelper.convertToString(element, name)));
       return new ShapedFallbackRecipe(base, alternatives);
     }
 
     @Override
-    public ShapedFallbackRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+    public ShapedFallbackRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
       ShapedRecipe base = super.fromNetwork(id, buffer);
       assert base != null;
       int size = buffer.readVarInt();
@@ -105,7 +105,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, ShapedRecipe recipe) {
+    public void toNetwork(FriendlyByteBuf buffer, ShapedRecipe recipe) {
       // write base recipe
       super.toNetwork(buffer, recipe);
       // write extra data

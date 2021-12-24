@@ -9,25 +9,25 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.core.Direction;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -64,14 +64,14 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   }
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
     return model.getTextures(owner, modelGetter, missingTextureErrors);
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // bake the model and return
-    IBakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
+    BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
     return new BakedModel(baked, owner, model, transform, getAllRetextured(owner, this.model, retextured));
   }
 
@@ -84,7 +84,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
    */
   public static Set<String> getAllRetextured(IModelConfiguration owner, SimpleBlockModel model, Set<String> originalSet) {
     Set<String> retextured = Sets.newHashSet(originalSet);
-    for (Map<String,Either<RenderMaterial, String>> textures : ModelTextureIteratable.of(owner, model)) {
+    for (Map<String,Either<Material, String>> textures : ModelTextureIteratable.of(owner, model)) {
       textures.forEach((name, either) ->
         either.ifRight(parent -> {
           if (retextured.contains(parent)) {
@@ -103,7 +103,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     private Loader() {}
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void onResourceManagerReload(ResourceManager resourceManager) {}
 
     @Override
     public RetexturedModel read(JsonDeserializationContext context, JsonObject json) {
@@ -133,7 +133,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
           }
           ImmutableSet.Builder<String> builder = ImmutableSet.builder();
           for (int i = 0; i < array.size(); i++) {
-            builder.add(JSONUtils.convertToString(array.get(i), "retextured[" + i + "]"));
+            builder.add(GsonHelper.convertToString(array.get(i), "retextured[" + i + "]"));
           }
           return builder.build();
         }
@@ -148,17 +148,17 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   }
 
   /** Baked variant of the model, used to swap out quads based on the texture */
-  public static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
+  public static class BakedModel extends DynamicBakedWrapper<BakedModel> {
     /** Cache of texture name to baked model */
-    private final Map<ResourceLocation,IBakedModel> cache = new HashMap<>();
+    private final Map<ResourceLocation,BakedModel> cache = new HashMap<>();
     /* Properties for rebaking */
     private final IModelConfiguration owner;
     private final SimpleBlockModel model;
-    private final IModelTransform transform;
+    private final ModelState transform;
     /** List of texture names that are retextured */
     private final Set<String> retextured;
 
-    public BakedModel(IBakedModel baked, IModelConfiguration owner, SimpleBlockModel model, IModelTransform transform, Set<String> retextured) {
+    public BakedModel(BakedModel baked, IModelConfiguration owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
       super(baked);
       this.model = model;
       this.owner = owner;
@@ -171,7 +171,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
      * @param name  Texture location
      * @return  Retextured model
      */
-    private IBakedModel getRetexturedModel(ResourceLocation name) {
+    private BakedModel getRetexturedModel(ResourceLocation name) {
       return model.bakeDynamic(new RetexturedConfiguration(owner, retextured, name), transform);
     }
 
@@ -180,7 +180,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
      * @param block  Block determining the texture
      * @return  Retextured model
      */
-    private IBakedModel getCachedModel(Block block) {
+    private BakedModel getCachedModel(Block block) {
       return cache.computeIfAbsent(ModelHelper.getParticleTexture(block), this::getRetexturedModel);
     }
 
@@ -206,7 +206,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
       return RetexturedOverride.INSTANCE;
     }
   }
@@ -218,7 +218,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     /** List of textures to retexture */
     private final Set<String> retextured;
     /** Replacement texture */
-    private final RenderMaterial texture;
+    private final Material texture;
 
     /**
      * Creates a new configuration wrapper
@@ -235,13 +235,13 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     @Override
     public boolean isTexturePresent(String name) {
       if (retextured.contains(name)) {
-        return !MissingTextureSprite.getLocation().equals(texture.texture());
+        return !MissingTextureAtlasSprite.getLocation().equals(texture.texture());
       }
       return super.isTexturePresent(name);
     }
 
     @Override
-    public RenderMaterial resolveTexture(String name) {
+    public Material resolveTexture(String name) {
       if (retextured.contains(name)) {
         return texture;
       }
@@ -250,12 +250,12 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   }
 
   /** Override list to swap the texture in from NBT */
-  private static class RetexturedOverride extends ItemOverrideList {
+  private static class RetexturedOverride extends ItemOverrides {
     private static final RetexturedOverride INSTANCE = new RetexturedOverride();
 
     @Nullable
     @Override
-    public IBakedModel resolve(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+    public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity) {
       if (stack.isEmpty() || !stack.hasTag()) {
         return originalModel;
       }

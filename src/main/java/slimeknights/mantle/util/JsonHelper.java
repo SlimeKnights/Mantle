@@ -7,8 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -64,7 +64,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonArray array, String name, Function<JsonObject,T> mapper) {
-    return parseList(array, name, (element, s) -> mapper.apply(JSONUtils.convertToJsonObject(element, s)));
+    return parseList(array, name, (element, s) -> mapper.apply(GsonHelper.convertToJsonObject(element, s)));
   }
 
   /**
@@ -76,7 +76,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonObject parent, String name, BiFunction<JsonElement,String,T> mapper) {
-    return parseList(JSONUtils.getAsJsonArray(parent, name), name, mapper);
+    return parseList(GsonHelper.getAsJsonArray(parent, name), name, mapper);
   }
 
   /**
@@ -88,7 +88,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonObject parent, String name, Function<JsonObject,T> mapper) {
-    return parseList(JSONUtils.getAsJsonArray(parent, name), name, mapper);
+    return parseList(GsonHelper.getAsJsonArray(parent, name), name, mapper);
   }
 
   /**
@@ -98,7 +98,7 @@ public class JsonHelper {
    * @return  Resource location parsed
    */
   public static ResourceLocation getResourceLocation(JsonObject json, String key) {
-    String text = JSONUtils.getAsString(json, key);
+    String text = GsonHelper.getAsString(json, key);
     ResourceLocation location = ResourceLocation.tryParse(text);
     if (location == null) {
       throw new JsonSyntaxException("Expected " + key + " to be a Resource location, was '" + text + "'");

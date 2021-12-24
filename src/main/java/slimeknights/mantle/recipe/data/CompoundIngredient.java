@@ -1,6 +1,6 @@
 package slimeknights.mantle.recipe.data;
 
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
 import java.util.List;

@@ -7,24 +7,24 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.FaceDirection;
 import net.minecraft.client.renderer.FaceDirection.VertexInformation;
-import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.client.renderer.model.BlockPart;
-import net.minecraft.client.renderer.model.BlockPartFace;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.model.BlockPartRotation;
 import net.minecraft.client.renderer.model.FaceBakery;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
-import net.minecraft.client.renderer.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3f;
@@ -44,7 +44,7 @@ import java.util.function.Function;
 import static net.minecraft.client.renderer.model.BlockModel.FACE_BAKERY;
 
 /**
- * Block model that supports coloring elements and setting element lighting. Similar to {@link MantleItemLayerModel} but for blocks
+ * Blonet.minecraft.client.renderer.block.model.BlockModeletting element lighting. Similar to {@link MantleItemLayerModel} but for blocks
  */
 @RequiredArgsConstructor
 public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
@@ -56,7 +56,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
   private final List<ColorData> colorData;
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
     return model.getTextures(owner, modelGetter, missingTextureErrors);
   }
 
@@ -71,9 +71,9 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * @param spriteGetter  Sprite getter
    * @param location      Model location
    */
-  public static void bakePart(SimpleBakedModel.Builder builder, IModelConfiguration owner, BlockPart part, int color, int luminosity, IModelTransform transform, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+  public static void bakePart(SimpleBakedModel.Builder builder, IModelConfiguration owner, BlockElement part, int color, int luminosity, ModelState transform, Function<Material,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
     for (Direction direction : part.faces.keySet()) {
-      BlockPartFace face = part.faces.get(direction);
+      BlockElementFace face = part.faces.get(direction);
       // ensure the name is not prefixed (it always is)
       String texture = face.texture;
       if (texture.charAt(0) == '#') {
@@ -101,13 +101,13 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * @param location      Model bake location
    * @return  Baked model
    */
-  public static IBakedModel bakeModel(IModelConfiguration owner, List<BlockPart> elements, List<ColorData> colorData, IModelTransform transform, ItemOverrideList overrides, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+  public static BakedModel bakeModel(IModelConfiguration owner, List<BlockElement> elements, List<ColorData> colorData, ModelState transform, ItemOverrides overrides, Function<Material,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
     // iterate parts, adding to the builder
     TextureAtlasSprite particle = spriteGetter.apply(owner.resolveTexture("particle"));
     SimpleBakedModel.Builder builder = new SimpleBakedModel.Builder(owner, overrides).particle(particle);
     int size = elements.size();
     for (int i = 0; i < size; i++) {
-      BlockPart part = elements.get(i);
+      BlockElement part = elements.get(i);
       ColorData colors = LogicHelper.getOrDefault(colorData, i, ColorData.DEFAULT);
       bakePart(builder, owner, part, colors.getColor(), colors.getLuminosity(), transform, spriteGetter, location);
     }

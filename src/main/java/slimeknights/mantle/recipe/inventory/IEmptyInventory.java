@@ -1,6 +1,6 @@
 package slimeknights.mantle.recipe.inventory;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Base inventory for inventories that do not use items

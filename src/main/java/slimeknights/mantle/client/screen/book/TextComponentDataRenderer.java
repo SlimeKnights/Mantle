@@ -1,17 +1,17 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.LanguageMap;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
@@ -38,7 +38,7 @@ public class TextComponentDataRenderer {
    * @param tooltip     the list of tooltips
    * @return the action if there's any
    */
-  public static String drawText(MatrixStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextComponentData[] data, int mouseX, int mouseY, FontRenderer fr, List<ITextComponent> tooltip) {
+  public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextComponentData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
     String action = "";
 
     int atX = x;
@@ -68,7 +68,7 @@ public class TextComponentDataRenderer {
 
       prevScale = item.scale;
 
-      List<ITextProperties> textLines = splitTextComponentBySize(item.text, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
+      List<FormattedText> textLines = splitTextComponentBySize(item.text, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
 
       box1X = atX;
       box1Y = atY;
@@ -81,7 +81,7 @@ public class TextComponentDataRenderer {
           box3Y = atY;
         }
 
-        ITextProperties textComponent = textLines.get(lineNumber);
+        FormattedText textComponent = textLines.get(lineNumber);
         drawScaledTextComponent(matrixStack, fr, textComponent, atX, atY, item.dropShadow, item.scale);
 
         if (lineNumber < textLines.size() - 1) {
@@ -102,7 +102,7 @@ public class TextComponentDataRenderer {
 
       box2H = atY;
 
-      atX += fr.width(LanguageMap.getInstance().getVisualOrder(textLines.get(textLines.size() - 1))) * item.scale;
+      atX += fr.width(Language.getInstance().getVisualOrder(textLines.get(textLines.size() - 1))) * item.scale;
       if (atX - x >= boxWidth) {
         atX = x;
         atY += fr.lineHeight * item.scale;
@@ -146,8 +146,8 @@ public class TextComponentDataRenderer {
     }
 
     if (BookScreen.debug && !action.isEmpty()) {
-      tooltip.add(StringTextComponent.EMPTY);
-      tooltip.add(new StringTextComponent("Action: " + action).withStyle(TextFormatting.GRAY));
+      tooltip.add(TextComponent.EMPTY);
+      tooltip.add(new TextComponent("Action: " + action).withStyle(ChatFormatting.GRAY));
     }
 
     return action;
@@ -162,12 +162,12 @@ public class TextComponentDataRenderer {
    * @param scale         the scale to use
    * @return the list of split text components based on the given size
    */
-  public static List<ITextProperties> splitTextComponentBySize(ITextComponent textComponent, int width, int height, int firstWidth, FontRenderer fontRenderer, float scale) {
+  public static List<FormattedText> splitTextComponentBySize(Component textComponent, int width, int height, int firstWidth, Font fontRenderer, float scale) {
     int curWidth = (int) (fontRenderer.width(textComponent) * scale);
 
     int curHeight = (int) (fontRenderer.lineHeight * scale);
     boolean needsWrap = false;
-    List<ITextProperties> textLines = new ArrayList<>();
+    List<FormattedText> textLines = new ArrayList<>();
 
     if ((curHeight == (int) (fontRenderer.lineHeight * scale) && curWidth > firstWidth) || (curHeight != (int) (fontRenderer.lineHeight * scale) && curWidth > width)) {
       needsWrap = true;
@@ -193,15 +193,15 @@ public class TextComponentDataRenderer {
    * @param dropShadow    if there should be a shadow on the text
    * @param scale         the scale to render as
    */
-  public static void drawScaledTextComponent(MatrixStack matrixStack, FontRenderer font, ITextProperties textComponent, float x, float y, boolean dropShadow, float scale) {
+  public static void drawScaledTextComponent(PoseStack matrixStack, Font font, FormattedText textComponent, float x, float y, boolean dropShadow, float scale) {
     matrixStack.pushPose();
     matrixStack.translate(x, y, 0);
     matrixStack.scale(scale, scale, 1F);
 
     if (dropShadow) {
-      font.drawShadow(matrixStack, LanguageMap.getInstance().getVisualOrder(textComponent), 0, 0, 0);
+      font.drawShadow(matrixStack, Language.getInstance().getVisualOrder(textComponent), 0, 0, 0);
     } else {
-      font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(textComponent), 0, 0, 0);
+      font.draw(matrixStack, Language.getInstance().getVisualOrder(textComponent), 0, 0, 0);
     }
 
     matrixStack.popPose();
@@ -231,9 +231,9 @@ public class TextComponentDataRenderer {
     RenderSystem.disableAlphaTest();
     RenderSystem.blendFuncSeparate(770, 771, 1, 0);
     RenderSystem.shadeModel(7425);
-    Tessellator tessellator = Tessellator.getInstance();
+    Tesselator tessellator = Tesselator.getInstance();
     BufferBuilder vertexBuffer = tessellator.getBuilder();
-    vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+    vertexBuffer.begin(7, DefaultVertexFormat.POSITION_COLOR);
     vertexBuffer.vertex((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
     vertexBuffer.vertex((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
     vertexBuffer.vertex((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();

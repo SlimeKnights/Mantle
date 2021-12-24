@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -51,7 +51,7 @@ public class SliderWidget extends Widget {
     this.maxValue = slideBar.h;
     this.increment = 1;
 
-    this.sliderOffset = MathHelper.abs(slideBar.w - slider.w) / 2;
+    this.sliderOffset = Mth.abs(slideBar.w - slider.w) / 2;
 
     this.isScrolling = false;
     this.isHighlighted = false;
@@ -119,7 +119,7 @@ public class SliderWidget extends Widget {
   }
 
   @Override
-  public void draw(MatrixStack matrixStack) {
+  public void draw(PoseStack matrixStack) {
     if (this.hidden) {
       return;
     }

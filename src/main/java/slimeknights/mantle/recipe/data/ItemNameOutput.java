@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ public class ItemNameOutput extends ItemOutput {
   private final ResourceLocation name;
   private final int count;
   @Nullable
-  private final CompoundNBT nbt;
+  private final CompoundTag nbt;
 
   /**
    * Creates an output for the given item with no NBT

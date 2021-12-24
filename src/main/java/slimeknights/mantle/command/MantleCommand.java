@@ -2,11 +2,11 @@ package slimeknights.mantle.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.minecraft.command.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.command.arguments.ArgumentSerializer;
-import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.command.arguments.SuggestionProviders;
 import net.minecraft.world.GameRules;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,14 +29,14 @@ public class MantleCommand {
   public static final int PERMISSION_OWNER = 4;
 
   /** Suggestion provider that lists tags for this type */
-  public static SuggestionProvider<CommandSource> VALID_TAGS;
+  public static SuggestionProvider<CommandSourceStack> VALID_TAGS;
   /** Suggestion provider that lists tags values for this registry */
-  public static SuggestionProvider<CommandSource> REGISTRY_VALUES;
+  public static SuggestionProvider<CommandSourceStack> REGISTRY_VALUES;
 
   /** Registers all Mantle command related content */
   public static void init() {
     // register arguments
-    ArgumentTypes.register("mantle:tag_collection", TagCollectionArgument.class, new ArgumentSerializer<>(TagCollectionArgument::collection));
+    ArgumentTypes.register("mantle:tag_collection", TagCollectionArgument.class, new EmptyArgumentSerializer<>(TagCollectionArgument::collection));
     VALID_TAGS = SuggestionProviders.register(Mantle.getResource("valid_tags"), (context, builder) -> {
       TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
       return ISuggestionProvider.suggestResource(result.getCollection().getAvailableTags(), builder);

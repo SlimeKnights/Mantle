@@ -2,9 +2,9 @@ package slimeknights.mantle.client.model.util;
 
 import com.mojang.datafixers.util.Either;
 import lombok.AllArgsConstructor;
-import net.minecraft.client.renderer.model.BlockModel;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.Material;
 import net.minecraftforge.client.model.IModelConfiguration;
 
 import javax.annotation.Nullable;
@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @AllArgsConstructor
-public class ModelTextureIteratable implements Iterable<Map<String,Either<RenderMaterial, String>>> {
+public class ModelTextureIteratable implements Iterable<Map<String,Either<Material, String>>> {
   /** Initial map for iteration */
   @Nullable
-  private final Map<String,Either<RenderMaterial, String>> startMap;
+  private final Map<String,Either<Material, String>> startMap;
   /** Initial model for iteration */
   @Nullable
   private final BlockModel startModel;
@@ -36,7 +36,7 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Render
    * @return  Iteratable over block model texture maps
    */
   public static ModelTextureIteratable of(IModelConfiguration owner, SimpleBlockModel fallback) {
-    IUnbakedModel unbaked = owner.getOwnerModel();
+    UnbakedModel unbaked = owner.getOwnerModel();
     if (unbaked instanceof BlockModel) {
       return new ModelTextureIteratable(null, (BlockModel)unbaked);
     }
@@ -49,10 +49,10 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Render
   }
 
   @AllArgsConstructor
-  private static class MapIterator implements Iterator<Map<String,Either<RenderMaterial, String>>> {
+  private static class MapIterator implements Iterator<Map<String,Either<Material, String>>> {
     /** Initial map for iteration */
     @Nullable
-    private Map<String,Either<RenderMaterial, String>> initial;
+    private Map<String,Either<Material, String>> initial;
     /** current model in the iterator */
     @Nullable
     private BlockModel model;
@@ -63,8 +63,8 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Render
     }
 
     @Override
-    public Map<String,Either<RenderMaterial,String>> next() {
-      Map<String,Either<RenderMaterial, String>> map;
+    public Map<String,Either<Material,String>> next() {
+      Map<String,Either<Material, String>> map;
       if (initial != null) {
         map = initial;
         initial = null;

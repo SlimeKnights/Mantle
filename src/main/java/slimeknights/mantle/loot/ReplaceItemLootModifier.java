@@ -4,15 +4,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.functions.ILootFunction;
-import net.minecraft.loot.functions.LootFunctionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
@@ -35,16 +35,16 @@ public class ReplaceItemLootModifier extends LootModifier {
   /** Item for the replacement */
   private final ItemOutput replacement;
   /** Functions to apply to the replacement */
-  private final ILootFunction[] functions;
+  private final LootItemFunction[] functions;
   /** Functions merged into a single function for ease of use */
   private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunctions;
 
-  protected ReplaceItemLootModifier(ILootCondition[] conditionsIn, Ingredient original, ItemOutput replacement, ILootFunction[] functions) {
+  protected ReplaceItemLootModifier(LootItemCondition[] conditionsIn, Ingredient original, ItemOutput replacement, LootItemFunction[] functions) {
     super(conditionsIn);
     this.original = original;
     this.replacement = replacement;
     this.functions = functions;
-    this.combinedFunctions = LootFunctionManager.compose(functions);
+    this.combinedFunctions = LootItemFunctions.compose(functions);
   }
 
   /** Creates a builder to create a loot modifier */
@@ -66,7 +66,7 @@ public class ReplaceItemLootModifier extends LootModifier {
 
   public static class Serializer extends GlobalLootModifierSerializer<ReplaceItemLootModifier> {
     @Override
-    public ReplaceItemLootModifier read(ResourceLocation location, JsonObject object, ILootCondition[] conditions) {
+    public ReplaceItemLootModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] conditions) {
       Ingredient original;
       JsonElement element = JsonHelper.getElement(object, "original");
       if (element.isJsonPrimitive()) {
@@ -76,11 +76,11 @@ public class ReplaceItemLootModifier extends LootModifier {
       }
       ItemOutput replacement = ItemOutput.fromJson(JsonHelper.getElement(object, "replacement"));
       // functions
-      ILootFunction[] functions;
+      LootItemFunction[] functions;
       if (object.has("functions")) {
-        functions = AddEntryLootModifier.GSON.fromJson(JSONUtils.getAsJsonArray(object, "functions"), ILootFunction[].class);
+        functions = AddEntryLootModifier.GSON.fromJson(GsonHelper.getAsJsonArray(object, "functions"), LootItemFunction[].class);
       } else {
-        functions = new ILootFunction[0];
+        functions = new LootItemFunction[0];
       }
       return new ReplaceItemLootModifier(conditions, original, replacement, functions);
     }
@@ -91,7 +91,7 @@ public class ReplaceItemLootModifier extends LootModifier {
       object.add("original", instance.original.toJson());
       object.add("replacement", instance.replacement.serialize());
       if (instance.functions.length > 0) {
-        object.add("functions", AddEntryLootModifier.GSON.toJsonTree(instance.functions, ILootFunction[].class));
+        object.add("functions", AddEntryLootModifier.GSON.toJsonTree(instance.functions, LootItemFunction[].class));
       }
       return object;
     }
@@ -102,19 +102,19 @@ public class ReplaceItemLootModifier extends LootModifier {
   public static class Builder extends AbstractLootModifierBuilder<Builder> {
     private final Ingredient input;
     private final ItemOutput replacement;
-    private final List<ILootFunction> functions = new ArrayList<>();
+    private final List<LootItemFunction> functions = new ArrayList<>();
 
     /**
      * Adds a loot function to the builder
      */
-    public Builder addFunction(ILootFunction function) {
+    public Builder addFunction(LootItemFunction function) {
       functions.add(function);
       return this;
     }
 
     @Override
     public void build(String name, GlobalLootModifierProvider provider) {
-      provider.add(name, MantleLoot.REPLACE_ITEM, new ReplaceItemLootModifier(getConditions(), input, replacement, functions.toArray(new ILootFunction[0])));
+      provider.add(name, MantleLoot.REPLACE_ITEM, new ReplaceItemLootModifier(getConditions(), input, replacement, functions.toArray(new LootItemFunction[0])));
     }
   }
 }

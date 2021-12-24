@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.book.action;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.action.protocol.ActionProtocol;
 import slimeknights.mantle.client.screen.book.BookScreen;
 

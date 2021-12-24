@@ -4,15 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootEntry;
-import net.minecraft.loot.LootSerializers;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.functions.ILootFunction;
-import net.minecraft.loot.functions.LootFunctionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.Deserializers;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
@@ -30,32 +30,32 @@ import java.util.function.Consumer;
 
 /** Loot modifier to inject an additional loot entry into an existing table */
 public class AddEntryLootModifier extends LootModifier {
-	static final Gson GSON = LootSerializers.createFunctionSerializer().registerTypeHierarchyAdapter(ILootModifierCondition.class, ILootModifierCondition.MODIFIER_CONDITIONS).create();
+	static final Gson GSON = Deserializers.createFunctionSerializer().registerTypeHierarchyAdapter(ILootModifierCondition.class, ILootModifierCondition.MODIFIER_CONDITIONS).create();
 
   /** Additional conditions that can consider the previously generated loot */
   private final ILootModifierCondition[] modifierConditions;
   /** Entry for generating loot */
-	private final LootEntry entry;
+	private final LootPoolEntryContainer entry;
   /** Functions to apply to the entry, allows adding functions to parented loot entries such as alternatives */
-	private final ILootFunction[] functions;
+	private final LootItemFunction[] functions;
   /** Functions merged into a single function for ease of use */
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunctions;
 
-	protected AddEntryLootModifier(ILootCondition[] conditionsIn, ILootModifierCondition[] modifierConditions, LootEntry entry, ILootFunction[] functions) {
+	protected AddEntryLootModifier(LootItemCondition[] conditionsIn, ILootModifierCondition[] modifierConditions, LootPoolEntryContainer entry, LootItemFunction[] functions) {
 		super(conditionsIn);
     this.modifierConditions = modifierConditions;
     this.entry = entry;
 		this.functions = functions;
-		this.combinedFunctions = LootFunctionManager.compose(functions);
+		this.combinedFunctions = LootItemFunctions.compose(functions);
 	}
 
   /** Creates a builder for this loot modifier */
-  public static Builder builder(LootEntry entry) {
+  public static Builder builder(LootPoolEntryContainer entry) {
     return new Builder(entry);
   }
 
   /** Creates a builder for this loot modifier */
-  public static Builder builder(LootEntry.Builder<?> builder) {
+  public static Builder builder(LootPoolEntryContainer.Builder<?> builder) {
     return builder(builder.build());
   }
 
@@ -69,30 +69,30 @@ public class AddEntryLootModifier extends LootModifier {
       }
     }
     // generate the actual entry
-    Consumer<ItemStack> consumer = ILootFunction.decorate(this.combinedFunctions, generatedLoot::add, context);
+    Consumer<ItemStack> consumer = LootItemFunction.decorate(this.combinedFunctions, generatedLoot::add, context);
     entry.expand(context, generator -> generator.createItemStack(consumer, context));
 		return generatedLoot;
 	}
 
 	public static class Serializer extends GlobalLootModifierSerializer<AddEntryLootModifier> {
 		@Override
-		public AddEntryLootModifier read(ResourceLocation location, JsonObject object, ILootCondition[] conditions) {
-			LootEntry entry = GSON.fromJson(JSONUtils.getAsJsonObject(object, "entry"), LootEntry.class);
+		public AddEntryLootModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] conditions) {
+			LootPoolEntryContainer entry = GSON.fromJson(GsonHelper.getAsJsonObject(object, "entry"), LootPoolEntryContainer.class);
 
       // loot modifier conditions
       ILootModifierCondition[] modifierConditions;
       if (object.has("post_conditions")) {
-        modifierConditions = GSON.fromJson(JSONUtils.getAsJsonArray(object, "modifier_conditions"), ILootModifierCondition[].class);
+        modifierConditions = GSON.fromJson(GsonHelper.getAsJsonArray(object, "modifier_conditions"), ILootModifierCondition[].class);
       } else {
         modifierConditions = new ILootModifierCondition[0];
       }
 
       // functions
-      ILootFunction[] functions;
+      LootItemFunction[] functions;
 			if (object.has("functions")) {
-				functions = GSON.fromJson(JSONUtils.getAsJsonArray(object, "functions"), ILootFunction[].class);
+				functions = GSON.fromJson(GsonHelper.getAsJsonArray(object, "functions"), LootItemFunction[].class);
 			} else {
-				functions = new ILootFunction[0];
+				functions = new LootItemFunction[0];
 			}
 			return new AddEntryLootModifier(conditions, modifierConditions, entry, functions);
 		}
@@ -103,9 +103,9 @@ public class AddEntryLootModifier extends LootModifier {
       if (instance.modifierConditions.length > 0) {
         object.add("modifier_conditions", GSON.toJsonTree(instance.modifierConditions, ILootModifierCondition[].class));
       }
-			object.add("entry", GSON.toJsonTree(instance.entry, LootEntry.class));
+			object.add("entry", GSON.toJsonTree(instance.entry, LootPoolEntryContainer.class));
       if (instance.functions.length > 0) {
-        object.add("functions", GSON.toJsonTree(instance.functions, ILootFunction[].class));
+        object.add("functions", GSON.toJsonTree(instance.functions, LootItemFunction[].class));
       }
 			return object;
 		}
@@ -116,8 +116,8 @@ public class AddEntryLootModifier extends LootModifier {
   public static class Builder extends AbstractLootModifierBuilder<Builder> {
 
     private final List<ILootModifierCondition> modifierConditions = new ArrayList<>();
-    private final LootEntry entry;
-    private final List<ILootFunction> functions = new ArrayList<>();
+    private final LootPoolEntryContainer entry;
+    private final List<LootItemFunction> functions = new ArrayList<>();
 
     /**
      * Adds a loot entry condition to the builder
@@ -130,14 +130,14 @@ public class AddEntryLootModifier extends LootModifier {
     /**
      * Adds a loot function to the builder
      */
-    public Builder addFunction(ILootFunction function) {
+    public Builder addFunction(LootItemFunction function) {
       functions.add(function);
       return this;
     }
 
     @Override
     public void build(String name, GlobalLootModifierProvider provider) {
-      provider.add(name, MantleLoot.ADD_ENTRY, new AddEntryLootModifier(getConditions(), modifierConditions.toArray(new ILootModifierCondition[0]), entry, functions.toArray(new ILootFunction[0])));
+      provider.add(name, MantleLoot.ADD_ENTRY, new AddEntryLootModifier(getConditions(), modifierConditions.toArray(new ILootModifierCondition[0]), entry, functions.toArray(new LootItemFunction[0])));
     }
   }
 }

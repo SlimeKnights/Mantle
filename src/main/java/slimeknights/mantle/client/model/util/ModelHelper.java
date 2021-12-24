@@ -5,18 +5,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.MultipartBakedModel;
-import net.minecraft.client.renderer.model.WeightedBakedModel;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.MultiPartBakedModel;
+import net.minecraft.client.resources.model.WeightedBakedModel;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.math.Vector3f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
@@ -50,16 +50,16 @@ public class ModelHelper {
    * @return  Block model, or null if its missing or the wrong class type
    */
   @Nullable
-  public static <T extends IBakedModel> T getBakedModel(BlockState state, Class<T> clazz) {
+  public static <T extends BakedModel> T getBakedModel(BlockState state, Class<T> clazz) {
     Minecraft minecraft = Minecraft.getInstance();
     //noinspection ConstantConditions  null during run data
     if (minecraft == null) {
       return null;
     }
-    IBakedModel baked = minecraft.getModelManager().getBlockModelShaper().getBlockModel(state);
+    BakedModel baked = minecraft.getModelManager().getBlockModelShaper().getBlockModel(state);
     // map multipart and weighted random into the first variant
-    if (baked instanceof MultipartBakedModel) {
-      baked = ((MultipartBakedModel)baked).selectors.get(0).getRight();
+    if (baked instanceof MultiPartBakedModel) {
+      baked = ((MultiPartBakedModel)baked).selectors.get(0).getRight();
     }
     if (baked instanceof WeightedBakedModel) {
       baked = ((WeightedBakedModel) baked).wrapped;
@@ -79,13 +79,13 @@ public class ModelHelper {
    * @return  Item model, or null if its missing or the wrong class type
    */
   @Nullable
-  public static <T extends IBakedModel> T getBakedModel(IItemProvider item, Class<T> clazz) {
+  public static <T extends BakedModel> T getBakedModel(ItemLike item, Class<T> clazz) {
     Minecraft minecraft = Minecraft.getInstance();
     //noinspection ConstantConditions  null during run data
     if (minecraft == null) {
       return null;
     }
-    IBakedModel baked = minecraft.getItemRenderer().getItemModelShaper().getItemModel(item.asItem());
+    BakedModel baked = minecraft.getItemRenderer().getItemModelShaper().getItemModel(item.asItem());
     if (clazz.isInstance(baked)) {
       return clazz.cast(baked);
     }
@@ -124,13 +124,13 @@ public class ModelHelper {
    * @throws JsonParseException  If there is no array or the length is wrong
    */
   public static <T> T arrayToObject(JsonObject json, String name, int size, Function<float[], T> mapper) {
-    JsonArray array = JSONUtils.getAsJsonArray(json, name);
+    JsonArray array = GsonHelper.getAsJsonArray(json, name);
     if (array.size() != size) {
       throw new JsonParseException("Expected " + size + " " + name + " values, found: " + array.size());
     }
     float[] vec = new float[size];
     for(int i = 0; i < size; ++i) {
-      vec[i] = JSONUtils.convertToFloat(array.get(i), name + "[" + i + "]");
+      vec[i] = GsonHelper.convertToFloat(array.get(i), name + "[" + i + "]");
     }
     return mapper.apply(vec);
   }
@@ -152,7 +152,7 @@ public class ModelHelper {
    * @return  Integer of 0, 90, 180, or 270
    */
   public static int getRotation(JsonObject json, String key) {
-    int i = JSONUtils.getAsInt(json, key, 0);
+    int i = GsonHelper.getAsInt(json, key, 0);
     if (i >= 0 && i % 90 == 0 && i / 90 <= 3) {
       return i;
     } else {

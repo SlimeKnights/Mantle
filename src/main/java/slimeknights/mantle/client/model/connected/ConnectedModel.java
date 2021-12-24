@@ -12,28 +12,28 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.client.renderer.model.BlockPart;
-import net.minecraft.client.renderer.model.BlockPartFace;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.IModelTransform;
-import net.minecraft.client.renderer.model.IUnbakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.Direction.Plane;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Direction.Plane;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import com.mojang.math.Transformation;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.IModelData;
@@ -80,13 +80,13 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   private final Set<Direction> sides;
 
   /** Map of full texture name to the resulting material, filled during {@link #getTextures(IModelConfiguration, Function, Set)} */
-  private Map<String,RenderMaterial> extraTextures;
+  private Map<String,Material> extraTextures;
 
   @Override
-  public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    Collection<RenderMaterial> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
+  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    Collection<Material> textures = model.getTextures(owner, modelGetter, missingTextureErrors);
     // for all connected textures, add suffix textures
-    Map<String, RenderMaterial> extraTextures = new HashMap<>();
+    Map<String, Material> extraTextures = new HashMap<>();
     for (Entry<String,String[]> entry : connectedTextures.entrySet()) {
       // fetch data from the base texture
       String name = entry.getKey();
@@ -94,7 +94,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       if (!owner.isTexturePresent(name)) {
         continue;
       }
-      RenderMaterial base = owner.resolveTexture(name);
+      Material base = owner.resolveTexture(name);
       ResourceLocation atlas = base.atlasLocation();
       ResourceLocation texture = base.texture();
       String namespace = texture.getNamespace();
@@ -109,12 +109,12 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
         // skip running if we have seen it before
         String suffixedName = name + "_" + suffix;
         if (!extraTextures.containsKey(suffixedName)) {
-          RenderMaterial mat;
+          Material mat;
           // allow overriding a specific texture
           if (owner.isTexturePresent(suffixedName)) {
             mat = owner.resolveTexture(suffixedName);
           } else {
-            mat = new RenderMaterial(atlas, new ResourceLocation(namespace, path + "/" + suffix));
+            mat = new Material(atlas, new ResourceLocation(namespace, path + "/" + suffix));
           }
           textures.add(mat);
           // cache the texture name, we use it a lot in rebaking
@@ -130,20 +130,20 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   }
 
   @Override
-  public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform transform, ItemOverrideList overrides, ResourceLocation location) {
-    IBakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
+  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
+    BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
     return new BakedModel(this, new ExtraTextureConfiguration(owner, extraTextures), transform, baked);
   }
 
   @SuppressWarnings("WeakerAccess")
-  protected static class BakedModel extends DynamicBakedWrapper<IBakedModel> {
+  protected static class BakedModel extends DynamicBakedWrapper<BakedModel> {
     private final ConnectedModel parent;
     private final IModelConfiguration owner;
-    private final IModelTransform transforms;
-    private final IBakedModel[] cache = new IBakedModel[64];
+    private final ModelState transforms;
+    private final BakedModel[] cache = new BakedModel[64];
     private final Map<String,String> nameMappingCache = new HashMap<>();
     private final ModelTextureIteratable modelTextures;
-    public BakedModel(ConnectedModel parent, IModelConfiguration owner, IModelTransform transforms, IBakedModel baked) {
+    public BakedModel(ConnectedModel parent, IModelConfiguration owner, ModelState transforms, BakedModel baked) {
       super(baked);
       this.parent = parent;
       this.owner = owner;
@@ -255,8 +255,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       // otherwise, iterate into the parent models, trying to find a match
       String check = key;
       String found = "";
-      for(Map<String, Either<RenderMaterial, String>> textures : modelTextures) {
-        Either<RenderMaterial, String> either = textures.get(check);
+      for(Map<String, Either<Material, String>> textures : modelTextures) {
+        Either<Material, String> either = textures.get(check);
         if (either != null) {
           // if no name, its not connected
           Optional<String> newName = either.right();
@@ -307,16 +307,16 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      * @param connections  Array of face connections, true at indexes of connected sides
      * @return  Model with connections applied
      */
-    private IBakedModel applyConnections(byte connections) {
+    private BakedModel applyConnections(byte connections) {
       // copy each element with updated faces
-      List<BlockPart> elements = Lists.newArrayList();
-      for (BlockPart part : parent.model.getElements()) {
-        Map<Direction,BlockPartFace> partFaces = new EnumMap<>(Direction.class);
-        for (Map.Entry<Direction,BlockPartFace> entry : part.faces.entrySet()) {
+      List<BlockElement> elements = Lists.newArrayList();
+      for (BlockElement part : parent.model.getElements()) {
+        Map<Direction,BlockElementFace> partFaces = new EnumMap<>(Direction.class);
+        for (Map.Entry<Direction,BlockElementFace> entry : part.faces.entrySet()) {
           // first, determine which texture to use on this side
           Direction dir = entry.getKey();
-          BlockPartFace original = entry.getValue();
-          BlockPartFace face = original;
+          BlockElementFace original = entry.getValue();
+          BlockElementFace face = original;
 
           // follow the texture name back to the original name
           // if it never reaches a connected texture, skip
@@ -327,14 +327,14 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
             if (!suffix.isEmpty()) {
               // suffix the texture
               String fullTexture = connectedTexture + suffix;
-              face = new BlockPartFace(original.cullForDirection, original.tintIndex, "#" + fullTexture, original.uv);
+              face = new BlockElementFace(original.cullForDirection, original.tintIndex, "#" + fullTexture, original.uv);
             }
           }
           // add the updated face
           partFaces.put(dir, face);
         }
         // add the updated parts into a new model part
-        elements.add(new BlockPart(part.from, part.to, partFaces, part.rotation, part.shade));
+        elements.add(new BlockElement(part.from, part.to, partFaces, part.rotation, part.shade));
       }
 
       // bake the model
@@ -357,7 +357,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     }
 
     @Override
-    public IModelData getModelData(IBlockDisplayReader world, BlockPos pos, BlockState state, IModelData tileData) {
+    public IModelData getModelData(BlockAndTintGetter world, BlockPos pos, BlockState state, IModelData tileData) {
       // if the data is already defined, return it, will happen in multipart models
       if (tileData.getData(CONNECTIONS) != null) {
         return tileData;
@@ -370,7 +370,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       }
 
       // gather connections data
-      TransformationMatrix rotation = transforms.getRotation();
+      Transformation rotation = transforms.getRotation();
       data.setData(CONNECTIONS, getConnections((dir) -> parent.sides.contains(dir) && parent.connectionPredicate.test(state, world.getBlockState(pos.relative(rotation.rotateTransform(dir))))));
       return data;
     }
@@ -406,7 +406,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
           return originalModel.getQuads(null, side, rand, data);
         }
         // this will return original if the state is missing all properties
-        TransformationMatrix rotation = transforms.getRotation();
+        Transformation rotation = transforms.getRotation();
         connections = getConnections((dir) -> {
           if (!parent.sides.contains(dir)) {
             return false;
@@ -426,17 +426,17 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     public static final ConnectedModel.Loader INSTANCE = new ConnectedModel.Loader();
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void onResourceManagerReload(ResourceManager resourceManager) {}
 
     @Override
     public ConnectedModel read(JsonDeserializationContext context, JsonObject json) {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
 
       // root object for all model data
-      JsonObject data = JSONUtils.getAsJsonObject(json, "connection");
+      JsonObject data = GsonHelper.getAsJsonObject(json, "connection");
 
       // need at least one connected texture
-      JsonObject connected = JSONUtils.getAsJsonObject(data, "textures");
+      JsonObject connected = GsonHelper.getAsJsonObject(data, "textures");
       if (connected.size() == 0) {
         throw new JsonSyntaxException("Must have at least one texture in connected");
       }
@@ -453,10 +453,10 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       // get a list of sides to pay attention to
       Set<Direction> sides;
       if (data.has("sides")) {
-        JsonArray array = JSONUtils.getAsJsonArray(data, "sides");
+        JsonArray array = GsonHelper.getAsJsonArray(data, "sides");
         sides = EnumSet.noneOf(Direction.class);
         for (int i = 0; i < array.size(); i++) {
-          String side = JSONUtils.convertToString(array.get(i), "sides[" + i + "]");
+          String side = GsonHelper.convertToString(array.get(i), "sides[" + i + "]");
           Direction dir = Direction.byName(side);
           if (dir == null) {
             throw new JsonParseException("Invalid side " + side);

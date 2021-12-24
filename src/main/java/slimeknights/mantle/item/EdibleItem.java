@@ -1,17 +1,17 @@
 package slimeknights.mantle.item;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.util.TranslationHelper;
@@ -19,31 +19,31 @@ import slimeknights.mantle.util.TranslationHelper;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
 public class EdibleItem extends Item {
 
   /** if false, does not display effects of food in tooltip */
   private boolean displayEffectsTooltip;
 
-  public EdibleItem(Food foodIn, ItemGroup itemGroup) {
+  public EdibleItem(FoodProperties foodIn, CreativeModeTab itemGroup) {
     this(foodIn, itemGroup, true);
   }
 
-  public EdibleItem(Food foodIn, ItemGroup itemGroup, boolean displayEffectsTooltip) {
+  public EdibleItem(FoodProperties foodIn, CreativeModeTab itemGroup, boolean displayEffectsTooltip) {
     super(new Properties().food(foodIn).tab(itemGroup));
     this.displayEffectsTooltip = displayEffectsTooltip;
   }
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
     TranslationHelper.addOptionalTooltip(stack, tooltip);
 
     if (this.displayEffectsTooltip) {
-      for (Pair<EffectInstance, Float> pair : stack.getItem().getFoodProperties().getEffects()) {
+      for (Pair<MobEffectInstance, Float> pair : stack.getItem().getFoodProperties().getEffects()) {
         if (pair.getFirst() != null) {
-          tooltip.add(new StringTextComponent(I18n.get(pair.getFirst().getDescriptionId()).trim()).withStyle(TextFormatting.GRAY));
+          tooltip.add(new TextComponent(I18n.get(pair.getFirst().getDescriptionId()).trim()).withStyle(ChatFormatting.GRAY));
         }
       }
     }

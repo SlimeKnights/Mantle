@@ -1,9 +1,9 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -19,15 +19,15 @@ import java.util.List;
 public class TextComponentElement extends SizedBookElement {
 
   public TextComponentData[] text;
-  private final List<ITextComponent> tooltip = new ArrayList<ITextComponent>();
+  private final List<Component> tooltip = new ArrayList<Component>();
 
   private boolean doAction = false;
 
   public TextComponentElement(int x, int y, int width, int height, String text) {
-    this(x, y, width, height, new StringTextComponent(text));
+    this(x, y, width, height, new TextComponent(text));
   }
 
-  public TextComponentElement(int x, int y, int width, int height, ITextComponent text) {
+  public TextComponentElement(int x, int y, int width, int height, Component text) {
     this(x, y, width, height, new TextComponentData(text));
   }
 
@@ -42,7 +42,7 @@ public class TextComponentElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void draw(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     String action = TextComponentDataRenderer.drawText(matrixStack, this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
 
     if (this.doAction) {
@@ -52,7 +52,7 @@ public class TextComponentElement extends SizedBookElement {
   }
 
   @Override
-  public void drawOverlay(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
+  public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (this.tooltip.size() > 0) {
       TextDataRenderer.drawTooltip(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
       this.tooltip.clear();

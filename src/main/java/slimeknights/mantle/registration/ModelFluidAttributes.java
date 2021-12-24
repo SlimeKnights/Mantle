@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fml.DistExecutor;
 import slimeknights.mantle.client.model.fluid.FluidTextureModel;

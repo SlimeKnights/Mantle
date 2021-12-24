@@ -1,16 +1,16 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.block.Block;
-import net.minecraft.data.BlockStateVariantBuilder.ITriFunction;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.Item.Properties;
-import net.minecraft.item.SignItem;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.item.TallBlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.Properties;
+import net.minecraft.world.item.SignItem;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.BlockTooltipItem;
 import slimeknights.mantle.item.BurnableBlockItem;
@@ -190,14 +190,14 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
     // many of these are already burnable via tags, but simplier to set them all here
     BiFunction<? super Block, Integer, ? extends BlockItem> burnableItem;
     Function<? super Block, ? extends BlockItem> burnableTallItem;
-    ITriFunction<Item.Properties, ? super Block, ? super Block, ? extends BlockItem> burnableSignItem;
+    TriFunction<Item.Properties, ? super Block, ? super Block, ? extends BlockItem> burnableSignItem;
     if (isBurnable) {
       burnableItem     = (block, burnTime) -> new BurnableBlockItem(block, defaultProps, burnTime);
       burnableTallItem = (block) -> new BurnableTallBlockItem(block, defaultProps, 200);
       burnableSignItem = (props, standing, wall) -> new BurnableSignItem(props, standing, wall, 200);
     } else {
       burnableItem = (block, burnTime) -> new BlockItem(block, defaultProps);
-      burnableTallItem = (block) -> new TallBlockItem(block, defaultProps);
+      burnableTallItem = (block) -> new DoubleHighBlockItem(block, defaultProps);
       burnableSignItem = SignItem::new;
     }
 
