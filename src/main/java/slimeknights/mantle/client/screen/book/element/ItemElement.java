@@ -88,16 +88,19 @@ public class ItemElement extends SizedBookElement {
       }
     }
 
-    RenderSystem.pushMatrix();
-    RenderSystem.translatef(this.x, this.y, 0);
-    RenderSystem.scalef(this.scale, this.scale, 1.0F);
-
     if (this.currentItem < this.itemCycle.size()) {
-      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
-    }
+      RenderSystem.pushMatrix();
+      RenderSystem.translatef(this.x, this.y, 0);
+      RenderSystem.scalef(this.scale, this.scale, 1.0F);
+      ItemStack stack = this.itemCycle.get(this.currentItem);
+      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, 0, 0);
+      FontRenderer font = stack.getItem().getFontRenderer(stack);
+      if (font == null) font = mc.fontRenderer;
+      this.mc.getItemRenderer().renderItemOverlayIntoGUI(font, stack, 0, 0, null);
 
-    RenderSystem.popMatrix();
-    RenderHelper.disableStandardItemLighting();
+      RenderSystem.popMatrix();
+      RenderHelper.disableStandardItemLighting();
+    }
   }
 
   @Override
