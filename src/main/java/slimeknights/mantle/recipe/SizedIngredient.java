@@ -54,7 +54,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient fromItems(int amountNeeded, IItemProvider... items) {
-    return of(Ingredient.fromItems(items), amountNeeded);
+    return of(Ingredient.of(items), amountNeeded);
   }
 
   /**
@@ -73,7 +73,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient matching any size
    */
   public static SizedIngredient fromTag(ITag<Item> tag, int amountNeeded) {
-    return of(Ingredient.fromTag(tag), amountNeeded);
+    return of(Ingredient.of(tag), amountNeeded);
   }
 
   /**
@@ -95,7 +95,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  True if the ingredient has no matching stacks
    */
   public boolean hasNoMatchingStacks() {
-    return ingredient.hasNoMatchingItems();
+    return ingredient.isEmpty();
   }
 
   /**
@@ -103,7 +103,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  List of matching stacks
    */
   public List<ItemStack> getMatchingStacks() {
-    ItemStack[] ingredientMatch = ingredient.getMatchingStacks();
+    ItemStack[] ingredientMatch = ingredient.getItems();
     // if we never cached, or the array instance changed since we last cached, recache
     if (matchingStacks == null || lastIngredientMatch.get() != ingredientMatch) {
       matchingStacks = Arrays.stream(ingredientMatch).map(stack -> {
@@ -124,7 +124,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    */
   public void write(PacketBuffer buffer) {
     buffer.writeVarInt(amountNeeded);
-    ingredient.write(buffer);
+    ingredient.toNetwork(buffer);
   }
 
   /**
@@ -132,7 +132,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  JsonObject of sized ingredient
    */
   public JsonObject serialize() {
-    JsonElement ingredient = this.ingredient.serialize();
+    JsonElement ingredient = this.ingredient.toJson();
     JsonObject json = null;
     // try using the object itself as our JSON
     if (ingredient.isJsonObject()) {
@@ -161,7 +161,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    */
   public static SizedIngredient read(PacketBuffer buffer) {
     int amountNeeded = buffer.readVarInt();
-    Ingredient ingredient = Ingredient.read(buffer);
+    Ingredient ingredient = Ingredient.fromNetwork(buffer);
     return of(ingredient, amountNeeded);
   }
 
@@ -171,13 +171,13 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient
    */
   public static SizedIngredient deserialize(JsonObject json) {
-    int amountNeeded = JSONUtils.getInt(json, "amount_needed", 1);
+    int amountNeeded = JSONUtils.getAsInt(json, "amount_needed", 1);
     // if we have a nested value, read as nested
     Ingredient ingredient;
     if (json.has("ingredient")) {
-      ingredient = Ingredient.deserialize(JsonHelper.getElement(json, "ingredient"));
+      ingredient = Ingredient.fromJson(JsonHelper.getElement(json, "ingredient"));
     } else {
-      ingredient = Ingredient.deserialize(json);
+      ingredient = Ingredient.fromJson(json);
     }
 
     // return ingredient

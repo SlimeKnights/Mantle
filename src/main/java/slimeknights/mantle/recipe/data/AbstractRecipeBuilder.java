@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> {
   /** Advancement builder for this class */
-  protected final Advancement.Builder advancementBuilder = Advancement.Builder.builder();
+  protected final Advancement.Builder advancementBuilder = Advancement.Builder.advancement();
   /** Group for this recipe */
   @Nonnull
   protected String group = "";
@@ -37,7 +37,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    */
   @SuppressWarnings("unchecked")
   public T addCriterion(String name, ICriterionInstance criteria) {
-    this.advancementBuilder.withCriterion(name, criteria);
+    this.advancementBuilder.addCriterion(name, criteria);
     return (T)this;
   }
 
@@ -86,10 +86,10 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    */
   private ResourceLocation buildAdvancementInternal(ResourceLocation id, String folder) {
     this.advancementBuilder
-        .withParentId(new ResourceLocation("recipes/root"))
-        .withCriterion("has_the_recipe", RecipeUnlockedTrigger.create(id))
-        .withRewards(AdvancementRewards.Builder.recipe(id))
-        .withRequirementsStrategy(IRequirementsStrategy.OR);
+        .parent(new ResourceLocation("recipes/root"))
+        .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+        .rewards(AdvancementRewards.Builder.recipe(id))
+        .requirements(IRequirementsStrategy.OR);
     return new ResourceLocation(id.getNamespace(), "recipes/" + folder + "/" + id.getPath());
   }
 
@@ -130,11 +130,11 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
+    public JsonObject serializeAdvancement() {
       if (advancementID == null) {
         return null;
       }
-      return advancementBuilder.serialize();
+      return advancementBuilder.serializeToJson();
     }
   }
 }

@@ -39,11 +39,11 @@ public class MantleCommand {
     ArgumentTypes.register("mantle:tag_collection", TagCollectionArgument.class, new ArgumentSerializer<>(TagCollectionArgument::collection));
     VALID_TAGS = SuggestionProviders.register(Mantle.getResource("valid_tags"), (context, builder) -> {
       TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
-      return ISuggestionProvider.suggestIterable(result.getCollection().getRegisteredTags(), builder);
+      return ISuggestionProvider.suggestResource(result.getCollection().getAvailableTags(), builder);
     });
     REGISTRY_VALUES = SuggestionProviders.register(Mantle.getResource("registry_values"), (context, builder) -> {
       TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
-      return ISuggestionProvider.suggestIterable(result.getRegistry().getKeys(), builder);
+      return ISuggestionProvider.suggestResource(result.getRegistry().getKeys(), builder);
     });
 
     // add command listener
@@ -82,6 +82,6 @@ public class MantleCommand {
    * @return  True if the command can be run
    */
   public static boolean requiresDebugInfoOrOp(CommandSource source, int reducedDebugLevel) {
-    return !source.getWorld().getGameRules().getBoolean(GameRules.REDUCED_DEBUG_INFO) || source.hasPermissionLevel(reducedDebugLevel);
+    return !source.getLevel().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO) || source.hasPermission(reducedDebugLevel);
   }
 }

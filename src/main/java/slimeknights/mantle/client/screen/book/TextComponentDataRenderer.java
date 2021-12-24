@@ -47,7 +47,7 @@ public class TextComponentDataRenderer {
     float prevScale = 1.F;
 
     for (TextComponentData item : data) {
-      int box1X, box1Y, box1W = 9999, box1H = y + fr.FONT_HEIGHT;
+      int box1X, box1Y, box1W = 9999, box1H = y + fr.lineHeight;
       int box2X, box2Y = 9999, box2W, box2H;
       int box3X = 9999, box3Y = 9999, box3W, box3H;
 
@@ -57,13 +57,13 @@ public class TextComponentDataRenderer {
 
       if (item.text.getString().equals("\n")) {
         atX = x;
-        atY += fr.FONT_HEIGHT;
+        atY += fr.lineHeight;
         continue;
       }
 
       if (item.isParagraph) {
         atX = x;
-        atY += fr.FONT_HEIGHT * 2 * prevScale;
+        atY += fr.lineHeight * 2 * prevScale;
       }
 
       prevScale = item.scale;
@@ -85,7 +85,7 @@ public class TextComponentDataRenderer {
         drawScaledTextComponent(matrixStack, fr, textComponent, atX, atY, item.dropShadow, item.scale);
 
         if (lineNumber < textLines.size() - 1) {
-          atY += fr.FONT_HEIGHT;
+          atY += fr.lineHeight;
           atX = x;
         }
 
@@ -102,14 +102,14 @@ public class TextComponentDataRenderer {
 
       box2H = atY;
 
-      atX += fr.func_243245_a(LanguageMap.getInstance().func_241870_a(textLines.get(textLines.size() - 1))) * item.scale;
+      atX += fr.width(LanguageMap.getInstance().getVisualOrder(textLines.get(textLines.size() - 1))) * item.scale;
       if (atX - x >= boxWidth) {
         atX = x;
-        atY += fr.FONT_HEIGHT * item.scale;
+        atY += fr.lineHeight * item.scale;
       }
 
       box3W = atX;
-      box3H = (int) (atY + fr.FONT_HEIGHT * item.scale);
+      box3H = (int) (atY + fr.lineHeight * item.scale);
 
       boolean mouseCheck = (mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H);
 
@@ -135,9 +135,9 @@ public class TextComponentDataRenderer {
 
       if (atY >= y + boxHeight) {
         if (item.dropShadow) {
-          fr.drawStringWithShadow(matrixStack, "...", atX, atY, 0);
+          fr.drawShadow(matrixStack, "...", atX, atY, 0);
         } else {
-          fr.drawString(matrixStack, "...", atX, atY, 0);
+          fr.draw(matrixStack, "...", atX, atY, 0);
         }
         break;
       }
@@ -147,7 +147,7 @@ public class TextComponentDataRenderer {
 
     if (BookScreen.debug && !action.isEmpty()) {
       tooltip.add(StringTextComponent.EMPTY);
-      tooltip.add(new StringTextComponent("Action: " + action).mergeStyle(TextFormatting.GRAY));
+      tooltip.add(new StringTextComponent("Action: " + action).withStyle(TextFormatting.GRAY));
     }
 
     return action;
@@ -163,18 +163,18 @@ public class TextComponentDataRenderer {
    * @return the list of split text components based on the given size
    */
   public static List<ITextProperties> splitTextComponentBySize(ITextComponent textComponent, int width, int height, int firstWidth, FontRenderer fontRenderer, float scale) {
-    int curWidth = (int) (fontRenderer.getStringPropertyWidth(textComponent) * scale);
+    int curWidth = (int) (fontRenderer.width(textComponent) * scale);
 
-    int curHeight = (int) (fontRenderer.FONT_HEIGHT * scale);
+    int curHeight = (int) (fontRenderer.lineHeight * scale);
     boolean needsWrap = false;
     List<ITextProperties> textLines = new ArrayList<>();
 
-    if ((curHeight == (int) (fontRenderer.FONT_HEIGHT * scale) && curWidth > firstWidth) || (curHeight != (int) (fontRenderer.FONT_HEIGHT * scale) && curWidth > width)) {
+    if ((curHeight == (int) (fontRenderer.lineHeight * scale) && curWidth > firstWidth) || (curHeight != (int) (fontRenderer.lineHeight * scale) && curWidth > width)) {
       needsWrap = true;
     }
 
     if (needsWrap) {
-      textLines = new ArrayList<>(fontRenderer.getCharacterManager().func_238362_b_(textComponent, firstWidth, Style.EMPTY));
+      textLines = new ArrayList<>(fontRenderer.getSplitter().splitLines(textComponent, firstWidth, Style.EMPTY));
     } else {
       textLines.add(textComponent);
     }
@@ -194,17 +194,17 @@ public class TextComponentDataRenderer {
    * @param scale         the scale to render as
    */
   public static void drawScaledTextComponent(MatrixStack matrixStack, FontRenderer font, ITextProperties textComponent, float x, float y, boolean dropShadow, float scale) {
-    matrixStack.push();
+    matrixStack.pushPose();
     matrixStack.translate(x, y, 0);
     matrixStack.scale(scale, scale, 1F);
 
     if (dropShadow) {
-      font.func_238407_a_(matrixStack, LanguageMap.getInstance().func_241870_a(textComponent), 0, 0, 0);
+      font.drawShadow(matrixStack, LanguageMap.getInstance().getVisualOrder(textComponent), 0, 0, 0);
     } else {
-      font.func_238422_b_(matrixStack, LanguageMap.getInstance().func_241870_a(textComponent), 0, 0, 0);
+      font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(textComponent), 0, 0, 0);
     }
 
-    matrixStack.pop();
+    matrixStack.popPose();
   }
 
   /**
@@ -232,13 +232,13 @@ public class TextComponentDataRenderer {
     RenderSystem.blendFuncSeparate(770, 771, 1, 0);
     RenderSystem.shadeModel(7425);
     Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder vertexBuffer = tessellator.getBuffer();
+    BufferBuilder vertexBuffer = tessellator.getBuilder();
     vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-    vertexBuffer.pos((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.pos((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.pos((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    vertexBuffer.pos((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    tessellator.draw();
+    vertexBuffer.vertex((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
+    vertexBuffer.vertex((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
+    vertexBuffer.vertex((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
+    vertexBuffer.vertex((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
+    tessellator.end();
     RenderSystem.shadeModel(7424);
     RenderSystem.enableAlphaTest();
     RenderSystem.enableTexture();

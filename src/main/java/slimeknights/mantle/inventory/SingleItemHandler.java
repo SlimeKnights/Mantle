@@ -137,7 +137,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
   public CompoundNBT writeToNBT() {
     CompoundNBT nbt = new CompoundNBT();
     if (!stack.isEmpty()) {
-      stack.write(nbt);
+      stack.save(nbt);
     }
     return nbt;
   }
@@ -147,6 +147,6 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
    * @param nbt  NBT
    */
   public void readFromNBT(CompoundNBT nbt) {
-    stack = ItemStack.read(nbt);
+    stack = ItemStack.of(nbt);
   }
 }

@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 /** Loot modifier to inject an additional loot entry into an existing table */
 public class AddEntryLootModifier extends LootModifier {
-	static final Gson GSON = LootSerializers.func_237387_b_().registerTypeHierarchyAdapter(ILootModifierCondition.class, ILootModifierCondition.MODIFIER_CONDITIONS).create();
+	static final Gson GSON = LootSerializers.createFunctionSerializer().registerTypeHierarchyAdapter(ILootModifierCondition.class, ILootModifierCondition.MODIFIER_CONDITIONS).create();
 
   /** Additional conditions that can consider the previously generated loot */
   private final ILootModifierCondition[] modifierConditions;
@@ -46,7 +46,7 @@ public class AddEntryLootModifier extends LootModifier {
     this.modifierConditions = modifierConditions;
     this.entry = entry;
 		this.functions = functions;
-		this.combinedFunctions = LootFunctionManager.combine(functions);
+		this.combinedFunctions = LootFunctionManager.compose(functions);
 	}
 
   /** @deprecated use {@link #AddEntryLootModifier(ILootCondition[], ILootModifierCondition[], LootEntry, ILootFunction[])}} */
@@ -75,25 +75,25 @@ public class AddEntryLootModifier extends LootModifier {
       }
     }
     // generate the actual entry
-    Consumer<ItemStack> consumer = ILootFunction.func_215858_a(this.combinedFunctions, generatedLoot::add, context);
-    entry.expand(context, generator -> generator.func_216188_a(consumer, context));
+    Consumer<ItemStack> consumer = ILootFunction.decorate(this.combinedFunctions, generatedLoot::add, context);
+    entry.expand(context, generator -> generator.createItemStack(consumer, context));
 		return generatedLoot;
 	}
 
 	public static class Serializer extends GlobalLootModifierSerializer<AddEntryLootModifier> {
 		@Override
 		public AddEntryLootModifier read(ResourceLocation location, JsonObject object, ILootCondition[] conditions) {
-			LootEntry entry = GSON.fromJson(JSONUtils.getJsonObject(object, "entry"), LootEntry.class);
+			LootEntry entry = GSON.fromJson(JSONUtils.getAsJsonObject(object, "entry"), LootEntry.class);
 
       // loot modifier conditions
       ILootModifierCondition[] modifierConditions;
       if (object.has("post_conditions")) {
-        modifierConditions = GSON.fromJson(JSONUtils.getJsonArray(object, "modifier_conditions"), ILootModifierCondition[].class);
+        modifierConditions = GSON.fromJson(JSONUtils.getAsJsonArray(object, "modifier_conditions"), ILootModifierCondition[].class);
       } else {
         modifierConditions = new ILootModifierCondition[0];
       }
       // backwards compat
-      if (JSONUtils.getBoolean(object, "require_empty", false)) {
+      if (JSONUtils.getAsBoolean(object, "require_empty", false)) {
         Mantle.logger.warn("Using deprecated Loot Modifier property require_empty, use the mantle:empty post_condition instead");
         modifierConditions = Arrays.copyOf(modifierConditions, modifierConditions.length + 1);
         modifierConditions[modifierConditions.length - 1] = EmptyModifierLootCondition.INSTANCE;
@@ -101,7 +101,7 @@ public class AddEntryLootModifier extends LootModifier {
       // functions
       ILootFunction[] functions;
 			if (object.has("functions")) {
-				functions = GSON.fromJson(JSONUtils.getJsonArray(object, "functions"), ILootFunction[].class);
+				functions = GSON.fromJson(JSONUtils.getAsJsonArray(object, "functions"), ILootFunction[].class);
 			} else {
 				functions = new ILootFunction[0];
 			}

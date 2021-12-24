@@ -42,8 +42,8 @@ public class InvertedModifierLootCondition implements ILootModifierCondition {
 
   /** Deserializes this condition from JSON */
   public static InvertedModifierLootCondition deserialize(JsonElement object, Type typeOfT, JsonDeserializationContext context) {
-    JsonObject json = JSONUtils.getJsonObject(object, "condition");
-    ILootModifierCondition condition = ILootModifierCondition.MODIFIER_CONDITIONS.deserialize(JSONUtils.getJsonObject(json, "condition"), ILootModifierCondition.class, context);
+    JsonObject json = JSONUtils.convertToJsonObject(object, "condition");
+    ILootModifierCondition condition = ILootModifierCondition.MODIFIER_CONDITIONS.deserialize(JSONUtils.getAsJsonObject(json, "condition"), ILootModifierCondition.class, context);
     return new InvertedModifierLootCondition(condition);
   }
 }

@@ -43,7 +43,7 @@ public class ConnectedModelRegistry {
    * @return  Connection predicate
    */
   public static BiPredicate<BlockState,BlockState> deserializePredicate(JsonObject json, String key) {
-    String name = JSONUtils.getString(json, key, "block");
+    String name = JSONUtils.getAsString(json, key, "block");
     if (!CONNECTION_PREDICATES.containsKey(name)) {
       throw new JsonSyntaxException("Unknown connection predicate " + name);
     }
@@ -67,7 +67,7 @@ public class ConnectedModelRegistry {
    * @return  True if the property exists and is true, false if false or missing
    */
   private static boolean safeGet(BlockState state, BooleanProperty prop) {
-    return state.hasProperty(prop) && state.get(prop);
+    return state.hasProperty(prop) && state.getValue(prop);
   }
 
   static {
@@ -101,7 +101,7 @@ public class ConnectedModelRegistry {
       for (int i = 0; i < 16; i++) {
         final int index = i;
         suffixes[i] = mapper.apply((dir) -> {
-          int flag = 1 << dir.getHorizontalIndex();
+          int flag = 1 << dir.get2DDataValue();
           return (index & flag) == flag;
         });
       }
@@ -116,7 +116,7 @@ public class ConnectedModelRegistry {
    * @return  Connection predicate
    */
   public static String[] deserializeType(JsonElement json, String key) {
-    String name = JSONUtils.getString(json, key);
+    String name = JSONUtils.convertToString(json, key);
     if (!CONNECTION_TYPES.containsKey(name)) {
       throw new JsonSyntaxException("Unknown connection type " + name);
     }

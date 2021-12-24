@@ -39,7 +39,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
     EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
       // assuming the type will not sub for a different class
-      builder.putDelegate(value, register(mapper.apply(value), value.getString() + "_" + name).delegate);
+      builder.putDelegate(value, register(mapper.apply(value), value.getSerializedName() + "_" + name).delegate);
     }
     return builder.build();
   }
@@ -58,7 +58,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      builder.putDelegate(value, register(mapper.apply(value), name + "_" + value.getString()).delegate);
+      builder.putDelegate(value, register(mapper.apply(value), name + "_" + value.getSerializedName()).delegate);
     }
     return builder.build();
   }

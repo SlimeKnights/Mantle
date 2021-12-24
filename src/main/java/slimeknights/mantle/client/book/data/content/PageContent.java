@@ -128,7 +128,7 @@ public abstract class PageContent {
     int x = 0;
     int w = BookScreen.PAGE_WIDTH;
     if (isCentered()) {
-      w = (int)Math.ceil(this.parent.parent.parent.fontRenderer.getStringWidth(titleText) * title.scale) + 1;
+      w = (int)Math.ceil(this.parent.parent.parent.fontRenderer.width(titleText) * title.scale) + 1;
       x = (BookScreen.PAGE_WIDTH - w) / 2;
     }
     list.add(new TextElement(x, y, w, isLarge ? 11 : 9, title));
@@ -160,7 +160,7 @@ public abstract class PageContent {
       subText.useOldColor = false;
       subText.rgbColor = color;
     }
-    int height = this.parent.parent.parent.fontRenderer.getWordWrappedHeight(text, BookScreen.PAGE_WIDTH) * 12 / 9;
+    int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, BookScreen.PAGE_WIDTH) * 12 / 9;
     list.add(new TextElement(5, y, BookScreen.PAGE_WIDTH, height, subText));
     return height;
   }

@@ -90,7 +90,7 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
     if (player == null) {
       return 0;
     }
-    return player.ticksExisted;
+    return player.tickCount;
   }
 
   /** If true, the tracker is enabled despite a cooldown item not being held */
@@ -179,11 +179,11 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
 
   /** Swings the entities hand without resetting cooldown */
   public static void swingHand(LivingEntity entity, Hand hand, boolean updateSelf) {
-    if (!entity.isSwingInProgress || entity.swingProgressInt >= entity.getArmSwingAnimationEnd() / 2 || entity.swingProgressInt < 0) {
-      entity.swingProgressInt = -1;
-      entity.isSwingInProgress = true;
-      entity.swingingHand = hand;
-      if (!entity.world.isRemote) {
+    if (!entity.swinging || entity.swingTime >= entity.getCurrentSwingDuration() / 2 || entity.swingTime < 0) {
+      entity.swingTime = -1;
+      entity.swinging = true;
+      entity.swingingArm = hand;
+      if (!entity.level.isClientSide) {
         SwingArmPacket packet = new SwingArmPacket(entity, hand);
         if (updateSelf) {
           MantleNetwork.INSTANCE.sendToTrackingAndSelf(packet, entity);

@@ -21,13 +21,13 @@ public class SupplierItemGroup extends ItemGroup {
    */
   public SupplierItemGroup(String modId, String name, Supplier<ItemStack> supplier) {
     super(String.format("%s.%s", modId, name));
-    this.setTabPath(String.format("%s/%s", modId, name));
+    this.setRecipeFolderName(String.format("%s/%s", modId, name));
     this.supplier = supplier;
   }
 
   @OnlyIn(Dist.CLIENT)
   @Override
-  public ItemStack createIcon() {
+  public ItemStack makeIcon() {
     return supplier.get();
   }
 }

@@ -40,7 +40,7 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
 
   @Override
   public BlockModelWrapper read(JsonDeserializationContext context, JsonObject data) {
-    JsonArray models = JSONUtils.getJsonArray(data, "models");
+    JsonArray models = JSONUtils.getAsJsonArray(data, "models");
     if (models.size() < 2) {
       throw new JsonSyntaxException("Fallback model must contain at least 2 models");
     }
@@ -48,14 +48,14 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
     // try loading each model
     for (int i = 0; i < models.size(); i++) {
       String debugName = "models[" + i + "]";
-      JsonObject entry = JSONUtils.getJsonObject(models.get(i), debugName);
+      JsonObject entry = JSONUtils.convertToJsonObject(models.get(i), debugName);
 
       // first, determine required mod ID
       String modId = null;
       if (entry.has("fallback_mod_id")) {
-        modId = JSONUtils.getString(entry, "fallback_mod_id");
+        modId = JSONUtils.getAsString(entry, "fallback_mod_id");
       } else if (entry.has("loader")) {
-        ResourceLocation loader = new ResourceLocation(JSONUtils.getString(entry, "loader"));
+        ResourceLocation loader = new ResourceLocation(JSONUtils.getAsString(entry, "loader"));
         modId = loader.getNamespace();
       }
 
@@ -86,12 +86,12 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
 
     @Override
     public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-      return model.bakeModel(bakery, model, spriteGetter, modelTransform, modelLocation, true);
+      return model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
     }
 
     @Override
     public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation,IUnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-      return model.getTextures(modelGetter, missingTextureErrors);
+      return model.getMaterials(modelGetter, missingTextureErrors);
     }
   }
 }

@@ -88,7 +88,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param props  Block properties
    * @return  Block registry object
    */
-  public RegistryObject<Block> registerNoItem(String name, Block.Properties props) {
+  public RegistryObject<Block> registerNoItem(String name, AbstractBlock.Properties props) {
     return registerNoItem(name, () -> new Block(props));
   }
 
@@ -116,7 +116,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item        Function to create a BlockItem from a Block
    * @return  Block item registry object pair
    */
-  public ItemObject<Block> register(String name, Block.Properties blockProps, Function<? super Block, ? extends BlockItem> item) {
+  public ItemObject<Block> register(String name, AbstractBlock.Properties blockProps, Function<? super Block, ? extends BlockItem> item) {
     return register(name, () -> new Block(blockProps), item);
   }
 
@@ -134,8 +134,8 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
     ItemObject<Block> blockObj = register(name, block, item);
     return new BuildingBlockObject(
         blockObj,
-        this.register(name + "_slab", () -> new SlabBlock(AbstractBlock.Properties.from(blockObj.get())), item),
-        this.register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().getDefaultState(), AbstractBlock.Properties.from(blockObj.get())), item));
+        this.register(name + "_slab", () -> new SlabBlock(AbstractBlock.Properties.copy(blockObj.get())), item),
+        this.register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().defaultBlockState(), AbstractBlock.Properties.copy(blockObj.get())), item));
   }
 
   /**
@@ -145,11 +145,11 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item      Function to get an item from the block
    * @return  BuildingBlockObject class that returns different block types
    */
-  public BuildingBlockObject registerBuilding(String name, Block.Properties props, Function<? super Block, ? extends BlockItem> item) {
+  public BuildingBlockObject registerBuilding(String name, AbstractBlock.Properties props, Function<? super Block, ? extends BlockItem> item) {
     ItemObject<Block> blockObj = register(name, props, item);
     return new BuildingBlockObject(blockObj,
       register(name + "_slab", () -> new SlabBlock(props), item),
-      register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().getDefaultState(), props), item)
+      register(name + "_stairs", () -> new StairsBlock(() -> blockObj.get().defaultBlockState(), props), item)
     );
   }
 
@@ -162,7 +162,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    */
   public WallBuildingBlockObject registerWallBuilding(String name, Supplier<? extends Block> block, Function<? super Block, ? extends BlockItem> item) {
     BuildingBlockObject obj = this.registerBuilding(name, block, item);
-    return new WallBuildingBlockObject(obj, this.register(name + "_wall", () -> new WallBlock(AbstractBlock.Properties.from(obj.get())), item));
+    return new WallBuildingBlockObject(obj, this.register(name + "_wall", () -> new WallBlock(AbstractBlock.Properties.copy(obj.get())), item));
   }
 
   /**
@@ -172,7 +172,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item      Function to get an item from the block
    * @return  StoneBuildingBlockObject class that returns different block types
    */
-  public WallBuildingBlockObject registerWallBuilding(String name, Block.Properties props, Function<? super Block, ? extends BlockItem> item) {
+  public WallBuildingBlockObject registerWallBuilding(String name, AbstractBlock.Properties props, Function<? super Block, ? extends BlockItem> item) {
     return new WallBuildingBlockObject(
       registerBuilding(name, props, item),
       register(name + "_wall", () -> new WallBlock(props), item)
@@ -188,7 +188,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    */
   public FenceBuildingBlockObject registerFenceBuilding(String name, Supplier<? extends Block> block, Function<? super Block, ? extends BlockItem> item) {
     BuildingBlockObject obj = this.registerBuilding(name, block, item);
-    return new FenceBuildingBlockObject(obj, this.register(name + "_fence", () -> new FenceBlock(AbstractBlock.Properties.from(obj.get())), item));
+    return new FenceBuildingBlockObject(obj, this.register(name + "_fence", () -> new FenceBlock(AbstractBlock.Properties.copy(obj.get())), item));
   }
 
   /**
@@ -198,7 +198,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param item      Function to get an item from the block
    * @return  WoodBuildingBlockObject class that returns different block types
    */
-  public FenceBuildingBlockObject registerFenceBuilding(String name, Block.Properties props, Function<? super Block, ? extends BlockItem> item) {
+  public FenceBuildingBlockObject registerFenceBuilding(String name, AbstractBlock.Properties props, Function<? super Block, ? extends BlockItem> item) {
     return new FenceBuildingBlockObject(
       registerBuilding(name, props, item),
       register(name + "_fence", () -> new FenceBlock(props), item)
@@ -221,13 +221,13 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
   public WoodBlockObject registerWood(String name, Material planksMaterial, MaterialColor planksColor, SoundType plankSound, ToolType planksTool, Material barkMaterial, MaterialColor barkColor, SoundType barkSound, ItemGroup group) {
     WoodType woodType = WoodType.create(resourceName(name));
     RegistrationHelper.registerWoodType(woodType);
-    Item.Properties itemProps = new Item.Properties().group(group);
+    Item.Properties itemProps = new Item.Properties().tab(group);
 
     // many of these are already burnable via tags, but simplier to set them all here
     Function<Integer, Function<? super Block, ? extends BlockItem>> burnableItem;
     Function<? super Block, ? extends BlockItem> burnableTallItem;
     BiFunction<? super Block, ? super Block, ? extends BlockItem> burnableSignItem;
-    Item.Properties signProps = new Item.Properties().maxStackSize(16).group(group);
+    Item.Properties signProps = new Item.Properties().stacksTo(16).tab(group);
     if (barkMaterial.isFlammable()) {
       burnableItem     = burnTime -> block -> new BurnableBlockItem(block, itemProps, burnTime);
       burnableTallItem = block -> new BurnableTallBlockItem(block, itemProps, 200);
@@ -241,29 +241,29 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
 
     // planks
     Function<? super Block, ? extends BlockItem> burnable300 = burnableItem.apply(300);
-    AbstractBlock.Properties planksProps = AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(2.0f, 3.0f).sound(plankSound);
+    AbstractBlock.Properties planksProps = AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(2.0f, 3.0f).sound(plankSound);
     BuildingBlockObject planks = registerBuilding(name + "_planks", planksProps, block -> burnableItem.apply(block instanceof SlabBlock ? 150 : 300).apply(block));
-    ItemObject<FenceBlock> fence = register(name + "_fence", () -> new FenceBlock(Properties.from(planks.get())), burnable300);
+    ItemObject<FenceBlock> fence = register(name + "_fence", () -> new FenceBlock(Properties.copy(planks.get())), burnable300);
     // logs and wood
-    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(2.0f).sound(plankSound));
+    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(2.0f).sound(plankSound));
     ItemObject<RotatedPillarBlock> strippedLog = register("stripped_" + name + "_log", stripped, burnable300);
     ItemObject<RotatedPillarBlock> strippedWood = register("stripped_" + name + "_wood", stripped, burnable300);
     ItemObject<RotatedPillarBlock> log = register(name + "_log", () -> new StrippableLogBlock(strippedLog,
-      AbstractBlock.Properties.create(barkMaterial, state -> state.get(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? planksColor : barkColor)
-                              .harvestTool(ToolType.AXE).hardnessAndResistance(2.0f).sound(barkSound)), burnable300);
-    ItemObject<RotatedPillarBlock> wood = register(name + "_wood", () -> new StrippableLogBlock(strippedWood, AbstractBlock.Properties.create(barkMaterial, barkColor).harvestTool(ToolType.AXE).hardnessAndResistance(2.0f).sound(barkSound)), burnable300);
+      AbstractBlock.Properties.of(barkMaterial, state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? planksColor : barkColor)
+                              .harvestTool(ToolType.AXE).strength(2.0f).sound(barkSound)), burnable300);
+    ItemObject<RotatedPillarBlock> wood = register(name + "_wood", () -> new StrippableLogBlock(strippedWood, AbstractBlock.Properties.of(barkMaterial, barkColor).harvestTool(ToolType.AXE).strength(2.0f).sound(barkSound)), burnable300);
 
     // doors
-    ItemObject<DoorBlock> door = register(name + "_door", () -> new WoodenDoorBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(3.0F).sound(plankSound).notSolid()), burnableTallItem);
-    ItemObject<TrapDoorBlock> trapdoor = register(name + "_trapdoor", () -> new TrapDoorBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(3.0F).sound(SoundType.WOOD).notSolid().setAllowsSpawn(Blocks::neverAllowSpawn)), burnable300);
+    ItemObject<DoorBlock> door = register(name + "_door", () -> new WoodenDoorBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(3.0F).sound(plankSound).noOcclusion()), burnableTallItem);
+    ItemObject<TrapDoorBlock> trapdoor = register(name + "_trapdoor", () -> new TrapDoorBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(3.0F).sound(SoundType.WOOD).noOcclusion().isValidSpawn(Blocks::never)), burnable300);
     ItemObject<FenceGateBlock> fenceGate = register(name + "_fence_gate", () -> new FenceGateBlock(planksProps), burnable300);
     // redstone
-    AbstractBlock.Properties redstoneProps = AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(plankSound);
+    AbstractBlock.Properties redstoneProps = AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).noCollission().strength(0.5F).sound(plankSound);
     ItemObject<PressurePlateBlock> pressurePlate = register(name + "_pressure_plate", () -> new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), burnable300);
     ItemObject<WoodButtonBlock> button = register(name + "_button", () -> new WoodButtonBlock(redstoneProps), burnableItem.apply(100));
     // signs
-    RegistryObject<StandingSignBlock> standingSign = registerNoItem(name + "_sign", () -> new StandingSignBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).doesNotBlockMovement().hardnessAndResistance(1.0F).sound(plankSound), woodType));
-    RegistryObject<WallSignBlock> wallSign = registerNoItem(name + "_wall_sign", () -> new WallSignBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).doesNotBlockMovement().hardnessAndResistance(1.0F).sound(plankSound).lootFrom(standingSign), woodType));
+    RegistryObject<StandingSignBlock> standingSign = registerNoItem(name + "_sign", () -> new StandingSignBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).noCollission().strength(1.0F).sound(plankSound), woodType));
+    RegistryObject<WallSignBlock> wallSign = registerNoItem(name + "_wall_sign", () -> new WallSignBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).noCollission().strength(1.0F).sound(plankSound).lootFrom(standingSign), woodType));
     // tell mantle to inject these into the TE
     RegistrationHelper.registerSignBlock(standingSign);
     RegistrationHelper.registerSignBlock(wallSign);

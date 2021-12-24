@@ -45,7 +45,7 @@ public class RecipeHelper {
    * @return  Optional of the recipe, or empty if the recipe is missing
    */
   public static <C extends IRecipe<?>> Optional<C> getRecipe(RecipeManager manager, ResourceLocation name, Class<C> clazz) {
-    return manager.getRecipe(name).filter(clazz::isInstance).map(clazz::cast);
+    return manager.byKey(name).filter(clazz::isInstance).map(clazz::cast);
   }
 
   /**
@@ -59,7 +59,7 @@ public class RecipeHelper {
    * @return  List of recipes from the manager
    */
   public static <I extends IInventory, T extends IRecipe<I>, C extends T> List<C> getRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz) {
-    return manager.getRecipes(type).values().stream()
+    return manager.byType(type).values().stream()
                   .filter(clazz::isInstance)
                   .map(clazz::cast)
                   .collect(Collectors.toList());
@@ -77,7 +77,7 @@ public class RecipeHelper {
    * @return  Recipe list
    */
   public static <I extends IInventory, T extends IRecipe<I>, C extends T> List<C> getUIRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz, Predicate<? super C> filter) {
-    return manager.getRecipes(type).values().stream()
+    return manager.byType(type).values().stream()
                   .filter(clazz::isInstance)
                   .map(clazz::cast)
                   .filter(filter)
@@ -124,7 +124,7 @@ public class RecipeHelper {
    * @return  List of flattened recipes from the manager
    */
   public static <I extends IInventory, T extends IRecipe<I>, C> List<C> getJEIRecipes(RecipeManager manager, IRecipeType<T> type, Class<C> clazz) {
-    return getJEIRecipes(manager.getRecipes(type).values().stream(), clazz);
+    return getJEIRecipes(manager.byType(type).values().stream(), clazz);
   }
 
 
@@ -149,12 +149,12 @@ public class RecipeHelper {
    * @throws JsonSyntaxException if syntax is invalid
    */
   public static FluidStack deserializeFluidStack(JsonObject json) {
-    String fluidName = JSONUtils.getString(json, "fluid");
+    String fluidName = JSONUtils.getAsString(json, "fluid");
     Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
     if (fluid == null || fluid == Fluids.EMPTY) {
       throw new JsonSyntaxException("Unknown fluid " + fluidName);
     }
-    int amount = JSONUtils.getInt(json, "amount");
+    int amount = JSONUtils.getAsInt(json, "amount");
     return new FluidStack(fluid, amount);
   }
 
@@ -187,7 +187,7 @@ public class RecipeHelper {
    * @return  Item read from the buffer
    */
   public static Item readItem(PacketBuffer buffer) {
-    return Item.getItemById(buffer.readVarInt());
+    return Item.byId(buffer.readVarInt());
   }
 
   /**
@@ -212,6 +212,6 @@ public class RecipeHelper {
    * @param item    Item to write
    */
   public static void writeItem(PacketBuffer buffer, IItemProvider item) {
-    buffer.writeVarInt(Item.getIdFromItem(item.asItem()));
+    buffer.writeVarInt(Item.getId(item.asItem()));
   }
 }

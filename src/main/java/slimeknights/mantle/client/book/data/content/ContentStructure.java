@@ -54,17 +54,17 @@ public class ContentStructure extends PageContent {
 
     try {
       CompoundNBT compoundnbt = CompressedStreamTools.readCompressed(resource.getInputStream());
-      this.template.read(compoundnbt);
+      this.template.load(compoundnbt);
     } catch (IOException e) {
       e.printStackTrace();
       return;
     }
 
-    this.templateBlocks = this.template.blocks.get(0).func_237157_a_();
+    this.templateBlocks = this.template.palettes.get(0).blocks();
 
     for (int i = 0; i < this.templateBlocks.size(); i++) {
       Template.BlockInfo info = this.templateBlocks.get(i);
-      if (info.state == Blocks.AIR.getDefaultState()) {
+      if (info.state == Blocks.AIR.defaultBlockState()) {
         this.templateBlocks.remove(i);
         i--;
       } else if (info.state.isAir())

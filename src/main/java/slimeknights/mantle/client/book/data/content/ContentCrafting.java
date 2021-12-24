@@ -101,7 +101,7 @@ public class ContentCrafting extends PageContent {
   public void load() {
     super.load();
 
-    if (!StringUtils.isEmpty(recipe) && ResourceLocation.isResouceNameValid(recipe)) {
+    if (!StringUtils.isEmpty(recipe) && ResourceLocation.isValidResourceLocation(recipe)) {
       int w = 0, h = 0;
       switch (grid_size.toLowerCase()) {
         case "large":
@@ -112,14 +112,14 @@ public class ContentCrafting extends PageContent {
           break;
       }
 
-      assert Minecraft.getInstance().world != null;
-      IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
+      assert Minecraft.getInstance().level != null;
+      IRecipe<?> recipe = Minecraft.getInstance().level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
       if (recipe instanceof ICraftingRecipe) {
-        if (!recipe.canFit(w, h)) {
+        if (!recipe.canCraftInDimensions(w, h)) {
           throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
         }
 
-        result = IngredientData.getItemStackData(recipe.getRecipeOutput());
+        result = IngredientData.getItemStackData(recipe.getResultItem());
 
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
 
@@ -130,7 +130,7 @@ public class ContentCrafting extends PageContent {
 
           for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
-              grid[y][x] = IngredientData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getMatchingStacks()));
+              grid[y][x] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getItems()));
             }
           }
 
@@ -139,7 +139,7 @@ public class ContentCrafting extends PageContent {
 
         grid = new IngredientData[h][w];
         for (int i = 0; i < ingredients.size(); i++) {
-          grid[i / h][i % w] = IngredientData.getItemStackData(NonNullList.from(ItemStack.EMPTY, ingredients.get(i).getMatchingStacks()));
+          grid[i / h][i % w] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(i).getItems()));
         }
       }
     }

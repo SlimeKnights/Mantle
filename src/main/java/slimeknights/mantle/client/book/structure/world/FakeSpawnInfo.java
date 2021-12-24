@@ -16,17 +16,17 @@ public class FakeSpawnInfo implements ISpawnWorldInfo {
   private float spawnAngle;
 
   @Override
-  public void setSpawnX(int x) {
+  public void setXSpawn(int x) {
     this.spawnX = x;
   }
 
   @Override
-  public void setSpawnY(int y) {
+  public void setYSpawn(int y) {
     this.spawnY = y;
   }
 
   @Override
-  public void setSpawnZ(int z) {
+  public void setZSpawn(int z) {
     this.spawnZ = z;
   }
 
@@ -36,17 +36,17 @@ public class FakeSpawnInfo implements ISpawnWorldInfo {
   }
 
   @Override
-  public int getSpawnX() {
+  public int getXSpawn() {
     return this.spawnX;
   }
 
   @Override
-  public int getSpawnY() {
+  public int getYSpawn() {
     return this.spawnY;
   }
 
   @Override
-  public int getSpawnZ() {
+  public int getZSpawn() {
     return this.spawnZ;
   }
 
@@ -86,7 +86,7 @@ public class FakeSpawnInfo implements ISpawnWorldInfo {
   }
 
   @Override
-  public GameRules getGameRulesInstance() {
+  public GameRules getGameRules() {
     return RULES;
   }
 

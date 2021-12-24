@@ -36,13 +36,13 @@ public class RetexturedLootFunction extends LootFunction {
   }
 
   @Override
-  public Set<LootParameter<?>> getRequiredParameters() {
+  public Set<LootParameter<?>> getReferencedContextParams() {
     return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
   }
 
   @Override
-  protected ItemStack doApply(ItemStack stack, LootContext context) {
-    TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
+  protected ItemStack run(ItemStack stack, LootContext context) {
+    TileEntity te = context.getParamOrNull(LootParameters.BLOCK_ENTITY);
     if (te instanceof IRetexturedTileEntity) {
       RetexturedBlockItem.setTexture(stack, ((IRetexturedTileEntity)te).getTextureName());
     } else {
@@ -53,7 +53,7 @@ public class RetexturedLootFunction extends LootFunction {
   }
 
   @Override
-  public LootFunctionType getFunctionType() {
+  public LootFunctionType getType() {
     return MantleLoot.RETEXTURED_FUNCTION;
   }
 

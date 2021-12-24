@@ -31,7 +31,7 @@ public class GenericRegisteredSerializer<T extends IJsonSerializable> implements
 
   @Override
   public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-    JsonObject object = JSONUtils.getJsonObject(json, "transformer");
+    JsonObject object = JSONUtils.convertToJsonObject(json, "transformer");
     ResourceLocation type = JsonHelper.getResourceLocation(object, "type");
     JsonDeserializer<? extends T> deserializer = deserializers.get(type);
     if (deserializer == null) {
@@ -46,8 +46,8 @@ public class GenericRegisteredSerializer<T extends IJsonSerializable> implements
     if (!serialized.has("type")) {
       throw new IllegalArgumentException("Invalid serialized sprite transformer, missing type");
     }
-    String typeStr = JSONUtils.getString(serialized, "type");
-    ResourceLocation typeRL = ResourceLocation.tryCreate(typeStr);
+    String typeStr = JSONUtils.getAsString(serialized, "type");
+    ResourceLocation typeRL = ResourceLocation.tryParse(typeStr);
     if (typeRL == null) {
       throw new IllegalArgumentException("Invalid sprite transformer type '" + typeStr + '\'');
     }

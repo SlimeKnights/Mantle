@@ -20,20 +20,20 @@ public class UpdateLecternPagePacket implements IThreadsafePacket {
   private final String page;
   public UpdateLecternPagePacket(PacketBuffer buffer) {
     this.pos = buffer.readBlockPos();
-    this.page = buffer.readString(100);
+    this.page = buffer.readUtf(100);
   }
 
   @Override
   public void encode(PacketBuffer buf) {
     buf.writeBlockPos(pos);
-    buf.writeString(page);
+    buf.writeUtf(page);
   }
 
   @Override
   public void handleThreadsafe(Context context) {
     PlayerEntity player = context.getSender();
     if (player != null && this.page != null) {
-      World world = player.getEntityWorld();
+      World world = player.getCommandSenderWorld();
       TileEntityHelper.getTile(LecternTileEntity.class, world, this.pos).ifPresent(te -> {
         ItemStack stack = te.getBook();
         if (!stack.isEmpty()) {

@@ -14,28 +14,28 @@ public interface IReadOnlyInventory extends IInventory {
   /** @deprecated unsupported method */
   @Deprecated
   @Override
-  default ItemStack decrStackSize(int index, int count) {
+  default ItemStack removeItem(int index, int count) {
     throw new UnsupportedOperationException();
   }
 
   /** @deprecated unsupported method */
   @Deprecated
   @Override
-  default ItemStack removeStackFromSlot(int index) {
+  default ItemStack removeItemNoUpdate(int index) {
     throw new UnsupportedOperationException();
   }
 
   /** @deprecated unsupported method */
   @Deprecated
   @Override
-  default void setInventorySlotContents(int index, ItemStack stack) {
+  default void setItem(int index, ItemStack stack) {
     throw new UnsupportedOperationException();
   }
 
   /** @deprecated unsupported method */
   @Deprecated
   @Override
-  default void clear() {
+  default void clearContent() {
     throw new UnsupportedOperationException();
   }
 
@@ -44,12 +44,12 @@ public interface IReadOnlyInventory extends IInventory {
   /** @deprecated unused method */
   @Deprecated
   @Override
-  default void markDirty() {}
+  default void setChanged() {}
 
   /** @deprecated unused method */
   @Deprecated
   @Override
-  default boolean isUsableByPlayer(PlayerEntity player) {
+  default boolean stillValid(PlayerEntity player) {
     return true;
   }
 }

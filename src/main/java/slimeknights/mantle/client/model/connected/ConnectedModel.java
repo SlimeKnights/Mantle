@@ -95,8 +95,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
         continue;
       }
       RenderMaterial base = owner.resolveTexture(name);
-      ResourceLocation atlas = base.getAtlasLocation();
-      ResourceLocation texture = base.getTextureLocation();
+      ResourceLocation atlas = base.atlasLocation();
+      ResourceLocation texture = base.texture();
       String namespace = texture.getNamespace();
       String path = texture.getPath();
 
@@ -175,8 +175,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       switch(direction) {
         case NORTH: return Direction.UP;
         case SOUTH: return Direction.DOWN;
-        case EAST: return rotation.rotateYCCW();
-        case WEST: return rotation.rotateY();
+        case EAST: return rotation.getCounterClockWise();
+        case WEST: return rotation.getClockWise();
       }
       throw new IllegalArgumentException("Direction must be horizontal axis");
     }
@@ -220,13 +220,13 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       switch (uv.rotation) {
         // 90 degrees
         case 90:
-          transform = transform.compose(Direction::rotateY);
+          transform = transform.compose(Direction::getClockWise);
           break;
         case 180:
           transform = transform.compose(Direction::getOpposite);
           break;
         case 270:
-          transform = transform.compose(Direction::rotateYCCW);
+          transform = transform.compose(Direction::getCounterClockWise);
           break;
       }
 
@@ -287,9 +287,9 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     private String getTextureSuffix(String texture, byte connections, Function<Direction,Direction> transform) {
       int key = 0;
       for (Direction dir : Plane.HORIZONTAL) {
-        int flag = 1 << transform.apply(dir).getIndex();
+        int flag = 1 << transform.apply(dir).get3DDataValue();
         if ((connections & flag) == flag) {
-          key |= 1 << dir.getHorizontalIndex();
+          key |= 1 << dir.get2DDataValue();
         }
       }
       // if empty, do not prefix
@@ -312,7 +312,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       List<BlockPart> elements = Lists.newArrayList();
       for (BlockPart part : parent.model.getElements()) {
         Map<Direction,BlockPartFace> partFaces = new EnumMap<>(Direction.class);
-        for (Map.Entry<Direction,BlockPartFace> entry : part.mapFaces.entrySet()) {
+        for (Map.Entry<Direction,BlockPartFace> entry : part.faces.entrySet()) {
           // first, determine which texture to use on this side
           Direction dir = entry.getKey();
           BlockPartFace original = entry.getValue();
@@ -323,18 +323,18 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
           String connectedTexture = getConnectedName(original.texture);
           if (!connectedTexture.isEmpty()) {
             // if empty string, we can keep the old face
-            String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, original.blockFaceUV));
+            String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, original.uv));
             if (!suffix.isEmpty()) {
               // suffix the texture
               String fullTexture = connectedTexture + suffix;
-              face = new BlockPartFace(original.cullFace, original.tintIndex, "#" + fullTexture, original.blockFaceUV);
+              face = new BlockPartFace(original.cullForDirection, original.tintIndex, "#" + fullTexture, original.uv);
             }
           }
           // add the updated face
           partFaces.put(dir, face);
         }
         // add the updated parts into a new model part
-        elements.add(new BlockPart(part.positionFrom, part.positionTo, partFaces, part.partRotation, part.shade));
+        elements.add(new BlockPart(part.from, part.to, partFaces, part.rotation, part.shade));
       }
 
       // bake the model
@@ -350,7 +350,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       byte connections = 0;
       for (Direction dir : Direction.values()) {
         if (predicate.test(dir)) {
-          connections |= 1 << dir.getIndex();
+          connections |= 1 << dir.get3DDataValue();
         }
       }
       return connections;
@@ -371,7 +371,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
 
       // gather connections data
       TransformationMatrix rotation = transforms.getRotation();
-      data.setData(CONNECTIONS, getConnections((dir) -> parent.sides.contains(dir) && parent.connectionPredicate.test(state, world.getBlockState(pos.offset(rotation.rotateTransform(dir))))));
+      data.setData(CONNECTIONS, getConnections((dir) -> parent.sides.contains(dir) && parent.connectionPredicate.test(state, world.getBlockState(pos.relative(rotation.rotateTransform(dir))))));
       return data;
     }
 
@@ -412,7 +412,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
             return false;
           }
           BooleanProperty prop = IMultipartConnectedBlock.CONNECTED_DIRECTIONS.get(rotation.rotateTransform(dir));
-          return state.hasProperty(prop) && state.get(prop);
+          return state.hasProperty(prop) && state.getValue(prop);
         });
       }
       // get quads using connections
@@ -433,10 +433,10 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       SimpleBlockModel model = SimpleBlockModel.deserialize(context, json);
 
       // root object for all model data
-      JsonObject data = JSONUtils.getJsonObject(json, "connection");
+      JsonObject data = JSONUtils.getAsJsonObject(json, "connection");
 
       // need at least one connected texture
-      JsonObject connected = JSONUtils.getJsonObject(data, "textures");
+      JsonObject connected = JSONUtils.getAsJsonObject(data, "textures");
       if (connected.size() == 0) {
         throw new JsonSyntaxException("Must have at least one texture in connected");
       }
@@ -453,10 +453,10 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       // get a list of sides to pay attention to
       Set<Direction> sides;
       if (data.has("sides")) {
-        JsonArray array = JSONUtils.getJsonArray(data, "sides");
+        JsonArray array = JSONUtils.getAsJsonArray(data, "sides");
         sides = EnumSet.noneOf(Direction.class);
         for (int i = 0; i < array.size(); i++) {
-          String side = JSONUtils.getString(array.get(i), "sides[" + i + "]");
+          String side = JSONUtils.convertToString(array.get(i), "sides[" + i + "]");
           Direction dir = Direction.byName(side);
           if (dir == null) {
             throw new JsonParseException("Invalid side " + side);

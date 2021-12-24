@@ -28,7 +28,7 @@ public class CraftingCustomSlot extends CraftingResultSlot {
   @Override
   public ItemStack onTake(PlayerEntity playerIn, ItemStack stack) {
     BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
-    this.onCrafting(stack);
+    this.checkTakeAchievements(stack);
 
     this.callback.onCrafting(playerIn, stack, this.craftMatrix);
 

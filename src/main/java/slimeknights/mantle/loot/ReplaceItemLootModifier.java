@@ -44,13 +44,13 @@ public class ReplaceItemLootModifier extends LootModifier {
     this.original = original;
     this.replacement = replacement;
     this.functions = functions;
-    this.combinedFunctions = LootFunctionManager.combine(functions);
+    this.combinedFunctions = LootFunctionManager.compose(functions);
   }
 
   /** @deprecated use {@link #ReplaceItemLootModifier(ILootCondition[], Ingredient, ItemOutput, ILootFunction[])} */
   @Deprecated
   protected ReplaceItemLootModifier(ILootCondition[] conditionsIn, Item original, Item replacement) {
-    this(conditionsIn, Ingredient.fromItems(original), ItemOutput.fromItem(replacement), new ILootFunction[0]);
+    this(conditionsIn, Ingredient.of(original), ItemOutput.fromItem(replacement), new ILootFunction[0]);
   }
 
   /** Creates a builder to create a loot modifier */
@@ -76,15 +76,15 @@ public class ReplaceItemLootModifier extends LootModifier {
       Ingredient original;
       JsonElement element = JsonHelper.getElement(object, "original");
       if (element.isJsonPrimitive()) {
-        original = Ingredient.fromItems(RecipeHelper.deserializeItem(element.getAsString(), "original", Item.class));
+        original = Ingredient.of(RecipeHelper.deserializeItem(element.getAsString(), "original", Item.class));
       } else {
-        original = Ingredient.deserialize(element);
+        original = Ingredient.fromJson(element);
       }
       ItemOutput replacement = ItemOutput.fromJson(JsonHelper.getElement(object, "replacement"));
       // functions
       ILootFunction[] functions;
       if (object.has("functions")) {
-        functions = AddEntryLootModifier.GSON.fromJson(JSONUtils.getJsonArray(object, "functions"), ILootFunction[].class);
+        functions = AddEntryLootModifier.GSON.fromJson(JSONUtils.getAsJsonArray(object, "functions"), ILootFunction[].class);
       } else {
         functions = new ILootFunction[0];
       }
@@ -94,7 +94,7 @@ public class ReplaceItemLootModifier extends LootModifier {
     @Override
     public JsonObject write(ReplaceItemLootModifier instance) {
       JsonObject object = makeConditions(instance.conditions);
-      object.add("original", instance.original.serialize());
+      object.add("original", instance.original.toJson());
       object.add("replacement", instance.replacement.serialize());
       if (instance.functions.length > 0) {
         object.add("functions", AddEntryLootModifier.GSON.toJsonTree(instance.functions, ILootFunction[].class));

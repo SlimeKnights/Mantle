@@ -31,7 +31,7 @@ public class ViewTagCommand {
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
     subCommand.requires(source -> MantleCommand.requiresDebugInfoOrOp(source, MantleCommand.PERMISSION_GAME_COMMANDS))
               .then(Commands.argument("type", TagCollectionArgument.collection())
-                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.VALID_TAGS)
+                            .then(Commands.argument("name", ResourceLocationArgument.id()).suggests(MantleCommand.VALID_TAGS)
                                           .executes(ViewTagCommand::run)));
   }
 
@@ -44,23 +44,23 @@ public class ViewTagCommand {
   private static int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
     TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
-    ITag<?> tag = result.getCollection().get(name);
+    ITag<?> tag = result.getCollection().getTag(name);
     if (tag != null) {
       // start building output message
       IFormattableTextComponent output = new TranslationTextComponent("command.mantle.view_tag.success", result.getName(), name);
-      Collection<?> values = tag.getAllElements();
+      Collection<?> values = tag.getValues();
 
       // if no values, print empty
       if (values.isEmpty()) {
-        output.appendString("\n* ").append(EMPTY);
+        output.append("\n* ").append(EMPTY);
       } else {
         values.stream()
               .filter(value -> value instanceof IForgeRegistryEntry)
               .map(value -> (IForgeRegistryEntry<?>) value)
               .sorted((a, b) -> Objects.requireNonNull(a.getRegistryName()).compareNamespaced(Objects.requireNonNull(b.getRegistryName())))
-              .forEach(value -> output.appendString("\n* " + Objects.requireNonNull(value.getRegistryName()).toString()));
+              .forEach(value -> output.append("\n* " + Objects.requireNonNull(value.getRegistryName()).toString()));
       }
-      context.getSource().sendFeedback(output, true);
+      context.getSource().sendSuccess(output, true);
       return values.size();
     }
     throw TAG_NOT_FOUND.create(result.getName(), name);

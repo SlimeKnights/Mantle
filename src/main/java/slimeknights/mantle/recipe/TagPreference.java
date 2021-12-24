@@ -32,8 +32,8 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
   /** Map of each tag type to the preference instance for that type */
   private static final Map<Class<?>, TagPreference<?>> PREFERENCE_MAP = new IdentityHashMap<>();
   // cached tag supplier lambdas
-  private static final Supplier<ITagCollection<Item>> ITEM_TAG_COLLECTION_SUPPLIER = () -> TagCollectionManager.getManager().getItemTags();
-  private static final Supplier<ITagCollection<Fluid>> FLUID_TAG_COLLECTION_SUPPLIER = () -> TagCollectionManager.getManager().getFluidTags();
+  private static final Supplier<ITagCollection<Item>> ITEM_TAG_COLLECTION_SUPPLIER = () -> TagCollectionManager.getInstance().getItems();
+  private static final Supplier<ITagCollection<Fluid>> FLUID_TAG_COLLECTION_SUPPLIER = () -> TagCollectionManager.getInstance().getFluids();
 
   /** Comparator to decide which registry entry is preferred */
   private static final Comparator<IForgeRegistryEntry<?>> ENTRY_COMPARATOR = (a, b) -> {
@@ -105,7 +105,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
     if (tag instanceof IOptionalNamedTag && ((IOptionalNamedTag<?>) tag).isDefaulted()) {
       return Optional.empty();
     }
-    List<? extends T> elements = tag.getAllElements();
+    List<? extends T> elements = tag.getValues();
     if (elements.isEmpty()) {
       return Optional.empty();
     }
@@ -128,7 +128,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
   public Optional<T> getPreference(ITag<T> tag) {
     // fetch cached value if we have one
     try {
-      ResourceLocation tagName = collection.get().getValidatedIdFromTag(tag);
+      ResourceLocation tagName = collection.get().getIdOrThrow(tag);
       return preferenceCache.computeIfAbsent(tagName, name -> getUncachedPreference(tag));
     } catch (Exception e) {
       Mantle.logger.warn("Attempting to get tag preference for unregistered tag {}", tag, e);

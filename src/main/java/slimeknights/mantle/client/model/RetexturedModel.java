@@ -133,7 +133,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
           }
           ImmutableSet.Builder<String> builder = ImmutableSet.builder();
           for (int i = 0; i < array.size(); i++) {
-            builder.add(JSONUtils.getString(array.get(i), "retextured[" + i + "]"));
+            builder.add(JSONUtils.convertToString(array.get(i), "retextured[" + i + "]"));
           }
           return builder.build();
         }
@@ -235,7 +235,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     @Override
     public boolean isTexturePresent(String name) {
       if (retextured.contains(name)) {
-        return !MissingTextureSprite.getLocation().equals(texture.getTextureLocation());
+        return !MissingTextureSprite.getLocation().equals(texture.texture());
       }
       return super.isTexturePresent(name);
     }
@@ -255,7 +255,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
 
     @Nullable
     @Override
-    public IBakedModel getOverrideModel(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+    public IBakedModel resolve(IBakedModel originalModel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
       if (stack.isEmpty() || !stack.hasTag()) {
         return originalModel;
       }

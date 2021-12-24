@@ -96,7 +96,7 @@ public class NetworkWrapper {
    */
   public void sendVanillaPacket(IPacket<?> packet, Entity player) {
     if (player instanceof ServerPlayerEntity && ((ServerPlayerEntity) player).connection != null) {
-      ((ServerPlayerEntity) player).connection.sendPacket(packet);
+      ((ServerPlayerEntity) player).connection.send(packet);
     }
   }
 
@@ -118,7 +118,7 @@ public class NetworkWrapper {
    */
   public void sendTo(Object msg, ServerPlayerEntity player) {
     if (!(player instanceof FakePlayer)) {
-      network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+      network.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
   }
 

@@ -15,19 +15,19 @@ public class SwingArmPacket implements IThreadsafePacket {
   private final Hand hand;
 
   public SwingArmPacket(Entity entity, Hand hand) {
-    this.entityId = entity.getEntityId();
+    this.entityId = entity.getId();
     this.hand = hand;
   }
 
   public SwingArmPacket(PacketBuffer buffer) {
     this.entityId = buffer.readVarInt();
-    this.hand = buffer.readEnumValue(Hand.class);
+    this.hand = buffer.readEnum(Hand.class);
   }
 
   @Override
   public void encode(PacketBuffer buffer) {
     buffer.writeVarInt(entityId);
-    buffer.writeEnumValue(hand);
+    buffer.writeEnum(hand);
   }
 
   @Override
@@ -37,9 +37,9 @@ public class SwingArmPacket implements IThreadsafePacket {
 
   private static class HandleClient {
     private static void handle(SwingArmPacket packet) {
-      World world = Minecraft.getInstance().world;
+      World world = Minecraft.getInstance().level;
       if (world != null) {
-        Entity entity = world.getEntityByID(packet.entityId);
+        Entity entity = world.getEntity(packet.entityId);
         if (entity instanceof LivingEntity) {
           OffhandCooldownTracker.swingHand((LivingEntity) entity, packet.hand, false);
         }

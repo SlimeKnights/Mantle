@@ -95,19 +95,19 @@ public class ContentSmelting extends PageContent {
   public void load() {
     super.load();
 
-    if (!StringUtils.isEmpty(this.recipe) && ResourceLocation.isResouceNameValid(this.recipe)) {
-      IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
+    if (!StringUtils.isEmpty(this.recipe) && ResourceLocation.isValidResourceLocation(this.recipe)) {
+      IRecipe<?> recipe = Minecraft.getInstance().level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
 
       if (recipe instanceof AbstractCookingRecipe) {
-        this.input = IngredientData.getItemStackData(NonNullList.from(ItemStack.EMPTY, recipe.getIngredients().get(0).getMatchingStacks()));
-        this.cookTime = ((AbstractCookingRecipe) recipe).getCookTime();
-        this.result = IngredientData.getItemStackData(recipe.getRecipeOutput());
+        this.input = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, recipe.getIngredients().get(0).getItems()));
+        this.cookTime = ((AbstractCookingRecipe) recipe).getCookingTime();
+        this.result = IngredientData.getItemStackData(recipe.getResultItem());
       }
     }
   }
 
   static {
-    FUELS = NonNullList.from(ItemStack.EMPTY,
+    FUELS = NonNullList.of(ItemStack.EMPTY,
       new ItemStack(Blocks.OAK_SLAB),
       new ItemStack(Blocks.SPRUCE_SLAB),
       new ItemStack(Blocks.BIRCH_SLAB),

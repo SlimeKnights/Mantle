@@ -14,7 +14,7 @@ public class ValidZeroIntReference extends IntReferenceHolder {
   private final int idx;
 
   public ValidZeroIntReference(IIntArray data, int idx) {
-    this.lastKnownValue = Integer.MIN_VALUE;
+    this.prevValue = Integer.MIN_VALUE;
     this.data = data;
     this.idx = idx;
   }
@@ -35,7 +35,7 @@ public class ValidZeroIntReference extends IntReferenceHolder {
    * @param array     Array source
    */
   public static void trackIntArray(Consumer<IntReferenceHolder> consumer, IIntArray array) {
-    for(int i = 0; i < array.size(); ++i) {
+    for(int i = 0; i < array.getCount(); ++i) {
       consumer.accept(new ValidZeroIntReference(array, i));
     }
   }

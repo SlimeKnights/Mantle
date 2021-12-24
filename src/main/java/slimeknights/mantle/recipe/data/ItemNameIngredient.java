@@ -48,7 +48,7 @@ public class ItemNameIngredient extends Ingredient {
   }
 
   @Override
-  public JsonElement serialize() {
+  public JsonElement toJson() {
     if (names.size() == 1) {
       return forName(names.get(0));
     }

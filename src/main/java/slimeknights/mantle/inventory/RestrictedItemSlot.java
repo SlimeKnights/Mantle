@@ -15,7 +15,7 @@ public class RestrictedItemSlot extends Slot {
   }
 
   @Override
-  public boolean isItemValid(ItemStack stack) {
+  public boolean mayPlace(ItemStack stack) {
     return !stack.isEmpty() && stack.getItem() == this.allowedItem;
   }
 }

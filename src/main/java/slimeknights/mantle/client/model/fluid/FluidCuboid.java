@@ -132,14 +132,14 @@ public class FluidCuboid {
     }
 
     Map<Direction, FluidFace> faces = new EnumMap<>(Direction.class);
-    JsonObject object = JSONUtils.getJsonObject(json, "faces");
+    JsonObject object = JSONUtils.getAsJsonObject(json, "faces");
     for (Entry<String, JsonElement> entry : object.entrySet()) {
       // if the direction is a face, add it
       String name = entry.getKey();
       Direction dir = Direction.byName(name);
       if (dir != null) {
-        JsonObject face = JSONUtils.getJsonObject(entry.getValue(), name);
-        boolean flowing = JSONUtils.getBoolean(face, "flowing", false);
+        JsonObject face = JSONUtils.convertToJsonObject(entry.getValue(), name);
+        boolean flowing = JSONUtils.getAsBoolean(face, "flowing", false);
         int rotation = ModelHelper.getRotation(face, "rotation");
         faces.put(dir, new FluidFace(flowing, rotation));
       } else {

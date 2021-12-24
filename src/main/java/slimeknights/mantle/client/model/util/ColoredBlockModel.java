@@ -72,8 +72,8 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * @param location      Model location
    */
   public static void bakePart(SimpleBakedModel.Builder builder, IModelConfiguration owner, BlockPart part, int color, int luminosity, IModelTransform transform, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
-    for (Direction direction : part.mapFaces.keySet()) {
-      BlockPartFace face = part.mapFaces.get(direction);
+    for (Direction direction : part.faces.keySet()) {
+      BlockPartFace face = part.faces.get(direction);
       // ensure the name is not prefixed (it always is)
       String texture = face.texture;
       if (texture.charAt(0) == '#') {
@@ -83,10 +83,10 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
       TextureAtlasSprite sprite = spriteGetter.apply(owner.resolveTexture(texture));
       BakedQuad quad = bakeFace(part, face, sprite, direction, transform, color, luminosity, location);
       // apply cull face
-      if (face.cullFace == null) {
-        builder.addGeneralQuad(quad);
+      if (face.cullForDirection == null) {
+        builder.addUnculledFace(quad);
       } else {
-        builder.addFaceQuad(Direction.rotateFace(transform.getRotation().getMatrix(), face.cullFace), quad);
+        builder.addCulledFace(Direction.rotate(transform.getRotation().getMatrix(), face.cullForDirection), quad);
       }
     }
   }
@@ -104,7 +104,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
   public static IBakedModel bakeModel(IModelConfiguration owner, List<BlockPart> elements, List<ColorData> colorData, IModelTransform transform, ItemOverrideList overrides, Function<RenderMaterial,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
     // iterate parts, adding to the builder
     TextureAtlasSprite particle = spriteGetter.apply(owner.resolveTexture("particle"));
-    SimpleBakedModel.Builder builder = new SimpleBakedModel.Builder(owner, overrides).setTexture(particle);
+    SimpleBakedModel.Builder builder = new SimpleBakedModel.Builder(owner, overrides).particle(particle);
     int size = elements.size();
     for (int i = 0; i < size; i++) {
       BlockPart part = elements.get(i);
@@ -128,8 +128,8 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
 
     /** Parses the color data from JSON */
     public static ColorData fromJson(JsonObject json) {
-      int color = JsonHelper.parseColor(JSONUtils.getString(json, "color", ""));
-      int luminosity = JSONUtils.getInt(json, "luminosity", 0);
+      int color = JsonHelper.parseColor(JSONUtils.getAsString(json, "color", ""));
+      int luminosity = JSONUtils.getAsInt(json, "luminosity", 0);
       return new ColorData(color, luminosity);
     }
   }
@@ -162,7 +162,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * @param location    Model location for errors
    */
   public static BakedQuad bakeFace(BlockPart part, BlockPartFace face, TextureAtlasSprite sprite, Direction facing, IModelTransform transform, int color, int luminosity, ResourceLocation location) {
-    return bakeQuad(part.positionFrom, part.positionTo, face, sprite, facing, transform, part.partRotation, part.shade, color, luminosity, location);
+    return bakeQuad(part.from, part.to, face, sprite, facing, transform, part.rotation, part.shade, color, luminosity, location);
   }
 
   /**
@@ -183,24 +183,24 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
   public static BakedQuad bakeQuad(Vector3f posFrom, Vector3f posTo, BlockPartFace face, TextureAtlasSprite sprite,
                                    Direction facing, IModelTransform transform, @Nullable BlockPartRotation partRotation,
                                    boolean shade, int color, int luminosity, ResourceLocation location) {
-    BlockFaceUV faceUV = face.blockFaceUV;
-    if (transform.isUvLock()) {
-      faceUV = FaceBakery.updateFaceUV(face.blockFaceUV, facing, transform.getRotation(), location);
+    BlockFaceUV faceUV = face.uv;
+    if (transform.isUvLocked()) {
+      faceUV = FaceBakery.recomputeUVs(face.uv, facing, transform.getRotation(), location);
     }
     float[] originalUV = new float[faceUV.uvs.length];
     System.arraycopy(faceUV.uvs, 0, originalUV, 0, originalUV.length);
-    float shrinkRatio = sprite.getUvShrinkRatio();
+    float shrinkRatio = sprite.uvShrinkRatio();
     float u = (faceUV.uvs[0] + faceUV.uvs[0] + faceUV.uvs[2] + faceUV.uvs[2]) / 4.0F;
     float v = (faceUV.uvs[1] + faceUV.uvs[1] + faceUV.uvs[3] + faceUV.uvs[3]) / 4.0F;
     faceUV.uvs[0] = MathHelper.lerp(shrinkRatio, faceUV.uvs[0], u);
     faceUV.uvs[2] = MathHelper.lerp(shrinkRatio, faceUV.uvs[2], u);
     faceUV.uvs[1] = MathHelper.lerp(shrinkRatio, faceUV.uvs[1], v);
     faceUV.uvs[3] = MathHelper.lerp(shrinkRatio, faceUV.uvs[3], v);
-    int[] vertexData = makeQuadVertexData(faceUV, sprite, facing, FACE_BAKERY.getPositionsDiv16(posFrom, posTo), transform.getRotation(), partRotation, color, luminosity);
-    Direction direction = FaceBakery.getFacingFromVertexData(vertexData);
+    int[] vertexData = makeQuadVertexData(faceUV, sprite, facing, FACE_BAKERY.setupShape(posFrom, posTo), transform.getRotation(), partRotation, color, luminosity);
+    Direction direction = FaceBakery.calculateFacing(vertexData);
     System.arraycopy(originalUV, 0, faceUV.uvs, 0, originalUV.length);
     if (partRotation == null) {
-      FACE_BAKERY.applyFacing(vertexData, direction);
+      FACE_BAKERY.recalculateWinding(vertexData, direction);
     }
     ForgeHooksClient.fillNormal(vertexData, direction);
     return new BakedQuad(vertexData, face.tintIndex, direction, sprite, shade);
@@ -217,10 +217,10 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
 
   /** Clone of the vanilla method with 2 extra parameters */
   private static void fillVertexData(int[] vertexData, int vertexIndex, Direction facing, BlockFaceUV blockFaceUVIn, float[] posDiv16, TextureAtlasSprite sprite, TransformationMatrix rotationIn, @Nullable BlockPartRotation partRotation, int color, int luminosity) {
-    VertexInformation vertexInfo = FaceDirection.getFacing(facing).getVertexInformation(vertexIndex);
-    Vector3f vector3f = new Vector3f(posDiv16[vertexInfo.xIndex], posDiv16[vertexInfo.yIndex], posDiv16[vertexInfo.zIndex]);
-    FACE_BAKERY.rotatePart(vector3f, partRotation);
-    FACE_BAKERY.rotateVertex(vector3f, rotationIn);
+    VertexInformation vertexInfo = FaceDirection.fromFacing(facing).getVertexInfo(vertexIndex);
+    Vector3f vector3f = new Vector3f(posDiv16[vertexInfo.xFace], posDiv16[vertexInfo.yFace], posDiv16[vertexInfo.zFace]);
+    FACE_BAKERY.applyElementRotation(vector3f, partRotation);
+    FACE_BAKERY.applyModelRotation(vector3f, rotationIn);
     fillVertexData(vertexData, vertexIndex, vector3f, sprite, blockFaceUVIn, color, luminosity);
   }
 
@@ -240,14 +240,14 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
   private static void fillVertexData(int[] vertexData, int vertexIndex, Vector3f vector, TextureAtlasSprite sprite, BlockFaceUV blockFaceUV, int color, int luminosity) {
     int i = vertexIndex * 8;
     // XYZ - 3 ints
-    vertexData[i] = Float.floatToRawIntBits(vector.getX());
-    vertexData[i + 1] = Float.floatToRawIntBits(vector.getY());
-    vertexData[i + 2] = Float.floatToRawIntBits(vector.getZ());
+    vertexData[i] = Float.floatToRawIntBits(vector.x());
+    vertexData[i + 1] = Float.floatToRawIntBits(vector.y());
+    vertexData[i + 2] = Float.floatToRawIntBits(vector.z());
     // color - 1 int in ABGR format, we use ARGB format as that is used everywhere else. vanilla uses -1 here
     vertexData[i + 3] = swapColorRedBlue(color);
     // UV - 2 ints
-    vertexData[i + 4] = Float.floatToRawIntBits(sprite.getInterpolatedU((double)blockFaceUV.getVertexU(vertexIndex) * .999 + blockFaceUV.getVertexU((vertexIndex + 2) % 4) * .001));
-    vertexData[i + 5] = Float.floatToRawIntBits(sprite.getInterpolatedV((double)blockFaceUV.getVertexV(vertexIndex) * .999 + blockFaceUV.getVertexV((vertexIndex + 2) % 4) * .001));
+    vertexData[i + 4] = Float.floatToRawIntBits(sprite.getU((double)blockFaceUV.getU(vertexIndex) * .999 + blockFaceUV.getU((vertexIndex + 2) % 4) * .001));
+    vertexData[i + 5] = Float.floatToRawIntBits(sprite.getV((double)blockFaceUV.getV(vertexIndex) * .999 + blockFaceUV.getV((vertexIndex + 2) % 4) * .001));
     // light UV - 1 ints, just setting block light here rather than block and sky. vanilla uses 0 here
     vertexData[i + 6] = (luminosity << 4);
   }

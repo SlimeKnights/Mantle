@@ -9,8 +9,8 @@ import net.minecraft.item.Items;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemProperties {
   /** Properties for a standard bucket item */
-  public static final Item.Properties BUCKET_PROPS = new Item.Properties().containerItem(Items.BUCKET).maxStackSize(1).group(ItemGroup.MISC);
+  public static final Item.Properties BUCKET_PROPS = new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1).tab(ItemGroup.TAB_MISC);
 
   /** Item property used for spawn egg items */
-  public static final Item.Properties EGG_PROPS = new Item.Properties().group(ItemGroup.MISC);
+  public static final Item.Properties EGG_PROPS = new Item.Properties().tab(ItemGroup.TAB_MISC);
 }

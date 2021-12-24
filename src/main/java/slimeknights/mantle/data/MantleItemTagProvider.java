@@ -29,12 +29,12 @@ public class MantleItemTagProvider extends TagsProvider<Item> {
   }
 
   @Override
-  protected void registerTags() {
-    this.getOrCreateBuilder(MantleTags.Items.OFFHAND_COOLDOWN);
+  protected void addTags() {
+    this.tag(MantleTags.Items.OFFHAND_COOLDOWN);
   }
 
   @Override
-  protected Path makePath(ResourceLocation id) {
+  protected Path getPath(ResourceLocation id) {
     return this.generator.getOutputFolder().resolve("data/" + id.getNamespace() + "/tags/items/" + id.getPath() + ".json");
   }
 }

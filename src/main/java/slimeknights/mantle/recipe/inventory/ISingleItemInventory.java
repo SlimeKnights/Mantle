@@ -20,7 +20,7 @@ public interface ISingleItemInventory extends IReadOnlyInventory {
   /** @deprecated use {{@link #getStack()}} */
   @Deprecated
   @Override
-  default ItemStack getStackInSlot(int index) {
+  default ItemStack getItem(int index) {
     return index == 0 ? getStack() : ItemStack.EMPTY;
   }
 
@@ -32,7 +32,7 @@ public interface ISingleItemInventory extends IReadOnlyInventory {
   /** @deprecated always 1, not useful */
   @Deprecated
   @Override
-  default int getSizeInventory() {
+  default int getContainerSize() {
     return 1;
   }
 
@@ -40,7 +40,7 @@ public interface ISingleItemInventory extends IReadOnlyInventory {
   /* Utils made more efficient */
 
   @Override
-  default int count(Item itemIn) {
+  default int countItem(Item itemIn) {
     ItemStack stack = getStack();
     if (stack.getItem() == itemIn) {
       return stack.getCount();
@@ -49,7 +49,7 @@ public interface ISingleItemInventory extends IReadOnlyInventory {
   }
 
   @Override
-  default boolean hasAny(Set<Item> set) {
+  default boolean hasAnyOf(Set<Item> set) {
     ItemStack stack = getStack();
     return !stack.isEmpty() && set.contains(getStack().getItem());
   }

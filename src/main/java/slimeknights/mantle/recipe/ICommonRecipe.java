@@ -10,14 +10,14 @@ import net.minecraft.item.crafting.IRecipe;
  */
 public interface ICommonRecipe<C extends IInventory> extends IRecipe<C> {
   @Override
-  default ItemStack getCraftingResult(C inv) {
-    return getRecipeOutput().copy();
+  default ItemStack assemble(C inv) {
+    return getResultItem().copy();
   }
 
   /** @deprecated Means nothing outside of crafting tables */
   @Deprecated
   @Override
-  default boolean canFit(int width, int height) {
+  default boolean canCraftInDimensions(int width, int height) {
     return true;
   }
 
@@ -26,7 +26,7 @@ public interface ICommonRecipe<C extends IInventory> extends IRecipe<C> {
    * @return  True
    */
   @Override
-  default boolean isDynamic() {
+  default boolean isSpecial() {
     return true;
   }
 }

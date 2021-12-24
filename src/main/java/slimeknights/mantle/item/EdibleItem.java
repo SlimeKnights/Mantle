@@ -19,6 +19,8 @@ import slimeknights.mantle.util.TranslationHelper;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 public class EdibleItem extends Item {
 
   /** if false, does not display effects of food in tooltip */
@@ -29,23 +31,23 @@ public class EdibleItem extends Item {
   }
 
   public EdibleItem(Food foodIn, ItemGroup itemGroup, boolean displayEffectsTooltip) {
-    super(new Properties().food(foodIn).group(itemGroup));
+    super(new Properties().food(foodIn).tab(itemGroup));
     this.displayEffectsTooltip = displayEffectsTooltip;
   }
 
   @Override
   @OnlyIn(Dist.CLIENT)
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+  public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
     TranslationHelper.addOptionalTooltip(stack, tooltip);
 
     if (this.displayEffectsTooltip) {
-      for (Pair<EffectInstance, Float> pair : stack.getItem().getFood().getEffects()) {
+      for (Pair<EffectInstance, Float> pair : stack.getItem().getFoodProperties().getEffects()) {
         if (pair.getFirst() != null) {
-          tooltip.add(new StringTextComponent(I18n.format(pair.getFirst().getEffectName()).trim()).mergeStyle(TextFormatting.GRAY));
+          tooltip.add(new StringTextComponent(I18n.get(pair.getFirst().getDescriptionId()).trim()).withStyle(TextFormatting.GRAY));
         }
       }
     }
 
-    super.addInformation(stack, worldIn, tooltip, flagIn);
+    super.appendHoverText(stack, worldIn, tooltip, flagIn);
   }
 }

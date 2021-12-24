@@ -62,7 +62,7 @@ public class ItemElement extends SizedBookElement {
   public ItemElement(int x, int y, float scale, ItemStack[] itemCycle, @Nullable String action) {
     super(x, y, MathHelper.floor(ITEM_SIZE_HARDCODED * scale), MathHelper.floor(ITEM_SIZE_HARDCODED * scale));
 
-    lastTime = Util.nanoTime();
+    lastTime = Util.getNanos();
 
     NonNullList<ItemStack> nonNullStacks = NonNullList.withSize(itemCycle.length, ItemStack.EMPTY);
     for (int i = 0; i < itemCycle.length; i++) {
@@ -78,7 +78,7 @@ public class ItemElement extends SizedBookElement {
 
   @Override
   public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    long nano = Util.nanoTime();
+    long nano = Util.getNanos();
 
     if(nano > lastTime + ITEM_SWITCH_TIME) {
       this.lastTime = nano;
@@ -90,21 +90,21 @@ public class ItemElement extends SizedBookElement {
     }
 
     if (this.currentItem < this.itemCycle.size()) {
-      RenderHelper.enableStandardItemLighting();
+      RenderHelper.turnBackOn();
 
-      matrixStack.push();
+      matrixStack.pushPose();
       matrixStack.translate(x, y, 0);
       matrixStack.scale(scale, scale, 1.0F);
 
       // Matrix stack -> old system
       RenderSystem.pushMatrix();
-      RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
+      RenderSystem.multMatrix(matrixStack.last().pose());
 
-      this.mc.getItemRenderer().renderItemAndEffectIntoGUI(this.itemCycle.get(this.currentItem), 0, 0);
+      this.mc.getItemRenderer().renderAndDecorateItem(this.itemCycle.get(this.currentItem), 0, 0);
 
-      matrixStack.pop();
+      matrixStack.popPose();
       RenderSystem.popMatrix();
-      RenderHelper.disableStandardItemLighting();
+      RenderHelper.turnOff();
     }
   }
 

@@ -42,8 +42,8 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       return false;
     }
 
-    assert this.world != null;
-    if (this.world.getBlockState(this.master).getBlock() == this.masterBlock && this.world.getBlockState(this.master) == this.state) {
+    assert this.level != null;
+    if (this.level.getBlockState(this.master).getBlock() == this.masterBlock && this.level.getBlockState(this.master) == this.state) {
       return true;
     }
     else {
@@ -59,10 +59,10 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   }
 
   public void overrideMaster(BlockPos pos) {
-    assert this.world != null;
+    assert this.level != null;
     this.hasMaster = true;
     this.master = pos;
-    this.state = this.world.getBlockState(this.master);
+    this.state = this.level.getBlockState(this.master);
     this.masterBlock = this.state.getBlock();
     this.markDirtyFast();
   }
@@ -82,9 +82,9 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   @Deprecated
   public boolean verifyMaster(IMasterLogic logic, BlockPos pos) {
-    assert this.world != null;
-    return this.master.equals(pos) && this.world.getBlockState(pos) == this.state
-           && this.world.getBlockState(pos).getBlock() == this.masterBlock;
+    assert this.level != null;
+    return this.master.equals(pos) && this.level.getBlockState(pos) == this.state
+           && this.level.getBlockState(pos).getBlock() == this.masterBlock;
   }
 
   @Override
@@ -106,9 +106,9 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
   @Override
   public void notifyMasterOfChange() {
     if (this.hasValidMaster()) {
-      assert this.world != null;
-      IMasterLogic logic = (IMasterLogic) this.world.getTileEntity(this.master);
-      logic.notifyChange(this, this.pos);
+      assert this.level != null;
+      IMasterLogic logic = (IMasterLogic) this.level.getBlockEntity(this.master);
+      logic.notifyChange(this, this.worldPosition);
     }
   }
 
@@ -120,7 +120,7 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       int zCenter = tags.getInt("zCenter");
       this.master = new BlockPos(xCenter, yCenter, zCenter);
       this.masterBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tags.getString("MasterBlockName")));
-      this.state = Block.getStateById(tags.getInt("masterState"));
+      this.state = Block.stateById(tags.getInt("masterState"));
     }
   }
 
@@ -131,20 +131,20 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
       tags.putInt("yCenter", this.master.getY());
       tags.putInt("zCenter", this.master.getZ());
       tags.putString("MasterBlockName", Objects.requireNonNull(this.masterBlock.getRegistryName()).toString());
-      tags.putInt("masterState", Block.getStateId(this.state));
+      tags.putInt("masterState", Block.getId(this.state));
     }
     return tags;
   }
 
   @Override
-  public void read(BlockState blockState, CompoundNBT tags) {
-    super.read(blockState, tags);
+  public void load(BlockState blockState, CompoundNBT tags) {
+    super.load(blockState, tags);
     this.readCustomNBT(tags);
   }
 
   @Override
-  public CompoundNBT write(CompoundNBT tags) {
-    tags = super.write(tags);
+  public CompoundNBT save(CompoundNBT tags) {
+    tags = super.save(tags);
     return this.writeCustomNBT(tags);
   }
 
@@ -158,17 +158,17 @@ public class MultiServantLogic extends MantleTileEntity implements IServantLogic
 
   @Override
   public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-    this.readCustomNBT(packet.getNbtCompound());
+    this.readCustomNBT(packet.getTag());
     //this.world.notifyLightSet(this.pos);
-    assert world != null;
-    BlockState state = world.getBlockState(this.pos);
-    this.world.notifyBlockUpdate(this.pos, state, state, 3);
+    assert level != null;
+    BlockState state = level.getBlockState(this.worldPosition);
+    this.level.sendBlockUpdated(this.worldPosition, state, state, 3);
   }
 
   @Deprecated
   public boolean setMaster(BlockPos pos) {
-    assert this.world != null;
-    if (!this.hasMaster || this.world.getBlockState(this.master) != this.state || (this.world.getBlockState(this.master).getBlock() != this.masterBlock)) {
+    assert this.level != null;
+    if (!this.hasMaster || this.level.getBlockState(this.master) != this.state || (this.level.getBlockState(this.master).getBlock() != this.masterBlock)) {
       this.overrideMaster(pos);
       return true;
     }

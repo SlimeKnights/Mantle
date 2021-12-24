@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public interface IMultipartConnectedBlock {
   /** Map of direction to boolean property for that direction */
   Map<Direction,BooleanProperty> CONNECTED_DIRECTIONS = Arrays.stream(Direction.values())
-       .map(dir -> Pair.of(dir,BooleanProperty.create("connected_" + dir.getString())))
+       .map(dir -> Pair.of(dir,BooleanProperty.create("connected_" + dir.getSerializedName())))
       .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, (u,v) -> u, () -> new EnumMap<>(Direction.class)));
 
   /**
@@ -32,7 +32,7 @@ public interface IMultipartConnectedBlock {
    */
   static BlockState defaultConnections(BlockState state) {
     for (BooleanProperty prop : CONNECTED_DIRECTIONS.values()) {
-      state = state.with(prop, false);
+      state = state.setValue(prop, false);
     }
     return state;
   }
@@ -63,6 +63,6 @@ public interface IMultipartConnectedBlock {
    * @return  Updated block state
    */
   default BlockState getConnectionUpdate(BlockState state, Direction facing, BlockState neighbor) {
-    return state.with(CONNECTED_DIRECTIONS.get(facing), connects(state, neighbor));
+    return state.setValue(CONNECTED_DIRECTIONS.get(facing), connects(state, neighbor));
   }
 }

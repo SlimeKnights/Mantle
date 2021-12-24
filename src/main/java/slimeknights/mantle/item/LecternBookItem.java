@@ -12,6 +12,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import slimeknights.mantle.util.TileEntityHelper;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Book item that can be placed on lecterns
  */
@@ -21,13 +23,13 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
   }
 
   @Override
-  public ActionResultType onItemUse(ItemUseContext context) {
-    World world = context.getWorld();
-    BlockPos pos = context.getPos();
+  public ActionResultType useOn(ItemUseContext context) {
+    World world = context.getLevel();
+    BlockPos pos = context.getClickedPos();
     BlockState state = world.getBlockState(pos);
-    if (state.isIn(Blocks.LECTERN)) {
-      if (LecternBlock.tryPlaceBook(world, pos, state, context.getItem())) {
-        return ActionResultType.func_233537_a_(world.isRemote);
+    if (state.is(Blocks.LECTERN)) {
+      if (LecternBlock.tryPlaceBook(world, pos, state, context.getItemInHand())) {
+        return ActionResultType.sidedSuccess(world.isClientSide);
       }
     }
     return ActionResultType.PASS;
@@ -39,13 +41,13 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
   public static void interactWithBlock(PlayerInteractEvent.RightClickBlock event) {
     World world = event.getWorld();
     // client side has no access to the book, so just skip
-    if (world.isRemote() || event.getPlayer().isSneaking()) {
+    if (world.isClientSide() || event.getPlayer().isShiftKeyDown()) {
       return;
     }
     // must be a lectern, and have the TE
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
-    if (state.isIn(Blocks.LECTERN)) {
+    if (state.is(Blocks.LECTERN)) {
       TileEntityHelper.getTile(LecternTileEntity.class, world, pos)
                       .ifPresent(te -> {
                         ItemStack book = te.getBook();

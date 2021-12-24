@@ -50,7 +50,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
    * @param alternatives  List of recipe names to fail this match if they match
    */
   public ShapedFallbackRecipe(ShapedRecipe base, List<ResourceLocation> alternatives) {
-    this(base.getId(), base.getGroup(), base.getWidth(), base.getHeight(), base.getIngredients(), base.getRecipeOutput(), alternatives);
+    this(base.getId(), base.getGroup(), base.getWidth(), base.getHeight(), base.getIngredients(), base.getResultItem(), alternatives);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     if (alternativeCache == null) {
       RecipeManager manager = world.getRecipeManager();
       alternativeCache = alternatives.stream()
-                                     .map(manager::getRecipe)
+                                     .map(manager::byKey)
                                      .filter(Optional::isPresent)
                                      .map(Optional::get)
                                      .filter(recipe -> {
@@ -86,15 +86,15 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
 
   public static class Serializer extends ShapedRecipe.Serializer {
     @Override
-    public ShapedFallbackRecipe read(ResourceLocation id, JsonObject json) {
-      ShapedRecipe base = super.read(id, json);
-      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new ResourceLocation(JSONUtils.getString(element, name)));
+    public ShapedFallbackRecipe fromJson(ResourceLocation id, JsonObject json) {
+      ShapedRecipe base = super.fromJson(id, json);
+      List<ResourceLocation> alternatives = JsonHelper.parseList(json, "alternatives", (element, name) -> new ResourceLocation(JSONUtils.convertToString(element, name)));
       return new ShapedFallbackRecipe(base, alternatives);
     }
 
     @Override
-    public ShapedFallbackRecipe read(ResourceLocation id, PacketBuffer buffer) {
-      ShapedRecipe base = super.read(id, buffer);
+    public ShapedFallbackRecipe fromNetwork(ResourceLocation id, PacketBuffer buffer) {
+      ShapedRecipe base = super.fromNetwork(id, buffer);
       assert base != null;
       int size = buffer.readVarInt();
       ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
@@ -105,9 +105,9 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     }
 
     @Override
-    public void write(PacketBuffer buffer, ShapedRecipe recipe) {
+    public void toNetwork(PacketBuffer buffer, ShapedRecipe recipe) {
       // write base recipe
-      super.write(buffer, recipe);
+      super.toNetwork(buffer, recipe);
       // write extra data
       assert recipe instanceof ShapedFallbackRecipe;
       List<ResourceLocation> alternatives = ((ShapedFallbackRecipe) recipe).alternatives;

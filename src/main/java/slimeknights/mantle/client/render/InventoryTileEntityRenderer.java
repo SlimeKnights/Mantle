@@ -33,12 +33,12 @@ public class InventoryTileEntityRenderer<T extends TileEntity & IInventory> exte
       // render items
       List<ModelItem> modelItems = model.getItems();
       for (int i = 0; i < modelItems.size(); i++) {
-        RenderingHelper.renderItem(matrices, buffer, inventory.getStackInSlot(i), modelItems.get(i), light);
+        RenderingHelper.renderItem(matrices, buffer, inventory.getItem(i), modelItems.get(i), light);
       }
 
       // pop back rotation
       if (isRotated) {
-        matrices.pop();
+        matrices.popPose();
       }
     }
   }

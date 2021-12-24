@@ -30,7 +30,7 @@ public class ContentTableOfContents extends PageContent {
 
     for (int i = 0; i < this.data.length; i++) {
       TextData text = this.data[i];
-      list.add(new TextElement(0, y + i * (int) (Minecraft.getInstance().fontRenderer.FONT_HEIGHT * text.scale), BookScreen.PAGE_WIDTH, Minecraft.getInstance().fontRenderer.FONT_HEIGHT, text));
+      list.add(new TextElement(0, y + i * (int) (Minecraft.getInstance().font.lineHeight * text.scale), BookScreen.PAGE_WIDTH, Minecraft.getInstance().font.lineHeight, text));
     }
   }
 }

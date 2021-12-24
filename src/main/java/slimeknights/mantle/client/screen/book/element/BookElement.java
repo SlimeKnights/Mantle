@@ -60,7 +60,7 @@ public abstract class BookElement extends AbstractGui {
   }
 
   public void renderToolTip(MatrixStack matrixStack, FontRenderer fontRenderer, ItemStack stack, int x, int y) {
-    List<ITextComponent> list = stack.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+    List<ITextComponent> list = stack.getTooltipLines(this.mc.player, this.mc.options.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 
     FontRenderer font = stack.getItem().getFontRenderer(stack);
     if (font == null) {

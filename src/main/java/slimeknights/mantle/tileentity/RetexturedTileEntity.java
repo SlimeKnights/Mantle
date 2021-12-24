@@ -20,7 +20,7 @@ public class RetexturedTileEntity extends MantleTileEntity implements IRetexture
 
   @Override
   public IModelData getModelData() {
-    return data.getValue();
+    return data.get();
   }
 
   @Override
@@ -29,15 +29,15 @@ public class RetexturedTileEntity extends MantleTileEntity implements IRetexture
   }
 
   @Override
-  public void read(BlockState blockState, CompoundNBT tags) {
+  public void load(BlockState blockState, CompoundNBT tags) {
     String oldName = getTextureName();
-    super.read(blockState, tags);
+    super.load(blockState, tags);
     String newName = getTextureName();
     // if the texture name changed, mark the position for rerender
-    if (!oldName.equals(newName) && world != null && world.isRemote) {
-      data.getValue().setData(RetexturedHelper.BLOCK_PROPERTY, getTexture());
+    if (!oldName.equals(newName) && level != null && level.isClientSide) {
+      data.get().setData(RetexturedHelper.BLOCK_PROPERTY, getTexture());
       requestModelDataUpdate();
-      world.notifyBlockUpdate(pos, blockState, blockState, 0);
+      level.sendBlockUpdated(worldPosition, blockState, blockState, 0);
     }
   }
 }

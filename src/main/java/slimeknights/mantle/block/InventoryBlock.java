@@ -26,13 +26,15 @@ import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock;
+
 /**
  * Base class for blocks with an inventory
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class InventoryBlock extends Block {
 
-  protected InventoryBlock(Block.Properties builder) {
+  protected InventoryBlock(AbstractBlock.Properties builder) {
     super(builder);
   }
 
@@ -55,13 +57,13 @@ public abstract class InventoryBlock extends Block {
    * @return true if the GUI opened, false if not
    */
   protected boolean openGui(PlayerEntity player, World world, BlockPos pos) {
-    if (!world.isRemote()) {
-      INamedContainerProvider container = this.getContainer(world.getBlockState(pos), world, pos);
+    if (!world.isClientSide()) {
+      INamedContainerProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
       if (container != null && player instanceof ServerPlayerEntity) {
         ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
         NetworkHooks.openGui(serverPlayer, container, pos);
-        if (player.openContainer instanceof BaseContainer<?>) {
-          ((BaseContainer<?>) player.openContainer).syncOnOpen(serverPlayer);
+        if (player.containerMenu instanceof BaseContainer<?>) {
+          ((BaseContainer<?>) player.containerMenu).syncOnOpen(serverPlayer);
         }
       }
     }
@@ -72,11 +74,11 @@ public abstract class InventoryBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
+  public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult rayTraceResult) {
     if (player.isSuppressingBounce()) {
       return ActionResultType.PASS;
     }
-    if (!world.isRemote) {
+    if (!world.isClientSide) {
       return this.openGui(player, world, pos) ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
     return ActionResultType.SUCCESS;
@@ -86,14 +88,14 @@ public abstract class InventoryBlock extends Block {
   /* Naming */
 
   @Override
-  public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+  public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    super.setPlacedBy(worldIn, pos, state, placer, stack);
 
     // set custom name from named stack
-    if (stack.hasDisplayName()) {
-      TileEntity tileentity = worldIn.getTileEntity(pos);
+    if (stack.hasCustomHoverName()) {
+      TileEntity tileentity = worldIn.getBlockEntity(pos);
       if (tileentity instanceof IRenamableContainerProvider) {
-        ((IRenamableContainerProvider) tileentity).setCustomName(stack.getDisplayName());
+        ((IRenamableContainerProvider) tileentity).setCustomName(stack.getHoverName());
       }
     }
   }
@@ -102,8 +104,8 @@ public abstract class InventoryBlock extends Block {
   @Override
   @Nullable
   @Deprecated
-  public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
-    TileEntity tileentity = worldIn.getTileEntity(pos);
+  public INamedContainerProvider getMenuProvider(BlockState state, World worldIn, BlockPos pos) {
+    TileEntity tileentity = worldIn.getBlockEntity(pos);
     return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
   }
 
@@ -113,9 +115,9 @@ public abstract class InventoryBlock extends Block {
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity te = worldIn.getTileEntity(pos);
+      TileEntity te = worldIn.getBlockEntity(pos);
       if (te != null) {
         // FIXME legacy support, switch to non-deprecated method in 1.17
         if (te instanceof InventoryTileEntity) {
@@ -124,11 +126,11 @@ public abstract class InventoryBlock extends Block {
           te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             .ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
         }
-        worldIn.updateComparatorOutputLevel(pos, this);
+        worldIn.updateNeighbourForOutputSignal(pos, this);
       }
     }
 
-    super.onReplaced(state, worldIn, pos, newState, isMoving);
+    super.onRemove(state, worldIn, pos, newState, isMoving);
   }
 
   /**
@@ -145,7 +147,7 @@ public abstract class InventoryBlock extends Block {
     if (itemCapability.isPresent()) {
       dropInventoryItems(state, worldIn, pos, itemCapability.orElse(EmptyItemHandler.INSTANCE));
     } else {
-      InventoryHelper.dropInventoryItems(worldIn, pos, inventory);
+      InventoryHelper.dropContents(worldIn, pos, inventory);
     }
   }
 
@@ -171,16 +173,16 @@ public abstract class InventoryBlock extends Block {
     double y = pos.getY();
     double z = pos.getZ();
     for(int i = 0; i < inventory.getSlots(); ++i) {
-      InventoryHelper.spawnItemStack(world, x, y, z, inventory.getStackInSlot(i));
+      InventoryHelper.dropItemStack(world, x, y, z, inventory.getStackInSlot(i));
     }
   }
 
   @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
-    super.eventReceived(state, worldIn, pos, id, param);
-    TileEntity tileentity = worldIn.getTileEntity(pos);
-    return tileentity != null && tileentity.receiveClientEvent(id, param);
+  public boolean triggerEvent(BlockState state, World worldIn, BlockPos pos, int id, int param) {
+    super.triggerEvent(state, worldIn, pos, id, param);
+    TileEntity tileentity = worldIn.getBlockEntity(pos);
+    return tileentity != null && tileentity.triggerEvent(id, param);
   }
 }

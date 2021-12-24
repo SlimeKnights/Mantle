@@ -62,13 +62,13 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public ItemStack[] getMatchingStacks() {
+  public ItemStack[] getItems() {
     if (this.intersectedMatchingStacks == null) {
       if (ingredients.isEmpty()) {
         this.intersectedMatchingStacks = new ItemStack[0];
       } else {
         this.intersectedMatchingStacks = Arrays
-          .stream(ingredients.get(0).getMatchingStacks())
+          .stream(ingredients.get(0).getItems())
           .filter(stack -> {
             for (int i = 1; i < ingredients.size(); i++) {
               if (!ingredients.get(i).test(stack)) {
@@ -83,8 +83,8 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public boolean hasNoMatchingItems() {
-    return getMatchingStacks().length == 0;
+  public boolean isEmpty() {
+    return getItems().length == 0;
   }
 
   @Override
@@ -105,12 +105,12 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public IntList getValidItemStacksPacked() {
+  public IntList getStackingIds() {
     if (this.packedMatchingStacks == null) {
-      ItemStack[] matchingStacks = getMatchingStacks();
+      ItemStack[] matchingStacks = getItems();
       this.packedMatchingStacks = new IntArrayList(matchingStacks.length);
       for(ItemStack stack : matchingStacks) {
-        this.packedMatchingStacks.add(RecipeItemHelper.pack(stack));
+        this.packedMatchingStacks.add(RecipeItemHelper.getStackingIndex(stack));
       }
       this.packedMatchingStacks.sort(IntComparators.NATURAL_COMPARATOR);
     }
@@ -118,12 +118,12 @@ public class IngredientIntersection extends Ingredient {
   }
 
   @Override
-  public JsonElement serialize() {
+  public JsonElement toJson() {
     JsonObject json = new JsonObject();
     json.addProperty("type", ID.toString());
     JsonArray array = new JsonArray();
     for (Ingredient ingredient : ingredients) {
-      array.add(ingredient.serialize());
+      array.add(ingredient.toJson());
     }
     json.add("ingredients", array);
     return json;
@@ -137,7 +137,7 @@ public class IngredientIntersection extends Ingredient {
   private static class Serializer implements IIngredientSerializer<IngredientIntersection> {
     @Override
     public IngredientIntersection parse(JsonObject json) {
-      List<Ingredient> ingredients = JsonHelper.parseList(json, "ingredients", (element, name) -> Ingredient.deserialize(element));
+      List<Ingredient> ingredients = JsonHelper.parseList(json, "ingredients", (element, name) -> Ingredient.fromJson(element));
       return new IngredientIntersection(ingredients);
     }
 
@@ -146,7 +146,7 @@ public class IngredientIntersection extends Ingredient {
       int size = buffer.readVarInt();
       ImmutableList.Builder<Ingredient> builder = ImmutableList.builder();
       for (int i = 0; i < size; i++) {
-        builder.add(Ingredient.read(buffer));
+        builder.add(Ingredient.fromNetwork(buffer));
       }
       return new IngredientIntersection(builder.build());
     }

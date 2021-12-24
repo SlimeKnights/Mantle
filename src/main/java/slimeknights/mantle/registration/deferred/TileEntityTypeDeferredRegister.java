@@ -30,7 +30,7 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Tile
    */
   @Nullable
   private Type<?> getType(String name) {
-    return Util.attemptDataFix(TypeReferences.BLOCK_ENTITY, resourceName(name));
+    return Util.fetchChoiceType(TypeReferences.BLOCK_ENTITY, resourceName(name));
   }
 
   /**
@@ -43,7 +43,7 @@ public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<Tile
    */
   @SuppressWarnings("ConstantConditions")
   public <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String name, Supplier<? extends T> factory, Supplier<? extends Block> block) {
-    return register.register(name, () ->  TileEntityType.Builder.<T>create(factory, block.get()).build(getType(name)));
+    return register.register(name, () ->  TileEntityType.Builder.<T>of(factory, block.get()).build(getType(name)));
   }
 
   /**

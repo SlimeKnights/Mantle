@@ -27,10 +27,10 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 	}
 
 	@Override
-	public void read(BlockState blockState, CompoundNBT tags) {
-		super.read(blockState, tags);
+	public void load(BlockState blockState, CompoundNBT tags) {
+		super.load(blockState, tags);
 		if (tags.contains(TAG_CUSTOM_NAME, NBT.TAG_STRING)) {
-			this.customName = ITextComponent.Serializer.getComponentFromJson(tags.getString(TAG_CUSTOM_NAME));
+			this.customName = ITextComponent.Serializer.fromJson(tags.getString(TAG_CUSTOM_NAME));
 		}
 	}
 

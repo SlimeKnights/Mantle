@@ -46,7 +46,7 @@ public class ShapedFallbackRecipeBuilder {
    * @param consumer  Recipe consumer
    */
   public void build(Consumer<IFinishedRecipe> consumer) {
-    base.build(base -> consumer.accept(new Result(base, alternatives)));
+    base.save(base -> consumer.accept(new Result(base, alternatives)));
   }
 
   /**
@@ -55,7 +55,7 @@ public class ShapedFallbackRecipeBuilder {
    * @param id        Recipe ID
    */
   public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
-    base.build(base -> consumer.accept(new Result(base, alternatives)), id);
+    base.save(base -> consumer.accept(new Result(base, alternatives)), id);
   }
 
   @AllArgsConstructor
@@ -64,33 +64,33 @@ public class ShapedFallbackRecipeBuilder {
     private final List<ResourceLocation> alternatives;
 
     @Override
-    public void serialize(JsonObject json) {
-      base.serialize(json);
+    public void serializeRecipeData(JsonObject json) {
+      base.serializeRecipeData(json);
       json.add("alternatives", alternatives.stream()
                                            .map(ResourceLocation::toString)
                                            .collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public IRecipeSerializer<?> getType() {
       return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
     }
 
     @Override
-    public ResourceLocation getID() {
-      return base.getID();
+    public ResourceLocation getId() {
+      return base.getId();
     }
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-      return base.getAdvancementJson();
+    public JsonObject serializeAdvancement() {
+      return base.serializeAdvancement();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
-      return base.getAdvancementID();
+    public ResourceLocation getAdvancementId() {
+      return base.getAdvancementId();
     }
   }
 }

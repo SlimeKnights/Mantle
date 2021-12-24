@@ -59,14 +59,14 @@ public class SelectionElement extends SizedBookElement {
     if (this.section.parent.appearance.drawSectionListText) {
       String title = this.section.getTitle().replace("\\n", "\n");
       String[] splitTitle = TextDataRenderer.cropStringBySize(title, "", WIDTH + 2,
-        fontRenderer.FONT_HEIGHT * 2 + 1, fontRenderer, 1F);
+        fontRenderer.lineHeight * 2 + 1, fontRenderer, 1F);
 
       for (int i = 0; i < splitTitle.length; i++) {
-        int textW = fontRenderer.getStringWidth(splitTitle[i]);
+        int textW = fontRenderer.width(splitTitle[i]);
         int textX = this.x + WIDTH / 2 - textW / 2;
-        int textY = this.y + HEIGHT - fontRenderer.FONT_HEIGHT / 2 + fontRenderer.FONT_HEIGHT * i;
+        int textY = this.y + HEIGHT - fontRenderer.lineHeight / 2 + fontRenderer.lineHeight * i;
 
-        fontRenderer.drawString(matrixStack, splitTitle[i],
+        fontRenderer.draw(matrixStack, splitTitle[i],
           textX,
           textY,
           hover ? 0xFF000000 : 0x7F000000);
@@ -82,7 +82,7 @@ public class SelectionElement extends SizedBookElement {
       text.add(new StringTextComponent(this.section.getTitle()));
 
       if (!this.section.isUnlocked(this.parent.advancementCache)) {
-        text.add(new StringTextComponent("Locked").mergeStyle(TextFormatting.RED));
+        text.add(new StringTextComponent("Locked").withStyle(TextFormatting.RED));
         text.add(new StringTextComponent("Requirements:"));
 
         for (String requirement : this.section.requirements) {

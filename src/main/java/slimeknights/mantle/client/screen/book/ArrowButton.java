@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 
+import net.minecraft.client.gui.widget.button.Button.IPressable;
+
 @OnlyIn(Dist.CLIENT)
 public class ArrowButton extends Button {
 
@@ -42,9 +44,9 @@ public class ArrowButton extends Button {
   public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, @Nullable BookData bookData) {
     Minecraft minecraft = Minecraft.getInstance();
     if (bookData != null) {
-      minecraft.getTextureManager().bindTexture(bookData.appearance.getBookTexture());
+      minecraft.getTextureManager().bind(bookData.appearance.getBookTexture());
     } else {
-      minecraft.getTextureManager().bindTexture(TEX_BOOK);
+      minecraft.getTextureManager().bind(TEX_BOOK);
     }
 
     this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;

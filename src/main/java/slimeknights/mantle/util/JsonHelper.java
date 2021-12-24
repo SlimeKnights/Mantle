@@ -64,7 +64,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonArray array, String name, Function<JsonObject,T> mapper) {
-    return parseList(array, name, (element, s) -> mapper.apply(JSONUtils.getJsonObject(element, s)));
+    return parseList(array, name, (element, s) -> mapper.apply(JSONUtils.convertToJsonObject(element, s)));
   }
 
   /**
@@ -76,7 +76,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonObject parent, String name, BiFunction<JsonElement,String,T> mapper) {
-    return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
+    return parseList(JSONUtils.getAsJsonArray(parent, name), name, mapper);
   }
 
   /**
@@ -88,7 +88,7 @@ public class JsonHelper {
    * @return  List of output objects
    */
   public static <T> List<T> parseList(JsonObject parent, String name, Function<JsonObject,T> mapper) {
-    return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
+    return parseList(JSONUtils.getAsJsonArray(parent, name), name, mapper);
   }
 
   /**
@@ -98,8 +98,8 @@ public class JsonHelper {
    * @return  Resource location parsed
    */
   public static ResourceLocation getResourceLocation(JsonObject json, String key) {
-    String text = JSONUtils.getString(json, key);
-    ResourceLocation location = ResourceLocation.tryCreate(text);
+    String text = JSONUtils.getAsString(json, key);
+    ResourceLocation location = ResourceLocation.tryParse(text);
     if (location == null) {
       throw new JsonSyntaxException("Expected " + key + " to be a Resource location, was '" + text + "'");
     }

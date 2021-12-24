@@ -80,7 +80,7 @@ public class ModelItem {
 
   /** Parses a transform type from a string */
   private static TransformType parseTransformType(JsonObject json, String key) {
-    String name = JSONUtils.getString(json, key, "none");
+    String name = JSONUtils.getAsString(json, key, "none");
     switch (name) {
       case "none":   return TransformType.NONE;
       case "head":   return TransformType.HEAD;
@@ -102,7 +102,7 @@ public class ModelItem {
    */
   public static ModelItem fromJson(JsonObject json) {
     // if the size is 0, skip rendering this item
-    float size = JSONUtils.getFloat(json, "size");
+    float size = JSONUtils.getAsFloat(json, "size");
     if (size == 0) {
       return ModelItem.EMPTY;
     }

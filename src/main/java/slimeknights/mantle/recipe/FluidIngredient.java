@@ -66,7 +66,7 @@ public abstract class FluidIngredient {
     if (displayFluids == null) {
       displayFluids = getAllFluids().stream().filter(stack -> {
         Fluid fluid = stack.getFluid();
-        return fluid.isSource(fluid.getDefaultState());
+        return fluid.isSource(fluid.defaultFluidState());
       }).collect(Collectors.toList());
     }
     return displayFluids;
@@ -92,7 +92,7 @@ public abstract class FluidIngredient {
     Collection<FluidStack> fluids = getAllFluids();
     buffer.writeInt(fluids.size());
     for (FluidStack stack : fluids) {
-      buffer.writeString(Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
+      buffer.writeUtf(Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
       buffer.writeInt(stack.getAmount());
     }
   }
@@ -221,7 +221,7 @@ public abstract class FluidIngredient {
     int count = buffer.readInt();
     FluidIngredient[] ingredients = new FluidIngredient[count];
     for (int i = 0; i < count; i++) {
-      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(buffer.readString(32767)));
+      Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(buffer.readUtf(32767)));
       if (fluid == null) {
         fluid = Fluids.EMPTY;
       }
@@ -302,7 +302,7 @@ public abstract class FluidIngredient {
       // count
       buffer.writeInt(1);
       // single fluid
-      buffer.writeString(Objects.requireNonNull(fluid.getRegistryName()).toString());
+      buffer.writeUtf(Objects.requireNonNull(fluid.getRegistryName()).toString());
       buffer.writeInt(amount);
     }
 
@@ -312,12 +312,12 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static FluidMatch deserialize(JsonObject json) {
-      String fluidName = JSONUtils.getString(json, "name");
+      String fluidName = JSONUtils.getAsString(json, "name");
       Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
       if (fluid == null || fluid == Fluids.EMPTY) {
         throw new JsonSyntaxException("Unknown fluid '" + fluidName + "'");
       }
-      int amount = JSONUtils.getInt(json, "amount");
+      int amount = JSONUtils.getAsInt(json, "amount");
       return new FluidMatch(fluid, amount);
     }
   }
@@ -342,13 +342,13 @@ public abstract class FluidIngredient {
 
     @Override
     public List<FluidStack> getAllFluids() {
-      return tag.getAllElements().stream().map((fluid) -> new FluidStack(fluid, amount)).collect(Collectors.toList());
+      return tag.getValues().stream().map((fluid) -> new FluidStack(fluid, amount)).collect(Collectors.toList());
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", TagCollectionManager.getManager().getFluidTags().getValidatedIdFromTag(this.tag).toString());
+      object.addProperty("tag", TagCollectionManager.getInstance().getFluids().getIdOrThrow(this.tag).toString());
       object.addProperty("amount", amount);
       return object;
     }
@@ -359,12 +359,12 @@ public abstract class FluidIngredient {
      * @return Fluid ingredient instance
      */
     private static TagMatch deserialize(JsonObject json) {
-      String tagName = JSONUtils.getString(json, "tag");
-      ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(new ResourceLocation(tagName));
+      String tagName = JSONUtils.getAsString(json, "tag");
+      ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(new ResourceLocation(tagName));
       if (tag == null) {
         throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
       }
-      int amount = JSONUtils.getInt(json, "amount");
+      int amount = JSONUtils.getAsInt(json, "amount");
       return new TagMatch(tag, amount);
     }
   }
@@ -428,7 +428,7 @@ public abstract class FluidIngredient {
       FluidIngredient[] ingredients = new FluidIngredient[size];
       for (int i = 0; i < size; i++) {
         // no reason to an array in an array
-        ingredients[i] = deserializeObject(JSONUtils.getJsonObject(array.get(i), name + "[" + i + "]"));
+        ingredients[i] = deserializeObject(JSONUtils.convertToJsonObject(array.get(i), name + "[" + i + "]"));
       }
       return new Compound(ingredients);
     }

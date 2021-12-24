@@ -71,7 +71,7 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,V> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      builder.put(value, register.apply(value.getString() + "_" + name, value));
+      builder.put(value, register.apply(value.getSerializedName() + "_" + name, value));
     }
     return builder.build();
   }
@@ -90,7 +90,7 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,V> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      builder.put(value, register.apply(name + "_" + value.getString(), value));
+      builder.put(value, register.apply(name + "_" + value.getSerializedName(), value));
     }
     return builder.build();
   }

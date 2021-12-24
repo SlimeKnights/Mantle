@@ -10,6 +10,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 
+import net.minecraft.resources.IFutureReloadListener.IStage;
+
 /**
  * This interface is similar to {@link net.minecraftforge.resource.ISelectiveResourceReloadListener}, except it runs during {@link net.minecraft.client.resources.ReloadListener}'s prepare phase.
  * This is used mainly as models load during the prepare phase, so it ensures they are loaded soon enough.
@@ -19,7 +21,7 @@ public interface IEarlySelectiveReloadListener extends IFutureReloadListener {
   default CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
     return CompletableFuture.runAsync(() -> {
       this.onResourceManagerReload(resourceManager, SelectiveReloadStateHandler.INSTANCE.get());
-    }, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers);
+    }, backgroundExecutor).thenCompose(stage::wait);
   }
 
   /**

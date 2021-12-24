@@ -37,7 +37,7 @@ public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityTyp
    */
   @Nullable
   private Type<?> getType(String name) {
-    return Util.attemptDataFix(TypeReferences.BLOCK_ENTITY, resourceName(name));
+    return Util.fetchChoiceType(TypeReferences.BLOCK_ENTITY, resourceName(name));
   }
 
   /**
@@ -50,7 +50,7 @@ public class TileEntityTypeRegistryAdapter extends RegistryAdapter<TileEntityTyp
    */
   @SuppressWarnings("ConstantConditions")
   public <T extends TileEntity> TileEntityType<T> register(Supplier<? extends T> factory, Block block, String name) {
-    return register(TileEntityType.Builder.<T>create(factory, block).build(getType(name)), name);
+    return register(TileEntityType.Builder.<T>of(factory, block).build(getType(name)), name);
   }
 
   /**

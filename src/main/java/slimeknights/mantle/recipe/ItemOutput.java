@@ -80,7 +80,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    */
   public static ItemOutput fromJson(JsonElement element) {
     if (element.isJsonPrimitive()) {
-      return fromItem(JSONUtils.getItem(element, "item"));
+      return fromItem(JSONUtils.convertToItem(element, "item"));
     }
     if (!element.isJsonObject()) {
       throw new JsonSyntaxException("Invalid item output, must be a string or an object");
@@ -88,12 +88,12 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     // if it has a tag, parse as tag
     JsonObject json = element.getAsJsonObject();
     if (json.has("tag")) {
-      String name = JSONUtils.getString(json, "tag");
-      ITag<Item> tag = TagCollectionManager.getManager().getItemTags().get(new ResourceLocation(name));
+      String name = JSONUtils.getAsString(json, "tag");
+      ITag<Item> tag = TagCollectionManager.getInstance().getItems().getTag(new ResourceLocation(name));
       if (tag == null) {
         throw new JsonSyntaxException("Unknown tag " + name + " for item output");
       }
-      int count = JSONUtils.getInt(json, "count", 1);
+      int count = JSONUtils.getAsInt(json, "count", 1);
       return fromTag(tag, count);
     }
 
@@ -106,7 +106,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @param buffer  Packet buffer instance
    */
   public void write(PacketBuffer buffer) {
-    buffer.writeItemStack(get());
+    buffer.writeItem(get());
   }
 
   /**
@@ -115,7 +115,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @return  Item output
    */
   public static ItemOutput read(PacketBuffer buffer) {
-    return fromStack(buffer.readItemStack());
+    return fromStack(buffer.readItem());
   }
 
   /** Class for an output that is just an item, simplifies NBT for serializing as vanilla forces NBT to be set for tools and forge goes through extra steps when NBT is set */
@@ -201,7 +201,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     @Override
     public JsonElement serialize() {
       JsonObject json = new JsonObject();
-      json.addProperty("tag", TagCollectionManager.getManager().getItemTags().getValidatedIdFromTag(tag).toString());
+      json.addProperty("tag", TagCollectionManager.getInstance().getItems().getIdOrThrow(tag).toString());
       if (count != 1) {
         json.addProperty("count", count);
       }

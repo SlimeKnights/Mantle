@@ -360,7 +360,7 @@ public class BookData implements IDataItem {
    */
   public void openGui(ITextComponent title, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
     this.load();
-    Minecraft.getInstance().displayGuiScreen(new BookScreen(title, this, page, pageUpdater, bookPickup));
+    Minecraft.getInstance().setScreen(new BookScreen(title, this, page, pageUpdater, bookPickup));
   }
 
   /**
@@ -370,7 +370,7 @@ public class BookData implements IDataItem {
    */
   public void openGui(Hand hand, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
-    openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, hand, newPage));
+    openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, hand, newPage));
   }
 
   /** @deprecated Use {@link #openGui(Hand, ItemStack)} */
@@ -394,7 +394,7 @@ public class BookData implements IDataItem {
 
     Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
 
-    openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
+    openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
   }
 
   /**

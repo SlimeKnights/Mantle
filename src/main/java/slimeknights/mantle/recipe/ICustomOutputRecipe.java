@@ -11,14 +11,14 @@ public interface ICustomOutputRecipe<C extends IInventory> extends ICommonRecipe
   /** @deprecated Item stack output not supported */
   @Override
   @Deprecated
-  default ItemStack getRecipeOutput() {
+  default ItemStack getResultItem() {
     return ItemStack.EMPTY;
   }
 
   /** @deprecated Item stack output not supported */
   @Override
   @Deprecated
-  default ItemStack getCraftingResult(C inv) {
+  default ItemStack assemble(C inv) {
     return ItemStack.EMPTY;
   }
 }

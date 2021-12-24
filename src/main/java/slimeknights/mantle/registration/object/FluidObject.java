@@ -94,7 +94,7 @@ public class FluidObject<F extends ForgeFlowingFluid> implements Supplier<F>, II
    */
   @Override
   public Item asItem() {
-    return still.get().getFilledBucket();
+    return still.get().getBucket();
   }
 
   /** Gets the mod local tag for this fluid object */

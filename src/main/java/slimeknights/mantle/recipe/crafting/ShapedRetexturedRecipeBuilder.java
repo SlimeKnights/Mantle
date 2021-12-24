@@ -37,7 +37,7 @@ public class ShapedRetexturedRecipeBuilder {
    * @return Builder instance
    */
   public ShapedRetexturedRecipeBuilder setSource(ITag<Item> tag) {
-    this.texture = Ingredient.fromTag(tag);
+    this.texture = Ingredient.of(tag);
     return this;
   }
 
@@ -57,7 +57,7 @@ public class ShapedRetexturedRecipeBuilder {
    */
   public void build(Consumer<IFinishedRecipe> consumer) {
     this.validate();
-    parent.build(base -> consumer.accept(new Result(base, texture, matchAll)));
+    parent.save(base -> consumer.accept(new Result(base, texture, matchAll)));
   }
 
   /**
@@ -67,7 +67,7 @@ public class ShapedRetexturedRecipeBuilder {
    */
   public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation location) {
     this.validate();
-    parent.build(base -> consumer.accept(new Result(base, texture, matchAll)), location);
+    parent.save(base -> consumer.accept(new Result(base, texture, matchAll)), location);
   }
 
   /**
@@ -92,32 +92,32 @@ public class ShapedRetexturedRecipeBuilder {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public IRecipeSerializer<?> getType() {
       return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
     }
 
     @Override
-    public ResourceLocation getID() {
-      return base.getID();
+    public ResourceLocation getId() {
+      return base.getId();
     }
 
     @Override
-    public void serialize(JsonObject json) {
-      base.serialize(json);
-      json.add("texture", texture.serialize());
+    public void serializeRecipeData(JsonObject json) {
+      base.serializeRecipeData(json);
+      json.add("texture", texture.toJson());
       json.addProperty("match_all", matchAll);
     }
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-      return base.getAdvancementJson();
+    public JsonObject serializeAdvancement() {
+      return base.serializeAdvancement();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
-      return base.getAdvancementID();
+    public ResourceLocation getAdvancementId() {
+      return base.getAdvancementId();
     }
   }
 }

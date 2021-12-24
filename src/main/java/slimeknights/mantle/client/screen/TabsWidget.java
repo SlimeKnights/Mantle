@@ -146,13 +146,13 @@ public class TabsWidget extends Widget {
       // todo: draw all the tabs first and then all the itemstacks so it doesn't have to switch texture in between all the time
 
       // rebind texture from drawing an itemstack
-      Minecraft.getInstance().getTextureManager().bindTexture(this.tabsResource);
+      Minecraft.getInstance().getTextureManager().bind(this.tabsResource);
       actualTab.draw(matrixStack,x, y);
 
       ItemStack icon = this.icons.get(i);
       if (icon != null) {
         this.drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
-        RenderHelper.disableStandardItemLighting();
+        RenderHelper.turnOff();
       }
     }
   }
@@ -161,9 +161,9 @@ public class TabsWidget extends Widget {
   private void drawItemStack(ItemStack stack, int x, int y) {
     ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
     RenderSystem.translatef(0.0F, 0.0F, 32.0F);
-    itemRender.zLevel = 200.0F;
+    itemRender.blitOffset = 200.0F;
 
-    itemRender.renderItemAndEffectIntoGUI(stack, x, y);
-    itemRender.zLevel = 0.0F;
+    itemRender.renderAndDecorateItem(stack, x, y);
+    itemRender.blitOffset = 0.0F;
   }
 }

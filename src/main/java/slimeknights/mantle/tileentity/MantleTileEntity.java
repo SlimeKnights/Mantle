@@ -18,7 +18,7 @@ public class MantleTileEntity extends TileEntity {
   }
 
   public boolean isClient() {
-    return this.getWorld() != null && this.getWorld().isRemote;
+    return this.getLevel() != null && this.getLevel().isClientSide;
   }
 
   /**
@@ -26,8 +26,8 @@ public class MantleTileEntity extends TileEntity {
    * Used since most of our markDirty calls only adjust TE data
    */
   public void markDirtyFast() {
-    if (world != null) {
-      world.markChunkDirty(pos, this);
+    if (level != null) {
+      level.blockEntityChanged(worldPosition, this);
     }
   }
   
@@ -46,12 +46,12 @@ public class MantleTileEntity extends TileEntity {
   @Nullable
   public SUpdateTileEntityPacket getUpdatePacket() {
     // number is just used for vanilla, -1 ensures it skips all instanceof checks as its not a vanilla TE
-    return shouldSyncOnUpdate() ? new SUpdateTileEntityPacket(this.pos, -1, this.getUpdateTag()) : null;
+    return shouldSyncOnUpdate() ? new SUpdateTileEntityPacket(this.worldPosition, -1, this.getUpdateTag()) : null;
   }
 
   @Override
   public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-    this.read(this.getBlockState(), pkt.getNbtCompound());
+    this.load(this.getBlockState(), pkt.getTag());
   }
 
   /**
@@ -76,8 +76,8 @@ public class MantleTileEntity extends TileEntity {
   }
 
   @Override
-  public CompoundNBT write(CompoundNBT nbt) {
-    nbt = super.write(nbt);
+  public CompoundNBT save(CompoundNBT nbt) {
+    nbt = super.save(nbt);
     writeSynced(nbt);
     return nbt;
   }

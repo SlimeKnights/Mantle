@@ -70,25 +70,25 @@ public class ImageElement extends SizedBookElement {
 
     if (this.image.item == null) {
       if(this.image.location != null) {
-        this.renderEngine.bindTexture(this.image.location);
+        this.renderEngine.bind(this.image.location);
       } else {
-        this.renderEngine.bindTexture(TextureManager.RESOURCE_LOCATION_EMPTY);
+        this.renderEngine.bind(TextureManager.INTENTIONAL_MISSING_TEXTURE);
       }
 
       blitRaw(matrixStack, this.x, this.y, this.width, this.height, this.image.u, this.image.u + this.image.uw, this.image.v, this.image.v + this.image.vh, this.image.texWidth, this.image.texHeight);
     }
     else {
-      matrixStack.push();
+      matrixStack.pushPose();
       matrixStack.translate(this.x, this.y, 0F);
       matrixStack.scale(this.width / 16F, this.height / 16F, 1F);
 
       this.itemElement.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);
 
-      matrixStack.pop();
+      matrixStack.popPose();
     }
   }
 
   public static void blitRaw(MatrixStack matrixStack, int x, int y, int w, int h, int minU, int maxU, int minV, int maxV, float tw, float th) {
-    innerBlit(matrixStack.getLast().getMatrix(), x, x + w, y, y + h, 0, minU / tw, maxU / tw, minV / th, maxV / th);
+    innerBlit(matrixStack.last().pose(), x, x + w, y, y + h, 0, minU / tw, maxU / tw, minV / th, maxV / th);
   }
 }

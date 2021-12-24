@@ -69,7 +69,7 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Render
         map = initial;
         initial = null;
       } else if (model != null) {
-        map = model.textures;
+        map = model.textureMap;
         model = model.parent;
       } else {
         throw new NoSuchElementException();

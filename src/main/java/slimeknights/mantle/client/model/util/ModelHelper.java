@@ -56,13 +56,13 @@ public class ModelHelper {
     if (minecraft == null) {
       return null;
     }
-    IBakedModel baked = minecraft.getModelManager().getBlockModelShapes().getModel(state);
+    IBakedModel baked = minecraft.getModelManager().getBlockModelShaper().getBlockModel(state);
     // map multipart and weighted random into the first variant
     if (baked instanceof MultipartBakedModel) {
       baked = ((MultipartBakedModel)baked).selectors.get(0).getRight();
     }
     if (baked instanceof WeightedBakedModel) {
-      baked = ((WeightedBakedModel) baked).baseModel;
+      baked = ((WeightedBakedModel) baked).wrapped;
     }
     // final model should match the desired type
     if (clazz.isInstance(baked)) {
@@ -85,7 +85,7 @@ public class ModelHelper {
     if (minecraft == null) {
       return null;
     }
-    IBakedModel baked = minecraft.getItemRenderer().getItemModelMesher().getItemModel(item.asItem());
+    IBakedModel baked = minecraft.getItemRenderer().getItemModelShaper().getItemModel(item.asItem());
     if (clazz.isInstance(baked)) {
       return clazz.cast(baked);
     }
@@ -99,7 +99,7 @@ public class ModelHelper {
    */
   @SuppressWarnings("deprecation")
   private static ResourceLocation getParticleTextureInternal(Block block) {
-    return Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(block.getDefaultState()).getParticleTexture().getName();
+    return Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(block.defaultBlockState()).getParticleIcon().getName();
   }
 
   /**
@@ -124,13 +124,13 @@ public class ModelHelper {
    * @throws JsonParseException  If there is no array or the length is wrong
    */
   public static <T> T arrayToObject(JsonObject json, String name, int size, Function<float[], T> mapper) {
-    JsonArray array = JSONUtils.getJsonArray(json, name);
+    JsonArray array = JSONUtils.getAsJsonArray(json, name);
     if (array.size() != size) {
       throw new JsonParseException("Expected " + size + " " + name + " values, found: " + array.size());
     }
     float[] vec = new float[size];
     for(int i = 0; i < size; ++i) {
-      vec[i] = JSONUtils.getFloat(array.get(i), name + "[" + i + "]");
+      vec[i] = JSONUtils.convertToFloat(array.get(i), name + "[" + i + "]");
     }
     return mapper.apply(vec);
   }
@@ -152,7 +152,7 @@ public class ModelHelper {
    * @return  Integer of 0, 90, 180, or 270
    */
   public static int getRotation(JsonObject json, String key) {
-    int i = JSONUtils.getInt(json, key, 0);
+    int i = JSONUtils.getAsInt(json, key, 0);
     if (i >= 0 && i % 90 == 0 && i / 90 <= 3) {
       return i;
     } else {

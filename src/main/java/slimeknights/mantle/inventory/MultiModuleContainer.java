@@ -43,7 +43,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
    */
   public void addSubContainer(Container subcontainer, boolean preferForShiftClick) {
     if (this.subContainers.isEmpty()) {
-      this.subContainerSlotStart = this.inventorySlots.size();
+      this.subContainerSlotStart = this.slots.size();
     }
     this.subContainers.add(subcontainer);
 
@@ -51,13 +51,13 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
       this.shiftClickContainers.add(subcontainer);
     }
 
-    int begin = this.inventorySlots.size();
-    for (Object slot : subcontainer.inventorySlots) {
+    int begin = this.slots.size();
+    for (Object slot : subcontainer.slots) {
       WrapperSlot wrapper = new WrapperSlot((Slot) slot);
       this.addSlot(wrapper);
-      this.slotContainerMap.put(wrapper.slotNumber, subcontainer);
+      this.slotContainerMap.put(wrapper.index, subcontainer);
     }
-    int end = this.inventorySlots.size();
+    int end = this.slots.size();
     this.subContainerSlotRanges.put(subcontainer, Pair.of(begin, end));
   }
 
@@ -90,49 +90,49 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
   }
 
   @Override
-  public boolean canInteractWith(PlayerEntity playerIn) {
+  public boolean stillValid(PlayerEntity playerIn) {
     // check if subcontainers are valid
     for (Container sub : this.subContainers) {
-      if (!sub.canInteractWith(playerIn)) {
+      if (!sub.stillValid(playerIn)) {
         return false;
       }
     }
 
-    return super.canInteractWith(playerIn);
+    return super.stillValid(playerIn);
   }
 
   @Override
-  public void onContainerClosed(PlayerEntity playerIn) {
+  public void removed(PlayerEntity playerIn) {
     for (Container sub : this.subContainers) {
-      sub.onContainerClosed(playerIn);
+      sub.removed(playerIn);
     }
 
-    super.onContainerClosed(playerIn);
+    super.removed(playerIn);
   }
 
   @Override
-  public ItemStack slotClick(int slotId, int dragType, ClickType type, PlayerEntity player) {
+  public ItemStack clicked(int slotId, int dragType, ClickType type, PlayerEntity player) {
     if (slotId == -999 && type == ClickType.QUICK_CRAFT) {
       for (Container container : this.subContainers) {
-        container.slotClick(slotId, dragType, type, player);
+        container.clicked(slotId, dragType, type, player);
       }
     }
 
-    return super.slotClick(slotId, dragType, type, player);
+    return super.clicked(slotId, dragType, type, player);
   }
 
   // More sophisticated version of the one in BaseContainer
   // Takes submodules into account when shiftclicking!
   @Override
-  public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-    Slot slot = this.inventorySlots.get(index);
+  public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+    Slot slot = this.slots.get(index);
 
-    if (slot == null || !slot.getHasStack()) {
+    if (slot == null || !slot.hasItem()) {
       return ItemStack.EMPTY;
     }
 
-    ItemStack ret = slot.getStack().copy();
-    ItemStack itemstack = slot.getStack().copy();
+    ItemStack ret = slot.getItem().copy();
+    ItemStack itemstack = slot.getItem().copy();
 
     Container container = this.getSlotContainer(index);
     boolean nothingDone = true;
@@ -178,18 +178,18 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
 
   protected ItemStack notifySlotAfterTransfer(PlayerEntity player, ItemStack stack, ItemStack original, Slot slot) {
     // notify slot
-    slot.onSlotChange(stack, original);
+    slot.onQuickCraft(stack, original);
 
     if (stack.getCount() == original.getCount()) {
       return ItemStack.EMPTY;
     }
 
     // update slot we pulled from
-    slot.putStack(stack);
+    slot.set(stack);
     slot.onTake(player, stack);
 
-    if (slot.getHasStack() && slot.getStack().isEmpty()) {
-      slot.putStack(ItemStack.EMPTY);
+    if (slot.hasItem() && slot.getItem().isEmpty()) {
+      slot.set(ItemStack.EMPTY);
     }
 
     return original;
@@ -204,7 +204,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     if (end < 0) {
       end = this.playerInventoryStart;
     }
-    return !this.mergeItemStack(itemstack, 0, end, false);
+    return !this.moveItemStackTo(itemstack, 0, end, false);
   }
 
   protected boolean moveToPlayerInventory(ItemStack itemstack) {
@@ -212,7 +212,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
       return false;
     }
 
-    return this.playerInventoryStart > 0 && !this.mergeItemStack(itemstack, this.playerInventoryStart, this.inventorySlots.size(), true);
+    return this.playerInventoryStart > 0 && !this.moveItemStackTo(itemstack, this.playerInventoryStart, this.slots.size(), true);
   }
 
   protected boolean moveToAnyContainer(ItemStack itemstack, Collection<Container> containers) {
@@ -231,7 +231,7 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
 
   protected boolean moveToContainer(ItemStack itemstack, Container container) {
     Pair<Integer, Integer> range = this.subContainerSlotRanges.get(container);
-    return !this.mergeItemStack(itemstack, range.getLeft(), range.getRight(), false);
+    return !this.moveItemStackTo(itemstack, range.getLeft(), range.getRight(), false);
   }
 
   protected boolean refillAnyContainer(ItemStack itemstack, Collection<Container> containers) {
@@ -261,10 +261,10 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     if (this.tile == null) {
       return null;
     } else {
-      return ObjectUtils.firstNonNull(this.detectChest(this.tile.getPos().north(), clazz),
-        this.detectChest(this.tile.getPos().east(), clazz),
-        this.detectChest(this.tile.getPos().south(), clazz),
-        this.detectChest(this.tile.getPos().west(), clazz));
+      return ObjectUtils.firstNonNull(this.detectChest(this.tile.getBlockPos().north(), clazz),
+        this.detectChest(this.tile.getBlockPos().east(), clazz),
+        this.detectChest(this.tile.getBlockPos().south(), clazz),
+        this.detectChest(this.tile.getBlockPos().west(), clazz));
     }
   }
 
@@ -273,10 +273,10 @@ public class MultiModuleContainer<TILE extends TileEntity> extends BaseContainer
     if (this.tile == null) {
       return null;
     } else {
-      if (this.tile.getWorld() == null) {
+      if (this.tile.getLevel() == null) {
         return null;
       } else {
-        TileEntity te = this.tile.getWorld().getTileEntity(pos);
+        TileEntity te = this.tile.getLevel().getBlockEntity(pos);
         if (clazz.isInstance(te)) {
           return clazz.cast(te);
         }

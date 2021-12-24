@@ -28,7 +28,7 @@ public class RenderingHelper {
    */
   public static boolean applyRotation(MatrixStack matrices, BlockState state) {
     if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-      return applyRotation(matrices, state.get(BlockStateProperties.HORIZONTAL_FACING));
+      return applyRotation(matrices, state.getValue(BlockStateProperties.HORIZONTAL_FACING));
     }
     return false;
   }
@@ -42,9 +42,9 @@ public class RenderingHelper {
   public static boolean applyRotation(MatrixStack matrices, Direction facing) {
     // south has a facing of 0, no rotation needed
     if (facing.getAxis().isHorizontal() && facing != Direction.SOUTH) {
-      matrices.push();
+      matrices.pushPose();
       matrices.translate(0.5, 0, 0.5);
-      matrices.rotate(Vector3f.YP.rotationDegrees(-90f * (facing.getHorizontalIndex())));
+      matrices.mulPose(Vector3f.YP.rotationDegrees(-90f * (facing.get2DDataValue())));
       matrices.translate(-0.5, 0, -0.5);
       return true;
     }
@@ -69,9 +69,9 @@ public class RenderingHelper {
     if (item.isEmpty()) return;
 
     // start rendering
-    matrices.push();
+    matrices.pushPose();
     Vector3f center = modelItem.getCenterScaled();
-    matrices.translate(center.getX(), center.getY(), center.getZ());
+    matrices.translate(center.x(), center.y(), center.z());
 
     // scale
     float scale = modelItem.getSizeScaled();
@@ -80,16 +80,16 @@ public class RenderingHelper {
     // rotate X, then Y
     float x = modelItem.getX();
     if (x != 0) {
-      matrices.rotate(Vector3f.XP.rotationDegrees(x));
+      matrices.mulPose(Vector3f.XP.rotationDegrees(x));
     }
     float y = modelItem.getY();
     if (y != 0) {
-      matrices.rotate(Vector3f.YP.rotationDegrees(y));
+      matrices.mulPose(Vector3f.YP.rotationDegrees(y));
     }
 
     // render the actual item
-    Minecraft.getInstance().getItemRenderer().renderItem(item, modelItem.getTransform(), light, OverlayTexture.NO_OVERLAY, matrices, buffer);
-    matrices.pop();
+    Minecraft.getInstance().getItemRenderer().renderStatic(item, modelItem.getTransform(), light, OverlayTexture.NO_OVERLAY, matrices, buffer);
+    matrices.popPose();
   }
 
   /**

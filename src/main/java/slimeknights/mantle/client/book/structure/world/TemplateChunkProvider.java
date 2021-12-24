@@ -51,19 +51,19 @@ public class TemplateChunkProvider extends AbstractChunkProvider {
 
   @Nonnull
   @Override
-  public String makeString() {
+  public String gatherStats() {
     return "?";
   }
 
   @Nonnull
   @Override
-  public WorldLightManager getLightManager() {
+  public WorldLightManager getLightEngine() {
     return this.lightManager;
   }
 
   @Nonnull
   @Override
-  public IBlockReader getWorld() {
+  public IBlockReader getLevel() {
     return this.world;
   }
 }

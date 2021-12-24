@@ -79,7 +79,7 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
 
   @Override
   public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-    return ISuggestionProvider.suggestIterable(ALL_COLLECTIONS_ITERABLE, builder);
+    return ISuggestionProvider.suggestResource(ALL_COLLECTIONS_ITERABLE, builder);
   }
 
   @Override
@@ -99,10 +99,10 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
   /** Enum containing all vanilla tag collection types */
   @AllArgsConstructor
   protected enum VanillaTagType {
-    BLOCK(Registry.BLOCK_KEY.getLocation(),             () -> TagCollectionManager.getManager().getBlockTags()),
-    ITEM(Registry.ITEM_KEY.getLocation(),               () -> TagCollectionManager.getManager().getItemTags()),
-    FLUID(Registry.FLUID_KEY.getLocation(),             () -> TagCollectionManager.getManager().getFluidTags()),
-    ENTITY_TYPE(Registry.ENTITY_TYPE_KEY.getLocation(), () -> TagCollectionManager.getManager().getEntityTypeTags());
+    BLOCK(Registry.BLOCK_REGISTRY.location(),             () -> TagCollectionManager.getInstance().getBlocks()),
+    ITEM(Registry.ITEM_REGISTRY.location(),               () -> TagCollectionManager.getInstance().getItems()),
+    FLUID(Registry.FLUID_REGISTRY.location(),             () -> TagCollectionManager.getInstance().getFluids()),
+    ENTITY_TYPE(Registry.ENTITY_TYPE_REGISTRY.location(), () -> TagCollectionManager.getInstance().getEntityTypes());
 
     @Getter
     private final ResourceLocation name;

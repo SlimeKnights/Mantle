@@ -107,19 +107,19 @@ public class ConsumerWrapperBuilder {
     }
 
     @Override
-    public JsonObject getRecipeJson() {
+    public JsonObject serializeRecipe() {
       JsonObject json = new JsonObject();
       if (overrideName != null) {
         json.addProperty("type", overrideName.toString());
       } else {
-        json.addProperty("type", Objects.requireNonNull(getSerializer().getRegistryName()).toString());
+        json.addProperty("type", Objects.requireNonNull(getType().getRegistryName()).toString());
       }
-      this.serialize(json);
+      this.serializeRecipeData(json);
       return json;
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serializeRecipeData(JsonObject json) {
       // add conditions on top
       if (!conditions.isEmpty()) {
         JsonArray conditionsArray = new JsonArray();
@@ -129,32 +129,32 @@ public class ConsumerWrapperBuilder {
         json.add("conditions", conditionsArray);
       }
       // serialize the normal recipe
-      original.serialize(json);
+      original.serializeRecipeData(json);
     }
 
     @Override
-    public ResourceLocation getID() {
-      return original.getID();
+    public ResourceLocation getId() {
+      return original.getId();
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public IRecipeSerializer<?> getType() {
       if (override != null) {
         return override;
       }
-      return original.getSerializer();
+      return original.getType();
     }
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-      return original.getAdvancementJson();
+    public JsonObject serializeAdvancement() {
+      return original.serializeAdvancement();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
-      return original.getAdvancementID();
+    public ResourceLocation getAdvancementId() {
+      return original.getAdvancementId();
     }
   }
 }

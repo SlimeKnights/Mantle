@@ -52,7 +52,7 @@ public class DumpAllTagsCommand {
    * @param subCommand  Command builder
    */
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
-    subCommand.requires(sender -> sender.hasPermissionLevel(MantleCommand.PERMISSION_EDIT_SPAWN))
+    subCommand.requires(sender -> sender.hasPermission(MantleCommand.PERMISSION_EDIT_SPAWN))
               .executes(DumpAllTagsCommand::runAll)
               .then(Commands.argument("type", TagCollectionArgument.collection())
                             .executes(DumpAllTagsCommand::runType));
@@ -69,7 +69,7 @@ public class DumpAllTagsCommand {
    * @return  Clickable text component
    */
   protected static ITextComponent getOutputComponent(File file) {
-    return new StringTextComponent(file.getAbsolutePath()).modifyStyle(style -> style.setUnderlined(true).setClickEvent(new ClickEvent(Action.OPEN_FILE, file.getAbsolutePath())));
+    return new StringTextComponent(file.getAbsolutePath()).withStyle(style -> style.setUnderlined(true).withClickEvent(new ClickEvent(Action.OPEN_FILE, file.getAbsolutePath())));
   }
 
   /** Dumps all tags to the game directory */
@@ -87,7 +87,7 @@ public class DumpAllTagsCommand {
       }
     }
     // print the output path
-    context.getSource().sendFeedback(new TranslationTextComponent("command.mantle.dump_all_tags.success", getOutputComponent(output)), true);
+    context.getSource().sendSuccess(new TranslationTextComponent("command.mantle.dump_all_tags.success", getOutputComponent(output)), true);
     return tagsDumped;
   }
 
@@ -97,7 +97,7 @@ public class DumpAllTagsCommand {
     TagCollectionArgument.Result type = context.getArgument("type", TagCollectionArgument.Result.class);
     int result = runForFolder(context, type.getName(), type.getTagFolder(), output);
     // print result
-    context.getSource().sendFeedback(new TranslationTextComponent("command.mantle.dump_all_tags.type_success", type.getName(), getOutputComponent(output)), true);
+    context.getSource().sendSuccess(new TranslationTextComponent("command.mantle.dump_all_tags.type_success", type.getName(), getOutputComponent(output)), true);
     return result;
   }
 
@@ -114,24 +114,24 @@ public class DumpAllTagsCommand {
 
     // iterate all tags from the datapack
     String dataPackFolder = "tags/" + tagFolder;
-    for (ResourceLocation resourcePath : manager.getAllResourceLocations(dataPackFolder, fileName -> fileName.endsWith(".json"))) {
+    for (ResourceLocation resourcePath : manager.listResources(dataPackFolder, fileName -> fileName.endsWith(".json"))) {
       String path = resourcePath.getPath();
       ResourceLocation tagId = new ResourceLocation(resourcePath.getNamespace(), path.substring(dataPackFolder.length() + 1, path.length() - EXTENSION_LENGTH));
       try {
-        for (IResource resource : manager.getAllResources(resourcePath)) {
+        for (IResource resource : manager.getResources(resourcePath)) {
           try (
             InputStream inputstream = resource.getInputStream();
             Reader reader = new BufferedReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8))
           ) {
             JsonObject json = JSONUtils.fromJson(GSON, reader, JsonObject.class);
             if (json == null) {
-              Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", tagType, tagId, resourcePath, resource.getPackName());
+              Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", tagType, tagId, resourcePath, resource.getSourceName());
             } else {
               // store by the resource path instead of the ID, thats the one we want at the end
-              foundTags.computeIfAbsent(resourcePath, id -> Builder.create()).deserialize(json, resource.getPackName());
+              foundTags.computeIfAbsent(resourcePath, id -> Builder.tag()).addFromJson(json, resource.getSourceName());
             }
           } catch (RuntimeException | IOException ex) {
-            Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", tagType, tagId, resourcePath, resource.getPackName(), ex);
+            Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", tagType, tagId, resourcePath, resource.getSourceName(), ex);
           } finally {
             IOUtils.closeQuietly(resource);
           }
@@ -148,7 +148,7 @@ public class DumpAllTagsCommand {
       try {
         Files.createDirectories(path.getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-          writer.write(GSON.toJson(entry.getValue().serialize()));
+          writer.write(GSON.toJson(entry.getValue().serializeToJson()));
         }
       } catch (IOException ex) {
         Mantle.logger.error("Couldn't save tags to {}", path, ex);

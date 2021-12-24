@@ -72,7 +72,7 @@ public class IngredientData implements IDataElement {
       return;
     }
 
-    items = NonNullList.from(getMissingItem(), stacks.toArray(new ItemStack[0]));
+    items = NonNullList.of(getMissingItem(), stacks.toArray(new ItemStack[0]));
   }
 
   private ItemStack getMissingItem() {
@@ -82,7 +82,7 @@ public class IngredientData implements IDataElement {
   private ItemStack getMissingItem(String error) {
     ItemStack missingItem = new ItemStack(Items.BARRIER);
 
-    CompoundNBT display = missingItem.getOrCreateChildTag("display");
+    CompoundNBT display = missingItem.getOrCreateTagElement("display");
     display.putString("Name", "\u00A7rError Loading Item");
     ListNBT lore = new ListNBT();
     if(!StringUtils.isNullOrEmpty(error)) {
@@ -107,7 +107,7 @@ public class IngredientData implements IDataElement {
           try {
             data.ingredients[i] = readIngredient(array.get(i));
           } catch (Exception e) {
-            data.ingredients[i] = SizedIngredient.of(Ingredient.fromStacks(data.getMissingItem(e.getMessage())));
+            data.ingredients[i] = SizedIngredient.of(Ingredient.of(data.getMissingItem(e.getMessage())));
           }
         }
 

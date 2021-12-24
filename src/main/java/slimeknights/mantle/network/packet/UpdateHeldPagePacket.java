@@ -16,21 +16,21 @@ public class UpdateHeldPagePacket implements IThreadsafePacket {
   private final Hand hand;
   private final String page;
   public UpdateHeldPagePacket(PacketBuffer buffer) {
-    this.hand = buffer.readEnumValue(Hand.class);
-    this.page = buffer.readString(100);
+    this.hand = buffer.readEnum(Hand.class);
+    this.page = buffer.readUtf(100);
   }
 
   @Override
   public void encode(PacketBuffer buf) {
-    buf.writeEnumValue(hand);
-    buf.writeString(this.page);
+    buf.writeEnum(hand);
+    buf.writeUtf(this.page);
   }
 
   @Override
   public void handleThreadsafe(Context context) {
     PlayerEntity player = context.getSender();
     if (player != null && this.page != null) {
-      ItemStack stack = player.getHeldItem(hand);
+      ItemStack stack = player.getItemInHand(hand);
       if (!stack.isEmpty()) {
         BookHelper.writeSavedPageToBook(stack, this.page);
       }

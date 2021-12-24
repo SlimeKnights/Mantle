@@ -45,7 +45,7 @@ public class ContainsItemModifierLootCondition implements ILootModifierCondition
   public JsonObject serialize(JsonSerializationContext context) {
     JsonObject json = new JsonObject();
     json.addProperty("type", ID.toString());
-    json.add("ingredient", ingredient.serialize());
+    json.add("ingredient", ingredient.toJson());
     if (amountNeeded != 1) {
       json.addProperty("needed", amountNeeded);
     }
@@ -54,9 +54,9 @@ public class ContainsItemModifierLootCondition implements ILootModifierCondition
 
   /** Parses this from JSON */
   public static ContainsItemModifierLootCondition deserialize(JsonElement element, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-    JsonObject json = JSONUtils.getJsonObject(element, "condition");
-    Ingredient ingredient = Ingredient.deserialize(JSONUtils.getJsonObject(json, "ingredient"));
-    int needed = JSONUtils.getInt(json, "needed", 1);
+    JsonObject json = JSONUtils.convertToJsonObject(element, "condition");
+    Ingredient ingredient = Ingredient.fromJson(JSONUtils.getAsJsonObject(json, "ingredient"));
+    int needed = JSONUtils.getAsInt(json, "needed", 1);
     return new ContainsItemModifierLootCondition(ingredient, needed);
   }
 }

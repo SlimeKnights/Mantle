@@ -122,7 +122,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
 
     /** Increases the number of entries in the column */
     private void incrementColumns(String text) {
-      entriesInColumn += section.parent.fontRenderer.getWordWrappedHeight(text, COLUMN_WIDTH) / 9;
+      entriesInColumn += section.parent.fontRenderer.wordWrapHeight(text, COLUMN_WIDTH) / 9;
     }
 
     /** Starts a new column */

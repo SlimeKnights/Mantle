@@ -17,13 +17,13 @@ public class OpenLecternBookPacket implements IThreadsafePacket {
 
   public OpenLecternBookPacket(PacketBuffer buffer) {
     this.pos = buffer.readBlockPos();
-    this.book = buffer.readItemStack();
+    this.book = buffer.readItem();
   }
 
   @Override
   public void encode(PacketBuffer buffer) {
     buffer.writeBlockPos(pos);
-    buffer.writeItemStack(book);
+    buffer.writeItem(book);
   }
 
   @Override

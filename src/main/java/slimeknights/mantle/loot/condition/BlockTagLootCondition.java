@@ -32,7 +32,7 @@ public class BlockTagLootCondition implements ILootCondition {
   private final StatePropertiesPredicate properties;
 
   public BlockTagLootCondition(ITag<Block> tag) {
-    this(tag, StatePropertiesPredicate.EMPTY);
+    this(tag, StatePropertiesPredicate.ANY);
   }
 
   public BlockTagLootCondition(ITag<Block> tag, StatePropertiesPredicate.Builder builder) {
@@ -41,39 +41,39 @@ public class BlockTagLootCondition implements ILootCondition {
 
   @Override
   public boolean test(LootContext context) {
-    BlockState state = context.get(LootParameters.BLOCK_STATE);
-    return state != null && state.isIn(tag) && this.properties.matches(state);
+    BlockState state = context.getParamOrNull(LootParameters.BLOCK_STATE);
+    return state != null && state.is(tag) && this.properties.matches(state);
   }
 
   @Override
-  public Set<LootParameter<?>> getRequiredParameters() {
+  public Set<LootParameter<?>> getReferencedContextParams() {
     return ImmutableSet.of(LootParameters.BLOCK_STATE);
   }
 
   @Override
-  public LootConditionType func_230419_b_() {
+  public LootConditionType getType() {
     return MantleLoot.BLOCK_TAG_CONDITION;
   }
 
   private static class Serializer implements ILootSerializer<BlockTagLootCondition> {
     @Override
     public void serialize(JsonObject json, BlockTagLootCondition loot, JsonSerializationContext context) {
-      json.addProperty("tag", TagCollectionManager.getManager().getBlockTags().getValidatedIdFromTag(loot.tag).toString());
-      if (loot.properties != StatePropertiesPredicate.EMPTY) {
-        json.add("properties", loot.properties.toJsonElement());
+      json.addProperty("tag", TagCollectionManager.getInstance().getBlocks().getIdOrThrow(loot.tag).toString());
+      if (loot.properties != StatePropertiesPredicate.ANY) {
+        json.add("properties", loot.properties.serializeToJson());
       }
     }
 
     @Override
     public BlockTagLootCondition deserialize(JsonObject json, JsonDeserializationContext context) {
       ResourceLocation id = JsonHelper.getResourceLocation(json, "tag");
-      ITag<Block> tag = TagCollectionManager.getManager().getBlockTags().get(id);
+      ITag<Block> tag = TagCollectionManager.getInstance().getBlocks().getTag(id);
       if (tag == null) {
         throw new JsonSyntaxException("Unknown block tag '" + id + "'");
       }
-      StatePropertiesPredicate predicate = StatePropertiesPredicate.EMPTY;
+      StatePropertiesPredicate predicate = StatePropertiesPredicate.ANY;
       if (json.has("properties")) {
-        predicate = StatePropertiesPredicate.deserializeProperties(json.get("properties"));
+        predicate = StatePropertiesPredicate.fromJson(json.get("properties"));
       }
       return new BlockTagLootCondition(tag, predicate);
     }

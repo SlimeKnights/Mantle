@@ -175,7 +175,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    */
   public static void updateSavedPage(@Nullable PlayerEntity player, Hand hand, String page) {
     if (player != null) {
-      ItemStack item = player.getHeldItem(hand);
+      ItemStack item = player.getItemInHand(hand);
       if (!item.isEmpty()) {
         BookHelper.writeSavedPageToBook(item, page);
         MantleNetwork.INSTANCE.network.sendToServer(new UpdateHeldPagePacket(hand, page));

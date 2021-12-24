@@ -11,6 +11,8 @@ import net.minecraftforge.common.crafting.NBTIngredient;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+import net.minecraftforge.common.crafting.NBTIngredient.Serializer;
+
 /**
  * Ingredient for a NBT sensitive item from another mod, should never be used outside datagen
  */
@@ -50,7 +52,7 @@ public class NBTNameIngredient extends NBTIngredient {
   }
 
   @Override
-  public JsonElement serialize() {
+  public JsonElement toJson() {
     JsonObject json = new JsonObject();
     json.addProperty("type", Objects.requireNonNull(CraftingHelper.getID(Serializer.INSTANCE)).toString());
     json.addProperty("item", name.toString());

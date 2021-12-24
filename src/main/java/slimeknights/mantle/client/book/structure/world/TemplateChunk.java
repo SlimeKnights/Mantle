@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import net.minecraft.world.chunk.Chunk.CreateEntityType;
+
 public class TemplateChunk extends EmptyChunk {
 
   private final Map<BlockPos, BlockInfo> blocksInChunk;
@@ -35,10 +37,10 @@ public class TemplateChunk extends EmptyChunk {
       this.blocksInChunk.put(info.pos, info);
 
       if (info.nbt != null) {
-        TileEntity tile = TileEntity.readTileEntity(info.state, info.nbt);
+        TileEntity tile = TileEntity.loadStatic(info.state, info.nbt);
 
         if (tile != null) {
-          tile.setWorldAndPos(worldIn, info.pos);
+          tile.setLevelAndPosition(worldIn, info.pos);
           this.tiles.put(info.pos, tile);
         }
       }
@@ -55,7 +57,7 @@ public class TemplateChunk extends EmptyChunk {
         return result.state;
     }
 
-    return Blocks.VOID_AIR.getDefaultState();
+    return Blocks.VOID_AIR.defaultBlockState();
   }
 
   @Nonnull
@@ -67,7 +69,7 @@ public class TemplateChunk extends EmptyChunk {
 
   @Nullable
   @Override
-  public TileEntity getTileEntity(@Nonnull BlockPos pos, @Nonnull CreateEntityType creationMode) {
+  public TileEntity getBlockEntity(@Nonnull BlockPos pos, @Nonnull CreateEntityType creationMode) {
     if (!this.shouldShow.test(pos))
       return null;
 

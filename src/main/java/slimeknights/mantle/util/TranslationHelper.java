@@ -43,7 +43,7 @@ public class TranslationHelper {
    * @param tooltip  List of tooltips
    */
   public static void addOptionalTooltip(ItemStack stack, List<ITextComponent> tooltip) {
-    addOptionalTooltip(stack.getTranslationKey() + ".tooltip", tooltip);
+    addOptionalTooltip(stack.getDescriptionId() + ".tooltip", tooltip);
   }
 
   /**
@@ -65,7 +65,7 @@ public class TranslationHelper {
    */
   public static void addEachLine(String text, List<ITextComponent> tooltip) {
     for (String string : text.split("\n")) {
-      tooltip.add(new StringTextComponent(string).mergeStyle(TextFormatting.GRAY));
+      tooltip.add(new StringTextComponent(string).withStyle(TextFormatting.GRAY));
     }
   }
 

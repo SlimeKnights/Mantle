@@ -16,6 +16,8 @@ import slimeknights.mantle.util.TileEntityHelper;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 /**
  * Logic for a retexturable block. Use alongside {@link slimeknights.mantle.tileentity.IRetexturedTileEntity} and {@link slimeknights.mantle.item.RetexturedBlockItem}
  */
@@ -35,8 +37,8 @@ public abstract class RetexturedBlock extends Block {
   public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
 
   @Override
-  public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    super.onBlockPlacedBy(world, pos, state, placer, stack);
+  public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    super.setPlacedBy(world, pos, state, placer, stack);
     updateTextureBlock(world, pos, stack);
   }
 

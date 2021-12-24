@@ -15,6 +15,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.recipe.RecipeHelper;
 
+import net.minecraft.loot.LootFunction.Builder;
+
 /**
  * Loot function to set the fluid on a dropped item
  */
@@ -29,7 +31,7 @@ public class SetFluidLootFunction extends LootFunction {
   }
 
   @Override
-  protected ItemStack doApply(ItemStack stack, LootContext context) {
+  protected ItemStack run(ItemStack stack, LootContext context) {
     return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
                 .map(handler -> {
                   handler.fill(fluid.copy(), FluidAction.EXECUTE);
@@ -38,7 +40,7 @@ public class SetFluidLootFunction extends LootFunction {
   }
 
   @Override
-  public LootFunctionType getFunctionType() {
+  public LootFunctionType getType() {
     return MantleLoot.SET_FLUID_FUNCTION;
   }
 
@@ -48,7 +50,7 @@ public class SetFluidLootFunction extends LootFunction {
    * @return  Builder instance
    */
   public static Builder<?> builder(FluidStack fluid) {
-    return builder(conditions -> new SetFluidLootFunction(conditions, fluid));
+    return simpleBuilder(conditions -> new SetFluidLootFunction(conditions, fluid));
   }
 
   /** Serializer logic for the function */
@@ -61,7 +63,7 @@ public class SetFluidLootFunction extends LootFunction {
 
     @Override
     public SetFluidLootFunction deserialize(JsonObject object, JsonDeserializationContext context, ILootCondition[] conditions) {
-      FluidStack fluid = RecipeHelper.deserializeFluidStack(JSONUtils.getJsonObject(object, "fluid"));
+      FluidStack fluid = RecipeHelper.deserializeFluidStack(JSONUtils.getAsJsonObject(object, "fluid"));
       return new SetFluidLootFunction(conditions, fluid);
     }
   }

@@ -62,8 +62,8 @@ public class StructureElement extends SizedBookElement {
 
   @Override
   public void draw(MatrixStack transform, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-    MatrixStack.Entry lastEntryBeforeTry = transform.getLast();
+    IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+    MatrixStack.Entry lastEntryBeforeTry = transform.last();
 
     try {
       long currentTime = System.currentTimeMillis();
@@ -83,14 +83,14 @@ public class StructureElement extends SizedBookElement {
       int structureWidth = this.renderInfo.structureWidth;
       int structureHeight = this.renderInfo.structureHeight;
 
-      transform.push();
+      transform.pushPose();
 
-      final BlockRendererDispatcher blockRender = Minecraft.getInstance().getBlockRendererDispatcher();
+      final BlockRendererDispatcher blockRender = Minecraft.getInstance().getBlockRenderer();
 
       transform.translate(this.transX, this.transY, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
       transform.scale(this.scale, -this.scale, 1);
       this.additionalTransform.push(transform);
-      transform.rotate(new Quaternion(0, 0, 0, true));
+      transform.mulPose(new Quaternion(0, 0, 0, true));
 
       transform.translate(structureLength / -2f, structureHeight / -2f, structureWidth / -2f);
 
@@ -101,18 +101,18 @@ public class StructureElement extends SizedBookElement {
             BlockState state = this.structureWorld.getBlockState(pos);
 
             if (!state.isAir(this.structureWorld, pos)) {
-              transform.push();
+              transform.pushPose();
               transform.translate(l, h, w);
 
               int overlay;
 
               if (pos.equals(new BlockPos(1, 1, 1)))
-                overlay = OverlayTexture.getPackedUV(0, true);
+                overlay = OverlayTexture.pack(0, true);
               else
                 overlay = OverlayTexture.NO_OVERLAY;
 
               IModelData modelData = EmptyModelData.INSTANCE;
-              TileEntity te = structureWorld.getTileEntity(pos);
+              TileEntity te = structureWorld.getBlockEntity(pos);
 
               if (te != null)
                 modelData = te.getModelData();
@@ -120,14 +120,14 @@ public class StructureElement extends SizedBookElement {
               RenderSystem.disableLighting();
 
               blockRender.renderBlock(state, transform, buffer, 0xf000f0, overlay, modelData);
-              transform.pop();
+              transform.popPose();
             }
           }
         }
       }
 
-      transform.pop();
-      transform.pop();
+      transform.popPose();
+      transform.popPose();
 
     } catch (Exception e) {
       final long now = System.currentTimeMillis();
@@ -137,11 +137,11 @@ public class StructureElement extends SizedBookElement {
         this.lastPrintedErrorTimeMs = now;
       }
 
-      while (lastEntryBeforeTry != transform.getLast())
-        transform.pop();
+      while (lastEntryBeforeTry != transform.last())
+        transform.popPose();
     }
 
-    buffer.finish();
+    buffer.endBatch();
   }
 
   @Override

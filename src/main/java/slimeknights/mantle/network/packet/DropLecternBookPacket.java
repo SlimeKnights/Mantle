@@ -37,30 +37,30 @@ public class DropLecternBookPacket implements IThreadsafePacket {
       return;
     }
 
-    ServerWorld world = player.getServerWorld();
+    ServerWorld world = player.getLevel();
 
-    if(!world.isBlockLoaded(pos)) {
+    if(!world.hasChunkAt(pos)) {
       return;
     }
 
     BlockState state = world.getBlockState(pos);
 
-    if(state.getBlock() instanceof LecternBlock && state.get(LecternBlock.HAS_BOOK)) {
-      TileEntity te = world.getTileEntity(pos);
+    if(state.getBlock() instanceof LecternBlock && state.getValue(LecternBlock.HAS_BOOK)) {
+      TileEntity te = world.getBlockEntity(pos);
       if(te instanceof LecternTileEntity) {
         LecternTileEntity lecternTe = (LecternTileEntity) te;
 
         ItemStack book = lecternTe.getBook().copy();
         if(!book.isEmpty()) {
-          if(!player.addItemStackToInventory(book)) {
-            player.dropItem(book, false, false);
+          if(!player.addItem(book)) {
+            player.drop(book, false, false);
           }
 
-          lecternTe.clear();
+          lecternTe.clearContent();
 
           // fix lectern state
-          world.setBlockState(pos, state.with(LecternBlock.POWERED, false).with(LecternBlock.HAS_BOOK, false), 3);
-          world.notifyNeighborsOfStateChange(pos.down(), state.getBlock());
+          world.setBlock(pos, state.setValue(LecternBlock.POWERED, false).setValue(LecternBlock.HAS_BOOK, false), 3);
+          world.updateNeighborsAt(pos.below(), state.getBlock());
         }
       }
     }

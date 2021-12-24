@@ -143,13 +143,13 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
 
     // type is just a name
     if (json.has("type")) {
-      ResourceLocation name = new ResourceLocation(JSONUtils.getString(json, "type"));
+      ResourceLocation name = new ResourceLocation(JSONUtils.getAsString(json, "type"));
       return new Single(findEntityType(name));
     }
     // tag is also a name
     if (json.has("tag")) {
-      ResourceLocation name = new ResourceLocation(JSONUtils.getString(json, "tag"));
-      ITag<EntityType<?>> tag = TagCollectionManager.getManager().getEntityTypeTags().get(name);
+      ResourceLocation name = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
+      ITag<EntityType<?>> tag = TagCollectionManager.getInstance().getEntityTypes().getTag(name);
       if (tag == null) {
         throw new JsonSyntaxException("Unknown entity type tag " + name);
       } else {
@@ -158,7 +158,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     }
     // types is a list
     if (json.has("types")) {
-      List<EntityType<?>> types = JsonHelper.parseList(json, "types", (element, key) -> findEntityType(new ResourceLocation(JSONUtils.getString(element, key))));
+      List<EntityType<?>> types = JsonHelper.parseList(json, "types", (element, key) -> findEntityType(new ResourceLocation(JSONUtils.convertToString(element, key))));
       return new SetMatch(ImmutableSet.copyOf(types));
     }
 
@@ -228,13 +228,13 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
 
     @Override
     public List<EntityType<?>> getTypes() {
-      return tag.getAllElements();
+      return tag.getValues();
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", TagCollectionManager.getManager().getEntityTypeTags().getValidatedIdFromTag(tag).toString());
+      object.addProperty("tag", TagCollectionManager.getInstance().getEntityTypes().getIdOrThrow(tag).toString());
       return object;
     }
   }

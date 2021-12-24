@@ -30,7 +30,7 @@ public class IntArrayWrapper implements IIntArray {
   }
 
   @Override
-  public int size() {
+  public int getCount() {
     return sup.get().length;
   }
 }

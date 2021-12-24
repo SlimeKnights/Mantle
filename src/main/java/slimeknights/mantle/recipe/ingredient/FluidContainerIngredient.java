@@ -51,7 +51,7 @@ public class FluidContainerIngredient extends Ingredient {
 
   /** Creates an instance from a fluid ingredient with a display container */
   public static FluidContainerIngredient fromFluid(FluidObject<?> fluid, boolean forgeTag) {
-    return fromIngredient(FluidIngredient.of(forgeTag ? fluid.getForgeTag() : fluid.getLocalTag(), FluidAttributes.BUCKET_VOLUME), Ingredient.fromItems(fluid));
+    return fromIngredient(FluidIngredient.of(forgeTag ? fluid.getForgeTag() : fluid.getLocalTag(), FluidAttributes.BUCKET_VOLUME), Ingredient.of(fluid));
   }
 
   @Override
@@ -74,25 +74,25 @@ public class FluidContainerIngredient extends Ingredient {
       int amount = fluidIngredient.getAmount(fluid);
       FluidStack drained = cap.drain(amount, FluidAction.EXECUTE);
       // we need an exact match, and we need the resulting container item to be the same as the item stack's container item
-      return drained.getFluid() == fluid && drained.getAmount() == amount && ItemStack.areItemStacksEqual(stack.getContainerItem(), cap.getContainer());
+      return drained.getFluid() == fluid && drained.getAmount() == amount && ItemStack.matches(stack.getContainerItem(), cap.getContainer());
     }).isPresent();
   }
 
   @Override
-  public ItemStack[] getMatchingStacks() {
+  public ItemStack[] getItems() {
     if (displayStacks == null) {
       // no container? unfortunately hard to display this recipe so show nothing
       if (display == null) {
         displayStacks = new ItemStack[0];
       } else {
-        displayStacks = display.getMatchingStacks();
+        displayStacks = display.getItems();
       }
     }
     return displayStacks;
   }
 
   @Override
-  public JsonElement serialize() {
+  public JsonElement toJson() {
     JsonElement element = fluidIngredient.serialize();
     JsonObject json;
     if (element.isJsonObject()) {
@@ -103,7 +103,7 @@ public class FluidContainerIngredient extends Ingredient {
     }
     json.addProperty("type", ID.toString());
     if (display != null) {
-      json.add("display", display.serialize());
+      json.add("display", display.toJson());
     }
     return json;
   }
@@ -137,7 +137,7 @@ public class FluidContainerIngredient extends Ingredient {
       }
       Ingredient display = null;
       if (json.has("display")) {
-        display = Ingredient.deserialize(JsonHelper.getElement(json, "display"));
+        display = Ingredient.fromJson(JsonHelper.getElement(json, "display"));
       }
       return new FluidContainerIngredient(fluidIngredient, display);
     }
@@ -147,7 +147,7 @@ public class FluidContainerIngredient extends Ingredient {
       FluidIngredient fluidIngredient = FluidIngredient.read(buffer);
       Ingredient display = null;
       if (buffer.readBoolean()) {
-        display = Ingredient.read(buffer);
+        display = Ingredient.fromNetwork(buffer);
       }
       return new FluidContainerIngredient(fluidIngredient, display);
     }
@@ -157,7 +157,7 @@ public class FluidContainerIngredient extends Ingredient {
       ingredient.fluidIngredient.write(buffer);
       if (ingredient.display != null) {
         buffer.writeBoolean(true);
-        ingredient.display.write(buffer);
+        ingredient.display.toNetwork(buffer);
       } else {
         buffer.writeBoolean(false);
       }

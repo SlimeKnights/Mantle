@@ -44,7 +44,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
 
   /** Checks if a texture is missing */
   private static boolean isMissing(RenderMaterial material) {
-    return MissingTextureSprite.getLocation().equals(material.getTextureLocation());
+    return MissingTextureSprite.getLocation().equals(material.texture());
   }
 
   /** Gets the texture, or null if missing */
@@ -73,9 +73,9 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     RenderMaterial still = owner.resolveTexture("still");
     RenderMaterial flowing = owner.resolveTexture("flowing");
     RenderMaterial overlay = owner.resolveTexture("overlay");
-    ResourceLocation overlayLocation = isMissing(overlay) ? null : overlay.getTextureLocation();
-    IBakedModel baked = new SimpleBakedModel.Builder(owner, overrides).setTexture(spriteGetter.apply(still)).build();
-    return new BakedModel(baked, still.getTextureLocation(), flowing.getTextureLocation(), overlayLocation, color);
+    ResourceLocation overlayLocation = isMissing(overlay) ? null : overlay.texture();
+    IBakedModel baked = new SimpleBakedModel.Builder(owner, overrides).particle(spriteGetter.apply(still)).build();
+    return new BakedModel(baked, still.texture(), flowing.texture(), overlayLocation, color);
   }
 
   /** Data holder class, has no quads */
@@ -104,7 +104,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     /** Gets a model for a fluid */
     @Nullable
     private BakedModel getFluidModel(Fluid fluid) {
-      return ModelHelper.getBakedModel(fluid.getDefaultState().getBlockState(), BakedModel.class);
+      return ModelHelper.getBakedModel(fluid.defaultFluidState().createLegacyBlock(), BakedModel.class);
     }
 
     /** Gets a model for a fluid from the cache */
@@ -149,7 +149,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     public FluidTextureModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
       int color = -1;
       if (modelContents.has("color")) {
-        String colorString = JSONUtils.getString(modelContents, "color");
+        String colorString = JSONUtils.getAsString(modelContents, "color");
         int length = colorString.length();
         // prevent some invalid strings, colors should all be 6 or 8 digits
         if (colorString.charAt(0) == '-' || (length != 6 && length != 8)) {

@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+import net.minecraft.item.Item.Properties;
+
 /**
  * Logic for a dynamically retexturable block item. This will ensure all the NBT is in the expected format on the item NBT.
  *
@@ -37,16 +39,16 @@ public class RetexturedBlockItem extends BlockTooltipItem {
   }
 
   @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-    if (this.isInGroup(group)) {
+  public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    if (this.allowdedIn(group)) {
       addTagVariants(this.getBlock(), textureTag, items, true);
     }
   }
 
   @OnlyIn(Dist.CLIENT)
   @Override
-  public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-    super.addInformation(stack, worldIn, tooltip, flagIn);
+  public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    super.appendHoverText(stack, worldIn, tooltip, flagIn);
     addTooltip(stack, tooltip);
   }
 
@@ -79,7 +81,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
   public static void addTooltip(ItemStack stack, List<ITextComponent> tooltip) {
     Block block = getTexture(stack);
     if (block != Blocks.AIR) {
-      tooltip.add(block.getTranslatedName());
+      tooltip.add(block.getName());
     }
   }
   /**
@@ -121,8 +123,8 @@ public class RetexturedBlockItem extends BlockTooltipItem {
     boolean added = false;
     // using item tags as that is what will be present in the recipe
     Class<?> clazz = block.getClass();
-    if (!ItemTags.getCollection().getRegisteredTags().isEmpty()) {
-      for (Item candidate : tag.getAllElements()) {
+    if (!ItemTags.getAllTags().getAvailableTags().isEmpty()) {
+      for (Item candidate : tag.getValues()) {
         // non-block items don't have the textures we need
         if (!(candidate instanceof BlockItem)) {
           continue;

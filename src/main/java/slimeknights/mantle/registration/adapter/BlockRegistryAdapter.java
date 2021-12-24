@@ -63,7 +63,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @return  Registered block
    */
   public <T extends Block> T registerOverride(Function<Properties, T> constructor, Block base) {
-    return register(constructor.apply(Block.Properties.from(base)), base);
+    return register(constructor.apply(AbstractBlock.Properties.copy(base)), base);
   }
 
   /* Building */
@@ -80,8 +80,8 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public BuildingBlockObject registerBuilding(Block block, String name) {
     return new BuildingBlockObject(
       this.register(block, name),
-      this.register(new SlabBlock(Block.Properties.from(block)), name + "_slab"),
-      this.register(new StairsBlock(block::getDefaultState, Block.Properties.from(block)), name + "_stairs")
+      this.register(new SlabBlock(AbstractBlock.Properties.copy(block)), name + "_slab"),
+      this.register(new StairsBlock(block::defaultBlockState, AbstractBlock.Properties.copy(block)), name + "_stairs")
     );
   }
 
@@ -95,7 +95,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public WallBuildingBlockObject registerWallBuilding(Block block, String name) {
     return new WallBuildingBlockObject(
       registerBuilding(block, name),
-      this.register(new WallBlock(Block.Properties.from(block)), name + "_wall")
+      this.register(new WallBlock(AbstractBlock.Properties.copy(block)), name + "_wall")
     );
   }
 
@@ -109,7 +109,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public FenceBuildingBlockObject registerFenceBuilding(Block block, String name) {
     return new FenceBuildingBlockObject(
       registerBuilding(block, name),
-      this.register(new FenceBlock(Block.Properties.from(block)), name + "_fence")
+      this.register(new FenceBlock(AbstractBlock.Properties.copy(block)), name + "_fence")
     );
   }
 
@@ -130,32 +130,32 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public WoodBlockObject registerWood(String name, Material planksMaterial, MaterialColor planksColor, SoundType plankSound, ToolType planksTool, Material barkMaterial, MaterialColor barkColor, SoundType barkSound, ItemGroup group) {
     WoodType woodType = WoodType.create(resourceName(name));
     RegistrationHelper.registerWoodType(woodType);
-    Item.Properties itemProps = new Item.Properties().group(group);
+    Item.Properties itemProps = new Item.Properties().tab(group);
 
     // planks
-    AbstractBlock.Properties planksProps = AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(2.0f, 3.0f).sound(plankSound);
+    AbstractBlock.Properties planksProps = AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(2.0f, 3.0f).sound(plankSound);
     BuildingBlockObject planks = registerBuilding(new Block(planksProps), name + "_planks");
-    FenceBlock fence = register(new FenceBlock(Properties.from(planks.get())), name + "_fence");
+    FenceBlock fence = register(new FenceBlock(Properties.copy(planks.get())), name + "_fence");
     // logs and wood
-    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(2.0f).sound(plankSound));
+    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(2.0f).sound(plankSound));
     RotatedPillarBlock strippedLog = register(stripped.get(), "stripped_" + name + "_log");
     RotatedPillarBlock strippedWood = register(stripped.get(), "stripped_" + name + "_wood");
-    RotatedPillarBlock log = register(new StrippableLogBlock(strippedLog.delegate, AbstractBlock.Properties.create(
-      barkMaterial, state -> state.get(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? planksColor : barkColor)
-        .harvestTool(ToolType.AXE).hardnessAndResistance(2.0f).sound(barkSound)), name + "_log");
-    RotatedPillarBlock wood = register(new StrippableLogBlock(strippedWood.delegate, AbstractBlock.Properties.create(barkMaterial, barkColor).harvestTool(ToolType.AXE).hardnessAndResistance(2.0f).sound(barkSound)), name + "_wood");
+    RotatedPillarBlock log = register(new StrippableLogBlock(strippedLog.delegate, AbstractBlock.Properties.of(
+      barkMaterial, state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? planksColor : barkColor)
+        .harvestTool(ToolType.AXE).strength(2.0f).sound(barkSound)), name + "_log");
+    RotatedPillarBlock wood = register(new StrippableLogBlock(strippedWood.delegate, AbstractBlock.Properties.of(barkMaterial, barkColor).harvestTool(ToolType.AXE).strength(2.0f).sound(barkSound)), name + "_wood");
 
     // doors
-    DoorBlock door = register(new WoodenDoorBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(3.0F).sound(plankSound).notSolid()), name + "_door");
-    TrapDoorBlock trapdoor = register(new TrapDoorBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).hardnessAndResistance(3.0F).sound(SoundType.WOOD).notSolid().setAllowsSpawn(Blocks::neverAllowSpawn)), name + "_trapdoor");
+    DoorBlock door = register(new WoodenDoorBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(3.0F).sound(plankSound).noOcclusion()), name + "_door");
+    TrapDoorBlock trapdoor = register(new TrapDoorBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).strength(3.0F).sound(SoundType.WOOD).noOcclusion().isValidSpawn(Blocks::never)), name + "_trapdoor");
     FenceGateBlock fenceGate = register(new FenceGateBlock(planksProps), name + "_fence_gate");
     // redstone
-    AbstractBlock.Properties redstoneProps = AbstractBlock.Properties.create(planksMaterial, planksColor).harvestTool(planksTool).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(plankSound);
+    AbstractBlock.Properties redstoneProps = AbstractBlock.Properties.of(planksMaterial, planksColor).harvestTool(planksTool).noCollission().strength(0.5F).sound(plankSound);
     PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), name + "_pressure_plate");
     WoodButtonBlock button = register(new WoodButtonBlock(redstoneProps), name + "_button");
     // signs
-    StandingSignBlock standingSign = register(new StandingSignBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).doesNotBlockMovement().hardnessAndResistance(1.0F).sound(plankSound), woodType), name + "_sign");
-    WallSignBlock wallSign = register(new WallSignBlock(AbstractBlock.Properties.create(planksMaterial, planksColor).doesNotBlockMovement().hardnessAndResistance(1.0F).sound(plankSound).lootFrom(standingSign.delegate), woodType), name + "_wall_sign");
+    StandingSignBlock standingSign = register(new StandingSignBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).noCollission().strength(1.0F).sound(plankSound), woodType), name + "_sign");
+    WallSignBlock wallSign = register(new WallSignBlock(AbstractBlock.Properties.of(planksMaterial, planksColor).noCollission().strength(1.0F).sound(plankSound).lootFrom(standingSign.delegate), woodType), name + "_wall_sign");
     // tell mantle to inject these into the TE
     RegistrationHelper.registerSignBlock(standingSign.delegate);
     RegistrationHelper.registerSignBlock(wallSign.delegate);
@@ -175,11 +175,11 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    */
   public FlowingFluidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, Material material, int lightLevel, String name) {
     return register(
-        new FlowingFluidBlock(fluid, Block.Properties.create(material)
-                                                     .doesNotBlockMovement()
-                                                     .hardnessAndResistance(100.0F)
+        new FlowingFluidBlock(fluid, AbstractBlock.Properties.of(material)
+                                                     .noCollission()
+                                                     .strength(100.0F)
                                                      .noDrops()
-                                                     .setLightLevel((state) -> lightLevel)),
+                                                     .lightLevel((state) -> lightLevel)),
         name + "_fluid");
   }
 }

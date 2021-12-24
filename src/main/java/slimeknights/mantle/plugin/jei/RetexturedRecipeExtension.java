@@ -45,9 +45,9 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
     this.size = new Size2i(recipe.getRecipeWidth(), recipe.getRecipeHeight());
 
     // gets the outputs of this recipe
-    ItemStack output = this.recipe.getRecipeOutput();
+    ItemStack output = this.recipe.getResultItem();
     // fetch all stacks from the ingredient, note any variants that are not blocks will get a blank shelf
-    List<ItemStack> displayVariants = Arrays.stream(recipe.getTexture().getMatchingStacks())
+    List<ItemStack> displayVariants = Arrays.stream(recipe.getTexture().getItems())
                                             .map(stack -> recipe.getRecipeOutput(stack.getItem()))
                                             .collect(Collectors.toList());
 
@@ -103,7 +103,7 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
       else if (mode == IFocus.Mode.OUTPUT) {
         // the focus might not be the same count as the output
         ItemStack output = focus.copy();
-        output.setCount(recipe.getRecipeOutput().getCount());
+        output.setCount(recipe.getResultItem().getCount());
         outputs = ImmutableList.of(output);
 
         // focus texture may be undefined for the mixed planks bookshelf or missing NBT
@@ -134,13 +134,13 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
 
         if (modIdDifferent) {
           String modName = JEIPlugin.modIdHelper.getFormattedModNameForModId(recipeModId);
-          tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.by", modName).mergeStyle(TextFormatting.GRAY));
+          tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.by", modName).withStyle(TextFormatting.GRAY));
         }
       }
 
-      boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
+      boolean showAdvanced = Minecraft.getInstance().options.advancedItemTooltips || Screen.hasShiftDown();
       if (showAdvanced) {
-        tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.id", registryName).mergeStyle(TextFormatting.DARK_GRAY));
+        tooltip.add(new TranslationTextComponent("jei.tooltip.recipe.id", registryName).withStyle(TextFormatting.DARK_GRAY));
       }
     }
   }

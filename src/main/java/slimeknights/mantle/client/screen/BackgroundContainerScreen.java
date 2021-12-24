@@ -31,29 +31,29 @@ public class BackgroundContainerScreen<T extends Container> extends ContainerScr
 	public BackgroundContainerScreen(T container, PlayerInventory inventory, ITextComponent name, int height, ResourceLocation background) {
 		super(container, inventory, name);
 		this.background = background;
-		this.ySize = height;
-		this.playerInventoryTitleY = this.ySize - 94;
+		this.imageHeight = height;
+		this.inventoryLabelY = this.imageHeight - 94;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		this.titleX = (this.xSize - this.font.getStringPropertyWidth(this.title)) / 2;
+		this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
 	}
 
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
-		this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+		this.renderTooltip(matrixStack, mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		assert this.minecraft != null;
-		this.minecraft.getTextureManager().bindTexture(this.background);
-		this.blit(matrixStack, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+		this.minecraft.getTextureManager().bind(this.background);
+		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 	}
 
 	@RequiredArgsConstructor(staticName = "of")

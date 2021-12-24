@@ -44,7 +44,7 @@ public class TileEntityHelper {
     }
 
     //TODO: This causes freezes if being called from onLoad
-    TileEntity tile = world.getTileEntity(pos);
+    TileEntity tile = world.getBlockEntity(pos);
     if (tile == null) {
       return Optional.empty();
     }
@@ -69,7 +69,7 @@ public class TileEntityHelper {
       return false;
     }
     if (world instanceof IWorldReader) {
-      return ((IWorldReader) world).isBlockLoaded(pos);
+      return ((IWorldReader) world).hasChunkAt(pos);
     }
     return true;
   }

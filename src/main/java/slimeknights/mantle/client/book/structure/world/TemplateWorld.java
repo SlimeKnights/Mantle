@@ -41,11 +41,11 @@ public class TemplateWorld extends World {
   private final Scoreboard scoreboard = new Scoreboard();
   private final RecipeManager recipeManager = new RecipeManager();
   private final TemplateChunkProvider chunkProvider;
-  private final DynamicRegistries registries = DynamicRegistries.func_239770_b_();
+  private final DynamicRegistries registries = DynamicRegistries.builtin();
 
   public TemplateWorld(List<BlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
-      new FakeSpawnInfo(), World.OVERWORLD, DimensionType.OVERWORLD_TYPE,
+      new FakeSpawnInfo(), World.OVERWORLD, DimensionType.DEFAULT_OVERWORLD,
       () -> EmptyProfiler.INSTANCE, true, false, 0
     );
 
@@ -53,7 +53,7 @@ public class TemplateWorld extends World {
   }
 
   @Override
-  public void notifyBlockUpdate(@Nonnull BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newState, int flags) {
+  public void sendBlockUpdated(@Nonnull BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newState, int flags) {
   }
 
   @Override
@@ -61,12 +61,12 @@ public class TemplateWorld extends World {
   }
 
   @Override
-  public void playMovingSound(@Nullable PlayerEntity playerIn, @Nonnull Entity entityIn, @Nonnull SoundEvent eventIn, @Nonnull SoundCategory categoryIn, float volume, float pitch) {
+  public void playSound(@Nullable PlayerEntity playerIn, @Nonnull Entity entityIn, @Nonnull SoundEvent eventIn, @Nonnull SoundCategory categoryIn, float volume, float pitch) {
   }
 
   @Nullable
   @Override
-  public Entity getEntityByID(int id) {
+  public Entity getEntity(int id) {
     return null;
   }
 
@@ -77,17 +77,17 @@ public class TemplateWorld extends World {
   }
 
   @Override
-  public void registerMapData(@Nonnull MapData mapDataIn) {
-    this.maps.put(mapDataIn.getName(), mapDataIn);
+  public void setMapData(@Nonnull MapData mapDataIn) {
+    this.maps.put(mapDataIn.getId(), mapDataIn);
   }
 
   @Override
-  public int getNextMapId() {
+  public int getFreeMapId() {
     return this.maps.size();
   }
 
   @Override
-  public void sendBlockBreakProgress(int breakerId, @Nonnull BlockPos pos, int progress) {
+  public void destroyBlockProgress(int breakerId, @Nonnull BlockPos pos, int progress) {
   }
 
   @Nonnull
@@ -104,52 +104,52 @@ public class TemplateWorld extends World {
 
   @Nonnull
   @Override
-  public ITagCollectionSupplier getTags() {
-    return ITagCollectionSupplier.TAG_COLLECTION_SUPPLIER;
+  public ITagCollectionSupplier getTagManager() {
+    return ITagCollectionSupplier.EMPTY;
   }
 
   @Nonnull
   @Override
-  public ITickList<Block> getPendingBlockTicks() {
-    return EmptyTickList.get();
+  public ITickList<Block> getBlockTicks() {
+    return EmptyTickList.empty();
   }
 
   @Nonnull
   @Override
-  public ITickList<Fluid> getPendingFluidTicks() {
-    return EmptyTickList.get();
+  public ITickList<Fluid> getLiquidTicks() {
+    return EmptyTickList.empty();
   }
 
   @Nonnull
   @Override
-  public AbstractChunkProvider getChunkProvider() {
+  public AbstractChunkProvider getChunkSource() {
     return this.chunkProvider;
   }
 
   @Override
-  public void playEvent(@Nullable PlayerEntity player, int type, @Nonnull BlockPos pos, int data) {
+  public void levelEvent(@Nullable PlayerEntity player, int type, @Nonnull BlockPos pos, int data) {
   }
 
   @Nonnull
   @Override
-  public DynamicRegistries func_241828_r() {
+  public DynamicRegistries registryAccess() {
     return this.registries;
   }
 
   @Override
-  public float func_230487_a_(@Nonnull Direction p_230487_1_, boolean p_230487_2_) {
+  public float getShade(@Nonnull Direction p_230487_1_, boolean p_230487_2_) {
     return 0;
   }
 
   @Nonnull
   @Override
-  public List<? extends PlayerEntity> getPlayers() {
+  public List<? extends PlayerEntity> players() {
     return ImmutableList.of();
   }
 
   @Nonnull
   @Override
-  public Biome getNoiseBiomeRaw(int x, int y, int z) {
-    return this.func_241828_r().getRegistry(Registry.BIOME_KEY).getOrThrow(Biomes.PLAINS);
+  public Biome getUncachedNoiseBiome(int x, int y, int z) {
+    return this.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getOrThrow(Biomes.PLAINS);
   }
 }

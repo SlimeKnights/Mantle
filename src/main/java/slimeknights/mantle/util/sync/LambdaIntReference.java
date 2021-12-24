@@ -17,7 +17,7 @@ public class LambdaIntReference extends IntReferenceHolder {
   /** Constructor to let you start from a value other than 0 */
   public LambdaIntReference(int startingValue, IntSupplier getter, IntConsumer setter) {
     this(getter, setter);
-    this.lastKnownValue = startingValue;
+    this.prevValue = startingValue;
   }
 
   @Override

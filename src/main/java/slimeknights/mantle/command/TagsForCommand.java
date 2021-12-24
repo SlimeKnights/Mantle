@@ -77,7 +77,7 @@ public class TagsForCommand {
               // by registry ID
               .then(Commands.literal("id")
                             .then(Commands.argument("type", TagCollectionArgument.collection())
-                                          .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.REGISTRY_VALUES)
+                                          .then(Commands.argument("name", ResourceLocationArgument.id()).suggests(MantleCommand.REGISTRY_VALUES)
                                                         .executes(TagsForCommand::runForId))))
               // held item
               .then(Commands.literal("held")
@@ -106,15 +106,15 @@ public class TagsForCommand {
   private static <T> int printOwningTags(CommandContext<CommandSource> context, ITagCollection<T> collection, ResourceLocation typeName, ResourceLocation name, Object value) {
     // TODO: not sure if there is a better way to do this, it did come out of that registry
     IFormattableTextComponent output = new TranslationTextComponent("command.mantle.tags_for.success", typeName, name);
-    Collection<ResourceLocation> tags = collection.getOwningTags((T)value);
+    Collection<ResourceLocation> tags = collection.getMatchingTags((T)value);
     if (tags.isEmpty()) {
-      output.appendString("\n* ").append(NO_TAGS);
+      output.append("\n* ").append(NO_TAGS);
     } else {
       tags.stream()
           .sorted(ResourceLocation::compareNamespaced)
-          .forEach(tag -> output.appendString("\n* " + tag));
+          .forEach(tag -> output.append("\n* " + tag));
     }
-    context.getSource().sendFeedback(output, true);
+    context.getSource().sendSuccess(output, true);
     return tags.size();
   }
 
@@ -142,26 +142,26 @@ public class TagsForCommand {
 
   /** Item tags for held item */
   private static int heldItem(CommandContext<CommandSource> context) throws CommandSyntaxException {
-    Item item = context.getSource().asPlayer().getHeldItemMainhand().getItem();
-    return printOwningTags(context, TagCollectionManager.getManager().getItemTags(), Registry.ITEM_KEY.getLocation(), Objects.requireNonNull(item.getRegistryName()), item);
+    Item item = context.getSource().getPlayerOrException().getMainHandItem().getItem();
+    return printOwningTags(context, TagCollectionManager.getInstance().getItems(), Registry.ITEM_REGISTRY.location(), Objects.requireNonNull(item.getRegistryName()), item);
   }
 
   /** Block tags for held item */
   private static int heldBlock(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    Item item = source.asPlayer().getHeldItemMainhand().getItem();
-    Block block = Block.getBlockFromItem(item);
+    Item item = source.getPlayerOrException().getMainHandItem().getItem();
+    Block block = Block.byItem(item);
     if (block != Blocks.AIR) {
-      return printOwningTags(context, TagCollectionManager.getManager().getBlockTags(), Registry.BLOCK_KEY.getLocation(), Objects.requireNonNull(block.getRegistryName()), block);
+      return printOwningTags(context, TagCollectionManager.getInstance().getBlocks(), Registry.BLOCK_REGISTRY.location(), Objects.requireNonNull(block.getRegistryName()), block);
     }
-    source.sendFeedback(NO_HELD_BLOCK, true);
+    source.sendSuccess(NO_HELD_BLOCK, true);
     return 0;
   }
 
   /** Fluid tags for held item */
   private static int heldFluid(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    ItemStack stack = source.asPlayer().getHeldItemMainhand();
+    ItemStack stack = source.getPlayerOrException().getMainHandItem();
     LazyOptional<IFluidHandlerItem> capability = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
     if (capability.isPresent()) {
       IFluidHandler handler = capability.map(h -> (IFluidHandler) h).orElse(EmptyFluidHandler.INSTANCE);
@@ -169,35 +169,35 @@ public class TagsForCommand {
         FluidStack fluidStack = handler.getFluidInTank(0);
         if (!fluidStack.isEmpty()) {
           Fluid fluid = fluidStack.getFluid();
-          return printOwningTags(context, TagCollectionManager.getManager().getFluidTags(), Registry.FLUID_KEY.getLocation(), Objects.requireNonNull(fluid.getRegistryName()), fluid);
+          return printOwningTags(context, TagCollectionManager.getInstance().getFluids(), Registry.FLUID_REGISTRY.location(), Objects.requireNonNull(fluid.getRegistryName()), fluid);
         }
       }
     }
-    source.sendFeedback(NO_HELD_FLUID, true);
+    source.sendSuccess(NO_HELD_FLUID, true);
     return 0;
   }
 
   /** Potion tags for held item */
   private static int heldPotion(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    ItemStack stack = source.asPlayer().getHeldItemMainhand();
-    Potion potion = PotionUtils.getPotionFromItem(stack);
+    ItemStack stack = source.getPlayerOrException().getMainHandItem();
+    Potion potion = PotionUtils.getPotion(stack);
     if (potion != Potions.EMPTY) {
-      ResourceLocation registry = Registry.POTION_KEY.getLocation();
+      ResourceLocation registry = Registry.POTION_REGISTRY.location();
       return printOwningTags(context, ForgeTagHandler.getCustomTagTypes().get(registry), registry, Objects.requireNonNull(potion.getRegistryName()), potion);
     }
-    source.sendFeedback(NO_HELD_POTION, true);
+    source.sendSuccess(NO_HELD_POTION, true);
     return 0;
   }
 
   /** Block tags for held item */
   private static int heldEnchantments(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    ItemStack stack = source.asPlayer().getHeldItemMainhand();
+    ItemStack stack = source.getPlayerOrException().getMainHandItem();
     Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
     if (!enchantments.isEmpty()) {
       int totalTags = 0;
-      ResourceLocation registry = Registry.ENCHANTMENT_KEY.getLocation();
+      ResourceLocation registry = Registry.ENCHANTMENT_REGISTRY.location();
       ITagCollection<?> enchantmentTags = ForgeTagHandler.getCustomTagTypes().get(registry);
       // print tags for each contained enchantment
       for (Enchantment enchantment : enchantments.keySet()) {
@@ -205,19 +205,19 @@ public class TagsForCommand {
       }
       return totalTags;
     }
-    source.sendFeedback(NO_HELD_ENCHANTMENT, true);
+    source.sendSuccess(NO_HELD_ENCHANTMENT, true);
     return 0;
   }
 
   /** Entity tags for held item */
   private static int heldEntity(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    ItemStack stack = source.asPlayer().getHeldItemMainhand();
+    ItemStack stack = source.getPlayerOrException().getMainHandItem();
     if (stack.getItem() instanceof SpawnEggItem) {
       EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack.getTag());
-      return printOwningTags(context, TagCollectionManager.getManager().getEntityTypeTags(), Registry.ENTITY_TYPE_KEY.getLocation(), Objects.requireNonNull(type.getRegistryName()), type);
+      return printOwningTags(context, TagCollectionManager.getInstance().getEntityTypes(), Registry.ENTITY_TYPE_REGISTRY.location(), Objects.requireNonNull(type.getRegistryName()), type);
     }
-    source.sendFeedback(NO_HELD_ENTITY, true);
+    source.sendSuccess(NO_HELD_ENTITY, true);
     return 0;
   }
 
@@ -232,19 +232,19 @@ public class TagsForCommand {
    */
   private static int targetedTileEntity(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    PlayerEntity player = source.asPlayer();
-    World world = source.getWorld();
-    BlockRayTraceResult blockTrace = Item.rayTrace(world, player, FluidMode.NONE);
+    PlayerEntity player = source.getPlayerOrException();
+    World world = source.getLevel();
+    BlockRayTraceResult blockTrace = Item.getPlayerPOVHitResult(world, player, FluidMode.NONE);
     if (blockTrace.getType() == Type.BLOCK) {
-      TileEntity te = world.getTileEntity(blockTrace.getPos());
+      TileEntity te = world.getBlockEntity(blockTrace.getBlockPos());
       if (te != null) {
         TileEntityType<?> type = te.getType();
-        ResourceLocation registry = Registry.BLOCK_ENTITY_TYPE_KEY.getLocation();
+        ResourceLocation registry = Registry.BLOCK_ENTITY_TYPE_REGISTRY.location();
         return printOwningTags(context, ForgeTagHandler.getCustomTagTypes().get(registry), registry, Objects.requireNonNull(type.getRegistryName()), type);
       }
     }
     // failed
-    source.sendFeedback(NO_TARGETED_TILE_ENTITY, true);
+    source.sendSuccess(NO_TARGETED_TILE_ENTITY, true);
     return 0;
   }
 
@@ -256,19 +256,19 @@ public class TagsForCommand {
    */
   private static int targetedEntity(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    PlayerEntity player = source.asPlayer();
+    PlayerEntity player = source.getPlayerOrException();
     Vector3d start = player.getEyePosition(1F);
-    Vector3d look = player.getLookVec();
+    Vector3d look = player.getLookAngle();
     double range = Objects.requireNonNull(player.getAttribute(ForgeMod.REACH_DISTANCE.get())).getValue();
     Vector3d direction = start.add(look.x * range, look.y * range, look.z * range);
-    AxisAlignedBB bb = player.getBoundingBox().expand(look.x * range, look.y * range, look.z * range).expand(1, 1, 1);
-    EntityRayTraceResult entityTrace = ProjectileHelper.rayTraceEntities(source.getWorld(), player, start, direction, bb, e -> true);
+    AxisAlignedBB bb = player.getBoundingBox().expandTowards(look.x * range, look.y * range, look.z * range).expandTowards(1, 1, 1);
+    EntityRayTraceResult entityTrace = ProjectileHelper.getEntityHitResult(source.getLevel(), player, start, direction, bb, e -> true);
     if (entityTrace != null) {
       EntityType<?> target = entityTrace.getEntity().getType();
-      return printOwningTags(context, TagCollectionManager.getManager().getEntityTypeTags(), Registry.ENTITY_TYPE_KEY.getLocation(), Objects.requireNonNull(target.getRegistryName()), target);
+      return printOwningTags(context, TagCollectionManager.getInstance().getEntityTypes(), Registry.ENTITY_TYPE_REGISTRY.location(), Objects.requireNonNull(target.getRegistryName()), target);
     }
     // failed
-    source.sendFeedback(NO_TARGETED_ENTITY, true);
+    source.sendSuccess(NO_TARGETED_ENTITY, true);
     return 0;
   }
 }

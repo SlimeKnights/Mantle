@@ -82,7 +82,7 @@ public class NBTKeyModel implements IModelGeometry<NBTKeyModel> {
     // must have a default
     RenderMaterial defaultTexture = owner.resolveTexture("default");
     textures.put("default", defaultTexture);
-    if (Objects.equals(defaultTexture.getTextureLocation(), MissingTextureSprite.getLocation())) {
+    if (Objects.equals(defaultTexture.texture(), MissingTextureSprite.getLocation())) {
       missingTextureErrors.add(Pair.of("default", owner.getModelName()));
     }
     // fetch others
@@ -138,7 +138,7 @@ public class NBTKeyModel implements IModelGeometry<NBTKeyModel> {
     private final Map<String,IBakedModel> variants;
 
     @Override
-    public IBakedModel getOverrideModel(IBakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity livingEntity) {
+    public IBakedModel resolve(IBakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity livingEntity) {
       CompoundNBT nbt = stack.getTag();
       if (nbt != null && nbt.contains(nbtKey)) {
         return variants.getOrDefault(nbt.getString(nbtKey), model);
@@ -160,7 +160,7 @@ public class NBTKeyModel implements IModelGeometry<NBTKeyModel> {
 
     @Override
     public NBTKeyModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-      String key = JSONUtils.getString(modelContents, "nbt_key");
+      String key = JSONUtils.getAsString(modelContents, "nbt_key");
       ResourceLocation extraTexturesKey = null;
       if (modelContents.has("extra_textures_key")) {
         extraTexturesKey = JsonHelper.getResourceLocation(modelContents, "extra_textures_key");

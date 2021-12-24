@@ -248,17 +248,17 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
 
     // front
     builder.add(buildQuad(transform, Direction.NORTH, sprite, color, tint, luminosity,
-                          0, 0, 7.5f / 16f, sprite.getMinU(), sprite.getMaxV(),
-                          0, 1, 7.5f / 16f, sprite.getMinU(), sprite.getMinV(),
-                          1, 1, 7.5f / 16f, sprite.getMaxU(), sprite.getMinV(),
-                          1, 0, 7.5f / 16f, sprite.getMaxU(), sprite.getMaxV()
+                          0, 0, 7.5f / 16f, sprite.getU0(), sprite.getV1(),
+                          0, 1, 7.5f / 16f, sprite.getU0(), sprite.getV0(),
+                          1, 1, 7.5f / 16f, sprite.getU1(), sprite.getV0(),
+                          1, 0, 7.5f / 16f, sprite.getU1(), sprite.getV1()
                          ));
     // back
     builder.add(buildQuad(transform, Direction.SOUTH, sprite, color, tint, luminosity,
-                          0, 0, 8.5f / 16f, sprite.getMinU(), sprite.getMaxV(),
-                          1, 0, 8.5f / 16f, sprite.getMaxU(), sprite.getMaxV(),
-                          1, 1, 8.5f / 16f, sprite.getMaxU(), sprite.getMinV(),
-                          0, 1, 8.5f / 16f, sprite.getMinU(), sprite.getMinV()
+                          0, 0, 8.5f / 16f, sprite.getU0(), sprite.getV1(),
+                          1, 0, 8.5f / 16f, sprite.getU1(), sprite.getV1(),
+                          1, 1, 8.5f / 16f, sprite.getU1(), sprite.getV0(),
+                          0, 1, 8.5f / 16f, sprite.getU0(), sprite.getV0()
                          ));
 
     // fill in the pixel map with new pixels from the sprite
@@ -326,8 +326,8 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
     }
 
     // for the side, Y axis's use of getOpposite is related to the swapping of V direction
-    float dx = side.getDirectionVec().getX() * eps / width;
-    float dy = side.getDirectionVec().getY() * eps / height;
+    float dx = side.getNormal().getX() * eps / width;
+    float dy = side.getNormal().getY() * eps / height;
     float u0 = 16f * (x0 - dx);
     float u1 = 16f * (x1 - dx);
     float v0 = 16f * (1f - y0 - dy);
@@ -335,10 +335,10 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
     return buildQuad(
       transform, (side.getAxis() == Axis.Y ? side.getOpposite() : side),
       sprite, color, tint, luminosity,
-      x0, y0, z0, sprite.getInterpolatedU(u0), sprite.getInterpolatedV(v0),
-      x1, y1, z0, sprite.getInterpolatedU(u1), sprite.getInterpolatedV(v1),
-      x1, y1, z1, sprite.getInterpolatedU(u1), sprite.getInterpolatedV(v1),
-      x0, y0, z1, sprite.getInterpolatedU(u0), sprite.getInterpolatedV(v0));
+      x0, y0, z0, sprite.getU(u0), sprite.getV(v0),
+      x1, y1, z0, sprite.getU(u1), sprite.getV(v1),
+      x1, y1, z1, sprite.getU(u1), sprite.getV(v1),
+      x0, y0, z1, sprite.getU(u0), sprite.getV(v0));
   }
 
   /**
@@ -402,9 +402,9 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
           consumer.put(e, r, g, b, a);
           break;
         case NORMAL:
-          float offX = (float) side.getXOffset();
-          float offY = (float) side.getYOffset();
-          float offZ = (float) side.getZOffset();
+          float offX = (float) side.getStepX();
+          float offY = (float) side.getStepY();
+          float offZ = (float) side.getStepZ();
           consumer.put(e, offX, offY, offZ, 0f);
           break;
         case UV:
@@ -463,9 +463,9 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
 
     /** Parses the layer data from JSON */
     public static LayerData fromJson(JsonObject json) {
-      int color = JsonHelper.parseColor(JSONUtils.getString(json, "color", ""));
-      int luminosity = JSONUtils.getInt(json, "luminosity");
-      boolean noTint = JSONUtils.getBoolean(json, "no_tint", false);
+      int color = JsonHelper.parseColor(JSONUtils.getAsString(json, "color", ""));
+      int luminosity = JSONUtils.getAsInt(json, "luminosity");
+      boolean noTint = JSONUtils.getAsBoolean(json, "no_tint", false);
       return new LayerData(color, luminosity, noTint);
     }
   }

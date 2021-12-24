@@ -74,7 +74,7 @@ public class FaucetFluidLoader extends JsonReloadListener {
     if (mc != null) {
       IResourceManager manager = mc.getResourceManager();
       if (manager instanceof IReloadableResourceManager) {
-        ((IReloadableResourceManager) manager).addReloadListener(FaucetFluidLoader.INSTANCE);
+        ((IReloadableResourceManager) manager).registerReloadListener(FaucetFluidLoader.INSTANCE);
       }
     }
   }
@@ -116,16 +116,16 @@ public class FaucetFluidLoader extends JsonReloadListener {
 
       try {
         // all others are block
-        JsonObject json = JSONUtils.getJsonObject(entry.getValue(), "");
-        JsonObject variants = JSONUtils.getJsonObject(json, "variants");
+        JsonObject json = JSONUtils.convertToJsonObject(entry.getValue(), "");
+        JsonObject variants = JSONUtils.getAsJsonObject(json, "variants");
         Block block = ForgeRegistries.BLOCKS.getValue(location);
         if(block != null && block != Blocks.AIR) {
-          StateContainer<Block,BlockState> container = block.getStateContainer();
-          List<BlockState> validStates = container.getValidStates();
+          StateContainer<Block,BlockState> container = block.getStateDefinition();
+          List<BlockState> validStates = container.getPossibleStates();
           for (Entry<String, JsonElement> variant : variants.entrySet()) {
             // parse fluid
-            FaucetFluid fluid = FaucetFluid.fromJson(JSONUtils.getJsonObject(variant.getValue(), variant.getKey()), defaultFluid);
-            validStates.stream().filter(ModelBakery.parseVariantKey(container, variant.getKey())).forEach(state -> fluidMap.put(state, fluid));
+            FaucetFluid fluid = FaucetFluid.fromJson(JSONUtils.convertToJsonObject(variant.getValue(), variant.getKey()), defaultFluid);
+            validStates.stream().filter(ModelBakery.predicate(container, variant.getKey())).forEach(state -> fluidMap.put(state, fluid));
           }
         } else {
           Mantle.logger.debug("Skipping loading faucet fluid model '{}' as no coorsponding block exists", location);
@@ -163,14 +163,14 @@ public class FaucetFluidLoader extends JsonReloadListener {
     do {
       // get the faucet data for the block
       i++;
-      faucetFluid = FaucetFluidLoader.get(world.getBlockState(pos.down(i)));
+      faucetFluid = FaucetFluidLoader.get(world.getBlockState(pos.below(i)));
       // render all down cubes with the given offset
-      matrices.push();
+      matrices.pushPose();
       matrices.translate(0, -i, 0);
       for (FluidCuboid cube : faucetFluid.getFluids(direction)) {
         FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, false);
       }
-      matrices.pop();
+      matrices.popPose();
     } while (faucetFluid.isContinued());
   }
 
@@ -232,7 +232,7 @@ public class FaucetFluidLoader extends JsonReloadListener {
     protected static FaucetFluid fromJson(JsonObject json, FaucetFluid def) {
       List<FluidCuboid> side = parseFluids(json, "side", def.side);
       List<FluidCuboid> center = parseFluids(json, "center", def.center);
-      boolean cont = JSONUtils.getBoolean(json, "continue", false);
+      boolean cont = JSONUtils.getAsBoolean(json, "continue", false);
       return new FaucetFluid(side, center, cont);
     }
 

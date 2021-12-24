@@ -219,7 +219,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
     registerBlockItem(burnableItem.apply(object.getPressurePlate(), 300));
     registerBlockItem(burnableItem.apply(object.getButton(), 100));
     // sign
-    registerBlockItem(burnableSignItem.apply(new Item.Properties().maxStackSize(16).group(planks.getGroup()), object.getSign(), object.getWallSign()));
+    registerBlockItem(burnableSignItem.apply(new Item.Properties().stacksTo(16).tab(planks.getItemCategory()), object.getSign(), object.getWallSign()));
   }
 
   /**

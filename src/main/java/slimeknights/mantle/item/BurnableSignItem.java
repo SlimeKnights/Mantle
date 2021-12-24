@@ -4,6 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SignItem;
 
+import net.minecraft.item.Item.Properties;
+
 public class BurnableSignItem extends SignItem {
   private final int burnTime;
   public BurnableSignItem(Properties propertiesIn, Block floorBlockIn, Block wallBlockIn, int burnTime) {

@@ -14,6 +14,6 @@ public class InventorySlotWrapper implements ISingleItemInventory {
 
   @Override
   public ItemStack getStack() {
-    return parent.getStackInSlot(index);
+    return parent.getItem(index);
   }
 }

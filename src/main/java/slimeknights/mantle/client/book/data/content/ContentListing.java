@@ -86,7 +86,7 @@ public class ContentListing extends PageContent {
       yOff = 16;
     }
     if (this.subText != null) {
-      yOff += sectionData.parent.fontRenderer.getWordWrappedHeight(this.subText, BookScreen.PAGE_WIDTH) * 12 / 9;
+      yOff += sectionData.parent.fontRenderer.wordWrapHeight(this.subText, BookScreen.PAGE_WIDTH) * 12 / 9;
     }
     return getColumnHeight(yOff) / LINE_HEIGHT;
   }
@@ -141,7 +141,7 @@ public class ContentListing extends PageContent {
           y += LINE_HEIGHT;
         } else {
           if (!data.bold) text = "- " + text;
-          int height = this.parent.parent.parent.fontRenderer.getWordWrappedHeight(text, width) * LINE_HEIGHT / 9;
+          int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, width) * LINE_HEIGHT / 9;
           list.add(new ListingLeftElement(x, y + yOff, width, height, data.bold, data));
           y += height;
         }
