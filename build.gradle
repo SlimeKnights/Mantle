@@ -20,18 +20,23 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        maven {
+            name "Parchment"
+            url "https://maven.parchmentmc.org"
+        }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'io.freefair.gradle:lombok-plugin:4.1.6'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'io.freefair.gradle:lombok-plugin:6.3.0'
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'io.freefair.lombok'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 repositories {
     mavenLocal()
@@ -87,6 +92,8 @@ if (System.getenv().ARTIFACT_VERSION != null) {
 
 version = "${minecraft_version}-${artifact_version}"
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 sourceSets {
     main {
         resources {
@@ -98,7 +105,7 @@ sourceSets {
 }
 
 minecraft {
-    mappings channel: 'official', version: minecraft_version
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -160,12 +167,12 @@ configurations {
 }
                
 dependencies {
-    minecraft 'net.minecraftforge:forge:' + minecraft_version + '-' + forge_version
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
 }
 
 def modsTomlSpec = copySpec{
