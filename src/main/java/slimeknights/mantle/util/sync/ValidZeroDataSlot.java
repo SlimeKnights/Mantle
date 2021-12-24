@@ -10,11 +10,11 @@ import java.util.function.Consumer;
  * Fixes a bug where a non-zero value on the client is not updated on UI open as the new value is 0
  */
 @SuppressWarnings("unused")
-public class ValidZeroIntReference extends DataSlot {
+public class ValidZeroDataSlot extends DataSlot {
   private final ContainerData data;
   private final int idx;
 
-  public ValidZeroIntReference(ContainerData data, int idx) {
+  public ValidZeroDataSlot(ContainerData data, int idx) {
     this.prevValue = Integer.MIN_VALUE;
     this.data = data;
     this.idx = idx;
@@ -37,7 +37,7 @@ public class ValidZeroIntReference extends DataSlot {
    */
   public static void trackIntArray(Consumer<DataSlot> consumer, ContainerData array) {
     for(int i = 0; i < array.getCount(); ++i) {
-      consumer.accept(new ValidZeroIntReference(array, i));
+      consumer.accept(new ValidZeroDataSlot(array, i));
     }
   }
 }

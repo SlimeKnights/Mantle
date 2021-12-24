@@ -10,12 +10,12 @@ import java.util.function.IntSupplier;
  * Data slot implementation using lambdas for the getter and setter
  */
 @AllArgsConstructor
-public class LambdaIntReference extends DataSlot {
+public class LambdaDataSlot extends DataSlot {
   private final IntSupplier getter;
   private final IntConsumer setter;
 
   /** Constructor to let you start from a value other than 0 */
-  public LambdaIntReference(int startingValue, IntSupplier getter, IntConsumer setter) {
+  public LambdaDataSlot(int startingValue, IntSupplier getter, IntConsumer setter) {
     this(getter, setter);
     this.prevValue = startingValue;
   }

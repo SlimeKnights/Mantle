@@ -1,4 +1,4 @@
-package slimeknights.mantle.tileentity;
+package slimeknights.mantle.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -10,9 +10,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
-public class MantleTileEntity extends BlockEntity {
+public class MantleBlockEntity extends BlockEntity {
 
-  public MantleTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+  public MantleBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
     super(type, pos, state);
   }
 

@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package slimeknights.mantle.tileentity;
+package slimeknights.mantle.block.entity;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

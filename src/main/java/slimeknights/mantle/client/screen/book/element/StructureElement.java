@@ -17,7 +17,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.client.book.structure.StructureInfo;
-import slimeknights.mantle.client.book.structure.world.TemplateWorld;
+import slimeknights.mantle.client.book.structure.level.TemplateLevel;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class StructureElement extends SizedBookElement {
   public float transY = 0;
   public Transformation additionalTransform;
   public final StructureInfo renderInfo;
-  public final TemplateWorld structureWorld;
+  public final TemplateLevel structureWorld;
 
   public long lastStep = -1;
   public long lastPrintedErrorTimeMs = -1;
@@ -51,7 +51,7 @@ public class StructureElement extends SizedBookElement {
 
     this.renderInfo = new StructureInfo(structure);
 
-    this.structureWorld = new TemplateWorld(structure, renderInfo);
+    this.structureWorld = new TemplateLevel(structure, renderInfo);
 
     this.transX = x + width / 2F;
     this.transY = y + height / 2F;

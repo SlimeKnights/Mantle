@@ -11,14 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import slimeknights.mantle.inventory.MultiModuleContainer;
+import slimeknights.mantle.inventory.MultiModuleContainerMenu;
 import slimeknights.mantle.inventory.WrapperSlot;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extends AbstractContainerScreen<CONTAINER> {
+public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> extends AbstractContainerScreen<CONTAINER> {
 
   protected List<ModuleScreen<?,?>> modules = Lists.newArrayList();
 

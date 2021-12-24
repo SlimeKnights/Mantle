@@ -1,32 +1,32 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.block.RetexturedBlock;
+import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
 import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-import net.minecraft.world.item.Item.Properties;
-
 /**
  * Logic for a dynamically retexturable block item. This will ensure all the NBT is in the expected format on the item NBT.
  *
- * Use alongside {@link slimeknights.mantle.tileentity.IRetexturedTileEntity} and {@link slimeknights.mantle.block.RetexturedBlock}
+ * Use alongside {@link IRetexturedBlockEntity} and {@link RetexturedBlock}
  */
 @SuppressWarnings("WeakerAccess")
 public class RetexturedBlockItem extends BlockTooltipItem {

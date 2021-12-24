@@ -1,6 +1,6 @@
 // Credit to Immersive Engineering and blusunrize for this class
 // See: https://github.com/BluSunrize/ImmersiveEngineering/blob/1.16.5/src/main/java/blusunrize/immersiveengineering/common/util/fakeworld/TemplateWorld.java
-package slimeknights.mantle.client.book.structure.world;
+package slimeknights.mantle.client.book.structure.level;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
@@ -38,21 +38,21 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /** World implementation for the book structures */
-public class TemplateWorld extends Level {
+public class TemplateLevel extends Level {
 
   private final Map<String, MapItemSavedData> maps = new HashMap<>();
   private final Scoreboard scoreboard = new Scoreboard();
   private final RecipeManager recipeManager = new RecipeManager();
-  private final TemplateChunkProvider chunkProvider;
+  private final TemplateChunkSource chunkSource;
   private final RegistryAccess registries = RegistryAccess.builtin();
 
-  public TemplateWorld(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
+  public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
-      new FakeSpawnInfo(), Level.OVERWORLD, DimensionType.DEFAULT_OVERWORLD,
+      new FakeLevelData(), Level.OVERWORLD, DimensionType.DEFAULT_OVERWORLD,
       () -> InactiveProfiler.INSTANCE, true, false, 0
     );
 
-    this.chunkProvider = new TemplateChunkProvider(blocks, this, shouldShow);
+    this.chunkSource = new TemplateChunkSource(blocks, this, shouldShow);
   }
 
   @Override
@@ -69,7 +69,7 @@ public class TemplateWorld extends Level {
 
   @Override
   public String gatherChunkSourceStats() {
-    return chunkProvider.gatherStats();
+    return chunkSource.gatherStats();
   }
 
   @Nullable
@@ -136,7 +136,7 @@ public class TemplateWorld extends Level {
   @Nonnull
   @Override
   public ChunkSource getChunkSource() {
-    return this.chunkProvider;
+    return this.chunkSource;
   }
 
   @Override

@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 @SuppressWarnings("WeakerAccess")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TileEntityHelper {
+public class BlockEntityHelper {
   /**
    * Gets a tile entity if present and the right type
    * @param clazz  Tile entity class

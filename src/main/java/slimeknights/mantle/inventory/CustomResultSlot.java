@@ -6,7 +6,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.item.ItemStack;
 
-public class CraftingCustomSlot extends ResultSlot {
+public class CustomResultSlot extends ResultSlot {
 
   private final CraftingContainer craftMatrix;
   private final IContainerCraftingCustom callback;
@@ -17,7 +17,7 @@ public class CraftingCustomSlot extends ResultSlot {
    * @param craftingInventory Inventory where the ingredients are taken from
    * @param craftResult       Inventory where the result is put
    */
-  public CraftingCustomSlot(IContainerCraftingCustom callback, Player player, CraftingContainer craftingInventory, Container craftResult, int slotIndex, int xPosition, int yPosition) {
+  public CustomResultSlot(IContainerCraftingCustom callback, Player player, CraftingContainer craftingInventory, Container craftResult, int slotIndex, int xPosition, int yPosition) {
     super(player, craftingInventory, craftResult, slotIndex, xPosition, yPosition);
 
     this.craftMatrix = craftingInventory;

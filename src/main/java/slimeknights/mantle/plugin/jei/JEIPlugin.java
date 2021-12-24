@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
-import slimeknights.mantle.inventory.MultiModuleContainer;
+import slimeknights.mantle.inventory.MultiModuleContainerMenu;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class JEIPlugin implements IModPlugin {
 
   @Override
   public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registry) {
-    registry.getCraftingCategory().addCategoryExtension(ShapedRetexturedRecipe.class, RetexturedRecipeExtension::new);
+    registry.getCraftingCategory().addCategoryExtension(ShapedRetexturedRecipe.class, RetexturableRecipeExtension::new);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -52,7 +52,7 @@ public class JEIPlugin implements IModPlugin {
     recipeManager = jeiRuntime.getRecipeManager();
   }
 
-  private static class MultiModuleContainerHandler<C extends MultiModuleContainer<?>> implements IGuiContainerHandler<MultiModuleScreen<C>> {
+  private static class MultiModuleContainerHandler<C extends MultiModuleContainerMenu<?>> implements IGuiContainerHandler<MultiModuleScreen<C>> {
     @Override
     public List<Rect2i> getGuiExtraAreas(MultiModuleScreen<C> guiContainer) {
       return guiContainer.getModuleAreas();

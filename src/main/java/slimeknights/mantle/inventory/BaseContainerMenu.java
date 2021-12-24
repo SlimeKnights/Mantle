@@ -1,25 +1,25 @@
 package slimeknights.mantle.inventory;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
-public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMenu {
+public class BaseContainerMenu<TILE extends BlockEntity> extends AbstractContainerMenu {
 
   public static double MAX_DISTANCE = 64;
   public static int BASE_Y_OFFSET = 84;
@@ -30,7 +30,7 @@ public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMe
   @Nullable
   protected final Inventory inv;
 
-  protected BaseContainer(MenuType<?> type, int id, @Nullable Inventory inv, @Nullable TILE tile) {
+  protected BaseContainerMenu(MenuType<?> type, int id, @Nullable Inventory inv, @Nullable TILE tile) {
     super(type, id);
     this.inv = inv;
     this.tile = tile;
@@ -50,9 +50,9 @@ public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMe
         continue;
       }
 
-      if (player.containerMenu instanceof BaseContainer) {
-        if (this.sameGui((BaseContainer) player.containerMenu)) {
-          this.syncWithOtherContainer((BaseContainer) player.containerMenu, playerOpened);
+      if (player.containerMenu instanceof BaseContainerMenu) {
+        if (this.sameGui((BaseContainerMenu) player.containerMenu)) {
+          this.syncWithOtherContainer((BaseContainerMenu) player.containerMenu, playerOpened);
           return;
         }
       }
@@ -66,7 +66,7 @@ public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMe
    * Called when the container is opened and another player already has a container for this tile open
    * Sync to the same state here.
    */
-  protected void syncWithOtherContainer(BaseContainer otherContainer, ServerPlayer player) {
+  protected void syncWithOtherContainer(BaseContainerMenu otherContainer, ServerPlayer player) {
   }
 
   /**
@@ -76,7 +76,7 @@ public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMe
   protected void syncNewContainer(ServerPlayer player) {
   }
 
-  public boolean sameGui(BaseContainer otherContainer) {
+  public boolean sameGui(BaseContainerMenu otherContainer) {
     if (this.tile == null) {
       return false;
     }
@@ -322,6 +322,6 @@ public class BaseContainer<TILE extends BlockEntity> extends AbstractContainerMe
     if (buf == null) {
       return null;
     }
-    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> TileEntityHelper.getTile(type, Minecraft.getInstance().level, buf.readBlockPos()).orElse(null));
+    return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> BlockEntityHelper.getTile(type, Minecraft.getInstance().level, buf.readBlockPos()).orElse(null));
   }
 }

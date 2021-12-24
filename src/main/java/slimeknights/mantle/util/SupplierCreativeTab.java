@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * Item group that sets its item based on an item supplier
  */
-public class SupplierItemGroup extends CreativeModeTab {
+public class SupplierCreativeTab extends CreativeModeTab {
   private final Supplier<ItemStack> supplier;
 
   /**
@@ -19,7 +19,7 @@ public class SupplierItemGroup extends CreativeModeTab {
    * @param name      Tab name
    * @param supplier  Item stack supplier
    */
-  public SupplierItemGroup(String modId, String name, Supplier<ItemStack> supplier) {
+  public SupplierCreativeTab(String modId, String name, Supplier<ItemStack> supplier) {
     super(String.format("%s.%s", modId, name));
     this.setRecipeFolderName(String.format("%s/%s", modId, name));
     this.supplier = supplier;

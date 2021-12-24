@@ -19,8 +19,8 @@ import java.util.function.Supplier;
 /**
  * Deferred register to register tile entity instances
  */
-public class TileEntityTypeDeferredRegister extends DeferredRegisterWrapper<BlockEntityType<?>> {
-  public TileEntityTypeDeferredRegister(String modID) {
+public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<BlockEntityType<?>> {
+  public BlockEntityTypeDeferredRegister(String modID) {
     super(ForgeRegistries.BLOCK_ENTITIES, modID);
   }
 

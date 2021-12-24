@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * JEI crafting extension to properly show, animate, and focus {@link ShapedRetexturedRecipe} instances
  */
-public class RetexturedRecipeExtension implements ICraftingCategoryExtension, ICustomCraftingCategoryExtension, ITooltipCallback<ItemStack> {
+public class RetexturableRecipeExtension implements ICraftingCategoryExtension, ICustomCraftingCategoryExtension, ITooltipCallback<ItemStack> {
   /** Actual recipe instance */
   private final ShapedRetexturedRecipe recipe;
   /** Recipe size */
@@ -40,7 +40,7 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
   /** List of all textured variants, fallback for JEI display */
   private final List<ItemStack> displayOutputs;
 
-  RetexturedRecipeExtension(ShapedRetexturedRecipe recipe) {
+  RetexturableRecipeExtension(ShapedRetexturedRecipe recipe) {
     this.recipe = recipe;
     this.size = new Size2i(recipe.getRecipeWidth(), recipe.getRecipeHeight());
 

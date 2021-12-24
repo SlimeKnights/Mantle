@@ -1,4 +1,4 @@
-package slimeknights.mantle.tileentity;
+package slimeknights.mantle.block.entity;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
-public abstract class InventoryTileEntity extends NamableTileEntity implements Container, MenuProvider, Nameable {
+public abstract class InventoryBlockEntity extends NameableBlockEntity implements Container, MenuProvider, Nameable {
   private static final String TAG_INVENTORY_SIZE = "InventorySize";
   private static final String TAG_ITEMS = "Items";
   private static final String TAG_SLOT = "Slot";
@@ -41,14 +41,14 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize) {
+  public InventoryBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize) {
     this(tileEntityTypeIn, pos, state, name, inventorySize, 64);
   }
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize, int maxStackSize) {
+  public InventoryBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize, int maxStackSize) {
     super(tileEntityTypeIn, pos, state, name);
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;

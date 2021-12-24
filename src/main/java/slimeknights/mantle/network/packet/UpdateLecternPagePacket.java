@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.client.book.BookHelper;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 /**
  * Packet to update the book page in a lectern
@@ -34,7 +34,7 @@ public class UpdateLecternPagePacket implements IThreadsafePacket {
     Player player = context.getSender();
     if (player != null && this.page != null) {
       Level world = player.getCommandSenderWorld();
-      TileEntityHelper.getTile(LecternBlockEntity.class, world, this.pos).ifPresent(te -> {
+      BlockEntityHelper.getTile(LecternBlockEntity.class, world, this.pos).ifPresent(te -> {
         ItemStack stack = te.getBook();
         if (!stack.isEmpty()) {
           BookHelper.writeSavedPageToBook(stack, this.page);

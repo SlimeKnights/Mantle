@@ -12,7 +12,7 @@
   "command.mantle.tags_for.no_held_fluid": "Unable to get fluid from the held item",
   "command.mantle.tags_for.no_held_enchantment": "Held item is not enchanted",
   "command.mantle.tags_for.no_targeted_entity": "No entity within range",
-  "command.mantle.tags_for.no_targeted_tile_entity": "No fluid within range",
+  "command.mantle.tags_for.no_targeted_block_entity": "No targeted block entity",
   "command.mantle.tags_for.no_tags": "No tags",
 
   "command.mantle.dump_tag.success": "Printed combined %s tag '%s' to console log",

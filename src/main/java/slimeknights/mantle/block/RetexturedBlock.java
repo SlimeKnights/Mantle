@@ -10,14 +10,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
+import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
 import slimeknights.mantle.item.RetexturedBlockItem;
-import slimeknights.mantle.tileentity.IRetexturedTileEntity;
-import slimeknights.mantle.util.TileEntityHelper;
+import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
 
 /**
- * Logic for a retexturable block. Use alongside {@link slimeknights.mantle.tileentity.IRetexturedTileEntity} and {@link slimeknights.mantle.item.RetexturedBlockItem}
+ * Logic for a retexturable block. Use alongside {@link IRetexturedBlockEntity} and {@link slimeknights.mantle.item.RetexturedBlockItem}
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class RetexturedBlock extends Block implements EntityBlock {
@@ -47,7 +47,7 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
    */
   public static void updateTextureBlock(Level world, BlockPos pos, ItemStack stack) {
     if (stack.hasTag()) {
-      TileEntityHelper.getTile(IRetexturedTileEntity.class, world, pos).ifPresent(te -> te.updateTexture(RetexturedBlockItem.getTextureName(stack)));
+      BlockEntityHelper.getTile(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> te.updateTexture(RetexturedBlockItem.getTextureName(stack)));
     }
   }
 
@@ -61,7 +61,7 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
   public static ItemStack getPickBlock(BlockGetter world, BlockPos pos, BlockState state) {
     Block block = state.getBlock();
     ItemStack stack = new ItemStack(block);
-    TileEntityHelper.getTile(IRetexturedTileEntity.class, world, pos).ifPresent(te -> RetexturedBlockItem.setTexture(stack, te.getTextureName()));
+    BlockEntityHelper.getTile(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> RetexturedBlockItem.setTexture(stack, te.getTextureName()));
     return stack;
   }
 }

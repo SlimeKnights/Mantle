@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package slimeknights.mantle.client.book.structure.world;
+package slimeknights.mantle.client.book.structure.level;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

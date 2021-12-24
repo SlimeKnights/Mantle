@@ -1,4 +1,4 @@
-package slimeknights.mantle.client.book.structure.world;
+package slimeknights.mantle.client.book.structure.level;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.EntityTypeTest;

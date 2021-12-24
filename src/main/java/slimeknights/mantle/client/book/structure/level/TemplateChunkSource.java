@@ -1,6 +1,6 @@
 // Credit to Immersive Engineering and blusunrize for this class
 // See: https://github.com/BluSunrize/ImmersiveEngineering/blob/1.16.5/src/main/java/blusunrize/immersiveengineering/common/util/fakeworld/TemplateChunkProvider.java
-package slimeknights.mantle.client.book.structure.world;
+package slimeknights.mantle.client.book.structure.level;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
@@ -24,13 +24,13 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TemplateChunkProvider extends ChunkSource {
+public class TemplateChunkSource extends ChunkSource {
 
   private final Map<ChunkPos, ChunkAccess> chunks;
   private final Level level;
   private final LevelLightEngine lightManager;
 
-  public TemplateChunkProvider(List<StructureBlockInfo> blocks, Level level, Predicate<BlockPos> shouldShow) {
+  public TemplateChunkSource(List<StructureBlockInfo> blocks, Level level, Predicate<BlockPos> shouldShow) {
     this.level = level;
     this.lightManager = new LevelLightEngine(this, true, true);
     Map<ChunkPos, List<StructureBlockInfo>> byChunk = new HashMap<>();

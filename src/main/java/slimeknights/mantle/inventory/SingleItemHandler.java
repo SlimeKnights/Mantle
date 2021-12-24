@@ -6,7 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.tileentity.MantleTileEntity;
+import slimeknights.mantle.block.entity.MantleBlockEntity;
 
 import javax.annotation.Nonnull;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  */
 @SuppressWarnings("unused")
 @RequiredArgsConstructor
-public abstract class SingleItemHandler<T extends MantleTileEntity> implements IItemHandlerModifiable {
+public abstract class SingleItemHandler<T extends MantleBlockEntity> implements IItemHandlerModifiable {
   protected final T parent;
   private final int maxStackSize;
 

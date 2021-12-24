@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 // TODO: cleanup
-public class MultiModuleContainer<TILE extends BlockEntity> extends BaseContainer<TILE> {
+public class MultiModuleContainerMenu<TILE extends BlockEntity> extends BaseContainerMenu<TILE> {
 
   public List<AbstractContainerMenu> subContainers = Lists.newArrayList();
 
@@ -32,7 +32,7 @@ public class MultiModuleContainer<TILE extends BlockEntity> extends BaseContaine
   protected int subContainerSlotStart = -1;
   protected Set<AbstractContainerMenu> shiftClickContainers = Sets.newHashSet();
 
-  public MultiModuleContainer(MenuType<?> containerType, int id, @Nullable Inventory inv, @Nullable TILE tile) {
+  public MultiModuleContainerMenu(MenuType<?> containerType, int id, @Nullable Inventory inv, @Nullable TILE tile) {
     super(containerType, id, inv, tile);
   }
 

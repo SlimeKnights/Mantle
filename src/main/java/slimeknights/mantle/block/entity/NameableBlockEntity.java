@@ -1,4 +1,4 @@
-package slimeknights.mantle.tileentity;
+package slimeknights.mantle.block.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Extension of tile entity to make it namable
  */
-public abstract class NamableTileEntity extends MantleTileEntity implements IRenamableContainerProvider {
+public abstract class NameableBlockEntity extends MantleBlockEntity implements INameableMenuProvider {
 	private static final String TAG_CUSTOM_NAME = "CustomName";
 
 	/** Default title for this tile entity */
@@ -22,7 +22,7 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 	@Getter @Setter
 	private Component customName;
 
-	public NamableTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Component defaultTitle) {
+	public NameableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Component defaultTitle) {
 		super(type, pos, state);
 		this.defaultName = defaultTitle;
 	}

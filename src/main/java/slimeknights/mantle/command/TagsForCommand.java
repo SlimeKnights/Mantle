@@ -64,7 +64,7 @@ public class TagsForCommand {
   private static final Component NO_HELD_FLUID = new TranslatableComponent("command.mantle.tags_for.no_held_fluid");
   private static final Component NO_HELD_ENCHANTMENT = new TranslatableComponent("command.mantle.tags_for.no_held_enchantment");
   private static final Component NO_TARGETED_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_entity");
-  private static final Component NO_TARGETED_TILE_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_tile_entity");
+  private static final Component NO_TARGETED_BLOCK_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_block_entity");
   /** Value has no tags */
   private static final Component NO_TAGS = new TranslatableComponent("command.mantle.tags_for.no_tags");
 
@@ -89,7 +89,7 @@ public class TagsForCommand {
                             .then(Commands.literal("potion").executes(TagsForCommand::heldPotion)))
               // targeted
               .then(Commands.literal("targeted")
-                            .then(Commands.literal("tile_entity").executes(TagsForCommand::targetedTileEntity))
+                            .then(Commands.literal("block_entity").executes(TagsForCommand::targetedTileEntity))
                             .then(Commands.literal("entity").executes(TagsForCommand::targetedEntity)));
   }
 
@@ -249,7 +249,7 @@ public class TagsForCommand {
       }
     }
     // failed
-    source.sendSuccess(NO_TARGETED_TILE_ENTITY, true);
+    source.sendSuccess(NO_TARGETED_BLOCK_ENTITY, true);
     return 0;
   }
 

@@ -19,8 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
-import slimeknights.mantle.inventory.BaseContainer;
-import slimeknights.mantle.tileentity.IRenamableContainerProvider;
+import slimeknights.mantle.block.entity.INameableMenuProvider;
+import slimeknights.mantle.inventory.BaseContainerMenu;
 
 import javax.annotation.Nullable;
 
@@ -46,8 +46,8 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
       MenuProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
       if (container != null && player instanceof ServerPlayer serverPlayer) {
         NetworkHooks.openGui(serverPlayer, container, pos);
-        if (player.containerMenu instanceof BaseContainer<?>) {
-          ((BaseContainer<?>) player.containerMenu).syncOnOpen(serverPlayer);
+        if (player.containerMenu instanceof BaseContainerMenu<?> menu) {
+          menu.syncOnOpen(serverPlayer);
         }
       }
     }
@@ -78,8 +78,8 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
     // set custom name from named stack
     if (stack.hasCustomHoverName()) {
       BlockEntity tileentity = worldIn.getBlockEntity(pos);
-      if (tileentity instanceof IRenamableContainerProvider) {
-        ((IRenamableContainerProvider) tileentity).setCustomName(stack.getHoverName());
+      if (tileentity instanceof INameableMenuProvider provider) {
+        provider.setCustomName(stack.getHoverName());
       }
     }
   }
@@ -89,8 +89,8 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
   @Nullable
   @Deprecated
   public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
-    BlockEntity tileentity = worldIn.getBlockEntity(pos);
-    return tileentity instanceof MenuProvider ? (MenuProvider) tileentity : null;
+    BlockEntity be = worldIn.getBlockEntity(pos);
+    return be instanceof MenuProvider ? (MenuProvider) be : null;
   }
 
 
@@ -103,8 +103,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
     if (state.getBlock() != newState.getBlock()) {
       BlockEntity te = worldIn.getBlockEntity(pos);
       if (te != null) {
-        te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-          .ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
+        te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
         worldIn.updateNeighbourForOutputSignal(pos, this);
       }
     }
@@ -143,7 +142,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
   @Override
   public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
     super.triggerEvent(state, worldIn, pos, id, param);
-    BlockEntity tileentity = worldIn.getBlockEntity(pos);
-    return tileentity != null && tileentity.triggerEvent(id, param);
+    BlockEntity be = worldIn.getBlockEntity(pos);
+    return be != null && be.triggerEvent(id, param);
   }
 }

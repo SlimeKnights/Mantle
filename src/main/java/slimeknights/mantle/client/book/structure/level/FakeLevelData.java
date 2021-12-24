@@ -1,12 +1,12 @@
 // Credit to Immersive Engineering and blusunrize for this class
 // See: https://github.com/BluSunrize/ImmersiveEngineering/blob/1.16.5/src/main/java/blusunrize/immersiveengineering/common/util/fakeworld/FakeSpawnInfo.java
-package slimeknights.mantle.client.book.structure.world;
+package slimeknights.mantle.client.book.structure.level;
 
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.WritableLevelData;
 
-public class FakeSpawnInfo implements WritableLevelData {
+public class FakeLevelData implements WritableLevelData {
 
   private static final GameRules RULES = new GameRules();
 

@@ -19,14 +19,14 @@ import java.util.function.Consumer;
  * Registry adapter for tile entity types with helpers for adding blocks
  */
 @SuppressWarnings("unused")
-public class TileEntityTypeRegistryAdapter extends RegistryAdapter<BlockEntityType<?>> {
+public class BlockEntityTypeRegistryAdapter extends RegistryAdapter<BlockEntityType<?>> {
   /** @inheritDoc */
-  public TileEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry, String modId) {
+  public BlockEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry, String modId) {
     super(registry, modId);
   }
 
   /** @inheritDoc */
-  public TileEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry) {
+  public BlockEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry) {
     super(registry);
   }
 
