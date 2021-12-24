@@ -1,18 +1,16 @@
 package slimeknights.mantle.network.packet;
 
 import lombok.AllArgsConstructor;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
-import slimeknights.mantle.item.ILecternBookItem;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.NetworkEvent.Context;
 
 /**
  * Packet to drop the book as item from lectern
@@ -30,6 +28,7 @@ public class DropLecternBookPacket implements IThreadsafePacket {
     buffer.writeBlockPos(pos);
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public void handleThreadsafe(Context context) {
     ServerPlayer player = context.getSender();
@@ -47,9 +46,7 @@ public class DropLecternBookPacket implements IThreadsafePacket {
 
     if(state.getBlock() instanceof LecternBlock && state.getValue(LecternBlock.HAS_BOOK)) {
       BlockEntity te = world.getBlockEntity(pos);
-      if(te instanceof LecternBlockEntity) {
-        LecternBlockEntity lecternTe = (LecternBlockEntity) te;
-
+      if(te instanceof LecternBlockEntity lecternTe) {
         ItemStack book = lecternTe.getBook().copy();
         if(!book.isEmpty()) {
           if(!player.addItem(book)) {
@@ -64,6 +61,5 @@ public class DropLecternBookPacket implements IThreadsafePacket {
         }
       }
     }
-
   }
 }

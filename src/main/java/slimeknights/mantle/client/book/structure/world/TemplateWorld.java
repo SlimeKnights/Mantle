@@ -3,30 +3,32 @@
 package slimeknights.mantle.client.book.structure.world;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagContainer;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.util.profiling.InactiveProfiler;
-import net.minecraft.world.scores.Scoreboard;
-import net.minecraft.tags.TagContainer;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.Registry;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.EmptyTickList;
-import net.minecraft.world.level.TickList;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.entity.LevelEntityGetter;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.ticks.BlackholeTickAccess;
+import net.minecraft.world.ticks.LevelTickAccess;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+/** World implementation for the book structures */
 public class TemplateWorld extends Level {
 
   private final Map<String, MapItemSavedData> maps = new HashMap<>();
@@ -64,6 +67,11 @@ public class TemplateWorld extends Level {
   public void playSound(@Nullable Player playerIn, @Nonnull Entity entityIn, @Nonnull SoundEvent eventIn, @Nonnull SoundSource categoryIn, float volume, float pitch) {
   }
 
+  @Override
+  public String gatherChunkSourceStats() {
+    return chunkProvider.gatherStats();
+  }
+
   @Nullable
   @Override
   public Entity getEntity(int id) {
@@ -77,8 +85,8 @@ public class TemplateWorld extends Level {
   }
 
   @Override
-  public void setMapData(@Nonnull MapItemSavedData mapDataIn) {
-    this.maps.put(mapDataIn.getId(), mapDataIn);
+  public void setMapData(String mapId, MapItemSavedData mapDataIn) {
+    this.maps.put(mapId, mapDataIn);
   }
 
   @Override
@@ -108,16 +116,21 @@ public class TemplateWorld extends Level {
     return TagContainer.EMPTY;
   }
 
-  @Nonnull
   @Override
-  public TickList<Block> getBlockTicks() {
-    return EmptyTickList.empty();
+  protected LevelEntityGetter<Entity> getEntities() {
+    return FakeEntityGetter.INSTANCE;
   }
 
   @Nonnull
   @Override
-  public TickList<Fluid> getLiquidTicks() {
-    return EmptyTickList.empty();
+  public LevelTickAccess<Block> getBlockTicks() {
+    return BlackholeTickAccess.emptyLevelList();
+  }
+
+  @Nonnull
+  @Override
+  public LevelTickAccess<Fluid> getFluidTicks() {
+    return BlackholeTickAccess.emptyLevelList();
   }
 
   @Nonnull
@@ -128,6 +141,11 @@ public class TemplateWorld extends Level {
 
   @Override
   public void levelEvent(@Nullable Player player, int type, @Nonnull BlockPos pos, int data) {
+  }
+
+  @Override
+  public void gameEvent(@Nullable Entity pEntity, GameEvent pEvent, BlockPos pPos) {
+
   }
 
   @Nonnull

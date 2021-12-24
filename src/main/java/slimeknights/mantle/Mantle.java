@@ -1,12 +1,13 @@
 package slimeknights.mantle;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
@@ -15,8 +16,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -32,8 +33,8 @@ import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
-import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
 import slimeknights.mantle.recipe.ingredient.IngredientDifference;
+import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
@@ -62,17 +63,22 @@ public class Mantle {
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, this::commonSetup);
     bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
-    bus.addListener(EventPriority.NORMAL, false, ModConfig.ModConfigEvent.class, Config::configChanged);
+    bus.addListener(EventPriority.NORMAL, false, ModConfigEvent.class, Config::configChanged);
+    bus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
     bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
     bus.addGenericListener(GlobalLootModifierSerializer.class, MantleLoot::registerGlobalLootModifiers);
     MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
   }
 
+  private void registerCapabilities(RegisterCapabilitiesEvent event) {
+    OffhandCooldownTracker.register(event);
+  }
+
   private void commonSetup(final FMLCommonSetupEvent event) {
     MantleNetwork.registerPackets();
     MantleCommand.init();
-    OffhandCooldownTracker.register();
     MantleTags.init();
+    OffhandCooldownTracker.init();
 
     // inject our new signs into the tile entity type
     event.enqueueWork(() -> {

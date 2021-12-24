@@ -1,7 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
 import com.google.common.collect.ImmutableSet;
-import lombok.Data;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -27,6 +26,7 @@ import java.util.Set;
  *   <li>{@code line_break}: Forces a new line</li>
  * </ul>
  */
+@SuppressWarnings("unused")
 public class ContentIndex extends ContentListing {
   public static final transient ResourceLocation ID = Mantle.getResource("index");
 
@@ -50,19 +50,12 @@ public class ContentIndex extends ContentListing {
         if (page != parent && !IndexTransformer.isPageHidden(page) && !hiddenSet.contains(page.name)) {
           // perform extra action if anything happens before this page
           for (Operation operation : operations) {
-            if (page.name.equals(operation.getBefore())) {
-              switch (operation.getAction()) {
-                case "add_group":
-                  addEntry(operation.getData(), null, true);
-                  break;
-                case "column_break":
-                  addColumnBreak();
-                  break;
-                case "line_break":
-                  addEntry("", null, false);
-                  break;
-                default:
-                  Mantle.logger.error("Unknown ContentIndex action " + operation.getAction());
+            if (page.name.equals(operation.before())) {
+              switch (operation.action()) {
+                case "add_group"    -> addEntry(operation.data, null, true);
+                case "column_break" -> addColumnBreak();
+                case "line_break"   -> addEntry("", null, false);
+                default -> Mantle.logger.error("Unknown ContentIndex action " + operation.action());
               }
             }
           }
@@ -75,10 +68,5 @@ public class ContentIndex extends ContentListing {
   }
 
   /** Data class for extra index operations we can perform */
-  @Data
-  protected static class Operation {
-    private final String before;
-    private final String action;
-    private final String data;
-  }
+  protected record Operation(String before, String action, String data) {}
 }

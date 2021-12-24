@@ -1,20 +1,15 @@
 package slimeknights.mantle.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.level.block.state.BlockState;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.core.Direction;
-import com.mojang.math.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import slimeknights.mantle.client.model.inventory.ModelItem;
-
-import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public class RenderingHelper {
@@ -24,7 +19,7 @@ public class RenderingHelper {
    * Applies horizontal rotation to the given TESR
    * @param matrices  Matrix stack
    * @param state     Block state, checked for {@link BlockStateProperties#HORIZONTAL_FACING}
-   * @return  True if rotation was applied. Caller is expected to call {@link MatrixStack#pop()} if true
+   * @return  True if rotation was applied. Caller is expected to call {@link PoseStack#popPose()} if true
    */
   public static boolean applyRotation(PoseStack matrices, BlockState state) {
     if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
@@ -37,7 +32,7 @@ public class RenderingHelper {
    * Applies horizontal rotation to the given TESR
    * @param matrices  Matrix stack
    * @param facing    Direction of rotation
-   * @return  True if rotation was applied. Caller is expected to call {@link MatrixStack#pop()} if true
+   * @return  True if rotation was applied. Caller is expected to call {@link PoseStack#popPose()} if true
    */
   public static boolean applyRotation(PoseStack matrices, Direction facing) {
     // south has a facing of 0, no rotation needed
@@ -88,7 +83,7 @@ public class RenderingHelper {
     }
 
     // render the actual item
-    Minecraft.getInstance().getItemRenderer().renderStatic(item, modelItem.getTransform(), light, OverlayTexture.NO_OVERLAY, matrices, buffer);
+    Minecraft.getInstance().getItemRenderer().renderStatic(item, modelItem.getTransform(), light, OverlayTexture.NO_OVERLAY, matrices, buffer, 0);
     matrices.popPose();
   }
 }

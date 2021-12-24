@@ -6,19 +6,19 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
@@ -75,11 +75,11 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     Material overlay = owner.resolveTexture("overlay");
     ResourceLocation overlayLocation = isMissing(overlay) ? null : overlay.texture();
     BakedModel baked = new SimpleBakedModel.Builder(owner, overrides).particle(spriteGetter.apply(still)).build();
-    return new BakedModel(baked, still.texture(), flowing.texture(), overlayLocation, color);
+    return new Baked(baked, still.texture(), flowing.texture(), overlayLocation, color);
   }
 
   /** Data holder class, has no quads */
-  private static class BakedModel extends BakedModelWrapper<BakedModel> {
+  private static class Baked extends BakedModelWrapper<BakedModel> {
     @Getter
     private final ResourceLocation still;
     @Getter
@@ -88,7 +88,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     private final ResourceLocation overlay;
     @Getter
     private final int color;
-    public BakedModel(BakedModel originalModel, ResourceLocation still, ResourceLocation flowing, @Nullable ResourceLocation overlay, int color) {
+    public Baked(BakedModel originalModel, ResourceLocation still, ResourceLocation flowing, @Nullable ResourceLocation overlay, int color) {
       super(originalModel);
       this.still = still;
       this.flowing = flowing;
@@ -99,49 +99,49 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
 
   /** Model loader, also doubles as the fluid model provider */
   private static class Loader implements IModelLoader<FluidTextureModel>, IFluidModelProvider {
-    private final Map<Fluid,BakedModel> modelCache = new HashMap<>();
+    private final Map<Fluid,Baked> modelCache = new HashMap<>();
 
     /** Gets a model for a fluid */
     @Nullable
-    private BakedModel getFluidModel(Fluid fluid) {
-      return ModelHelper.getBakedModel(fluid.defaultFluidState().createLegacyBlock(), BakedModel.class);
+    private Baked getFluidModel(Fluid fluid) {
+      return ModelHelper.getBakedModel(fluid.defaultFluidState().createLegacyBlock(), Baked.class);
     }
 
     /** Gets a model for a fluid from the cache */
     @Nullable
-    private BakedModel getCachedModel(Fluid fluid) {
+    private Baked getCachedModel(Fluid fluid) {
       return modelCache.computeIfAbsent(fluid, this::getFluidModel);
     }
 
     @Override
     @Nullable
     public ResourceLocation getStillTexture(Fluid fluid) {
-      BakedModel model = getCachedModel(fluid);
+      Baked model = getCachedModel(fluid);
       return model == null ? null : model.getStill();
     }
 
     @Override
     @Nullable
     public ResourceLocation getFlowingTexture(Fluid fluid) {
-      BakedModel model = getCachedModel(fluid);
+      Baked model = getCachedModel(fluid);
       return model == null ? null : model.getFlowing();
     }
 
     @Override
     @Nullable
     public ResourceLocation getOverlayTexture(Fluid fluid) {
-      BakedModel model = getCachedModel(fluid);
+      Baked model = getCachedModel(fluid);
       return model == null ? null : model.getOverlay();
     }
 
     @Override
     public int getColor(Fluid fluid) {
-      BakedModel model = getCachedModel(fluid);
+      Baked model = getCachedModel(fluid);
       return model == null ? -1 : model.getColor();
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
       modelCache.clear();
     }
 
@@ -149,7 +149,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
     public FluidTextureModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
       int color = -1;
       if (modelContents.has("color")) {
-        String colorString = JSONUtils.getAsString(modelContents, "color");
+        String colorString = GsonHelper.getAsString(modelContents, "color");
         int length = colorString.length();
         // prevent some invalid strings, colors should all be 6 or 8 digits
         if (colorString.charAt(0) == '-' || (length != 6 && length != 8)) {

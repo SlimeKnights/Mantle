@@ -1,23 +1,21 @@
 package slimeknights.mantle.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.inventory.ModelItem;
 import slimeknights.mantle.client.model.util.ModelHelper;
 
 import java.util.List;
 
-public class InventoryTileEntityRenderer<T extends BlockEntity & Container> extends BlockEntityRenderer<T> {
+public class InventoryTileEntityRenderer<T extends BlockEntity & Container> implements BlockEntityRenderer<T> {
 
-  public InventoryTileEntityRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
-    super(rendererDispatcherIn);
-  }
+  public InventoryTileEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
   @Override
   public void render(T inventory, float partialTicks, PoseStack matrices, MultiBufferSource buffer, int light, int combinedOverlayIn) {
@@ -25,7 +23,7 @@ public class InventoryTileEntityRenderer<T extends BlockEntity & Container> exte
 
     // first, find the model for item display locations
     BlockState state = inventory.getBlockState();
-    InventoryModel.BakedModel model = ModelHelper.getBakedModel(state, InventoryModel.BakedModel.class);
+    InventoryModel.Baked model = ModelHelper.getBakedModel(state, InventoryModel.Baked.class);
     if (model != null) {
       // if the block is rotatable, rotate item display
       boolean isRotated = RenderingHelper.applyRotation(matrices, state);

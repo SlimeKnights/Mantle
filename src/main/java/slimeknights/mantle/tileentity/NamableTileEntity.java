@@ -2,11 +2,12 @@ package slimeknights.mantle.tileentity;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Extension of tile entity to make it namable
@@ -21,22 +22,22 @@ public abstract class NamableTileEntity extends MantleTileEntity implements IRen
 	@Getter @Setter
 	private Component customName;
 
-	public NamableTileEntity(BlockEntityType<?> tileEntityTypeIn, Component defaultTitle) {
-		super(tileEntityTypeIn);
+	public NamableTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Component defaultTitle) {
+		super(type, pos, state);
 		this.defaultName = defaultTitle;
 	}
 
 	@Override
-	public void load(BlockState blockState, CompoundTag tags) {
-		super.load(blockState, tags);
-		if (tags.contains(TAG_CUSTOM_NAME, NBT.TAG_STRING)) {
+	public void load(CompoundTag tags) {
+		super.load(tags);
+		if (tags.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
 			this.customName = Component.Serializer.fromJson(tags.getString(TAG_CUSTOM_NAME));
 		}
 	}
 
 	@Override
-	public void writeSynced(CompoundTag tags) {
-		super.writeSynced(tags);
+	public void saveSynced(CompoundTag tags) {
+		super.saveSynced(tags);
 		if (this.hasCustomName()) {
 			tags.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(this.customName));
 		}

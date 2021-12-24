@@ -195,8 +195,7 @@ public class SingleKeyMultimap<K,V> implements Multimap<K,V> {
 
     @Override
     public boolean contains(@Nullable Object o) {
-      if (o instanceof Entry) {
-        Entry<?, ?> entry = (Entry<?, ?>) o;
+      if (o instanceof Entry<?,?> entry) {
         return SingleKeyMultimap.this.containsEntry(entry.getKey(), entry.getValue());
       }
       return false;
@@ -204,8 +203,7 @@ public class SingleKeyMultimap<K,V> implements Multimap<K,V> {
 
     @Override
     public boolean remove(@Nullable Object o) {
-      if (o instanceof Entry) {
-        Entry<?, ?> entry = (Entry<?, ?>) o;
+      if (o instanceof Entry<?,?> entry) {
         return SingleKeyMultimap.this.remove(entry.getKey(), entry.getValue());
       }
       return false;

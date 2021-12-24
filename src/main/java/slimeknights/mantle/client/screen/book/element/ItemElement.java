@@ -1,17 +1,16 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.world.level.block.Block;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
-import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.NonNullList;
-import net.minecraft.util.StringUtil;
-import net.minecraft.Util;
-import net.minecraft.util.Mth;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -20,6 +19,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class ItemElement extends SizedBookElement {
 
@@ -90,21 +90,26 @@ public class ItemElement extends SizedBookElement {
     }
 
     if (this.currentItem < this.itemCycle.size()) {
-      Lighting.turnBackOn();
+      // Lighting.turnBackOn(); TODO: still needed?
 
       matrixStack.pushPose();
       matrixStack.translate(x, y, 0);
       matrixStack.scale(scale, scale, 1.0F);
 
       // Matrix stack -> old system
-      RenderSystem.pushMatrix();
-      RenderSystem.multMatrix(matrixStack.last().pose());
+      PoseStack poses = RenderSystem.getModelViewStack();
+      poses.pushPose();
+      poses.mulPoseMatrix(matrixStack.last().pose());
 
-      this.mc.getItemRenderer().renderAndDecorateItem(this.itemCycle.get(this.currentItem), 0, 0);
+      ItemStack stack = this.itemCycle.get(this.currentItem);
+      this.mc.getItemRenderer().renderAndDecorateItem(stack, 0, 0);
+      Font font = net.minecraftforge.client.RenderProperties.get(stack).getFont(stack);
+      if (font == null) font = mc.font;
+      this.mc.getItemRenderer().renderGuiItemDecorations(font, stack, 0, 0, null);
 
       matrixStack.popPose();
-      RenderSystem.popMatrix();
-      Lighting.turnOff();
+      poses.popPose();
+      // Lighting.turnOff(); TODO: still needed?
     }
   }
 

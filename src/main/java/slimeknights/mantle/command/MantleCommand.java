@@ -3,12 +3,12 @@ package slimeknights.mantle.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.command.Commands;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.command.arguments.SuggestionProviders;
-import net.minecraft.world.GameRules;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import slimeknights.mantle.Mantle;
@@ -38,12 +38,12 @@ public class MantleCommand {
     // register arguments
     ArgumentTypes.register("mantle:tag_collection", TagCollectionArgument.class, new EmptyArgumentSerializer<>(TagCollectionArgument::collection));
     VALID_TAGS = SuggestionProviders.register(Mantle.getResource("valid_tags"), (context, builder) -> {
-      TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
-      return ISuggestionProvider.suggestResource(result.getCollection().getAvailableTags(), builder);
+      TagCollectionArgument.Result<?> result = context.getArgument("type", TagCollectionArgument.Result.class);
+      return SharedSuggestionProvider.suggestResource(result.collection().getAvailableTags(), builder);
     });
     REGISTRY_VALUES = SuggestionProviders.register(Mantle.getResource("registry_values"), (context, builder) -> {
-      TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
-      return ISuggestionProvider.suggestResource(result.getRegistry().getKeys(), builder);
+      TagCollectionArgument.Result<?> result = context.getArgument("type", TagCollectionArgument.Result.class);
+      return SharedSuggestionProvider.suggestResource(result.registry().getKeys(), builder);
     });
 
     // add command listener
@@ -51,15 +51,15 @@ public class MantleCommand {
   }
 
   /** Registers a sub command for the root Mantle command */
-  private static void register(LiteralArgumentBuilder<CommandSource> root, String name, Consumer<LiteralArgumentBuilder<CommandSource>> consumer) {
-    LiteralArgumentBuilder<CommandSource> subCommand = Commands.literal(name);
+  private static void register(LiteralArgumentBuilder<CommandSourceStack> root, String name, Consumer<LiteralArgumentBuilder<CommandSourceStack>> consumer) {
+    LiteralArgumentBuilder<CommandSourceStack> subCommand = Commands.literal(name);
     consumer.accept(subCommand);
     root.then(subCommand);
   }
 
   /** Event listener to register the Mantle command */
   private static void registerCommand(RegisterCommandsEvent event) {
-    LiteralArgumentBuilder<CommandSource> builder = Commands.literal("mantle");
+    LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("mantle");
 
     // sub commands
     register(builder, "view_tag", ViewTagCommand::register);
@@ -81,7 +81,7 @@ public class MantleCommand {
    * @param reducedDebugLevel  Level to use when reduced debug info is true
    * @return  True if the command can be run
    */
-  public static boolean requiresDebugInfoOrOp(CommandSource source, int reducedDebugLevel) {
+  public static boolean requiresDebugInfoOrOp(CommandSourceStack source, int reducedDebugLevel) {
     return !source.getLevel().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO) || source.hasPermission(reducedDebugLevel);
   }
 }

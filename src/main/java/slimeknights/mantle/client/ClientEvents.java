@@ -1,21 +1,12 @@
 package slimeknights.mantle.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Options;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -86,6 +77,8 @@ public class ClientEvents {
 
   // registered with FORGE bus
   private static void renderOffhandAttackIndicator(RenderGameOverlayEvent.Post event) {
+    // TODO: update
+    /*
     // must have a player, not be in spectator, and have the indicator enabled
     Minecraft minecraft = Minecraft.getInstance();
     Options settings = minecraft.options;
@@ -113,7 +106,7 @@ public class ClientEvents {
             int y = (scaledHeight / 2) - 14 + (2 * (scaledHeight % 2));
             int x = minecraft.getWindow().getGuiScaledWidth() / 2 - 8;
             int width = (int)(cooldown * 17.0F);
-            minecraft.getTextureManager().bind(GuiComponent.GUI_ICONS_LOCATION);
+            minecraft.getTextureManager().bindForSetup(GuiComponent.GUI_ICONS_LOCATION);
             minecraft.gui.blit(matrixStack, x, y, 36, 94, 16, 4);
             minecraft.gui.blit(matrixStack, x, y, 52, 94, width, 4);
           }
@@ -130,13 +123,14 @@ public class ClientEvents {
           } else {
             x = centerWidth + 91 + 6 + 32;
           }
-          minecraft.getTextureManager().bind(GuiComponent.GUI_ICONS_LOCATION);
+          minecraft.getTextureManager().bindForSetup(GuiComponent.GUI_ICONS_LOCATION);
           int l1 = (int)(cooldown * 19.0F);
-          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+          RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
           minecraft.gui.blit(matrixStack, x, y, 0, 94, 18, 18);
           minecraft.gui.blit(matrixStack, x, y + 18 - l1, 18, 112 - l1, 18, l1);
         }
         break;
     }
+     */
   }
 }

@@ -1,11 +1,12 @@
 package slimeknights.mantle.recipe.helper;
 
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.Item;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
-import net.minecraft.tags.SerializationTags;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.event.TagsUpdatedEvent;
@@ -20,7 +21,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Utility that helps get the preferred item from a tag based on mod ID.
@@ -30,10 +30,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
   /** Just an alphabetically late RL to simplify null checks */
   private static final ResourceLocation DEFAULT_ID = new ResourceLocation("zzzzz:zzzzz"); // simplfies null checks
   /** Map of each tag type to the preference instance for that type */
-  private static final Map<Class<?>, TagPreference<?>> PREFERENCE_MAP = new IdentityHashMap<>();
-  // cached tag supplier lambdas
-  private static final Supplier<TagCollection<Item>> ITEM_TAG_COLLECTION_SUPPLIER = () -> SerializationTags.getInstance().getItems();
-  private static final Supplier<TagCollection<Fluid>> FLUID_TAG_COLLECTION_SUPPLIER = () -> SerializationTags.getInstance().getFluids();
+  private static final Map<ResourceKey<?>, TagPreference<?>> PREFERENCE_MAP = new IdentityHashMap<>();
 
   /** Comparator to decide which registry entry is preferred */
   private static final Comparator<IForgeRegistryEntry<?>> ENTRY_COMPARATOR = (a, b) -> {
@@ -54,14 +51,14 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
 
   /**
    * Gets the tag preference instance associated with the given tag collection
-   * @param clazz  Tag class
+   * @param key   Registry key for the relevant collection
    * @param <T>    Tag value type
    * @return  Tag preference instance
    */
   @SuppressWarnings("unchecked")
-  public static <T extends IForgeRegistryEntry<T>> TagPreference<T> getInstance(Class<T> clazz, Supplier<TagCollection<T>> collection) {
+  public static <T extends IForgeRegistryEntry<T>> TagPreference<T> getInstance(ResourceKey<Registry<T>> key) {
     // should always be the right instance as only we add entries to the map
-    return (TagPreference<T>) PREFERENCE_MAP.computeIfAbsent(clazz, c -> new TagPreference<>(collection));
+    return (TagPreference<T>) PREFERENCE_MAP.computeIfAbsent(key, c -> new TagPreference<>(key));
   }
 
   /**
@@ -69,7 +66,7 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * @return  Instance for item tags
    */
   public static TagPreference<Item> getItems() {
-    return getInstance(Item.class, ITEM_TAG_COLLECTION_SUPPLIER);
+    return getInstance(Registry.ITEM_REGISTRY);
   }
 
   /**
@@ -77,17 +74,17 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * @return  Instance for fluid tags
    */
   public static TagPreference<Fluid> getFluids() {
-    return getInstance(Fluid.class, FLUID_TAG_COLLECTION_SUPPLIER);
+    return getInstance(Registry.FLUID_REGISTRY);
   }
 
   /** Supplier to tag collection */
-  private final Supplier<TagCollection<T>> collection;
+  private final ResourceKey<Registry<T>> key;
 
   /** Specific cache to this tag preference class type */
   private final Map<ResourceLocation, Optional<T>> preferenceCache = new HashMap<>();
 
-  private TagPreference(Supplier<TagCollection<T>> collection) {
-    this.collection = collection;
+  private TagPreference(ResourceKey<Registry<T>> key) {
+    this.key = key;
     MinecraftForge.EVENT_BUS.addListener(this::clearCache);
   }
 
@@ -95,11 +92,11 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * Clears the tag cache from the event
    * @param event  Tag event
    */
-  private void clearCache(TagsUpdatedEvent.VanillaTagTypes event) {
+  private void clearCache(TagsUpdatedEvent event) {
     preferenceCache.clear();
   }
 
-  /** Gets the preference from a tag without going through the cache, internal logic behind {@link #getPreference(ITag)} */
+  /** Gets the preference from a tag without going through the cache, internal logic behind {@link #getPreference(Tag)} */
   private Optional<T> getUncachedPreference(Tag<T> tag) {
     // if no items, empty optional
     if (tag instanceof IOptionalNamedTag && ((IOptionalNamedTag<?>) tag).isDefaulted()) {
@@ -127,12 +124,11 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    */
   public Optional<T> getPreference(Tag<T> tag) {
     // fetch cached value if we have one
-    try {
-      ResourceLocation tagName = collection.get().getIdOrThrow(tag);
+    ResourceLocation tagName = SerializationTags.getInstance().getOrEmpty(key).getId(tag);
+    if (tagName != null) {
       return preferenceCache.computeIfAbsent(tagName, name -> getUncachedPreference(tag));
-    } catch (Exception e) {
-      Mantle.logger.warn("Attempting to get tag preference for unregistered tag {}", tag, e);
-      return getUncachedPreference(tag);
     }
+    Mantle.logger.warn("Attempting to get tag preference for unregistered tag {}", tag);
+    return getUncachedPreference(tag);
   }
 }

@@ -1,20 +1,20 @@
 package slimeknights.mantle.network;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
 import javax.annotation.Nullable;
@@ -39,11 +39,12 @@ public class NetworkWrapper {
    * @param channelName  Unique packet channel name
    */
   public NetworkWrapper(ResourceLocation channelName) {
-    this.network = NetworkRegistry.ChannelBuilder.named(channelName)
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
-            .simpleChannel();
+    this.network = NetworkRegistry.ChannelBuilder
+      .named(channelName)
+      .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+      .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+      .networkProtocolVersion(() -> PROTOCOL_VERSION)
+      .simpleChannel();
   }
 
   /**
@@ -65,7 +66,7 @@ public class NetworkWrapper {
    * @param direction  Network direction for validation. Pass null for no direction
    * @param <MSG>  Packet class type
    */
-  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<Context>> consumer, @Nullable NetworkDirection direction) {
+  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer, @Nullable NetworkDirection direction) {
     this.network.registerMessage(this.id++, clazz, encoder, decoder, consumer, Optional.ofNullable(direction));
   }
 
@@ -95,8 +96,8 @@ public class NetworkWrapper {
    * @param packet  Packet
    */
   public void sendVanillaPacket(Packet<?> packet, Entity player) {
-    if (player instanceof ServerPlayer && ((ServerPlayer) player).connection != null) {
-      ((ServerPlayer) player).connection.send(packet);
+    if (player instanceof ServerPlayer sPlayer) {
+      sPlayer.connection.send(packet);
     }
   }
 

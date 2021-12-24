@@ -5,19 +5,18 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
@@ -80,10 +79,7 @@ public class FallbackModelLoader implements IModelLoader<FallbackModelLoader.Blo
    * Wrapper around a single block model, redirects all standard calls to vanilla logic
    * Final baked model will still be the original instance, which is what is important
    */
-  @AllArgsConstructor
-  static class BlockModelWrapper implements IModelGeometry<BlockModelWrapper> {
-    private final BlockModel model;
-
+  record BlockModelWrapper(BlockModel model) implements IModelGeometry<BlockModelWrapper> {
     @Override
     public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
       return model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);

@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
@@ -12,8 +12,6 @@ import slimeknights.mantle.client.book.data.BookData;
 import javax.annotation.Nullable;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
-
-import net.minecraft.client.gui.components.Button.OnPress;
 
 @OnlyIn(Dist.CLIENT)
 public class ArrowButton extends Button {
@@ -44,9 +42,9 @@ public class ArrowButton extends Button {
   public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, @Nullable BookData bookData) {
     Minecraft minecraft = Minecraft.getInstance();
     if (bookData != null) {
-      minecraft.getTextureManager().bind(bookData.appearance.getBookTexture());
+      minecraft.getTextureManager().bindForSetup(bookData.appearance.getBookTexture());
     } else {
-      minecraft.getTextureManager().bind(TEX_BOOK);
+      minecraft.getTextureManager().bindForSetup(TEX_BOOK);
     }
 
     this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
@@ -57,7 +55,7 @@ public class ArrowButton extends Button {
     float g = ((color >> 8) & 0xff) / 255.F;
     float b = (color & 0xff) / 255.F;
 
-    RenderSystem.color3f(r, g, b);
+    RenderSystem.setShaderColor(r, g, b, 1f);
     blit(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
     this.renderBg(matrixStack, minecraft, mouseX, mouseY);
   }

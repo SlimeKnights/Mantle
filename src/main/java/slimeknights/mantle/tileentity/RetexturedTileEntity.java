@@ -1,11 +1,14 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.util.LazyLoadedValue;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.common.util.Lazy;
 import slimeknights.mantle.util.RetexturedHelper;
+
+import javax.annotation.Nonnull;
 
 /**
  * Minimal implementation for {@link IRetexturedTileEntity}, use alongside {@link slimeknights.mantle.block.RetexturedBlock} and {@link slimeknights.mantle.item.RetexturedBlockItem}
@@ -13,11 +16,12 @@ import slimeknights.mantle.util.RetexturedHelper;
 public class RetexturedTileEntity extends MantleTileEntity implements IRetexturedTileEntity {
 
   /** Lazy value of model data as it will not change after first fetch */
-  private final LazyLoadedValue<IModelData> data = new LazyLoadedValue<>(this::getRetexturedModelData);
-  public RetexturedTileEntity(BlockEntityType<?> type) {
-    super(type);
+  private final Lazy<IModelData> data = Lazy.of(this::getRetexturedModelData);
+  public RetexturedTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    super(type, pos, state);
   }
 
+  @Nonnull
   @Override
   public IModelData getModelData() {
     return data.get();
@@ -29,15 +33,16 @@ public class RetexturedTileEntity extends MantleTileEntity implements IRetexture
   }
 
   @Override
-  public void load(BlockState blockState, CompoundTag tags) {
+  public void load(CompoundTag tags) {
     String oldName = getTextureName();
-    super.load(blockState, tags);
+    super.load(tags);
     String newName = getTextureName();
     // if the texture name changed, mark the position for rerender
     if (!oldName.equals(newName) && level != null && level.isClientSide) {
       data.get().setData(RetexturedHelper.BLOCK_PROPERTY, getTexture());
       requestModelDataUpdate();
-      level.sendBlockUpdated(worldPosition, blockState, blockState, 0);
+      BlockState state = getBlockState();
+      level.sendBlockUpdated(worldPosition, state, state, 0);
     }
   }
 }

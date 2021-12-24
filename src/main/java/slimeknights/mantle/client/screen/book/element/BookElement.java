@@ -2,15 +2,16 @@ package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraftforge.client.RenderProperties;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
@@ -50,7 +51,8 @@ public abstract class BookElement extends GuiComponent {
   public void renderToolTip(PoseStack matrixStack, Font fontRenderer, ItemStack stack, int x, int y) {
     List<Component> list = stack.getTooltipLines(this.mc.player, this.mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
 
-    Font font = stack.getItem().getFontRenderer(stack);
+
+    Font font = RenderProperties.get(stack).getFont(stack);
     if (font == null) {
       font = fontRenderer;
     }
@@ -60,6 +62,8 @@ public abstract class BookElement extends GuiComponent {
 
   public void drawHoveringText(PoseStack matrixStack, List<Component> textLines, int x, int y, Font font) {
     //    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
-    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
+    // TODO: not sure what to call
+    Mantle.logger.error("Missing tooltip render function");
+    //GuiUtils.drawHoveringText(matrixStack, textLines, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
   }
 }

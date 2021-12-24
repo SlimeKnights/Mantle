@@ -7,12 +7,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 
 /**
  * Ingredient accepting an entity or an entity tag as an input
- * TODO: move to ingredient package in 1.17
  */
 public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /** Empty entity ingredient, matching nothing */
@@ -149,12 +149,9 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     // tag is also a name
     if (json.has("tag")) {
       ResourceLocation name = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-      Tag<EntityType<?>> tag = SerializationTags.getInstance().getEntityTypes().getTag(name);
-      if (tag == null) {
-        throw new JsonSyntaxException("Unknown entity type tag " + name);
-      } else {
-        return new TagMatch(tag);
-      }
+      Tag<EntityType<?>> tag = SerializationTags.getInstance().getTagOrThrow(Registry.ENTITY_TYPE_REGISTRY, name,
+                                                               n -> new JsonSyntaxException("Unknown entity type tag " + n));
+      return new TagMatch(tag);
     }
     // types is a list
     if (json.has("types")) {
@@ -234,7 +231,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", SerializationTags.getInstance().getEntityTypes().getIdOrThrow(tag).toString());
+      object.addProperty("tag", SerializationTags.getInstance().getIdOrThrow(Registry.ENTITY_TYPE_REGISTRY, tag, () -> new IllegalStateException("Unregistered entity tag " + tag)).toString());
       return object;
     }
   }

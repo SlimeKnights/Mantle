@@ -1,10 +1,10 @@
 package slimeknights.mantle.network.packet;
 
 import lombok.AllArgsConstructor;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.item.ILecternBookItem;
 
 /**

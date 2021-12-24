@@ -1,14 +1,14 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 /**
  * Generic container screen that simply draws the given background
@@ -50,9 +50,9 @@ public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends 
 
 	@Override
 	protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		assert this.minecraft != null;
-		this.minecraft.getTextureManager().bind(this.background);
+		this.minecraft.getTextureManager().bindForSetup(this.background);
 		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 	}
 
@@ -70,9 +70,9 @@ public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends 
 			return of(new ResourceLocation(name.getNamespace(), String.format("textures/gui/%s.png", name.getPath())), height);
 		}
 
-		@Override
-		public BackgroundContainerScreen<T> create(T container, PlayerInventory inventory, ITextComponent name) {
-			return new BackgroundContainerScreen<>(container, inventory, name, height, background);
-		}
+    @Override
+    public BackgroundContainerScreen<T> create(T menu, Inventory inventory, Component title) {
+      return new BackgroundContainerScreen<>(menu, inventory, title, height, background);
+    }
 	}
 }

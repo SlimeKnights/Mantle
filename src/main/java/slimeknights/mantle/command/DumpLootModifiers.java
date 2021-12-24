@@ -9,12 +9,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.Mantle;
 
@@ -56,7 +56,7 @@ public class DumpLootModifiers {
   /** Runs the command, dumping the tag */
   private static int run(CommandContext<CommandSourceStack> context, boolean saveFile) throws CommandSyntaxException {
     List<ResourceLocation> finalLocations = new ArrayList<>();
-    ResourceManager manager = context.getSource().getServer().getDataPackRegistries().getResourceManager();
+    ResourceManager manager = context.getSource().getServer().getResourceManager();
     try {
       // logic based on forge logic for reading loot managers
       for (Resource resource : manager.getResources(GLOBAL_LOOT_MODIFIERS)) {

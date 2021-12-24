@@ -10,30 +10,30 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Transformation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.Plane;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
-import com.mojang.math.Transformation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.IModelData;
@@ -46,6 +46,7 @@ import slimeknights.mantle.client.model.util.ExtraTextureConfiguration;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -132,18 +133,18 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
   @Override
   public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
-    return new BakedModel(this, new ExtraTextureConfiguration(owner, extraTextures), transform, baked);
+    return new Baked(this, new ExtraTextureConfiguration(owner, extraTextures), transform, baked);
   }
 
   @SuppressWarnings("WeakerAccess")
-  protected static class BakedModel extends DynamicBakedWrapper<BakedModel> {
+  protected static class Baked extends DynamicBakedWrapper<BakedModel> {
     private final ConnectedModel parent;
     private final IModelConfiguration owner;
     private final ModelState transforms;
     private final BakedModel[] cache = new BakedModel[64];
     private final Map<String,String> nameMappingCache = new HashMap<>();
     private final ModelTextureIteratable modelTextures;
-    public BakedModel(ConnectedModel parent, IModelConfiguration owner, ModelState transforms, BakedModel baked) {
+    public Baked(ConnectedModel parent, IModelConfiguration owner, ModelState transforms, BakedModel baked) {
       super(baked);
       this.parent = parent;
       this.owner = owner;
@@ -217,20 +218,13 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       }
 
       // rotation
-      switch (uv.rotation) {
+      return switch (uv.rotation) {
         // 90 degrees
-        case 90:
-          transform = transform.compose(Direction::getClockWise);
-          break;
-        case 180:
-          transform = transform.compose(Direction::getOpposite);
-          break;
-        case 270:
-          transform = transform.compose(Direction::getCounterClockWise);
-          break;
-      }
-
-      return transform;
+        case 90 -> transform.compose(Direction::getClockWise);
+        case 180 -> transform.compose(Direction::getOpposite);
+        case 270 -> transform.compose(Direction::getCounterClockWise);
+        default -> transform;
+      };
     }
 
     /**
@@ -260,7 +254,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
         if (either != null) {
           // if no name, its not connected
           Optional<String> newName = either.right();
-          if (!newName.isPresent()) {
+          if (newName.isEmpty()) {
             break;
           }
           // if the name is connected, we are done
@@ -356,6 +350,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       return connections;
     }
 
+    @Nonnull
     @Override
     public IModelData getModelData(BlockAndTintGetter world, BlockPos pos, BlockState state, IModelData tileData) {
       // if the data is already defined, return it, will happen in multipart models
@@ -394,6 +389,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       return cache[connections].getQuads(state, side, rand, data);
     }
 
+    @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
       // try model data first

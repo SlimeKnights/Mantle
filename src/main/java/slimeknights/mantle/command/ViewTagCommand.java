@@ -6,12 +6,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.command.arguments.ResourceLocationArgument;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Collection;
@@ -41,13 +41,13 @@ public class ViewTagCommand {
    * @return  Integer return
    * @throws CommandSyntaxException  If invalid values are passed
    */
-  private static int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-    TagCollectionArgument.Result result = context.getArgument("type", TagCollectionArgument.Result.class);
+  private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    TagCollectionArgument.Result<?> result = TagCollectionArgument.getResult(context, "type");
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
-    ITag<?> tag = result.getCollection().getTag(name);
+    Tag<?> tag = result.collection().getTag(name);
     if (tag != null) {
       // start building output message
-      IFormattableTextComponent output = new TranslationTextComponent("command.mantle.view_tag.success", result.getName(), name);
+      MutableComponent output = new TranslatableComponent("command.mantle.view_tag.success", result.name(), name);
       Collection<?> values = tag.getValues();
 
       // if no values, print empty
@@ -63,6 +63,6 @@ public class ViewTagCommand {
       context.getSource().sendSuccess(output, true);
       return values.size();
     }
-    throw TAG_NOT_FOUND.create(result.getName(), name);
+    throw TAG_NOT_FOUND.create(result.name(), name);
   }
 }

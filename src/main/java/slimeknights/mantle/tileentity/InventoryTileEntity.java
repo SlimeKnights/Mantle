@@ -1,27 +1,29 @@
 package slimeknights.mantle.tileentity;
 
 import lombok.Getter;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.Container;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.Direction;
-import net.minecraft.world.Nameable;
-import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
@@ -39,21 +41,22 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, Component name, int inventorySize) {
-    this(tileEntityTypeIn, name, inventorySize, 64);
+  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize) {
+    this(tileEntityTypeIn, pos, state, name, inventorySize, 64);
   }
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, Component name, int inventorySize, int maxStackSize) {
-    super(tileEntityTypeIn, name);
+  public InventoryTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize, int maxStackSize) {
+    super(tileEntityTypeIn, pos, state, name);
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.itemHandler = new InvWrapper(this);
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
   }
 
+  @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
     if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -63,7 +66,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
   }
 
   @Override
-  protected void invalidateCaps() {
+  public void invalidateCaps() {
     super.invalidateCaps();
     this.itemHandlerCap.invalidate();
   }
@@ -101,7 +104,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
 
   public void resize(int size) {
     this.resizeInternal(size);
-    this.markDirtyFast();
+    this.setChangedFast();
   }
 
   @Override
@@ -127,7 +130,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
       itemstack.setCount(this.getMaxStackSize());
     }
     if (!ItemStack.matches(current, itemstack)) {
-      this.markDirtyFast();
+      this.setChangedFast();
     }
   }
 
@@ -145,7 +148,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
     // whole itemstack taken out
     if (itemStack.getCount() <= quantity) {
       this.setItem(slot, ItemStack.EMPTY);
-      this.markDirtyFast();
+      this.setChangedFast();
       return itemStack;
     }
 
@@ -157,7 +160,7 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
       this.setItem(slot, ItemStack.EMPTY);
     }
 
-    this.markDirtyFast();
+    this.setChangedFast();
     // return remainder
     return itemStack;
   }
@@ -202,25 +205,25 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
   public void stopOpen(Player player) {}
 
   /* NBT */
+
   @Override
-  public void load(BlockState blockState, CompoundTag tags) {
-    super.load(blockState, tags);
+  public void load(CompoundTag tags) {
+    super.load(tags);
     this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
     this.readInventoryFromNBT(tags);
   }
 
   @Override
-  public void writeSynced(CompoundTag tags) {
-    super.writeSynced(tags);
+  public void saveSynced(CompoundTag tags) {
+    super.saveSynced(tags);
     // only sync the size to the client by default
     tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
   }
   
   @Override
-  public CompoundTag save(CompoundTag tags) {
+  public void saveAdditional(CompoundTag tags) {
     super.save(tags);
     this.writeInventoryToNBT(tags);
-    return tags;
   }
 
   /**
@@ -243,15 +246,15 @@ public abstract class InventoryTileEntity extends NamableTileEntity implements C
   }
 
   /**
-   * Reads a an inventory from the tag. Overwrites current content
+   * Reads an inventory from the tag. Overwrites current content
    */
   public void readInventoryFromNBT(CompoundTag tag) {
-    ListTag nbttaglist = tag.getList(TAG_ITEMS, NBT.TAG_COMPOUND);
+    ListTag list = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
 
     int limit = this.getMaxStackSize();
     ItemStack stack;
-    for (int i = 0; i < nbttaglist.size(); ++i) {
-      CompoundTag itemTag = nbttaglist.getCompound(i);
+    for (int i = 0; i < list.size(); ++i) {
+      CompoundTag itemTag = list.getCompound(i);
       int slot = itemTag.getByte(TAG_SLOT) & 255;
       if (slot < this.inventory.size()) {
         stack = ItemStack.of(itemTag);

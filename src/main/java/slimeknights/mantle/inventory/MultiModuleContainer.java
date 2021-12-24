@@ -3,16 +3,15 @@ package slimeknights.mantle.inventory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -52,8 +51,8 @@ public class MultiModuleContainer<TILE extends BlockEntity> extends BaseContaine
     }
 
     int begin = this.slots.size();
-    for (Object slot : subcontainer.slots) {
-      WrapperSlot wrapper = new WrapperSlot((Slot) slot);
+    for (Slot slot : subcontainer.slots) {
+      WrapperSlot wrapper = new WrapperSlot(slot);
       this.addSlot(wrapper);
       this.slotContainerMap.put(wrapper.index, subcontainer);
     }
@@ -111,14 +110,13 @@ public class MultiModuleContainer<TILE extends BlockEntity> extends BaseContaine
   }
 
   @Override
-  public ItemStack clicked(int slotId, int dragType, ClickType type, Player player) {
+  public void clicked(int slotId, int dragType, ClickType type, Player player) {
     if (slotId == -999 && type == ClickType.QUICK_CRAFT) {
       for (AbstractContainerMenu container : this.subContainers) {
         container.clicked(slotId, dragType, type, player);
       }
     }
-
-    return super.clicked(slotId, dragType, type, player);
+    super.clicked(slotId, dragType, type, player);
   }
 
   // More sophisticated version of the one in BaseContainer
@@ -127,7 +125,7 @@ public class MultiModuleContainer<TILE extends BlockEntity> extends BaseContaine
   public ItemStack quickMoveStack(Player playerIn, int index) {
     Slot slot = this.slots.get(index);
 
-    if (slot == null || !slot.hasItem()) {
+    if (!slot.hasItem()) {
       return ItemStack.EMPTY;
     }
 

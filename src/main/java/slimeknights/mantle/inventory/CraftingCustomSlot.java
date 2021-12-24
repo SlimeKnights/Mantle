@@ -1,11 +1,10 @@
 package slimeknights.mantle.inventory;
 
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.Container;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.hooks.BasicEventHooks;
 
 public class CraftingCustomSlot extends ResultSlot {
 
@@ -26,12 +25,10 @@ public class CraftingCustomSlot extends ResultSlot {
   }
 
   @Override
-  public ItemStack onTake(Player playerIn, ItemStack stack) {
-    BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
+  public void onTake(Player playerIn, ItemStack stack) {
+    //TODO: needed? BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
     this.checkTakeAchievements(stack);
 
     this.callback.onCrafting(playerIn, stack, this.craftMatrix);
-
-    return stack;
   }
 }

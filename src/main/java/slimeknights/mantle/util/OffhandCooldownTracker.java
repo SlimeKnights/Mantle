@@ -1,20 +1,19 @@
 package slimeknights.mantle.util;
 
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.nbt.Tag;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullFunction;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -22,6 +21,7 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.SwingArmPacket;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -36,24 +36,16 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
   /**
    * Capability instance for offhand cooldown
    */
-  @CapabilityInject(OffhandCooldownTracker.class)
-  public static Capability<OffhandCooldownTracker> CAPABILITY = null;
+  public static final Capability<OffhandCooldownTracker> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
   /** Registers the capability and subscribes to event listeners */
-  public static void register() {
-    // register a bunch of dumb unused things because I need to register one actually useful thing
-    CapabilityManager.INSTANCE.register(OffhandCooldownTracker.class, new IStorage<OffhandCooldownTracker>() {
-      @Nullable
-      @Override
-      public Tag writeNBT(Capability<OffhandCooldownTracker> capability, OffhandCooldownTracker instance, Direction side) {
-        return null;
-      }
-
-      @Override
-      public void readNBT(Capability<OffhandCooldownTracker> capability, OffhandCooldownTracker instance, Direction side, Tag nbt) {}
-    }, () -> new OffhandCooldownTracker(null));
-
+  public static void init() {
     MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, OffhandCooldownTracker::attachCapability);
+  }
+
+  /** Registers the capability with the event bus */
+  public static void register(RegisterCapabilitiesEvent event) {
+    event.register(OffhandCooldownTracker.class);
   }
 
   /**
@@ -62,8 +54,8 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
    */
   private static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
     Entity entity = event.getObject();
-    if (entity instanceof Player) {
-      event.addCapability(KEY, new OffhandCooldownTracker((Player) entity));
+    if (entity instanceof Player player) {
+      event.addCapability(KEY, new OffhandCooldownTracker(player));
     }
   }
 
@@ -77,9 +69,10 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
   /** Time in ticks when the player can next attack for full power */
   private int attackReady = 0;
 
-  /** Forces the cooldown tracker to enable even if the offhand is not in {@link slimeknights.mantle.data.MantleTags.Items#OFFHAND_COOLDOWN}. Intended to be set in equipment change events, not serialized */
-  private int forceEnable = 0;
+  /** Enables the cooldown tracker if above 0. Intended to be set in equipment change events, not serialized */
+  private int enabled = 0;
 
+  @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
     return cap == CAPABILITY ? this.capabilityInstance.cast() : LazyOptional.empty();
@@ -94,19 +87,19 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
   }
 
   /** If true, the tracker is enabled despite a cooldown item not being held */
-  public boolean isForceEnable() {
-    return forceEnable > 0;
+  public boolean isEnabled() {
+    return enabled > 0;
   }
 
   /**
    * Call this method when your item causing offhand cooldown to be needed is enabled and disabled. If multiple placces call this, the tracker will automatically keep enabled until all places disable
-   * @param force  If true, enable. If false, disable
+   * @param enable  If true, enable. If false, disable
    */
-  public void setForceEnable(boolean force) {
-    if (force) {
-      forceEnable++;
+  public void setEnabled(boolean enable) {
+    if (enable) {
+      enabled++;
     } else {
-      forceEnable--;
+      enabled--;
     }
   }
 
@@ -120,7 +113,7 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
   }
 
   /**
-   * Returns a number from 0 to 1 denoting the current cooldown amount, akin to {@link PlayerEntity#getCooledAttackStrength(float)}
+   * Returns a number from 0 to 1 denoting the current cooldown amount, akin to {@link Player#getAttackStrengthScale(float)}
    * @return  number from 0 to 1, with 1 being no cooldown
    */
   public float getCooldown() {

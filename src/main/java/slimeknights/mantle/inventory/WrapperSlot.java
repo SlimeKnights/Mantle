@@ -1,10 +1,10 @@
 package slimeknights.mantle.inventory;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -46,10 +46,8 @@ public class WrapperSlot extends Slot {
   }
 
   @Override
-  public ItemStack onTake(Player playerIn, ItemStack stack) {
+  public void onTake(Player playerIn, ItemStack stack) {
     this.parent.onTake(playerIn, stack);
-
-    return stack;
   }
 
   @Override

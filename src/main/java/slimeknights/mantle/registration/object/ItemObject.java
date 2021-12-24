@@ -1,12 +1,12 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.AllArgsConstructor;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
 /**
- * Registry object wrapper to implement {@link IItemProvider}
+ * Registry object wrapper to implement {@link ItemLike}
  * @param <I>  Item class
  */
 @SuppressWarnings({"unused", "WeakerAccess"})

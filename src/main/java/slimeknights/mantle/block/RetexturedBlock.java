@@ -1,40 +1,29 @@
 package slimeknights.mantle.block;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.tileentity.IRetexturedTileEntity;
 import slimeknights.mantle.util.TileEntityHelper;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-
 /**
  * Logic for a retexturable block. Use alongside {@link slimeknights.mantle.tileentity.IRetexturedTileEntity} and {@link slimeknights.mantle.item.RetexturedBlockItem}
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class RetexturedBlock extends Block {
+public abstract class RetexturedBlock extends Block implements EntityBlock {
   public RetexturedBlock(Properties properties) {
     super(properties);
   }
-
-  @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
-  @Nullable
-  @Override
-  public abstract BlockEntity createTileEntity(BlockState state, BlockGetter world);
 
   @Override
   public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
@@ -43,7 +32,7 @@ public abstract class RetexturedBlock extends Block {
   }
 
   @Override
-  public ItemStack getPickBlock(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
     return getPickBlock(world, pos, state);
   }
 
@@ -51,7 +40,7 @@ public abstract class RetexturedBlock extends Block {
   /* Utils */
 
   /**
-   * Call in {@link Block#onBlockPlacedBy(World, BlockPos, BlockState, LivingEntity, ItemStack)} to set the texture tag to the Tile Entity
+   * Call in {@link Block#setPlacedBy(Level, BlockPos, BlockState, LivingEntity, ItemStack)} to set the texture tag to the Tile Entity
    * @param world World where the block was placed
    * @param pos   Block position
    * @param stack Item stack

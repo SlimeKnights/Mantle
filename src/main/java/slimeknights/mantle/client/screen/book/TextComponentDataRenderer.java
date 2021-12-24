@@ -1,19 +1,17 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Matrix4f;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.gui.GuiUtils;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
 
 import java.util.ArrayList;
@@ -116,10 +114,11 @@ public class TextComponentDataRenderer {
       if (item.tooltips != null && item.tooltips.length > 0) {
         // Uncomment to render bounding boxes for event handling
         if (BookScreen.debug) {
-          drawGradientRect(box1X, box1Y, box1W, box1H, 0xFF00FF00, 0xFF00FF00);
-          drawGradientRect(box2X, box2Y, box2W, box2H, 0xFFFF0000, 0xFFFF0000);
-          drawGradientRect(box3X, box3Y, box3W, box3H, 0xFF0000FF, 0xFF0000FF);
-          drawGradientRect(mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
+          Matrix4f matrix = matrixStack.last().pose();
+          GuiUtils.drawGradientRect(matrix, 0, box1X,  box1Y,  box1W,      box1H,      0xFF00FF00, 0xFF00FF00);
+          GuiUtils.drawGradientRect(matrix, 0, box2X,  box2Y,  box2W,      box2H,      0xFFFF0000, 0xFFFF0000);
+          GuiUtils.drawGradientRect(matrix, 0, box3X,  box3Y,  box3W,      box3H,      0xFF0000FF, 0xFF0000FF);
+          GuiUtils.drawGradientRect(matrix, 0, mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
         }
 
         if (mouseCheck) {
@@ -205,42 +204,5 @@ public class TextComponentDataRenderer {
     }
 
     matrixStack.popPose();
-  }
-
-  /**
-   * Draws a gradient box with the from the given points
-   * Only used in debug
-   *
-   * @param left       the left position
-   * @param top        the top position
-   * @param right      the right position
-   * @param bottom     the bottom position
-   * @param startColor the start color to use
-   * @param endColor   the end color to use
-   */
-  private static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-    float f = (float) (startColor >> 24 & 255) / 255.0F;
-    float f1 = (float) (startColor >> 16 & 255) / 255.0F;
-    float f2 = (float) (startColor >> 8 & 255) / 255.0F;
-    float f3 = (float) (startColor & 255) / 255.0F;
-    float f4 = (float) (endColor >> 24 & 255) / 255.0F;
-    float f5 = (float) (endColor >> 16 & 255) / 255.0F;
-    float f6 = (float) (endColor >> 8 & 255) / 255.0F;
-    float f7 = (float) (endColor & 255) / 255.0F;
-    RenderSystem.disableTexture();
-    RenderSystem.disableAlphaTest();
-    RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-    RenderSystem.shadeModel(7425);
-    Tesselator tessellator = Tesselator.getInstance();
-    BufferBuilder vertexBuffer = tessellator.getBuilder();
-    vertexBuffer.begin(7, DefaultVertexFormat.POSITION_COLOR);
-    vertexBuffer.vertex((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.vertex((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.vertex((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    vertexBuffer.vertex((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    tessellator.end();
-    RenderSystem.shadeModel(7424);
-    RenderSystem.enableAlphaTest();
-    RenderSystem.enableTexture();
   }
 }

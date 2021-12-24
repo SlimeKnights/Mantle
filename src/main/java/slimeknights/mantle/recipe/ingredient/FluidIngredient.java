@@ -7,13 +7,14 @@ import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.util.JsonHelper;
@@ -348,7 +349,7 @@ public abstract class FluidIngredient {
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", SerializationTags.getInstance().getFluids().getIdOrThrow(this.tag).toString());
+      object.addProperty("tag", SerializationTags.getInstance().getIdOrThrow(Registry.FLUID_REGISTRY, this.tag, () -> new IllegalStateException("Unregistered fluid tag " + tag)).toString());
       object.addProperty("amount", amount);
       return object;
     }
@@ -360,10 +361,7 @@ public abstract class FluidIngredient {
      */
     private static TagMatch deserialize(JsonObject json) {
       String tagName = GsonHelper.getAsString(json, "tag");
-      Tag<Fluid> tag = SerializationTags.getInstance().getFluids().getTag(new ResourceLocation(tagName));
-      if (tag == null) {
-        throw new JsonSyntaxException("Unknown fluid tag '" + tagName + "'");
-      }
+      Tag<Fluid> tag = SerializationTags.getInstance().getTagOrThrow(Registry.FLUID_REGISTRY, new ResourceLocation(tagName), n -> new JsonSyntaxException("Unknown fluid tag '" + n + "'"));
       int amount = GsonHelper.getAsInt(json, "amount");
       return new TagMatch(tag, amount);
     }

@@ -1,17 +1,15 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import slimeknights.mantle.client.book.data.SectionData;
-import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SelectionElement extends SizedBookElement {
@@ -46,12 +44,12 @@ public class SelectionElement extends SizedBookElement {
       fill(matrixStack, this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
     }
     if (unlocked) {
-      RenderSystem.color4f(1F, 1F, 1F, hover ? 1F : 0.5F);
+      RenderSystem.setShaderColor(1F, 1F, 1F, hover ? 1F : 0.5F);
     } else {
       float r = ((this.parent.book.appearance.lockedSectionColor >> 16) & 0xff) / 255.F;
       float g = ((this.parent.book.appearance.lockedSectionColor >> 8) & 0xff) / 255.F;
       float b = (this.parent.book.appearance.lockedSectionColor & 0xff) / 255.F;
-      RenderSystem.color4f(r, g, b, 0.75F);
+      RenderSystem.setShaderColor(r, g, b, 0.75F);
     }
 
     this.iconRenderer.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);

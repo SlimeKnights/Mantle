@@ -1,12 +1,14 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.element.ImageData;
+
+import static java.util.Objects.requireNonNullElse;
 
 @OnlyIn(Dist.CLIENT)
 public class ImageElement extends SizedBookElement {
@@ -66,15 +68,10 @@ public class ImageElement extends SizedBookElement {
     float g = ((this.colorMultiplier >> 8) & 0xff) / 255.F;
     float b = (this.colorMultiplier & 0xff) / 255.F;
 
-    RenderSystem.color3f(r, g, b);
+    RenderSystem.setShaderColor(r, g, b, 1f);
 
     if (this.image.item == null) {
-      if(this.image.location != null) {
-        this.renderEngine.bind(this.image.location);
-      } else {
-        this.renderEngine.bind(TextureManager.INTENTIONAL_MISSING_TEXTURE);
-      }
-
+      this.renderEngine.bindForSetup(requireNonNullElse(this.image.location, TextureManager.INTENTIONAL_MISSING_TEXTURE));
       blitRaw(matrixStack, this.x, this.y, this.width, this.height, this.image.u, this.image.u + this.image.uw, this.image.v, this.image.v + this.image.vh, this.image.texWidth, this.image.texHeight);
     }
     else {

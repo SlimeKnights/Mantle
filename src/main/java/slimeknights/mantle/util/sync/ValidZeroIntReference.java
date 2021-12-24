@@ -9,6 +9,7 @@ import java.util.function.Consumer;
  * Int reference holder that starts the "lastKnownValue" at an invalid value.
  * Fixes a bug where a non-zero value on the client is not updated on UI open as the new value is 0
  */
+@SuppressWarnings("unused")
 public class ValidZeroIntReference extends DataSlot {
   private final ContainerData data;
   private final int idx;

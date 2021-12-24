@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
  * @param <T>  Enum type
  * @param <I>  Entry type
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "ClassCanBeRecord"})
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> {
   /** Singleton empty object, type does not matter as it has no items */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private static final EnumObject EMPTY = new EnumObject(Collections.emptyMap());
 
   /** Internal backing supplier map */
@@ -85,7 +85,7 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
   }
 
   /**
-   * Gets a list of values in this enum object. Will error if a {@link net.minecraftforge.fml.RegistryObject} cannot be resolved, unlike {@link #forEach(Consumer)}
+   * Gets a list of values in this enum object. Will error if a {@link net.minecraftforge.registries.RegistryObject} cannot be resolved, unlike {@link #forEach(Consumer)}
    * @return  List of values in the object
    */
   public List<I> values() {

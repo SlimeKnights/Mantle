@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package slimeknights.mantle.client.book.data.content;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

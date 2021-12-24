@@ -1,24 +1,19 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Matrix4f;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraftforge.client.gui.GuiUtils;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +24,7 @@ public class TextDataRenderer {
   /**
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
-  @Nullable
+  @Deprecated
   public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr) {
     List<Component> tooltip = new ArrayList<Component>();
     String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
@@ -137,20 +132,25 @@ public class TextDataRenderer {
       box3W = atX;
       box3H = (int) (atY + fr.lineHeight * item.scale);
 
+      boolean mouseInside = (mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H)
+                            || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H)
+                            || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H);
       if (item.tooltip != null && item.tooltip.length > 0) {
-        // Uncomment to render bounding boxes for event handling
-        /*drawGradientRect(box1X, box1Y, box1W, box1H, 0xFF00FF00, 0xFF00FF00);
-        drawGradientRect(box2X, box2Y, box2W, box2H, 0xFFFF0000, 0xFFFF0000);
-        drawGradientRect(box3X, box3Y, box3W, box3H, 0xFF0000FF, 0xFF0000FF);
-        drawGradientRect(mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);*/
+        if (BookScreen.debug) {
+          Matrix4f matrix = matrixStack.last().pose();
+          GuiUtils.drawGradientRect(matrix, 0, box1X,  box1Y,  box1W,      box1H,      0xFF00FF00, 0xFF00FF00);
+          GuiUtils.drawGradientRect(matrix, 0, box2X,  box2Y,  box2W,      box2H,      0xFFFF0000, 0xFFFF0000);
+          GuiUtils.drawGradientRect(matrix, 0, box3X,  box3Y,  box3W,      box3H,      0xFF0000FF, 0xFF0000FF);
+          GuiUtils.drawGradientRect(matrix, 0, mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
+        }
 
-        if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
+        if (mouseInside) {
           tooltip.addAll(Arrays.asList(item.tooltip));
         }
       }
 
       if (item.action != null && !item.action.isEmpty()) {
-        if ((mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H)) {
+        if (mouseInside) {
           action = item.action;
         }
       }
@@ -230,8 +230,9 @@ public class TextDataRenderer {
 
   //BEGIN METHODS FROM GUI
   public static void drawTooltip(PoseStack matrixStack, List<Component> textLines, int mouseX, int mouseY, Font font) {
-    GuiUtils.drawHoveringText(matrixStack, textLines, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
-    Lighting.turnOff();
+    Mantle.logger.error("Draw tooltip not yet implemented");
+    //GuiUtils.drawHoveringText(matrixStack, textLines, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
+    // Lighting.turnOff(); TODO: needed?
   }
 
   public static void drawScaledString(PoseStack matrixStack, Font font, String text, float x, float y, int color, boolean dropShadow, float scale) {
@@ -246,32 +247,6 @@ public class TextDataRenderer {
     }
 
     matrixStack.popPose();
-  }
-
-  private static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-    float f = (float) (startColor >> 24 & 255) / 255.0F;
-    float f1 = (float) (startColor >> 16 & 255) / 255.0F;
-    float f2 = (float) (startColor >> 8 & 255) / 255.0F;
-    float f3 = (float) (startColor & 255) / 255.0F;
-    float f4 = (float) (endColor >> 24 & 255) / 255.0F;
-    float f5 = (float) (endColor >> 16 & 255) / 255.0F;
-    float f6 = (float) (endColor >> 8 & 255) / 255.0F;
-    float f7 = (float) (endColor & 255) / 255.0F;
-    RenderSystem.disableTexture();
-    RenderSystem.disableAlphaTest();
-    RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-    RenderSystem.shadeModel(7425);
-    Tesselator tessellator = Tesselator.getInstance();
-    BufferBuilder vertexBuffer = tessellator.getBuilder();
-    vertexBuffer.begin(7, DefaultVertexFormat.POSITION_COLOR);
-    vertexBuffer.vertex((double) right, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.vertex((double) left, (double) top, 0D).color(f1, f2, f3, f).endVertex();
-    vertexBuffer.vertex((double) left, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    vertexBuffer.vertex((double) right, (double) bottom, 0D).color(f5, f6, f7, f4).endVertex();
-    tessellator.end();
-    RenderSystem.shadeModel(7424);
-    RenderSystem.enableAlphaTest();
-    RenderSystem.enableTexture();
   }
   //END METHODS FROM GUI
 }

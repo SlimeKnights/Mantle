@@ -5,31 +5,30 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.datafixers.util.Pair;
-import lombok.Data;
+import com.mojang.math.Transformation;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Transformation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
 import net.minecraftforge.client.model.BakedItemModel;
+import net.minecraftforge.client.model.CompositeModelState;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ItemLayerModel;
-import net.minecraftforge.client.model.ModelTransformComposition;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
@@ -96,37 +95,37 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
     for (int i = textures.size() - 1; i >= 0; i--) {
       TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
       LayerData data = getLayer(i);
-      builder.addAll(getQuadsForSprite(data.getColor(), data.isNoTint() ? -1 : i, sprite, transform, data.getLuminosity(), pixels));
+      builder.addAll(getQuadsForSprite(data.color(), data.noTint() ? -1 : i, sprite, transform, data.luminosity(), pixels));
     }
     // transform data
-    ImmutableMap<TransformType,TransformationMatrix> transformMap = PerspectiveMapWrapper.getTransforms(new ModelTransformComposition(owner.getCombinedTransform(), modelTransform));
+    ImmutableMap<ItemTransforms.TransformType,Transformation> transformMap = PerspectiveMapWrapper.getTransforms(new CompositeModelState(owner.getCombinedTransform(), modelTransform));
     return new BakedItemModel(builder.build(), particle, Maps.immutableEnumMap(transformMap), overrides, true, owner.isSideLit());
   }
 
   /**
    * Gets all quads for an item layer for the given sprite
    * @param color       Color for the sprite in AARRGGBB format.
-   * @param tint        Tint index for {@link net.minecraft.client.renderer.color.BlockColors} and {@link net.minecraft.client.renderer.color.ItemColors}. Generally unused
+   * @param tint        Tint index for {@link net.minecraft.client.color.block.BlockColors} and {@link net.minecraft.client.color.item.ItemColors}. Generally unused
    * @param sprite      Sprite to convert into quads
    * @param transform   Transforms to apply
    * @param luminosity  Extra light to add to the quad from 0-15, makes it appear to glow a bit
    * @return  List of baked quads
    */
-  public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, TransformationMatrix transform, int luminosity) {
+  public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, Transformation transform, int luminosity) {
     return getQuadsForSprite(color, tint, sprite, transform, luminosity, null);
   }
 
   /**
    * Gets all quads for an item layer for the given sprite
    * @param color       Color for the sprite in AARRGGBB format.
-   * @param tint        Tint index for {@link net.minecraft.client.renderer.color.BlockColors} and {@link net.minecraft.client.renderer.color.ItemColors}. Generally unused
+   * @param tint        Tint index for {@link net.minecraft.client.color.block.BlockColors} and {@link net.minecraft.client.color.item.ItemColors}. Generally unused
    * @param sprite      Sprite to convert into quads
    * @param transform   Transforms to apply
    * @param luminosity  Extra light to add to the quad from 0-15, makes it appear to glow a bit
    * @param pixels      Object to keep track of used pixels across multiple layers to help prevent z-fighting. To effective use, sprites must be built in reverse order. Use null to skip this logic
    * @return  List of baked quads
    */
-  public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, TransformationMatrix transform, int luminosity, @Nullable ItemLayerPixels pixels) {
+  public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, Transformation transform, int luminosity, @Nullable ItemLayerPixels pixels) {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
     int uMax = sprite.getWidth();
@@ -289,7 +288,7 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
    * @param transform  Transforms to apply
    * @param side       Side to build
    * @param color      Color for the sprite
-   * @param tint       Tint index for {@link net.minecraft.client.renderer.color.BlockColors} and {@link net.minecraft.client.renderer.color.ItemColors}
+   * @param tint       Tint index for {@link net.minecraft.client.color.block.BlockColors} and {@link net.minecraft.client.color.item.ItemColors}
    * @param sprite     Sprite to render
    * @param u          Sprite U
    * @param v          Sprite V
@@ -297,8 +296,7 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
    * @param luminosity Extra light to add to the quad between 0 and 15
    * @return  Baked quad
    */
-  @SuppressWarnings("DuplicateBranchesInSwitch")
-  private static BakedQuad buildSideQuad(TransformationMatrix transform, Direction side, int color, int tint, TextureAtlasSprite sprite, int u, int v, int size, int luminosity) {
+  private static BakedQuad buildSideQuad(Transformation transform, Direction side, int color, int tint, TextureAtlasSprite sprite, int u, int v, int size, int luminosity) {
     final float eps = 1e-2f;
     int width = sprite.getWidth();
     int height = sprite.getHeight();
@@ -347,11 +345,11 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
    * @param side         Quad side
    * @param sprite       Sprite to use in the quad
    * @param color        Color for the sprite in AARRGGBB format
-   * @param tint         Tint index for {@link net.minecraft.client.renderer.color.BlockColors} and {@link net.minecraft.client.renderer.color.ItemColors}
+   * @param tint         Tint index for {@link net.minecraft.client.color.block.BlockColors} and {@link net.minecraft.client.color.item.ItemColors}
    * @param luminosity Extra light to add to the quad between 0 and 15
    * @return  Final quad
    */
-  protected static BakedQuad buildQuad(TransformationMatrix transform, Direction side, TextureAtlasSprite sprite, int color, int tint, int luminosity,
+  protected static BakedQuad buildQuad(Transformation transform, Direction side, TextureAtlasSprite sprite, int color, int tint, int luminosity,
                                      float x0, float y0, float z0, float u0, float v0,
                                      float x1, float y1, float z1, float u1, float v1,
                                      float x2, float y2, float z2, float u2, float v2,
@@ -452,27 +450,26 @@ public class MantleItemLayerModel implements IModelGeometry<MantleItemLayerModel
     }
   }
 
-  /** Class holding details about a single layer in the model */
-  @Data
-  private static class LayerData {
+  /**
+   * Class holding details about a single layer in the model
+   */
+  private record LayerData(int color, int luminosity, boolean noTint) {
     private static final LayerData DEFAULT = new LayerData(-1, 0, false);
 
-    private final int color;
-    private final int luminosity;
-    private final boolean noTint;
-
-    /** Parses the layer data from JSON */
+    /**
+     * Parses the layer data from JSON
+     */
     public static LayerData fromJson(JsonObject json) {
-      int color = JsonHelper.parseColor(JSONUtils.getAsString(json, "color", ""));
-      int luminosity = JSONUtils.getAsInt(json, "luminosity");
-      boolean noTint = JSONUtils.getAsBoolean(json, "no_tint", false);
+      int color = JsonHelper.parseColor(GsonHelper.getAsString(json, "color", ""));
+      int luminosity = GsonHelper.getAsInt(json, "luminosity");
+      boolean noTint = GsonHelper.getAsBoolean(json, "no_tint", false);
       return new LayerData(color, luminosity, noTint);
     }
   }
 
   private static class Loader implements IModelLoader<MantleItemLayerModel> {
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {}
+    public void onResourceManagerReload(ResourceManager resourceManager) {}
 
     @Override
     public MantleItemLayerModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {

@@ -4,7 +4,9 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import slimeknights.mantle.Mantle;
 
 import java.util.ArrayList;
@@ -78,10 +80,10 @@ public class Config {
 	 * Event to call when the config changes
 	 * @param configEvent  Config event
 	 */
-	public static void configChanged(final ModConfig.ModConfigEvent configEvent) {
+	public static void configChanged(final ModConfigEvent configEvent) {
 		ModConfig config = configEvent.getConfig();
 		if (config.getModId().equals(Mantle.modId)) {
-			ForgeConfigSpec spec = config.getSpec();
+			IConfigSpec<?> spec = config.getSpec();
 			if (spec == Config.CLIENT_SPEC) {
 				CLIENT_VALUES.forEach(CachedValue::invalidate);
 			} else if (spec == Config.SERVER_SPEC) {

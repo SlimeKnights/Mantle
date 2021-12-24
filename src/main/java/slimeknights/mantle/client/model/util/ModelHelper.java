@@ -3,24 +3,23 @@ package slimeknights.mantle.client.model.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.math.Vector3f;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.MultiPartBakedModel;
 import net.minecraft.client.resources.model.WeightedBakedModel;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Vector3f;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.VertexTransformer;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
-import net.minecraftforge.resource.VanillaResourceType;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -34,11 +33,7 @@ import java.util.function.Function;
 public class ModelHelper {
   private static final Map<Block,ResourceLocation> TEXTURE_NAME_CACHE = new HashMap<>();
   /** Listener instance to clear cache */
-  public static final ISelectiveResourceReloadListener LISTENER = (manager, predicate) -> {
-    if (predicate.test(VanillaResourceType.MODELS)) {
-      TEXTURE_NAME_CACHE.clear();
-    }
-  };
+  public static final ResourceManagerReloadListener LISTENER = manager -> TEXTURE_NAME_CACHE.clear();
 
   /* Baked models */
 

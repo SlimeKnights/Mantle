@@ -2,15 +2,18 @@ package slimeknights.mantle.inventory;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.tileentity.MantleTileEntity;
 
+import javax.annotation.Nonnull;
+
 /**
  * Item handler containing exactly one item.
  */
+@SuppressWarnings("unused")
 @RequiredArgsConstructor
 public abstract class SingleItemHandler<T extends MantleTileEntity> implements IItemHandlerModifiable {
   protected final T parent;
@@ -26,7 +29,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
    */
   public void setStack(ItemStack newStack) {
     this.stack = newStack;
-    parent.markDirtyFast();
+    parent.setChangedFast();
   }
 
   /**
@@ -54,6 +57,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
     return maxStackSize;
   }
 
+  @Nonnull
   @Override
   public ItemStack getStackInSlot(int slot) {
     if (slot == 0) {
@@ -72,6 +76,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
     }
   }
   
+  @Nonnull
   @Override
   public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
     if (stack.isEmpty()) {
@@ -103,6 +108,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
     return stack;
   }
 
+  @Nonnull
   @Override
   public ItemStack extractItem(int slot, int amount, boolean simulate) {
     if (amount == 0 || slot != 0) {
@@ -134,8 +140,8 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
    * Writes this module to NBT
    * @return  Module in NBT
    */
-  public CompoundNBT writeToNBT() {
-    CompoundNBT nbt = new CompoundNBT();
+  public CompoundTag writeToNBT() {
+    CompoundTag nbt = new CompoundTag();
     if (!stack.isEmpty()) {
       stack.save(nbt);
     }
@@ -146,7 +152,7 @@ public abstract class SingleItemHandler<T extends MantleTileEntity> implements I
    * Reads this module from NBT
    * @param nbt  NBT
    */
-  public void readFromNBT(CompoundNBT nbt) {
+  public void readFromNBT(CompoundTag nbt) {
     stack = ItemStack.of(nbt);
   }
 }

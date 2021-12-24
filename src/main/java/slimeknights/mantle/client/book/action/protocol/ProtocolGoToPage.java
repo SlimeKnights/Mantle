@@ -1,7 +1,5 @@
 package slimeknights.mantle.client.book.action.protocol;
 
-import net.minecraft.util.ResourceLocation;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 public class ProtocolGoToPage extends ActionProtocol {

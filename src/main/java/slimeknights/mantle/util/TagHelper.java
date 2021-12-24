@@ -2,9 +2,9 @@ package slimeknights.mantle.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +36,7 @@ public class TagHelper {
    */
   @Nullable
   public static BlockPos readPos(CompoundTag tag) {
-    if (tag.contains("X", NBT.TAG_ANY_NUMERIC) && tag.contains("Y", NBT.TAG_ANY_NUMERIC) && tag.contains("Z", NBT.TAG_ANY_NUMERIC)) {
+    if (tag.contains("X", Tag.TAG_ANY_NUMERIC) &&tag.contains("Y", Tag.TAG_ANY_NUMERIC) && tag.contains("Z", Tag.TAG_ANY_NUMERIC)) {
       return new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
     }
     return null;

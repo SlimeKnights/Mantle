@@ -1,32 +1,23 @@
 package slimeknights.mantle.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.Util;
-import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.config.Config;
 
 import java.util.Random;
 
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.HEALTH;
-
+// TODO: need to switch to pre-layer
 @OnlyIn(Dist.CLIENT)
 public class ExtraHeartRenderHandler {
   private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/hearts.png");
@@ -65,9 +56,11 @@ public class ExtraHeartRenderHandler {
    */
   @SubscribeEvent(priority = EventPriority.LOW)
   public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
+    // TODO: update
+    /*
     Entity renderViewEnity = this.mc.getCameraEntity();
     if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()
-        || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof Player)) {
+        || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof Player player)) {
       return;
     }
 
@@ -82,7 +75,6 @@ public class ExtraHeartRenderHandler {
     this.mc.getProfiler().push("health");
     RenderSystem.enableBlend();
 
-    Player player = (Player) renderViewEnity;
     int health = Mth.ceil(player.getHealth());
     boolean highlight = this.healthUpdateCounter > (long) updateCounter && (this.healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
 
@@ -116,7 +108,7 @@ public class ExtraHeartRenderHandler {
     int healthRows = Mth.ceil((healthMax + absorb) / 2.0F / 10.0F);
     int rowHeight = Math.max(10 - (healthRows - 2), 3);
 
-    this.rand.setSeed(updateCounter * 312871);
+    this.rand.setSeed(updateCounter * 312871L);
 
     int left = width / 2 - 91;
     int top = height - left_height;
@@ -180,7 +172,7 @@ public class ExtraHeartRenderHandler {
     this.renderExtraHearts(matrixStack, left, top, player);
     this.renderExtraAbsorption(matrixStack, left, top - rowHeight, player);
 
-    this.mc.getTextureManager().bind(ICON_VANILLA);
+    this.mc.getTextureManager().bindForSetup(ICON_VANILLA);
     ForgeIngameGui.left_height += 10;
     if (absorb > 0) {
       ForgeIngameGui.left_height += 10;
@@ -190,6 +182,7 @@ public class ExtraHeartRenderHandler {
     RenderSystem.disableBlend();
     this.mc.getProfiler().pop();
     MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(matrixStack, event, HEALTH));
+    */
   }
 
   /**
@@ -225,7 +218,7 @@ public class ExtraHeartRenderHandler {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
-    this.mc.getTextureManager().bind(ICON_HEARTS);
+    this.mc.getTextureManager().bindForSetup(ICON_HEARTS);
     int hp = Mth.ceil(player.getHealth());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, hp, false);
   }
@@ -241,7 +234,7 @@ public class ExtraHeartRenderHandler {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
-    this.mc.getTextureManager().bind(ICON_ABSORB);
+    this.mc.getTextureManager().bindForSetup(ICON_ABSORB);
     int absorb = Mth.ceil(player.getAbsorptionAmount());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, absorb, true);
   }

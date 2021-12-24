@@ -9,25 +9,27 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.core.Direction;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -41,6 +43,7 @@ import slimeknights.mantle.client.model.util.SimpleBlockModel;
 import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.RetexturedHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,14 +57,10 @@ import java.util.function.Function;
  * Model that dynamically retextures a list of textures based on data from {@link RetexturedHelper}.
  */
 @SuppressWarnings("WeakerAccess")
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   private final SimpleBlockModel model;
   private final Set<String> retextured;
-
-  protected RetexturedModel(SimpleBlockModel model, Set<String> retextured) {
-    this.model = model;
-    this.retextured = retextured;
-  }
 
   @Override
   public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
@@ -72,7 +71,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // bake the model and return
     BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
-    return new BakedModel(baked, owner, model, transform, getAllRetextured(owner, this.model, retextured));
+    return new Baked(baked, owner, model, transform, getAllRetextured(owner, this.model, retextured));
   }
 
   /**
@@ -148,7 +147,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   }
 
   /** Baked variant of the model, used to swap out quads based on the texture */
-  public static class BakedModel extends DynamicBakedWrapper<BakedModel> {
+  public static class Baked extends DynamicBakedWrapper<BakedModel> {
     /** Cache of texture name to baked model */
     private final Map<ResourceLocation,BakedModel> cache = new HashMap<>();
     /* Properties for rebaking */
@@ -158,7 +157,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     /** List of texture names that are retextured */
     private final Set<String> retextured;
 
-    public BakedModel(BakedModel baked, IModelConfiguration owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
+    public Baked(BakedModel baked, IModelConfiguration owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
       super(baked);
       this.model = model;
       this.owner = owner;
@@ -185,17 +184,18 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture(IModelData data) {
+    public TextureAtlasSprite getParticleIcon(IModelData data) {
       // if particle is retextured, fetch particle from the cached model
       if (retextured.contains("particle")) {
         Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
         if (block != null) {
-          return getCachedModel(block).getParticleTexture(data);
+          return getCachedModel(block).getParticleIcon(data);
         }
       }
-      return originalModel.getParticleTexture(data);
+      return originalModel.getParticleIcon(data);
     }
 
+    @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
       Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
@@ -255,7 +255,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
 
     @Nullable
     @Override
-    public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity) {
+    public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int pSeed) {
       if (stack.isEmpty() || !stack.hasTag()) {
         return originalModel;
       }
@@ -267,7 +267,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
       }
 
       // if valid, use the block
-      return ((BakedModel)originalModel).getCachedModel(block);
+      return ((Baked)originalModel).getCachedModel(block);
     }
   }
 }

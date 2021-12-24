@@ -2,10 +2,10 @@ package slimeknights.mantle.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
@@ -64,6 +64,7 @@ public class TileEntityHelper {
    * @param pos    Position to check
    * @return  True if its loaded
    */
+  @SuppressWarnings("deprecation")
   public static boolean isBlockLoaded(@Nullable BlockGetter world, BlockPos pos) {
     if (world == null) {
       return false;

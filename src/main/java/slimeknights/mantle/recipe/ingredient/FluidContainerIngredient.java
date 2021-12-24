@@ -2,11 +2,11 @@ package slimeknights.mantle.recipe.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -142,7 +142,7 @@ public class FluidContainerIngredient extends Ingredient {
     }
 
     @Override
-    public FluidContainerIngredient parse(PacketBuffer buffer) {
+    public FluidContainerIngredient parse(FriendlyByteBuf buffer) {
       FluidIngredient fluidIngredient = FluidIngredient.read(buffer);
       Ingredient display = null;
       if (buffer.readBoolean()) {
@@ -152,7 +152,7 @@ public class FluidContainerIngredient extends Ingredient {
     }
 
     @Override
-    public void write(PacketBuffer buffer, FluidContainerIngredient ingredient) {
+    public void write(FriendlyByteBuf buffer, FluidContainerIngredient ingredient) {
       ingredient.fluidIngredient.write(buffer);
       if (ingredient.display != null) {
         buffer.writeBoolean(true);

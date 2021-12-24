@@ -1,19 +1,18 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.MultiBufferSource;
 import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
@@ -100,7 +99,7 @@ public class StructureElement extends SizedBookElement {
             BlockPos pos = new BlockPos(l, h, w);
             BlockState state = this.structureWorld.getBlockState(pos);
 
-            if (!state.isAir(this.structureWorld, pos)) {
+            if (!state.isAir()) {
               transform.pushPose();
               transform.translate(l, h, w);
 
@@ -117,9 +116,9 @@ public class StructureElement extends SizedBookElement {
               if (te != null)
                 modelData = te.getModelData();
 
-              RenderSystem.disableLighting();
+              // RenderSystem.disableLighting(); TODO: not sure what to call yet
 
-              blockRender.renderBlock(state, transform, buffer, 0xf000f0, overlay, modelData);
+              blockRender.renderSingleBlock(state, transform, buffer, 0xf000f0, overlay, modelData);
               transform.popPose();
             }
           }

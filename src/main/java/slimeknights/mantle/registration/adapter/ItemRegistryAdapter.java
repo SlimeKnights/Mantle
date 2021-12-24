@@ -1,16 +1,18 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.world.level.block.Block;
 import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.SignItem;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.DoubleHighBlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.item.BlockTooltipItem;
 import slimeknights.mantle.item.BurnableBlockItem;
@@ -25,6 +27,7 @@ import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 import slimeknights.mantle.registration.object.WoodBlockObject;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -51,11 +54,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    */
   public ItemRegistryAdapter(IForgeRegistry<Item> registry, @Nullable Item.Properties defaultProps) {
     super(registry);
-    if (defaultProps == null) {
-      this.defaultProps = new Item.Properties();
-    } else {
-      this.defaultProps = defaultProps;
-    }
+    this.defaultProps = Objects.requireNonNullElseGet(defaultProps, Properties::new);
   }
 
   /**
@@ -66,11 +65,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    */
   public ItemRegistryAdapter(IForgeRegistry<Item> registry, String modid, @Nullable Item.Properties defaultProps) {
     super(registry, modid);
-    if (defaultProps == null) {
-      this.defaultProps = new Item.Properties();
-    } else {
-      this.defaultProps = defaultProps;
-    }
+    this.defaultProps = Objects.requireNonNullElseGet(defaultProps, Properties::new);
   }
 
   /* Item helpers */
@@ -263,13 +258,13 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
 
   /**
    * Registers a spawn egg for the entity type
-   * @param entity     Entity type. Will be unregistered at this point
+   * @param type       Entity type supplier
    * @param primary    Primary color
    * @param secondary  Secondary color
    * @param baseName   Entity name, as it may or may not be present in the entity type
    * @return  Spawn egg item instance
    */
-  public SpawnEggItem registerSpawnEgg(EntityType<?> entity, int primary, int secondary, String baseName) {
-    return register(new SpawnEggItem(entity, primary, secondary, ItemProperties.EGG_PROPS), baseName + "_spawn_egg");
+  public SpawnEggItem registerSpawnEgg(Supplier<? extends EntityType<? extends Mob>> type, int primary, int secondary, String baseName) {
+    return register(new ForgeSpawnEggItem(type, primary, secondary, ItemProperties.EGG_PROPS), baseName + "_spawn_egg");
   }
 }

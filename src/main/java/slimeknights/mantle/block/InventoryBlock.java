@@ -1,53 +1,38 @@
 package slimeknights.mantle.block;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.network.NetworkHooks;
 import slimeknights.mantle.inventory.BaseContainer;
-import slimeknights.mantle.inventory.EmptyItemHandler;
 import slimeknights.mantle.tileentity.IRenamableContainerProvider;
-import slimeknights.mantle.tileentity.InventoryTileEntity;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
  * Base class for blocks with an inventory
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class InventoryBlock extends Block {
+public abstract class InventoryBlock extends Block implements EntityBlock {
 
   protected InventoryBlock(BlockBehaviour.Properties builder) {
     super(builder);
   }
-
-  /* Tile entity */
-
-  // inventories usually need a tileEntity
-  @Override
-  public boolean hasTileEntity(BlockState state) {
-    return true;
-  }
-
-  @Override
-  public abstract BlockEntity createTileEntity(BlockState state, BlockGetter world);
 
   /**
    * Called when the block is activated to open the UI. Override to return false for blocks with no inventory
@@ -59,8 +44,7 @@ public abstract class InventoryBlock extends Block {
   protected boolean openGui(Player player, Level world, BlockPos pos) {
     if (!world.isClientSide()) {
       MenuProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
-      if (container != null && player instanceof ServerPlayer) {
-        ServerPlayer serverPlayer = (ServerPlayer) player;
+      if (container != null && player instanceof ServerPlayer serverPlayer) {
         NetworkHooks.openGui(serverPlayer, container, pos);
         if (player.containerMenu instanceof BaseContainer<?>) {
           ((BaseContainer<?>) player.containerMenu).syncOnOpen(serverPlayer);

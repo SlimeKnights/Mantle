@@ -1,8 +1,8 @@
 package slimeknights.mantle.util;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.NonNullList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Extension of {@link NonNullList} to better handle items in an inventory
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ItemStackList extends NonNullList<ItemStack> {
 
   /**

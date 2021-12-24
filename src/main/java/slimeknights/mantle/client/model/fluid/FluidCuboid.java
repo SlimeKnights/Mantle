@@ -3,12 +3,11 @@ package slimeknights.mantle.client.model.fluid;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.math.Vector3f;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.core.Direction;
 import net.minecraft.util.GsonHelper;
-import com.mojang.math.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -149,11 +148,8 @@ public class FluidCuboid {
     return faces;
   }
 
-  @AllArgsConstructor
-  @Getter
-  public static class FluidFace {
+  /** Represents a single fluid face in the model */
+  public record FluidFace(boolean isFlowing, int rotation) {
     public static final FluidFace NORMAL = new FluidFace(false, 0);
-    private final boolean isFlowing;
-    private final int rotation;
   }
 }

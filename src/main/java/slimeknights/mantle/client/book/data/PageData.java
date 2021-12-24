@@ -1,8 +1,8 @@
 package slimeknights.mantle.client.book.data;
 
 import com.google.gson.JsonElement;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -17,6 +17,7 @@ import slimeknights.mantle.client.book.repository.BookRepository;
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
@@ -95,8 +96,8 @@ public class PageData implements IDataItem, IConditional {
     if (this.content == null) {
       if (ctype != null) {
         try {
-          this.content = ctype.newInstance();
-        } catch (InstantiationException | IllegalAccessException | NullPointerException e) {
+          this.content = ctype.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NullPointerException | NoSuchMethodException | InvocationTargetException e) {
           this.content = new ContentError("Failed to create a page of type \"" + this.type + "\".", e);
         }
       } else {

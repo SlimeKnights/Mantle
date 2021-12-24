@@ -1,20 +1,19 @@
 package slimeknights.mantle.tileentity;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
 public class MantleTileEntity extends BlockEntity {
 
-  public MantleTileEntity(BlockEntityType<?> tileEntityTypeIn) {
-    super(tileEntityTypeIn);
+  public MantleTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    super(type, pos, state);
   }
 
   public boolean isClient() {
@@ -22,12 +21,15 @@ public class MantleTileEntity extends BlockEntity {
   }
 
   /**
-   * Marks the chunk dirty without performing comparator updates or block state checks
+   * Marks the chunk dirty without performing comparator updates (twice!!) or block state checks
    * Used since most of our markDirty calls only adjust TE data
    */
-  public void markDirtyFast() {
+  @SuppressWarnings("deprecation")
+  public void setChangedFast() {
     if (level != null) {
-      level.blockEntityChanged(worldPosition, this);
+      if (level.hasChunkAt(worldPosition)) {
+        level.getChunkAt(worldPosition).setUnsaved(true);
+      }
     }
   }
   
@@ -35,8 +37,9 @@ public class MantleTileEntity extends BlockEntity {
   /* Syncing */
 
   /**
-   * If true, this TE syncs when {@link net.minecraft.world.World#notifyBlockUpdate(BlockPos, BlockState, BlockState, int)} is called
-   * Syncs data from {@link #writeSynced(CompoundNBT)}
+   * If true, this TE syncs when {@link net.minecraft.world.level.Level#blockUpdated(BlockPos, Block) is called
+   * TODO: right method?
+   * Syncs data from {@link #saveSynced(CompoundTag)}
    */
   protected boolean shouldSyncOnUpdate() {
     return false;
@@ -46,39 +49,25 @@ public class MantleTileEntity extends BlockEntity {
   @Nullable
   public ClientboundBlockEntityDataPacket getUpdatePacket() {
     // number is just used for vanilla, -1 ensures it skips all instanceof checks as its not a vanilla TE
-    return shouldSyncOnUpdate() ? new ClientboundBlockEntityDataPacket(this.worldPosition, -1, this.getUpdateTag()) : null;
-  }
-
-  @Override
-  public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-    this.load(this.getBlockState(), pkt.getTag());
+    return shouldSyncOnUpdate() ? ClientboundBlockEntityDataPacket.create(this) : null;
   }
 
   /**
-   * Write to NBT that is synced to the client in {@link #getUpdateTag()} and in {@link #write(CompoundNBT)}
+   * Write to NBT that is synced to the client in {@link #getUpdateTag()} and in {@link #saveAdditional(CompoundTag)}
    * @param nbt  NBT
    */
-  protected void writeSynced(CompoundTag nbt) {}
+  protected void saveSynced(CompoundTag nbt) {}
 
   @Override
   public CompoundTag getUpdateTag() {
-    CompoundTag nbt = super.getUpdateTag();
-    // forge just directly puts the data into the update tag, which on dedicated server can lead to client and server both writing to the same tag object
-    // fix that by copying forge data before syncing it
-    if (nbt.contains("ForgeData", NBT.TAG_COMPOUND)) {
-      CompoundTag forgeData = nbt.getCompound("ForgeData");
-      if (forgeData == this.getTileData()) {
-        nbt.put("ForgeData", forgeData.copy());
-      }
-    }
-    writeSynced(nbt);
+    CompoundTag nbt = new CompoundTag();
+    saveSynced(nbt);
     return nbt;
   }
 
   @Override
-  public CompoundTag save(CompoundTag nbt) {
-    nbt = super.save(nbt);
-    writeSynced(nbt);
-    return nbt;
+  public void saveAdditional(CompoundTag nbt) {
+    super.saveAdditional(nbt);
+    saveSynced(nbt);
   }
 }

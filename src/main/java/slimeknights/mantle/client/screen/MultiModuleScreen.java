@@ -1,16 +1,16 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 import slimeknights.mantle.inventory.MultiModuleContainer;
 import slimeknights.mantle.inventory.WrapperSlot;
 
@@ -48,7 +48,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   @Override
-  public void init() {
+  protected void init() {
     if (this.realWidth > -1) {
       // has to be reset before calling initGui so the position is getting retained
       this.imageWidth = this.realWidth;
@@ -62,20 +62,22 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
     this.realWidth = this.imageWidth;
     this.realHeight = this.imageHeight;
 
+    assert this.minecraft != null;
     for (ModuleScreen<?,?> module : this.modules) {
+      module.init(this.minecraft, width, height); // TODO: this a good place?
       this.updateSubmodule(module);
     }
   }
 
-  @Override
-  public void init(Minecraft mc, int width, int height) {
-    super.init(mc, width, height);
-
-    for (ModuleScreen<?,?> module : this.modules) {
-      module.init(mc, width, height);
-      this.updateSubmodule(module);
-    }
-  }
+//  @Override
+//  public void init(Minecraft mc, int width, int height) {
+//    super.init(mc, width, height);
+//
+//    for (ModuleScreen<?,?> module : this.modules) {
+//      module.init(mc, width, height);
+//      this.updateSubmodule(module);
+//    }
+//  }
 
   @Override
   protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
@@ -108,8 +110,9 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
   }
 
   protected void drawBackground(PoseStack matrixStack, ResourceLocation background) {
-    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    this.minecraft.getTextureManager().bind(background);
+    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    assert this.minecraft != null;
+    this.minecraft.getTextureManager().bindForSetup(background);
     this.blit(matrixStack, this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }
 
@@ -119,7 +122,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainer<?>> extend
 
   protected void drawPlayerInventoryName(PoseStack matrixStack) {
     assert Minecraft.getInstance().player != null;
-    Component localizedName = Minecraft.getInstance().player.inventory.getDisplayName();
+    Component localizedName = Minecraft.getInstance().player.getInventory().getDisplayName();
     this.font.draw(matrixStack, localizedName.getVisualOrderText(), 8, this.imageHeight - 96 + 2, 0x404040);
   }
 

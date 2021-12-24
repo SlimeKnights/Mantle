@@ -4,13 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.lang.ref.WeakReference;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor(staticName = "of")
 public class SizedIngredient implements Predicate<ItemStack> {
-  /** Empty sized ingredient wrapper. Matches only the empty stack of size o */
+  /** Empty sized ingredient wrapper. Matches only the empty stack of size 0 */
   public static final SizedIngredient EMPTY = of(Ingredient.EMPTY, 0);
 
   /** Ingredient to use in recipe match */

@@ -1,18 +1,16 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.entity.LecternBlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import slimeknights.mantle.util.TileEntityHelper;
-
-import net.minecraft.world.item.Item.Properties;
 
 /**
  * Book item that can be placed on lecterns
@@ -24,12 +22,12 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
 
   @Override
   public InteractionResult useOn(UseOnContext context) {
-    Level world = context.getLevel();
+    Level level = context.getLevel();
     BlockPos pos = context.getClickedPos();
-    BlockState state = world.getBlockState(pos);
+    BlockState state = level.getBlockState(pos);
     if (state.is(Blocks.LECTERN)) {
-      if (LecternBlock.tryPlaceBook(world, pos, state, context.getItemInHand())) {
-        return InteractionResult.sidedSuccess(world.isClientSide);
+      if (LecternBlock.tryPlaceBook(context.getPlayer(), level, pos, state, context.getItemInHand())) {
+        return InteractionResult.sidedSuccess(level.isClientSide);
       }
     }
     return InteractionResult.PASS;

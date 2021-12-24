@@ -5,15 +5,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import java.util.Objects;
@@ -89,10 +90,8 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     JsonObject json = element.getAsJsonObject();
     if (json.has("tag")) {
       String name = GsonHelper.getAsString(json, "tag");
-      Tag<Item> tag = SerializationTags.getInstance().getItems().getTag(new ResourceLocation(name));
-      if (tag == null) {
-        throw new JsonSyntaxException("Unknown tag " + name + " for item output");
-      }
+      Tag<Item> tag = SerializationTags.getInstance().getTagOrThrow(Registry.ITEM_REGISTRY, new ResourceLocation(name),
+                                                      n -> new JsonSyntaxException("Unknown tag " + n + " for item output"));
       int count = GsonHelper.getAsInt(json, "count", 1);
       return fromTag(tag, count);
     }
@@ -201,7 +200,8 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     @Override
     public JsonElement serialize() {
       JsonObject json = new JsonObject();
-      json.addProperty("tag", SerializationTags.getInstance().getItems().getIdOrThrow(tag).toString());
+      json.addProperty("tag", SerializationTags.getInstance().getIdOrThrow(Registry.ITEM_REGISTRY, tag,
+                                                                           () -> new IllegalStateException("Unregistered tag " + tag)).toString());
       if (count != 1) {
         json.addProperty("count", count);
       }

@@ -2,17 +2,16 @@ package slimeknights.mantle.client.book;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
@@ -47,10 +46,9 @@ import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
-public class BookLoader implements ISelectiveResourceReloadListener {
+public class BookLoader implements ResourceManagerReloadListener {
 
   /**
    * GSON object to be used for book loading purposes
@@ -216,7 +214,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
    * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
    */
   @Override
-  public void onResourceManagerReload(ResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+  public void onResourceManagerReload(ResourceManager resourceManager) {
     books.forEach((s, bookData) -> bookData.reset());
   }
 }

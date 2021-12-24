@@ -1,11 +1,11 @@
 package slimeknights.mantle.network.packet;
 
 import lombok.RequiredArgsConstructor;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.NetworkEvent.Context;
 import slimeknights.mantle.client.book.BookHelper;
 
 /**

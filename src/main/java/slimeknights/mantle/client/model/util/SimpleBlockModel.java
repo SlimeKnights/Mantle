@@ -11,26 +11,26 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraftforge.client.model.ForgeModelBakery;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import slimeknights.mantle.Mantle;
 
@@ -261,14 +261,14 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
   }
 
   /**
-   * Same as {@link #bakeModel(IModelConfiguration, List, IModelTransform, ItemOverrideList, Function, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
+   * Same as {@link #bakeModel(IModelConfiguration, List, ModelState, ItemOverrides, Function, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
    * @param owner      Model configuration
    * @param elements   Elements to bake
    * @param transform  Model transform
    * @return Baked model
    */
   public static BakedModel bakeDynamic(IModelConfiguration owner, List<BlockElement> elements, ModelState transform) {
-    return bakeModel(owner, elements, transform, ItemOverrides.EMPTY, ModelLoader.defaultTextureGetter(), BAKE_LOCATION);
+    return bakeModel(owner, elements, transform, ItemOverrides.EMPTY, ForgeModelBakery.defaultTextureGetter(), BAKE_LOCATION);
   }
 
   /**
@@ -290,7 +290,7 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
   }
 
   /**
-   * Same as {@link #bakeModel(IModelConfiguration, IModelTransform, ItemOverrideList, Function, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
+   * Same as {@link #bakeModel(IModelConfiguration, ModelState, ItemOverrides, Function, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
    * @param owner         Model configuration
    * @param transform     Transform to apply
    * @return  Baked model
