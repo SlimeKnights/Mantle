@@ -7,9 +7,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Argument type that supports any tag collection
  */
-@NoArgsConstructor(staticName = "collection")
+@RequiredArgsConstructor(staticName = "collection")
 public class TagCollectionArgument implements ArgumentType<TagCollectionArgument.Result<?>> {
   private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:blocks", "minecraft:enchantments");
   // errors
@@ -70,9 +72,15 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
     ResourceLocation name = ResourceLocation.read(reader);
     TagCollection<?> collection = SerializationTags.getInstance().get(ResourceKey.createRegistryKey(name));
     if (collection != null) {
-      ForgeRegistry<?> registry = RegistryManager.ACTIVE.getRegistry(name);
-      String tagFolder = getTagFolder(registry, name);
-      return new Result(name, tagFolder, registry, collection);
+      ForgeRegistry<?> forgeRegistry = RegistryManager.ACTIVE.getRegistry(name);
+      String tagFolder = getTagFolder(forgeRegistry, name);
+      if (forgeRegistry != null) {
+        return new ForgeResult(name, tagFolder, collection, forgeRegistry);
+      }
+      Registry<?> registry = Registry.REGISTRY.get(name);
+      if (registry != null) {
+        return new VanillaResult(name, tagFolder, collection, registry);
+      }
     }
     throw TAG_COLLECTION_NOT_FOUND.create(name);
   }
@@ -88,5 +96,80 @@ public class TagCollectionArgument implements ArgumentType<TagCollectionArgument
   }
 
   /** Data class for result, to ensure its unique to the mod */
-  public record Result<T extends IForgeRegistryEntry<T>>(ResourceLocation name, String tagFolder, ForgeRegistry<T> registry, TagCollection<T> collection) {}
+  @RequiredArgsConstructor
+  public static abstract class Result<T> {
+    @Getter
+    private final ResourceLocation name;
+    @Getter
+    private final String tagFolder;
+    @Getter
+    private final TagCollection<T> collection;
+
+    /** Gets all keys associated with the given registry */
+    public abstract Collection<ResourceLocation> getKeys();
+
+    /** Gets the key for the given object */
+    @Nullable
+    public abstract ResourceLocation getKey(T object);
+
+    /** Gets the value for the given key */
+    @Nullable
+    public abstract T getValue(ResourceLocation key);
+  }
+
+  /** Result for a forge registry */
+  private static class ForgeResult<T extends IForgeRegistryEntry<T>> extends Result<T> {
+    private final ForgeRegistry<T> registry;
+    public ForgeResult(ResourceLocation name, String tagFolder, TagCollection<T> collection, ForgeRegistry<T> registry) {
+      super(name, tagFolder, collection);
+      this.registry = registry;
+    }
+
+    @Override
+    public Collection<ResourceLocation> getKeys() {
+      return registry.getKeys();
+    }
+
+    @Override
+    public ResourceLocation getKey(T object) {
+      return object.getRegistryName();
+    }
+
+    @Nullable
+    @Override
+    public T getValue(ResourceLocation key) {
+      if (registry.containsKey(key)) {
+        return registry.getValue(key);
+      }
+      return null;
+    }
+  }
+
+  /** Result for a vanilla registry */
+  private static class VanillaResult<T> extends Result<T> {
+    private final Registry<T> registry;
+    public VanillaResult(ResourceLocation name, String tagFolder, TagCollection<T> collection, Registry<T> registry) {
+      super(name, tagFolder, collection);
+      this.registry = registry;
+    }
+
+    @Override
+    public Collection<ResourceLocation> getKeys() {
+      return registry.keySet();
+    }
+
+    @Override
+    public ResourceLocation getKey(T object) {
+      return registry.getKey(object);
+    }
+
+    @Nullable
+    @Override
+    public T getValue(ResourceLocation key) {
+      if (registry.containsKey(key)) {
+        return registry.get(key);
+      }
+      return null;
+    }
+  }
 }

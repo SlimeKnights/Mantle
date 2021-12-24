@@ -44,7 +44,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Collection;
 import java.util.Map;
@@ -122,18 +121,14 @@ public class TagsForCommand {
   /* Standard way: by ID */
 
   /** Runs the registry ID subcommand making generics happy */
-  private static <T extends IForgeRegistryEntry<T>> int runForResult(CommandContext<CommandSourceStack> context, TagCollectionArgument.Result<T> result) throws CommandSyntaxException {
+  private static <T> int runForResult(CommandContext<CommandSourceStack> context, TagCollectionArgument.Result<T> result) throws CommandSyntaxException {
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
-
     // first, fetch value
-    if (!result.registry().containsKey(name)) {
-      throw VALUE_NOT_FOUND.create(result.name(), name);
-    }
-    T value = result.registry().getValue(name);
+    T value = result.getValue(name);
     if (value == null) {
-      throw VALUE_NOT_FOUND.create(result.name(), name);
+      throw VALUE_NOT_FOUND.create(result.getName(), name);
     }
-    return printOwningTags(context, result.collection(), result.name(), name, value);
+    return printOwningTags(context, result.getCollection(), result.getName(), name, value);
   }
 
   /** Run the registry ID subcommand */

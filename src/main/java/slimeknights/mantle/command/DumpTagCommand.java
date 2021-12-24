@@ -56,7 +56,7 @@ public class DumpTagCommand {
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
     ResourceManager manager = context.getSource().getServer().getResourceManager();
 
-    ResourceLocation path = new ResourceLocation(name.getNamespace(), "tags/" + type.tagFolder() + "/" + name.getPath() + ".json");
+    ResourceLocation path = new ResourceLocation(name.getNamespace(), "tags/" + type.getTagFolder() + "/" + name.getPath() + ".json");
     try {
       // fetch tags from all datapacks for this, logic mostly based on vanilla tag loader
       List<Resource> resources = manager.getResources(path);
@@ -71,32 +71,32 @@ public class DumpTagCommand {
           JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
           if (json == null) {
             // no json
-            Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", type.name(), name, path, resource.getSourceName());
+            Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", type.getName(), name, path, resource.getSourceName());
           } else {
             builder.addFromJson(json, resource.getSourceName());
             tagsProcessed++;
           }
         } catch (RuntimeException | IOException ex) {
           // failed to parse
-          Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", type.name(), name, path, resource.getSourceName(), ex);
+          Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", type.getName(), name, path, resource.getSourceName(), ex);
         } finally {
           IOUtils.closeQuietly(resource);
         }
       }
 
       // builder done, ready to dump
-      Component message = new TranslatableComponent("command.mantle.dump_tag.success", type.name(), name);
+      Component message = new TranslatableComponent("command.mantle.dump_tag.success", type.getName(), name);
       context.getSource().sendSuccess(message, true);
-      Mantle.logger.info("Tag dump of {} tag '{}':\n{}", type.name(), name, GSON.toJson(builder.serializeToJson()));
+      Mantle.logger.info("Tag dump of {} tag '{}':\n{}", type.getName(), name, GSON.toJson(builder.serializeToJson()));
       return tagsProcessed;
     } catch (IOException | RuntimeException ex) {
       // if the tag does not exist in the collect, probably an invalid tag name
-      if (type.collection().getTag(name) == null) {
-        throw ViewTagCommand.TAG_NOT_FOUND.create(type.name(), name);
+      if (type.getCollection().getTag(name) == null) {
+        throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);
       } else {
         // tag exists and we still could not read it? something went wrong
-        Mantle.logger.error("Couldn't read {} tag list {} from {}", type.name(), name, path, ex);
-        throw ERROR_READING_TAG.create(type.name(), name);
+        Mantle.logger.error("Couldn't read {} tag list {} from {}", type.getName(), name, path, ex);
+        throw ERROR_READING_TAG.create(type.getName(), name);
       }
     }
   }

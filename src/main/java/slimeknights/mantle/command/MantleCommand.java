@@ -39,11 +39,11 @@ public class MantleCommand {
     ArgumentTypes.register("mantle:tag_collection", TagCollectionArgument.class, new EmptyArgumentSerializer<>(TagCollectionArgument::collection));
     VALID_TAGS = SuggestionProviders.register(Mantle.getResource("valid_tags"), (context, builder) -> {
       TagCollectionArgument.Result<?> result = context.getArgument("type", TagCollectionArgument.Result.class);
-      return SharedSuggestionProvider.suggestResource(result.collection().getAvailableTags(), builder);
+      return SharedSuggestionProvider.suggestResource(result.getCollection().getAvailableTags(), builder);
     });
     REGISTRY_VALUES = SuggestionProviders.register(Mantle.getResource("registry_values"), (context, builder) -> {
       TagCollectionArgument.Result<?> result = context.getArgument("type", TagCollectionArgument.Result.class);
-      return SharedSuggestionProvider.suggestResource(result.registry().getKeys(), builder);
+      return SharedSuggestionProvider.suggestResource(result.getKeys(), builder);
     });
 
     // add command listener

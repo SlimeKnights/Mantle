@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
@@ -72,7 +71,7 @@ public class DumpAllTagsCommand {
   }
 
   /** Dumps all tags to the game directory */
-  private static int runAll(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+  private static int runAll(CommandContext<CommandSourceStack> context) {
     File output = getOutputFile(context);
     int tagsDumped = 0;
     for (ResourceKey<? extends Registry<?>> key : SerializationTags.getInstance().collections.keySet()) {
@@ -85,12 +84,12 @@ public class DumpAllTagsCommand {
   }
 
   /** Dumps a single type of tags to the game directory */
-  private static int runType(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+  private static int runType(CommandContext<CommandSourceStack> context) {
     File output = getOutputFile(context);
     TagCollectionArgument.Result<?> type = TagCollectionArgument.getResult(context, "type");
-    int result = runForFolder(context, type.name(), type.tagFolder(), output);
+    int result = runForFolder(context, type.getName(), type.getTagFolder(), output);
     // print result
-    context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_all_tags.type_success", type.name(), getOutputComponent(output)), true);
+    context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_all_tags.type_success", type.getName(), getOutputComponent(output)), true);
     return result;
   }
 

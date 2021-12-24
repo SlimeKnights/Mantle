@@ -12,7 +12,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -36,33 +35,41 @@ public class ViewTagCommand {
   }
 
   /**
-   * Runs the view-tag command
+   * Runs the view-tag command with the generic registry type, done to make generics happy
    * @param context  Tag context
    * @return  Integer return
    * @throws CommandSyntaxException  If invalid values are passed
    */
-  private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-    TagCollectionArgument.Result<?> result = TagCollectionArgument.getResult(context, "type");
+  private static <T> int runGeneric(CommandContext<CommandSourceStack> context, TagCollectionArgument.Result<T> result) throws CommandSyntaxException {
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
-    Tag<?> tag = result.collection().getTag(name);
+    Tag<T> tag = result.getCollection().getTag(name);
     if (tag != null) {
       // start building output message
-      MutableComponent output = new TranslatableComponent("command.mantle.view_tag.success", result.name(), name);
-      Collection<?> values = tag.getValues();
+      MutableComponent output = new TranslatableComponent("command.mantle.view_tag.success", result.getName(), name);
+      Collection<T> values = tag.getValues();
 
       // if no values, print empty
       if (values.isEmpty()) {
         output.append("\n* ").append(EMPTY);
       } else {
         values.stream()
-              .filter(value -> value instanceof IForgeRegistryEntry)
-              .map(value -> (IForgeRegistryEntry<?>) value)
-              .sorted((a, b) -> Objects.requireNonNull(a.getRegistryName()).compareNamespaced(Objects.requireNonNull(b.getRegistryName())))
-              .forEach(value -> output.append("\n* " + Objects.requireNonNull(value.getRegistryName()).toString()));
+              .map(result::getKey)
+              .sorted((a, b) -> Objects.requireNonNull(a).compareNamespaced(Objects.requireNonNull(b)))
+              .forEach(value -> output.append("\n* " + Objects.requireNonNull(value)));
       }
       context.getSource().sendSuccess(output, true);
       return values.size();
     }
-    throw TAG_NOT_FOUND.create(result.name(), name);
+    throw TAG_NOT_FOUND.create(result.getName(), name);
+  }
+
+  /**
+   * Runs the view-tag command
+   * @param context  Tag context
+   * @return  Integer return
+   * @throws CommandSyntaxException  If invalid values are passed
+   */
+  private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    return runGeneric(context, TagCollectionArgument.getResult(context, "type"));
   }
 }
