@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -50,9 +51,9 @@ public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends 
 
 	@Override
 	protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		assert this.minecraft != null;
-		this.minecraft.getTextureManager().bindForSetup(this.background);
+		RenderSystem.setShaderTexture(0, this.background);
 		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 	}
 

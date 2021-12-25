@@ -1,19 +1,27 @@
 package slimeknights.mantle.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.config.Config;
 
 import java.util.Random;
 
@@ -55,25 +63,30 @@ public class ExtraHeartRenderHandler {
    * @param event  Event instance
    */
   @SubscribeEvent(priority = EventPriority.LOW)
-  public void renderHealthbar(RenderGameOverlayEvent.Pre event) {
-    // TODO: update
-    /*
-    Entity renderViewEnity = this.mc.getCameraEntity();
-    if (event.getType() != RenderGameOverlayEvent.ElementType.HEALTH || event.isCanceled()
-        || !Config.EXTRA_HEART_RENDERER.getAsBoolean() || !(renderViewEnity instanceof Player player)) {
+  public void renderHealthbar(RenderGameOverlayEvent.PreLayer event) {
+    if (event.isCanceled() || !Config.EXTRA_HEART_RENDERER.get() || event.getOverlay() != ForgeIngameGui.PLAYER_HEALTH_ELEMENT) {
       return;
     }
+    // ensure its visible
+    if (!(mc.gui instanceof ForgeIngameGui gui) || mc.options.hideGui || !gui.shouldDrawSurvivalElements()) {
+      return;
+    }
+    Entity renderViewEnity = this.mc.getCameraEntity();
+    if (!(renderViewEnity instanceof Player player)) {
+      return;
+    }
+    gui.setupOverlayRenderState(true, false);
+
+    this.mc.getProfiler().push("health");
 
     // extra setup stuff from us
-    int left_height = ForgeIngameGui.left_height;
+    int left_height = gui.left_height;
     int width = this.mc.getWindow().getGuiScaledWidth();
     int height = this.mc.getWindow().getGuiScaledHeight();
     int updateCounter = this.mc.gui.getGuiTicks();
 
     // start default forge/mc rendering
     // changes are indicated by comment
-    this.mc.getProfiler().push("health");
-    RenderSystem.enableBlend();
 
     int health = Mth.ceil(player.getHealth());
     boolean highlight = this.healthUpdateCounter > (long) updateCounter && (this.healthUpdateCounter - (long) updateCounter) / 3L % 2L == 1L;
@@ -172,17 +185,16 @@ public class ExtraHeartRenderHandler {
     this.renderExtraHearts(matrixStack, left, top, player);
     this.renderExtraAbsorption(matrixStack, left, top - rowHeight, player);
 
-    this.mc.getTextureManager().bindForSetup(ICON_VANILLA);
-    ForgeIngameGui.left_height += 10;
+    RenderSystem.setShaderTexture(0, ICON_VANILLA);
+    gui.left_height += 10;
     if (absorb > 0) {
-      ForgeIngameGui.left_height += 10;
+      gui.left_height += 10;
     }
 
     event.setCanceled(true);
     RenderSystem.disableBlend();
     this.mc.getProfiler().pop();
-    MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(matrixStack, event, HEALTH));
-    */
+    MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.PostLayer(matrixStack, event, ForgeIngameGui.PLAYER_HEALTH_ELEMENT));
   }
 
   /**
@@ -218,7 +230,7 @@ public class ExtraHeartRenderHandler {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
-    this.mc.getTextureManager().bindForSetup(ICON_HEARTS);
+    RenderSystem.setShaderTexture(0, ICON_HEARTS);
     int hp = Mth.ceil(player.getHealth());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, hp, false);
   }
@@ -234,7 +246,7 @@ public class ExtraHeartRenderHandler {
     int potionOffset = this.getPotionOffset(player);
 
     // Extra hearts
-    this.mc.getTextureManager().bindForSetup(ICON_ABSORB);
+    RenderSystem.setShaderTexture(0, ICON_ABSORB);
     int absorb = Mth.ceil(player.getAbsorptionAmount());
     this.renderCustomHearts(matrixStack, xBasePos, yBasePos, potionOffset, absorb, true);
   }

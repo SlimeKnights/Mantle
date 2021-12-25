@@ -71,7 +71,7 @@ public class ImageElement extends SizedBookElement {
     RenderSystem.setShaderColor(r, g, b, 1f);
 
     if (this.image.item == null) {
-      this.renderEngine.bindForSetup(requireNonNullElse(this.image.location, TextureManager.INTENTIONAL_MISSING_TEXTURE));
+      RenderSystem.setShaderTexture(0, requireNonNullElse(this.image.location, TextureManager.INTENTIONAL_MISSING_TEXTURE));
       blitRaw(matrixStack, this.x, this.y, this.width, this.height, this.image.u, this.image.u + this.image.uw, this.image.v, this.image.v + this.image.vh, this.image.texWidth, this.image.texHeight);
     }
     else {

@@ -146,7 +146,7 @@ public class TabsWidget extends Widget {
       // todo: draw all the tabs first and then all the itemstacks so it doesn't have to switch texture in between all the time
 
       // rebind texture from drawing an itemstack
-      Minecraft.getInstance().getTextureManager().bindForSetup(this.tabsResource);
+      RenderSystem.setShaderTexture(0, this.tabsResource);
       actualTab.draw(matrixStack,x, y);
 
       ItemStack icon = this.icons.get(i);

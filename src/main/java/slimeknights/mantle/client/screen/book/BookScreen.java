@@ -12,7 +12,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -140,12 +139,10 @@ public class BookScreen extends Screen {
     // RenderSystem.enableAlphaTest(); TODO: still needed?
     RenderSystem.enableBlend();
 
-    TextureManager render = this.minecraft.textureManager;
-
     Vector3f coverColor = splitRGB(this.book.appearance.coverColor);
 
     if(this.page == -1) {
-      this.renderCover(matrixStack, coverColor, render);
+      this.renderCover(matrixStack, coverColor);
     } else {
       // Jank way to copy last matrix in matrix stack, as no proper way is provided
       PoseStack leftMatrix = new PoseStack();
@@ -165,14 +162,14 @@ public class BookScreen extends Screen {
       boolean renderLeft = shouldRenderPage(this.page, false);
       boolean renderRight = shouldRenderPage(this.page, true);
 
-      renderUnderLayer(matrixStack, coverColor, render);
+      renderUnderLayer(matrixStack, coverColor);
 
       if(renderLeft) {
-        renderPageBackground(matrixStack, false, render);
+        renderPageBackground(matrixStack, false);
       }
 
       if(renderRight) {
-        renderPageBackground(matrixStack, true, render);
+        renderPageBackground(matrixStack, true);
       }
 
       int leftMX = this.getMouseX(false);
@@ -181,11 +178,11 @@ public class BookScreen extends Screen {
 
       for (ILayerRenderFunction layer : LAYERS) {
         if(renderLeft) {
-          renderPageLayer(leftMatrix, leftMX, mY, partialTicks, render, leftElements, layer);
+          renderPageLayer(leftMatrix, leftMX, mY, partialTicks, leftElements, layer);
         }
 
         if(renderRight) {
-          renderPageLayer(rightMatrix, rightMX, mY, partialTicks, render, rightElements, layer);
+          renderPageLayer(rightMatrix, rightMX, mY, partialTicks, rightElements, layer);
         }
       }
     }
@@ -202,10 +199,10 @@ public class BookScreen extends Screen {
     return this.page < fullPageCount - 1 || this.book.getPageCount(this.advancementCache) % 2 != 0;
   }
 
-  private void renderCover(PoseStack matrixStack, Vector3f coverColor, TextureManager render) {
+  private void renderCover(PoseStack matrixStack, Vector3f coverColor) {
     Font fontRenderer = getFontRenderer();
 
-    render.bindForSetup(book.appearance.getCoverTexture());
+    RenderSystem.setShaderTexture(0, book.appearance.getCoverTexture());
 
     int centerX = this.width / 2 - PAGE_WIDTH_UNSCALED / 2;
     int centerY = this.height / 2 - PAGE_HEIGHT_UNSCALED / 2;
@@ -240,14 +237,14 @@ public class BookScreen extends Screen {
     }
   }
 
-  private void renderUnderLayer(PoseStack matrixStack, Vector3f coverColor, TextureManager render) {
-    render.bindForSetup(this.book.appearance.getBookTexture());
+  private void renderUnderLayer(PoseStack matrixStack, Vector3f coverColor) {
+    RenderSystem.setShaderTexture(0, this.book.appearance.getBookTexture());
     RenderSystem.setShaderColor(coverColor.x(), coverColor.y(), coverColor.z(), 1f);
 
     blit(matrixStack, this.width / 2 - PAGE_WIDTH_UNSCALED, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, 0, 0, PAGE_WIDTH_UNSCALED * 2, PAGE_HEIGHT_UNSCALED, TEX_SIZE, TEX_SIZE);
   }
 
-  private void renderPageBackground(PoseStack matrixStack, boolean rightSide, TextureManager render) {
+  private void renderPageBackground(PoseStack matrixStack, boolean rightSide) {
     Vector3f pageTint = splitRGB(this.book.appearance.getPageTint());
     RenderSystem.setShaderColor(pageTint.x(), pageTint.y(), pageTint.z(), 1f);
 
@@ -258,8 +255,8 @@ public class BookScreen extends Screen {
     }
   }
 
-  private void renderPageLayer(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, TextureManager render, List<BookElement> elements, ILayerRenderFunction layerFunc) {
-    render.bindForSetup(book.appearance.getBookTexture());
+  private void renderPageLayer(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, List<BookElement> elements, ILayerRenderFunction layerFunc) {
+    RenderSystem.setShaderTexture(0, book.appearance.getCoverTexture());
 
     Font font = getFontRenderer();
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -110,9 +111,9 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   }
 
   protected void drawBackground(PoseStack matrixStack, ResourceLocation background) {
+    RenderSystem.setShader(GameRenderer::getPositionTexShader);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    assert this.minecraft != null;
-    this.minecraft.getTextureManager().bindForSetup(background);
+    RenderSystem.setShaderTexture(0, background);
     this.blit(matrixStack, this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }
 
