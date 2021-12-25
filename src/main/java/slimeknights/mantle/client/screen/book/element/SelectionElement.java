@@ -88,7 +88,7 @@ public class SelectionElement extends SizedBookElement {
         }
       }
 
-      this.drawHoveringText(matrixStack, text, mouseX, mouseY, fontRenderer);
+      this.drawTooltip(matrixStack, text, mouseX, mouseY, fontRenderer);
     }
   }
 

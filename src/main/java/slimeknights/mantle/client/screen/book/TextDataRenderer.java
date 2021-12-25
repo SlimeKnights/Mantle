@@ -17,6 +17,7 @@ import slimeknights.mantle.client.book.data.element.TextData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class TextDataRenderer {
@@ -25,12 +26,12 @@ public class TextDataRenderer {
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
   @Deprecated
-  public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr) {
+  public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, BookScreen parent) {
     List<Component> tooltip = new ArrayList<Component>();
     String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
     if (tooltip.size() > 0) {
-      drawTooltip(matrixStack, tooltip, mouseX, mouseY, fr);
+      parent.renderTooltip(matrixStack, tooltip, Optional.empty(), mouseX, mouseY, fr);
     }
 
     return action;
@@ -229,12 +230,6 @@ public class TextDataRenderer {
   }
 
   //BEGIN METHODS FROM GUI
-  public static void drawTooltip(PoseStack matrixStack, List<Component> textLines, int mouseX, int mouseY, Font font) {
-    Mantle.logger.error("Draw tooltip not yet implemented");
-    //GuiUtils.drawHoveringText(matrixStack, textLines, mouseX, mouseY, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
-    // Lighting.turnOff(); TODO: needed?
-  }
-
   public static void drawScaledString(PoseStack matrixStack, Font font, String text, float x, float y, int color, boolean dropShadow, float scale) {
     matrixStack.pushPose();
     matrixStack.translate(x, y, 0);

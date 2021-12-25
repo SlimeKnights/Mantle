@@ -12,6 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -136,6 +137,7 @@ public class BookScreen extends Screen {
       fontRenderer.draw(matrixStack, "DEBUG", 2, 2, 0xFFFFFFFF);
     }
 
+    RenderSystem.setShader(GameRenderer::getPositionTexShader);
     // RenderSystem.enableAlphaTest(); TODO: still needed?
     RenderSystem.enableBlend();
 

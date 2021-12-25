@@ -11,10 +11,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.RenderProperties;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class BookElement extends GuiComponent {
@@ -57,13 +57,18 @@ public abstract class BookElement extends GuiComponent {
       font = fontRenderer;
     }
 
-    this.drawHoveringText(matrixStack, list, x, y, font);
+    this.drawTooltip(matrixStack, list, x, y, font);
   }
 
-  public void drawHoveringText(PoseStack matrixStack, List<Component> textLines, int x, int y, Font font) {
-    //    GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
-    // TODO: not sure what to call
-    Mantle.logger.error("Missing tooltip render function");
-    //GuiUtils.drawHoveringText(matrixStack, textLines, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
+  public void drawTooltip(PoseStack matrixStack, List<Component> textLines, int x, int y, Font font) {
+    // GuiUtils.drawHoveringText(matrixStack, textLines, x, y, this.parent.width, this.parent.height, -1, font);
+    // GuiUtils.drawHoveringText(matrixStack, textLines, x, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT, BookScreen.PAGE_WIDTH, font);
+    int oldWidth = parent.width;
+    int oldHeight = parent.height;
+    parent.width = BookScreen.PAGE_WIDTH;
+    parent.height = BookScreen.PAGE_HEIGHT;
+    parent.renderTooltip(matrixStack, textLines, Optional.empty(), x, y, font);
+    parent.width = oldWidth;
+    parent.height = oldHeight;
   }
 }

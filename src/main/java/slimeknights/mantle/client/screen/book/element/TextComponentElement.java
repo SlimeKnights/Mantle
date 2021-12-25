@@ -9,7 +9,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
 import slimeknights.mantle.client.screen.book.TextComponentDataRenderer;
-import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +53,7 @@ public class TextComponentElement extends SizedBookElement {
   @Override
   public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (this.tooltip.size() > 0) {
-      TextDataRenderer.drawTooltip(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
+      drawTooltip(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
       this.tooltip.clear();
     }
   }

@@ -117,7 +117,7 @@ public class ItemElement extends SizedBookElement {
   public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (this.isHovered(mouseX, mouseY) && this.currentItem < this.itemCycle.size()) {
       if (this.tooltip != null) {
-        this.drawHoveringText(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
+        this.drawTooltip(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
       }
       else {
         this.renderToolTip(matrixStack, fontRenderer, this.itemCycle.get(this.currentItem), mouseX, mouseY);

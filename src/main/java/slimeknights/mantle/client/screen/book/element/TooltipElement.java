@@ -5,6 +5,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TooltipElement extends SizedBookElement {
 
@@ -23,7 +24,7 @@ public class TooltipElement extends SizedBookElement {
   @Override
   public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (this.isHovered(mouseX, mouseY)) {
-      this.drawHoveringText(matrixStack, this.tooltips, mouseX, mouseY, fontRenderer);
+      parent.renderTooltip(matrixStack, this.tooltips, Optional.empty(), mouseX, mouseY, fontRenderer);
     }
   }
 }
