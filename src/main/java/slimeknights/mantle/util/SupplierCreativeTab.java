@@ -2,8 +2,6 @@ package slimeknights.mantle.util;
 
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.Supplier;
 
@@ -25,7 +23,6 @@ public class SupplierCreativeTab extends CreativeModeTab {
     this.supplier = supplier;
   }
 
-  @OnlyIn(Dist.CLIENT)
   @Override
   public ItemStack makeIcon() {
     return supplier.get();

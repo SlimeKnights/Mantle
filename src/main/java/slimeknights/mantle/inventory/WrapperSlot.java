@@ -5,8 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Used to wrap the slots inside Modules/Subcontainers
@@ -71,7 +69,6 @@ public class WrapperSlot extends Slot {
   }
 
   @Override
-  @OnlyIn(Dist.CLIENT)
   public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
     return this.parent.getNoItemIcon();
   }
@@ -86,7 +83,6 @@ public class WrapperSlot extends Slot {
     return this.parent.remove(amount);
   }
 
-  @OnlyIn(Dist.CLIENT)
   @Override
   public boolean isActive() {
     return this.parent.isActive();

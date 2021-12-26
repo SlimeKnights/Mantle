@@ -2,20 +2,20 @@ package slimeknights.mantle.client.book.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
-import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.repository.BookRepository;
+import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.DropLecternBookPacket;
@@ -70,7 +70,7 @@ public class BookData implements IDataItem {
       for (BookRepository repo : this.repositories) {
         try {
           List<SectionData> repoContents = repo.getSections();
-          this.sections.addAll(repoContents.stream().filter(SectionData::isConditionMet).collect(Collectors.toList()));
+          this.sections.addAll(repoContents.stream().filter(SectionData::isConditionMet).toList());
 
           for (SectionData section : repoContents) {
             section.source = repo;
