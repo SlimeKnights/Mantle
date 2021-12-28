@@ -46,7 +46,7 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
     BlockPos pos = event.getPos();
     BlockState state = world.getBlockState(pos);
     if (state.is(Blocks.LECTERN)) {
-      BlockEntityHelper.getTile(LecternBlockEntity.class, world, pos)
+      BlockEntityHelper.get(LecternBlockEntity.class, world, pos)
 											 .ifPresent(te -> {
                         ItemStack book = te.getBook();
                         if (!book.isEmpty() && book.getItem() instanceof ILecternBookItem

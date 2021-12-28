@@ -25,8 +25,8 @@ public class BlockEntityHelper {
    * @param <T>    Tile entity type
    * @return  Optional of the tile entity, empty if missing or wrong class
    */
-  public static <T> Optional<T> getTile(Class<T> clazz, @Nullable BlockGetter world, BlockPos pos) {
-    return getTile(clazz, world, pos, false);
+  public static <T> Optional<T> get(Class<T> clazz, @Nullable BlockGetter world, BlockPos pos) {
+    return get(clazz, world, pos, false);
   }
 
   /**
@@ -38,7 +38,7 @@ public class BlockEntityHelper {
    * @param <T>    Tile entity type
    * @return  Optional of the tile entity, empty if missing or wrong class
    */
-  public static <T> Optional<T>  getTile(Class<T> clazz, @Nullable BlockGetter world, BlockPos pos, boolean logWrongType) {
+  public static <T> Optional<T> get(Class<T> clazz, @Nullable BlockGetter world, BlockPos pos, boolean logWrongType) {
     if (!isBlockLoaded(world, pos)) {
       return Optional.empty();
     }

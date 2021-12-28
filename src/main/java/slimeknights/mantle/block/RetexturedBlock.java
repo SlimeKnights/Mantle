@@ -47,7 +47,7 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
    */
   public static void updateTextureBlock(Level world, BlockPos pos, ItemStack stack) {
     if (stack.hasTag()) {
-      BlockEntityHelper.getTile(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> te.updateTexture(RetexturedBlockItem.getTextureName(stack)));
+      BlockEntityHelper.get(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> te.updateTexture(RetexturedBlockItem.getTextureName(stack)));
     }
   }
 
@@ -61,7 +61,7 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
   public static ItemStack getPickBlock(BlockGetter world, BlockPos pos, BlockState state) {
     Block block = state.getBlock();
     ItemStack stack = new ItemStack(block);
-    BlockEntityHelper.getTile(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> RetexturedBlockItem.setTexture(stack, te.getTextureName()));
+    BlockEntityHelper.get(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> RetexturedBlockItem.setTexture(stack, te.getTextureName()));
     return stack;
   }
 }

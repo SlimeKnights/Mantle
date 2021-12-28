@@ -34,7 +34,7 @@ public class UpdateLecternPagePacket implements IThreadsafePacket {
     Player player = context.getSender();
     if (player != null && this.page != null) {
       Level world = player.getCommandSenderWorld();
-      BlockEntityHelper.getTile(LecternBlockEntity.class, world, this.pos).ifPresent(te -> {
+      BlockEntityHelper.get(LecternBlockEntity.class, world, this.pos).ifPresent(te -> {
         ItemStack stack = te.getBook();
         if (!stack.isEmpty()) {
           BookHelper.writeSavedPageToBook(stack, this.page);
