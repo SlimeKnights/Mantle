@@ -4,13 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.element.ImageData;
 
 import static java.util.Objects.requireNonNullElse;
 
-@OnlyIn(Dist.CLIENT)
 public class ImageElement extends SizedBookElement {
 
   public ImageData image;

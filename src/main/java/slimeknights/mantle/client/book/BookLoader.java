@@ -9,8 +9,6 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
@@ -47,7 +45,6 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
-@OnlyIn(Dist.CLIENT)
 public class BookLoader implements ResourceManagerReloadListener {
 
   /**

@@ -1,7 +1,5 @@
 package slimeknights.mantle.client.book.data.content;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -12,7 +10,6 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-@OnlyIn(Dist.CLIENT)
 public class ContentError extends PageContent {
 
   private final String errorStage;

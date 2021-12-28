@@ -5,15 +5,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.book.data.BookData;
 
 import javax.annotation.Nullable;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 
-@OnlyIn(Dist.CLIENT)
 public class ArrowButton extends Button {
 
   public static final int WIDTH = 18;

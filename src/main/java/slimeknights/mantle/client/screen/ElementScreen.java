@@ -2,14 +2,11 @@ package slimeknights.mantle.client.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Represents a GUI element INSIDE the graphics file.
  * The coordinates all refer to the coordinates inside the graphics!
  */
-@OnlyIn(Dist.CLIENT)
 public class ElementScreen {
 
   // this is totally completely ugly but it's a simple solution that doesn't clutter everything too much >_>

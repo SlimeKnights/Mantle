@@ -2,11 +2,8 @@ package slimeknights.mantle.client.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 // a vertical slider!
-@OnlyIn(Dist.CLIENT)
 public class SliderWidget extends Widget {
 
   // gui info

@@ -1,8 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -12,7 +10,6 @@ import slimeknights.mantle.client.screen.book.element.ImageElement;
 
 import java.util.ArrayList;
 
-@OnlyIn(Dist.CLIENT)
 public class ContentImage extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("image");
 

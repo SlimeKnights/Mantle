@@ -1,9 +1,5 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-@OnlyIn(Dist.CLIENT)
 public abstract class SizedBookElement extends BookElement {
 
   public int width, height;

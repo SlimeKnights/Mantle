@@ -2,12 +2,9 @@ package slimeknights.mantle.client.book.data;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import slimeknights.mantle.client.book.BookLoader;
@@ -25,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@OnlyIn(Dist.CLIENT)
 public class SectionData implements IDataItem, IConditional {
 
   public String name = null;

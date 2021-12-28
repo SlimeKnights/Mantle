@@ -2,10 +2,7 @@ package slimeknights.mantle.client.book.data.element;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class TextComponentData {
 
   public static final TextComponentData LINEBREAK = new TextComponentData("\n");

@@ -3,15 +3,12 @@ package slimeknights.mantle.client.book.data;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.client.screen.book.Textures;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 
 /** This class represents the JSON structure of book appearance */
-@OnlyIn(Dist.CLIENT)
 @SuppressWarnings("unused")
 public class AppearanceData implements IDataItem {
   // cover
