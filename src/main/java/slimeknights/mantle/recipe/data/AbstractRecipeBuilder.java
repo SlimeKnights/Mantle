@@ -122,14 +122,14 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   @RequiredArgsConstructor
   protected abstract class AbstractFinishedRecipe implements FinishedRecipe {
     @Getter
-    private final ResourceLocation ID;
+    private final ResourceLocation id;
     @Getter @Nullable
-    private final ResourceLocation advancementID;
+    private final ResourceLocation advancementId;
 
     @Nullable
     @Override
     public JsonObject serializeAdvancement() {
-      if (advancementID == null) {
+      if (advancementId == null) {
         return null;
       }
       return advancementBuilder.serializeToJson();
