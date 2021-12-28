@@ -26,7 +26,6 @@ public class CustomResultSlot extends ResultSlot {
 
   @Override
   public void onTake(Player playerIn, ItemStack stack) {
-    //TODO: needed? BasicEventHooks.firePlayerCraftingEvent(playerIn, stack, this.craftMatrix);
     this.checkTakeAchievements(stack);
 
     this.callback.onCrafting(playerIn, stack, this.craftMatrix);

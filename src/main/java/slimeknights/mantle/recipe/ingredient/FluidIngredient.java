@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-// TODO: move to ingredient package in 1.17
 @SuppressWarnings("unused")
 public abstract class FluidIngredient {
   /** Empty fluid ingredient, matches nothing */
