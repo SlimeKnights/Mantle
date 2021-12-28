@@ -6,6 +6,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
@@ -73,5 +75,12 @@ public class BlockEntityHelper {
       return ((LevelReader) world).hasChunkAt(pos);
     }
     return true;
+  }
+
+  /** Handles the unchecked cast for a block entity ticker */
+  @SuppressWarnings("unchecked")
+  @Nullable
+  public static <HAVE extends BlockEntity, RET extends BlockEntity> BlockEntityTicker<RET> castTicker(BlockEntityType<RET> expected, BlockEntityType<HAVE> have, BlockEntityTicker<? super HAVE> ticker) {
+    return have == expected ? (BlockEntityTicker<RET>)ticker : null;
   }
 }
