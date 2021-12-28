@@ -5,11 +5,11 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.Mantle;
@@ -43,7 +43,7 @@ public class IngredientDifference extends Ingredient {
    * @param subtracted  Ingredient to subtract
    * @return  Ingredient that {@code base} anything in base that is not in {@code without}
    */
-  public static IngredientDifference without(Ingredient base, Ingredient subtracted) {
+  public static IngredientDifference difference(Ingredient base, Ingredient subtracted) {
     return new IngredientDifference(base, subtracted);
   }
 
