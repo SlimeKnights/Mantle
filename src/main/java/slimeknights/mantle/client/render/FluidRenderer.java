@@ -76,30 +76,18 @@ public class FluidRenderer {
     float x2 = to.getX(), y2 = to.getY(), z2 = to.getZ();
     // choose UV based on opposite two axis
     float u1, u2, v1, v2;
-    switch (face) {
-      case DOWN:
+    switch (face.getAxis()) {
+      case Y:
       default:
         u1 = x1; u2 = x2;
         v1 = z2; v2 = z1;
         break;
-      case UP:
-        u1 = x1; u2 = x2;
-        v1 = 1 - z1; v2 = 1 - z2;
-        break;
-      case NORTH:
-        u1 = 1 - x1; u2 = 1 - x2;
-        v1 = y1; v2 = y2;
-        break;
-      case SOUTH:
+      case Z:
         u1 = x2; u2 = x1;
         v1 = y1; v2 = y2;
         break;
-      case WEST:
+      case X:
         u1 = z2; u2 = z1;
-        v1 = y1; v2 = y2;
-        break;
-      case EAST:
-        u1 = 1 - z1; u2 = 1 - z2;
         v1 = y1; v2 = y2;
         break;
     }
@@ -121,6 +109,22 @@ public class FluidRenderer {
       if (v1 == 0) v1 = 1;
     } else {
       if (v2 == 0) v2 = 1;
+    }
+
+    switch (face) {
+      default:
+        break;
+      case UP:
+        float temp = v1;
+        v1 = 1f - v2;
+        v2 = 1f - temp;
+        break;
+      case NORTH:
+        u1 = 1f - u1; u2 = 1f - u2;
+        break;
+      case EAST:
+        u1 = 1f - u1; u2 = 1f - u2;
+        break;
     }
 
     // flip V when relevant
