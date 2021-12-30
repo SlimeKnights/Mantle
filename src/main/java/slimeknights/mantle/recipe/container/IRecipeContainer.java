@@ -1,14 +1,14 @@
-package slimeknights.mantle.recipe.inventory;
+package slimeknights.mantle.recipe.container;
 
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * IInventory extension for a recipe that only needs read access.
+ * {@link Container} extension for a recipe that only needs read access.
  * Used to control which slots an recipe gets and to prevent the need to implement IInventory to get the recipe.
  */
-public interface IReadOnlyInventory extends Container {
+public interface IRecipeContainer extends Container {
   /* Unsupported operations */
 
   /** @deprecated unsupported method */

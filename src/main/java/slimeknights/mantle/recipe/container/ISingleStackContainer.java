@@ -1,14 +1,15 @@
-package slimeknights.mantle.recipe.inventory;
+package slimeknights.mantle.recipe.container;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.Set;
 
 /**
- * IInventory extension for an inventory wrapper containing a single item. Primarily used for furnace like recipes.
+ * {@link Recipe} extension for an inventory wrapper containing a single item. Primarily used for furnace like recipes.
  */
-public interface ISingleItemInventory extends IReadOnlyInventory {
+public interface ISingleStackContainer extends IRecipeContainer {
   /**
    * Gets the relevant item in this inventory
    * @return  Contained item

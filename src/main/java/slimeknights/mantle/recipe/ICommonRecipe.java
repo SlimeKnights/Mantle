@@ -5,7 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 
 /**
- * Extension of {@link IRecipe} to set some methods that always set.
+ * Extension of {@link Recipe} to set some methods that always set.
  * @param <C>  Inventory type
  */
 public interface ICommonRecipe<C extends Container> extends Recipe<C> {
