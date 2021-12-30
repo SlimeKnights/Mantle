@@ -1,6 +1,10 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
@@ -11,12 +15,10 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.WoodButtonBlock;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.item.Item;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
@@ -150,5 +152,14 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
   /* Gets the wall sign for this wood type */
   public WallSignBlock getWallSign() {
     return wallSign.get();
+  }
+
+  @Override
+  public List<Block> values() {
+    return Arrays.asList(
+      get(), getSlab(), getStairs(), getFence(),
+      getLog(), getStrippedLog(), getWood(), getStrippedWood(),
+      getFenceGate(), getDoor(), getTrapdoor(),
+      getPressurePlate(), getButton(), getSign(), getWallSign());
   }
 }
