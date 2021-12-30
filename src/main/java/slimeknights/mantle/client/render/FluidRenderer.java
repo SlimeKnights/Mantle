@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -59,6 +58,22 @@ public class FluidRenderer {
   /* Fluid cuboids */
 
   /**
+   * Forces the UV to be between 0 and 1
+   * @param value  Original value
+   * @param upper  If true, this is the larger UV. Needed to enforce integer values end up at 1
+   * @return  UV mapped between 0 and 1
+   */
+  private static float boundUV(float value, boolean upper) {
+    value = value % 1;
+    if (value == 0) {
+      // if it lands exactly on the 0 bound, map that to 1 instead for the larger UV
+      return upper ? 1 : 0;
+    }
+    // modulo returns a negative result if the input is negative, so add 1 to account for that
+    return value < 0 ? (value + 1) : value;
+  }
+
+  /**
    * Adds a quad to the renderer
    * @param renderer    Renderer instnace
    * @param matrix      Render matrix
@@ -84,10 +99,10 @@ public class FluidRenderer {
         break;
       case UP:
         u1 = x1; u2 = x2;
-        v1 = 1 - z1; v2 = 1 - z2;
+        v1 = -z1; v2 = -z2;
         break;
       case NORTH:
-        u1 = 1 - x1; u2 = 1 - x2;
+        u1 = -x1; u2 = -x2;
         v1 = y1; v2 = y2;
         break;
       case SOUTH:
@@ -99,42 +114,32 @@ public class FluidRenderer {
         v1 = y1; v2 = y2;
         break;
       case EAST:
-        u1 = 1 - z1; u2 = 1 - z2;
+        u1 = -z1; u2 = -z2;
         v1 = y1; v2 = y2;
         break;
-    }
-
-    // wrap UV to be between 0 and 1, assumes none of the positions lie outside the 0,0,0 to 1,1,1 range
-    // however, one of them might be exactly on the 1.0 bound, that one should be set to 1 instead of left at 0
-    boolean bigger = u1 > u2;
-    u1 = u1 % 1;
-    u2 = u2 % 1;
-    if (bigger) {
-      if (u1 == 0) u1 = 1;
-    } else {
-      if (u2 == 0) u2 = 1;
-    }
-    bigger = v1 > v2;
-    v1 = v1 % 1;
-    v2 = v2 % 1;
-    if (bigger) {
-      if (v1 == 0) v1 = 1;
-    } else {
-      if (v2 == 0) v2 = 1;
     }
 
     // flip V when relevant
     if (rotation == 0 || rotation == 270) {
       float temp = v1;
-      v1 = 1f - v2;
-      v2 = 1f - temp;
+      v1 = -v2;
+      v2 = -temp;
     }
     // flip U when relevant
     if (rotation >= 180) {
       float temp = u1;
-      u1 = 1f - u2;
-      u2 = 1f - temp;
+      u1 = -u2;
+      u2 = -temp;
     }
+    
+    // bound UV to be between 0 and 1
+    boolean reverse = u1 > u2;
+    u1 = boundUV(u1, reverse);
+    u2 = boundUV(u2, !reverse);
+    reverse = v1 > v2;
+    v1 = boundUV(v1, reverse);
+    v2 = boundUV(v2, !reverse);
+
     // if rotating by 90 or 270, swap U and V
     float minU, maxU, minV, maxV;
     double size = flowing ? 8 : 16;
