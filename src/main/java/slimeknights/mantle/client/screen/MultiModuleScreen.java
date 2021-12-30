@@ -65,7 +65,11 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 
     assert this.minecraft != null;
     for (ModuleScreen<?,?> module : this.modules) {
-      module.init(this.minecraft, width, height); // TODO: this a good place?
+      this.updateSubmodule(module);
+    }
+    // TODO: this is a small ordering change, does it need another hook?
+    for (ModuleScreen<?,?> module : this.modules) {
+      module.init(this.minecraft, width, height);
       this.updateSubmodule(module);
     }
   }
