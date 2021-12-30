@@ -34,7 +34,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @return  Builder
    */
   @SuppressWarnings("unchecked")
-  public T addCriterion(String name, CriterionTriggerInstance criteria) {
+  public T unlockedBy(String name, CriterionTriggerInstance criteria) {
     this.advancementBuilder.addCriterion(name, criteria);
     return (T)this;
   }
@@ -45,7 +45,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @return  Builder
    */
   @SuppressWarnings("unchecked")
-  public T setGroup(String group) {
+  public T group(String group) {
     this.group = group;
     return (T)this;
   }
@@ -55,26 +55,26 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @param group  Recipe resource location group
    * @return  Builder
    */
-  public T setGroup(ResourceLocation group) {
+  public T group(ResourceLocation group) {
     // if minecraft, no namepsace. Groups are technically not namespaced so this is for consistency with vanilla
     if ("minecraft".equals(group.getNamespace())) {
-      return setGroup(group.getPath());
+      return group(group.getPath());
     }
-    return setGroup(group.toString());
+    return group(group.toString());
   }
 
   /**
    * Builds the recipe with a default recipe ID, typically based on the output
    * @param consumerIn  Recipe consumer
    */
-  public abstract void build(Consumer<FinishedRecipe> consumerIn);
+  public abstract void save(Consumer<FinishedRecipe> consumerIn);
 
   /**
    * Builds the recipe
    * @param consumerIn  Recipe consumer
    * @param id          Recipe ID
    */
-  public abstract void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id);
+  public abstract void save(Consumer<FinishedRecipe> consumerIn, ResourceLocation id);
 
   /**
    * Base logic for advancement building
@@ -92,7 +92,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   }
 
   /**
-   * Builds and validates the advancement, intended to be called in {@link #build(Consumer, ResourceLocation)}
+   * Builds and validates the advancement, intended to be called in {@link #save(Consumer, ResourceLocation)}
    * @param id      Recipe ID
    * @param folder  Group folder for saving recipes. Vanilla typically uses item groups, but for mods might as well base on the recipe
    * @return Advancement ID
@@ -105,7 +105,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   }
 
   /**
-   * Builds an optional advancement, intended to be called in {@link #build(Consumer, ResourceLocation)}
+   * Builds an optional advancement, intended to be called in {@link #save(Consumer, ResourceLocation)}
    * @param id        Recipe ID
    * @param folder    Group folder for saving recipes. Vanilla typically uses item groups, but for mods might as well base on the recipe
    * @return Advancement ID, or null if the advancement was not defined
