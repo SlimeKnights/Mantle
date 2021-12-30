@@ -27,6 +27,7 @@ import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.helper.FluidTagEmptyCondition;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.IngredientDifference;
 import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
@@ -86,6 +87,7 @@ public class Mantle {
     adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
     adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
 
+    CraftingHelper.register(FluidTagEmptyCondition.SERIALIZER);
     CraftingHelper.register(IngredientDifference.ID, IngredientDifference.SERIALIZER);
     CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
     CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
