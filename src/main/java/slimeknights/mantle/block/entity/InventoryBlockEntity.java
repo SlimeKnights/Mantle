@@ -33,6 +33,8 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   private static final String TAG_SLOT = "Slot";
 
   private NonNullList<ItemStack> inventory;
+  /** If true, the inventory size is saved to NBT, false means you are responsible for serializing it if it changes */
+  private final boolean saveSizeToNBT;
   protected int stackSizeLimit;
   @Getter
   protected IItemHandlerModifiable itemHandler;
@@ -41,15 +43,16 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize) {
-    this(tileEntityTypeIn, pos, state, name, inventorySize, 64);
+  public InventoryBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, boolean saveSizeToNBT, int inventorySize) {
+    this(tileEntityTypeIn, pos, state, name, saveSizeToNBT, inventorySize, 64);
   }
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
    */
-  public InventoryBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, int inventorySize, int maxStackSize) {
+  public InventoryBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, Component name, boolean saveSizeToNBT, int inventorySize, int maxStackSize) {
     super(tileEntityTypeIn, pos, state, name);
+    this.saveSizeToNBT = saveSizeToNBT;
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.itemHandler = new InvWrapper(this);
@@ -209,7 +212,9 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   @Override
   public void load(CompoundTag tags) {
     super.load(tags);
-    this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
+    if (saveSizeToNBT) {
+      this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
+    }
     this.readInventoryFromNBT(tags);
   }
 
@@ -217,7 +222,9 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   public void saveSynced(CompoundTag tags) {
     super.saveSynced(tags);
     // only sync the size to the client by default
-    tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
+    if (saveSizeToNBT) {
+      tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
+    }
   }
   
   @Override
