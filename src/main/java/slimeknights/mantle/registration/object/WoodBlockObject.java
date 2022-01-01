@@ -162,4 +162,7 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
       getFenceGate(), getDoor(), getTrapdoor(),
       getPressurePlate(), getButton(), getSign(), getWallSign());
   }
+
+  /** Variants of wood for the register function */
+	public enum WoodVariant { LOG, WOOD, PLANKS }
 }

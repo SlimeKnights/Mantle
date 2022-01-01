@@ -1,8 +1,5 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
@@ -13,7 +10,6 @@ import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.PressurePlateBlock.Sensitivity;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -24,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.block.StrippableLogBlock;
@@ -34,6 +29,7 @@ import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 import slimeknights.mantle.registration.object.WoodBlockObject;
+import slimeknights.mantle.registration.object.WoodBlockObject.WoodVariant;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -116,44 +112,35 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   /**
    * Registers a new wood object
    * @param name             Name of the wood object
-   * @param planksMaterial   Material for the planks
-   * @param planksColor      Map color for the planks
-   * @param plankSound       Sound for the planks
-   * @param barkMaterial     Bark material
-   * @param barkColor        Map color for the bark
-   * @param barkSound        Sound for the bark
-   * @param group            Item group
+   * @param behaviorCreator  Logic to create the behavior
    * @return Wood object
    */
-  public WoodBlockObject registerWood(String name, Material planksMaterial, MaterialColor planksColor, SoundType plankSound, Material barkMaterial, MaterialColor barkColor, SoundType barkSound, CreativeModeTab group) {
+  public WoodBlockObject registerWood(String name, Function<WoodVariant,BlockBehaviour.Properties> behaviorCreator) {
     WoodType woodType = WoodType.create(resourceName(name));
     RegistrationHelper.registerWoodType(woodType);
-    Item.Properties itemProps = new Item.Properties().tab(group);
 
     // planks
-    BlockBehaviour.Properties planksProps = BlockBehaviour.Properties.of(planksMaterial, planksColor).strength(2.0f, 3.0f).sound(plankSound);
+    BlockBehaviour.Properties planksProps = behaviorCreator.apply(WoodVariant.PLANKS).strength(2.0f, 3.0f);
     BuildingBlockObject planks = registerBuilding(new Block(planksProps), name + "_planks");
     FenceBlock fence = register(new FenceBlock(Properties.copy(planks.get())), name + "_fence");
     // logs and wood
-    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(BlockBehaviour.Properties.of(planksMaterial, planksColor).strength(2.0f).sound(plankSound));
+    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(2.0f));
     RotatedPillarBlock strippedLog = register(stripped.get(), "stripped_" + name + "_log");
     RotatedPillarBlock strippedWood = register(stripped.get(), "stripped_" + name + "_wood");
-    RotatedPillarBlock log = register(new StrippableLogBlock(strippedLog.delegate, BlockBehaviour.Properties.of(
-      barkMaterial, state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? planksColor : barkColor)
-        .strength(2.0f).sound(barkSound)), name + "_log");
-    RotatedPillarBlock wood = register(new StrippableLogBlock(strippedWood.delegate, BlockBehaviour.Properties.of(barkMaterial, barkColor).strength(2.0f).sound(barkSound)), name + "_wood");
+    RotatedPillarBlock log = register(new StrippableLogBlock(strippedLog.delegate, behaviorCreator.apply(WoodVariant.LOG).strength(2.0f)), name + "_log");
+    RotatedPillarBlock wood = register(new StrippableLogBlock(strippedWood.delegate, behaviorCreator.apply(WoodVariant.WOOD).strength(2.0f)), name + "_wood");
 
     // doors
-    DoorBlock door = register(new WoodenDoorBlock(BlockBehaviour.Properties.of(planksMaterial, planksColor).strength(3.0F).sound(plankSound).noOcclusion()), name + "_door");
-    TrapDoorBlock trapdoor = register(new TrapDoorBlock(BlockBehaviour.Properties.of(planksMaterial, planksColor).strength(3.0F).sound(SoundType.WOOD).noOcclusion().isValidSpawn(Blocks::never)), name + "_trapdoor");
+    DoorBlock door = register(new WoodenDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion()), name + "_door");
+    TrapDoorBlock trapdoor = register(new TrapDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never)), name + "_trapdoor");
     FenceGateBlock fenceGate = register(new FenceGateBlock(planksProps), name + "_fence_gate");
     // redstone
-    BlockBehaviour.Properties redstoneProps = BlockBehaviour.Properties.of(planksMaterial, planksColor).noCollission().strength(0.5F).sound(plankSound);
+    BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(0.5F);
     PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), name + "_pressure_plate");
     WoodButtonBlock button = register(new WoodButtonBlock(redstoneProps), name + "_button");
     // signs
-    StandingSignBlock standingSign = register(new StandingSignBlock(BlockBehaviour.Properties.of(planksMaterial, planksColor).noCollission().strength(1.0F).sound(plankSound), woodType), name + "_sign");
-    WallSignBlock wallSign = register(new WallSignBlock(BlockBehaviour.Properties.of(planksMaterial, planksColor).noCollission().strength(1.0F).sound(plankSound).lootFrom(standingSign.delegate), woodType), name + "_wall_sign");
+    StandingSignBlock standingSign = register(new StandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F), woodType), name + "_sign");
+    WallSignBlock wallSign = register(new WallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F).lootFrom(standingSign.delegate), woodType), name + "_wall_sign");
     // tell mantle to inject these into the TE
     RegistrationHelper.registerSignBlock(standingSign.delegate);
     RegistrationHelper.registerSignBlock(wallSign.delegate);
