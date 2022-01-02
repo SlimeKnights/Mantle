@@ -18,9 +18,10 @@ public interface IRetexturedBlockEntity {
   CompoundTag getTileData();
 
   /**
-   * Gets the current texture block name
+   * Gets the current texture block name. Encouraged to override this to not use {@link #getTileData()}
    * @return Texture block name
    */
+
   default String getTextureName() {
     return RetexturedHelper.getTextureName(getTileData());
   }
@@ -33,7 +34,7 @@ public interface IRetexturedBlockEntity {
   }
 
   /**
-   * Updates the texture to the given name
+   * Updates the texture to the given name. Encouraged to override this to not use {@link #getTileData()}
    * @param name  Texture name
    */
   default void updateTexture(String name) {

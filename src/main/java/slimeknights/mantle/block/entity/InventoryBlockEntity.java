@@ -229,7 +229,7 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   
   @Override
   public void saveAdditional(CompoundTag tags) {
-    super.save(tags);
+    super.saveAdditional(tags);
     this.writeInventoryToNBT(tags);
   }
 

@@ -22,7 +22,7 @@ public class SinglePropertyData<D> implements IModelData {
    * @param property  Property for this instance
    * @param data      Original data
    */
-  public SinglePropertyData(ModelProperty<D> property, D data) {
+  public SinglePropertyData(ModelProperty<D> property, @Nullable D data) {
     Preconditions.checkArgument(property.test(data), "Value is invalid for this property");
     this.property = property;
     this.data = data;
