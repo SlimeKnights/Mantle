@@ -25,7 +25,7 @@ public class ContentTableOfContents extends PageContent {
 
     if (this.title != null && !this.title.trim().isEmpty()) {
       this.addTitle(list, this.title);
-      y += TITLE_HEIGHT;
+      y += getTitleHeight();
     }
 
     for (int i = 0; i < this.data.length; i++) {

@@ -1,7 +1,9 @@
 package slimeknights.mantle.client.model.inventory;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
+import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.vector.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
@@ -25,6 +27,8 @@ public class ModelItem {
   /** Y axis rotation, applied second */
   @Getter
   private final float y;
+  @Getter
+  private final TransformType transform;
 
   /** Item center location in percentages, lazy loaded */
   private Vector3f centerScaled;
@@ -32,10 +36,15 @@ public class ModelItem {
   private Float sizeScaled;
 
   public ModelItem(Vector3f center, float size, float x, float y) {
+    this(center, size, x, y, TransformType.NONE);
+  }
+
+  public ModelItem(Vector3f center, float size, float x, float y, TransformType transform) {
     this.center = center;
     this.size = size;
     this.x = x;
     this.y = y;
+    this.transform = transform;
   }
 
   /**
@@ -69,6 +78,23 @@ public class ModelItem {
     return size == 0;
   }
 
+  /** Parses a transform type from a string */
+  private static TransformType parseTransformType(JsonObject json, String key) {
+    String name = JSONUtils.getString(json, key, "none");
+    switch (name) {
+      case "none":   return TransformType.NONE;
+      case "head":   return TransformType.HEAD;
+      case "gui":    return TransformType.GUI;
+      case "ground": return TransformType.GROUND;
+      case "fixed":  return TransformType.FIXED;
+      case "thirdperson_righthand": return TransformType.THIRD_PERSON_RIGHT_HAND;
+      case "thirdperson_lefthand":  return TransformType.THIRD_PERSON_LEFT_HAND;
+      case "firstperson_righthand": return TransformType.FIRST_PERSON_RIGHT_HAND;
+      case "firstperson_lefthand":  return TransformType.FIRST_PERSON_LEFT_HAND;
+    }
+    throw new JsonSyntaxException("Unknown transform type " + name);
+  }
+
   /**
    * Gets a model item from a JSON object
    * @param json  JSON object instance
@@ -83,7 +109,8 @@ public class ModelItem {
     Vector3f center = ModelHelper.arrayToVector(json, "center");
     float x = ModelHelper.getRotation(json, "x");
     float y = ModelHelper.getRotation(json, "y");
-    return new ModelItem(center, size, x, y);
+    TransformType transformType = parseTransformType(json, "transform");
+    return new ModelItem(center, size, x, y, transformType);
   }
 
   /**

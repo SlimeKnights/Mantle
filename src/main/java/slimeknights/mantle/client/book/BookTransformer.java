@@ -3,29 +3,37 @@ package slimeknights.mantle.client.book;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.book.data.content.ContentBlank;
+import slimeknights.mantle.client.book.data.content.ContentPadding.PaddingBookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentSectionList;
 import slimeknights.mantle.client.book.data.content.ContentTableOfContents;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class BookTransformer {
-
+  /** Adds a transformer which builds a visual index */
   public static BookTransformer indexTranformer() {
     return IndexTranformer.INSTANCE;
   }
 
+  /** Adds a transformer which builds a table of contents */
   public static BookTransformer contentTableTransformer() {
     return ContentTableTransformer.INSTANCE;
   }
 
+  /** Adds a transformer which builds a table of contents for a specific section name */
   @SuppressWarnings("unused") // API
   public static BookTransformer contentTableTransformerForSection(String sectionName) {
     return new ContentTableTransformer(sectionName);
+  }
+
+  /** Adds a transformer which removes padding pages if unneeded, should be added to the book last */
+  public static BookTransformer paddingTransformer() {
+    return PaddingBookTransformer.INSTANCE;
   }
 
   /**
@@ -39,23 +47,28 @@ public abstract class BookTransformer {
 
     public static final IndexTranformer INSTANCE = new IndexTranformer();
 
+    /** Divides a number by the given divisor, rounding up */
+    private static int ceilingDivide(int value, int divisor) {
+      int result = value / divisor;
+      if (value % divisor != 0) result++;
+      return result;
+    }
+
     @Override
     public void transform(BookData book) {
+      int sectionsPerPage = book.appearance.drawFourColumnIndex ? 12 : 9;
       SectionData index = new SectionData(true) {
         @Override
         public void update(@Nullable BookScreen.AdvancementCache advancementCache) {
           this.pages.clear();
 
+          // find how many other sections to draw
           List<SectionData> visibleSections = this.parent.getVisibleSections(advancementCache);
-
           if (visibleSections.isEmpty()) {
             return;
           }
-
           visibleSections.remove(0);
-
-          PageData[] pages = new PageData[(int) Math.ceil(visibleSections.size() / 9F)];
-
+          PageData[] pages = new PageData[ceilingDivide(visibleSections.size(), sectionsPerPage)];
           for (int i = 0; i < pages.length; i++) {
             pages[i] = new PageData(true);
 
@@ -64,14 +77,26 @@ public abstract class BookTransformer {
             ContentSectionList content = new ContentSectionList();
             pages[i].content = content;
 
-            for (int j = i * 9; j - i * 9 < 9 && j < visibleSections.size(); j++) {
+            int pageStart = i * sectionsPerPage;
+            for (int j = pageStart; j - pageStart < 16 && j < visibleSections.size(); j++) {
               content.addSection(visibleSections.get(j));
             }
           }
 
-          this.pages = new ArrayList<>(Arrays.asList(pages));
+          this.pages.addAll(Arrays.asList(pages));
         }
       };
+      // add in some blank pages so the padding transformer has an accurate count
+      List<SectionData> visibleSections = book.getVisibleSections(null);
+      if (!visibleSections.isEmpty()) {
+        PageData[] pages = new PageData[ceilingDivide(visibleSections.size() - 1, sectionsPerPage)];
+        for (int i = 0; i < pages.length; i++) {
+          pages[i] = new PageData(true);
+          pages[i].name = "page" + (i + 1);
+          pages[i].content = new ContentBlank();
+        }
+        index.pages.addAll(Arrays.asList(pages));
+      }
 
       index.name = "index";
       book.sections.add(0, index);

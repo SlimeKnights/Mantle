@@ -7,6 +7,9 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import slimeknights.mantle.client.book.data.BookData;
+
+import javax.annotation.Nullable;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
 
@@ -17,22 +20,32 @@ public class ArrowButton extends Button {
   public static final int HEIGHT = 10;
 
   // Appearance
+  @Nullable
+  private final BookData bookData;
   public ArrowType arrowType;
   public int color;
   public int hoverColor;
 
-  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
+  public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
     super(x, y, arrowType.w, arrowType.h, StringTextComponent.EMPTY, iPressable);
 
     this.arrowType = arrowType;
     this.color = color;
     this.hoverColor = hoverColor;
+    this.bookData = bookData;
   }
 
-  @Override
-  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, IPressable iPressable) {
+    this(null, x, y, arrowType, color, hoverColor, iPressable);
+  }
+
+  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, @Nullable BookData bookData) {
     Minecraft minecraft = Minecraft.getInstance();
-    minecraft.getTextureManager().bindTexture(TEX_BOOK);
+    if (bookData != null) {
+      minecraft.getTextureManager().bindTexture(bookData.appearance.getBookTexture());
+    } else {
+      minecraft.getTextureManager().bindTexture(TEX_BOOK);
+    }
 
     this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
@@ -45,6 +58,11 @@ public class ArrowButton extends Button {
     RenderSystem.color3f(r, g, b);
     blit(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
     this.renderBg(matrixStack, minecraft, mouseX, mouseY);
+  }
+
+  @Override
+  public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    renderButton(matrixStack, mouseX, mouseY, partialTicks, bookData);
   }
 
   public enum ArrowType {

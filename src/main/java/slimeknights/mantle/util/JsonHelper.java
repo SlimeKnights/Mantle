@@ -8,7 +8,9 @@ import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -87,5 +89,47 @@ public class JsonHelper {
    */
   public static <T> List<T> parseList(JsonObject parent, String name, Function<JsonObject,T> mapper) {
     return parseList(JSONUtils.getJsonArray(parent, name), name, mapper);
+  }
+
+  /**
+   * Gets a resource location from JSON, throwing a nice exception if invalid
+   * @param json  JSON object
+   * @param key   Key to fetch
+   * @return  Resource location parsed
+   */
+  public static ResourceLocation getResourceLocation(JsonObject json, String key) {
+    String text = JSONUtils.getString(json, key);
+    ResourceLocation location = ResourceLocation.tryCreate(text);
+    if (location == null) {
+      throw new JsonSyntaxException("Expected " + key + " to be a Resource location, was '" + text + "'");
+    }
+    return location;
+  }
+
+  /**
+   * Parses a color as a string
+   * @param color  Color to parse
+   * @return  Parsed string
+   */
+  public static int parseColor(@Nullable String color) {
+    if (color == null || color.isEmpty()) {
+      return -1;
+    }
+    // two options, 6 character or 8 character, must not start with - sign
+    if (color.charAt(0) != '-') {
+      try {
+        // length of 8 must parse as long, supports transparency
+        int length = color.length();
+        if (length == 8) {
+          return (int)Long.parseLong(color, 16);
+        }
+        if (length == 6) {
+          return 0xFF000000 | Integer.parseInt(color, 16);
+        }
+      } catch (NumberFormatException ex) {
+        // NO-OP
+      }
+    }
+    throw new JsonSyntaxException("Invalid color '" + color + "'");
   }
 }

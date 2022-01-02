@@ -37,7 +37,7 @@ public class ContentSmithing extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = BookScreen.PAGE_WIDTH / 2 - IMG_SMITHING.width / 2;
-    int y = TITLE_HEIGHT;
+    int y = getTitleHeight();
 
     if (this.title == null || this.title.isEmpty()) {
       y = 0;

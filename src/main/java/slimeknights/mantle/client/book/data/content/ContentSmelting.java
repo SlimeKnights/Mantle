@@ -53,11 +53,15 @@ public class ContentSmelting extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = BookScreen.PAGE_WIDTH / 2 - IMG_SMELTING.width / 2;
-    int y = TITLE_HEIGHT;
 
-    TextData tdTitle = new TextData(this.title);
-    tdTitle.underlined = true;
-    list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
+    int y;
+    if (this.title == null || this.title.isEmpty()) {
+      y = 0;
+    } else {
+      this.addTitle(list, this.title);
+      y = getTitleHeight();
+    }
+
     list.add(new ImageElement(x, y, IMG_SMELTING.width, IMG_SMELTING.height, IMG_SMELTING, book.appearance.slotColor));
     list.add(new TooltipElement(ImmutableList.of(new TranslationTextComponent("mantle:tooltip.cooktime", this.cookTime / 20)), x + 7, y + 42, 60, 28));
 

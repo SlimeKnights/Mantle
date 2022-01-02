@@ -11,14 +11,12 @@ import net.minecraft.world.gen.feature.template.Template;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
-import slimeknights.mantle.client.book.data.element.BlockData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.ArrowButton;
 import slimeknights.mantle.client.screen.book.BookScreen;
-import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.AnimationToggleElement;
+import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.StructureElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
@@ -77,7 +75,7 @@ public class ContentStructure extends PageContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
-    int y = TITLE_HEIGHT;
+    int y = getTitleHeight();
 
     if (this.title == null || this.title.isEmpty()) {
       y = 0;

@@ -30,10 +30,21 @@ public class IngredientWithout extends Ingredient {
   private final Ingredient without;
   private ItemStack[] filteredMatchingStacks;
   private IntList packedMatchingStacks;
+
   public IngredientWithout(Ingredient base, Ingredient without) {
     super(Stream.empty());
     this.base = base;
     this.without = without;
+  }
+
+  /**
+   * Gets the set difference from the two ingredients
+   * @param base     Base ingredient
+   * @param without  Ingredient to subtract
+   * @return  Ingredient that {@code base} anything in base that is not in {@code without}
+   */
+  public static IngredientWithout without(Ingredient base, Ingredient without) {
+    return new IngredientWithout(base, without);
   }
 
   @Override

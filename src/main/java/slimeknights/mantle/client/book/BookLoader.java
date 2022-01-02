@@ -6,6 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -19,6 +21,9 @@ import slimeknights.mantle.client.book.data.content.ContentBlockInteraction;
 import slimeknights.mantle.client.book.data.content.ContentCrafting;
 import slimeknights.mantle.client.book.data.content.ContentImage;
 import slimeknights.mantle.client.book.data.content.ContentImageText;
+import slimeknights.mantle.client.book.data.content.ContentIndex;
+import slimeknights.mantle.client.book.data.content.ContentPadding;
+import slimeknights.mantle.client.book.data.content.ContentShowcase;
 import slimeknights.mantle.client.book.data.content.ContentSmelting;
 import slimeknights.mantle.client.book.data.content.ContentSmithing;
 import slimeknights.mantle.client.book.data.content.ContentStructure;
@@ -30,7 +35,8 @@ import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.network.MantleNetwork;
-import slimeknights.mantle.network.packet.UpdateSavedPagePacket;
+import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
+import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -42,7 +48,7 @@ public class BookLoader implements ISelectiveResourceReloadListener {
   /**
    * GSON object to be used for book loading purposes
    */
-  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(int.class, new HexStringDeserializer()).create();
+  public static final Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).registerTypeAdapter(int.class, new HexStringDeserializer()).create();
 
   /**
    * Maps page content presets to names
@@ -58,6 +64,8 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     // Register page types
     registerPageType("blank", ContentBlank.class);
     registerPageType("text", ContentText.class);
+    registerPageType(ContentPadding.LEFT_ID, ContentPadding.ContentLeftPadding.class);
+    registerPageType(ContentPadding.RIGHT_ID, ContentPadding.ContentRightPadding.class);
     registerPageType("image", ContentImage.class);
     registerPageType("image with text below", ContentImageText.class);
     registerPageType("text with image below", ContentTextImage.class);
@@ -68,6 +76,8 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     registerPageType("smithing", ContentSmithing.class);
     registerPageType("block interaction", ContentBlockInteraction.class);
     registerPageType(ContentStructure.ID, ContentStructure.class);
+    registerPageType(ContentIndex.ID, ContentIndex.class);
+    registerPageType(ContentShowcase.ID, ContentShowcase.class);
 
     // Register action protocols
     StringActionProcessor.registerProtocol(new ProtocolGoToPage());
@@ -137,16 +147,29 @@ public class BookLoader implements ISelectiveResourceReloadListener {
     return info;
   }
 
-  public static void updateSavedPage(@Nullable PlayerEntity player, ItemStack item, String page) {
-    if (player == null) {
-      return;
+  /**
+   * Updates the saved page of a held book
+   * @param player  Player instance
+   * @param hand    Hand
+   * @param page    New page
+   */
+  public static void updateSavedPage(@Nullable PlayerEntity player, Hand hand, String page) {
+    if (player != null) {
+      ItemStack item = player.getHeldItem(hand);
+      if (!item.isEmpty()) {
+        BookHelper.writeSavedPageToBook(item, page);
+        MantleNetwork.INSTANCE.network.sendToServer(new UpdateHeldPagePacket(hand, page));
+      }
     }
-    if (player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
-      return;
-    }
+  }
 
-    BookHelper.writeSavedPageToBook(item, page);
-    MantleNetwork.INSTANCE.network.sendToServer(new UpdateSavedPagePacket(page));
+  /**
+   * Updates the saved page of a held book
+   * @param pos     Position being changed
+   * @param page    New page
+   */
+  public static void updateSavedPage(BlockPos pos, String page) {
+    MantleNetwork.INSTANCE.network.sendToServer(new UpdateLecternPagePacket(pos, page));
   }
 
   /**

@@ -1,6 +1,7 @@
 package slimeknights.mantle.network;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -104,6 +105,17 @@ public class NetworkWrapper {
    * @param msg     Packet
    * @param player  Player to send
    */
+  public void sendTo(Object msg, PlayerEntity player) {
+    if (player instanceof ServerPlayerEntity) {
+      sendTo(msg, (ServerPlayerEntity) player);
+    }
+  }
+
+  /**
+   * Sends a packet to a player
+   * @param msg     Packet
+   * @param player  Player to send
+   */
   public void sendTo(Object msg, ServerPlayerEntity player) {
     if (!(player instanceof FakePlayer)) {
       network.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
@@ -119,5 +131,23 @@ public class NetworkWrapper {
   public void sendToClientsAround(Object msg, ServerWorld serverWorld, BlockPos position) {
     Chunk chunk = serverWorld.getChunkAt(position);
     network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
+  }
+
+  /**
+   * Sends a packet to all entities tracking the given entity
+   * @param msg     Packet
+   * @param entity  Entity to check
+   */
+  public void sendToTrackingAndSelf(Object msg, Entity entity) {
+    this.network.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), msg);
+  }
+
+  /**
+   * Sends a packet to all entities tracking the given entity
+   * @param msg     Packet
+   * @param entity  Entity to check
+   */
+  public void sendToTracking(Object msg, Entity entity) {
+    this.network.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg);
   }
 }

@@ -4,17 +4,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.BookTransformer;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ItemStackData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.network.MantleNetwork;
+import slimeknights.mantle.network.packet.DropLecternBookPacket;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
@@ -45,6 +51,7 @@ public class BookData implements IDataItem {
     this.repositories = new ArrayList<>(Arrays.asList(repositories));
   }
 
+  /** Reinitializes the given book */
   public void reset() {
     this.initialized = false;
   }
@@ -196,11 +203,13 @@ public class BookData implements IDataItem {
     Mantle.logger.info("Finished loading book");
   }
 
+  /** Finds the section with the given name, ignoring advancements */
   @Nullable
   public SectionData findSection(String name) {
     return this.findSection(name, null);
   }
 
+  /** Finds the section with the given name, advancement sensitive */
   @Nullable
   public SectionData findSection(String name, @Nullable BookScreen.AdvancementCache advancementCache) {
     for (SectionData section : this.sections) {
@@ -214,6 +223,7 @@ public class BookData implements IDataItem {
     return null;
   }
 
+  /** Gets the number corresponding to the first page */
   public int getFirstPageNumber(SectionData section, @Nullable BookScreen.AdvancementCache advancementCache) {
     int pages = 0;
 
@@ -234,6 +244,7 @@ public class BookData implements IDataItem {
     return -1;
   }
 
+  /** Gets the page data for the given page number */
   @Nullable
   public PageData findPage(int number, @Nullable BookScreen.AdvancementCache advancementCache) {
     if (number < 0) {
@@ -259,16 +270,19 @@ public class BookData implements IDataItem {
     return null;
   }
 
+  /** Gets the page data for the given location */
   @SuppressWarnings("unused") // API
   @Nullable
   public PageData findPage(String location, @Nullable BookScreen.AdvancementCache advancementCache) {
     return this.findPage(this.findPageNumber(location, advancementCache), advancementCache);
   }
 
+  /** Gets the page number for the given location, ignoring advancements */
   public int findPageNumber(String location) {
     return this.findPageNumber(location, null);
   }
 
+  /** Gets the page number for the given location, advancement sensitive */
   public int findPageNumber(String location, @Nullable BookScreen.AdvancementCache advancementCache) {
     location = location.toLowerCase();
 
@@ -306,6 +320,7 @@ public class BookData implements IDataItem {
     return -1;
   }
 
+  /** Gets the number of individual pages */
   public int getPageCount(@Nullable BookScreen.AdvancementCache advancementCache) {
     int pages = 0;
     for (SectionData section : this.sections) {
@@ -316,10 +331,12 @@ public class BookData implements IDataItem {
     return pages;
   }
 
+  /** Gets the number of pages the book can be on, effectively half the individual page count */
   public int getFullPageCount(@Nullable BookScreen.AdvancementCache advancementCache) {
     return (int) Math.ceil((this.getPageCount(advancementCache) - 1) / 2F) + 1;
   }
 
+  /** Gets the action to perform when clicking the item */
   public String getItemAction(ItemStackData item) {
     for (ItemStackData.ItemLink link : this.itemLinks) {
       if (item.id.equals(link.item.id) && (!link.damageSensitive)) {
@@ -330,6 +347,7 @@ public class BookData implements IDataItem {
     return "";
   }
 
+  /** Gets a list of all visible sections, sensitive to current advancements */
   public List<SectionData> getVisibleSections(@Nullable BookScreen.AdvancementCache advancementCache) {
     List<SectionData> visible = new ArrayList<>();
 
@@ -342,20 +360,73 @@ public class BookData implements IDataItem {
     return visible;
   }
 
+  /** Translates the given string using the book language */
   public String translate(String string) {
     String out = this.strings.get(string);
     return out != null ? out : string;
   }
 
+  /**
+   * Generic method to open the book GUI
+   * @param title        Screen title
+   * @param page         Starting page
+   * @param pageUpdater  Function to call to save the page
+   */
+  public void openGui(ITextComponent title, String page, @Nullable Consumer<String> pageUpdater) {
+    this.openGui(title, page, pageUpdater, null);
+  }
+
+  /**
+   * Generic method to open the book GUI in a situation when the book can be picked up (i.e. lectern)
+   * @param title        Screen title
+   * @param page         Starting page
+   * @param pageUpdater  Function to call to save the page
+   */
+  public void openGui(ITextComponent title, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
+    this.load();
+    Minecraft.getInstance().displayGuiScreen(new BookScreen(title, this, page, pageUpdater, bookPickup));
+  }
+
+  /**
+   * Opens the GUI for a held book
+   * @param hand   Hand containing the book
+   * @param stack  Book stack
+   */
+  public void openGui(Hand hand, ItemStack stack) {
+    String page = BookHelper.getCurrentSavedPage(stack);
+    openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, hand, newPage));
+  }
+
+  /** @deprecated Use {@link #openGui(Hand, ItemStack)} */
+  @Deprecated
   public void openGui(ITextComponent title, @Nullable ItemStack item) {
-    if (!this.initialized) {
-      this.load();
-    }
-    if (Minecraft.getInstance().player != null) {
-      Minecraft.getInstance().displayGuiScreen(new BookScreen(title, this, item));
+    if (item == null) {
+      openGui(title, "", newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, Hand.MAIN_HAND, newPage));
+    } else {
+      openGui(Hand.MAIN_HAND, item);
     }
   }
 
+  /**
+   * Opens the GUI for a lectern containing the book
+   * @param pos    Position of the lectern
+   * @param stack  Item in the lectern
+   */
+  @SuppressWarnings("unused") // API
+  public void openGui(BlockPos pos, ItemStack stack) {
+    String page = BookHelper.getCurrentSavedPage(stack);
+
+    Consumer<?> bookPickup = (v) -> {
+      MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
+    };
+
+    openGui(stack.getDisplayName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
+  }
+
+  /**
+   * Adds a new repository to the book
+   * @param repository  Repository to add
+   */
   @SuppressWarnings("unused") // API
   public void addRepository(@Nullable BookRepository repository) {
     if (repository != null && !this.repositories.contains(repository)) {
@@ -363,6 +434,10 @@ public class BookData implements IDataItem {
     }
   }
 
+  /**
+   * Adds a new transformer to the book
+   * @param transformer  Transformer to add
+   */
   public void addTransformer(@Nullable BookTransformer transformer) {
     if (transformer != null && !this.transformers.contains(transformer)) {
       this.transformers.add(transformer);

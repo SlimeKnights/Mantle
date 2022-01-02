@@ -8,17 +8,17 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.multiplayer.ClientAdvancementManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
-import slimeknights.mantle.client.book.BookHelper;
-import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
@@ -29,9 +29,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOK;
-import static slimeknights.mantle.client.screen.book.Textures.TEX_BOOKFRONT;
+import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class BookScreen extends Screen {
@@ -62,12 +60,15 @@ public class BookScreen extends Screen {
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
 
   public final BookData book;
-  private ItemStack item;
+  @Nullable
+  private Consumer<String> pageUpdater;
+  @Nullable
+  private Consumer<?> bookPickup;
 
   private int page = -1;
   private int oldPage = -2;
-  private ArrayList<BookElement> leftElements = new ArrayList<>();
-  private ArrayList<BookElement> rightElements = new ArrayList<>();
+  private final ArrayList<BookElement> leftElements = new ArrayList<>();
+  private final ArrayList<BookElement> rightElements = new ArrayList<>();
 
   public AdvancementCache advancementCache;
 
@@ -80,10 +81,11 @@ public class BookScreen extends Screen {
     PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   }
 
-  public BookScreen(ITextComponent title, BookData book, @Nullable ItemStack item) {
+  public BookScreen(ITextComponent title, BookData book, String page, @Nullable Consumer<String> pageUpdater, @Nullable Consumer<?> bookPickup) {
     super(title);
     this.book = book;
-    this.item = item;
+    this.pageUpdater = pageUpdater;
+    this.bookPickup = bookPickup;
 
     this.minecraft = Minecraft.getInstance();
     this.font = this.minecraft.fontRenderer;
@@ -91,14 +93,18 @@ public class BookScreen extends Screen {
     initWidthsAndHeights();
 
     this.advancementCache = new AdvancementCache();
-    this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
-
-    this.openPage(book.findPageNumber(BookHelper.getCurrentSavedPage(item), this.advancementCache));
+    if (this.minecraft.player != null) {
+      this.minecraft.player.connection.getAdvancementManager().setListener(this.advancementCache);
+    }
+    this.openPage(book.findPageNumber(page, this.advancementCache));
   }
 
   @Override
   @SuppressWarnings("ForLoopReplaceableByForEach")
   public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    if (this.minecraft == null) {
+      return;
+    }
     initWidthsAndHeights();
     FontRenderer fontRenderer = this.book.fontRenderer;
     if (fontRenderer == null) {
@@ -124,7 +130,7 @@ public class BookScreen extends Screen {
     TextureManager render = this.minecraft.textureManager;
 
     if (this.page == -1) {
-      render.bindTexture(TEX_BOOKFRONT);
+      render.bindTexture(book.appearance.getCoverTexture());
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
@@ -150,7 +156,7 @@ public class BookScreen extends Screen {
         RenderSystem.popMatrix();
       }
     } else {
-      render.bindTexture(TEX_BOOK);
+      render.bindTexture(book.appearance.getBookTexture());
       RenderHelper.disableStandardItemLighting();
 
       RenderSystem.color3f(coverR, coverG, coverB);
@@ -194,7 +200,7 @@ public class BookScreen extends Screen {
       }
 
       // Rebind texture as the font renderer binds its own texture
-      render.bindTexture(TEX_BOOK);
+      render.bindTexture(book.appearance.getBookTexture());
       // Set color back to white
       RenderSystem.color4f(1F, 1F, 1F, 1F);
       RenderHelper.disableStandardItemLighting();
@@ -255,7 +261,7 @@ public class BookScreen extends Screen {
     this.buttons.clear();
     this.children.clear();
 
-    this.previousArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.previousArrow = this.addButton(new ArrowButton(book, 50, -50, ArrowButton.ArrowType.PREV, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.page--;
 
       if (this.page < -1) {
@@ -266,7 +272,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.nextArrow = this.addButton(new ArrowButton(-50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.nextArrow = this.addButton(new ArrowButton(book, -50, -50, ArrowButton.ArrowType.NEXT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.page++;
 
       int fullPageCount = this.book.getFullPageCount(this.advancementCache);
@@ -279,7 +285,7 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.backArrow = this.addButton(new ArrowButton(this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.backArrow = this.addButton(new ArrowButton(book, this.width / 2 - ArrowButton.WIDTH / 2, this.height / 2 + ArrowButton.HEIGHT / 2 + PAGE_HEIGHT / 2, ArrowButton.ArrowType.LEFT, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       if (this.oldPage >= -1) {
         this.page = this.oldPage;
       }
@@ -288,12 +294,24 @@ public class BookScreen extends Screen {
       this.buildPages();
     }));
 
-    this.indexArrow = this.addButton(new ArrowButton(this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
+    this.indexArrow = this.addButton(new ArrowButton(book, this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
       this.openPage(this.book.findPageNumber("index.page1"));
 
       this.oldPage = -2;
       this.buildPages();
     }));
+
+    if(this.bookPickup != null) {
+      int margin = 10;
+      if(this.height / 2 + PAGE_HEIGHT_UNSCALED / 2 + margin + 20 >= this.height) {
+        margin = 0;
+      }
+
+      this.addButton(new Button(this.width / 2 - 196 / 2, this.height / 2 + PAGE_HEIGHT_UNSCALED / 2 + margin, 196, 20, new TranslationTextComponent("lectern.take_book"), (p_212998_1_) -> {
+        this.closeScreen();
+        this.bookPickup.accept(null);
+      }));
+    }
 
     this.buildPages();
   }
@@ -461,20 +479,22 @@ public class BookScreen extends Screen {
 
   @Override
   public void onClose() {
-    if (this.minecraft.player == null) {
+    if (this.minecraft == null || this.minecraft.player == null) {
       return;
     }
-
-    PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
-
-    if (page == null) {
-      page = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
-    }
-
-    if (this.page == -1) {
-      BookLoader.updateSavedPage(this.minecraft.player, this.item, "");
-    } else if (page != null && page.parent != null) {
-      BookLoader.updateSavedPage(this.minecraft.player, this.item, page.parent.name + "." + page.name);
+    // find what page to update
+    if (pageUpdater != null) {
+      String pageStr = "";
+      if (this.page >= 0) {
+        PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
+        if (page == null) {
+          page = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
+        }
+        if (page != null && page.parent != null) {
+          pageStr = page.parent.name + "." + page.name;
+        }
+      }
+      pageUpdater.accept(pageStr);
     }
   }
 

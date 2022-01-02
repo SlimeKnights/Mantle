@@ -40,7 +40,7 @@ public class DumpTagCommand {
   public static void register(LiteralArgumentBuilder<CommandSource> subCommand) {
     subCommand.requires(sender -> sender.hasPermissionLevel(MantleCommand.PERMISSION_EDIT_SPAWN))
               .then(Commands.argument("type", TagCollectionArgument.collection())
-                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation())
+                            .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.VALID_TAGS)
                                           .executes(DumpTagCommand::run)));
   }
 
@@ -89,7 +89,7 @@ public class DumpTagCommand {
       context.getSource().sendFeedback(message, true);
       Mantle.logger.info("Tag dump of {} tag '{}':\n{}", type.getName(), name, GSON.toJson(builder.serialize()));
       return tagsProcessed;
-    } catch (IOException ex) {
+    } catch (IOException | RuntimeException ex) {
       // if the tag does not exist in the collect, probably an invalid tag name
       if (type.getCollection().get(name) == null) {
         throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);

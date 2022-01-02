@@ -24,7 +24,7 @@ public class Config {
 	public static final CachedBoolean EXTRA_HEART_RENDERER;
 
 	/** List of preferences for tag outputs */
-	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "create", "immersiveengineering", "mekanism", "thermalfoundation", "thermalexpansion");
+	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "create", "immersiveengineering", "mekanism", "thermal");
 	public static final CachedValue<List<? extends String>> TAG_PREFERENCES;
 
 	private static final ForgeConfigSpec.Builder CLIENT_BUILDER, SERVER_BUILDER;

@@ -1,5 +1,6 @@
 package slimeknights.mantle.recipe.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.data.IFinishedRecipe;
@@ -11,18 +12,23 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * Builds a recipe consumer wrapper, which adds some extra properties to wrap the result of another recipe
  */
+@SuppressWarnings("UnusedReturnValue")
 public class ConsumerWrapperBuilder {
   private final List<ICondition> conditions = new ArrayList<>();
   @Nullable
   private final IRecipeSerializer<?> override;
+  @Nullable
+  private final ResourceLocation overrideName;
 
-  private ConsumerWrapperBuilder(@Nullable IRecipeSerializer<?> override) {
+  private ConsumerWrapperBuilder(@Nullable IRecipeSerializer<?> override, @Nullable ResourceLocation overrideName) {
     this.override = override;
+    this.overrideName = overrideName;
   }
 
   /**
@@ -30,7 +36,7 @@ public class ConsumerWrapperBuilder {
    * @return Default serializer builder
    */
   public static ConsumerWrapperBuilder wrap() {
-    return new ConsumerWrapperBuilder(null);
+    return new ConsumerWrapperBuilder(null, null);
   }
 
   /**
@@ -39,7 +45,16 @@ public class ConsumerWrapperBuilder {
    * @return Default serializer builder
    */
   public static ConsumerWrapperBuilder wrap(IRecipeSerializer<?> override) {
-    return new ConsumerWrapperBuilder(override);
+    return new ConsumerWrapperBuilder(override, null);
+  }
+
+  /**
+   * Creates a wrapper builder with a serializer name override
+   * @param override Serializer override
+   * @return Default serializer builder
+   */
+  public static ConsumerWrapperBuilder wrap(ResourceLocation override) {
+    return new ConsumerWrapperBuilder(null, override);
   }
 
   /**
@@ -58,7 +73,7 @@ public class ConsumerWrapperBuilder {
    * @return Built wrapper consumer
    */
   public Consumer<IFinishedRecipe> build(Consumer<IFinishedRecipe> consumer) {
-    return (recipe) -> consumer.accept(new Wrapped(recipe, conditions, override));
+    return (recipe) -> consumer.accept(new Wrapped(recipe, conditions, override, overrideName));
   }
 
   private static class Wrapped implements IFinishedRecipe {
@@ -66,21 +81,53 @@ public class ConsumerWrapperBuilder {
     private final List<ICondition> conditions;
     @Nullable
     private final IRecipeSerializer<?> override;
+    @Nullable
+    private final ResourceLocation overrideName;
 
-    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override) {
-      this.original = original;
-      this.conditions = conditions;
-      this.override = override;
+    private Wrapped(IFinishedRecipe original, List<ICondition> conditions, @Nullable IRecipeSerializer<?> override, @Nullable ResourceLocation overrideName) {
+      // if wrapping another wrapper result, merge the two together
+      if (original instanceof Wrapped) {
+        Wrapped toMerge = (Wrapped) original;
+        this.original = toMerge.original;
+        this.conditions = ImmutableList.<ICondition>builder().addAll(toMerge.conditions).addAll(conditions).build();
+        // consumer wrappers are processed inside out, so the innermost wrapped recipe is the one with the most recent serializer override
+        if (toMerge.override != null || toMerge.overrideName != null) {
+          this.override = toMerge.override;
+          this.overrideName = toMerge.overrideName;
+        } else {
+          this.override = override;
+          this.overrideName = overrideName;
+        }
+      } else {
+        this.original = original;
+        this.conditions = conditions;
+        this.override = override;
+        this.overrideName = overrideName;
+      }
+    }
+
+    @Override
+    public JsonObject getRecipeJson() {
+      JsonObject json = new JsonObject();
+      if (overrideName != null) {
+        json.addProperty("type", overrideName.toString());
+      } else {
+        json.addProperty("type", Objects.requireNonNull(getSerializer().getRegistryName()).toString());
+      }
+      this.serialize(json);
+      return json;
     }
 
     @Override
     public void serialize(JsonObject json) {
       // add conditions on top
-      JsonArray conditionsArray = new JsonArray();
-      for (ICondition condition : conditions) {
-        conditionsArray.add(CraftingHelper.serialize(condition));
+      if (!conditions.isEmpty()) {
+        JsonArray conditionsArray = new JsonArray();
+        for (ICondition condition : conditions) {
+          conditionsArray.add(CraftingHelper.serialize(condition));
+        }
+        json.add("conditions", conditionsArray);
       }
-      json.add("conditions", conditionsArray);
       // serialize the normal recipe
       original.serialize(json);
     }

@@ -89,13 +89,7 @@ public class FileRepository extends BookRepository {
     if (location == null) {
       return false;
     }
-
-    try {
-      Minecraft.getInstance().getResourceManager().getResource(location);
-      return true;
-    } catch (IOException e) {
-      return false;
-    }
+    return Minecraft.getInstance().getResourceManager().hasResource(location);
   }
 
   @Override

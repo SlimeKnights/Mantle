@@ -34,10 +34,10 @@ public class ItemStackData implements IDataElement {
 
   private transient boolean customData;
   private transient boolean isTag;
-  private transient int tagGeneration;
+  private transient boolean tagLoaded;
 
   public NonNullList<ItemStack> getItems() {
-    if (this.isTag && this.tagGeneration != 0) { //ItemTags.getGeneration()) {  TODO FIX
+    if (this.isTag && this.tagLoaded) {
       this.loadTag();
     }
 
@@ -115,7 +115,7 @@ public class ItemStackData implements IDataElement {
 
   private void loadTag() {
     this.isTag = true;
-    this.tagGeneration = 0;//ItemTags.getGeneration(); TODO FIX
+    this.tagLoaded = true;
 
     ITag<Item> values = ItemTags.getCollection().get(new ResourceLocation(this.tag));
     if (values != null) {

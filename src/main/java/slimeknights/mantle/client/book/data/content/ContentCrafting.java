@@ -49,14 +49,17 @@ public class ContentCrafting extends PageContent {
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
     int x = 0;
-    int y = 16;
+    int y;
     int height = 100;
     int resultX = 100;
     int resultY = 50;
 
-    TextData tdTitle = new TextData(this.title);
-    tdTitle.underlined = true;
-    list.add(new TextElement(0, 0, BookScreen.PAGE_WIDTH, 9, tdTitle));
+    if (this.title == null || this.title.isEmpty()) {
+      y = 0;
+    } else {
+      this.addTitle(list, this.title);
+      y = getTitleHeight();
+    }
 
     if (this.grid_size.equalsIgnoreCase("small")) {
       x = BookScreen.PAGE_WIDTH / 2 - IMG_CRAFTING_SMALL.width / 2;
@@ -107,6 +110,7 @@ public class ContentCrafting extends PageContent {
           break;
       }
 
+      assert Minecraft.getInstance().world != null;
       IRecipe<?> recipe = Minecraft.getInstance().world.getRecipeManager().getRecipe(new ResourceLocation(this.recipe)).orElse(null);
       if (recipe instanceof ICraftingRecipe) {
         if (!recipe.canFit(w, h)) {
@@ -118,7 +122,7 @@ public class ContentCrafting extends PageContent {
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
 
         if (recipe instanceof IShapedRecipe) {
-          IShapedRecipe shaped = (IShapedRecipe) recipe;
+          IShapedRecipe<?> shaped = (IShapedRecipe<?>) recipe;
 
           grid = new ItemStackData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
 

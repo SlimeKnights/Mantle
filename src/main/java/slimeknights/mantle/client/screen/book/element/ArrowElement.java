@@ -11,13 +11,13 @@ public class ArrowElement extends ButtonElement {
 
   public ArrowElement(int x, int y, ArrowButton.ArrowType arrowType, int arrowColor, int arrowColorHover, IPressable iPressable) {
     super(x, y, arrowType.w, arrowType.h);
-
-    this.button = new ArrowButton(x, y, arrowType, arrowColor, arrowColorHover, iPressable);
+    // pass in book data during draw
+    this.button = new ArrowButton(null, x, y, arrowType, arrowColor, arrowColorHover, iPressable);
   }
 
   @Override
   public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, FontRenderer fontRenderer) {
-    this.button.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+    this.button.renderButton(matrixStack, mouseX, mouseY, partialTicks, parent.book);
   }
 
   @Override

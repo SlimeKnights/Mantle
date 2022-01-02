@@ -59,7 +59,7 @@ public class DumpAllTagsCommand {
   }
 
   /** Gets the path for the output */
-  private static File getOutputFile(CommandContext<CommandSource> context) {
+  protected static File getOutputFile(CommandContext<CommandSource> context) {
     return context.getSource().getServer().getFile(TAG_DUMP_PATH);
   }
 
@@ -68,7 +68,7 @@ public class DumpAllTagsCommand {
    * @param file  File
    * @return  Clickable text component
    */
-  private static ITextComponent getOutputComponent(File file) {
+  protected static ITextComponent getOutputComponent(File file) {
     return new StringTextComponent(file.getAbsolutePath()).modifyStyle(style -> style.setUnderlined(true).setClickEvent(new ClickEvent(Action.OPEN_FILE, file.getAbsolutePath())));
   }
 

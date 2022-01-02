@@ -48,10 +48,20 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   /**
    * Creates a new output for the given item
    * @param item  Item
+   * @param count Stack count
+   * @return  Output
+   */
+  public static ItemOutput fromItem(IItemProvider item, int count) {
+    return new OfItem(item.asItem(), count);
+  }
+
+  /**
+   * Creates a new output for the given item
+   * @param item  Item
    * @return  Output
    */
   public static ItemOutput fromItem(IItemProvider item) {
-    return fromStack(new ItemStack(item));
+    return fromItem(item, 1);
   }
 
   /**
@@ -108,6 +118,35 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     return fromStack(buffer.readItemStack());
   }
 
+  /** Class for an output that is just an item, simplifies NBT for serializing as vanilla forces NBT to be set for tools and forge goes through extra steps when NBT is set */
+  @RequiredArgsConstructor
+  private static class OfItem extends ItemOutput {
+    private final Item item;
+    private final int count;
+    private ItemStack cachedStack;
+
+    @Override
+    public ItemStack get() {
+      if (cachedStack == null) {
+        cachedStack = new ItemStack(item, count);
+      }
+      return cachedStack;
+    }
+
+    @Override
+    public JsonElement serialize() {
+      String itemName = Objects.requireNonNull(item.getRegistryName()).toString();
+      if (count > 1) {
+        JsonObject json = new JsonObject();
+        json.addProperty("item", itemName);
+        json.addProperty("count", count);
+        return json;
+      } else {
+        return new JsonPrimitive(itemName);
+      }
+    }
+  }
+
   /** Class for an output that is just a stack */
   @RequiredArgsConstructor
   private static class OfStack extends ItemOutput {
@@ -123,7 +162,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
       String itemName = Objects.requireNonNull(stack.getItem().getRegistryName()).toString();
       int count = stack.getCount();
       // if the item has NBT or a count, write as object
-      if (stack.hasTag() || stack.getCount() > 1) {
+      if (stack.hasTag() || count > 1) {
         JsonObject jsonResult = new JsonObject();
         jsonResult.addProperty("item", itemName);
         if (count > 1) {
@@ -145,12 +184,18 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   private static class OfTagPreference extends ItemOutput {
     private final ITag<Item> tag;
     private final int count;
+    private ItemStack cachedResult = null;
 
     @Override
     public ItemStack get() {
-      return TagPreference.getItems().getPreference(tag)
-                          .map(item -> new ItemStack(item, count))
-                          .orElse(ItemStack.EMPTY);
+      // cache the result from the tag preference to save effort, especially helpful if the tag becomes invalid
+      // this object should only exist in recipes so no need to invalidate the cache
+      if (cachedResult == null) {
+        cachedResult = TagPreference.getItems().getPreference(tag)
+                                    .map(item -> new ItemStack(item, count))
+                                    .orElse(ItemStack.EMPTY);
+      }
+      return cachedResult;
     }
 
     @Override

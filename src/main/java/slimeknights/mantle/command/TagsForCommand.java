@@ -58,15 +58,15 @@ public class TagsForCommand {
   protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> new TranslationTextComponent("command.mantle.tags_for.not_found", type, name));
 
   /* Missing target errors */
-  private static final ITextComponent NO_HELD_BLOCK = new TranslationTextComponent("command.mantle.view_tags.no_held_block");
-  private static final ITextComponent NO_HELD_ENTITY = new TranslationTextComponent("command.mantle.view_tags.no_held_entity");
-  private static final ITextComponent NO_HELD_POTION = new TranslationTextComponent("command.mantle.view_tags.no_held_potion");
-  private static final ITextComponent NO_HELD_FLUID = new TranslationTextComponent("command.mantle.view_tags.no_held_fluid");
-  private static final ITextComponent NO_HELD_ENCHANTMENT = new TranslationTextComponent("command.mantle.view_tags.no_held_enchantment");
-  private static final ITextComponent NO_TARGETED_ENTITY = new TranslationTextComponent("command.mantle.view_tags.no_targeted_entity");
-  private static final ITextComponent NO_TARGETED_TILE_ENTITY = new TranslationTextComponent("command.mantle.view_tags.no_targeted_tile_entity");
+  private static final ITextComponent NO_HELD_BLOCK = new TranslationTextComponent("command.mantle.tags_for.no_held_block");
+  private static final ITextComponent NO_HELD_ENTITY = new TranslationTextComponent("command.mantle.tags_for.no_held_entity");
+  private static final ITextComponent NO_HELD_POTION = new TranslationTextComponent("command.mantle.tags_for.no_held_potion");
+  private static final ITextComponent NO_HELD_FLUID = new TranslationTextComponent("command.mantle.tags_for.no_held_fluid");
+  private static final ITextComponent NO_HELD_ENCHANTMENT = new TranslationTextComponent("command.mantle.tags_for.no_held_enchantment");
+  private static final ITextComponent NO_TARGETED_ENTITY = new TranslationTextComponent("command.mantle.tags_for.no_targeted_entity");
+  private static final ITextComponent NO_TARGETED_TILE_ENTITY = new TranslationTextComponent("command.mantle.tags_for.no_targeted_tile_entity");
   /** Value has no tags */
-  private static final ITextComponent NO_TAGS = new TranslationTextComponent("command.mantle.view_tags.no_tags");
+  private static final ITextComponent NO_TAGS = new TranslationTextComponent("command.mantle.tags_for.no_tags");
 
   /**
    * Registers this sub command with the root command
@@ -77,7 +77,7 @@ public class TagsForCommand {
               // by registry ID
               .then(Commands.literal("id")
                             .then(Commands.argument("type", TagCollectionArgument.collection())
-                                          .then(Commands.argument("name", ResourceLocationArgument.resourceLocation())
+                                          .then(Commands.argument("name", ResourceLocationArgument.resourceLocation()).suggests(MantleCommand.REGISTRY_VALUES)
                                                         .executes(TagsForCommand::runForId))))
               // held item
               .then(Commands.literal("held")
