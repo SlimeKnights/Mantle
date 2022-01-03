@@ -163,6 +163,16 @@ public class BookLoader implements ResourceManagerReloadListener {
   }
 
   /**
+   * Gets the instance of the given book
+   * @param id The ID of the book to retrieve
+   * @return The book object, or null if it doesn't exist
+   */
+  @Nullable
+  public static BookData getBook(ResourceLocation id) {
+    return books.getOrDefault(id, null);
+  }
+
+  /**
    * Updates the saved page of a held book
    * @param player  Player instance
    * @param hand    Hand

@@ -1,0 +1,11 @@
+{
+  "title": "Smithing (manually populated)",
+  "input": "minecraft:redstone",
+  "result": "minecraft:dispenser",
+  "modifier": "minecraft:cobblestone",
+  "description": [
+    {
+      "text": "This smithing recipe is manually populated"
+    }
+  ]
+}

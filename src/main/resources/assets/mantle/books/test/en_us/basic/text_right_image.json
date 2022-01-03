@@ -1,0 +1,18 @@
+{
+  "title": "Text Right Image",
+  "image": {
+    "item": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "text1": [
+    {
+      "text": "There is an image in the upper-right corner"
+    }
+  ],
+  "text2": [
+    {
+      "text": "I am below said image"
+    }
+  ]
+}

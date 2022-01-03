@@ -1,0 +1,16 @@
+{
+  "title": "Text Left Image",
+  "image": {
+    "file": "images/ores.png"
+  },
+  "text": [
+    {
+      "text": "There is an image in the upper-left corner"
+    }
+  ],
+  "text2": [
+    {
+      "text": "I am below said image"
+    }
+  ]
+}

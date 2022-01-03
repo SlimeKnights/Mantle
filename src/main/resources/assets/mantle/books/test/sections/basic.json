@@ -1,0 +1,92 @@
+[
+  {
+    "name": "blank",
+    "type": "blank"
+  },
+  {
+    "name": "text",
+    "type": "text",
+    "data": "basic/text.json"
+  },
+  {
+    "name": "image",
+    "type": "image",
+    "data": "basic/image.json"
+  },
+  {
+    "name": "image_text",
+    "type": "image_text",
+    "data": "basic/image_text.json"
+  },
+  {
+    "name": "text_image",
+    "type": "text_image",
+    "data": "basic/text_image.json"
+  },
+  {
+    "name": "text_left_image",
+    "type": "text_left_image",
+    "data": "basic/text_left_image.json"
+  },
+  {
+    "name": "text_right_image",
+    "type": "text_right_image",
+    "data": "basic/text_right_image.json"
+  },
+  {
+    "name": "crafting_sm_manual",
+    "type": "crafting",
+    "data": "basic/crafting_sm_manual.json"
+  },
+  {
+    "name": "crafting_sm_auto",
+    "type": "crafting",
+    "data": "basic/crafting_sm_auto.json"
+  },
+  {
+    "name": "crafting_lg_manual",
+    "type": "crafting",
+    "data": "basic/crafting_lg_manual.json"
+  },
+  {
+    "name": "crafting_lg_auto",
+    "type": "crafting",
+    "data": "basic/crafting_lg_auto.json"
+  },
+  {
+    "name": "smelting_manual",
+    "type": "smelting",
+    "data": "basic/smelting_manual.json"
+  },
+  {
+    "name": "smelting_auto",
+    "type": "smelting",
+    "data": "basic/smelting_auto.json"
+  },
+  {
+    "name": "smithing_manual",
+    "type": "smithing",
+    "data": "basic/smithing_manual.json"
+  },
+  {
+    "name": "smithing_auto",
+    "type": "blank",
+    "comment": "There is currently no smithing auto-population, so this is a placeholder",
+    "data": "basic/smithing_auto.json"
+  },
+  {
+    "name": "block_interaction",
+    "type": "block_interaction",
+    "data": "basic/block_interaction.json"
+  },
+  {
+    "name": "structure",
+    "type": "structure",
+    "data": "basic/structure.json"
+  },
+  {
+    "name": "showcase",
+    "type": "showcase",
+    "data": "basic/showcase.json"
+  }
+]

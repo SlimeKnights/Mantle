@@ -1,0 +1,20 @@
+{
+  "title": "Crafting (manually populated)",
+  "grid_size": "small",
+  "grid": [
+    [
+      "minecraft:cobblestone",
+      "minecraft:andesite"
+    ],
+    [
+      "minecraft:andesite",
+      "minecraft:cobblestone"
+    ]
+  ],
+  "result": "minecraft:redstone",
+  "description": [
+    {
+      "text": "This small recipe is manually populated"
+    }
+  ]
+}

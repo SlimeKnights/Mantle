@@ -1,0 +1,11 @@
+{
+  "title": "Smelting (manually populated)",
+  "input": "minecraft:redstone",
+  "result": "minecraft:dispenser",
+  "fuel": "minecraft:cobblestone",
+  "description": [
+    {
+      "text": "This smelting recipe is manually populated"
+    }
+  ]
+}

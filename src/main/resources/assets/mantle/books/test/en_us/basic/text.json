@@ -1,0 +1,28 @@
+{
+  "title": "Text",
+  "text": [
+    {
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In venenatis eleifend arcu, ac condimentum dolor dignissim ac."
+    },
+    {
+      "text": "Curabitur iaculis velit nibh, at bibendum ligula aliquet at. Duis bibendum lacinia mauris sed varius.",
+      "paragraph": true
+    },
+    {
+      "text": "Nam vestibulum gravida nisi, et ultrices lacus. Ut ac massa quis purus congue porttitor.",
+      "paragraph": true,
+      "underline": true
+    },
+    {
+      "text": "Fusce vitae maximus urna. ",
+      "paragraph": true
+    },
+    {
+      "text": "Donec",
+      "color": "orange"
+    },
+    {
+      "text": " in vehicula arcu, in molestie lectus."
+    }
+  ]
+}

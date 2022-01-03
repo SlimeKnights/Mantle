@@ -1,0 +1,11 @@
+{
+  "title": "Text Image",
+  "image": {
+    "file": "images/disguisegui.png"
+  },
+  "text": [
+    {
+      "text": "Below me is an image"
+    }
+  ]
+}

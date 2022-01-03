@@ -1,0 +1,9 @@
+{
+  "title": "Crafting (auto populated)",
+  "recipe": "minecraft:crafting_table",
+  "description": [
+    {
+      "text": "This small recipe is automatically populated"
+    }
+  ]
+}

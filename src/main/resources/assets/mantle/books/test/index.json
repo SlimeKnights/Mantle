@@ -1,0 +1,9 @@
+[
+  {
+    "name": "basic_pages",
+    "data": "sections/basic.json",
+    "icon":  {
+      "item": "minecraft:book"
+    }
+  }
+]
