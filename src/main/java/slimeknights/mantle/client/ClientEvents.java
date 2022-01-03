@@ -10,9 +10,11 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
@@ -39,6 +41,7 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.registration.MantleRegistrations;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
@@ -48,6 +51,11 @@ import java.util.function.Function;
 @EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = Bus.MOD)
 public class ClientEvents {
   private static final Function<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
+
+  @SubscribeEvent
+  static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    event.registerBlockEntityRenderer(MantleRegistrations.SIGN, SignRenderer::new);
+  }
 
   @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {

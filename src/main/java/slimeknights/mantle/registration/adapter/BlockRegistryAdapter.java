@@ -22,8 +22,11 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.block.MantleStandingSignBlock;
+import slimeknights.mantle.block.MantleWallSignBlock;
 import slimeknights.mantle.block.StrippableLogBlock;
 import slimeknights.mantle.block.WoodenDoorBlock;
+import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
@@ -139,11 +142,11 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
     PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), name + "_pressure_plate");
     WoodButtonBlock button = register(new WoodButtonBlock(redstoneProps), name + "_button");
     // signs
-    StandingSignBlock standingSign = register(new StandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F), woodType), name + "_sign");
-    WallSignBlock wallSign = register(new WallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F).lootFrom(standingSign.delegate), woodType), name + "_wall_sign");
+    StandingSignBlock standingSign = register(new MantleStandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F), woodType), name + "_sign");
+    WallSignBlock wallSign = register(new MantleWallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F).lootFrom(standingSign.delegate), woodType), name + "_wall_sign");
     // tell mantle to inject these into the TE
-    RegistrationHelper.registerSignBlock(standingSign.delegate);
-    RegistrationHelper.registerSignBlock(wallSign.delegate);
+    MantleSignBlockEntity.registerSignBlock(standingSign.delegate);
+    MantleSignBlockEntity.registerSignBlock(wallSign.delegate);
     // finally, return
     return new WoodBlockObject(getResource(name), woodType, planks, log, strippedLog, wood, strippedWood, fence, fenceGate, door, trapdoor, pressurePlate, button, standingSign, wallSign);
   }

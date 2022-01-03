@@ -1,9 +1,7 @@
 package slimeknights.mantle;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -20,6 +18,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
 import slimeknights.mantle.item.LecternBookItem;
@@ -31,7 +30,7 @@ import slimeknights.mantle.recipe.helper.FluidTagEmptyCondition;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.IngredientDifference;
 import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
-import slimeknights.mantle.registration.RegistrationHelper;
+import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
@@ -60,6 +59,7 @@ public class Mantle {
     bus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, this::commonSetup);
     bus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
     bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
+    bus.addGenericListener(BlockEntityType.class, this::registerBlockEntities);
     bus.addGenericListener(GlobalLootModifierSerializer.class, MantleLoot::registerGlobalLootModifiers);
     MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
   }
@@ -72,14 +72,6 @@ public class Mantle {
     MantleNetwork.registerPackets();
     MantleCommand.init();
     OffhandCooldownTracker.init();
-
-    // inject our new signs into the tile entity type
-    event.enqueueWork(() -> {
-      ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
-      builder.addAll(BlockEntityType.SIGN.validBlocks);
-      RegistrationHelper.forEachSignBlock(builder::add);
-      BlockEntityType.SIGN.validBlocks = builder.build();
-    });
   }
 
   private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {
@@ -91,6 +83,11 @@ public class Mantle {
     CraftingHelper.register(IngredientDifference.ID, IngredientDifference.SERIALIZER);
     CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
     CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
+  }
+
+  private void registerBlockEntities(final RegistryEvent.Register<BlockEntityType<?>> event) {
+    BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(event.getRegistry());
+    adapter.register(MantleSignBlockEntity::new, "sign", MantleSignBlockEntity::buildSignBlocks);
   }
 
   /**
