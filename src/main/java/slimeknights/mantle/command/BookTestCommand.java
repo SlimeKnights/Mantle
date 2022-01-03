@@ -9,9 +9,6 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.BookLoader;
-import slimeknights.mantle.client.book.data.BookData;
-import slimeknights.mantle.client.book.repository.FileRepository;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.OpenNamedBookPacket;
 
@@ -20,8 +17,6 @@ import java.util.Set;
 
 /** Command that opens a test book */
 public class BookTestCommand {
-  private static final BookData TEST_BOOK = BookLoader.registerBook(Mantle.getResource("test"),
-    new FileRepository(Mantle.getResource("books/test")));
   private static final Set<ResourceLocation> BOOK_SUGGESTIONS = new HashSet<>();
 
   /**

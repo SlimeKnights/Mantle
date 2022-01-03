@@ -27,6 +27,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
+import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.client.book.repository.FileRepository;
 import slimeknights.mantle.client.model.FallbackModelLoader;
 import slimeknights.mantle.client.model.NBTKeyModel;
 import slimeknights.mantle.client.model.RetexturedModel;
@@ -54,6 +56,8 @@ public class ClientEvents {
       ((ReloadableResourceManager)manager).registerReloadListener(ModelHelper.LISTENER);
     }
     event.enqueueWork(() -> RegistrationHelper.forEachWoodType(Sheets::addWoodType));
+
+    BookLoader.registerBook(Mantle.getResource("test"), new FileRepository(Mantle.getResource("books/test")));
   }
 
   @SubscribeEvent
