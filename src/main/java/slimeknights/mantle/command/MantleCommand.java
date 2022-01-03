@@ -32,6 +32,8 @@ public class MantleCommand {
   public static SuggestionProvider<CommandSourceStack> VALID_TAGS;
   /** Suggestion provider that lists tags values for this registry */
   public static SuggestionProvider<CommandSourceStack> REGISTRY_VALUES;
+  /** Suggestion provider that lists registered book ids **/
+  public static SuggestionProvider<CommandSourceStack> REGISTERED_BOOKS;
 
   /** Registers all Mantle command related content */
   public static void init() {
@@ -45,6 +47,8 @@ public class MantleCommand {
       TagCollectionArgument.Result<?> result = context.getArgument("type", TagCollectionArgument.Result.class);
       return SharedSuggestionProvider.suggestResource(result.getKeys(), builder);
     });
+    REGISTERED_BOOKS = SuggestionProviders.register(Mantle.getResource("registered_books"), (context, builder) ->
+      SharedSuggestionProvider.suggestResource(BookTestCommand.getBookSuggestions(), builder));
 
     // add command listener
     MinecraftForge.EVENT_BUS.addListener(MantleCommand::registerCommand);
