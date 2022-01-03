@@ -82,6 +82,7 @@ public class PageData implements IDataItem, IConditional {
               this.content = BookLoader.getGson().fromJson(data, ctype);
             } catch (Exception e) {
               this.content = new ContentError("Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
+              e.printStackTrace();
             }
           } else {
             this.content = new ContentError("Failed to create a page of type \"" + this.type + "\" as it is not registered.");
@@ -96,6 +97,7 @@ public class PageData implements IDataItem, IConditional {
           this.content = ctype.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NullPointerException | NoSuchMethodException | InvocationTargetException e) {
           this.content = new ContentError("Failed to create a page of type \"" + this.type + "\".", e);
+          e.printStackTrace();
         }
       } else {
         this.content = new ContentError("Failed to create a page of type \"" + this.type + "\" as it is not registered.");
