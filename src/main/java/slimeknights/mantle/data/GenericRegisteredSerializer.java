@@ -1,4 +1,4 @@
-package slimeknights.mantle.util;
+package slimeknights.mantle.data;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -8,9 +8,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.mantle.util.GenericRegisteredSerializer.IJsonSerializable;
+import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.GenericRegisteredSerializer.IJsonSerializable;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
