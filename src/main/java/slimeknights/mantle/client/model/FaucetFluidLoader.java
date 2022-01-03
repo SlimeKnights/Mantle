@@ -7,14 +7,12 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
@@ -24,6 +22,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.fluid.FluidCuboid;
@@ -59,22 +58,14 @@ public class FaucetFluidLoader extends SimpleJsonResourceReloadListener {
   private static boolean initialized = false;
 
   /**
-   * Call during mod constructor to enable the faucet fluid loader system
+   * Call during the event to register the reload listener
    */
-  public static void initialize() {
+  public static void initialize(RegisterClientReloadListenersEvent event) {
     if (initialized) {
       return;
     }
     initialized = true;
-
-    Minecraft mc = Minecraft.getInstance();
-    //noinspection ConstantConditions
-    if (mc != null) {
-      ResourceManager manager = mc.getResourceManager();
-      if (manager instanceof ReloadableResourceManager) {
-        ((ReloadableResourceManager) manager).registerReloadListener(FaucetFluidLoader.INSTANCE);
-      }
-    }
+    event.registerReloadListener(INSTANCE);
   }
 
   /** Default fluid model for blocks with no model */

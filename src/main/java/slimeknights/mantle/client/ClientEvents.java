@@ -8,14 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.client.gui.IIngameOverlay;
@@ -58,11 +57,13 @@ public class ClientEvents {
   }
 
   @SubscribeEvent
+  static void registerListeners(RegisterClientReloadListenersEvent event) {
+    event.registerReloadListener(ModelHelper.LISTENER);
+    event.registerReloadListener(new BookLoader());
+  }
+
+  @SubscribeEvent
   static void clientSetup(FMLClientSetupEvent event) {
-    ResourceManager manager = Minecraft.getInstance().getResourceManager();
-    if (manager instanceof ReloadableResourceManager) {
-      ((ReloadableResourceManager)manager).registerReloadListener(ModelHelper.LISTENER);
-    }
     event.enqueueWork(() -> RegistrationHelper.forEachWoodType(Sheets::addWoodType));
 
     BookLoader.registerBook(Mantle.getResource("test"), new FileRepository(Mantle.getResource("books/test")));
@@ -88,10 +89,6 @@ public class ClientEvents {
 
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
-    ResourceManager manager = Minecraft.getInstance().getResourceManager();
-    if (manager instanceof ReloadableResourceManager) {
-      ((ReloadableResourceManager)manager).registerReloadListener(new BookLoader());
-    }
     MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
     MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGameOverlayEvent.PostLayer.class, ClientEvents::renderOffhandAttackIndicator);
   }
