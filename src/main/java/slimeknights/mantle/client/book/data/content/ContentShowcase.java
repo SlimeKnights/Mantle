@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -17,6 +18,7 @@ public class ContentShowcase extends PageContent {
   public static final transient ResourceLocation ID = Mantle.getResource("showcase");
 
   /** Title of the page */
+  @Getter
   public String title = null;
   /** Text to display below the item */
   public TextData[] text;

@@ -1,15 +1,16 @@
 package slimeknights.mantle.client.book.data.content;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.world.level.block.Blocks;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -44,6 +45,7 @@ public class ContentSmelting extends PageContent {
 
   public static final transient float ITEM_SCALE = 2.0F;
 
+  @Getter
   public String title = "Smelting";
   public IngredientData input;
   public IngredientData result;

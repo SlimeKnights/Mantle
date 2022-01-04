@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -30,6 +31,7 @@ public class ContentBlockInteraction extends PageContent {
   public static final transient float ITEM_SCALE = 2.0F;
   public static final transient float BLOCK_SCALE = 5.0F;
 
+  @Getter
   public String title = "Block Interaction";
   public IngredientData input;
   public IngredientData block;

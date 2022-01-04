@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -26,6 +27,7 @@ public class ContentStructure extends PageContent {
 
   public static final transient ResourceLocation ID = Mantle.getResource("structure");
 
+  @Getter
   public String title;
   public String data;
 

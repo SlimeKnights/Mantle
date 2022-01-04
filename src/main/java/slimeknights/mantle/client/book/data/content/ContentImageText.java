@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 public class ContentImageText extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("image_text");
 
+  @Getter
   public String title = null;
   public ImageData image;
   public TextData[] text;

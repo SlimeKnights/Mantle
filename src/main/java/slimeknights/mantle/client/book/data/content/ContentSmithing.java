@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -31,6 +32,7 @@ public class ContentSmithing extends PageContent {
 
   public static final transient float ITEM_SCALE = 2.0F;
 
+  @Getter
   public String title = "Smithing";
   public IngredientData input;
   public IngredientData modifier;

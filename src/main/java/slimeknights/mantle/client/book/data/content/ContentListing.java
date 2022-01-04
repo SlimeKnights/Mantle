@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.Util;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -20,6 +21,7 @@ public class ContentListing extends PageContent {
   public static final int LINE_HEIGHT = 10;
 
   /** Title to display in the listing */
+  @Getter
   public String title = null;
   /** Text to display below the title and before the index */
   public String subText = null;

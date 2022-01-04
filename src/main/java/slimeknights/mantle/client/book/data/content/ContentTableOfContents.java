@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 
 public class ContentTableOfContents extends PageContent {
 
+  @Getter
   public String title;
   public TextData[] data;
 

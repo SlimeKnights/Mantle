@@ -29,6 +29,11 @@ public abstract class PageContent {
   @Setter @Getter @Nullable
   private Boolean largeTitle;
 
+  /** Returns the title for this page content, for the sake of indexes */
+  public String getTitle() {
+    return "";
+  }
+
   /**
    * Call when the GUI is opened to initialize content
    */
