@@ -163,7 +163,7 @@ public class PageData implements IDataItem, IConditional {
       return title;
     }
     title = content.getTitle();
-    if (!title.isEmpty()) {
+    if (title != null && !title.isEmpty()) {
       return title;
     }
     return this.name;

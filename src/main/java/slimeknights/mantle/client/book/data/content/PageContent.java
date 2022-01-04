@@ -30,6 +30,7 @@ public abstract class PageContent {
   private Boolean largeTitle;
 
   /** Returns the title for this page content, for the sake of indexes */
+  @Nullable
   public String getTitle() {
     return "";
   }
