@@ -24,7 +24,7 @@ public class TextDataRenderer {
    */
   @Deprecated
   public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, BookScreen parent) {
-    List<Component> tooltip = new ArrayList<Component>();
+    List<Component> tooltip = new ArrayList<>();
     String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
     if (tooltip.size() > 0) {
@@ -66,7 +66,15 @@ public class TextDataRenderer {
       String modifiers = "";
 
       if (item.useOldColor) {
-        modifiers += ChatFormatting.getByName(item.color);
+        ChatFormatting colFormat = ChatFormatting.getByName(item.color);
+        if(colFormat != null) {
+          modifiers += colFormat;
+        } else {
+          modifiers += "unknown color"; // more descriptive than null
+
+          // This will spam the console, but that makes the error more obvious
+          Mantle.logger.error("Failed to parse color: " + item.color + " for text rendering.");
+        }
       }
 
       if (item.bold) {
