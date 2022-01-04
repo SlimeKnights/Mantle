@@ -24,7 +24,7 @@ public class BookTestCommand {
    * @param subCommand  Command builder
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
-    subCommand.requires(source -> source.getEntity() instanceof ServerPlayer)
+    subCommand.requires(source -> source.hasPermission(MantleCommand.PERMISSION_GAME_COMMANDS) && source.getEntity() instanceof ServerPlayer)
       .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleCommand.REGISTERED_BOOKS)
         .executes(BookTestCommand::runBook))
       .executes(BookTestCommand::run);
