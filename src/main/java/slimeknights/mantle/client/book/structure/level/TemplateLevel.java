@@ -1,5 +1,5 @@
 // Credit to Immersive Engineering and blusunrize for this class
-// See: https://github.com/BluSunrize/ImmersiveEngineering/blob/1.16.5/src/main/java/blusunrize/immersiveengineering/common/util/fakeworld/TemplateWorld.java
+// See: https://github.com/BluSunrize/ImmersiveEngineering/blob/1.18/src/main/java/blusunrize/immersiveengineering/common/util/fakeworld/TemplateWorld.java
 package slimeknights.mantle.client.book.structure.level;
 
 import com.google.common.collect.ImmutableList;
@@ -37,7 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-/** World implementation for the book structures */
+/**
+ * World implementation for the book structures
+ */
 public class TemplateLevel extends Level {
 
   private final Map<String, MapItemSavedData> maps = new HashMap<>();
@@ -145,7 +147,6 @@ public class TemplateLevel extends Level {
 
   @Override
   public void gameEvent(@Nullable Entity pEntity, GameEvent pEvent, BlockPos pPos) {
-
   }
 
   @Nonnull
@@ -156,7 +157,7 @@ public class TemplateLevel extends Level {
 
   @Override
   public float getShade(@Nonnull Direction p_230487_1_, boolean p_230487_2_) {
-    return 0;
+    return 1;
   }
 
   @Nonnull

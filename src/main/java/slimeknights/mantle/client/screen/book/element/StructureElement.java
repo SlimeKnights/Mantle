@@ -2,6 +2,7 @@ package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
@@ -18,6 +19,7 @@ import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import slimeknights.mantle.client.book.structure.StructureInfo;
 import slimeknights.mantle.client.book.structure.level.TemplateLevel;
+import slimeknights.mantle.client.render.MantleRenderTypes;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
@@ -116,9 +118,12 @@ public class StructureElement extends SizedBookElement {
               if (te != null)
                 modelData = te.getModelData();
 
-              // RenderSystem.disableLighting(); TODO: not sure what to call yet
+              blockRender.getModelRenderer().tesselateBlock(
+                structureWorld, blockRender.getBlockModel(state), state, pos, transform,
+                buffer.getBuffer(MantleRenderTypes.TRANSLUCENT_FULLBRIGHT), false, structureWorld.random, state.getSeed(pos),
+                overlay, modelData
+              );
 
-              blockRender.renderSingleBlock(state, transform, buffer, 0xf000f0, overlay, modelData);
               transform.popPose();
             }
           }
