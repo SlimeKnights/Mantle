@@ -16,7 +16,7 @@ public class TextElement extends SizedBookElement {
   public TextData[] text;
   private final List<Component> tooltip = new ArrayList<Component>();
 
-  private boolean doAction = false;
+  private transient String lastAction = "";
 
   public TextElement(int x, int y, int width, int height, String text) {
     this(x, y, width, height, new TextData(text));
@@ -34,12 +34,7 @@ public class TextElement extends SizedBookElement {
 
   @Override
   public void draw(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
-    String action = TextDataRenderer.drawText(matrixStack, this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
-
-    if (this.doAction) {
-      this.doAction = false;
-      StringActionProcessor.process(action, this.parent);
-    }
+    lastAction = TextDataRenderer.drawText(matrixStack, this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
   }
 
   @Override
@@ -52,8 +47,8 @@ public class TextElement extends SizedBookElement {
 
   @Override
   public void mouseClicked(double mouseX, double mouseY, int mouseButton) {
-    if (mouseButton == 0) {
-      this.doAction = true;
+    if (mouseButton == 0 && !lastAction.isEmpty()) {
+      StringActionProcessor.process(lastAction, this.parent);
     }
   }
 }
