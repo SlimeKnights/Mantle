@@ -52,7 +52,7 @@ public class ContentListingSectionTransformer extends SectionTransformer {
    */
   protected boolean processPage(BookData book, ContentListing listing, PageData page) {
     if (!IndexTransformer.isPageHidden(page) && !page.name.equals("hidden")) {
-      listing.addEntry(book.translate(page.getTitle()), page);
+      listing.addEntry(page.getTitle(), page);
     }
     return true;
   }
