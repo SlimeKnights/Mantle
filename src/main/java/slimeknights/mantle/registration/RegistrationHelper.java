@@ -63,6 +63,7 @@ public class RegistrationHelper {
   public static void registerWoodType(WoodType type) {
     synchronized (WOOD_TYPES) {
       WOOD_TYPES.add(type);
+      WoodType.register(type);
     }
   }
 
