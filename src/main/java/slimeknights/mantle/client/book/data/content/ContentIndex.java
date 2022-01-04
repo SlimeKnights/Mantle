@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import com.google.common.collect.ImmutableSet;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -50,12 +51,12 @@ public class ContentIndex extends ContentListing {
         if (page != parent && !IndexTransformer.isPageHidden(page) && !hiddenSet.contains(page.name)) {
           // perform extra action if anything happens before this page
           for (Operation operation : operations) {
-            if (page.name.equals(operation.before())) {
-              switch (operation.action()) {
+            if (page.name.equals(operation.before)) {
+              switch (operation.action) {
                 case "add_group"    -> addEntry(operation.data, null, true);
                 case "column_break" -> addColumnBreak();
                 case "line_break"   -> addEntry("", null, false);
-                default -> Mantle.logger.error("Unknown ContentIndex action " + operation.action());
+                default -> Mantle.logger.error("Unknown ContentIndex action " + operation.action);
               }
             }
           }
@@ -68,5 +69,11 @@ public class ContentIndex extends ContentListing {
   }
 
   /** Data class for extra index operations we can perform */
-  protected record Operation(String before, String action, String data) {}
+  @SuppressWarnings("ClassCanBeRecord") // messes with GSON
+  @RequiredArgsConstructor
+  protected static final class Operation {
+    private final String before;
+    private final String action;
+    private final String data;
+  }
 }
