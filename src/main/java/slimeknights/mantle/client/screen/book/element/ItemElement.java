@@ -106,6 +106,7 @@ public class ItemElement extends SizedBookElement {
 
       matrixStack.popPose();
       poses.popPose();
+      RenderSystem.applyModelViewMatrix();
       // Lighting.turnOff(); TODO: still needed?
     }
   }
