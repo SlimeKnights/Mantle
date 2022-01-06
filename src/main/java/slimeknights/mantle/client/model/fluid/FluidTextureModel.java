@@ -29,10 +29,10 @@ import slimeknights.mantle.registration.ModelFluidAttributes.IFluidModelProvider
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /** Fluid model that allows a resource pack to control the textures of a block. Use alongside {@link ModelFluidAttributes} */
@@ -99,7 +99,7 @@ public class FluidTextureModel implements IModelGeometry<FluidTextureModel> {
 
   /** Model loader, also doubles as the fluid model provider */
   private static class Loader implements IModelLoader<FluidTextureModel>, IFluidModelProvider {
-    private final Map<Fluid,Baked> modelCache = new HashMap<>();
+    private final Map<Fluid,Baked> modelCache = new ConcurrentHashMap<>();
 
     /** Gets a model for a fluid */
     @Nullable

@@ -46,11 +46,11 @@ import slimeknights.mantle.util.RetexturedHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -149,7 +149,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   /** Baked variant of the model, used to swap out quads based on the texture */
   public static class Baked extends DynamicBakedWrapper<BakedModel> {
     /** Cache of texture name to baked model */
-    private final Map<ResourceLocation,BakedModel> cache = new HashMap<>();
+    private final Map<ResourceLocation,BakedModel> cache = new ConcurrentHashMap<>();
     /* Properties for rebaking */
     private final IModelConfiguration owner;
     private final SimpleBlockModel model;

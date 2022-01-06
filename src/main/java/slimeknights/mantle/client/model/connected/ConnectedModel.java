@@ -58,6 +58,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -142,7 +143,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
     private final IModelConfiguration owner;
     private final ModelState transforms;
     private final BakedModel[] cache = new BakedModel[64];
-    private final Map<String,String> nameMappingCache = new HashMap<>();
+    private final Map<String,String> nameMappingCache = new ConcurrentHashMap<>();
     private final ModelTextureIteratable modelTextures;
     public Baked(ConnectedModel parent, IModelConfiguration owner, ModelState transforms, BakedModel baked) {
       super(baked);
@@ -227,25 +228,8 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
       };
     }
 
-    /**
-     * Gets the name of this texture that supports connected textures, or null if never is connected
-     * @param key  Name of the part texture
-     * @return  Name of the connected texture
-     */
-    private String getConnectedName(String key) {
-      if (key.charAt(0) == '#') {
-        key = key.substring(1);
-      }
-      // if the name is connected, we are done
-      if (parent.connectedTextures.containsKey(key)) {
-        return key;
-      }
-
-      // if we already found it, return what we found before
-      if (nameMappingCache.containsKey(key)) {
-        return nameMappingCache.get(key);
-      }
-
+    /** Uncached variant of {@link #getConnectedName(String)}, used internally */
+    private String getConnectedNameUncached(String key) {
       // otherwise, iterate into the parent models, trying to find a match
       String check = key;
       String found = "";
@@ -265,10 +249,23 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
           }
         }
       }
-
-      // cache what we found
-      nameMappingCache.put(key, found);
       return found;
+    }
+
+    /**
+     * Gets the name of this texture that supports connected textures, or null if never is connected
+     * @param key  Name of the part texture
+     * @return  Name of the connected texture
+     */
+    private String getConnectedName(String key) {
+      if (key.charAt(0) == '#') {
+        key = key.substring(1);
+      }
+      // if the name is connected, we are done
+      if (parent.connectedTextures.containsKey(key)) {
+        return key;
+      }
+      return nameMappingCache.computeIfAbsent(key, this::getConnectedNameUncached);
     }
 
     /**
@@ -379,7 +376,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
      * @param data         Model data instance
      * @return             Model quads for the given side
      */
-    protected List<BakedQuad> getCachedQuads(byte connections, @Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
+    protected synchronized List<BakedQuad> getCachedQuads(byte connections, @Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
       // bake a new model if the orientation is not yet baked
       if (cache[connections] == null) {
         cache[connections] = applyConnections(connections);
