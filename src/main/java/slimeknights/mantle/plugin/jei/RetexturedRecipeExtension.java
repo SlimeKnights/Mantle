@@ -101,15 +101,18 @@ public class RetexturedRecipeExtension implements ICraftingCategoryExtension, IC
 
       // if we clicked the textured block, remove all items which affect the texture that are not the proper texture
       else if (mode == IFocus.Mode.OUTPUT) {
-        // the focus might not be the same count as the output
-        ItemStack output = focus.copy();
-        output.setCount(recipe.getRecipeOutput().getCount());
-        outputs = ImmutableList.of(output);
-
         // focus texture may be undefined for the mixed planks bookshelf or missing NBT
         Block textureBlock = RetexturedBlockItem.getTexture(focus);
         if (textureBlock != Blocks.AIR) {
+          // the focus might not be the same count as the output
+          ItemStack output = focus.copy();
+          output.setCount(recipe.getRecipeOutput().getCount());
+          outputs = ImmutableList.of(output);
+
           guiIngredients.setOverrideDisplayFocus(JEIPlugin.recipeManager.createFocus(IFocus.Mode.INPUT, new ItemStack(textureBlock)));
+        } else {
+          // no texture? show default outputs
+          guiIngredients.setOverrideDisplayFocus(null);
         }
       }
     }
