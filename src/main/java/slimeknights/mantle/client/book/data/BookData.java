@@ -62,6 +62,7 @@ public class BookData implements IDataItem {
     try {
       this.initialized = true;
       this.sections.clear();
+      this.strings.clear();
       this.appearance = new AppearanceData();
 
       for (BookRepository repo : this.repositories) {
