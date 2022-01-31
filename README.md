@@ -4,7 +4,7 @@
 
 ## Compile from Source
 Note: Git MUST be installed and in the system path to use our scripts.
-* setup: Run [gradle]in the repository root: `gradlew[.bat] [setupDevWorkspace|setupDecompWorkspace] [eclipse|idea]`
+* setup: Import as a gradle project into your desired IDE. Run `gradlew[.bat] [genIntellijRuns|genEclipseRuns]` to be able to launch the game
 * build: Run [gradle]in the repository root: `gradlew[.bat] build`
 * if obscure gradle issues are found try running `gradlew clean` or/and `gradlew cleanCache`
 
@@ -23,7 +23,7 @@ Please include the following:
 
 ## Licenses  
 The MIT License (MIT)
-Copyright (c) 2013-2014 Slime Knights (mDiyo, fuj1n, Sunstrike, progwml6, pillbox, alexbegt)
+Copyright (c) 2013-2022 Slime Knights (mDiyo, fuj1n, Sunstrike, progwml6, pillbox, alexbegt, KnightMiner)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
