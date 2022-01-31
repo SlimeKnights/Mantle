@@ -1,0 +1,26 @@
+{
+  "mantle:tooltip.cooktime": "Temps pour cuire: %ds",
+  "config.mantle.extraHeartRenderer": "Activer le rendu pour les coeurs supplémentaires",
+
+  "command.mantle.tags_for.success": "Valeurs pour l'étiquette '%s' de %s:",
+  "command.mantle.tags_for.not_found": "Valeur %s inconnue du registre '%s'",
+  "command.mantle.tags_for.no_held_block": "L'objet tenu n'est pas un bloc",
+  "command.mantle.tags_for.no_held_entity": "L'objet tenu n'est pas un oeuf d'apparition",
+  "command.mantle.tags_for.no_held_potion": "L'objet tenu n'est pas une potion",
+  "command.mantle.tags_for.no_held_fluid": "Incapable d'obtenir un fluide à partir de l'objet tenu",
+  "command.mantle.tags_for.no_held_enchantment": "L'objet tenu n'est pas enchanté",
+  "command.mantle.tags_for.no_targeted_entity": "Pas d'entité à portée",
+  "command.mantle.tags_for.no_targeted_tile_entity": "Pas de fluide à portée",
+  "command.mantle.tags_for.no_tags": "Pas d'étiquette",
+
+  "command.mantle.dump_tag.success": "L'étiquette %s de '%s' a été ajouté au registre de la console",
+  "command.mantle.dump_tag.read_error": "Une erreur a eu lieu en lisant l'étiquette %s de '%s':",
+  "command.mantle.dump_all_tags.success": "Toutes les étiquettes ont été mise dans '%s'",
+  "command.mantle.dump_all_tags.type_success": "Toutes les étiquettes de %s ont été mises dans '%s'",
+
+  "command.mantle.tags_for.success": "Les étiquettes %s pour '%s':",
+
+  "command.mantle.tag.empty": "Vide",
+  "command.mantle.tag_collection.not_found": "Collection '%s' d'étiquettes inconnue",
+  "command.mantle.tag.not_found": "L'étiquette %s de '%s' est inconnue"
+}
