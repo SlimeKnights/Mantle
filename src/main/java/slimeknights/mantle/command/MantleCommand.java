@@ -72,6 +72,7 @@ public class MantleCommand {
     register(builder, "dump_all_tags", DumpAllTagsCommand::register);
     register(builder, "tags_for", TagsForCommand::register);
     register(builder, "book_test", BookTestCommand::register);
+    register(builder, "harvest_tiers", HarvestTiersCommand::register);
 
     // register final command
     event.getDispatcher().register(builder);
