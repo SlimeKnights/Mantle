@@ -17,7 +17,6 @@
   "command.mantle.book_test.not_found": "Unknown book with ID %s",
 
   "command.mantle.dump_tag.success": "Printed combined %s tag '%s' to console log",
-  "command.mantle.dump_tag.read_error": "Error reading %s tag '%s':",
   "command.mantle.dump_tag.success_log": "Dumped combined %s tag '%s' to '%s'",
   "command.mantle.dump_all_tags.success": "Dumped all tags to '%s'",
   "command.mantle.dump_all_tags.type_success": "Dumped all %s tags to '%s'",

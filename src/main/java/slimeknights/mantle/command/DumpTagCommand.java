@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -36,8 +35,6 @@ import java.util.List;
 /** Command that dumps a tag into a JSON object */
 public class DumpTagCommand {
   protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static final Dynamic2CommandExceptionType ERROR_READING_TAG = new Dynamic2CommandExceptionType((type, name) -> new TranslatableComponent("command.mantle.dump_tag.read_error", type, name));
-  private static final Component SUCCESS_LOG = new TranslatableComponent("command.mantle.dump_tag.success_log");
 
   /**
    * Registers this sub command with the root command
@@ -73,12 +70,8 @@ public class DumpTagCommand {
       // if the tag does not exist in the collect, probably an invalid tag name
       if (type.getCollection().getTag(name) == null) {
         throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);
-        // if its a valid name, avoid erroring, just create the empty tag
-      } else if (!saveFile) {
-        // tag exists and we still could not read it? something went wrong
-        Mantle.logger.error("Couldn't read {} tag list {} from {}", type.getName(), name, path, ex);
-        throw ERROR_READING_TAG.create(type.getName(), name);
       }
+      // if its a valid name, avoid erroring, just do the empty tag
     }
 
     // simply create a tag builder
