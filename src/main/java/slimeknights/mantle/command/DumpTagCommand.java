@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -35,6 +36,8 @@ import java.util.List;
 /** Command that dumps a tag into a JSON object */
 public class DumpTagCommand {
   protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private static final Dynamic2CommandExceptionType ERROR_READING_TAG = new Dynamic2CommandExceptionType((type, name) -> new TranslatableComponent("command.mantle.dump_tag.read_error", type, name));
+  private static final Component SUCCESS_LOG = new TranslatableComponent("command.mantle.dump_tag.success_log");
 
   /**
    * Registers this sub command with the root command
@@ -63,15 +66,19 @@ public class DumpTagCommand {
 
     ResourceLocation path = new ResourceLocation(name.getNamespace(), "tags/" + type.getTagFolder() + "/" + name.getPath() + ".json");
 
+    // if the tag file does not exist, only error if the tag is unknown
     List<Resource> resources = Collections.emptyList();
-    try {
-      resources = manager.getResources(path);
-    } catch (IOException ex) {
-      // if the tag does not exist in the collect, probably an invalid tag name
-      if (type.getCollection().getTag(name) == null) {
-        throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);
+    if (manager.hasResource(path)) {
+      try {
+        resources = manager.getResources(path);
+      } catch (IOException ex) {
+        // tag exists and we still could not read it? something went wrong
+        Mantle.logger.error("Couldn't read {} tag list {} from {}", type.getName(), name, path, ex);
+        throw ERROR_READING_TAG.create(type.getName(), name);
       }
-      // if its a valid name, avoid erroring, just do the empty tag
+    // if the tag does not exist in the collect, probably an invalid tag name
+    } else if (type.getCollection().getTag(name) == null) {
+      throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);
     }
 
     // simply create a tag builder
