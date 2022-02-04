@@ -8,8 +8,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.ClickEvent.Action;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SerializationTags;
@@ -50,6 +53,15 @@ public class HarvestTiersCommand {
               .then(Commands.literal("list").executes(HarvestTiersCommand::list));
   }
 
+  /** Creates a clickable component for a block tag */
+  private static Object getTagComponent(TagCollection<Block> blockTags, Tag<Block> tag) {
+    ResourceLocation id = blockTags.getId(tag);
+    if (id == null) {
+      return "";
+    }
+    return new TextComponent(id.toString()).withStyle(style -> style.setUnderlined(true).withClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/mantle dump_tag " + Registry.BLOCK_REGISTRY.location() + " " + id + " save")));
+  }
+
   /** Runs the command, dumping the tag */
   private static int list(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     List<Tier> sortedTiers = TierSortingRegistry.getSortedTiers();
@@ -66,7 +78,7 @@ public class HarvestTiersCommand {
         Tag<Block> tag = tier.getTag();
         ResourceLocation id = TierSortingRegistry.getName(tier);
         if (tag != null) {
-          output.append(new TranslatableComponent("command.mantle.harvest_tiers.tag", id, blockTags.getId(tag)));
+          output.append(new TranslatableComponent("command.mantle.harvest_tiers.tag", id, getTagComponent(blockTags, tag)));
         } else {
           output.append(new TranslatableComponent("command.mantle.harvest_tiers.no_tag", id));
         }
@@ -75,6 +87,7 @@ public class HarvestTiersCommand {
     context.getSource().sendSuccess(output, true);
     return sortedTiers.size();
   }
+
   /** Runs the command, dumping the tag */
   private static int run(CommandContext<CommandSourceStack> context, boolean saveFile) throws CommandSyntaxException {
     List<Tier> sortedTiers = TierSortingRegistry.getSortedTiers();
