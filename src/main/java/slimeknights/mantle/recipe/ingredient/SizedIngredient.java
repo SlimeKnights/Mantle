@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -72,7 +72,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param amountNeeded  Number that must match of this ingredient
    * @return  Sized ingredient matching any size
    */
-  public static SizedIngredient fromTag(Tag<Item> tag, int amountNeeded) {
+  public static SizedIngredient fromTag(TagKey<Item> tag, int amountNeeded) {
     return of(Ingredient.of(tag), amountNeeded);
   }
 
@@ -81,7 +81,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param tag  Tag to match
    * @return  Sized ingredient matching any size
    */
-  public static SizedIngredient fromTag(Tag<Item> tag) {
+  public static SizedIngredient fromTag(TagKey<Item> tag) {
     return fromTag(tag, 1);
   }
 

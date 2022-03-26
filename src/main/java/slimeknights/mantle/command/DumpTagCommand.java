@@ -10,12 +10,15 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
+import net.minecraft.tags.TagManager;
 import net.minecraft.util.GsonHelper;
 import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.Mantle;
@@ -45,7 +48,7 @@ public class DumpTagCommand {
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(sender -> sender.hasPermission(MantleCommand.PERMISSION_EDIT_SPAWN))
-              .then(Commands.argument("type", TagCollectionArgument.collection())
+              .then(Commands.argument("type", RegistryArgument.registry()).suggests(MantleCommand.REGISTRY)
                             .then(Commands.argument("name", ResourceLocationArgument.id()).suggests(MantleCommand.VALID_TAGS)
                                           .executes(context -> run(context, false))
                                           .then(Commands.literal("log").executes(context -> run(context, false)))
@@ -60,11 +63,23 @@ public class DumpTagCommand {
    * @throws CommandSyntaxException  If invalid values are passed
    */
   private static int run(CommandContext<CommandSourceStack> context, boolean saveFile) throws CommandSyntaxException {
-    TagCollectionArgument.Result<?> type = TagCollectionArgument.getResult(context, "type");
+    return runGeneric(context, RegistryArgument.getResult(context, "type"), saveFile);
+  }
+
+  /**
+   * Runs the view-tag command, with the generic for the registry so those don't get mad
+   *
+   * @param context   Tag context
+   * @param registry  Registry
+   * @return  Integer return
+   * @throws CommandSyntaxException  If invalid values are passed
+   */
+  private static <T> int runGeneric(CommandContext<CommandSourceStack> context, Registry<T> registry, boolean saveFile) throws CommandSyntaxException {
+    ResourceLocation regName = registry.key().location();
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
     ResourceManager manager = context.getSource().getServer().getResourceManager();
 
-    ResourceLocation path = new ResourceLocation(name.getNamespace(), "tags/" + type.getTagFolder() + "/" + name.getPath() + ".json");
+    ResourceLocation path = new ResourceLocation(name.getNamespace(), TagManager.getTagDir(registry.key()) + "/" + name.getPath() + ".json");
 
     // if the tag file does not exist, only error if the tag is unknown
     List<Resource> resources = Collections.emptyList();
@@ -73,12 +88,12 @@ public class DumpTagCommand {
         resources = manager.getResources(path);
       } catch (IOException ex) {
         // tag exists and we still could not read it? something went wrong
-        Mantle.logger.error("Couldn't read {} tag list {} from {}", type.getName(), name, path, ex);
-        throw ERROR_READING_TAG.create(type.getName(), name);
+        Mantle.logger.error("Couldn't read {} tag list {} from {}", regName, name, path, ex);
+        throw ERROR_READING_TAG.create(regName, name);
       }
     // if the tag does not exist in the collect, probably an invalid tag name
-    } else if (type.getCollection().getTag(name) == null) {
-      throw ViewTagCommand.TAG_NOT_FOUND.create(type.getName(), name);
+    } else if (registry.getTag(TagKey.create(registry.key(), name)).isEmpty()) {
+      throw ViewTagCommand.TAG_NOT_FOUND.create(regName, name);
     }
 
     // simply create a tag builder
@@ -92,14 +107,14 @@ public class DumpTagCommand {
         JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
         if (json == null) {
           // no json
-          Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", type.getName(), name, path, resource.getSourceName());
+          Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", regName, name, path, resource.getSourceName());
         } else {
           builder.addFromJson(json, resource.getSourceName());
           tagsProcessed++;
         }
       } catch (RuntimeException | IOException ex) {
         // failed to parse
-        Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", type.getName(), name, path, resource.getSourceName(), ex);
+        Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", regName, name, path, resource.getSourceName(), ex);
       } finally {
         IOUtils.closeQuietly(resource);
       }
@@ -117,14 +132,14 @@ public class DumpTagCommand {
           writer.write(DumpTagCommand.GSON.toJson(builder.serializeToJson()));
         }
       } catch (IOException ex) {
-        Mantle.logger.error("Couldn't save {} tag {} to {}", type.getName(), name, outputPath, ex);
+        Mantle.logger.error("Couldn't save {} tag {} to {}", regName, name, outputPath, ex);
       }
-      context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_tag.success_log", type.getName(), name, DumpAllTagsCommand.getOutputComponent(output)), true);
+      context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_tag.success_log", regName, name, DumpAllTagsCommand.getOutputComponent(output)), true);
     } else {
       // print to console
-      Component message = new TranslatableComponent("command.mantle.dump_tag.success", type.getName(), name);
+      Component message = new TranslatableComponent("command.mantle.dump_tag.success", regName, name);
       context.getSource().sendSuccess(message, true);
-      Mantle.logger.info("Tag dump of {} tag '{}':\n{}", type.getName(), name, GSON.toJson(builder.serializeToJson()));
+      Mantle.logger.info("Tag dump of {} tag '{}':\n{}", regName, name, GSON.toJson(builder.serializeToJson()));
     }
 
     return tagsProcessed;

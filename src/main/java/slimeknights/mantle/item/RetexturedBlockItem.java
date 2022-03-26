@@ -1,9 +1,10 @@
 package slimeknights.mantle.item;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -30,8 +31,8 @@ import java.util.Objects;
 public class RetexturedBlockItem extends BlockTooltipItem {
 
   /** Tag used for getting the texture */
-  protected final Tag<Item> textureTag;
-  public RetexturedBlockItem(Block block, Tag<Item> textureTag, Properties builder) {
+  protected final TagKey<Item> textureTag;
+  public RetexturedBlockItem(Block block, TagKey<Item> textureTag, Properties builder) {
     super(block, builder);
     this.textureTag = textureTag;
   }
@@ -116,26 +117,28 @@ public class RetexturedBlockItem extends BlockTooltipItem {
    * @param list              List of texture blocks
    * @param showAllVariants   If true, shows all variants. If false, shows just the first
    */
-  public static void addTagVariants(ItemLike block, Tag<Item> tag, NonNullList<ItemStack> list, boolean showAllVariants) {
+  public static void addTagVariants(ItemLike block, TagKey<Item> tag, NonNullList<ItemStack> list, boolean showAllVariants) {
     boolean added = false;
     // using item tags as that is what will be present in the recipe
     Class<?> clazz = block.getClass();
-    if (!ItemTags.getAllTags().getAvailableTags().isEmpty()) {
-      for (Item candidate : tag.getValues()) {
-        // non-block items don't have the textures we need
-        if (!(candidate instanceof BlockItem)) {
-          continue;
-        }
-        Block textureBlock = ((BlockItem)candidate).getBlock();
-        // Don't add instances of the block itself, see Inspirations enlightened bushes
-        if (clazz.isInstance(textureBlock)) {
-          continue;
-        }
-        added = true;
-        list.add(setTexture(new ItemStack(block), textureBlock));
-        if (!showAllVariants) {
-          return;
-        }
+    for (Holder<Item> candidate : Registry.ITEM.getTagOrEmpty(tag)) {
+      if (!candidate.isBound()) {
+        continue;
+      }
+      // non-block items don't have the textures we need
+      Item item = candidate.value();
+      if (!(item instanceof BlockItem)) {
+        continue;
+      }
+      Block textureBlock = ((BlockItem)item).getBlock();
+      // Don't add instances of the block itself, see Inspirations enlightened bushes
+      if (clazz.isInstance(textureBlock)) {
+        continue;
+      }
+      added = true;
+      list.add(setTexture(new ItemStack(block), textureBlock));
+      if (!showAllVariants) {
+        return;
       }
     }
     // if we never got one, just add the textureless one

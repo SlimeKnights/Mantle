@@ -8,14 +8,13 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -70,7 +69,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @param tag  Tag
    * @return Output
    */
-  public static ItemOutput fromTag(Tag<Item> tag, int count) {
+  public static ItemOutput fromTag(TagKey<Item> tag, int count) {
     return new OfTagPreference(tag, count);
   }
 
@@ -89,9 +88,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     // if it has a tag, parse as tag
     JsonObject json = element.getAsJsonObject();
     if (json.has("tag")) {
-      String name = GsonHelper.getAsString(json, "tag");
-      Tag<Item> tag = SerializationTags.getInstance().getTagOrThrow(Registry.ITEM_REGISTRY, new ResourceLocation(name),
-                                                      n -> new JsonSyntaxException("Unknown tag " + n + " for item output"));
+      TagKey<Item> tag = TagKey.create(Registry.ITEM_REGISTRY, JsonHelper.getResourceLocation(json, "tag"));
       int count = GsonHelper.getAsInt(json, "count", 1);
       return fromTag(tag, count);
     }
@@ -181,7 +178,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   /** Class for an output from a tag preference */
   @RequiredArgsConstructor
   private static class OfTagPreference extends ItemOutput {
-    private final Tag<Item> tag;
+    private final TagKey<Item> tag;
     private final int count;
     private ItemStack cachedResult = null;
 
@@ -200,8 +197,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     @Override
     public JsonElement serialize() {
       JsonObject json = new JsonObject();
-      json.addProperty("tag", SerializationTags.getInstance().getIdOrThrow(Registry.ITEM_REGISTRY, tag,
-                                                                           () -> new IllegalStateException("Unregistered tag " + tag)).toString());
+      json.addProperty("tag", tag.location().toString());
       if (count != 1) {
         json.addProperty("count", count);
       }

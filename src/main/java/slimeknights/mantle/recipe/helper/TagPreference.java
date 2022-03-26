@@ -1,19 +1,18 @@
 package slimeknights.mantle.recipe.helper;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.config.Config;
 import slimeknights.mantle.util.LogicHelper;
+import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -78,14 +77,10 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
     return getInstance(Registry.FLUID_REGISTRY);
   }
 
-  /** Supplier to tag collection */
-  private final ResourceKey<Registry<T>> key;
-
   /** Specific cache to this tag preference class type */
   private final Map<ResourceLocation, Optional<T>> preferenceCache = new HashMap<>();
 
   private TagPreference(ResourceKey<Registry<T>> key) {
-    this.key = key;
     MinecraftForge.EVENT_BUS.addListener(this::clearCache);
   }
 
@@ -97,25 +92,18 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
     preferenceCache.clear();
   }
 
-  /** Gets the preference from a tag without going through the cache, internal logic behind {@link #getPreference(Tag)} */
-  private Optional<T> getUncachedPreference(Tag<T> tag) {
-    // if no items, empty optional
-    if (tag instanceof IOptionalNamedTag && ((IOptionalNamedTag<?>) tag).isDefaulted()) {
-      return Optional.empty();
-    }
-    List<? extends T> elements = tag.getValues();
-    if (elements.isEmpty()) {
-      return Optional.empty();
-    }
 
-    // if size 1, quick exit
-    if (elements.size() == 1) {
-      return Optional.of(elements.get(0));
+
+  /** Gets the preference from a tag without going through the cache, internal logic behind {@link #getPreference(TagKey)} */
+  @SuppressWarnings("unchecked")
+  private Optional<T> getUncachedPreference(TagKey<T> tag) {
+    Registry<T> registry = (Registry<T>)Registry.REGISTRY.get(tag.registry().location());
+    if (registry == null) {
+      return Optional.empty();
     }
     // streams have a lovely function to get the minimum element based on a comparator
-    return elements.stream()
-                   .min(ENTRY_COMPARATOR)
-                   .map(t -> (T) t); // required for generics to be happy
+    // if the tag is empty, stream is empty so returns empty
+    return RegistryHelper.getTagStream(tag).filter(Holder::isBound).map(Holder::value).min(ENTRY_COMPARATOR);
   }
 
   /**
@@ -123,13 +111,8 @@ public class TagPreference<T extends IForgeRegistryEntry<T>> {
    * @param tag    Tag to fetch
    * @return  Preferred value from the tag, or empty optional if the tag is empty
    */
-  public Optional<T> getPreference(Tag<T> tag) {
+  public Optional<T> getPreference(TagKey<T> tag) {
     // fetch cached value if we have one
-    ResourceLocation tagName = SerializationTags.getInstance().getOrEmpty(key).getId(tag);
-    if (tagName != null) {
-      return preferenceCache.computeIfAbsent(tagName, name -> getUncachedPreference(tag));
-    }
-    Mantle.logger.warn("Attempting to get tag preference for unregistered tag {}", tag);
-    return getUncachedPreference(tag);
+    return preferenceCache.computeIfAbsent(tag.location(), name -> getUncachedPreference(tag));
   }
 }

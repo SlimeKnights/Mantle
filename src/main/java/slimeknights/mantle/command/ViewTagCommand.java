@@ -7,11 +7,14 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -29,7 +32,7 @@ public class ViewTagCommand {
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(source -> MantleCommand.requiresDebugInfoOrOp(source, MantleCommand.PERMISSION_GAME_COMMANDS))
-              .then(Commands.argument("type", TagCollectionArgument.collection())
+              .then(Commands.argument("type", RegistryArgument.registry()).suggests(MantleCommand.REGISTRY)
                             .then(Commands.argument("name", ResourceLocationArgument.id()).suggests(MantleCommand.VALID_TAGS)
                                           .executes(ViewTagCommand::run)));
   }
@@ -40,27 +43,27 @@ public class ViewTagCommand {
    * @return  Integer return
    * @throws CommandSyntaxException  If invalid values are passed
    */
-  private static <T> int runGeneric(CommandContext<CommandSourceStack> context, TagCollectionArgument.Result<T> result) throws CommandSyntaxException {
+  private static <T> int runGeneric(CommandContext<CommandSourceStack> context, Registry<T> registry) throws CommandSyntaxException {
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
-    Tag<T> tag = result.getCollection().getTag(name);
-    if (tag != null) {
+    HolderSet.Named<T> holder = registry.getTag(TagKey.create(registry.key(), name)).orElse(null);
+    if (holder != null) {
       // start building output message
-      MutableComponent output = new TranslatableComponent("command.mantle.view_tag.success", result.getName(), name);
-      Collection<T> values = tag.getValues();
+      MutableComponent output = new TranslatableComponent("command.mantle.view_tag.success", registry.key().location(), name);
+      Collection<T> values = holder.stream().filter(Holder::isBound).map(Holder::value).toList();
 
       // if no values, print empty
       if (values.isEmpty()) {
         output.append("\n* ").append(EMPTY);
       } else {
         values.stream()
-              .map(result::getKey)
+              .map(registry::getKey)
               .sorted((a, b) -> Objects.requireNonNull(a).compareNamespaced(Objects.requireNonNull(b)))
               .forEach(value -> output.append("\n* " + Objects.requireNonNull(value)));
       }
       context.getSource().sendSuccess(output, true);
       return values.size();
     }
-    throw TAG_NOT_FOUND.create(result.getName(), name);
+    throw TAG_NOT_FOUND.create(registry.key().location(), name);
   }
 
   /**
@@ -70,6 +73,6 @@ public class ViewTagCommand {
    * @throws CommandSyntaxException  If invalid values are passed
    */
   private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-    return runGeneric(context, TagCollectionArgument.getResult(context, "type"));
+    return runGeneric(context, RegistryArgument.getResult(context, "type"));
   }
 }

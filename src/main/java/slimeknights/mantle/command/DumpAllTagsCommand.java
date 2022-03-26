@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.Registry;
@@ -17,8 +18,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagManager;
 import net.minecraft.util.GsonHelper;
 import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.Mantle;
@@ -52,7 +53,7 @@ public class DumpAllTagsCommand {
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(sender -> sender.hasPermission(MantleCommand.PERMISSION_EDIT_SPAWN))
               .executes(DumpAllTagsCommand::runAll)
-              .then(Commands.argument("type", TagCollectionArgument.collection())
+              .then(Commands.argument("type", RegistryArgument.registry()).suggests(MantleCommand.REGISTRY)
                             .executes(DumpAllTagsCommand::runType));
   }
 
@@ -73,23 +74,19 @@ public class DumpAllTagsCommand {
   /** Dumps all tags to the game directory */
   private static int runAll(CommandContext<CommandSourceStack> context) {
     File output = getOutputFile(context);
-    int tagsDumped = 0;
-    for (ResourceKey<? extends Registry<?>> key : SerializationTags.getInstance().collections.keySet()) {
-      ResourceLocation name = key.location();
-      tagsDumped += runForFolder(context, name, TagCollectionArgument.getTagFolder(name), output);
-    }
+    int tagsDumped = context.getSource().registryAccess().registries().mapToInt(r -> runForFolder(context, r.key(), output)).sum();
     // print the output path
     context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_all_tags.success", getOutputComponent(output)), true);
     return tagsDumped;
   }
 
   /** Dumps a single type of tags to the game directory */
-  private static int runType(CommandContext<CommandSourceStack> context) {
+  private static int runType(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     File output = getOutputFile(context);
-    TagCollectionArgument.Result<?> type = TagCollectionArgument.getResult(context, "type");
-    int result = runForFolder(context, type.getName(), type.getTagFolder(), output);
+    Registry<?> registry = RegistryArgument.getResult(context, "type");
+    int result = runForFolder(context, registry.key(), output);
     // print result
-    context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_all_tags.type_success", type.getName(), getOutputComponent(output)), true);
+    context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_all_tags.type_success", registry.key().location(), getOutputComponent(output)), true);
     return result;
   }
 
@@ -98,13 +95,14 @@ public class DumpAllTagsCommand {
    * @param context  Tag context
    * @return  Integer return
    */
-  private static int runForFolder(CommandContext<CommandSourceStack> context, ResourceLocation tagType, String tagFolder, File output) {
+  private static int runForFolder(CommandContext<CommandSourceStack> context, ResourceKey<? extends Registry<?>> key, File output) {
     Map<ResourceLocation, Tag.Builder> foundTags = Maps.newHashMap();
     MinecraftServer server = context.getSource().getServer();
     ResourceManager manager = server.getResourceManager();
+    ResourceLocation tagType = key.location();
 
     // iterate all tags from the datapack
-    String dataPackFolder = "tags/" + tagFolder;
+    String dataPackFolder = TagManager.getTagDir(key);
     for (ResourceLocation resourcePath : manager.listResources(dataPackFolder, fileName -> fileName.endsWith(".json"))) {
       String path = resourcePath.getPath();
       ResourceLocation tagId = new ResourceLocation(resourcePath.getNamespace(), path.substring(dataPackFolder.length() + 1, path.length() - EXTENSION_LENGTH));

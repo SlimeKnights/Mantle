@@ -7,11 +7,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Ingredient accepting an entity or an entity tag as an input
@@ -79,7 +80,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /**
    * Creates an ingredient to match a tags
    */
-  public static EntityIngredient of(Tag<EntityType<?>> tag) {
+  public static EntityIngredient of(TagKey<EntityType<?>> tag) {
     return new TagMatch(tag);
   }
 
@@ -148,10 +149,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     }
     // tag is also a name
     if (json.has("tag")) {
-      ResourceLocation name = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-      Tag<EntityType<?>> tag = SerializationTags.getInstance().getTagOrThrow(Registry.ENTITY_TYPE_REGISTRY, name,
-                                                               n -> new JsonSyntaxException("Unknown entity type tag " + n));
-      return new TagMatch(tag);
+      return new TagMatch(TagKey.create(Registry.ENTITY_TYPE_REGISTRY, JsonHelper.getResourceLocation(json, "tag")));
     }
     // types is a list
     if (json.has("types")) {
@@ -216,22 +214,29 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /** Ingredient that matches any entity from a tag */
   @RequiredArgsConstructor
   private static class TagMatch extends EntityIngredient {
-    private final Tag<EntityType<?>> tag;
+    private final TagKey<EntityType<?>> tag;
+    private List<EntityType<?>> types;
 
     @Override
     public boolean test(EntityType<?> type) {
-      return tag.contains(type);
+      return type.is(tag);
     }
 
     @Override
     public List<EntityType<?>> getTypes() {
-      return tag.getValues();
+      if (types == null) {
+        types = StreamSupport.stream(Registry.ENTITY_TYPE.getTagOrEmpty(tag).spliterator(), false)
+                             .filter(Holder::isBound)
+                             .map(Holder::value)
+                             .collect(Collectors.toList());
+      }
+      return types;
     }
 
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("tag", SerializationTags.getInstance().getIdOrThrow(Registry.ENTITY_TYPE_REGISTRY, tag, () -> new IllegalStateException("Unregistered entity tag " + tag)).toString());
+      object.addProperty("tag", tag.location().toString());
       return object;
     }
   }

@@ -4,9 +4,11 @@ package slimeknights.mantle.client.book.structure.level;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -47,11 +49,11 @@ public class TemplateChunkSource extends ChunkSource {
   @Nullable
   @Override
   public ChunkAccess getChunk(int chunkX, int chunkZ, @Nonnull ChunkStatus requiredStatus, boolean load) {
-    return this.chunks.computeIfAbsent(new ChunkPos(chunkX, chunkZ), p -> new EmptyLevelChunk(level, p));
+    return this.chunks.computeIfAbsent(new ChunkPos(chunkX, chunkZ), p -> new EmptyLevelChunk(level, p, BuiltinRegistries.BIOME.getHolderOrThrow(Biomes.PLAINS)));
   }
 
   @Override
-  public void tick(BooleanSupplier pHasTimeLeft) {}
+  public void tick(BooleanSupplier hasMoreTime, boolean tickChunks) {}
 
   @Override
   public String gatherStats() {

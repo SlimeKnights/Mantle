@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.WoodButtonBlock;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,9 +44,9 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
   private final Supplier<? extends WallSignBlock> wallSign;
   // tags
   @Getter
-  private final IOptionalNamedTag<Block> logBlockTag;
+  private final TagKey<Block> logBlockTag;
   @Getter
-  private final IOptionalNamedTag<Item> logItemTag;
+  private final TagKey<Item> logItemTag;
 
   public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
                          Supplier<? extends Block> log, Supplier<? extends Block> strippedLog, Supplier<? extends Block> wood, Supplier<? extends Block> strippedWood,
@@ -67,8 +67,8 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
     this.sign = sign;
     this.wallSign = wallSign;
     ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
-    this.logBlockTag = BlockTags.createOptional(tagName);
-    this.logItemTag = ItemTags.createOptional(tagName);
+    this.logBlockTag = BlockTags.create(tagName);
+    this.logItemTag = ItemTags.create(tagName);
   }
 
   public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
@@ -89,8 +89,8 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
     this.sign = castDelegate(sign.delegate);
     this.wallSign = castDelegate(wallSign.delegate);
     ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
-    this.logBlockTag = BlockTags.createOptional(tagName);
-    this.logItemTag = ItemTags.createOptional(tagName);
+    this.logBlockTag = BlockTags.create(tagName);
+    this.logItemTag = ItemTags.create(tagName);
   }
 
   /** Gets the log for this wood type */

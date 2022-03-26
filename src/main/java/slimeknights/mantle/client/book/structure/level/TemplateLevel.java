@@ -3,13 +3,14 @@
 package slimeknights.mantle.client.book.structure.level;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.TagContainer;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -46,11 +48,11 @@ public class TemplateLevel extends Level {
   private final Scoreboard scoreboard = new Scoreboard();
   private final RecipeManager recipeManager = new RecipeManager();
   private final TemplateChunkSource chunkSource;
-  private final RegistryAccess registries = RegistryAccess.builtin();
+  private final RegistryAccess registries = Objects.requireNonNull(Minecraft.getInstance().level).registryAccess();
 
   public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
-      new FakeLevelData(), Level.OVERWORLD, DimensionType.DEFAULT_OVERWORLD,
+      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(DimensionType.OVERWORLD_LOCATION),
       () -> InactiveProfiler.INSTANCE, true, false, 0
     );
 
@@ -112,12 +114,6 @@ public class TemplateLevel extends Level {
     return this.recipeManager;
   }
 
-  @Nonnull
-  @Override
-  public TagContainer getTagManager() {
-    return TagContainer.EMPTY;
-  }
-
   @Override
   protected LevelEntityGetter<Entity> getEntities() {
     return FakeEntityGetter.INSTANCE;
@@ -168,7 +164,7 @@ public class TemplateLevel extends Level {
 
   @Nonnull
   @Override
-  public Biome getUncachedNoiseBiome(int x, int y, int z) {
-    return this.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getOrThrow(Biomes.PLAINS);
+  public Holder<Biome> getUncachedNoiseBiome(int x, int y, int z) {
+    return registries.registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS);
   }
 }

@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.tags.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import slimeknights.mantle.recipe.MantleRecipeSerializers;
 
 import javax.annotation.Nullable;
@@ -36,7 +36,7 @@ public class ShapedRetexturedRecipeBuilder {
    * @param tag Tag to use for texture
    * @return Builder instance
    */
-  public ShapedRetexturedRecipeBuilder setSource(Tag<Item> tag) {
+  public ShapedRetexturedRecipeBuilder setSource(TagKey<Item> tag) {
     this.texture = Ingredient.of(tag);
     return this;
   }

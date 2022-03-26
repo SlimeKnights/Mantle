@@ -4,9 +4,9 @@ import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
 import java.util.function.Supplier;
 
@@ -15,19 +15,19 @@ public class MetalItemObject extends ItemObject<Block> {
   private final Supplier<? extends Item> ingot;
   private final Supplier<? extends Item> nugget;
   @Getter
-  private final IOptionalNamedTag<Block> blockTag;
+  private final TagKey<Block> blockTag;
   @Getter
-  private final IOptionalNamedTag<Item> blockItemTag;
+  private final TagKey<Item> blockItemTag;
   @Getter
-  private final IOptionalNamedTag<Item> ingotTag;
+  private final TagKey<Item> ingotTag;
   @Getter
-  private final IOptionalNamedTag<Item> nuggetTag;
+  private final TagKey<Item> nuggetTag;
 
   public MetalItemObject(String tagName, ItemObject<? extends Block> block, Supplier<? extends Item> ingot, Supplier<? extends Item> nugget) {
     super(block);
     this.ingot = ingot;
     this.nugget = nugget;
-    this.blockTag = BlockTags.createOptional(new ResourceLocation("forge", "storage_blocks/" + tagName));
+    this.blockTag = BlockTags.create(new ResourceLocation("forge", "storage_blocks/" + tagName));
     this.blockItemTag = getTag("storage_blocks/" + tagName);
     this.ingotTag = getTag("ingots/" + tagName);
     this.nuggetTag = getTag("nuggets/" + tagName);
@@ -48,7 +48,7 @@ public class MetalItemObject extends ItemObject<Block> {
    * @param name  Tag name
    * @return  Tag
    */
-  private static IOptionalNamedTag<Item> getTag(String name) {
-    return ItemTags.createOptional(new ResourceLocation("forge", name));
+  private static TagKey<Item> getTag(String name) {
+    return ItemTags.create(new ResourceLocation("forge", name));
   }
 }
