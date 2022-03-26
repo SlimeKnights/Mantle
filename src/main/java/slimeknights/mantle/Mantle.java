@@ -27,6 +27,7 @@ import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.helper.FluidTagEmptyCondition;
+import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.IngredientDifference;
 import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
@@ -72,6 +73,7 @@ public class Mantle {
     MantleNetwork.registerPackets();
     MantleCommand.init();
     OffhandCooldownTracker.init();
+    TagPreference.init();
   }
 
   private void registerRecipeSerializers(final RegistryEvent.Register<RecipeSerializer<?>> event) {

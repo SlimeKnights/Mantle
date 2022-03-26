@@ -34,5 +34,8 @@
 
   "command.mantle.tag.empty": "Empty",
   "command.mantle.registry.not_found": "Unknown registry '%s'",
-  "command.mantle.tag.not_found": "Unknown %s tag '%s'"
+  "command.mantle.tag.not_found": "Unknown %s tag '%s'",
+
+  "command.mantle.tag_preference.empty_tag": "No preference for %s tag %s",
+  "command.mantle.tag_preference.preference": "Preferred value for %s tag %s is %s"
 }

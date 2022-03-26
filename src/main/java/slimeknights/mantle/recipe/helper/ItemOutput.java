@@ -187,7 +187,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
       // cache the result from the tag preference to save effort, especially helpful if the tag becomes invalid
       // this object should only exist in recipes so no need to invalidate the cache
       if (cachedResult == null) {
-        cachedResult = TagPreference.getItems().getPreference(tag)
+        cachedResult = TagPreference.getPreference(tag)
                                     .map(item -> new ItemStack(item, count))
                                     .orElse(ItemStack.EMPTY);
       }
