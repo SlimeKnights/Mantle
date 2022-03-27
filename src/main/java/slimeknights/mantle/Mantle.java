@@ -29,8 +29,6 @@ import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.helper.FluidTagEmptyCondition;
 import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
-import slimeknights.mantle.recipe.ingredient.IngredientDifference;
-import slimeknights.mantle.recipe.ingredient.IngredientIntersection;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
@@ -82,8 +80,6 @@ public class Mantle {
     adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
 
     CraftingHelper.register(FluidTagEmptyCondition.SERIALIZER);
-    CraftingHelper.register(IngredientDifference.ID, IngredientDifference.SERIALIZER);
-    CraftingHelper.register(IngredientIntersection.ID, IngredientIntersection.SERIALIZER);
     CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
   }
 
