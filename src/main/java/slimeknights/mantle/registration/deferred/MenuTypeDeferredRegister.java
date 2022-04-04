@@ -1,20 +1,20 @@
 package slimeknights.mantle.registration.deferred;
 
+import net.minecraft.core.Registry;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * Deferred register for container types, automatically mapping a factory argument in {@link IForgeMenuType}
+ * Deferred register for menu types, automatically mapping a factory argument in {@link IForgeMenuType}
  */
 @SuppressWarnings("unused")
-public class ContainerTypeDeferredRegister extends DeferredRegisterWrapper<MenuType<?>> {
+public class MenuTypeDeferredRegister extends DeferredRegisterWrapper<MenuType<?>> {
 
-  public ContainerTypeDeferredRegister(String modID) {
-    super(ForgeRegistries.CONTAINERS, modID);
+  public MenuTypeDeferredRegister(String modID) {
+    super(Registry.MENU_REGISTRY, modID);
   }
 
   /**

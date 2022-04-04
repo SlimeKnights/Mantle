@@ -1,5 +1,6 @@
 package slimeknights.mantle.registration.deferred;
 
+import net.minecraft.core.Registry;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -58,7 +59,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
 
   protected final DeferredRegister<Item> itemRegister;
   public BlockDeferredRegister(String modID) {
-    super(ForgeRegistries.BLOCKS, modID);
+    super(Registry.BLOCK_REGISTRY, modID);
     this.itemRegister = DeferredRegister.create(ForgeRegistries.ITEMS, modID);
   }
 

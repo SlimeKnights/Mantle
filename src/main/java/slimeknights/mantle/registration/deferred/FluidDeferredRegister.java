@@ -1,5 +1,6 @@
 package slimeknights.mantle.registration.deferred;
 
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -12,7 +13,6 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.registration.DelayedSupplier;
 import slimeknights.mantle.registration.FluidBuilder;
@@ -27,9 +27,9 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
   private final DeferredRegister<Block> blockRegister;
   private final DeferredRegister<Item> itemRegister;
   public FluidDeferredRegister(String modID) {
-    super(ForgeRegistries.FLUIDS, modID);
-    this.blockRegister = DeferredRegister.create(ForgeRegistries.BLOCKS, modID);
-    this.itemRegister = DeferredRegister.create(ForgeRegistries.ITEMS, modID);
+    super(Registry.FLUID_REGISTRY, modID);
+    this.blockRegister = DeferredRegister.create(Registry.BLOCK_REGISTRY, modID);
+    this.itemRegister = DeferredRegister.create(Registry.ITEM_REGISTRY, modID);
   }
 
   @Override

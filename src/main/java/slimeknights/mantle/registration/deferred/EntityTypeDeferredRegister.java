@@ -1,5 +1,6 @@
 package slimeknights.mantle.registration.deferred;
 
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -7,7 +8,6 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.registration.ItemProperties;
 
@@ -21,8 +21,8 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
 
   private final DeferredRegister<Item> itemRegistry;
   public EntityTypeDeferredRegister(String modID) {
-    super(ForgeRegistries.ENTITIES, modID);
-    itemRegistry = DeferredRegister.create(ForgeRegistries.ITEMS, modID);
+    super(Registry.ENTITY_TYPE_REGISTRY, modID);
+    itemRegistry = DeferredRegister.create(Registry.ITEM_REGISTRY, modID);
   }
 
   @Override

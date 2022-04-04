@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.registration.object.EnumObject;
 
@@ -18,16 +17,12 @@ import java.util.function.Supplier;
  * @param <T>  Registry type
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> {
+public abstract class DeferredRegisterWrapper<T> {
   /** Registry instance, use this to provide register methods */
   protected final DeferredRegister<T> register;
   /** Mod ID for registration */
   private final String modID;
 
-  protected DeferredRegisterWrapper(IForgeRegistry<T> reg, String modID) {
-    this(DeferredRegister.create(reg, modID), modID);
-  }
-  
   protected DeferredRegisterWrapper(ResourceKey<Registry<T>> reg, String modID) {
     this(DeferredRegister.create(reg, modID), modID);
   }
