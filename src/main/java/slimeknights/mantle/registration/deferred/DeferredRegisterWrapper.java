@@ -1,7 +1,9 @@
 package slimeknights.mantle.registration.deferred;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -23,7 +25,15 @@ public abstract class DeferredRegisterWrapper<T extends IForgeRegistryEntry<T>> 
   private final String modID;
 
   protected DeferredRegisterWrapper(IForgeRegistry<T> reg, String modID) {
-    register = DeferredRegister.create(reg, modID);
+    this(DeferredRegister.create(reg, modID), modID);
+  }
+  
+  protected DeferredRegisterWrapper(ResourceKey<Registry<T>> reg, String modID) {
+    this(DeferredRegister.create(reg, modID), modID);
+  }
+
+  protected DeferredRegisterWrapper(DeferredRegister<T> register, String modID) {
+    this.register = register;
     this.modID = modID;
   }
 
