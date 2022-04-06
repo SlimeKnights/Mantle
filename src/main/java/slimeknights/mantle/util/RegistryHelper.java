@@ -19,17 +19,27 @@ public class RegistryHelper {
     return (Registry<T>) Registry.REGISTRY.get(key.location());
   }
 
-  /** Gets a stream of tag values for the given registry */
+  /** Gets a stream of tag holders for the given registry */
   public static <T> Stream<Holder<T>> getTagStream(Registry<T> registry, TagKey<T> key) {
     return StreamSupport.stream(registry.getTagOrEmpty(key).spliterator(), false);
   }
 
-  /** Gets a stream of tag values for the given registry */
+  /** Gets a stream of tag holders for the given registry */
   public static <T> Stream<Holder<T>> getTagStream(TagKey<T> key) {
     Registry<T> registry = getRegistry(key.registry());
     if (registry == null) {
       return Stream.empty();
     }
     return getTagStream(registry, key);
+  }
+
+  /** Gets a stream of tag values for the given registry */
+  public static <T> Stream<T> getTagValueStream(Registry<T> registry, TagKey<T> key) {
+    return getTagStream(registry, key).filter(Holder::isBound).map(Holder::value);
+  }
+
+  /** Gets a stream of tag values for the given registry */
+  public static <T> Stream<T> getTagValueStream(TagKey<T> key) {
+    return getTagStream(key).filter(Holder::isBound).map(Holder::value);
   }
 }
