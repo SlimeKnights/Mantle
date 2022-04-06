@@ -4,6 +4,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -41,5 +45,43 @@ public class RegistryHelper {
   /** Gets a stream of tag values for the given registry */
   public static <T> Stream<T> getTagValueStream(TagKey<T> key) {
     return getTagStream(key).filter(Holder::isBound).map(Holder::value);
+  }
+
+  /** Checks if the given tag contains the given registry object */
+  public static <T> boolean contains(Registry<T> registry, TagKey<T> tag, T value) {
+    return registry.createIntrusiveHolder(value).is(tag);
+  }
+
+  /** Checks if the given tag contains the given registry object */
+  public static <T> boolean contains(TagKey<T> tag, T value) {
+    Registry<T> registry = getRegistry(tag.registry());
+    if (registry == null) {
+      return false;
+    }
+    return contains(registry, tag, value);
+  }
+
+  /** Checks if the given tag contains the given registry object */
+  @SuppressWarnings("deprecation")
+  public static boolean contains(TagKey<Block> tag, Block value) {
+    return value.builtInRegistryHolder().is(tag);
+  }
+
+  /** Checks if the given tag contains the given registry object */
+  @SuppressWarnings("deprecation")
+  public static boolean contains(TagKey<Item> tag, Item value) {
+    return value.builtInRegistryHolder().is(tag);
+  }
+
+  /** Checks if the given tag contains the given registry object */
+  @SuppressWarnings("deprecation")
+  public static boolean contains(TagKey<EntityType<?>> tag, EntityType<?> value) {
+    return value.builtInRegistryHolder().is(tag);
+  }
+
+  /** Checks if the given tag contains the given registry object */
+  @SuppressWarnings("deprecation")
+  public static boolean contains(TagKey<Fluid> tag, Fluid value) {
+    return value.builtInRegistryHolder().is(tag);
   }
 }
