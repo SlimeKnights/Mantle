@@ -49,7 +49,11 @@ public class RegistryHelper {
 
   /** Checks if the given tag contains the given registry object */
   public static <T> boolean contains(Registry<T> registry, TagKey<T> tag, T value) {
-    return registry.createIntrusiveHolder(value).is(tag);
+    int index = registry.getId(value);
+    if (index == Registry.DEFAULT) {
+      return false;
+    }
+    return registry.getHolder(index).filter(holder -> holder.containsTag(tag)).isPresent();
   }
 
   /** Checks if the given tag contains the given registry object */

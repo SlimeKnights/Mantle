@@ -1,6 +1,5 @@
 package slimeknights.mantle.recipe.helper;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -51,7 +50,7 @@ public class TagPreference {
     }
     // streams have a lovely function to get the minimum element based on a comparator
     // if the tag is empty, stream is empty so returns empty
-    return RegistryHelper.getTagStream(tag).filter(Holder::isBound).map(Holder::value).min(getComparator(registry));
+    return RegistryHelper.getTagValueStream(tag).min(getComparator(registry));
   }
 
   /**
