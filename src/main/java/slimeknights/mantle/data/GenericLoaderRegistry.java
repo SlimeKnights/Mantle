@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 
 /** Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON */
 @RequiredArgsConstructor
-public class GenericLoaderRegistry<T extends IHaveLoader> implements JsonSerializer<T>, JsonDeserializer<T> {
+public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSerializer<T>, JsonDeserializer<T> {
   /** Map of all serializers for implementations */
   private final NamedComponentRegistry<IGenericLoader<? extends T>> loaders = new NamedComponentRegistry<>("Unknown loader");
 
@@ -55,7 +55,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements JsonSeriali
 
   /** Serializes the object to json, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L extends IHaveLoader> JsonObject serialize(IGenericLoader<L> loader, T src) {
+  private <L extends IHaveLoader<T>> JsonObject serialize(IGenericLoader<L> loader, T src) {
     JsonObject json = new JsonObject();
     json.addProperty("type", loaders.getKey((IGenericLoader<? extends T>)loader).toString());
     loader.serialize((L)src, json);
@@ -77,7 +77,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements JsonSeriali
 
   /** Writes the object to the network, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L extends IHaveLoader> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
+  private <L extends IHaveLoader<T>> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(loaders.getKey((IGenericLoader<? extends T>)loader));
     loader.toNetwork((L)src, buffer);
   }
@@ -109,7 +109,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements JsonSeriali
   }
 
   /** Interface for a loader */
-  public interface IGenericLoader<T extends IHaveLoader> {
+  public interface IGenericLoader<T extends IHaveLoader<?>> {
     /** Deserializes the object from json */
     T deserialize(JsonObject json);
 
@@ -124,15 +124,15 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements JsonSeriali
   }
 
   /** Interface for an object with a loader */
-  public interface IHaveLoader {
+  public interface IHaveLoader<T> {
     /** Gets the loader for the object */
-    IGenericLoader<?> getLoader();
+    IGenericLoader<? extends T> getLoader();
   }
 
   /** Loader instance for an object with only a single implementation */
   @SuppressWarnings("ClassCanBeRecord")
   @RequiredArgsConstructor
-  public static class SingletonLoader<T extends IHaveLoader> implements IGenericLoader<T> {
+  public static class SingletonLoader<T extends IHaveLoader<?>> implements IGenericLoader<T> {
     private final T instance;
 
     @Override
