@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,7 @@ import slimeknights.mantle.data.GenericLoaderRegistry.IHaveLoader;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
+import java.util.function.Function;
 
 /** Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON */
 @RequiredArgsConstructor
@@ -43,6 +45,16 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
    */
   public T deserialize(JsonObject object) {
     return loaders.deserialize(object, "type").deserialize(object);
+  }
+
+  /**
+   * Deserializes the object from JSON
+   * @param parent  JSON object parent
+   * @param key     Key in the parent
+   * @return  Deserialized object
+   */
+  public T deserialize(JsonObject parent, String key) {
+    return deserialize(GsonHelper.getAsJsonObject(parent, key));
   }
 
   @Override
@@ -130,10 +142,15 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
   }
 
   /** Loader instance for an object with only a single implementation */
-  @SuppressWarnings("ClassCanBeRecord")
   @RequiredArgsConstructor
   public static class SingletonLoader<T extends IHaveLoader<?>> implements IGenericLoader<T> {
+    @Getter
     private final T instance;
+
+    /** Helper for creating a loader using an anonymous class */
+    public SingletonLoader(Function<IGenericLoader<T>,T> creator) {
+      this.instance = creator.apply(this);
+    }
 
     @Override
     public T deserialize(JsonObject json) {
