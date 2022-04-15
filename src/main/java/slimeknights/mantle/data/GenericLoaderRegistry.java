@@ -53,7 +53,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
    * @param key     Key in the parent
    * @return  Deserialized object
    */
-  public T deserialize(JsonObject parent, String key) {
+  public T getAndDeserialize(JsonObject parent, String key) {
     return deserialize(GsonHelper.getAsJsonObject(parent, key));
   }
 
