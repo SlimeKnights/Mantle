@@ -6,14 +6,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.GenericLoaderRegistry.IHaveLoader;
+import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -22,15 +25,28 @@ import java.util.function.Function;
 /** Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON */
 @RequiredArgsConstructor
 public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSerializer<T>, JsonDeserializer<T> {
+  /** Empty object instance for compact deserialization */
+  private static final JsonObject EMPTY_OBJECT = new JsonObject();
   /** Map of all serializers for implementations */
   private final NamedComponentRegistry<IGenericLoader<? extends T>> loaders = new NamedComponentRegistry<>("Unknown loader");
+
 
   /** Default instance, used for null values instead of null */
   @Nullable
   private final T defaultInstance;
+  /** If true, single key serializations will not use a JSON object to serialize, ideal for loaders with many singletons */
+  private final boolean compact;
+
+  public GenericLoaderRegistry(T defaultInstance) {
+    this(defaultInstance, false);
+  }
+
+  public GenericLoaderRegistry(boolean compact) {
+    this(null, compact);
+  }
 
   public GenericLoaderRegistry() {
-    this(null);
+    this(null, false);
   }
 
   /** Registers a deserializer by name */
@@ -40,11 +56,23 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
 
   /**
    * Deserializes the object from JSON
-   * @param object  JSON object
+   * @param element  JSON element
    * @return  Deserialized object
    */
-  public T deserialize(JsonObject object) {
-    return loaders.deserialize(object, "type").deserialize(object);
+  public T deserialize(JsonElement element) {
+    if (element.isJsonObject()) {
+      JsonObject object = element.getAsJsonObject();
+      return loaders.deserialize(object, "type").deserialize(object);
+    }
+    if (compact) {
+      if (element.isJsonPrimitive()) {
+        EMPTY_OBJECT.entrySet().clear();
+        return loaders.convert(element, "type").deserialize(EMPTY_OBJECT);
+      }
+      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + ", must be a JSON object or a string");
+    } else {
+      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + ", must be a JSON object");
+    }
   }
 
   /**
@@ -54,6 +82,9 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
    * @return  Deserialized object
    */
   public T getAndDeserialize(JsonObject parent, String key) {
+    if (compact) {
+      return deserialize(JsonHelper.getElement(parent, key));
+    }
     return deserialize(GsonHelper.getAsJsonObject(parent, key));
   }
 
@@ -62,20 +93,28 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     if (defaultInstance != null && json.isJsonNull()) {
       return defaultInstance;
     }
-    return deserialize(GsonHelper.convertToJsonObject(json, "object"));
+    return deserialize(json);
   }
 
   /** Serializes the object to json, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L extends IHaveLoader<T>> JsonObject serialize(IGenericLoader<L> loader, T src) {
+  private <L extends IHaveLoader<T>> JsonElement serialize(IGenericLoader<L> loader, T src) {
     JsonObject json = new JsonObject();
-    json.addProperty("type", loaders.getKey((IGenericLoader<? extends T>)loader).toString());
+    JsonElement type = new JsonPrimitive(loaders.getKey((IGenericLoader<? extends T>)loader).toString());
+    json.add("type", type);
     loader.serialize((L)src, json);
+    if (json.get("type") != type) {
+      throw new IllegalStateException("Serializer " + type.getAsString() + " modified the type key, this is not allowed as it breaks deserialization");
+    }
+    // nothing to serialize? use type directly
+    if (compact && json.entrySet().size() == 1) {
+      return type;
+    }
     return json;
   }
 
   /** Serializes the object to JSON */
-  public JsonObject serialize(T src) {
+  public JsonElement serialize(T src) {
     return serialize(src.getLoader(), src);
   }
 
@@ -167,5 +206,10 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
 
     @Override
     public void toNetwork(T object, FriendlyByteBuf buffer) {}
+
+    /** Helper to create a singleton object as an anonymous class */
+    public static <T extends IHaveLoader<?>> T singleton(Function<IGenericLoader<T>,T> instance) {
+      return new SingletonLoader<>(instance).getInstance();
+    }
   }
 }

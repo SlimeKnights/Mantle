@@ -2,6 +2,7 @@ package slimeknights.mantle.data;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
@@ -55,14 +56,23 @@ public class NamedComponentRegistry<T> {
 
   /* Json */
 
-  /** Parse the value from JSON */
-  public T deserialize(JsonObject parent, String key) {
-    ResourceLocation name = JsonHelper.getResourceLocation(parent, key);
+  /** Shared logic for deserialize */
+  private T deserialize(ResourceLocation name) {
     T value = getValue(name);
     if (value == null) {
       throw new JsonSyntaxException(errorText + name);
     }
     return value;
+  }
+
+  /** Parse the value from JSON */
+  public T convert(JsonElement element, String key) {
+    return deserialize(JsonHelper.convertToResourceLocation(element, key));
+  }
+
+  /** Parse the value from JSON */
+  public T deserialize(JsonObject parent, String key) {
+    return deserialize(JsonHelper.getResourceLocation(parent, key));
   }
 
 
