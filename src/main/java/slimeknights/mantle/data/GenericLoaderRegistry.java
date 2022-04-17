@@ -60,6 +60,9 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
    * @return  Deserialized object
    */
   public T deserialize(JsonElement element) {
+    if (defaultInstance != null && element.isJsonNull()) {
+      return defaultInstance;
+    }
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();
       return loaders.deserialize(object, "type").deserialize(object);
@@ -82,6 +85,9 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
    * @return  Deserialized object
    */
   public T getAndDeserialize(JsonObject parent, String key) {
+    if (defaultInstance != null && !parent.has(key)) {
+      return defaultInstance;
+    }
     if (compact) {
       return deserialize(JsonHelper.getElement(parent, key));
     }
@@ -90,9 +96,6 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
 
   @Override
   public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-    if (defaultInstance != null && json.isJsonNull()) {
-      return defaultInstance;
-    }
     return deserialize(json);
   }
 
