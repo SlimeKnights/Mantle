@@ -11,7 +11,7 @@ public class ProtocolGoToPage extends ActionProtocol {
 
   @Override
   public void processCommand(BookScreen book, String param) {
-    int pageNum = book.book.findPageNumber(param);
+    int pageNum = book.book.findPageNumber(param, book.advancementCache);
 
     if (pageNum >= 0) {
       book.openPage(pageNum, this.returner);

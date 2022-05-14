@@ -305,7 +305,7 @@ public class BookScreen extends Screen {
     }));
 
     this.indexArrow = this.addRenderableWidget(new ArrowButton(book, this.width / 2 - PAGE_WIDTH_UNSCALED - ArrowButton.WIDTH / 2, this.height / 2 - PAGE_HEIGHT_UNSCALED / 2, ArrowButton.ArrowType.BACK_UP, this.book.appearance.arrowColor, this.book.appearance.arrowColorHover, (p_212998_1_) -> {
-      this.openPage(this.book.findPageNumber("index.page1"));
+      this.openPage(this.book.findPageNumber("index.page1", this.advancementCache));
 
       this.oldPage = -2;
       this.buildPages();
@@ -341,7 +341,7 @@ public class BookScreen extends Screen {
       this.previousArrow.x = this.width / 2 - 184;
       this.nextArrow.x = this.width / 2 + 165;
 
-      SectionData index = this.book.findSection("index");
+      SectionData index = this.book.findSection("index", this.advancementCache);
       this.indexArrow.visible = index != null && (this.page - 1) * 2 + 2 > index.getPageCount();
     }
 
