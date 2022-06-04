@@ -259,7 +259,7 @@ public class JsonHelper {
       })
       .map(preferredPath != null ? resource -> {
         ResourceLocation loaded = resource.getLocation();
-        Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", resource.getSourceName(), loaded, loaded.getNamespace(), preferredPath);
+        Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", loaded, resource.getSourceName(), loaded.getNamespace(), preferredPath);
         return getJson(resource);
       } : JsonHelper::getJson)
       .filter(Objects::nonNull).toList();
