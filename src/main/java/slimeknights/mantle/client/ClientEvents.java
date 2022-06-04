@@ -28,7 +28,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
-import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.repository.FileRepository;
 import slimeknights.mantle.client.model.FallbackModelLoader;
 import slimeknights.mantle.client.model.NBTKeyModel;
@@ -60,6 +59,7 @@ public class ClientEvents {
   static void registerListeners(RegisterClientReloadListenersEvent event) {
     event.registerReloadListener(ModelHelper.LISTENER);
     event.registerReloadListener(new BookLoader());
+    ResourceColorManager.init(event);
   }
 
   @SubscribeEvent

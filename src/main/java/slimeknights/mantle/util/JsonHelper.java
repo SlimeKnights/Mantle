@@ -242,7 +242,7 @@ public class JsonHelper {
   }
 
   /** Gets a list of JSON objects for a single path in all domains and packs, for a language file like loader */
-  public static List<JsonObject> getFileInAllDomainsAndPacks(ResourceManager manager, String path) {
+  public static List<JsonObject> getFileInAllDomainsAndPacks(ResourceManager manager, String path, @Nullable String preferredPath) {
     return manager
       .getNamespaces().stream()
       .filter(ResourceLocation::isValidNamespace)
@@ -257,7 +257,11 @@ public class JsonHelper {
         }
         return Stream.empty();
       })
-      .map(JsonHelper::getJson)
+      .map(preferredPath != null ? resource -> {
+        ResourceLocation loaded = resource.getLocation();
+        Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", resource.getSourceName(), loaded, loaded.getNamespace(), preferredPath);
+        return getJson(resource);
+      } : JsonHelper::getJson)
       .filter(Objects::nonNull).toList();
   }
 
