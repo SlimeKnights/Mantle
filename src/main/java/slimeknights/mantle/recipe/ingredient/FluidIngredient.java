@@ -1,8 +1,13 @@
 package slimeknights.mantle.recipe.ingredient;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,6 +24,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.util.JsonHelper;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +37,8 @@ import java.util.stream.StreamSupport;
 public abstract class FluidIngredient {
   /** Empty fluid ingredient, matches nothing */
   public static final FluidIngredient EMPTY = new Empty();
+  /** Fluid json serializer instance */
+  public static Serializer SERIALIZER = new Serializer();
 
   /** Cached list of display fluids */
   private List<FluidStack> displayFluids;
@@ -431,6 +439,21 @@ public abstract class FluidIngredient {
         ingredients[i] = deserializeObject(GsonHelper.convertToJsonObject(array.get(i), name + "[" + i + "]"));
       }
       return new Compound(ingredients);
+    }
+  }
+
+  /** Json serializer for fluids */
+  public static class Serializer implements JsonDeserializer<FluidIngredient>, JsonSerializer<FluidIngredient> {
+    private Serializer() {}
+
+    @Override
+    public FluidIngredient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      return FluidIngredient.deserialize(json, "ingredient");
+    }
+
+    @Override
+    public JsonElement serialize(FluidIngredient src, Type typeOfSrc, JsonSerializationContext context) {
+      return src.serialize();
     }
   }
 }
