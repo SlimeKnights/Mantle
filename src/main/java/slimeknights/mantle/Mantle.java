@@ -1,5 +1,6 @@
 package slimeknights.mantle;
 
+import net.minecraft.Util;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -24,7 +25,13 @@ import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
 import slimeknights.mantle.datagen.MantleFluidTagProvider;
+import slimeknights.mantle.datagen.MantleFluidTooltipProvider;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.transfer.EmptyFluidContainerTransfer;
+import slimeknights.mantle.fluid.transfer.EmptyFluidWithNBTTransfer;
+import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
+import slimeknights.mantle.fluid.transfer.FillFluidWithNBTTransfer;
+import slimeknights.mantle.fluid.transfer.FluidContainerTransferManager;
 import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
@@ -57,6 +64,7 @@ public class Mantle {
     ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
 
+    FluidContainerTransferManager.INSTANCE.init();
     MantleTags.init();
 
     instance = this;
@@ -88,6 +96,12 @@ public class Mantle {
 
     CraftingHelper.register(TagEmptyCondition.SERIALIZER);
     CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
+
+    // fluid container transfer
+    FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidContainerTransfer.ID, EmptyFluidContainerTransfer.DESERIALIZER);
+    FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidContainerTransfer.ID, FillFluidContainerTransfer.DESERIALIZER);
+    FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidWithNBTTransfer.ID, EmptyFluidWithNBTTransfer.DESERIALIZER);
+    FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidWithNBTTransfer.ID, FillFluidWithNBTTransfer.DESERIALIZER);
   }
 
   private void registerBlockEntities(final RegistryEvent.Register<BlockEntityType<?>> event) {
@@ -109,5 +123,15 @@ public class Mantle {
    */
   public static ResourceLocation getResource(String name) {
     return new ResourceLocation(modId, name);
+  }
+
+  /**
+   * Makes a translation key for the given name
+   * @param base  Base name, such as "block" or "gui"
+   * @param name  Object name
+   * @return  Translation key
+   */
+  public static String makeDescriptionId(String base, String name) {
+    return Util.makeDescriptionId(base, getResource(name));
   }
 }

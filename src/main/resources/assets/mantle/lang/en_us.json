@@ -37,5 +37,8 @@
   "command.mantle.tag.not_found": "Unknown %s tag '%s'",
 
   "command.mantle.tag_preference.empty_tag": "No preference for %s tag %s",
-  "command.mantle.tag_preference.preference": "Preferred value for %s tag %s is %s"
+  "command.mantle.tag_preference.preference": "Preferred value for %s tag %s is %s",
+
+  "block.mantle.tank.drained": "Drained %s mb %s",
+  "block.mantle.tank.filled": "Filled %s mb %s"
 }
