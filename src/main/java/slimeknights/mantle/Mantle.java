@@ -2,6 +2,8 @@ package slimeknights.mantle;
 
 import net.minecraft.Util;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -114,6 +116,9 @@ public class Mantle {
     if (event.includeServer()) {
       generator.addProvider(new MantleFluidTagProvider(generator, event.getExistingFileHelper()));
     }
+    if (event.includeClient()) {
+      generator.addProvider(new MantleFluidTooltipProvider(generator));
+    }
   }
 
   /**
@@ -133,5 +138,15 @@ public class Mantle {
    */
   public static String makeDescriptionId(String base, String name) {
     return Util.makeDescriptionId(base, getResource(name));
+  }
+
+  /**
+   * Makes a translation text component for the given name
+   * @param base  Base name, such as "block" or "gui"
+   * @param name  Object name
+   * @return  Translation key
+   */
+  public static MutableComponent makeComponent(String base, String name) {
+    return new TranslatableComponent(makeDescriptionId(base, name));
   }
 }

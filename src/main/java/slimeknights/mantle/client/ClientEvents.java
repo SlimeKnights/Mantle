@@ -39,6 +39,7 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.MantleRegistrations;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
@@ -60,6 +61,7 @@ public class ClientEvents {
     event.registerReloadListener(ModelHelper.LISTENER);
     event.registerReloadListener(new BookLoader());
     ResourceColorManager.init(event);
+    FluidTooltipHandler.init(event);
   }
 
   @SubscribeEvent
