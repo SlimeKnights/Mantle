@@ -1,5 +1,6 @@
 package slimeknights.mantle;
 
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -16,11 +17,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
+import slimeknights.mantle.datagen.MantleFluidTagProvider;
+import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
@@ -53,10 +57,13 @@ public class Mantle {
     ModLoadingContext.get().registerConfig(Type.CLIENT, Config.CLIENT_SPEC);
     ModLoadingContext.get().registerConfig(Type.SERVER, Config.SERVER_SPEC);
 
+    MantleTags.init();
+
     instance = this;
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, this::commonSetup);
     bus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
+    bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     bus.addGenericListener(RecipeSerializer.class, this::registerRecipeSerializers);
     bus.addGenericListener(BlockEntityType.class, this::registerBlockEntities);
     bus.addGenericListener(GlobalLootModifierSerializer.class, MantleLoot::registerGlobalLootModifiers);
@@ -86,6 +93,13 @@ public class Mantle {
   private void registerBlockEntities(final RegistryEvent.Register<BlockEntityType<?>> event) {
     BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(event.getRegistry());
     adapter.register(MantleSignBlockEntity::new, "sign", MantleSignBlockEntity::buildSignBlocks);
+  }
+
+  private void gatherData(final GatherDataEvent event) {
+    DataGenerator generator = event.getGenerator();
+    if (event.includeServer()) {
+      generator.addProvider(new MantleFluidTagProvider(generator, event.getExistingFileHelper()));
+    }
   }
 
   /**
