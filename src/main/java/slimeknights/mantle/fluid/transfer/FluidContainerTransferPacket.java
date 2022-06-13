@@ -26,7 +26,7 @@ public class FluidContainerTransferPacket implements IThreadsafePacket {
 
   @Override
   public void encode(FriendlyByteBuf buffer) {
-    buffer.writeInt(items.size());
+    buffer.writeVarInt(items.size());
     for (Item item : items) {
       buffer.writeRegistryIdUnsafe(ForgeRegistries.ITEMS, item);
     }
