@@ -28,7 +28,7 @@ public class LogicHelper {
    * @return  List value or default
    */
   public static <E> E getOrDefault(List<E> list, int index, E defaultValue) {
-    if (index < 0 || index > list.size()) {
+    if (index < 0 || index >= list.size()) {
       return defaultValue;
     }
     return list.get(index);
