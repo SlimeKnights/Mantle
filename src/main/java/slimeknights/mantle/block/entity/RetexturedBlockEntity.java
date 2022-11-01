@@ -6,16 +6,18 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.util.Lazy;
-import slimeknights.mantle.block.RetexturedBlock;
 import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nonnull;
 
-/**
- * Minimal implementation for {@link IRetexturedBlockEntity}, use alongside {@link RetexturedBlock} and {@link slimeknights.mantle.item.RetexturedBlockItem}
- */
-public class RetexturedBlockEntity extends MantleBlockEntity implements IRetexturedBlockEntity {
+import static slimeknights.mantle.util.RetexturedHelper.TAG_TEXTURE;
 
+/**
+ *  Minimal implementation of retextured blocks by storing data in the block entity. Does not handle syncing the best
+ * @deprecated use {@link DefaultRetexturedBlockEntity}
+ */
+@Deprecated
+public class RetexturedBlockEntity extends MantleBlockEntity implements IRetexturedBlockEntity {
   /** Lazy value of model data as it will not change after first fetch */
   private final Lazy<IModelData> data = Lazy.of(this::getRetexturedModelData);
   public RetexturedBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -31,6 +33,17 @@ public class RetexturedBlockEntity extends MantleBlockEntity implements IRetextu
   @Override
   protected boolean shouldSyncOnUpdate() {
     return true;
+  }
+
+  @Override
+  protected void saveSynced(CompoundTag nbt) {
+    super.saveSynced(nbt);
+    // ensure the texture syncs, by default forge data does not
+    if (!nbt.contains("ForgeData")) {
+      CompoundTag forgeData = new CompoundTag();
+      forgeData.putString(TAG_TEXTURE, getTextureName());
+      nbt.put("ForgeData", forgeData);
+    }
   }
 
   @Override

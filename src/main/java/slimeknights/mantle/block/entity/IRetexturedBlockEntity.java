@@ -10,8 +10,9 @@ import slimeknights.mantle.util.RetexturedHelper;
 
 /**
  * Standard interface that should be used by retexturable tile entities, allows control over where the texture is saved.
+ * Note that in the future, more of these methods will be made abstract, discouraging the use of {@link #getTileData()} to store the texture (as we can sync our own tag easier)
  *
- * Use alongside {@link RetexturedBlock} and {@link slimeknights.mantle.item.RetexturedBlockItem}. See {@link RetexturedBlockEntity} for implementation.
+ * Use alongside {@link RetexturedBlock} and {@link slimeknights.mantle.item.RetexturedBlockItem}. See {@link DefaultRetexturedBlockEntity} for implementation.
  */
 public interface IRetexturedBlockEntity {
   /* Gets the Forge tile data for the tile entity */
@@ -21,10 +22,10 @@ public interface IRetexturedBlockEntity {
    * Gets the current texture block name. Encouraged to override this to not use {@link #getTileData()}
    * @return Texture block name
    */
-
   default String getTextureName() {
     return RetexturedHelper.getTextureName(getTileData());
   }
+
   /**
    * Gets the current texture block
    * @return Texture block
