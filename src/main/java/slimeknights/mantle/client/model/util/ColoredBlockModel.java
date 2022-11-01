@@ -122,7 +122,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
    * Data class for setting properties when baking colored elements
    */
   public record ColorData(int color, int luminosity) {
-    public static final ColorData DEFAULT = new ColorData(-1, -1);
+    public static final ColorData DEFAULT = new ColorData(-1, 0);
 
     /**
      * Parses the color data from JSON
