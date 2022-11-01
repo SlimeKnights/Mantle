@@ -5,6 +5,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,6 +27,12 @@ import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
+import slimeknights.mantle.data.predicate.block.BlockPredicate;
+import slimeknights.mantle.data.predicate.block.SetBlockPredicate;
+import slimeknights.mantle.data.predicate.block.TagBlockPredicate;
+import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
+import slimeknights.mantle.data.predicate.entity.MobTypePredicate;
+import slimeknights.mantle.data.predicate.entity.TagEntityPredicate;
 import slimeknights.mantle.datagen.MantleFluidTagProvider;
 import slimeknights.mantle.datagen.MantleFluidTooltipProvider;
 import slimeknights.mantle.datagen.MantleTags;
@@ -104,6 +111,33 @@ public class Mantle {
     FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidContainerTransfer.ID, FillFluidContainerTransfer.DESERIALIZER);
     FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidWithNBTTransfer.ID, EmptyFluidWithNBTTransfer.DESERIALIZER);
     FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidWithNBTTransfer.ID, FillFluidWithNBTTransfer.DESERIALIZER);
+
+    // predicates
+    {
+      // block predicates
+      BlockPredicate.LOADER.register(getResource("and"), BlockPredicate.AND);
+      BlockPredicate.LOADER.register(getResource("or"), BlockPredicate.OR);
+      BlockPredicate.LOADER.register(getResource("inverted"), BlockPredicate.INVERTED);
+      BlockPredicate.LOADER.register(getResource("requires_tool"), BlockPredicate.REQUIRES_TOOL.getLoader());
+      BlockPredicate.LOADER.register(getResource("set"), SetBlockPredicate.LOADER);
+      BlockPredicate.LOADER.register(getResource("tag"), TagBlockPredicate.LOADER);
+      // entity predicates
+      LivingEntityPredicate.LOADER.register(getResource("and"), LivingEntityPredicate.AND);
+      LivingEntityPredicate.LOADER.register(getResource("or"), LivingEntityPredicate.OR);
+      LivingEntityPredicate.LOADER.register(getResource("inverted"), LivingEntityPredicate.INVERTED);
+      LivingEntityPredicate.LOADER.register(getResource("any"), LivingEntityPredicate.ANY.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("fire_immune"), LivingEntityPredicate.FIRE_IMMUNE.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("water_sensitive"), LivingEntityPredicate.WATER_SENSITIVE.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("on_fire"), LivingEntityPredicate.ON_FIRE.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("tag"), TagEntityPredicate.LOADER);
+      LivingEntityPredicate.LOADER.register(getResource("mob_type"), MobTypePredicate.LOADER);
+      // register mob types
+      MobTypePredicate.MOB_TYPES.register(new ResourceLocation("undefined"), MobType.UNDEFINED);
+      MobTypePredicate.MOB_TYPES.register(new ResourceLocation("undead"), MobType.UNDEAD);
+      MobTypePredicate.MOB_TYPES.register(new ResourceLocation("arthropod"), MobType.ARTHROPOD);
+      MobTypePredicate.MOB_TYPES.register(new ResourceLocation("illager"), MobType.ILLAGER);
+      MobTypePredicate.MOB_TYPES.register(new ResourceLocation("water"), MobType.WATER);
+    }
   }
 
   private void registerBlockEntities(final RegistryEvent.Register<BlockEntityType<?>> event) {
