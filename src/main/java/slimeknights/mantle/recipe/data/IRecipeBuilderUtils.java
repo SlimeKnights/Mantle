@@ -1,8 +1,8 @@
 package slimeknights.mantle.recipe.data;
 
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
 import javax.annotation.Nullable;
@@ -11,7 +11,9 @@ import java.util.function.Consumer;
 
 /**
  * Utilities to help in the creation of recipes
+ * @deprecated use {@link IRecipeHelper}
  */
+@Deprecated
 @SuppressWarnings("unused")
 public interface IRecipeBuilderUtils {
   /**
