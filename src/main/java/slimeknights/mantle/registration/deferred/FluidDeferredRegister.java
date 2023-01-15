@@ -12,7 +12,6 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
-import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.registration.DelayedSupplier;
 import slimeknights.mantle.registration.FluidBuilder;
@@ -24,12 +23,12 @@ import java.util.function.Supplier;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
-  private final DeferredRegister<Block> blockRegister;
-  private final DeferredRegister<Item> itemRegister;
+  private final SynchronizedDeferredRegister<Block> blockRegister;
+  private final SynchronizedDeferredRegister<Item> itemRegister;
   public FluidDeferredRegister(String modID) {
     super(Registry.FLUID_REGISTRY, modID);
-    this.blockRegister = DeferredRegister.create(Registry.BLOCK_REGISTRY, modID);
-    this.itemRegister = DeferredRegister.create(Registry.ITEM_REGISTRY, modID);
+    this.blockRegister = SynchronizedDeferredRegister.create(Registry.BLOCK_REGISTRY, modID);
+    this.itemRegister = SynchronizedDeferredRegister.create(Registry.ITEM_REGISTRY, modID);
   }
 
   @Override

@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.block.MantleStandingSignBlock;
@@ -57,10 +56,10 @@ import java.util.function.Supplier;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
 
-  protected final DeferredRegister<Item> itemRegister;
+  protected final SynchronizedDeferredRegister<Item> itemRegister;
   public BlockDeferredRegister(String modID) {
     super(Registry.BLOCK_REGISTRY, modID);
-    this.itemRegister = DeferredRegister.create(ForgeRegistries.ITEMS, modID);
+    this.itemRegister = SynchronizedDeferredRegister.create(ForgeRegistries.ITEMS, modID);
   }
 
   @Override

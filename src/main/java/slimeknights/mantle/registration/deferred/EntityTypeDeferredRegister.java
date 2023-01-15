@@ -7,7 +7,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.registration.ItemProperties;
 
@@ -19,10 +18,10 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityType<?>> {
 
-  private final DeferredRegister<Item> itemRegistry;
+  private final SynchronizedDeferredRegister<Item> itemRegistry;
   public EntityTypeDeferredRegister(String modID) {
     super(Registry.ENTITY_TYPE_REGISTRY, modID);
-    itemRegistry = DeferredRegister.create(Registry.ITEM_REGISTRY, modID);
+    itemRegistry = SynchronizedDeferredRegister.create(Registry.ITEM_REGISTRY, modID);
   }
 
   @Override
