@@ -54,7 +54,7 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
   /** Model loader for vanilla block model, mainly intended for use in fallback registration */
   public static final Loader LOADER = new Loader();
   /** Location used for baking dynamic models, name does not matter so just using a constant */
-  private static final ResourceLocation BAKE_LOCATION = Mantle.getResource("dynamic_model_baking");
+  static final ResourceLocation BAKE_LOCATION = Mantle.getResource("dynamic_model_baking");
 
   /** Parent model location, used to fetch parts and for textures if the owner is not a block model */
   @Getter
