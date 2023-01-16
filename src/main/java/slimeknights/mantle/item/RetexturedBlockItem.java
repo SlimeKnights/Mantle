@@ -46,8 +46,8 @@ public class RetexturedBlockItem extends BlockTooltipItem {
 
   @Override
   public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    super.appendHoverText(stack, worldIn, tooltip, flagIn);
     addTooltip(stack, tooltip);
+    super.appendHoverText(stack, worldIn, tooltip, flagIn);
   }
 
 
