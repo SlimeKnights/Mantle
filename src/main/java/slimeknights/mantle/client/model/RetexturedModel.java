@@ -172,6 +172,10 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
       this.retextured = retextured;
     }
 
+    public Baked(BakedModel baked, IModelConfiguration owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
+      this(baked, owner, new ColoredBlockModel(model, Collections.emptyList()), transform, retextured);
+    }
+
     /**
      * Gets the model with the given texture applied
      * @param name  Texture location
