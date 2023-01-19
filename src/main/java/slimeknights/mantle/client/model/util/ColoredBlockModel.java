@@ -134,7 +134,7 @@ public class ColoredBlockModel implements IModelGeometry<ColoredBlockModel> {
     SimpleBakedModel.Builder builder = new SimpleBakedModel.Builder(owner, overrides).particle(particle);
     int size = elements.size();
     Transformation transformation = transform.getRotation();
-    boolean uvlock = transformation.isIdentity();
+    boolean uvlock = transform.isUvLocked();
     for (int i = 0; i < size; i++) {
       BlockElement part = elements.get(i);
       ColorData colors = LogicHelper.getOrDefault(colorData, i, ColorData.DEFAULT);
