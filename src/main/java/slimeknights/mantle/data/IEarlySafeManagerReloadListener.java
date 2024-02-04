@@ -9,7 +9,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 /**
- * Same as {@link ISafeManagerReloadListener}, but reloads earlier. Needed to work with some parts of models
+ * Same as {@link ISafeManagerReloadListener}, but reloads earlier. Needed to work with some parts of models.
+ * TODO 1.19: move to {@code slimeknights.data.listener}
  */
 public interface IEarlySafeManagerReloadListener extends PreparableReloadListener {
   @Override

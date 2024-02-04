@@ -24,7 +24,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Alternative to {@link net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener} that merges all json into a single builder rather than taking the top most JSON
+ * Alternative to {@link net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener} that merges all json into a single builder rather than taking the top most JSON.
+ * TODO 1.19: move to {@code slimeknights.data.listener}
  * @param <B>  Builder class
  */
 @RequiredArgsConstructor

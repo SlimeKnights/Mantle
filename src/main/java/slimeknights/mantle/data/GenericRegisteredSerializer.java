@@ -18,11 +18,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This is a serialier/deserializer to/from JsonObjects that automatically handles dispatching responsibilities to named serializers
- * @param <T>
+ * This is a serialier/deserializer to/from JsonObjects that automatically handles dispatching responsibilities to named serializers.
+ * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
+ * @param <T>  Type of the serializable object
+ * @see GenericLoaderRegistry GenericLoaderRegistry for an alternative that also supports network friendly byte buffers
  */
 public class GenericRegisteredSerializer<T extends IJsonSerializable> implements JsonSerializer<T>, JsonDeserializer<T> {
-  /** Map of all serializers for implementations */
+  /**
+   * Map of all serializers for implementations.
+   * TODO 1.19: would using {@link NamedComponentRegistry} make this implemention simplier?
+   */
   private final Map<ResourceLocation,JsonDeserializer<? extends T>> deserializers = new HashMap<>();
 
   /** Registers a deserializer by name */
@@ -45,15 +50,15 @@ public class GenericRegisteredSerializer<T extends IJsonSerializable> implements
   public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject serialized = src.serialize(context);
     if (!serialized.has("type")) {
-      throw new IllegalArgumentException("Invalid serialized sprite transformer, missing type");
+      throw new IllegalArgumentException("Invalid serialized object, missing type");
     }
     String typeStr = GsonHelper.getAsString(serialized, "type");
     ResourceLocation typeRL = ResourceLocation.tryParse(typeStr);
     if (typeRL == null) {
-      throw new IllegalArgumentException("Invalid sprite transformer type '" + typeStr + '\'');
+      throw new IllegalArgumentException("Invalid object type '" + typeStr + '\'');
     }
     if (!deserializers.containsKey(typeRL)) {
-      throw new IllegalArgumentException("Unregistered sprite transformer " + typeStr);
+      throw new IllegalArgumentException("Unregistered object " + typeStr);
     }
     return serialized;
   }

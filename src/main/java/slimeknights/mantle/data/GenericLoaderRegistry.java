@@ -22,7 +22,12 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.function.Function;
 
-/** Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON */
+/**
+ * Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON.
+ * TODO 1.19: move to {@code slimeknights.data.registry}
+ * @param <T>  Type of the serializable object
+ * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
+ */
 @RequiredArgsConstructor
 public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSerializer<T>, JsonDeserializer<T> {
   /** Empty object instance for compact deserialization */

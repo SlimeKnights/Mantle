@@ -12,8 +12,11 @@ import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 
-/** Generic registry of a component named by a resource location */
-
+/**
+ * Generic registry of a component named by a resource location. Supports any arbitrary object without making any changes to it.
+ * TODO 1.19: move to {@code slimeknights.data.registry}
+ * @param <T> Type of the component being registered.
+ */
 public class NamedComponentRegistry<T> {
   /** Registered box expansion types */
   private final BiMap<ResourceLocation,T> values = HashBiMap.create();

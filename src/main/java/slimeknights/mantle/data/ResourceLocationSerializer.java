@@ -8,14 +8,15 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 
 import java.lang.reflect.Type;
 import java.util.function.Function;
 
 /**
- * Extension to Resource Location serializer to change the default mod ID
+ * Extension to Resource Location serializer to change the default mod ID.
+ * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
  */
 @RequiredArgsConstructor
 public class ResourceLocationSerializer<T extends ResourceLocation> implements JsonDeserializer<T>, JsonSerializer<T> {

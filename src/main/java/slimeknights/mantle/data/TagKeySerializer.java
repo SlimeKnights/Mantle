@@ -16,7 +16,8 @@ import slimeknights.mantle.util.JsonHelper;
 import java.lang.reflect.Type;
 
 /**
- * Serializer for a generic tag key type
+ * Serializer for a generic tag key type.
+ * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
  */
 @RequiredArgsConstructor
 public class TagKeySerializer<T> implements JsonSerializer<TagKey<T>>, JsonDeserializer<TagKey<T>> {

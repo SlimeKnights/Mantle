@@ -9,7 +9,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Utility that handles checking if a resource exists in any resource pack
+ * Utility that handles checking if a resource exists in any resource pack.
+ * TODO 1.19: move to {@code slimeknights.data.listener}
  */
 public class ResourceValidator implements IEarlySafeManagerReloadListener, Predicate<ResourceLocation> {
   private final String folder;
