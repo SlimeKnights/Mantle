@@ -13,8 +13,7 @@ import java.util.Set;
  * Modifier matching a block
  */
 @RequiredArgsConstructor
-public
-class SetBlockPredicate implements BlockPredicate {
+public class SetBlockPredicate implements BlockPredicate {
   public static final IGenericLoader<SetBlockPredicate> LOADER = new RegistrySetLoader<>("blocks", ForgeRegistries.BLOCKS, SetBlockPredicate::new, predicate -> predicate.blocks);
 
   private final Set<Block> blocks;

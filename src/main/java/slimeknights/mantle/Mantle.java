@@ -28,11 +28,14 @@ import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.config.Config;
 import slimeknights.mantle.data.predicate.block.BlockPredicate;
+import slimeknights.mantle.data.predicate.block.BlockPropertiesPredicate;
 import slimeknights.mantle.data.predicate.block.SetBlockPredicate;
 import slimeknights.mantle.data.predicate.block.TagBlockPredicate;
 import slimeknights.mantle.data.predicate.damage.DamageSourcePredicate;
 import slimeknights.mantle.data.predicate.damage.SourceAttackerPredicate;
 import slimeknights.mantle.data.predicate.damage.SourceMessagePredicate;
+import slimeknights.mantle.data.predicate.entity.EntitySetPredicate;
+import slimeknights.mantle.data.predicate.entity.HasEnchantmentEntityPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.mantle.data.predicate.entity.MobTypePredicate;
 import slimeknights.mantle.data.predicate.entity.TagEntityPredicate;
@@ -124,9 +127,11 @@ public class Mantle {
       BlockPredicate.LOADER.register(getResource("and"), BlockPredicate.AND);
       BlockPredicate.LOADER.register(getResource("or"), BlockPredicate.OR);
       BlockPredicate.LOADER.register(getResource("inverted"), BlockPredicate.INVERTED);
+      BlockPredicate.LOADER.register(getResource("any"), BlockPredicate.ANY.getLoader());
       BlockPredicate.LOADER.register(getResource("requires_tool"), BlockPredicate.REQUIRES_TOOL.getLoader());
       BlockPredicate.LOADER.register(getResource("set"), SetBlockPredicate.LOADER);
       BlockPredicate.LOADER.register(getResource("tag"), TagBlockPredicate.LOADER);
+      BlockPredicate.LOADER.register(getResource("block_properties"), BlockPropertiesPredicate.LOADER);
 
       // item predicates
       ItemPredicate.LOADER.register(getResource("and"), ItemPredicate.AND);
@@ -140,12 +145,22 @@ public class Mantle {
       LivingEntityPredicate.LOADER.register(getResource("and"), LivingEntityPredicate.AND);
       LivingEntityPredicate.LOADER.register(getResource("or"), LivingEntityPredicate.OR);
       LivingEntityPredicate.LOADER.register(getResource("inverted"), LivingEntityPredicate.INVERTED);
+      // simple
       LivingEntityPredicate.LOADER.register(getResource("any"), LivingEntityPredicate.ANY.getLoader());
       LivingEntityPredicate.LOADER.register(getResource("fire_immune"), LivingEntityPredicate.FIRE_IMMUNE.getLoader());
       LivingEntityPredicate.LOADER.register(getResource("water_sensitive"), LivingEntityPredicate.WATER_SENSITIVE.getLoader());
       LivingEntityPredicate.LOADER.register(getResource("on_fire"), LivingEntityPredicate.ON_FIRE.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("on_ground"), LivingEntityPredicate.ON_GROUND.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("crouching"), LivingEntityPredicate.CROUCHING.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("eyes_in_water"), LivingEntityPredicate.EYES_IN_WATER.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("feet_in_water"), LivingEntityPredicate.FEET_IN_WATER.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("underwater"), LivingEntityPredicate.UNDERWATER.getLoader());
+      LivingEntityPredicate.LOADER.register(getResource("raining_at"), LivingEntityPredicate.RAINING.getLoader());
+      // property
+      LivingEntityPredicate.LOADER.register(getResource("set"), EntitySetPredicate.LOADER);
       LivingEntityPredicate.LOADER.register(getResource("tag"), TagEntityPredicate.LOADER);
       LivingEntityPredicate.LOADER.register(getResource("mob_type"), MobTypePredicate.LOADER);
+      LivingEntityPredicate.LOADER.register(getResource("has_enchantment"), HasEnchantmentEntityPredicate.LOADER);
       // register mob types
       MobTypePredicate.MOB_TYPES.register(new ResourceLocation("undefined"), MobType.UNDEFINED);
       MobTypePredicate.MOB_TYPES.register(new ResourceLocation("undead"), MobType.UNDEAD);

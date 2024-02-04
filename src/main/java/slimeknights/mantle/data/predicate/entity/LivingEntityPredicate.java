@@ -1,30 +1,22 @@
 package slimeknights.mantle.data.predicate.entity;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.data.GenericLoaderRegistry;
 import slimeknights.mantle.data.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.GenericLoaderRegistry.SingletonLoader;
 import slimeknights.mantle.data.predicate.AndJsonPredicate;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.InvertedJsonPredicate;
 import slimeknights.mantle.data.predicate.NestedJsonPredicateLoader;
 import slimeknights.mantle.data.predicate.OrJsonPredicate;
 
-import static slimeknights.mantle.data.GenericLoaderRegistry.SingletonLoader.singleton;
+import java.util.function.Predicate;
 
 /** Predicate matching an entity */
 public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   /** Predicate that matches all entities */
-  LivingEntityPredicate ANY = singleton(loader -> new LivingEntityPredicate() {
-    @Override
-    public boolean matches(LivingEntity input) {
-      return true;
-    }
-
-    @Override
-    public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
-      return loader;
-    }
-  });
+  LivingEntityPredicate ANY = simple(entity -> true);
 
   /** Loader for block state predicates */
   GenericLoaderRegistry<IJsonPredicate<LivingEntity>> LOADER = new GenericLoaderRegistry<>(ANY, true);
@@ -44,41 +36,38 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   /* Singletons */
 
   /** Predicate that matches water sensitive entities */
-  LivingEntityPredicate WATER_SENSITIVE = singleton(loader -> new LivingEntityPredicate() {
-    @Override
-    public boolean matches(LivingEntity input) {
-      return input.isSensitiveToWater();
-    }
-
-    @Override
-    public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
-      return loader;
-    }
-  });
-
+  LivingEntityPredicate WATER_SENSITIVE = simple(LivingEntity::isSensitiveToWater);
   /** Predicate that matches fire immune entities */
-  LivingEntityPredicate FIRE_IMMUNE = singleton(loader -> new LivingEntityPredicate() {
-    @Override
-    public boolean matches(LivingEntity input) {
-      return input.fireImmune();
-    }
-
-    @Override
-    public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
-      return loader;
-    }
-  });
-
+  LivingEntityPredicate FIRE_IMMUNE = simple(Entity::fireImmune);
   /** Predicate that matches fire immune entities */
-  LivingEntityPredicate ON_FIRE = singleton(loader -> new LivingEntityPredicate() {
-    @Override
-    public boolean matches(LivingEntity input) {
-      return input.isOnFire();
-    }
+  LivingEntityPredicate ON_FIRE = simple(Entity::isOnFire);
+  /** Checks if the entity is on the ground */
+  LivingEntityPredicate ON_GROUND = simple(Entity::isOnGround);
+  /** Entities that are in the air */
+  LivingEntityPredicate CROUCHING = simple(Entity::isCrouching);
 
-    @Override
-    public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
-      return loader;
-    }
-  });
+  // water
+  /** Entities with eyes in water */
+  LivingEntityPredicate EYES_IN_WATER = simple(entity -> entity.wasEyeInWater);
+  /** Entities with feet in water */
+  LivingEntityPredicate FEET_IN_WATER = simple(Entity::isInWater);
+  /** Entities with head and feet are in water */
+  LivingEntityPredicate UNDERWATER = simple(Entity::isUnderWater);
+  /** Checks if the entity is being hit by rain at their location */
+  LivingEntityPredicate RAINING = simple(entity -> entity.level.isRainingAt(entity.blockPosition()));
+
+  /** Creates a new predicate singleton */
+  private static LivingEntityPredicate simple(Predicate<LivingEntity> predicate) {
+    return SingletonLoader.singleton(loader -> new LivingEntityPredicate() {
+      @Override
+      public boolean matches(LivingEntity entity) {
+        return predicate.test(entity);
+      }
+
+      @Override
+      public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
+        return loader;
+      }
+    });
+  }
 }
