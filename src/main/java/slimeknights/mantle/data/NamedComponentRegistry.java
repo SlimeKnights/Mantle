@@ -88,17 +88,16 @@ public class NamedComponentRegistry<T> {
 
   /** Writes the value to the buffer */
   public void toNetworkOptional(@Nullable T value, FriendlyByteBuf buffer) {
+    // if null, just write an empty string, that is not a valid resource location anyways and saves us a byte
     if (value != null) {
-      buffer.writeBoolean(true);
-      buffer.writeResourceLocation(getKey(value));
+      buffer.writeUtf(getKey(value).toString());
     } else {
-      buffer.writeBoolean(false);
+      buffer.writeUtf("");
     }
   }
 
-  /** Parse the value from JSON */
-  public T fromNetwork(FriendlyByteBuf buffer) {
-    ResourceLocation name = buffer.readResourceLocation();
+  /** Reads the given value from the network by resource location */
+  private T fromNetwork(ResourceLocation name) {
     T value = getValue(name);
     if (value == null) {
       throw new DecoderException(errorText + name);
@@ -107,11 +106,18 @@ public class NamedComponentRegistry<T> {
   }
 
   /** Parse the value from JSON */
+  public T fromNetwork(FriendlyByteBuf buffer) {
+    return fromNetwork(buffer.readResourceLocation());
+  }
+
+  /** Parse the value from JSON */
   @Nullable
   public T fromNetworkOptional(FriendlyByteBuf buffer) {
-    if (buffer.readBoolean()) {
-      return fromNetwork(buffer);
+    // empty string is not a valid resource location, so its a nice value to use for null, saves us a byte
+    String key = buffer.readUtf(Short.MAX_VALUE);
+    if (key.isEmpty()) {
+      return null;
     }
-    return null;
+    return fromNetwork(new ResourceLocation(key));
   }
 }

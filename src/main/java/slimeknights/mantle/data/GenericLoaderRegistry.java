@@ -137,18 +137,21 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
   /** Writes the object to the network, fighting generics */
   @SuppressWarnings("unchecked")
   private <L extends IHaveLoader<T>> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
-    buffer.writeResourceLocation(loaders.getKey((IGenericLoader<? extends T>)loader));
     loader.toNetwork((L)src, buffer);
   }
 
   /** Writes the object to the network */
   public void toNetwork(T src, FriendlyByteBuf buffer) {
+    // if we have a default instance, reading the loader is optional
+    // if we match the default instance write no loader to save network space
     if (defaultInstance != null) {
       if (src == defaultInstance) {
-        buffer.writeBoolean(false);
+        loaders.toNetworkOptional(null, buffer);
         return;
       }
-      buffer.writeBoolean(true);
+      loaders.toNetworkOptional(src.getLoader(), buffer);
+    } else {
+      loaders.toNetwork(src.getLoader(), buffer);
     }
     toNetwork(src.getLoader(), src, buffer);
   }
@@ -159,12 +162,18 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
    * @return  Read object
    */
   public T fromNetwork(FriendlyByteBuf buffer) {
+    IGenericLoader<? extends T> loader;
+    // if we have a default instance, reading the loader is optional
+    // if missing, use default instance
     if (defaultInstance != null) {
-      if (!buffer.readBoolean()) {
+      loader = loaders.fromNetworkOptional(buffer);
+      if (loader == null) {
         return defaultInstance;
       }
+    } else {
+      loader = loaders.fromNetwork(buffer);
     }
-    return loaders.fromNetwork(buffer).fromNetwork(buffer);
+    return loader.fromNetwork(buffer);
   }
 
   /** Interface for a loader */
