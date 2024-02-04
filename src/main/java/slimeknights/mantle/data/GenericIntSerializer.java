@@ -10,7 +10,10 @@ import slimeknights.mantle.data.GenericLoaderRegistry.IHaveLoader;
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 
-/** Generic serializer for classes that just have a single int value */
+/**
+ * Generic serializer for classes that just have a single int value.
+ * TODO 1.19: move to {@link slimeknights.mantle.data.loader} as {@code IntLoader}
+ */
 @RequiredArgsConstructor
 public class GenericIntSerializer<T extends IHaveLoader<?>> implements IGenericLoader<T> {
   private final String key;

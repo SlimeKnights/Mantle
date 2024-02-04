@@ -12,7 +12,8 @@ import slimeknights.mantle.util.JsonHelper;
 import java.util.function.Function;
 
 /**
- * Generic loader for a tag based JSON predicate
+ * Generic loader for a tag based JSON predicate.
+ * TODO 1.19: move to {@link slimeknights.mantle.data.loader} as {@code TagKeyLoader}
  * @param <T>  Tag registry key
  * @param <C>  Constructor for the predicate
  */
