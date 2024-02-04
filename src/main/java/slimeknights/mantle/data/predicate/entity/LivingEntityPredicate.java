@@ -57,7 +57,7 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   LivingEntityPredicate RAINING = simple(entity -> entity.level.isRainingAt(entity.blockPosition()));
 
   /** Creates a new predicate singleton */
-  private static LivingEntityPredicate simple(Predicate<LivingEntity> predicate) {
+  static LivingEntityPredicate simple(Predicate<LivingEntity> predicate) {
     return SingletonLoader.singleton(loader -> new LivingEntityPredicate() {
       @Override
       public boolean matches(LivingEntity entity) {

@@ -64,7 +64,7 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   }
 
   /** Creates a simple predicate with no parameters */
-  private static DamageSourcePredicate simple(Predicate<DamageSource> predicate) {
+  static DamageSourcePredicate simple(Predicate<DamageSource> predicate) {
     return singleton(loader -> new DamageSourcePredicate() {
       @Override
       public boolean matches(DamageSource source) {

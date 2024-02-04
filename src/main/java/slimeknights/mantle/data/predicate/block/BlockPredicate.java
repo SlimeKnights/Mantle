@@ -41,7 +41,7 @@ public interface BlockPredicate extends IJsonPredicate<BlockState> {
   BlockPredicate REQUIRES_TOOL = simple(BlockStateBase::requiresCorrectToolForDrops);
 
   /** Creates a new simple predicate */
-  private static BlockPredicate simple(Predicate<BlockState> predicate) {
+  static BlockPredicate simple(Predicate<BlockState> predicate) {
     return SingletonLoader.singleton(loader -> new BlockPredicate() {
       @Override
       public boolean matches(BlockState state) {
