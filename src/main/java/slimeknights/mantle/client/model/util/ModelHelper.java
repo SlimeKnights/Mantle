@@ -9,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.MultiPartBakedModel;
 import net.minecraft.client.resources.model.WeightedBakedModel;
@@ -94,7 +96,12 @@ public class ModelHelper {
    */
   @SuppressWarnings("deprecation")
   private static ResourceLocation getParticleTextureInternal(Block block) {
-    return Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(block.defaultBlockState()).getParticleIcon().getName();
+    TextureAtlasSprite particle = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(block.defaultBlockState()).getParticleIcon();
+    //noinspection ConstantConditions  dumb mods returning null particle icons
+    if (particle != null) {
+      return particle.getName();
+    }
+    return MissingTextureAtlasSprite.getLocation();
   }
 
   /**
