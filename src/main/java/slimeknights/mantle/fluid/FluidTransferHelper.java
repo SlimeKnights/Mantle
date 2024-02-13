@@ -142,9 +142,30 @@ public class FluidTransferHelper {
         LazyOptional<IFluidHandler> teCapability = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face);
         if (teCapability.isPresent()) {
           IFluidHandler teHandler = teCapability.orElse(EmptyFluidHandler.INSTANCE);
-          ItemStack copy = ItemHandlerHelper.copyStackWithSize(stack, 1);
+
+          // fallback to JSON based transfer
+          if (FluidContainerTransferManager.INSTANCE.mayHaveTransfer(stack)) {
+            // only actually transfer on the serverside, client just has items
+            if (!world.isClientSide) {
+              FluidStack currentFluid = teHandler.drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
+              IFluidContainerTransfer transfer = FluidContainerTransferManager.INSTANCE.getTransfer(stack, currentFluid);
+              if (transfer != null) {
+                TransferResult result = transfer.transfer(stack, currentFluid, teHandler);
+                if (result != null) {
+                  if (result.didFill()) {
+                    playFillSound(world, pos, player, result.fluid());
+                  } else {
+                    playEmptySound(world, pos, player, result.fluid());
+                  }
+                  player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, result.stack()));
+                }
+              }
+            }
+            return true;
+          }
 
           // if the item has a capability, do a direct transfer
+          ItemStack copy = ItemHandlerHelper.copyStackWithSize(stack, 1);
           LazyOptional<IFluidHandlerItem> itemCapability = copy.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
           if (itemCapability.isPresent()) {
             if (!world.isClientSide) {
@@ -163,27 +184,6 @@ public class FluidTransferHelper {
               // if either worked, update the player's inventory
               if (!transferred.isEmpty()) {
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, itemHandler.getContainer()));
-              }
-            }
-            return true;
-          }
-
-          // fallback to JSON based transfer
-          if (FluidContainerTransferManager.INSTANCE.mayHaveTransfer(stack)) {
-            // only actually transfer on the serverside, client just has items
-            if (!world.isClientSide) {
-              FluidStack currentFluid = teHandler.drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
-              IFluidContainerTransfer transfer = FluidContainerTransferManager.INSTANCE.getTransfer(stack, currentFluid);
-              if (transfer != null) {
-                TransferResult result = transfer.transfer(stack, currentFluid, teHandler);
-                if (result != null) {
-                  if (result.didFill()) {
-                    playFillSound(world, pos, player, result.fluid());
-                  } else {
-                    playEmptySound(world, pos, player, result.fluid());
-                  }
-                  player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, result.stack()));
-                }
               }
             }
             return true;
