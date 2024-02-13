@@ -1,6 +1,7 @@
 package slimeknights.mantle.plugin.jei;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Getter;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
@@ -33,7 +34,8 @@ import java.util.stream.Collectors;
 public class RetexturableRecipeExtension implements ICraftingCategoryExtension, ICustomCraftingCategoryExtension, ITooltipCallback<ItemStack> {
   /** Actual recipe instance */
   private final ShapedRetexturedRecipe recipe;
-  /** Recipe size */
+  /** Recipe size, TODO: remove when fully updating to JEI 10.0/11.0 */
+  @Getter
   private final Size2i size;
   /** List of all possible outputs, for the sake of recipe lookups */
   private final List<List<ItemStack>> allOutputs;
@@ -76,8 +78,13 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension, 
   }
 
   @Override
-  public Size2i getSize() {
-    return size;
+  public int getWidth() {
+    return recipe.getRecipeWidth();
+  }
+
+  @Override
+  public int getHeight() {
+    return recipe.getRecipeHeight();
   }
 
   @Override

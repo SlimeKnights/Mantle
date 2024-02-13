@@ -53,6 +53,11 @@ repositories {
         url 'https://dvs1.progwml6.com/files/maven'
     }
     maven {
+        // JEI
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
         // for Yarn2MCP
         name "yarn2mcp"
         url "https://maven.tterrag.com/"
@@ -170,9 +175,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
 
 def modsTomlSpec = copySpec{
