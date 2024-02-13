@@ -28,6 +28,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
   public static final SizedIngredient EMPTY = of(Ingredient.EMPTY, 0);
 
   /** Ingredient to use in recipe match */
+  @Getter
   private final Ingredient ingredient;
   /** Amount of this ingredient needed */
   @Getter
