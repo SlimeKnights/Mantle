@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.transformer;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -10,6 +11,7 @@ import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentListing;
 import slimeknights.mantle.client.book.data.content.ContentPadding.ContentRightPadding;
 import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -121,8 +123,13 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
     }
 
     /** Increases the number of entries in the column */
-    private void incrementColumns(String text) {
-      entriesInColumn += section.parent.fontRenderer.wordWrapHeight(text, COLUMN_WIDTH) / 9;
+    private void incrementColumns(String text, boolean bold) {
+      // entriesInColumn += section.parent.fontRenderer.wordWrapHeight(text, COLUMN_WIDTH) / 9;
+      if (bold) {
+        entriesInColumn += TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), COLUMN_WIDTH, "", section.parent.fontRenderer);
+      } else {
+        entriesInColumn += TextDataRenderer.getLinesForString(text, "", COLUMN_WIDTH, "- ", section.parent.fontRenderer);
+      }
     }
 
     /** Starts a new column */
@@ -155,7 +162,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       }
 
       // add the title entry to the column
-      incrementColumns(name);
+      incrementColumns(name, true);
       currentListing.addEntry(name, data, true);
     }
 
@@ -164,7 +171,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       if (entriesInColumn == maxInColumn) {
         startNewColumn(false);
       }
-      incrementColumns("- " + name);
+      incrementColumns(name, false);
       currentListing.addEntry(name, data, false);
     }
   }

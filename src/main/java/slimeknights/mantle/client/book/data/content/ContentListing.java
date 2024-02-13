@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -9,6 +10,7 @@ import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.book.transformer.ContentListingSectionTransformer;
 import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.client.screen.book.TextDataRenderer;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.ListingLeftElement;
 
@@ -142,8 +144,14 @@ public class ContentListing extends PageContent {
         if (text.isEmpty()) {
           y += LINE_HEIGHT;
         } else {
-          if (!data.bold) text = "- " + text;
-          int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, width) * LINE_HEIGHT / 9;
+          // if (!data.bold) text = "- " + text;
+          // int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, width) * LINE_HEIGHT / 9;
+          int height;
+          if (data.bold) {
+            height = TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), width, "", parent.parent.parent.fontRenderer) * LINE_HEIGHT;
+          } else {
+            height = TextDataRenderer.getLinesForString(text, "", width, "- ", parent.parent.parent.fontRenderer) * LINE_HEIGHT;
+          }
           list.add(new ListingLeftElement(x, y + yOff, width, height, data.bold, data));
           y += height;
         }

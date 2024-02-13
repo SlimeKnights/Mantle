@@ -206,7 +206,7 @@ public class TextDataRenderer {
     for (int i = 0; i < s.length(); i++) {
       curWidth += fr.width(modifiers + s.charAt(i)) * scale;
 
-      if (s.charAt(i) == '\n' || (curHeight == (int) (fr.lineHeight * scale) && curWidth > firstWidth) || (curHeight != (int) (fr.lineHeight * scale) && curWidth > width)) {
+      if (s.charAt(i) == '\n' || (curHeight == (int) (fr.lineHeight * scale) ? curWidth > firstWidth : curWidth > width)) {
         int oldI = i;
         if (s.charAt(i) != '\n') {
           while (i >= 0 && s.charAt(i) != ' ') {
@@ -232,6 +232,11 @@ public class TextDataRenderer {
     }
 
     return s.split("\r");
+  }
+
+  /** Gets the number of lines needed to render the given text */
+  public static int getLinesForString(String s, String modifiers, int width, String prefix, Font fr) {
+    return cropStringBySize(s, modifiers, width, Short.MAX_VALUE, width - fr.width(prefix), fr, 1.0f).length;
   }
 
   //BEGIN METHODS FROM GUI
