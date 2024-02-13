@@ -18,7 +18,7 @@ public class ClearBookCacheCommand {
    * @param subCommand  Command builder
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
-    subCommand.requires(source -> source.hasPermission(MantleCommand.PERMISSION_GAME_COMMANDS) && source.getEntity() instanceof ServerPlayer)
+    subCommand.requires(source -> source.getEntity() instanceof ServerPlayer)
               .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleCommand.REGISTERED_BOOKS)
                             .executes(ClearBookCacheCommand::runBook))
               .executes(ClearBookCacheCommand::runAll);
