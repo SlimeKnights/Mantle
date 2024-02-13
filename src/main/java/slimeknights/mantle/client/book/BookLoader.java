@@ -217,11 +217,14 @@ public class BookLoader implements ResourceManagerReloadListener {
     gsonDirty = true;
   }
 
-  /**
-   * Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is changed
-   */
+  /** Reloads all the books, used in the command and the resource manager reloading */
+  public static void resetAllBooks() {
+    books.forEach((s, bookData) -> bookData.reset());
+  }
+
+  /** Reloads all the books, called when the resource manager reloads, such as when the resource pack or the language is change */
   @Override
   public void onResourceManagerReload(ResourceManager resourceManager) {
-    books.forEach((s, bookData) -> bookData.reset());
+    resetAllBooks();
   }
 }

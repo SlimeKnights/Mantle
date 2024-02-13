@@ -75,6 +75,7 @@ public class MantleCommand {
     register(builder, "dump_all_tags", DumpAllTagsCommand::register);
     register(builder, "tags_for", TagsForCommand::register);
     register(builder, "book_test", BookTestCommand::register);
+    register(builder, "clear_book_cache", ClearBookCacheCommand::register);
     register(builder, "harvest_tiers", HarvestTiersCommand::register);
     register(builder, "tag_preference", TagPreferenceCommand::register);
 
