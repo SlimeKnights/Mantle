@@ -22,6 +22,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.SimpleBakedModel.Builder;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -78,6 +79,13 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
     this.parts = parts;
     this.textures = textures;
     this.parentLocation = parentLocation;
+  }
+
+  public SimpleBlockModel(SimpleBlockModel base) {
+    this.parts = base.parts;
+    this.textures = base.textures;
+    this.parentLocation = base.parentLocation;
+    this.parent = base.parent;
   }
 
 
@@ -216,11 +224,11 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
    * @param builder       Baked model builder
    * @param owner         Model owner
    * @param part          Part to bake
-   * @param transform     Model transforms
    * @param spriteGetter  Sprite getter
+   * @param transform     Model transforms
    * @param location      Model location
    */
-  public static void bakePart(SimpleBakedModel.Builder builder, IModelConfiguration owner, BlockElement part, ModelState transform, Function<Material,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+  public static void bakePart(Builder builder, IModelConfiguration owner, BlockElement part, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ResourceLocation location) {
     for(Direction direction : part.faces.keySet()) {
       BlockElementFace face = part.faces.get(direction);
       // ensure the name is not prefixed (it always is)
@@ -232,6 +240,7 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
       TextureAtlasSprite sprite = spriteGetter.apply(owner.resolveTexture(texture));
       BakedQuad bakedQuad = BlockModel.bakeFace(part, face, sprite, direction, transform, location);
       // apply cull face
+      //noinspection ConstantConditions  Its nullable, just annotated wrongly
       if (face.cullForDirection == null) {
         builder.addUnculledFace(bakedQuad);
       } else {
@@ -244,53 +253,40 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
    * Bakes a list of block part elements into a model
    * @param owner         Model configuration
    * @param elements      Model elements
+   * @param spriteGetter  Sprite getter instance
    * @param transform     Model transform
    * @param overrides     Model overrides
-   * @param spriteGetter  Sprite getter instance
    * @param location      Model bake location
    * @return  Baked model
    */
-  public static BakedModel bakeModel(IModelConfiguration owner, List<BlockElement> elements, ModelState transform, ItemOverrides overrides, Function<Material,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
+  public static BakedModel bakeModel(IModelConfiguration owner, List<BlockElement> elements, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // iterate parts, adding to the builder
     TextureAtlasSprite particle = spriteGetter.apply(owner.resolveTexture("particle"));
     SimpleBakedModel.Builder builder = new SimpleBakedModel.Builder(owner, overrides).particle(particle);
     for(BlockElement part : elements) {
-      bakePart(builder, owner, part, transform, spriteGetter, location);
+      bakePart(builder, owner, part, spriteGetter, transform, location);
     }
     return builder.build();
   }
 
   /**
-   * Same as {@link #bakeModel(IModelConfiguration, List, ModelState, ItemOverrides, Function, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
+   * Same as {@link #bakeModel(IModelConfiguration, List, Function, ModelState, ItemOverrides, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
    * @param owner      Model configuration
    * @param elements   Elements to bake
    * @param transform  Model transform
    * @return Baked model
    */
   public static BakedModel bakeDynamic(IModelConfiguration owner, List<BlockElement> elements, ModelState transform) {
-    return bakeModel(owner, elements, transform, ItemOverrides.EMPTY, ForgeModelBakery.defaultTextureGetter(), BAKE_LOCATION);
-  }
-
-  /**
-   * Bakes the given block model
-   * @param owner         Model configuration
-   * @param transform     Transform to apply
-   * @param overrides     Item overrides in baking
-   * @param spriteGetter  Sprite getter instance
-   * @param location      Bake location
-   * @return  Baked model
-   */
-  public BakedModel bakeModel(IModelConfiguration owner, ModelState transform, ItemOverrides overrides, Function<Material,TextureAtlasSprite> spriteGetter, ResourceLocation location) {
-    return bakeModel(owner, this.getElements(), transform, overrides, spriteGetter, location);
+    return bakeModel(owner, elements, ForgeModelBakery.defaultTextureGetter(), transform, ItemOverrides.EMPTY, BAKE_LOCATION);
   }
 
   @Override
   public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
-    return bakeModel(owner, transform, overrides, spriteGetter, location);
+    return bakeModel(owner, this.getElements(), spriteGetter, transform, overrides, location);
   }
 
   /**
-   * Same as {@link #bakeModel(IModelConfiguration, ModelState, ItemOverrides, Function, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
+   * Same as {@link #bake(IModelConfiguration, ModelBakery, Function, ModelState, ItemOverrides, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
    * @param owner         Model configuration
    * @param transform     Transform to apply
    * @return  Baked model

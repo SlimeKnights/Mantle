@@ -133,7 +133,7 @@ public class ConnectedModel implements IModelGeometry<ConnectedModel> {
 
   @Override
   public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
-    BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
+    BakedModel baked = model.bake(owner, bakery, spriteGetter, transform, overrides, location);
     return new Baked(this, new ExtraTextureConfiguration(owner, extraTextures), transform, baked);
   }
 

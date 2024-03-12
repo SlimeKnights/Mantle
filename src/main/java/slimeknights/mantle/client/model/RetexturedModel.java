@@ -61,13 +61,8 @@ import java.util.function.Function;
 @SuppressWarnings("WeakerAccess")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class RetexturedModel implements IModelGeometry<RetexturedModel> {
-  private final ColoredBlockModel model;
+  private final SimpleBlockModel model;
   private final Set<String> retextured;
-
-  /** Fallback constructor for people extending this model */
-  protected RetexturedModel(SimpleBlockModel model, Set<String> retextured) {
-    this(new ColoredBlockModel(model, Collections.emptyList()), retextured);
-  }
 
   @Override
   public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
@@ -78,7 +73,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
   public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // bake the model and return
     BakedModel baked = model.bake(owner, bakery, spriteGetter, transform, overrides, location);
-    return new Baked(baked, owner, model, transform, getAllRetextured(owner, this.model.getModel(), retextured));
+    return new Baked(baked, owner, model, transform, getAllRetextured(owner, this.model, retextured));
   }
 
   /**
@@ -159,21 +154,17 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     private final Map<ResourceLocation,BakedModel> cache = new ConcurrentHashMap<>();
     /* Properties for rebaking */
     private final IModelConfiguration owner;
-    private final ColoredBlockModel model;
+    private final SimpleBlockModel model;
     private final ModelState transform;
     /** List of texture names that are retextured */
     private final Set<String> retextured;
 
-    public Baked(BakedModel baked, IModelConfiguration owner, ColoredBlockModel model, ModelState transform, Set<String> retextured) {
+    public Baked(BakedModel baked, IModelConfiguration owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
       super(baked);
       this.model = model;
       this.owner = owner;
       this.transform = transform;
       this.retextured = retextured;
-    }
-
-    public Baked(BakedModel baked, IModelConfiguration owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
-      this(baked, owner, new ColoredBlockModel(model, Collections.emptyList()), transform, retextured);
     }
 
     /**

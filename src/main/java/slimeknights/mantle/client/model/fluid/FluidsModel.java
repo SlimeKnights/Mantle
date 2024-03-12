@@ -40,7 +40,7 @@ public class FluidsModel implements IModelGeometry<FluidsModel> {
 
   @Override
   public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
-    BakedModel baked = model.bakeModel(owner, transform, overrides, spriteGetter, location);
+    BakedModel baked = model.bake(owner, bakery, spriteGetter, transform, overrides, location);
     return new Baked(baked, fluids);
   }
 
