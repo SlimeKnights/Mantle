@@ -1,8 +1,8 @@
 package slimeknights.mantle.data.predicate;
 
 import lombok.RequiredArgsConstructor;
-import slimeknights.mantle.data.GenericLoaderRegistry;
-import slimeknights.mantle.data.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.List;
 

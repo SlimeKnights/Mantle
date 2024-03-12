@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.gson;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -12,10 +12,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 
 import java.lang.reflect.Type;
 
-/**
- * Serializer for a forge condition.
- * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
- */
+/**  Serializer for a forge condition. */
 public class ConditionSerializer implements JsonDeserializer<ICondition>, JsonSerializer<ICondition> {
   public static final ConditionSerializer INSTANCE = new ConditionSerializer();
 

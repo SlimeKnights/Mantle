@@ -1,21 +1,18 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.loader;
 
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
-import slimeknights.mantle.data.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.GenericLoaderRegistry.IHaveLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 
-/**
- * Generic serializer for classes that just have a single int value.
- * TODO 1.19: move to {@link slimeknights.mantle.data.loader} as {@code IntLoader}
- */
+/** Generic serializer for classes that just have a single int value. */
 @RequiredArgsConstructor
-public class GenericIntSerializer<T extends IHaveLoader<?>> implements IGenericLoader<T> {
+public class IntLoader<T extends IHaveLoader<?>> implements IGenericLoader<T> {
   private final String key;
   private final IntFunction<T> constructor;
   private final ToIntFunction<T> getter;

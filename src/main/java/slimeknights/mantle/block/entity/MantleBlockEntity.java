@@ -38,7 +38,6 @@ public class MantleBlockEntity extends BlockEntity {
 
   /**
    * If true, this TE syncs when {@link net.minecraft.world.level.Level#blockUpdated(BlockPos, Block) is called
-   * TODO: right method?
    * Syncs data from {@link #saveSynced(CompoundTag)}
    */
   protected boolean shouldSyncOnUpdate() {

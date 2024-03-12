@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
-import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.datagen.GenericDataProvider;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

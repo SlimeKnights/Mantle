@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import slimeknights.mantle.data.GenericRegisteredSerializer.IJsonSerializable;
+import slimeknights.mantle.data.gson.GenericRegisteredSerializer.IJsonSerializable;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;

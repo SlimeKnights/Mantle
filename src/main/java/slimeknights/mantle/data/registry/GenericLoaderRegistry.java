@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.registry;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import slimeknights.mantle.data.GenericLoaderRegistry.IHaveLoader;
+import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -24,7 +25,6 @@ import java.util.function.Function;
 
 /**
  * Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON.
- * TODO 1.19: move to {@code slimeknights.data.registry}
  * @param <T>  Type of the serializable object
  * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
  */

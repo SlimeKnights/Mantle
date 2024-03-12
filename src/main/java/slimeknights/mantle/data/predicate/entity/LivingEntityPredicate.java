@@ -2,14 +2,14 @@ package slimeknights.mantle.data.predicate.entity;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import slimeknights.mantle.data.GenericLoaderRegistry;
-import slimeknights.mantle.data.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.GenericLoaderRegistry.SingletonLoader;
 import slimeknights.mantle.data.predicate.AndJsonPredicate;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.InvertedJsonPredicate;
 import slimeknights.mantle.data.predicate.NestedJsonPredicateLoader;
 import slimeknights.mantle.data.predicate.OrJsonPredicate;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.SingletonLoader;
 
 import java.util.function.Predicate;
 

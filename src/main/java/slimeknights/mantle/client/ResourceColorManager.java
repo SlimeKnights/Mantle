@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import slimeknights.mantle.data.ISafeManagerReloadListener;
+import slimeknights.mantle.data.listener.ISafeManagerReloadListener;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;

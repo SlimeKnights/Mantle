@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.gson;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -14,10 +14,7 @@ import net.minecraft.util.GsonHelper;
 import java.lang.reflect.Type;
 import java.util.function.Function;
 
-/**
- * Extension to Resource Location serializer to change the default mod ID.
- * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
- */
+/** Extension to Resource Location serializer to change the default mod ID. */
 @RequiredArgsConstructor
 public class ResourceLocationSerializer<T extends ResourceLocation> implements JsonDeserializer<T>, JsonSerializer<T> {
   private final Function<String,T> constructor;

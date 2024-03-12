@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.datagen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,10 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-/**
- * Generic logic to convert any serializable object into JSON.
- * TODO 1.19: move to {@link slimeknights.mantle.datagen}
- */
+/** Generic logic to convert any serializable object into JSON. */
 @RequiredArgsConstructor
 @Log4j2
 public abstract class GenericDataProvider implements DataProvider {

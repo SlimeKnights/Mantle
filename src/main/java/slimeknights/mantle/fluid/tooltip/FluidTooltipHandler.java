@@ -26,7 +26,7 @@ import net.minecraftforge.fml.ModList;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.TooltipKey;
-import slimeknights.mantle.data.TagKeySerializer;
+import slimeknights.mantle.data.gson.TagKeySerializer;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 import slimeknights.mantle.util.JsonHelper;
 

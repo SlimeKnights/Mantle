@@ -8,6 +8,7 @@ import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
@@ -24,15 +25,14 @@ public abstract class DynamicBakedWrapper<T extends BakedModel> extends BakedMod
     super(originalModel);
   }
 
-  /**
-   * @deprecated use {@link #getQuads(BlockState, Direction, Random, IModelData)}
-   */
+  /** @deprecated use {@link #getQuads(BlockState, Direction, Random, IModelData)} */
   @Override
   @Deprecated
   public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
     return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
   }
 
+  @Nonnull
   @Override
   public abstract List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData);
 }

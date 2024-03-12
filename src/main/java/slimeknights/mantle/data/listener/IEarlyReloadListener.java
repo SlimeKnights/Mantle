@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.listener;
 
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -10,8 +10,6 @@ import java.util.concurrent.Executor;
 /**
  * This interface is similar to {@link net.minecraft.server.packs.resources.ResourceManagerReloadListener}, except it runs during {@link net.minecraft.server.packs.resources.SimplePreparableReloadListener}'s prepare phase.
  * This is used mainly as models load during the prepare phase, so it ensures they are loaded soon enough.
- * <p>
- * TODO 1.19: move to {@code slimeknights.data.listener}
  * <p>
  * TODO 1.19: is there any reason to keep this alongside {@link IEarlySafeManagerReloadListener}?
  */

@@ -5,15 +5,15 @@ import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import slimeknights.mantle.data.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.predicate.TagPredicateLoader;
+import slimeknights.mantle.data.loader.TagKeyLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 /**
  * Predicate matching an entity tag
  */
 @RequiredArgsConstructor
 public class TagEntityPredicate implements LivingEntityPredicate {
-  public static final TagPredicateLoader<EntityType<?>,TagEntityPredicate> LOADER = new TagPredicateLoader<>(Registry.ENTITY_TYPE_REGISTRY, TagEntityPredicate::new, c -> c.tag);
+  public static final TagKeyLoader<EntityType<?>,TagEntityPredicate> LOADER = new TagKeyLoader<>(Registry.ENTITY_TYPE_REGISTRY, TagEntityPredicate::new, c -> c.tag);
 
   private final TagKey<EntityType<?>> tag;
 

@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.gson;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -10,7 +10,9 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import slimeknights.mantle.data.GenericRegisteredSerializer.IJsonSerializable;
+import slimeknights.mantle.data.gson.GenericRegisteredSerializer.IJsonSerializable;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.NamedComponentRegistry;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.lang.reflect.Type;
@@ -19,7 +21,6 @@ import java.util.Map;
 
 /**
  * This is a serialier/deserializer to/from JsonObjects that automatically handles dispatching responsibilities to named serializers.
- * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
  * @param <T>  Type of the serializable object
  * @see GenericLoaderRegistry GenericLoaderRegistry for an alternative that also supports network friendly byte buffers
  */

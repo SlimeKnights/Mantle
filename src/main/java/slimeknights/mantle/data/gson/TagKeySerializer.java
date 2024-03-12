@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.gson;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,10 +15,7 @@ import slimeknights.mantle.util.JsonHelper;
 
 import java.lang.reflect.Type;
 
-/**
- * Serializer for a generic tag key type.
- * TODO 1.19: move to {@code slimeknights.mantle.data.gson}
- */
+/** Serializer for a generic tag key type. */
 @RequiredArgsConstructor
 public class TagKeySerializer<T> implements JsonSerializer<TagKey<T>>, JsonDeserializer<TagKey<T>> {
   private final ResourceKey<Registry<T>> registry;

@@ -1,7 +1,7 @@
 package slimeknights.mantle.data.predicate.damage;
 
 import net.minecraft.world.damagesource.DamageSource;
-import slimeknights.mantle.data.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.loader.StringLoader;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 
