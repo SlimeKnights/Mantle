@@ -6,50 +6,18 @@
  * Help from AbrarSyed
 */
 
-buildscript {
-    repositories {
-        mavenLocal()
-        maven { url = 'https://maven.minecraftforge.net/' }
-        maven { url = 'https://libraries.minecraft.net/' }
-        jcenter()
-        mavenCentral()
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            name "Parchment"
-            url "https://maven.parchmentmc.org"
-        }
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'io.freefair.gradle:lombok-plugin:6.3.0'
-        classpath 'org.parchmentmc:librarian:1.+'
-    }
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'io.freefair.lombok' version '8.6'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: 'io.freefair.lombok'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-
 repositories {
-    mavenLocal()
-    maven { // Vanilla
-        name 'Vanilla'
-        url 'https://libraries.minecraft.net/'
-    }
-    maven { // Forge
-        name 'ForgeFS'
-        url 'https://maven.minecraftforge.net/'
-    }
     maven {
-        name 'DVS1 Maven FS'
+        // Our maven
+        name "Prog's Maven"
         url 'https://dvs1.progwml6.com/files/maven'
     }
     maven {
@@ -62,9 +30,15 @@ repositories {
         name "yarn2mcp"
         url "https://maven.tterrag.com/"
     }
+    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
+    // flatDir {
+    //     dir 'libs'
+    // }
 }
 
 group = 'slimeknights.mantle'
+archivesBaseName = 'Mantle'
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 // sets version to the slimeKnights version format
 task buildInfo {
@@ -96,8 +70,7 @@ if (System.getenv().ARTIFACT_VERSION != null) {
 }
 
 version = "${minecraft_version}-${artifact_version}"
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}, Version: ${version}"
 
 sourceSets {
     main {
@@ -156,7 +129,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'mantle', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'mantle', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 mantle {
@@ -261,4 +234,8 @@ publishing {
             maven { url DEPLOY_DIR }
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
