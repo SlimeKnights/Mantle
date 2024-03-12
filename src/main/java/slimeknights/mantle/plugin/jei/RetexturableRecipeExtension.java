@@ -1,16 +1,15 @@
 package slimeknights.mantle.plugin.jei;
 
-import com.google.common.collect.ImmutableList;
-import lombok.Getter;
+import com.google.common.collect.Streams;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
-import mezz.jei.api.gui.ingredient.ITooltipCallback;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,63 +17,62 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.util.Size2i;
-import slimeknights.mantle.item.RetexturedBlockItem;
+import net.minecraft.world.item.crafting.Ingredient;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * JEI crafting extension to properly show, animate, and focus {@link ShapedRetexturedRecipe} instances
  */
-public class RetexturableRecipeExtension implements ICraftingCategoryExtension, ICustomCraftingCategoryExtension, ITooltipCallback<ItemStack> {
+public class RetexturableRecipeExtension implements ICraftingCategoryExtension, IRecipeSlotTooltipCallback {
   /** Actual recipe instance */
   private final ShapedRetexturedRecipe recipe;
-  /** Recipe size, TODO: remove when fully updating to JEI 10.0/11.0 */
-  @Getter
-  private final Size2i size;
-  /** List of all possible outputs, for the sake of recipe lookups */
-  private final List<List<ItemStack>> allOutputs;
   /** List of all textured variants, fallback for JEI display */
   private final List<ItemStack> displayOutputs;
+  /** Ingredient indexes of all texture slots */
+  private final int[] textureSlots;
 
   RetexturableRecipeExtension(ShapedRetexturedRecipe recipe) {
     this.recipe = recipe;
-    this.size = new Size2i(recipe.getRecipeWidth(), recipe.getRecipeHeight());
 
-    // gets the outputs of this recipe
-    ItemStack output = this.recipe.getResultItem();
-    // fetch all stacks from the ingredient, note any variants that are not blocks will get a blank shelf
-    List<ItemStack> displayVariants = Arrays.stream(recipe.getTexture().getItems())
-                                            .map(stack -> recipe.getRecipeOutput(stack.getItem()))
-                                            .collect(Collectors.toList());
+    // set the output to display all variants from the texture ingredient
+    Ingredient texture = recipe.getTexture();
+    // fetch all stacks from the ingredient, note any variants that are not blocks will get a blank look
+    List<ItemStack> displayOutputs = Arrays.stream(texture.getItems())
+                                           .map(stack -> recipe.getRecipeOutput(stack.getItem()))
+                                           .toList();
+    // empty display means the tag found nothing, so just use the original output
+    this.displayOutputs = displayOutputs.isEmpty() ? List.of(this.recipe.getResultItem()) : displayOutputs;
 
-    // needs blank specifically added so recipe lookup works right
-    ImmutableList.Builder<ItemStack> builder = new ImmutableList.Builder<>();
-    builder.addAll(displayVariants);
-    builder.add(output);
-    // we have all variants done
-    List<ItemStack> allVariants = builder.build();
-    this.allOutputs = ImmutableList.of(allVariants);
+    // find out which inputs match the texture, we will need to use those for the focus link
+    List<Ingredient> inputs = recipe.getIngredients();
+    this.textureSlots = IntStream.range(0, inputs.size()).filter(i -> ingredientsMatch(texture, inputs.get(i))).toArray();
+  }
 
-    // empty display means the tag found nothing
-    this.displayOutputs = displayVariants.isEmpty() ? allVariants : displayVariants;
+  /** Checks if two ingredients match based on their display items */
+  private static boolean ingredientsMatch(Ingredient left, Ingredient right) {
+    ItemStack[] leftStacks = left.getItems();
+    ItemStack[] rightStacks = right.getItems();
+    if (leftStacks.length != rightStacks.length) {
+      return false;
+    }
+    for (int i = 0; i < leftStacks.length; i++) {
+      if (!ItemStack.isSameItemSameTags(leftStacks[i], rightStacks[i])) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
   public ResourceLocation getRegistryName() {
     return this.recipe.getId();
-  }
-
-  @Override
-  public void setIngredients(IIngredients ingredients) {
-    ingredients.setInputIngredients(this.recipe.getIngredients());
-    // use all list so textureless works for the lookup
-    ingredients.setOutputLists(VanillaTypes.ITEM, allOutputs);
   }
 
   @Override
@@ -88,56 +86,35 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension, 
   }
 
   @Override
-  public void setRecipe(IRecipeLayout recipeLayout, IIngredients ingredients) {
-    IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-    guiItemStacks.addTooltipCallback(this);
-
-    // determine the focused stack
-    List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
-    List<ItemStack> outputs = displayOutputs;
-    IFocus<ItemStack> focus = recipeLayout.getFocus(VanillaTypes.ITEM);
-    if (focus != null) {
-      focus.getValue();
-      IGuiIngredientGroup<ItemStack> guiIngredients = recipeLayout.getIngredientsGroup(VanillaTypes.ITEM);
-      ItemStack focusStack = focus.getValue();
-      IFocus.Mode mode = focus.getMode();
-
-      // input means we clicked on an ingredient, so if it affects the texture set the output texture
-      if (mode == IFocus.Mode.INPUT && recipe.getTexture().test(focusStack)) {
-        outputs = ImmutableList.of(recipe.getRecipeOutput(focusStack.getItem()));
-      }
-
-      // if we clicked the textured block, remove all items which affect the texture that are not the proper texture
-      else if (mode == IFocus.Mode.OUTPUT) {
-        // focus texture may be undefined for the mixed planks bookshelf or missing NBT
-        Block textureBlock = RetexturedBlockItem.getTexture(focusStack);
-        if (textureBlock != Blocks.AIR) {
-          // the focus might not be the same count as the output
-          ItemStack output = focusStack.copy();
-          output.setCount(recipe.getResultItem().getCount());
-          outputs = ImmutableList.of(output);
-
-          guiIngredients.setOverrideDisplayFocus(JEIPlugin.recipeManager.createFocus(IFocus.Mode.INPUT, new ItemStack(textureBlock)));
-        } else {
-          // no texture? show default outputs
-          guiIngredients.setOverrideDisplayFocus(null);
-        }
-      }
-    }
+  public void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+//    guiItemStacks.addTooltipCallback(this);
+    // we need the blank version for the sake of recipe lookup due to the subtype interpreter making it not the same
+    builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(recipe.getResultItem());
 
     // add the itemstacks to the grid
-    JEIPlugin.vanillaCraftingHelper.setInputs(guiItemStacks, inputs, size.width, size.height);
-    guiItemStacks.set(0, outputs);
+    List<List<ItemStack>> inputStacks = recipe.getIngredients().stream().map(ingredient -> List.of(ingredient.getItems())).toList();
+    int width = recipe.getWidth();
+    int height = recipe.getHeight();
+    List<IRecipeSlotBuilder> inputs = craftingGridHelper.createAndSetInputs(builder, VanillaTypes.ITEM_STACK, inputStacks, recipe.getWidth(), recipe.getHeight());
+    IRecipeSlotBuilder output = craftingGridHelper.createAndSetOutputs(builder, displayOutputs);
+    if (inputs.size() != 9) {
+      Mantle.logger.error("Failed to create focus link for {} as the layout {} is not 3x3", recipe.getId(), builder.getClass().getName());
+    } else {
+      // link the output to all inputs that match the texture
+      builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(textureSlots).mapToObj(i -> inputs.get(getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));
+    }
   }
 
   @Override
-  public void onTooltip(int slotIndex, boolean input, ItemStack ingredient, List<Component> tooltip) {
+  public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+    // TODO: is this still needed?
     ResourceLocation registryName = this.getRegistryName();
-    if (slotIndex == 0 && registryName != null) {
+    Optional<ItemStack> ingredient = recipeSlotView.getDisplayedItemStack();
+    if (recipeSlotView.getRole() == RecipeIngredientRole.OUTPUT && registryName != null && ingredient.isPresent()) {
       if (JEIPlugin.modIdHelper.isDisplayingModNameEnabled()) {
-        String recipeModId = this.getRegistryName().getNamespace();
+        String recipeModId = registryName.getNamespace();
         boolean modIdDifferent = false;
-        ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
+        ResourceLocation itemRegistryName = ingredient.get().getItem().getRegistryName();
         if (itemRegistryName != null) {
           String itemModId = itemRegistryName.getNamespace();
           modIdDifferent = !recipeModId.equals(itemModId);
@@ -154,5 +131,34 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension, 
         tooltip.add(new TranslatableComponent("jei.tooltip.recipe.id", registryName).withStyle(ChatFormatting.DARK_GRAY));
       }
     }
+  }
+
+  /** Borrowed from {@link ICraftingGridHelper} implementation. Ideally I'd call it from the API, but the API lacks all the information I need for that. */
+  private static int getCraftingIndex(int i, int width, int height) {
+    int index;
+    if (width == 1) {
+      if (height == 3) {
+        index = (i * 3) + 1;
+      } else if (height == 2) {
+        index = (i * 3) + 1;
+      } else {
+        index = 4;
+      }
+    } else if (height == 1) {
+      index = i + 3;
+    } else if (width == 2) {
+      index = i;
+      if (i > 1) {
+        index++;
+        if (i > 3) {
+          index++;
+        }
+      }
+    } else if (height == 2) {
+      index = i + 3;
+    } else {
+      index = i;
+    }
+    return index;
   }
 }
