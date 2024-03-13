@@ -15,6 +15,7 @@ import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.items.ItemHandlerHelper;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -50,8 +51,13 @@ public class FluidContainerIngredient extends AbstractIngredient {
   }
 
   /** Creates an instance from a fluid ingredient with a display container */
-  public static FluidContainerIngredient fromFluid(FluidObject<?> fluid, boolean forgeTag) {
+  public static FluidContainerIngredient fromFluid(FlowingFluidObject<?> fluid, boolean forgeTag) {
     return fromIngredient(FluidIngredient.of(forgeTag ? fluid.getForgeTag() : fluid.getLocalTag(), FluidType.BUCKET_VOLUME), Ingredient.of(fluid));
+  }
+
+  /** Creates an instance from a fluid ingredient with a display container */
+  public static FluidContainerIngredient fromFluid(FluidObject<?> fluid, boolean forgeTag) {
+    return fromIngredient(forgeTag ? FluidIngredient.of(fluid.getForgeTag(), FluidType.BUCKET_VOLUME) : FluidIngredient.of(fluid.get(), FluidType.BUCKET_VOLUME), Ingredient.of(fluid));
   }
 
   @Override

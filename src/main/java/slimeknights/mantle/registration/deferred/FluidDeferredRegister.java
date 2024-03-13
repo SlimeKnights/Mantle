@@ -18,9 +18,11 @@ import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.fluid.TextureFluidType;
+import slimeknights.mantle.fluid.UnplaceableFluid;
 import slimeknights.mantle.registration.DelayedSupplier;
 import slimeknights.mantle.registration.FluidBuilder;
 import slimeknights.mantle.registration.ItemProperties;
+import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 
 import java.util.function.Function;
@@ -81,12 +83,9 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
   @Setter
   public class Builder extends FluidBuilder<Builder> {
     private final String name;
-    private final DelayedSupplier<FlowingFluid> stillDelayed = new DelayedSupplier<>();
-    private final DelayedSupplier<FlowingFluid> flowingDelayed = new DelayedSupplier<>();
+    private final DelayedSupplier<Fluid> stillDelayed = new DelayedSupplier<>();
     /** Name to use for the tag, defaults to the fluid name */
     private String tagName;
-    /** Fluid type, must be set to build */
-    private Supplier<? extends FluidType> type;
 
     private Builder(String name) {
       this.name = name;
@@ -118,7 +117,7 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
     /* Bucket */
 
     /** Creates the bucket using the given supplier */
-    public Builder bucket(Function<Supplier<? extends FlowingFluid>, Item> constructor) {
+    public Builder bucket(Function<Supplier<? extends Fluid>, Item> constructor) {
       if (this.bucket != null) {
         throw new IllegalStateException("Bucket already created for " + name);
       }
@@ -134,16 +133,17 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
     /* Block */
 
     /** Creates the block form using the given supplier */
+    @SuppressWarnings({"unchecked", "rawtypes"})  // if you are calling this method, you must have a flowing fluid by the end, we throw later if not
     public Builder block(Function<Supplier<? extends FlowingFluid>, LiquidBlock> constructor) {
       if (this.block != null) {
         throw new IllegalStateException("Block already created for " + name);
       }
-      return block(blockRegister.register(name + "_fluid", () -> constructor.apply(stillDelayed)));
+      return block(blockRegister.register(name + "_fluid", () -> constructor.apply((Supplier<FlowingFluid>)(Supplier)stillDelayed)));
     }
 
     /** Creates the default block from the given material and light level */
     public Builder block(Material material, int lightLevel) {
-      return block(blockRegister.register(name + "_fluid", () -> new LiquidBlock(stillDelayed, BlockBehaviour.Properties.of(material).lightLevel(state -> lightLevel).noCollission().strength(100.0F).noLootTable())));
+      return block(sup -> new LiquidBlock(sup, BlockBehaviour.Properties.of(material).lightLevel(state -> lightLevel).noCollission().strength(100.0F).noLootTable()));
     }
 
     /** Creates the default block from the given material */
@@ -154,18 +154,48 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
 
     /* Final fluid */
 
-    /** Builds the final instance with the default constructors */
-    public FluidObject<ForgeFlowingFluid> build() {
-      return build(ForgeFlowingFluid.Source::new, ForgeFlowingFluid.Flowing::new);
+    /** Builds an unplacable fluid with the default constructor */
+    public FluidObject<UnplaceableFluid> unplacable() {
+      return unplacable(UnplaceableFluid::new);
     }
 
-    /** Builds the final instance with the given constructors */
-    public <F extends ForgeFlowingFluid> FluidObject<F> build(Function<Properties,? extends F> createStill, Function<Properties,? extends F> createFlowing) {
+    /**
+     * Builds an unplacable fluid with the passed constructor
+     * @param constructor  Constructor taking a fluid type and bucket supplier. Note the bucket supplier may be null.
+     * @param <F> Resulting fluid type
+     * @return  Fluid object instance
+     */
+    public <F extends Fluid> FluidObject<F> unplacable(Function<FluidBuilder<?>,F> constructor) {
+      if (block != null) {
+        throw new IllegalStateException("Cannot build an unplacable fluid with a block form");
+      }
+      if (type == null) {
+        this.type();
+      }
+      RegistryObject<F> fluid = registerFluid(name, () -> constructor.apply(this));
+      stillDelayed.setSupplier(fluid);
+      return new FluidObject<>(resource(name), tagName, type, fluid);
+    }
+
+    /** Builds a flowing fluid with the default constructors */
+    public FlowingFluidObject<ForgeFlowingFluid> flowing() {
+      return flowing(ForgeFlowingFluid.Source::new, ForgeFlowingFluid.Flowing::new);
+    }
+
+    /**
+     * Builds a flowing fluid with the given constructors
+     * @param createStill     Still constructor taking forge fluid properties, will contain the type, bucket, block, and flowing forms
+     * @param createFlowing   Flowing constructor taking forge fluid properties, will contain the type, bucket, block, and still forms
+     * @param <F>  Type of fluids being created
+     * @return  Flowing fluid object instance
+     */
+    public <F extends FlowingFluid> FlowingFluidObject<F> flowing(Function<Properties,? extends F> createStill, Function<Properties,? extends F> createFlowing) {
       if (type == null) {
         this.type();
       }
 
       // create props with the suppliers
+      DelayedSupplier<FlowingFluid> flowingDelayed = new DelayedSupplier<>();
       Properties props = build(type, stillDelayed, flowingDelayed);
 
       // create fluids now that we have props
@@ -175,7 +205,7 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
       flowingDelayed.setSupplier(flowing);
 
       // return the final nice object
-      return new FluidObject<>(resource(name), tagName, type, still, flowing, this.block);
+      return new FlowingFluidObject<>(resource(name), tagName, type, still, flowing, this.block);
     }
   }
 }
