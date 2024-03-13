@@ -142,8 +142,14 @@ public class IngredientData implements IDataElement {
         JsonPrimitive primitive = json.getAsJsonPrimitive();
 
         if(primitive.isString()) {
-          Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(primitive.getAsString()));
-          return SizedIngredient.fromItems(item);
+          String prim = primitive.getAsString();
+          if(primitive.getAsString().startsWith("#")) {
+            return SizedIngredient.fromTag(ForgeRegistries.ITEMS.tags().createTagKey(new ResourceLocation(prim.substring(1))));
+          }
+          else {
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(prim));
+            return SizedIngredient.fromItems(item);
+          }
         }
       }
 
