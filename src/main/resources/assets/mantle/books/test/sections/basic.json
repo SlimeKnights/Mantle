@@ -88,5 +88,10 @@
     "name": "showcase",
     "type": "showcase",
     "data": "basic/showcase.json"
+  },
+    {
+    "name": "showcase_tag",
+    "type": "showcase",
+    "data": "basic/showcase_tag.json"
   }
 ]
