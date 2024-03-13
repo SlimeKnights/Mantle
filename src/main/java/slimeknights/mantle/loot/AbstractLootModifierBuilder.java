@@ -1,4 +1,4 @@
-package slimeknights.mantle.loot.builder;
+package slimeknights.mantle.loot;
 
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
@@ -21,7 +21,4 @@ public abstract class AbstractLootModifierBuilder<B extends AbstractLootModifier
   protected LootItemCondition[] getConditions() {
     return conditions.toArray(new LootItemCondition[0]);
   }
-
-  /** Builds the GLM */
-  public abstract void build(String name, GlobalLootModifierProvider provider);
 }

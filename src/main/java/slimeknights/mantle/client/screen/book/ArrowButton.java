@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.data.BookData;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public class ArrowButton extends Button {
   public int hoverColor;
 
   public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress iPressable) {
-    super(x, y, arrowType.w, arrowType.h, TextComponent.EMPTY, iPressable);
+    super(x, y, arrowType.w, arrowType.h, Component.empty(), iPressable);
 
     this.arrowType = arrowType;
     this.color = color;

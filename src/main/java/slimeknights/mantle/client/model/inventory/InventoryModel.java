@@ -13,11 +13,11 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.model.BakedModelWrapper;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.geometry.IModelGeometry;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
 import java.util.Collection;
@@ -29,17 +29,19 @@ import java.util.function.Function;
  * This model contains a list of multiple items to display in a TESR
  */
 @AllArgsConstructor
-public class InventoryModel implements IModelGeometry<InventoryModel> {
+public class InventoryModel implements IUnbakedGeometry<InventoryModel> {
+  public static final IGeometryLoader<InventoryModel> LOADER = InventoryModel::deserialize;
+
   protected final SimpleBlockModel model;
   protected final List<ModelItem> items;
 
   @Override
-  public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    return model.getTextures(owner, modelGetter, missingTextureErrors);
+  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+    return model.getMaterials(owner, modelGetter, missingTextureErrors);
   }
 
   @Override
-  public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     BakedModel baked = model.bake(owner, bakery, spriteGetter, transform, overrides, location);
     return new Baked(baked, items);
   }
@@ -55,21 +57,10 @@ public class InventoryModel implements IModelGeometry<InventoryModel> {
     }
   }
 
-  /** Loader for this model */
-  public static class Loader implements IModelLoader<InventoryModel> {
-    /**
-     * Shared loader instance
-     */
-    public static final Loader INSTANCE = new Loader();
-
-    @Override
-    public void onResourceManagerReload(ResourceManager resourceManager) {}
-
-    @Override
-    public InventoryModel read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-      SimpleBlockModel model = SimpleBlockModel.deserialize(deserializationContext, modelContents);
-      List<ModelItem> items = ModelItem.listFromJson(modelContents, "items");
-      return new InventoryModel(model, items);
-    }
+  /** Deserializes an inventory model from JSON */
+  public static InventoryModel deserialize(JsonObject json, JsonDeserializationContext context) {
+    ColoredBlockModel model = ColoredBlockModel.deserialize(json, context);
+    List<ModelItem> items = ModelItem.listFromJson(json, "items");
+    return new InventoryModel(model, items);
   }
 }

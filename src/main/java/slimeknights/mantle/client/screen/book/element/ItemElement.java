@@ -11,6 +11,8 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions.FontContext;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 
 import javax.annotation.Nullable;
@@ -100,7 +102,7 @@ public class ItemElement extends SizedBookElement {
 
       ItemStack stack = this.itemCycle.get(this.currentItem);
       this.mc.getItemRenderer().renderAndDecorateItem(stack, 0, 0);
-      Font font = net.minecraftforge.client.RenderProperties.get(stack).getFont(stack);
+      Font font = IClientItemExtensions.of(stack).getFont(stack, FontContext.TOOLTIP);
       if (font == null) font = mc.font;
       this.mc.getItemRenderer().renderGuiItemDecorations(font, stack, 0, 0, null);
 

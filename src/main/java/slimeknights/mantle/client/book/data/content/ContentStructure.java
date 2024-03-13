@@ -52,7 +52,7 @@ public class ContentStructure extends PageContent {
     }
 
     try {
-      CompoundTag compoundnbt = NbtIo.readCompressed(resource.getInputStream());
+      CompoundTag compoundnbt = NbtIo.readCompressed(resource.open());
       this.template.load(compoundnbt);
     } catch (IOException e) {
       e.printStackTrace();

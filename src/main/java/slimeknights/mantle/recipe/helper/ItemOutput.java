@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -14,15 +15,34 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import slimeknights.mantle.data.JsonCodec;
 import slimeknights.mantle.util.JsonHelper;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
  * Class representing an item stack output. Supports both direct stacks and tag output, behaving like an ingredient used for output
  */
 public abstract class ItemOutput implements Supplier<ItemStack> {
+  /** Codec instance */ // TODO: implement as a proper codec
+  public static Codec<ItemOutput> CODEC = new JsonCodec<>() {
+    @Override
+    public ItemOutput deserialize(JsonElement element) {
+      return ItemOutput.fromJson(element);
+    }
+
+    @Override
+    public JsonElement serialize(ItemOutput output) {
+      return output.serialize();
+    }
+
+    @Override
+    public String toString() {
+      return "ItemOutput";
+    }
+  };
+
+
   /**
    * Gets the item output of this recipe
    * @return  Item output
@@ -131,7 +151,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
     @Override
     public JsonElement serialize() {
-      String itemName = Objects.requireNonNull(item.getRegistryName()).toString();
+      String itemName = Registry.ITEM.getKey(item).toString();
       if (count > 1) {
         JsonObject json = new JsonObject();
         json.addProperty("item", itemName);
@@ -155,7 +175,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
     @Override
     public JsonElement serialize() {
-      String itemName = Objects.requireNonNull(stack.getItem().getRegistryName()).toString();
+      String itemName = Registry.ITEM.getKey(stack.getItem()).toString();
       int count = stack.getCount();
       // if the item has NBT or a count, write as object
       if (stack.hasTag() || count > 1) {

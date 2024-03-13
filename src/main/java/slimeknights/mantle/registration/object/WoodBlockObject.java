@@ -1,6 +1,7 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -21,7 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
+import static slimeknights.mantle.registration.RegistrationHelper.getCastedHolder;
+import static slimeknights.mantle.util.RegistryHelper.getHolder;
 
 /** Extension of the fence object with all other wood blocks */
 public class WoodBlockObject extends FenceBuildingBlockObject {
@@ -77,17 +79,17 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
                          Block pressurePlate, Block button, Block sign, Block wallSign) {
     super(planks, fence);
     this.woodType = woodType;
-    this.log = castDelegate(log.delegate);
-    this.strippedLog = castDelegate(strippedLog.delegate);
-    this.wood = castDelegate(wood.delegate);
-    this.strippedWood = castDelegate(strippedWood.delegate);
-    this.fenceGate = castDelegate(fenceGate.delegate);
-    this.door = castDelegate(door.delegate);
-    this.trapdoor = castDelegate(trapdoor.delegate);
-    this.pressurePlate = castDelegate(pressurePlate.delegate);
-    this.button = castDelegate(button.delegate);
-    this.sign = castDelegate(sign.delegate);
-    this.wallSign = castDelegate(wallSign.delegate);
+    this.log = getHolder(Registry.BLOCK, log);
+    this.strippedLog = getHolder(Registry.BLOCK, strippedLog);
+    this.wood = getHolder(Registry.BLOCK, wood);
+    this.strippedWood = getHolder(Registry.BLOCK, strippedWood);
+    this.fenceGate = getCastedHolder(Registry.BLOCK, fenceGate);
+    this.door = getCastedHolder(Registry.BLOCK, door);
+    this.trapdoor = getCastedHolder(Registry.BLOCK, trapdoor);
+    this.pressurePlate = getCastedHolder(Registry.BLOCK, pressurePlate);
+    this.button = getCastedHolder(Registry.BLOCK, button);
+    this.sign = getCastedHolder(Registry.BLOCK, sign);
+    this.wallSign = getCastedHolder(Registry.BLOCK, wallSign);
     ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
     this.logBlockTag = BlockTags.create(tagName);
     this.logItemTag = ItemTags.create(tagName);

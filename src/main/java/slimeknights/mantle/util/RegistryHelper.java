@@ -1,5 +1,6 @@
 package slimeknights.mantle.util;
 
+import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -87,5 +89,16 @@ public class RegistryHelper {
   @SuppressWarnings("deprecation")
   public static boolean contains(TagKey<Fluid> tag, Fluid value) {
     return value.builtInRegistryHolder().is(tag);
+  }
+
+  /**
+   * Gets a holder for a registry object
+   * @param registry  Registry instance
+   * @param entry     Entry to fetch holder
+   * @param <T>       Registry type
+   * @return  Supplier for the given registry
+   */
+  public static <T> Supplier<T> getHolder(DefaultedRegistry<T> registry, T entry) {
+    return registry.getHolder(registry.getId(entry)).orElseThrow();
   }
 }

@@ -1,35 +1,37 @@
 package slimeknights.mantle.loot;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.data.GlobalLootModifierProvider;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.items.ItemHandlerHelper;
-import slimeknights.mantle.loot.builder.AbstractLootModifierBuilder;
+import slimeknights.mantle.data.MantleCodecs;
 import slimeknights.mantle.recipe.helper.ItemOutput;
-import slimeknights.mantle.recipe.helper.RecipeHelper;
-import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 /** Loot modifier to replace an item with another */
 public class ReplaceItemLootModifier extends LootModifier {
+  public static final Codec<ReplaceItemLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).and(
+    inst.group(
+      MantleCodecs.INGREDIENT.fieldOf("original").forGetter(m -> m.original),
+      ItemOutput.CODEC.fieldOf("replacement").forGetter(m -> m.replacement),
+      MantleCodecs.LOOT_FUNCTIONS.fieldOf("functions").forGetter(m -> m.functions)
+    )).apply(inst, ReplaceItemLootModifier::new));
+
   /** Ingredient to test for the original item */
   private final Ingredient original;
   /** Item for the replacement */
@@ -54,47 +56,21 @@ public class ReplaceItemLootModifier extends LootModifier {
 
   @Nonnull
   @Override
-  protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
-    return generatedLoot.stream().map(stack -> {
+  protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+    ListIterator<ItemStack> iterator = generatedLoot.listIterator();
+    while (iterator.hasNext()) {
+      ItemStack stack = iterator.next();
       if (original.test(stack)) {
         ItemStack replacement = this.replacement.get();
-        return combinedFunctions.apply(ItemHandlerHelper.copyStackWithSize(replacement, replacement.getCount() * stack.getCount()), context);
+        iterator.set(combinedFunctions.apply(ItemHandlerHelper.copyStackWithSize(replacement, replacement.getCount() * stack.getCount()), context));
       }
-      return stack;
-    }).collect(Collectors.toList());
+    }
+    return generatedLoot;
   }
 
-  public static class Serializer extends GlobalLootModifierSerializer<ReplaceItemLootModifier> {
-    @Override
-    public ReplaceItemLootModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] conditions) {
-      Ingredient original;
-      JsonElement element = JsonHelper.getElement(object, "original");
-      if (element.isJsonPrimitive()) {
-        original = Ingredient.of(RecipeHelper.deserializeItem(element.getAsString(), "original", Item.class));
-      } else {
-        original = Ingredient.fromJson(element);
-      }
-      ItemOutput replacement = ItemOutput.fromJson(JsonHelper.getElement(object, "replacement"));
-      // functions
-      LootItemFunction[] functions;
-      if (object.has("functions")) {
-        functions = AddEntryLootModifier.GSON.fromJson(GsonHelper.getAsJsonArray(object, "functions"), LootItemFunction[].class);
-      } else {
-        functions = new LootItemFunction[0];
-      }
-      return new ReplaceItemLootModifier(conditions, original, replacement, functions);
-    }
-
-    @Override
-    public JsonObject write(ReplaceItemLootModifier instance) {
-      JsonObject object = makeConditions(instance.conditions);
-      object.add("original", instance.original.toJson());
-      object.add("replacement", instance.replacement.serialize());
-      if (instance.functions.length > 0) {
-        object.add("functions", AddEntryLootModifier.GSON.toJsonTree(instance.functions, LootItemFunction[].class));
-      }
-      return object;
-    }
+  @Override
+  public Codec<? extends IGlobalLootModifier> codec() {
+    return CODEC;
   }
 
   /** Logic to build this modifier for datagen */
@@ -112,9 +88,9 @@ public class ReplaceItemLootModifier extends LootModifier {
       return this;
     }
 
-    @Override
-    public void build(String name, GlobalLootModifierProvider provider) {
-      provider.add(name, MantleLoot.REPLACE_ITEM, new ReplaceItemLootModifier(getConditions(), input, replacement, functions.toArray(new LootItemFunction[0])));
+    /** Builds the final modifier */
+    public ReplaceItemLootModifier build() {
+      return new ReplaceItemLootModifier(getConditions(), input, replacement, functions.toArray(new LootItemFunction[0]));
     }
   }
 }

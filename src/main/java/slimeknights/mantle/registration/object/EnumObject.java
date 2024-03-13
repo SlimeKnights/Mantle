@@ -2,8 +2,6 @@ package slimeknights.mantle.registration.object;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.IRegistryDelegate;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"unused", "WeakerAccess", "ClassCanBeRecord"})
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> {
+public class EnumObject<T extends Enum<T>, I> {
   /** Singleton empty object, type does not matter as it has no items */
   @SuppressWarnings({"rawtypes", "unchecked"})
   private static final EnumObject EMPTY = new EnumObject(Collections.emptyMap());
@@ -80,7 +78,7 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
    * @param value  Value to check for
    * @return  True if the value is contained, false otherwise
    */
-  public boolean contains(IForgeRegistryEntry<? super I> value) {
+  public boolean contains(Object value) {
     return this.map.values().stream().map(Supplier::get).anyMatch(value::equals);
   }
 
@@ -128,7 +126,7 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
    * @return  Empty EnumObject
    */
   @SuppressWarnings("unchecked")
-  public static <T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> EnumObject<T,I> empty() {
+  public static <T extends Enum<T>, I> EnumObject<T,I> empty() {
     return (EnumObject<T,I>) EMPTY;
   }
 
@@ -138,7 +136,7 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
    * @param <I>  Entry type
    */
   @SuppressWarnings({"UnusedReturnValue", "unused"})
-  public static class Builder<T extends Enum<T>, I extends IForgeRegistryEntry<? super I>> {
+  public static class Builder<T extends Enum<T>, I> {
     private final Map<T, Supplier<? extends I>> map;
     public Builder(Class<T> clazz) {
       this.map = new EnumMap<>(clazz);
@@ -162,9 +160,9 @@ public class EnumObject<T extends Enum<T>, I extends IForgeRegistryEntry<? super
      * @param value  Registry delegate
      * @return  Builder instance
      */
-    @SuppressWarnings("unchecked")
-    public Builder<T,I> putDelegate(T key, IRegistryDelegate<? super I> value) {
-      this.map.put(key, () -> (I) value.get());
+    public Builder<T,I> put(T key, I value) {
+      // TODO: should we use holders? is there a practical way to fetch one?
+      this.map.put(key, () -> value);
       return this;
     }
 

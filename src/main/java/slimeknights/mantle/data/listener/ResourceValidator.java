@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /** Utility that handles checking if a resource exists in any resource pack. */
+@SuppressWarnings("unused")  // API
 public class ResourceValidator implements IEarlySafeManagerReloadListener, Predicate<ResourceLocation> {
   private final String folder;
   private final int trim;
@@ -31,18 +32,13 @@ public class ResourceValidator implements IEarlySafeManagerReloadListener, Predi
   @Override
   public void onReloadSafe(ResourceManager manager) {
     int extensionLength = extension.length();
-    // FIXME: this does not validate folder names
     this.resources = manager.listResources(folder, (loc) -> {
       // must have proper extension and contain valid characters
-      return loc.endsWith(extension) && isPathValid(loc);
-    }).stream().map((location) -> {
+      return loc.getPath().endsWith(extension);
+    }).keySet().stream().map((location) -> {
       String path = location.getPath();
       return new ResourceLocation(location.getNamespace(), path.substring(trim, path.length() - extensionLength));
     }).collect(Collectors.toSet());
-  }
-
-  private static boolean isPathValid(String path) {
-      return path.chars().allMatch((c) -> c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == '/' || c == '.' || c == '-');
   }
 
   @Override

@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
@@ -58,7 +59,7 @@ public class EmptyFluidContainerTransfer implements IFluidContainerTransfer {
       int actual = handler.fill(contained.copy(), FluidAction.EXECUTE);
       if (actual > 0) {
         if (actual != this.fluid.getAmount()) {
-          Mantle.logger.error("Wrong amount filled from {}, expected {}, filled {}", stack.getItem().getRegistryName(), this.fluid.getAmount(), actual);
+          Mantle.logger.error("Wrong amount filled from {}, expected {}, filled {}", Registry.ITEM.getKey(stack.getItem()), this.fluid.getAmount(), actual);
         }
         return new TransferResult(filled.get().copy(), contained, false);
       }

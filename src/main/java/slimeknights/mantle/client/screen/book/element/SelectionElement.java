@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
@@ -77,14 +76,14 @@ public class SelectionElement extends SizedBookElement {
     if (this.section != null && this.isHovered(mouseX, mouseY)) {
       List<Component> text = new ArrayList<>();
 
-      text.add(new TextComponent(this.section.getTitle()));
+      text.add(Component.literal(this.section.getTitle()));
 
       if (!this.section.isUnlocked(this.parent.advancementCache)) {
-        text.add(new TextComponent("Locked").withStyle(ChatFormatting.RED));
-        text.add(new TextComponent("Requirements:"));
+        text.add(Component.literal("Locked").withStyle(ChatFormatting.RED));
+        text.add(Component.literal("Requirements:"));
 
         for (String requirement : this.section.requirements) {
-          text.add(new TextComponent(requirement));
+          text.add(Component.literal(requirement));
         }
       }
 

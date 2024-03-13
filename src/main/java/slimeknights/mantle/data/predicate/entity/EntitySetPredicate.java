@@ -11,7 +11,7 @@ import java.util.Set;
 
 /** Predicate matching entities from a set */
 public record EntitySetPredicate(Set<EntityType<?>> entities) implements LivingEntityPredicate {
-  public static final IGenericLoader<EntitySetPredicate> LOADER = new RegistrySetLoader<>("entities", ForgeRegistries.ENTITIES, EntitySetPredicate::new, EntitySetPredicate::entities);
+  public static final IGenericLoader<EntitySetPredicate> LOADER = new RegistrySetLoader<>("entities", ForgeRegistries.ENTITY_TYPES, EntitySetPredicate::new, EntitySetPredicate::entities);
 
   @Override
   public boolean matches(LivingEntity entity) {

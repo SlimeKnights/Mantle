@@ -11,6 +11,7 @@ import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.content.PageContent;
 import slimeknights.mantle.client.book.data.element.IDataElement;
 import slimeknights.mantle.client.book.repository.BookRepository;
+import slimeknights.mantle.util.DataLoadedConditionContext;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
@@ -171,7 +172,7 @@ public class PageData implements IDataItem, IConditional {
 
   @Override
   public boolean isConditionMet() {
-    return condition.test();
+    return condition.test(DataLoadedConditionContext.INSTANCE);
   }
 
   private static class PageTypeOverrider {

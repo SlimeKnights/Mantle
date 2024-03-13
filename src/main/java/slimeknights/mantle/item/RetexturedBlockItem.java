@@ -20,7 +20,6 @@ import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Logic for a dynamically retexturable block item. This will ensure all the NBT is in the expected format on the item NBT.
@@ -39,7 +38,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
 
   @Override
   public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (this.allowdedIn(group)) {
+    if (this.allowedIn(group)) {
       addTagVariants(this.getBlock(), textureTag, items, true);
     }
   }
@@ -107,7 +106,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
     if (block == null || block == Blocks.AIR) {
       return setTexture(stack, "");
     }
-    return setTexture(stack, Objects.requireNonNull(block.getRegistryName()).toString());
+    return setTexture(stack, Registry.BLOCK.getKey(block).toString());
   }
 
   /**

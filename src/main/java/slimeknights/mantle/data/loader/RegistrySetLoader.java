@@ -7,7 +7,6 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
@@ -22,7 +21,7 @@ import java.util.function.Function;
  * @param <T>  Loader object type
  * @see RegistryEntryLoader
  */
-public record RegistrySetLoader<R extends IForgeRegistryEntry<R>, T extends IHaveLoader<?>>(
+public record RegistrySetLoader<R, T extends IHaveLoader<?>>(
   String key,
   IForgeRegistry<R> registry,
   Function<Set<R>, T> constructor,
@@ -44,7 +43,7 @@ public record RegistrySetLoader<R extends IForgeRegistryEntry<R>, T extends IHav
   public void serialize(T object, JsonObject json) {
     JsonArray array = new JsonArray();
     for (R entry : getter.apply(object)) {
-      array.add(Objects.requireNonNull(entry.getRegistryName()).toString());
+      array.add(Objects.requireNonNull(registry.getKey(entry)).toString());
     }
     json.add(key, array);
   }

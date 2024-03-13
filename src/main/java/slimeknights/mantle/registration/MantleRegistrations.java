@@ -10,9 +10,9 @@ import static slimeknights.mantle.registration.RegistrationHelper.injected;
 /**
  * Various objects registered under Mantle
  */
-@ObjectHolder(Mantle.modId)
 public class MantleRegistrations {
   private MantleRegistrations() {}
 
+  @ObjectHolder(registryName = "minecraft:block_entity_type", value = Mantle.modId+":sign")
   public static final BlockEntityType<MantleSignBlockEntity> SIGN = injected();
 }

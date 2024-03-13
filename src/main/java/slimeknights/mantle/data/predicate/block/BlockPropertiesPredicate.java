@@ -10,14 +10,15 @@ import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.registries.ForgeRegistries;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -61,7 +62,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
   private static Property<?> parseProperty(Block block, String name, Function<String, RuntimeException> exception) {
     Property<?> property = block.getStateDefinition().getProperty(name);
     if (property == null) {
-      throw exception.apply("Property " + name + " does not exist in block " + block.getRegistryName());
+      throw exception.apply("Property " + name + " does not exist in block " + Registry.BLOCK.getKey(block));
     }
     return property;
   }
@@ -80,7 +81,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
 
     @Override
     public void serialize(BlockPropertiesPredicate object, JsonObject json) {
-      json.addProperty("block", Objects.requireNonNull(object.block.getRegistryName()).toString());
+      json.addProperty("block", Registry.BLOCK.getKey(object.block).toString());
       JsonObject properties = new JsonObject();
       for (Matcher matcher : object.properties) {
         properties.add(matcher.property().getName(), matcher.serialize());

@@ -1,6 +1,7 @@
 package slimeknights.mantle.loot;
 
 import com.google.gson.JsonDeserializer;
+import com.mojang.serialization.Codec;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.core.Registry;
@@ -10,9 +11,8 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
+import net.minecraftforge.registries.RegisterEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.loot.condition.BlockTagLootCondition;
 import slimeknights.mantle.loot.condition.ContainsItemModifierLootCondition;
@@ -23,10 +23,9 @@ import slimeknights.mantle.loot.function.RetexturedLootFunction;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
-import static slimeknights.mantle.registration.RegistrationHelper.injected;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@ObjectHolder(value = Mantle.modId)
 public class MantleLoot {
   /** Condition to match a block tag and property predicate */
   public static LootItemConditionType BLOCK_TAG_CONDITION;
@@ -35,18 +34,13 @@ public class MantleLoot {
   /** Function to add a fluid to an item fluid capability */
   public static LootItemFunctionType SET_FLUID_FUNCTION;
 
-  /** Loot modifier to get loot from an entry for generated loot */
-  public static final AddEntryLootModifier.Serializer ADD_ENTRY = injected();
-  /** Loot modifier to replace all instances of one item with another */
-  public static final ReplaceItemLootModifier.Serializer REPLACE_ITEM = injected();
-
   /**
    * Called during serializer registration to register any relevant loot logic
    */
-  public static void registerGlobalLootModifiers(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-    RegistryAdapter<GlobalLootModifierSerializer<?>> adapter = new RegistryAdapter<>(event.getRegistry());
-    adapter.register(new AddEntryLootModifier.Serializer(), "add_entry");
-    adapter.register(new ReplaceItemLootModifier.Serializer(), "replace_item");
+  public static void registerGlobalLootModifiers(final RegisterEvent event) {
+    RegistryAdapter<Codec<? extends IGlobalLootModifier>> adapter = new RegistryAdapter<>(Objects.requireNonNull(event.getForgeRegistry()));
+    adapter.register(AddEntryLootModifier.CODEC, "add_entry");
+    adapter.register(ReplaceItemLootModifier.CODEC, "replace_item");
 
     // functions
     RETEXTURED_FUNCTION = registerFunction("fill_retextured_block", RetexturedLootFunction.SERIALIZER);

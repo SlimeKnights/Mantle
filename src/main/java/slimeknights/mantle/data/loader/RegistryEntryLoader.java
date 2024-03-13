@@ -3,7 +3,6 @@ package slimeknights.mantle.data.loader;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
@@ -17,7 +16,7 @@ import java.util.function.Function;
  * @param <V>  Registry entry type
  * @see RegistrySetLoader
  */
-public record RegistryEntryLoader<O extends IHaveLoader<?>,V extends IForgeRegistryEntry<V>>(
+public record RegistryEntryLoader<O extends IHaveLoader<?>,V>(
   String key,
   IForgeRegistry<V> registry,
   Function<V,O> constructor,
@@ -31,7 +30,7 @@ public record RegistryEntryLoader<O extends IHaveLoader<?>,V extends IForgeRegis
 
   @Override
   public void serialize(O object, JsonObject json) {
-    json.addProperty(key, Objects.requireNonNull(getter.apply(object).getRegistryName()).toString());
+    json.addProperty(key, Objects.requireNonNull(registry.getKey(getter.apply(object))).toString());
   }
 
   @Override

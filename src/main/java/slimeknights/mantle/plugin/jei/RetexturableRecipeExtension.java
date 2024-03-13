@@ -5,16 +5,9 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -23,14 +16,13 @@ import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
  * JEI crafting extension to properly show, animate, and focus {@link ShapedRetexturedRecipe} instances
  */
-public class RetexturableRecipeExtension implements ICraftingCategoryExtension, IRecipeSlotTooltipCallback {
+public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
   /** Actual recipe instance */
   private final ShapedRetexturedRecipe recipe;
   /** List of all textured variants, fallback for JEI display */
@@ -102,34 +94,6 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension, 
     } else {
       // link the output to all inputs that match the texture
       builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(textureSlots).mapToObj(i -> inputs.get(getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));
-    }
-  }
-
-  @Override
-  public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-    // TODO: is this still needed?
-    ResourceLocation registryName = this.getRegistryName();
-    Optional<ItemStack> ingredient = recipeSlotView.getDisplayedItemStack();
-    if (recipeSlotView.getRole() == RecipeIngredientRole.OUTPUT && registryName != null && ingredient.isPresent()) {
-      if (JEIPlugin.modIdHelper.isDisplayingModNameEnabled()) {
-        String recipeModId = registryName.getNamespace();
-        boolean modIdDifferent = false;
-        ResourceLocation itemRegistryName = ingredient.get().getItem().getRegistryName();
-        if (itemRegistryName != null) {
-          String itemModId = itemRegistryName.getNamespace();
-          modIdDifferent = !recipeModId.equals(itemModId);
-        }
-
-        if (modIdDifferent) {
-          String modName = JEIPlugin.modIdHelper.getFormattedModNameForModId(recipeModId);
-          tooltip.add(new TranslatableComponent("jei.tooltip.recipe.by", modName).withStyle(ChatFormatting.GRAY));
-        }
-      }
-
-      boolean showAdvanced = Minecraft.getInstance().options.advancedItemTooltips || Screen.hasShiftDown();
-      if (showAdvanced) {
-        tooltip.add(new TranslatableComponent("jei.tooltip.recipe.id", registryName).withStyle(ChatFormatting.DARK_GRAY));
-      }
     }
   }
 

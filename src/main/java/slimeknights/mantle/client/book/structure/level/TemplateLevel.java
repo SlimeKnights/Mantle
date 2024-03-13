@@ -21,12 +21,14 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkSource;
-import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gameevent.GameEvent.Context;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.ticks.BlackholeTickAccess;
 import net.minecraft.world.ticks.LevelTickAccess;
@@ -52,24 +54,21 @@ public class TemplateLevel extends Level {
 
   public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
-      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(DimensionType.OVERWORLD_LOCATION),
-      () -> InactiveProfiler.INSTANCE, true, false, 0
+      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
+      () -> InactiveProfiler.INSTANCE, true, false, 0, 0
     );
 
     this.chunkSource = new TemplateChunkSource(blocks, this, shouldShow);
   }
 
   @Override
-  public void sendBlockUpdated(@Nonnull BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newState, int flags) {
-  }
+  public void sendBlockUpdated(@Nonnull BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newState, int flags) {}
 
   @Override
-  public void playSound(@Nullable Player player, double x, double y, double z, @Nonnull SoundEvent soundIn, @Nonnull SoundSource category, float volume, float pitch) {
-  }
+  public void playSeededSound(@Nullable Player pPlayer, double pX, double pY, double pZ, SoundEvent pSoundEvent, SoundSource pSoundSource, float pVolume, float pPitch, long pSeed) {}
 
   @Override
-  public void playSound(@Nullable Player playerIn, @Nonnull Entity entityIn, @Nonnull SoundEvent eventIn, @Nonnull SoundSource categoryIn, float volume, float pitch) {
-  }
+  public void playSeededSound(@Nullable Player pPlayer, Entity pEntity, SoundEvent pSoundEvent, SoundSource pSoundSource, float pVolume, float pPitch, long pSeed) {}
 
   @Override
   public String gatherChunkSourceStats() {
@@ -99,8 +98,7 @@ public class TemplateLevel extends Level {
   }
 
   @Override
-  public void destroyBlockProgress(int breakerId, @Nonnull BlockPos pos, int progress) {
-  }
+  public void destroyBlockProgress(int breakerId, @Nonnull BlockPos pos, int progress) {}
 
   @Nonnull
   @Override
@@ -138,12 +136,10 @@ public class TemplateLevel extends Level {
   }
 
   @Override
-  public void levelEvent(@Nullable Player player, int type, @Nonnull BlockPos pos, int data) {
-  }
+  public void levelEvent(@Nullable Player player, int type, @Nonnull BlockPos pos, int data) {}
 
   @Override
-  public void gameEvent(@Nullable Entity pEntity, GameEvent pEvent, BlockPos pPos) {
-  }
+  public void gameEvent(GameEvent pEvent, Vec3 pPosition, Context pContext) {}
 
   @Nonnull
   @Override

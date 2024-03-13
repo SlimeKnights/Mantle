@@ -103,7 +103,7 @@ public class BookData implements IDataItem {
           try {
             Resource resource = repo.getResource(languageLocation);
             if (resource != null) {
-              BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
+              BufferedReader br = new BufferedReader(new InputStreamReader(resource.open(), StandardCharsets.UTF_8));
               String next = br.readLine();
 
               while (next != null) {

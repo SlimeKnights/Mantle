@@ -2,11 +2,14 @@ package slimeknights.mantle.registration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraftforge.event.RegistryEvent.MissingMappings;
-import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.IRegistryDelegate;
+import net.minecraftforge.registries.MissingMappingsEvent;
+import net.minecraftforge.registries.MissingMappingsEvent.Mapping;
+import slimeknights.mantle.util.RegistryHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -31,15 +34,17 @@ public class RegistrationHelper {
   }
 
   /**
-   * Creates a supplier for a specific registry entry instance based on the delegate to a general instance.
-   * Note that this performs an unchecked cast, be certain that the right type is returned
-   * @param delegate  Delegate instance
-   * @param <I>  Forge registry type
-   * @return  Supplier for the given instance
+   * Gets a holder for a registry object
+   * @param registry  Registry instance
+   * @param entry     Entry to fetch holder
+   * @param <T>       Registry type
+   * @param <R>       Return type, typically but not strictly registry type
+   * @return  Supplier for the given registry casted to the requested type
    */
-  @SuppressWarnings("unchecked")
-  public static <I extends IForgeRegistryEntry<? super I>> Supplier<I> castDelegate(IRegistryDelegate<? super I> delegate) {
-    return () -> (I) delegate.get();
+  @SuppressWarnings("unchecked")  // we know the entry is the given type
+  public static <T, R extends T> Supplier<R> getCastedHolder(DefaultedRegistry<T> registry, T entry) {
+    Supplier<T> holder = RegistryHelper.getHolder(registry, entry);
+    return () -> (R) holder.get();
   }
 
   /**
@@ -48,10 +53,12 @@ public class RegistrationHelper {
    * @param handler  Mapping handler
    * @param <T>      Event type
    */
-  public static <T extends IForgeRegistryEntry<T>> void handleMissingMappings(MissingMappings<T> event, String modID, Function<String, T> handler) {
-    for (Mapping<T> mapping : event.getAllMappings()) {
-      if (modID.equals(mapping.key.getNamespace())) {
-        @Nullable T value = handler.apply(mapping.key.getPath());
+  public static <T> void handleMissingMappings(MissingMappingsEvent event, String modID, ResourceKey<? extends Registry<T>> registry, Function<String, T> handler) {
+    // event is kinda nice, automatically filters mappings to the registry type via the key
+    for (Mapping<T> mapping : event.getAllMappings(registry)) {
+      ResourceLocation id = mapping.getKey();
+      if (modID.equals(id.getNamespace())) {
+        @Nullable T value = handler.apply(id.getPath());
         if (value != null) {
           mapping.remap(value);
         }

@@ -2,8 +2,8 @@ package slimeknights.mantle.fluid.transfer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.fluids.FluidStack;
-import slimeknights.mantle.datagen.GenericDataProvider;
+import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
@@ -61,9 +61,9 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericData
   }
 
   @Override
-  public void run(HashCache cache) throws IOException {
+  public void run(CachedOutput cache) throws IOException {
     addTransfers();
-    allTransfers.forEach((id, data) -> saveThing(cache, id, data.toJson()));
+    allTransfers.forEach((id, data) -> saveJson(cache, id, data.toJson()));
   }
 
   /** Json with transfer and condition */

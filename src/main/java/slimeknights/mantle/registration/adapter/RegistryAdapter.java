@@ -4,18 +4,17 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Objects;
 
 /**
- * A convenience wrapper for forge registries, to be used in combination with the {@link net.minecraftforge.event.RegistryEvent.Register} event.
+ * A convenience wrapper for forge registries, to be used in combination with the {@link net.minecraftforge.registries.RegisterEvent} event.
  * Simply put it allows you to register things by passing (thing, name) instead of having to set the name inline.
  * There also is a convenience variant for items and itemblocks, see {@link ItemRegistryAdapter}.
  */
 @SuppressWarnings("WeakerAccess")
 @RequiredArgsConstructor
-public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
+public class RegistryAdapter<T> {
   private final IForgeRegistry<T> registry;
   private final String modId;
 
@@ -61,8 +60,8 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * @param <I>    Value type
    * @return  Registered entry
    */
-  public <I extends T> I register(I entry, IForgeRegistryEntry<?> name) {
-    return this.register(entry, Objects.requireNonNull(name.getRegistryName()));
+  public <I extends T> I register(I entry, T name) {
+    return this.register(entry, Objects.requireNonNull(registry.getKey(name)));
   }
 
   /**
@@ -75,8 +74,7 @@ public class RegistryAdapter<T extends IForgeRegistryEntry<T>> {
    * @return Registry entry
    */
   public <I extends T> I register(I entry, ResourceLocation location) {
-    entry.setRegistryName(location);
-    registry.register(entry);
+    registry.register(location, entry);
     return entry;
   }
 }

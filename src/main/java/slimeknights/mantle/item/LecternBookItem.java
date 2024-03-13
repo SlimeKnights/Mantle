@@ -37,9 +37,9 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
    * Event handler to control the lectern GUI
    */
   public static void interactWithBlock(PlayerInteractEvent.RightClickBlock event) {
-    Level world = event.getWorld();
+    Level world = event.getLevel();
     // client side has no access to the book, so just skip
-    if (world.isClientSide() || event.getPlayer().isShiftKeyDown()) {
+    if (world.isClientSide() || event.getEntity().isShiftKeyDown()) {
       return;
     }
     // must be a lectern, and have the TE
@@ -50,7 +50,7 @@ public abstract class LecternBookItem extends TooltipItem implements ILecternBoo
 											 .ifPresent(te -> {
                         ItemStack book = te.getBook();
                         if (!book.isEmpty() && book.getItem() instanceof ILecternBookItem
-                            && ((ILecternBookItem) book.getItem()).openLecternScreen(world, pos, event.getPlayer(), book)) {
+                            && ((ILecternBookItem) book.getItem()).openLecternScreen(world, pos, event.getEntity(), book)) {
                           event.setCanceled(true);
                         }
                       });

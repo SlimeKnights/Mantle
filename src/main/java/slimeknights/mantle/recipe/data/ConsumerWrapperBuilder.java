@@ -3,9 +3,10 @@ package slimeknights.mantle.recipe.data;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.core.Registry;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
@@ -112,7 +113,7 @@ public class ConsumerWrapperBuilder {
       if (overrideName != null) {
         json.addProperty("type", overrideName.toString());
       } else {
-        json.addProperty("type", Objects.requireNonNull(getType().getRegistryName()).toString());
+        json.addProperty("type", Objects.requireNonNull(Registry.RECIPE_SERIALIZER.getKey(getType())).toString());
       }
       this.serializeRecipeData(json);
       return json;

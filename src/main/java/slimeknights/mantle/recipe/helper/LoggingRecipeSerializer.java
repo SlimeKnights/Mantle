@@ -3,15 +3,16 @@ package slimeknights.mantle.recipe.helper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
 
 /**
- * Recipe serializer that logs exceptions before throwing them as otherwise the exceptions may be invisible
+ * Recipe serializer that logs network exceptions before throwing them as otherwise the exceptions may be invisible
  * @param <T>  Recipe class
  */
-public abstract class LoggingRecipeSerializer<T extends Recipe<?>> extends AbstractRecipeSerializer<T> {
+public interface LoggingRecipeSerializer<T extends Recipe<?>> extends RecipeSerializer<T> {
   /**
    * Read the recipe from the packet
    * @param id      Recipe ID
@@ -20,7 +21,7 @@ public abstract class LoggingRecipeSerializer<T extends Recipe<?>> extends Abstr
    * @throws RuntimeException  If any errors happen, the exception will be logged automatically
    */
   @Nullable
-  protected abstract T fromNetworkSafe(ResourceLocation id, FriendlyByteBuf buffer);
+  T fromNetworkSafe(ResourceLocation id, FriendlyByteBuf buffer);
 
   /**
    * Write the method to the buffer
@@ -28,11 +29,11 @@ public abstract class LoggingRecipeSerializer<T extends Recipe<?>> extends Abstr
    * @param recipe  Recipe instance
    * @throws RuntimeException  If any errors happen, the exception will be logged automatically
    */
-  protected abstract void toNetworkSafe(FriendlyByteBuf buffer, T recipe);
+  void toNetworkSafe(FriendlyByteBuf buffer, T recipe);
 
   @Nullable
   @Override
-  public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
+  default T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
     try {
       return fromNetworkSafe(id, buffer);
     } catch (RuntimeException e) {
@@ -42,7 +43,7 @@ public abstract class LoggingRecipeSerializer<T extends Recipe<?>> extends Abstr
   }
 
   @Override
-  public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+  default void toNetwork(FriendlyByteBuf buffer, T recipe) {
     try {
       toNetworkSafe(buffer, recipe);
     } catch (RuntimeException e) {

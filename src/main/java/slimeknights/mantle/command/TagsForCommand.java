@@ -11,7 +11,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -54,18 +53,18 @@ import java.util.Objects;
  */
 public class TagsForCommand {
   /** Tag type cannot be found */
-  protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> new TranslatableComponent("command.mantle.tags_for.not_found", type, name));
+  protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> Component.translatable("command.mantle.tags_for.not_found", type, name));
 
   /* Missing target errors */
-  private static final Component NO_HELD_BLOCK = new TranslatableComponent("command.mantle.tags_for.no_held_block");
-  private static final Component NO_HELD_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_held_entity");
-  private static final Component NO_HELD_POTION = new TranslatableComponent("command.mantle.tags_for.no_held_potion");
-  private static final Component NO_HELD_FLUID = new TranslatableComponent("command.mantle.tags_for.no_held_fluid");
-  private static final Component NO_HELD_ENCHANTMENT = new TranslatableComponent("command.mantle.tags_for.no_held_enchantment");
-  private static final Component NO_TARGETED_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_entity");
-  private static final Component NO_TARGETED_BLOCK_ENTITY = new TranslatableComponent("command.mantle.tags_for.no_targeted_block_entity");
+  private static final Component NO_HELD_BLOCK = Component.translatable("command.mantle.tags_for.no_held_block");
+  private static final Component NO_HELD_ENTITY = Component.translatable("command.mantle.tags_for.no_held_entity");
+  private static final Component NO_HELD_POTION = Component.translatable("command.mantle.tags_for.no_held_potion");
+  private static final Component NO_HELD_FLUID = Component.translatable("command.mantle.tags_for.no_held_fluid");
+  private static final Component NO_HELD_ENCHANTMENT = Component.translatable("command.mantle.tags_for.no_held_enchantment");
+  private static final Component NO_TARGETED_ENTITY = Component.translatable("command.mantle.tags_for.no_targeted_entity");
+  private static final Component NO_TARGETED_BLOCK_ENTITY = Component.translatable("command.mantle.tags_for.no_targeted_block_entity");
   /** Value has no tags */
-  private static final Component NO_TAGS = new TranslatableComponent("command.mantle.tags_for.no_tags");
+  private static final Component NO_TAGS = Component.translatable("command.mantle.tags_for.no_tags");
 
   /**
    * Registers this sub command with the root command
@@ -101,7 +100,7 @@ public class TagsForCommand {
    * @return  Number of tags printed
    */
   private static <T> int printOwningTags(CommandContext<CommandSourceStack> context, Registry<T> registry, T value) {
-    MutableComponent output = new TranslatableComponent("command.mantle.tags_for.success", registry.key().location(), registry.getKey(value));
+    MutableComponent output = Component.translatable("command.mantle.tags_for.success", registry.key().location(), registry.getKey(value));
     List<ResourceLocation> tags = registry.getHolder(registry.getId(value)).stream().flatMap(Holder::getTagKeys).map(TagKey::location).toList();
     if (tags.isEmpty()) {
       output.append("\n* ").append(NO_TAGS);

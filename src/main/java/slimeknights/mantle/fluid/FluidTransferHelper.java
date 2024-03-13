@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -16,10 +18,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.common.SoundAction;
+import net.minecraftforge.common.SoundActions;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
@@ -38,6 +42,25 @@ import slimeknights.mantle.fluid.transfer.IFluidContainerTransfer.TransferResult
 public class FluidTransferHelper {
   private static final String KEY_FILLED = Mantle.makeDescriptionId("block", "tank.filled");
   private static final String KEY_DRAINED = Mantle.makeDescriptionId("block", "tank.drained");
+
+  /** Gets the given sound from the fluid */
+  public static SoundEvent getSound(FluidStack fluid, SoundAction action, SoundEvent fallback) {
+    SoundEvent event = fluid.getFluid().getFluidType().getSound(fluid, action);
+    if (event == null) {
+      return fallback;
+    }
+    return event;
+  }
+
+  /** Gets the empty sound for a fluid */
+  public static SoundEvent getEmptySound(FluidStack fluid) {
+    return getSound(fluid, SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY);
+  }
+
+  /** Gets the fill sound for a fluid */
+  public static SoundEvent getFillSound(FluidStack fluid) {
+    return getSound(fluid, SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL);
+  }
 
   /**
    * Attempts to transfer fluid
@@ -86,17 +109,18 @@ public class FluidTransferHelper {
         if (!world.isClientSide) {
           BlockEntity te = world.getBlockEntity(pos);
           if (te != null) {
-            te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, hit)
+            te.getCapability(ForgeCapabilities.FLUID_HANDLER, hit)
               .ifPresent(handler -> {
-                FluidStack fluidStack = new FluidStack(bucket.getFluid(), FluidAttributes.BUCKET_VOLUME);
+                FluidStack fluidStack = new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME);
                 // must empty the whole bucket
-                if (handler.fill(fluidStack, FluidAction.SIMULATE) == FluidAttributes.BUCKET_VOLUME) {
+                if (handler.fill(fluidStack, FluidAction.SIMULATE) == FluidType.BUCKET_VOLUME) {
+                  SoundEvent sound = getEmptySound(fluidStack);
                   handler.fill(fluidStack, FluidAction.EXECUTE);
                   bucket.checkExtraContent(player, world, held, pos.relative(offset));
-                  world.playSound(null, pos, fluid.getAttributes().getEmptySound(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                  player.displayClientMessage(new TranslatableComponent(KEY_FILLED, FluidAttributes.BUCKET_VOLUME, fluidStack.getDisplayName()), true);
+                  world.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
+                  player.displayClientMessage(Component.translatable(KEY_FILLED, FluidType.BUCKET_VOLUME, fluidStack.getDisplayName()), true);
                   if (!player.isCreative()) {
-                    player.setItemInHand(hand, held.getContainerItem());
+                    player.setItemInHand(hand, held.getCraftingRemainingItem());
                   }
                 }
               });
@@ -110,14 +134,14 @@ public class FluidTransferHelper {
 
   /** Plays the sound from filling a TE */
   private static void playEmptySound(Level world, BlockPos pos, Player player, FluidStack transferred) {
-    world.playSound(null, pos, transferred.getFluid().getAttributes().getEmptySound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
-    player.displayClientMessage(new TranslatableComponent(KEY_FILLED, transferred.getAmount(), transferred.getDisplayName()), true);
+    world.playSound(null, pos, getEmptySound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
+    player.displayClientMessage(Component.translatable(KEY_FILLED, transferred.getAmount(), transferred.getDisplayName()), true);
   }
 
   /** Plays the sound from draining a TE */
   private static void playFillSound(Level world, BlockPos pos, Player player, FluidStack transferred) {
-    world.playSound(null, pos, transferred.getFluid().getAttributes().getFillSound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
-    player.displayClientMessage(new TranslatableComponent(KEY_DRAINED, transferred.getAmount(), transferred.getDisplayName()), true);
+    world.playSound(null, pos, getFillSound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
+    player.displayClientMessage(Component.translatable(KEY_DRAINED, transferred.getAmount(), transferred.getDisplayName()), true);
   }
 
   /**
@@ -139,7 +163,7 @@ public class FluidTransferHelper {
       BlockEntity te = world.getBlockEntity(pos);
       if (te != null) {
         // TE must have a capability
-        LazyOptional<IFluidHandler> teCapability = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face);
+        LazyOptional<IFluidHandler> teCapability = te.getCapability(ForgeCapabilities.FLUID_HANDLER, face);
         if (teCapability.isPresent()) {
           IFluidHandler teHandler = teCapability.orElse(EmptyFluidHandler.INSTANCE);
 
@@ -166,7 +190,7 @@ public class FluidTransferHelper {
 
           // if the item has a capability, do a direct transfer
           ItemStack copy = ItemHandlerHelper.copyStackWithSize(stack, 1);
-          LazyOptional<IFluidHandlerItem> itemCapability = copy.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY);
+          LazyOptional<IFluidHandlerItem> itemCapability = copy.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
           if (itemCapability.isPresent()) {
             if (!world.isClientSide) {
               IFluidHandlerItem itemHandler = itemCapability.resolve().orElseThrow();

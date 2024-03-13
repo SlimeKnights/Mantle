@@ -2,21 +2,21 @@ package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import slimeknights.mantle.client.book.structure.StructureInfo;
 import slimeknights.mantle.client.book.structure.level.TemplateLevel;
 import slimeknights.mantle.client.render.MantleRenderTypes;
@@ -112,17 +112,21 @@ public class StructureElement extends SizedBookElement {
               else
                 overlay = OverlayTexture.NO_OVERLAY;
 
-              IModelData modelData = EmptyModelData.INSTANCE;
+              ModelData modelData = ModelData.EMPTY;
               BlockEntity te = structureWorld.getBlockEntity(pos);
 
-              if (te != null)
+              if (te != null) {
                 modelData = te.getModelData();
+              }
 
-              blockRender.getModelRenderer().tesselateBlock(
-                structureWorld, blockRender.getBlockModel(state), state, pos, transform,
-                buffer.getBuffer(MantleRenderTypes.TRANSLUCENT_FULLBRIGHT), false, structureWorld.random, state.getSeed(pos),
-                overlay, modelData
-              );
+              // TODO: verify that we should be using all types here
+              BakedModel model = blockRender.getBlockModel(state);
+              for (RenderType renderType : model.getRenderTypes(state, structureWorld.random, modelData)) {
+                blockRender.getModelRenderer().tesselateBlock(
+                  structureWorld, blockRender.getBlockModel(state), state, pos, transform,
+                  buffer.getBuffer(MantleRenderTypes.TRANSLUCENT_FULLBRIGHT), false, structureWorld.random, state.getSeed(pos),
+                  overlay, modelData, renderType);
+              }
 
               transform.popPose();
             }

@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class DelayedSupplier<T> implements Supplier<T> {
   @Setter
   @Nullable
-  private Supplier<T> supplier;
+  private Supplier<? extends T> supplier;
 
   @Override
   public T get() {

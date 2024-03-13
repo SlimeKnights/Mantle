@@ -1,18 +1,16 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.AllArgsConstructor;
+import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistryEntry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryObject;
+import slimeknights.mantle.util.RegistryHelper;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
 /**
  * Registry object wrapper to implement {@link ItemLike}
@@ -20,7 +18,7 @@ import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor
-public class ItemObject<I extends IForgeRegistryEntry<? super I> & ItemLike> implements Supplier<I>, ItemLike {
+public class ItemObject<I extends ItemLike> implements Supplier<I>, ItemLike {
   /** Supplier to the registry entry */
   private final Supplier<? extends I> entry;
   /** Supplier to the registry name for this entry, allows fetching the name before the entry resolves if registry object is used */
@@ -30,9 +28,9 @@ public class ItemObject<I extends IForgeRegistryEntry<? super I> & ItemLike> imp
    * Creates a new item object from a supplier instance. Registry name will be fetched from the supplier entry, so the entry must be present during construction
    * @param entry  Existing registry entry, typically a vanilla block or a registered block
    */
-  public ItemObject(ForgeRegistryEntry<? super I> entry) {
-    this.entry = castDelegate(entry.delegate);
-    this.name = Objects.requireNonNull(entry.getRegistryName(), () -> "Attempted to create an Item Object with an unregistered entry");
+  public ItemObject(DefaultedRegistry<I> registry, I entry) {
+    this.entry = RegistryHelper.getHolder(registry, entry);
+    this.name = registry.getKey(entry);
   }
 
   /**

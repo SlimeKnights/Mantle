@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
@@ -13,20 +14,30 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
 /** Fluid with a bucket form, but no block form (hence no flowing) */
 @AllArgsConstructor
 public class UnplaceableFluid extends Fluid {
-  /** Bucket form of the liquid, use a supplier to air if no bucket form */
-  private final Supplier<? extends Item> bucket;
   /** Forge fluid attributes builder */
-  private final FluidAttributes.Builder builder;
+  private final Supplier<? extends FluidType> type;
+  /** Bucket form of the liquid, use a supplier to air if no bucket form */
+  @Nullable
+  private final Supplier<? extends Item> bucket;
+
+  @Override
+  public FluidType getFluidType() {
+    return type.get();
+  }
 
   @Override
   public Item getBucket() {
+    if (bucket == null) {
+      return Items.AIR;
+    }
     return bucket.get();
   }
 
@@ -50,11 +61,6 @@ public class UnplaceableFluid extends Fluid {
     return Blocks.AIR.defaultBlockState();
   }
 
-  @Override
-  protected FluidAttributes createAttributes()
-  {
-    return builder.build(this);
-  }
 
   /* Required methods */
 

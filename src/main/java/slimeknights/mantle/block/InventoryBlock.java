@@ -45,7 +45,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
     if (!world.isClientSide()) {
       MenuProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
       if (container != null && player instanceof ServerPlayer serverPlayer) {
-        NetworkHooks.openGui(serverPlayer, container, pos);
+        NetworkHooks.openScreen(serverPlayer, container, pos);
         if (player.containerMenu instanceof BaseContainerMenu<?> menu) {
           menu.syncOnOpen(serverPlayer);
         }

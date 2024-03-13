@@ -13,8 +13,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -59,12 +60,12 @@ public class ExtraHeartRenderHandler {
    * @param event  Event instance
    */
   @SubscribeEvent(priority = EventPriority.LOW)
-  public void renderHealthbar(RenderGameOverlayEvent.PreLayer event) {
-    if (event.isCanceled() || !Config.EXTRA_HEART_RENDERER.get() || event.getOverlay() != ForgeIngameGui.PLAYER_HEALTH_ELEMENT) {
+  public void renderHealthbar(RenderGuiOverlayEvent.Pre event) {
+    if (event.isCanceled() || !Config.EXTRA_HEART_RENDERER.get() || event.getOverlay() != VanillaGuiOverlay.PLAYER_HEALTH.type()) {
       return;
     }
     // ensure its visible
-    if (!(mc.gui instanceof ForgeIngameGui gui) || mc.options.hideGui || !gui.shouldDrawSurvivalElements()) {
+    if (!(mc.gui instanceof ForgeGui gui) || mc.options.hideGui || !gui.shouldDrawSurvivalElements()) {
       return;
     }
     Entity renderViewEnity = this.mc.getCameraEntity();
@@ -76,7 +77,7 @@ public class ExtraHeartRenderHandler {
     this.mc.getProfiler().push("health");
 
     // extra setup stuff from us
-    int left_height = gui.left_height;
+    int left_height = gui.leftHeight;
     int width = this.mc.getWindow().getGuiScaledWidth();
     int height = this.mc.getWindow().getGuiScaledHeight();
     int updateCounter = this.mc.gui.getGuiTicks();
@@ -138,7 +139,7 @@ public class ExtraHeartRenderHandler {
     else if (player.hasEffect(MobEffects.WITHER)) MARGIN += 72;
     float absorbRemaining = absorb;
 
-    PoseStack matrixStack = event.getMatrixStack();
+    PoseStack matrixStack = event.getPoseStack();
     for (int i = Mth.ceil((healthMax + absorb) / 2.0F) - 1; i >= 0; --i) {
       int row = Mth.ceil((float) (i + 1) / 10.0F) - 1;
       int x = left + i % 10 * 8;
@@ -182,15 +183,16 @@ public class ExtraHeartRenderHandler {
     this.renderExtraAbsorption(matrixStack, left, top - rowHeight, player);
 
     RenderSystem.setShaderTexture(0, ICON_VANILLA);
-    gui.left_height += 10;
+    gui.leftHeight += 10;
     if (absorb > 0) {
-      gui.left_height += 10;
+      gui.leftHeight += 10;
     }
 
     event.setCanceled(true);
     RenderSystem.disableBlend();
     this.mc.getProfiler().pop();
-    MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.PostLayer(matrixStack, event, ForgeIngameGui.PLAYER_HEALTH_ELEMENT));
+    //noinspection UnstableApiUsage  I do what I want (more accurately, we override the renderer but want to let others still respond in post)
+    MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Post(event.getWindow(), matrixStack, event.getPartialTick(), VanillaGuiOverlay.PLAYER_HEALTH.type()));
   }
 
   /**

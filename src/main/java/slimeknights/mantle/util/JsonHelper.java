@@ -1,12 +1,15 @@
 package slimeknights.mantle.util;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -21,17 +24,13 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -39,7 +38,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * Utilities to help in parsing JSON
@@ -47,6 +45,13 @@ import java.util.stream.Stream;
 @SuppressWarnings("unused")
 public class JsonHelper {
   private JsonHelper() {}
+
+  /** Default GSON instance, use instead of creating a new instance unless you need additional type adapaters */
+  public static final Gson DEFAULT_GSON = (new GsonBuilder())
+    .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+    .setPrettyPrinting()
+    .disableHtmlEscaping()
+    .create();
 
   /**
    * Gets an element from JSON, throwing an exception if missing
@@ -172,7 +177,7 @@ public class JsonHelper {
    * @return  Registry value
    * @throws JsonSyntaxException  If something failed to parse
    */
-  public static <T extends IForgeRegistryEntry<T>> T convertToEntry(IForgeRegistry<T> registry, JsonElement element, String key) {
+  public static <T> T convertToEntry(IForgeRegistry<T> registry, JsonElement element, String key) {
     ResourceLocation name = JsonHelper.convertToResourceLocation(element, key);
     if (registry.containsKey(name)) {
       T value = registry.getValue(name);
@@ -192,7 +197,7 @@ public class JsonHelper {
    * @return  Registry value
    * @throws JsonSyntaxException  If something failed to parse
    */
-  public static <T extends IForgeRegistryEntry<T>> T getAsEntry(IForgeRegistry<T> registry, JsonObject parent, String key) {
+  public static <T> T getAsEntry(IForgeRegistry<T> registry, JsonObject parent, String key) {
     return convertToEntry(registry, JsonHelper.getElement(parent, key), key);
   }
 
@@ -254,11 +259,11 @@ public class JsonHelper {
    * @return  JSON object, or null if failed to parse
    */
   @Nullable
-  public static JsonObject getJson(Resource resource) {
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+  public static JsonObject getJson(Resource resource, ResourceLocation location) {
+    try (Reader reader = resource.openAsReader()) {
       return GsonHelper.parse(reader);
     } catch (JsonParseException | IOException e) {
-      Mantle.logger.error("Failed to load JSON from resource " + resource.getLocation(), e);
+      Mantle.logger.error("Failed to load JSON from resource " + location, e);
       return null;
     }
   }
@@ -270,21 +275,12 @@ public class JsonHelper {
       .filter(ResourceLocation::isValidNamespace)
       .flatMap(namespace -> {
         ResourceLocation location = new ResourceLocation(namespace, path);
-        try {
-          return manager.getResources(location).stream();
-        } catch (FileNotFoundException e) {
-          // suppress, the above method throws instead of returning empty
-        } catch (IOException e) {
-          Mantle.logger.error("Failed to load JSON files from {}", location, e);
-        }
-        return Stream.empty();
-      })
-      .map(preferredPath != null ? resource -> {
-        ResourceLocation loaded = resource.getLocation();
-        Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", loaded, resource.getSourceName(), loaded.getNamespace(), preferredPath);
-        return getJson(resource);
-      } : JsonHelper::getJson)
-      .filter(Objects::nonNull).toList();
+        return manager.getResourceStack(location).stream()
+          .map(preferredPath != null ? resource -> {
+            Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", location, resource.sourcePackId(), location.getNamespace(), preferredPath);
+            return getJson(resource, location);
+          } : resource -> JsonHelper.getJson(resource, location));
+      }).filter(Objects::nonNull).toList();
   }
 
   /** Sends the packet to the given player */
@@ -400,7 +396,7 @@ public class JsonHelper {
   public static JsonElement serializeBlockState(BlockState state) {
     Block block = state.getBlock();
     if (state == block.defaultBlockState()) {
-      return new JsonPrimitive(Objects.requireNonNull(block.getRegistryName()).toString());
+      return new JsonPrimitive(Registry.BLOCK.getKey(block).toString());
     }
     return serializeBlockState(state, new JsonObject());
   }
@@ -420,7 +416,7 @@ public class JsonHelper {
    */
   public static JsonObject serializeBlockState(BlockState state, JsonObject json) {
     Block block = state.getBlock();
-    json.addProperty("block", Objects.requireNonNull(block.getRegistryName()).toString());
+    json.addProperty("block", Registry.BLOCK.getKey(block).toString());
     BlockState defaultState = block.defaultBlockState();
     JsonObject properties = new JsonObject();
     for (Property<?> property : block.getStateDefinition().getProperties()) {

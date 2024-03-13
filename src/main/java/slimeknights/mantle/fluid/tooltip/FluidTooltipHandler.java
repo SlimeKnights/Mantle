@@ -10,7 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -37,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /** Handles fluid units displaying in tooltips */
@@ -49,6 +47,7 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
   /** Folder for saving the logic */
   public static final String FOLDER = "mantle/fluid_tooltips";
   /** GSON instance */
+  // TODO: do we even need GSON here? I feel a classical serializer is sufficient as this class is pretty simple
   public static final Gson GSON = (new GsonBuilder())
     .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
     .registerTypeAdapter(FluidIngredient.class, FluidIngredient.SERIALIZER)
@@ -195,9 +194,9 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
     // material
     appendMaterial(fluid.getFluid(), amount, tooltip);
     // add mod display name
-    ModList.get().getModContainerById(Objects.requireNonNull(fluid.getFluid().getRegistryName()).getNamespace())
+    ModList.get().getModContainerById(Registry.FLUID.getKey(fluid.getFluid()).getNamespace())
            .map(container -> container.getModInfo().getDisplayName())
-           .ifPresent(name -> tooltip.add(new TextComponent(name).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)));
+           .ifPresent(name -> tooltip.add(Component.literal(name).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)));
     return tooltip;
   }
 
@@ -249,7 +248,7 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
    */
   public static void appendShift(List<Component> tooltip) {
     if(!SafeClientAccess.getTooltipKey().isShiftOrUnknown()) {
-      tooltip.add(TextComponent.EMPTY);
+      tooltip.add(Component.empty());
       tooltip.add(HOLD_SHIFT);
     }
   }

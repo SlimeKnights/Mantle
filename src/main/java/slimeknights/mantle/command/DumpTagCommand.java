@@ -7,40 +7,38 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagFile;
 import net.minecraft.tags.TagKey;
+import net.minecraft.tags.TagLoader;
+import net.minecraft.tags.TagLoader.EntryWithSource;
 import net.minecraft.tags.TagManager;
 import net.minecraft.util.GsonHelper;
-import org.apache.commons.io.IOUtils;
 import slimeknights.mantle.Mantle;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Command that dumps a tag into a JSON object */
 public class DumpTagCommand {
   protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static final Dynamic2CommandExceptionType ERROR_READING_TAG = new Dynamic2CommandExceptionType((type, name) -> new TranslatableComponent("command.mantle.dump_tag.read_error", type, name));
-  private static final Component SUCCESS_LOG = new TranslatableComponent("command.mantle.dump_tag.success_log");
+  private static final Dynamic2CommandExceptionType ERROR_READING_TAG = new Dynamic2CommandExceptionType((type, name) -> Component.translatable("command.mantle.dump_tag.read_error", type, name));
+  private static final Component SUCCESS_LOG = Component.translatable("command.mantle.dump_tag.success_log");
 
   /**
    * Registers this sub command with the root command
@@ -66,6 +64,45 @@ public class DumpTagCommand {
     return runGeneric(context, RegistryArgument.getResult(context, "type"), saveFile);
   }
 
+  /** Parses a tag from the resource list */
+  public static void parseTag(List<Resource> resources, List<TagLoader.EntryWithSource> list, ResourceLocation regName, ResourceLocation tagName, ResourceLocation path) {
+    for (Resource resource : resources) {
+      String packId = resource.sourcePackId();
+      try (Reader reader = resource.openAsReader()) {
+        JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
+        TagFile tagfile = TagFile.CODEC.parse(new Dynamic<>(JsonOps.INSTANCE, json)).getOrThrow(false, Mantle.logger::error);
+        if (tagfile.replace()) {
+          list.clear();
+        }
+        tagfile.entries().forEach(tag -> list.add(new TagLoader.EntryWithSource(tag, packId)));
+      } catch (RuntimeException | IOException ex) {
+        // failed to parse
+        Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", regName, tagName, path, packId, ex);
+      }
+    }
+  }
+
+  /** Converts the given entry list to a string tag file */
+  public static String tagToJson(List<TagLoader.EntryWithSource> entries) {
+    return GSON.toJson(
+      TagFile.CODEC.encodeStart(
+        JsonOps.INSTANCE,
+        new TagFile(entries.stream().map(EntryWithSource::entry).toList(), true)
+      ).getOrThrow(false, Mantle.logger::error));
+  }
+
+  /** Saves the tag to the given path */
+  public static void saveTag(List<TagLoader.EntryWithSource> entries, Path path) {
+    try {
+      Files.createDirectories(path.getParent());
+      try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+        writer.write(tagToJson(entries));
+      }
+    } catch (IOException ex) {
+      Mantle.logger.error("Couldn't save tag to {}", path, ex);
+    }
+  }
+
   /**
    * Runs the view-tag command, with the generic for the registry so those don't get mad
    *
@@ -82,66 +119,29 @@ public class DumpTagCommand {
     ResourceLocation path = new ResourceLocation(name.getNamespace(), TagManager.getTagDir(registry.key()) + "/" + name.getPath() + ".json");
 
     // if the tag file does not exist, only error if the tag is unknown
-    List<Resource> resources = Collections.emptyList();
-    if (manager.hasResource(path)) {
-      try {
-        resources = manager.getResources(path);
-      } catch (IOException ex) {
-        // tag exists and we still could not read it? something went wrong
-        Mantle.logger.error("Couldn't read {} tag list {} from {}", regName, name, path, ex);
-        throw ERROR_READING_TAG.create(regName, name);
-      }
-    // if the tag does not exist in the collect, probably an invalid tag name
-    } else if (registry.getTag(TagKey.create(registry.key(), name)).isEmpty()) {
+    List<Resource> resources = manager.getResourceStack(path);
+    // if the tag does not exist in the collection, probably an invalid tag name
+    if (resources.isEmpty() && registry.getTag(TagKey.create(registry.key(), name)).isEmpty()) {
       throw ViewTagCommand.TAG_NOT_FOUND.create(regName, name);
     }
 
     // simply create a tag builder
-    Tag.Builder builder = Tag.Builder.tag();
-    int tagsProcessed = 0;
-    for (Resource resource : resources) {
-      try (
-        InputStream inputstream = resource.getInputStream();
-        Reader reader = new BufferedReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8))
-      ) {
-        JsonObject json = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-        if (json == null) {
-          // no json
-          Mantle.logger.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", regName, name, path, resource.getSourceName());
-        } else {
-          builder.addFromJson(json, resource.getSourceName());
-          tagsProcessed++;
-        }
-      } catch (RuntimeException | IOException ex) {
-        // failed to parse
-        Mantle.logger.error("Couldn't read {} tag list {} from {} in data pack {}", regName, name, path, resource.getSourceName(), ex);
-      } finally {
-        IOUtils.closeQuietly(resource);
-      }
-    }
+    List<TagLoader.EntryWithSource> list = new ArrayList<>();
+    parseTag(resources, list, regName, name, path);
 
     // builder done, ready to dump
     // if requested, save
     if (saveFile) {
       // save file
       File output = new File(DumpAllTagsCommand.getOutputFile(context), path.getNamespace() + "/" + path.getPath());
-      Path outputPath = output.toPath();
-      try {
-        Files.createDirectories(outputPath.getParent());
-        try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
-          writer.write(DumpTagCommand.GSON.toJson(builder.serializeToJson()));
-        }
-      } catch (IOException ex) {
-        Mantle.logger.error("Couldn't save {} tag {} to {}", regName, name, outputPath, ex);
-      }
-      context.getSource().sendSuccess(new TranslatableComponent("command.mantle.dump_tag.success_log", regName, name, DumpAllTagsCommand.getOutputComponent(output)), true);
+      saveTag(list, output.toPath());
+      context.getSource().sendSuccess(Component.translatable("command.mantle.dump_tag.success_log", regName, name, DumpAllTagsCommand.getOutputComponent(output)), true);
     } else {
       // print to console
-      Component message = new TranslatableComponent("command.mantle.dump_tag.success", regName, name);
+      Component message = Component.translatable("command.mantle.dump_tag.success", regName, name);
       context.getSource().sendSuccess(message, true);
-      Mantle.logger.info("Tag dump of {} tag '{}':\n{}", regName, name, GSON.toJson(builder.serializeToJson()));
+      Mantle.logger.info("Tag dump of {} tag '{}':\n{}", regName, name, tagToJson(list));
     }
-
-    return tagsProcessed;
+    return resources.size();
   }
 }

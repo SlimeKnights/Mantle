@@ -1,15 +1,15 @@
 package slimeknights.mantle.registration.object;
 
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
+import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
 /**
  * Object containing a block with slab and stairs variants
@@ -26,9 +26,9 @@ public class BuildingBlockObject extends ItemObject<Block> {
    * @param stairs  Stairs block, should be an instance of StairsBlock
    */
   public BuildingBlockObject(Block block, Block slab, Block stairs) {
-    super(block);
-    this.slab = castDelegate(slab.delegate);
-    this.stairs = castDelegate(stairs.delegate);
+    super(Registry.BLOCK, block);
+    this.slab = RegistrationHelper.getCastedHolder(Registry.BLOCK, slab);
+    this.stairs = RegistrationHelper.getCastedHolder(Registry.BLOCK, stairs);
   }
 
   /**

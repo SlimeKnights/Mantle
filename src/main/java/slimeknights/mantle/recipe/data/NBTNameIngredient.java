@@ -6,17 +6,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-import net.minecraftforge.common.crafting.NBTIngredient.Serializer;
+import net.minecraftforge.common.crafting.StrictNBTIngredient.Serializer;
 
 /**
  * Ingredient for a NBT sensitive item from another mod, should never be used outside datagen
  */
-public class NBTNameIngredient extends NBTIngredient {
+public class NBTNameIngredient extends StrictNBTIngredient {
   private final ResourceLocation name;
   @Nullable
   private final CompoundTag nbt;

@@ -13,12 +13,11 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -33,12 +32,12 @@ import slimeknights.mantle.client.model.FallbackModelLoader;
 import slimeknights.mantle.client.model.NBTKeyModel;
 import slimeknights.mantle.client.model.RetexturedModel;
 import slimeknights.mantle.client.model.connected.ConnectedModel;
-import slimeknights.mantle.client.model.fluid.FluidTextureModel;
 import slimeknights.mantle.client.model.fluid.FluidsModel;
 import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.fluid.texture.FluidTextureManager;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.MantleRegistrations;
 import slimeknights.mantle.registration.RegistrationHelper;
@@ -62,6 +61,7 @@ public class ClientEvents {
     event.registerReloadListener(new BookLoader());
     ResourceColorManager.init(event);
     FluidTooltipHandler.init(event);
+    FluidTextureManager.init(event);
   }
 
   @SubscribeEvent
@@ -72,39 +72,43 @@ public class ClientEvents {
   }
 
   @SubscribeEvent
-  static void registerModelLoaders(ModelRegistryEvent event) {
+  static void registerModelLoaders(RegisterGeometryLoaders event) {
     // standard models - useful in resource packs for any model
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("connected"), ConnectedModel.Loader.INSTANCE);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("item_layer"), MantleItemLayerModel.LOADER);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("colored_block"), ColoredBlockModel.LOADER);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("fallback"), FallbackModelLoader.INSTANCE);
+    event.register("connected", ConnectedModel.LOADER);
+    event.register("item_layer", MantleItemLayerModel.LOADER);
+    event.register("colored_block", ColoredBlockModel.LOADER);
+    event.register("fallback", FallbackModelLoader.INSTANCE);
 
     // NBT dynamic models - require specific data defined in the block/item to use
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("nbt_key"), NBTKeyModel.LOADER);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("retextured"), RetexturedModel.Loader.INSTANCE);
+    event.register("nbt_key", NBTKeyModel.LOADER);
+    event.register("retextured", RetexturedModel.LOADER);
 
     // data models - contain information for other parts in rendering rather than rendering directly
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("fluid_texture"), FluidTextureModel.LOADER);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("inventory"), InventoryModel.Loader.INSTANCE);
-    ModelLoaderRegistry.registerLoader(Mantle.getResource("fluids"), FluidsModel.Loader.INSTANCE);
+    event.register("inventory", InventoryModel.LOADER);
+    event.register("fluids", FluidsModel.LOADER);
   }
 
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGameOverlayEvent.PostLayer.class, ClientEvents::renderOffhandAttackIndicator);
+    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiOverlayEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
   }
 
   // registered with FORGE bus
-  private static void renderOffhandAttackIndicator(RenderGameOverlayEvent.PostLayer event) {
+  private static void renderOffhandAttackIndicator(RenderGuiOverlayEvent.Post event) {
     // must have a player, not be in spectator, and have the indicator enabled
     Minecraft minecraft = Minecraft.getInstance();
     Options settings = minecraft.options;
-    if (minecraft.player == null || minecraft.gameMode == null || minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR || settings.attackIndicator == AttackIndicatorStatus.OFF) {
+    AttackIndicatorStatus indicator = settings.attackIndicator().get();
+    if (minecraft.player == null || minecraft.gameMode == null || minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR || indicator == AttackIndicatorStatus.OFF) {
       return;
     }
-    IIngameOverlay overlay = event.getOverlay();
-    if (overlay != ForgeIngameGui.CROSSHAIR_ELEMENT && overlay != ForgeIngameGui.HOTBAR_ELEMENT) {
+
+    // only care about hotbar and crosshair
+    NamedGuiOverlay overlay = event.getOverlay();
+    // will be true for hotbar, false for crosshair
+    boolean isHotbar = VanillaGuiOverlay.HOTBAR.type() == overlay;
+    if (!isHotbar && VanillaGuiOverlay.CROSSHAIR.type() != overlay) {
       return;
     }
 
@@ -115,11 +119,11 @@ public class ClientEvents {
     }
 
     // show attack indicator
-    PoseStack matrixStack = event.getMatrixStack();
-    switch (settings.attackIndicator) {
+    PoseStack matrixStack = event.getPoseStack();
+    switch (indicator) {
       case CROSSHAIR:
-        if (overlay == ForgeIngameGui.CROSSHAIR_ELEMENT && minecraft.options.getCameraType().isFirstPerson()) {
-          if (!settings.renderDebug || settings.hideGui || minecraft.player.isReducedDebugInfo() || settings.reducedDebugInfo) {
+        if (!isHotbar && minecraft.options.getCameraType().isFirstPerson()) {
+          if (!settings.renderDebug || settings.hideGui || minecraft.player.isReducedDebugInfo() || settings.reducedDebugInfo().get()) {
             // mostly cloned from vanilla attack indicator
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             int scaledHeight = minecraft.getWindow().getGuiScaledHeight();
@@ -134,7 +138,7 @@ public class ClientEvents {
         }
         break;
       case HOTBAR:
-        if (overlay == ForgeIngameGui.HOTBAR_ELEMENT && minecraft.cameraEntity == minecraft.player) {
+        if (isHotbar && minecraft.cameraEntity == minecraft.player) {
           int centerWidth = minecraft.getWindow().getGuiScaledWidth() / 2;
           int y = minecraft.getWindow().getGuiScaledHeight() - 20;
           int x;

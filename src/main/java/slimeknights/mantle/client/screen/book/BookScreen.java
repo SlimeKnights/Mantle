@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -317,7 +316,7 @@ public class BookScreen extends Screen {
         margin = 0;
       }
 
-      this.addRenderableWidget(new Button(this.width / 2 - 196 / 2, this.height / 2 + PAGE_HEIGHT_UNSCALED / 2 + margin, 196, 20, new TranslatableComponent("lectern.take_book"), (p_212998_1_) -> {
+      this.addRenderableWidget(new Button(this.width / 2 - 196 / 2, this.height / 2 + PAGE_HEIGHT_UNSCALED / 2 + margin, 196, 20, Component.translatable("lectern.take_book"), (p_212998_1_) -> {
         this.onClose();
         this.bookPickup.accept(null);
       }));

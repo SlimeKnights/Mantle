@@ -1,14 +1,14 @@
 package slimeknights.mantle.registration.object;
 
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
+import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
-
-import static slimeknights.mantle.registration.RegistrationHelper.castDelegate;
 
 /**
  * Object containing a block with slab, stairs, and wall variants
@@ -33,7 +33,7 @@ public class WallBuildingBlockObject extends BuildingBlockObject {
    * @param wall    Wall entry
    */
   public WallBuildingBlockObject(BuildingBlockObject object, Block wall) {
-    this(object, castDelegate(wall.delegate));
+    this(object, RegistrationHelper.getCastedHolder(Registry.BLOCK, wall));
   }
 
   /** Gets the wall for this block */

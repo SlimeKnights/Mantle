@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -52,7 +51,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     Collection<EntityType<?>> collection = getTypes();
     buffer.writeVarInt(collection.size());
     for (EntityType<?> type : collection) {
-      buffer.writeRegistryIdUnsafe(ForgeRegistries.ENTITIES, type);
+      buffer.writeRegistryIdUnsafe(ForgeRegistries.ENTITY_TYPES, type);
     }
   }
 
@@ -99,11 +98,11 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   public static EntityIngredient read(FriendlyByteBuf buffer) {
     int count = buffer.readVarInt();
     if (count == 1) {
-      return new Single(buffer.readRegistryIdUnsafe(ForgeRegistries.ENTITIES));
+      return new Single(buffer.readRegistryIdUnsafe(ForgeRegistries.ENTITY_TYPES));
     }
     List<EntityType<?>> list = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
-      list.add(buffer.readRegistryIdUnsafe(ForgeRegistries.ENTITIES));
+      list.add(buffer.readRegistryIdUnsafe(ForgeRegistries.ENTITY_TYPES));
     }
     return new SetMatch(ImmutableSet.copyOf(list));
   }
@@ -114,8 +113,8 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
    * @return  Entity type
    */
   private static EntityType<?> findEntityType(ResourceLocation name) {
-    if (ForgeRegistries.ENTITIES.containsKey(name)) {
-      EntityType<?> type = ForgeRegistries.ENTITIES.getValue(name);
+    if (ForgeRegistries.ENTITY_TYPES.containsKey(name)) {
+      EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(name);
       if (type != null) {
         return type;
       }
@@ -179,7 +178,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("type", Objects.requireNonNull(type.getRegistryName()).toString());
+      object.addProperty("type", Registry.ENTITY_TYPE.getKey(type).toString());
       return object;
     }
   }
@@ -204,7 +203,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>> {
       JsonObject object = new JsonObject();
       JsonArray array = new JsonArray();
       for (EntityType<?> type : getTypes()) {
-        array.add(Objects.requireNonNull(type.getRegistryName()).toString());
+        array.add(Registry.ENTITY_TYPE.getKey(type).toString());
       }
       object.add("types", array);
       return object;

@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package slimeknights.mantle.loot.builder;
+package slimeknights.mantle.fluid.texture;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

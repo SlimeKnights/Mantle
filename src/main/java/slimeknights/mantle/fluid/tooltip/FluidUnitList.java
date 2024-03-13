@@ -15,6 +15,7 @@ import java.util.List;
 @SuppressWarnings("ClassCanBeRecord") // needed in GSON
 @RequiredArgsConstructor
 public class FluidUnitList {
+  // TODO: switch to fluid ingredient
   @Nullable
   private final TagKey<Fluid> tag;
   private final List<FluidUnit> units;

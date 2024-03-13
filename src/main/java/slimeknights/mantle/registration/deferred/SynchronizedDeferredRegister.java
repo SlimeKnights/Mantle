@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
@@ -22,7 +21,7 @@ public class SynchronizedDeferredRegister<T> {
   }
 
   /** Creates a new instance for the given forge registry */
-  public static <B extends IForgeRegistryEntry<B>> SynchronizedDeferredRegister<B> create(IForgeRegistry<B> registry, String modid) {
+  public static <B> SynchronizedDeferredRegister<B> create(IForgeRegistry<B> registry, String modid) {
     return create(DeferredRegister.create(registry, modid));
   }
 

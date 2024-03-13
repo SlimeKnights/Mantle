@@ -1,13 +1,12 @@
 package slimeknights.mantle.client.book.repository;
 
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.List;
-
+import net.minecraft.server.packs.resources.Resource;
 import slimeknights.mantle.client.book.data.SectionData;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class BookRepository {
 
@@ -24,9 +23,16 @@ public abstract class BookRepository {
   @Nullable
   public abstract ResourceLocation getResourceLocation(@Nullable String path, boolean safe);
 
-  @Nullable
-  public abstract Resource getResource(@Nullable ResourceLocation loc);
+  /** Gets a resource from the given location */
+  public abstract Optional<Resource> getLocation(@Nullable ResourceLocation loc);
 
+  /** Gets a resource from the given location, returning null if it does not exist */
+  @Nullable
+  public Resource getResource(@Nullable ResourceLocation loc) {
+    return getLocation(loc).orElse(null);
+  }
+
+  /** Checks if the given resource exists */
   @SuppressWarnings("unused") // API
   public boolean resourceExists(@Nullable String location) {
     if(location == null) {
@@ -36,7 +42,10 @@ public abstract class BookRepository {
     return this.resourceExists(new ResourceLocation(location));
   }
 
-  public abstract boolean resourceExists(@Nullable ResourceLocation location);
+  /** Checks if the given resource exists */
+  public boolean resourceExists(@Nullable ResourceLocation location) {
+    return getLocation(location).isPresent();
+  }
 
   public String resourceToString(@Nullable Resource resource) {
     return this.resourceToString(resource, true);

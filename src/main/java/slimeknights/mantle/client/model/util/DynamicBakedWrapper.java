@@ -1,21 +1,21 @@
 package slimeknights.mantle.client.model.util;
 
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.BakedModelWrapper;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 /**
- * Cross between {@link BakedModelWrapper} and {@link net.minecraftforge.client.model.data.IDynamicBakedModel}.
- * Used to create a baked model wrapper that has a dynamic {@link #getQuads(BlockState, Direction, Random, IModelData)} without worrying about overriding the deprecated variant.
+ * Cross between {@link BakedModelWrapper} and {@link net.minecraftforge.client.model.IDynamicBakedModel}.
+ * Used to create a baked model wrapper that has a dynamic {@link #getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)} (BlockState, Direction, Random, IModelData)} without worrying about overriding the deprecated variant.
  * @param <T>  Baked model parent
  */
 @SuppressWarnings("WeakerAccess")
@@ -25,14 +25,14 @@ public abstract class DynamicBakedWrapper<T extends BakedModel> extends BakedMod
     super(originalModel);
   }
 
-  /** @deprecated use {@link #getQuads(BlockState, Direction, Random, IModelData)} */
+  /** @deprecated use {@link #getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)} */
   @Override
   @Deprecated
-  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-    return this.getQuads(state, side, rand, EmptyModelData.INSTANCE);
+  public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
+    return this.getQuads(state, side, rand, ModelData.EMPTY, null);
   }
 
-  @Nonnull
   @Override
-  public abstract List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData extraData);
+  @Nonnull
+  public abstract List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType);
 }

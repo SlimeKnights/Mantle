@@ -3,7 +3,6 @@ package slimeknights.mantle.client.screen.book.element;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
 import slimeknights.mantle.client.screen.book.TextComponentDataRenderer;
@@ -20,7 +19,7 @@ public class TextComponentElement extends SizedBookElement {
   private transient String lastAction = "";
 
   public TextComponentElement(int x, int y, int width, int height, String text) {
-    this(x, y, width, height, new TextComponent(text));
+    this(x, y, width, height, Component.literal(text));
   }
 
   public TextComponentElement(int x, int y, int width, int height, Component text) {

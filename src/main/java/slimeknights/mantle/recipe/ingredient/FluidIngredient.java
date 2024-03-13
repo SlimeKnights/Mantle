@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -101,7 +100,7 @@ public abstract class FluidIngredient {
     Collection<FluidStack> fluids = getAllFluids();
     buffer.writeInt(fluids.size());
     for (FluidStack stack : fluids) {
-      buffer.writeUtf(Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
+      buffer.writeUtf(Registry.FLUID.getKey(stack.getFluid()).toString());
       buffer.writeInt(stack.getAmount());
     }
   }
@@ -301,7 +300,7 @@ public abstract class FluidIngredient {
     @Override
     public JsonElement serialize() {
       JsonObject object = new JsonObject();
-      object.addProperty("name", Objects.requireNonNull(fluid.getRegistryName()).toString());
+      object.addProperty("name", Registry.FLUID.getKey(fluid).toString());
       object.addProperty("amount", amount);
       return object;
     }
@@ -311,7 +310,7 @@ public abstract class FluidIngredient {
       // count
       buffer.writeInt(1);
       // single fluid
-      buffer.writeUtf(Objects.requireNonNull(fluid.getRegistryName()).toString());
+      buffer.writeUtf(Registry.FLUID.getKey(fluid).toString());
       buffer.writeInt(amount);
     }
 

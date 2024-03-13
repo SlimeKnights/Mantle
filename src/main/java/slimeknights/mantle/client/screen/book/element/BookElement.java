@@ -8,7 +8,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraftforge.client.RenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions.FontContext;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 import java.util.List;
@@ -48,8 +49,7 @@ public abstract class BookElement extends GuiComponent {
   public void renderToolTip(PoseStack matrixStack, Font fontRenderer, ItemStack stack, int x, int y) {
     List<Component> list = stack.getTooltipLines(this.mc.player, this.mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
 
-
-    Font font = RenderProperties.get(stack).getFont(stack);
+    Font font = IClientItemExtensions.of(stack).getFont(stack, FontContext.TOOLTIP);
     if (font == null) {
       font = fontRenderer;
     }

@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.function.BiFunction;
@@ -21,7 +20,7 @@ public abstract class DeferredRegisterWrapper<T> {
   /** Registry instance, use this to provide register methods */
   protected final SynchronizedDeferredRegister<T> register;
   /** Mod ID for registration */
-  private final String modID;
+  protected final String modID;
 
   protected DeferredRegisterWrapper(ResourceKey<Registry<T>> reg, String modID) {
     this(DeferredRegister.create(reg, modID), modID);
@@ -69,7 +68,7 @@ public abstract class DeferredRegisterWrapper<T> {
    * @param register  Function to register an entry
    * @return  EnumObject mapping between different block types
    */
-  protected static <E extends Enum<E> & StringRepresentable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(E[] values, String name, BiFunction<String,E,Supplier<? extends V>> register) {
+  protected static <E extends Enum<E> & StringRepresentable, V extends T, T> EnumObject<E,V> registerEnum(E[] values, String name, BiFunction<String,E,Supplier<? extends V>> register) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
@@ -88,7 +87,7 @@ public abstract class DeferredRegisterWrapper<T> {
    * @param register  Function to register an entry
    * @return  EnumObject mapping between different block types
    */
-  protected static <E extends Enum<E> & StringRepresentable, V extends T, T extends IForgeRegistryEntry<T>> EnumObject<E,V> registerEnum(String name, E[] values, BiFunction<String,E,Supplier<? extends V>> register) {
+  protected static <E extends Enum<E> & StringRepresentable, V extends T, T> EnumObject<E,V> registerEnum(String name, E[] values, BiFunction<String,E,Supplier<? extends V>> register) {
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }

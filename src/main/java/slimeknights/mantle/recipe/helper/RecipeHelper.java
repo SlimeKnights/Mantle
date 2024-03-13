@@ -5,24 +5,24 @@ import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.mantle.recipe.IMultiRecipe;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -138,7 +138,7 @@ public class RecipeHelper {
    */
   public static JsonObject serializeFluidStack(FluidStack stack) {
     JsonObject json = new JsonObject();
-    json.addProperty("fluid", Objects.requireNonNull(stack.getFluid().getRegistryName()).toString());
+    json.addProperty("fluid", Registry.FLUID.getKey(stack.getFluid()).toString());
     json.addProperty("amount", stack.getAmount());
     return json;
   }
@@ -202,7 +202,7 @@ public class RecipeHelper {
   public static <T> T readItem(FriendlyByteBuf buffer, Class<T> clazz) {
     Item item = readItem(buffer);
     if (!clazz.isInstance(item)) {
-      throw new DecoderException("Invalid item '" + item.getRegistryName() + "', must be " + clazz.getSimpleName());
+      throw new DecoderException("Invalid item '" + Registry.ITEM.getKey(item) + "', must be " + clazz.getSimpleName());
     }
     return clazz.cast(item);
   }

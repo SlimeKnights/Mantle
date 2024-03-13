@@ -10,8 +10,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 import slimeknights.mantle.client.model.fluid.FluidCuboid;
 import slimeknights.mantle.client.model.fluid.FluidCuboid.FluidFace;
 
@@ -254,12 +255,13 @@ public class FluidRenderer {
     }
 
     // fluid attributes, fetch once for all fluids to save effort
-    FluidAttributes attributes = fluid.getFluid().getAttributes();
-    TextureAtlasSprite still = getBlockSprite(attributes.getStillTexture(fluid));
-    TextureAtlasSprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
-    int color = attributes.getColor(fluid);
-    light = withBlockLight(light,attributes.getLuminosity(fluid));
-    boolean isGas = attributes.isGaseous(fluid);
+    IClientFluidTypeExtensions clientFluid = IClientFluidTypeExtensions.of(fluid.getFluid());
+    TextureAtlasSprite still = getBlockSprite(clientFluid.getStillTexture(fluid));
+    TextureAtlasSprite flowing = getBlockSprite(clientFluid.getFlowingTexture(fluid));
+    int color = clientFluid.getTintColor(fluid);
+    FluidType type = fluid.getFluid().getFluidType();
+    light = withBlockLight(light, type.getLightLevel(fluid));
+    boolean isGas = type.isLighterThanAir();
 
     // render all given cuboids
     for (FluidCuboid cube : cubes) {
@@ -308,11 +310,13 @@ public class FluidRenderer {
     }
 
     // fluid attributes
-    FluidAttributes attributes = fluid.getFluid().getAttributes();
-    TextureAtlasSprite still = getBlockSprite(attributes.getStillTexture(fluid));
-    TextureAtlasSprite flowing = getBlockSprite(attributes.getFlowingTexture(fluid));
-    boolean isGas = attributes.isGaseous(fluid);
-    light = withBlockLight(light,attributes.getLuminosity(fluid));
+    IClientFluidTypeExtensions clientFluid = IClientFluidTypeExtensions.of(fluid.getFluid());
+    TextureAtlasSprite still = getBlockSprite(clientFluid.getStillTexture(fluid));
+    TextureAtlasSprite flowing = getBlockSprite(clientFluid.getFlowingTexture(fluid));
+    FluidType type = fluid.getFluid().getFluidType();
+    boolean isGas = type.isLighterThanAir();
+    int color = clientFluid.getTintColor(fluid);
+    light = withBlockLight(light, type.getLightLevel(fluid));
 
     // determine height based on fluid amount
     Vector3f from = cube.getFromScaled();
@@ -330,6 +334,6 @@ public class FluidRenderer {
     }
 
     // draw cuboid
-    renderCuboid(matrices, buffer.getBuffer(MantleRenderTypes.FLUID), cube, still, flowing, from, to, attributes.getColor(fluid), light, isGas);
+    renderCuboid(matrices, buffer.getBuffer(MantleRenderTypes.FLUID), cube, still, flowing, from, to, color, light, isGas);
   }
 }

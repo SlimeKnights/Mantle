@@ -12,6 +12,7 @@ import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.util.DataLoadedConditionContext;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -141,6 +142,6 @@ public class SectionData implements IDataItem, IConditional {
 
   @Override
   public boolean isConditionMet() {
-    return condition.test();
+    return condition.test(DataLoadedConditionContext.INSTANCE);
   }
 }

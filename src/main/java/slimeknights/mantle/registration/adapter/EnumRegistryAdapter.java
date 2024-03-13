@@ -1,7 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.registration.object.EnumObject;
 
@@ -12,7 +11,7 @@ import java.util.function.Function;
  * @param <T>  Registry type
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends RegistryAdapter<T> {
+public class EnumRegistryAdapter<T> extends RegistryAdapter<T> {
 
   /** @inheritDoc */
   public EnumRegistryAdapter(IForgeRegistry<T> registry) {
@@ -39,7 +38,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
     EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
       // assuming the type will not sub for a different class
-      builder.putDelegate(value, register(mapper.apply(value), value.getSerializedName() + "_" + name).delegate);
+      builder.put(value, register(mapper.apply(value), value.getSerializedName() + "_" + name));
     }
     return builder.build();
   }
@@ -58,7 +57,7 @@ public class EnumRegistryAdapter<T extends ForgeRegistryEntry<T>> extends Regist
     // note this cast only works because you cannot extend an enum
     EnumObject.Builder<E,I> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
     for (E value : values) {
-      builder.putDelegate(value, register(mapper.apply(value), name + "_" + value.getSerializedName()).delegate);
+      builder.put(value, register(mapper.apply(value), name + "_" + value.getSerializedName()));
     }
     return builder.build();
   }

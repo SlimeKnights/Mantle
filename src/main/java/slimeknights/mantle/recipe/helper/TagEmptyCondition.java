@@ -28,14 +28,8 @@ public class TagEmptyCondition<T> implements ICondition {
   }
 
   @Override
-  public boolean test() {
-    Mantle.logger.error("Improperly calling TagEmpty condition for " + tag + ", use context sensitive test method");
-    return false;
-  }
-
-  @Override
   public boolean test(IContext context) {
-    return context.getTag(tag).getValues().isEmpty();
+    return context.getTag(tag).isEmpty();
   }
 
   @Override
