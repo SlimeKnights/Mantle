@@ -143,7 +143,7 @@ public class IngredientData implements IDataElement {
 
         if(primitive.isString()) {
           String prim = primitive.getAsString();
-          if(primitive.getAsString().startsWith("#")) {
+          if(prim.startsWith("#")) {
             return SizedIngredient.fromTag(ForgeRegistries.ITEMS.tags().createTagKey(new ResourceLocation(prim.substring(1))));
           }
           else {
