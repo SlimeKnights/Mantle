@@ -263,7 +263,7 @@ public class JsonHelper {
     try (Reader reader = resource.openAsReader()) {
       return GsonHelper.parse(reader);
     } catch (JsonParseException | IOException e) {
-      Mantle.logger.error("Failed to load JSON from resource " + location, e);
+      Mantle.logger.error("Failed to load JSON from resource {} from pack '{}'", location, resource.sourcePackId(), e);
       return null;
     }
   }
