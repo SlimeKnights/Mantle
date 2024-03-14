@@ -11,8 +11,10 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.ApiStatus;
 import slimeknights.mantle.util.IdExtender.LocationExtender;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -25,13 +27,20 @@ public interface IRecipeHelper extends LocationExtender {
   /** Gets the ID of the mod adding recipes */
   String getModId();
 
+  /** Use {@link #location(String)}, this method just exists to simplify implementation. */
+  @ApiStatus.Internal
+  @Override
+  default ResourceLocation location(String namespace, String path) {
+    return location(path);
+  }
+
   /**
    * Gets a resource location for the mod
    * @param name  Location path
    * @return  Location for the mod
    */
   default ResourceLocation location(String name) {
-    return location(getModId(), name);
+    return new ResourceLocation(getModId(), name);
   }
 
   /**
@@ -46,10 +55,21 @@ public interface IRecipeHelper extends LocationExtender {
   /**
    * Gets a registry ID for the given item
    * @param item  Item to fetch ID
-   * @return  ID for the item
+   * @return  ID for the item put in your namespace
    */
+  @SuppressWarnings("deprecation")  // won't be for long
   default ResourceLocation id(ItemLike item) {
-    return Registry.ITEM.getKey(item.asItem());
+    return location(Registry.ITEM.getKey(item.asItem()).getPath());
+  }
+
+  /**
+   * Gets a registry ID for the given item
+   * @param registry  Registry to fetch IDs
+   * @param value     Registry value
+   * @return  ID for the item put in your namespace
+   */
+  default <T> ResourceLocation id(Registry<T> registry, T value) {
+    return location(Objects.requireNonNull(registry.getKey(value)).getPath());
   }
 
 
