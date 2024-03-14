@@ -12,6 +12,7 @@ import net.minecraftforge.common.crafting.conditions.NotCondition;
 import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.ApiStatus;
+import slimeknights.mantle.registration.object.IdAwareObject;
 import slimeknights.mantle.util.IdExtender.LocationExtender;
 
 import java.util.Objects;
@@ -103,6 +104,40 @@ public interface IRecipeHelper extends LocationExtender {
    * @return  Location with the given suffix
    */
   default ResourceLocation suffix(RegistryObject<?> location, String suffix) {
+    return suffix(location.getId(), suffix);
+  }
+
+
+  /* Other named object location helpers */
+
+  /**
+   * Wraps the registry object ID in the given prefix and suffix
+   * @param location  Object to use for location
+   * @param prefix    Path prefix
+   * @param suffix    Path suffix
+   * @return  Location with the given prefix and suffix
+   */
+  default ResourceLocation wrap(IdAwareObject location, String prefix, String suffix) {
+    return wrap(location.getId(), prefix, suffix);
+  }
+
+  /**
+   * Prefixes the registry object ID
+   * @param location  Object to use for location
+   * @param prefix    Path prefix
+   * @return  Location with the given prefix
+   */
+  default ResourceLocation prefix(IdAwareObject location, String prefix) {
+    return prefix(location.getId(), prefix);
+  }
+
+  /**
+   * Suffixes the registry object ID
+   * @param location  Object to use for location
+   * @param suffix    Path suffix
+   * @return  Location with the given suffix
+   */
+  default ResourceLocation suffix(IdAwareObject location, String suffix) {
     return suffix(location.getId(), suffix);
   }
 
