@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidType;
+import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,5 +63,10 @@ public class FlowingFluidObject<F extends FlowingFluid> extends FluidObject<F> {
       return null;
     }
     return block.get();
+  }
+
+  @Override
+  public FluidIngredient ingredient(int amount, boolean commonTag) {
+    return FluidIngredient.of(commonTag ? getForgeTag() : getLocalTag(), amount);
   }
 }

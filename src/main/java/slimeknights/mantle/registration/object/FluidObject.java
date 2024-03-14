@@ -9,6 +9,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidType;
+import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,5 +77,18 @@ public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike {
   @Override
   public Item asItem() {
     return still.get().getBucket();
+  }
+
+  /**
+   * Creates an ingredient from this object
+   * @param amount     Ingredient amount
+   * @param commonTag  If true, matches the common tag, if false matches just this object
+   * @return  Ingredient instance
+   */
+  public FluidIngredient ingredient(int amount, boolean commonTag) {
+    if (commonTag) {
+      return FluidIngredient.of(get(), amount);
+    }
+    return FluidIngredient.of(getForgeTag(), amount);
   }
 }
