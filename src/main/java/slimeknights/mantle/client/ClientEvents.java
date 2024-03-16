@@ -50,6 +50,11 @@ import java.util.function.Function;
 public class ClientEvents {
   private static final Function<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
 
+  /** Called on construct to initiatlize things that need early entry */
+  public static void onConstruct() {
+    FluidTextureManager.init();
+  }
+
   @SubscribeEvent
   static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
     event.registerBlockEntityRenderer(MantleRegistrations.SIGN, SignRenderer::new);
@@ -61,7 +66,6 @@ public class ClientEvents {
     event.registerReloadListener(new BookLoader());
     ResourceColorManager.init(event);
     FluidTooltipHandler.init(event);
-    FluidTextureManager.init(event);
   }
 
   @SubscribeEvent

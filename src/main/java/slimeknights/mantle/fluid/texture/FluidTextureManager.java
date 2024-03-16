@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fluids.FluidType;
@@ -40,9 +39,8 @@ public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
 
   /**
    * Initializes this manager, registering it with the resource manager
-   * @param manager  Manager
    */
-  public static void init(RegisterClientReloadListenersEvent manager) {
+  public static void init() {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, TextureStitchEvent.Pre.class, INSTANCE);
   }
 
