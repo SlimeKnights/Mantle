@@ -313,6 +313,28 @@ public class JsonHelper {
     }
   }
 
+  /**
+   * Localizes the given resource location to one within the folder
+   * @param path        Path to localize
+   * @param folder      Folder to trim (without trailing /), it is not validated so make sure you call correctly
+   * @param extension   Extension to trim
+   * @return  Localized location
+   */
+  public static String localize(String path, String folder, String extension) {
+    return path.substring(folder.length() + 1, path.length() - extension.length());
+  }
+
+  /**
+   * Localizes the given resource location to one within the folder
+   * @param location    Location to localize
+   * @param folder      Folder to trim (without trailing /), it is not validated so make sure you call correctly
+   * @param extension   Extension to trim
+   * @return  Localized location
+   */
+  public static ResourceLocation localize(ResourceLocation location, String folder, String extension) {
+    return new ResourceLocation(location.getNamespace(), localize(location.getPath(), folder, extension));
+  }
+
 
   /* Block States */
 

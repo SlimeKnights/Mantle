@@ -11,6 +11,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -27,7 +28,6 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Log4j2
 public abstract class MergingJsonDataLoader<B> implements ResourceManagerReloadListener {
-  private static final int JSON_LENGTH = ".json".length();
 
   @VisibleForTesting
   protected final Gson gson;
@@ -57,8 +57,7 @@ public abstract class MergingJsonDataLoader<B> implements ResourceManagerReloadL
     Map<ResourceLocation,B> map = new HashMap<>();
     for (Entry<ResourceLocation,List<Resource>> entry : manager.listResourceStacks(folder, fileName -> fileName.getPath().endsWith(".json")).entrySet()) {
       ResourceLocation filePath = entry.getKey();
-      String path = filePath.getPath();
-      ResourceLocation id = new ResourceLocation(filePath.getNamespace(), path.substring(folder.length() + 1, path.length() - JSON_LENGTH));
+      ResourceLocation id = JsonHelper.localize(filePath, folder, ".json");
 
       for (Resource resource : entry.getValue()) {
         try (Reader reader = resource.openAsReader()) {

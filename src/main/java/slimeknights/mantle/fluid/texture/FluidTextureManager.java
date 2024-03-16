@@ -31,9 +31,6 @@ public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
   /** Folder containing the logic */
   public static final String FOLDER = "mantle/fluid_texture";
 
-  private static final int FOLDER_LENGTH = FOLDER.length() + 1;
-  private static final int EXTENSION_LENGTH = ".json".length();
-
   /* Instance data */
   private static final FluidTextureManager INSTANCE = new FluidTextureManager();
   /** Map of fluid type to texture */
@@ -61,7 +58,7 @@ public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
       for (Map.Entry<ResourceLocation,Resource> entry : manager.listResources(FOLDER, location -> location.getPath().endsWith(".json")).entrySet()) {
         ResourceLocation fullPath = entry.getKey();
         String path = fullPath.getPath();
-        ResourceLocation id = new ResourceLocation(fullPath.getNamespace(), path.substring(FOLDER_LENGTH, path.length() - EXTENSION_LENGTH));
+        ResourceLocation id = JsonHelper.localize(fullPath, FOLDER, ".json");
         try (Reader reader = entry.getValue().openAsReader()) {
           // first step is to find the matching fluid type, if there is none ignore the file
           FluidType type = fluidTypeRegistry.getValue(id);

@@ -17,6 +17,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.tags.TagManager;
+import slimeknights.mantle.util.JsonHelper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -30,7 +31,6 @@ import java.util.Map.Entry;
  */
 public class DumpAllTagsCommand {
   private static final String TAG_DUMP_PATH = "./mantle_data_dump";
-  private static final int EXTENSION_LENGTH = ".json".length();
 
   /**
    * Registers this sub command with the root command
@@ -91,8 +91,7 @@ public class DumpAllTagsCommand {
     String dataPackFolder = TagManager.getTagDir(key);
     for (Map.Entry<ResourceLocation,List<Resource>> entry : manager.listResourceStacks(dataPackFolder, fileName -> fileName.getPath().endsWith(".json")).entrySet()) {
       ResourceLocation resourcePath = entry.getKey();
-      String path = resourcePath.getPath();
-      ResourceLocation tagId = new ResourceLocation(resourcePath.getNamespace(), path.substring(dataPackFolder.length() + 1, path.length() - EXTENSION_LENGTH));
+      ResourceLocation tagId = JsonHelper.localize(resourcePath, dataPackFolder, ".json");
       DumpTagCommand.parseTag(entry.getValue(), foundTags.computeIfAbsent(resourcePath, id -> new ArrayList<>()), tagType, tagId, resourcePath);
     }
 
