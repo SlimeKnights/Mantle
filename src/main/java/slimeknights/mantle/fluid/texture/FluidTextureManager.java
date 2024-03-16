@@ -10,9 +10,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.Mantle;
@@ -46,12 +46,13 @@ public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
    * @param manager  Manager
    */
   public static void init(RegisterClientReloadListenersEvent manager) {
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TextureStitchEvent.Pre.class, INSTANCE);
+    FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, TextureStitchEvent.Pre.class, INSTANCE);
   }
 
   @Override
   public void accept(TextureStitchEvent.Pre event) {
     if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+      long time = System.nanoTime();
       // first, load in all fluid texture files, done in this event as otherwise we cannot guarantee it happens before the atlas stitches
       Map<FluidType, FluidTexture> map = new HashMap<>();
 
@@ -92,6 +93,7 @@ public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
         }
         // no registering camera as its not stitched, its just drawn directly
       }
+      Mantle.logger.info("Loaded {} fluid textures in {} ms", map.size(), (System.nanoTime() - time) / 1000000f);
     }
   }
 

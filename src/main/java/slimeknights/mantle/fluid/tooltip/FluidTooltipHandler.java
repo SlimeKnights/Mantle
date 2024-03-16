@@ -145,7 +145,7 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
     unitLists = builder.build();
     fallback = this.unitLists.getOrDefault(DEFAULT_ID, DEFAULT_LIST);
     listCache.clear();
-    log.info("Loaded {} fluid unit lists in {} ms", listCache.size(), (System.nanoTime() - time) / 1000000f);
+    log.info("Loaded {} fluid unit lists in {} ms", unitLists.size(), (System.nanoTime() - time) / 1000000f);
   }
 
   /** Gets the unit list for the given fluid */
