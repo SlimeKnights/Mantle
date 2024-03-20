@@ -177,7 +177,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
   }
 
   /** Interface for a loader */
-  public interface IGenericLoader<T extends IHaveLoader<?>> {
+  public interface IGenericLoader<T> {
     /** Deserializes the object from json */
     T deserialize(JsonObject json);
 
@@ -199,7 +199,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
 
   /** Loader instance for an object with only a single implementation */
   @RequiredArgsConstructor
-  public static class SingletonLoader<T extends IHaveLoader<?>> implements IGenericLoader<T> {
+  public static class SingletonLoader<T> implements IGenericLoader<T> {
     @Getter
     private final T instance;
 
@@ -225,7 +225,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     public void toNetwork(T object, FriendlyByteBuf buffer) {}
 
     /** Helper to create a singleton object as an anonymous class */
-    public static <T extends IHaveLoader<?>> T singleton(Function<IGenericLoader<T>,T> instance) {
+    public static <T> T singleton(Function<IGenericLoader<T>,T> instance) {
       return new SingletonLoader<>(instance).getInstance();
     }
   }

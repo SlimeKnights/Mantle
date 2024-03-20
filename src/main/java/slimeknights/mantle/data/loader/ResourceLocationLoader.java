@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.function.Function;
@@ -13,7 +12,7 @@ import java.util.function.Function;
  * Loader for an object with a resource location
  * @param <O>  Object type
  */
-public record ResourceLocationLoader<O extends IHaveLoader<?>>(
+public record ResourceLocationLoader<O>(
   String key,
   Function<ResourceLocation,O> constructor,
   Function<O,ResourceLocation> getter

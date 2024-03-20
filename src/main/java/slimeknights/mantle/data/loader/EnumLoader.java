@@ -3,7 +3,6 @@ package slimeknights.mantle.data.loader;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.Locale;
@@ -14,7 +13,7 @@ import java.util.function.Function;
  * @param <O>  Object type
  * @param <T>  Loader type
  */
-public record EnumLoader<O extends IHaveLoader<?>, T extends Enum<T>>(
+public record EnumLoader<O, T extends Enum<T>>(
   String key,
   Class<T> enumClass,
   Function<T,O> constructor,

@@ -17,7 +17,7 @@ import java.util.function.Function;
  * @param <T>  Object being loaded
  * @param <N>  Nested object type
  */
-public record NestedLoader<T extends IHaveLoader<?>, N extends IHaveLoader<N>>(
+public record NestedLoader<T,N extends IHaveLoader<N>>(
   String typeKey,
   GenericLoaderRegistry<N> nestedLoader,
   Function<N, T> constructor,

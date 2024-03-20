@@ -8,7 +8,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.Objects;
@@ -21,7 +20,7 @@ import java.util.function.Function;
  * @param <T>  Loader object type
  * @see RegistryEntryLoader
  */
-public record RegistrySetLoader<R, T extends IHaveLoader<?>>(
+public record RegistrySetLoader<R,T>(
   String key,
   IForgeRegistry<R> registry,
   Function<Set<R>, T> constructor,

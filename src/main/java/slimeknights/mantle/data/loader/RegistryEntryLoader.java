@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.Objects;
@@ -16,7 +15,7 @@ import java.util.function.Function;
  * @param <V>  Registry entry type
  * @see RegistrySetLoader
  */
-public record RegistryEntryLoader<O extends IHaveLoader<?>,V>(
+public record RegistryEntryLoader<O,V>(
   String key,
   IForgeRegistry<V> registry,
   Function<V,O> constructor,
