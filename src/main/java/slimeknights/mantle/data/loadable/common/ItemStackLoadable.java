@@ -45,7 +45,7 @@ public enum ItemStackLoadable implements RecordLoadable<ItemStack> {
       }
       return new ItemStack(item);
     }
-    return convert(element, key);
+    return RecordLoadable.super.convert(element, key);
   }
 
   @Override

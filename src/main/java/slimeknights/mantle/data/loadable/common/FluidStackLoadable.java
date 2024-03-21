@@ -37,7 +37,7 @@ public enum FluidStackLoadable implements RecordLoadable<FluidStack> {
     if (!disallowEmpty && element.isJsonNull()) {
       return FluidStack.EMPTY;
     }
-    return convert(element, key);
+    return RecordLoadable.super.convert(element, key);
   }
 
   /** Deserializes this stack from an object */
