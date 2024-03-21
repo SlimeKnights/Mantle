@@ -16,6 +16,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.ToolAction;
 import slimeknights.mantle.data.loadable.common.RegistryLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 
@@ -32,6 +33,7 @@ public class Loadables {
       throw e.create(ex);
     }
   }, (r, e) -> r.toString());
+  public static final Loadable<ToolAction> TOOL_ACTION = StringLoadable.DEFAULT.flatMap(ToolAction::get, ToolAction::name);
 
   /* Registries */
   public static final Loadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(Registry.SOUND_EVENT);
