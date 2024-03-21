@@ -27,7 +27,7 @@ public record DefaultingField<T,P>(Loadable<T> loadable, String key, T defaultVa
   @Override
   public void serialize(P parent, JsonObject json) {
     T object = getter.apply(parent);
-    if (serializeDefault || defaultValue.equals(object)) {
+    if (serializeDefault || !defaultValue.equals(object)) {
       json.add(key, loadable.serialize(object));
     }
   }
