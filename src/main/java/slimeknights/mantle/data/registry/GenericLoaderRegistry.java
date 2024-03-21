@@ -14,10 +14,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.field.DefaultingField;
+import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
-import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -29,7 +30,7 @@ import java.util.function.Function;
  * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
  */
 @RequiredArgsConstructor
-public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSerializer<T>, JsonDeserializer<T> {
+public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSerializer<T>, JsonDeserializer<T>, Loadable<T> {
   /** Empty object instance for compact deserialization */
   private static final JsonObject EMPTY_OBJECT = new JsonObject();
   /** Map of all serializers for implementations */
@@ -59,44 +60,46 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     loaders.register(name, loader);
   }
 
-  /**
-   * Deserializes the object from JSON
-   * @param element  JSON element
-   * @return  Deserialized object
-   */
-  public T deserialize(JsonElement element) {
+  /** Shared logic for {@link #deserialize(JsonElement)} and {@link #convert(JsonElement, String)} */
+  private T convertInternal(JsonElement element, String context) throws JsonSyntaxException {
     if (defaultInstance != null && element.isJsonNull()) {
       return defaultInstance;
     }
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();
-      return loaders.deserialize(object, "type").deserialize(object);
+      return loaders.getAndDeserialize(object, "type").deserialize(object);
     }
     if (compact) {
       if (element.isJsonPrimitive()) {
         EMPTY_OBJECT.entrySet().clear();
         return loaders.convert(element, "type").deserialize(EMPTY_OBJECT);
       }
-      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + ", must be a JSON object or a string");
+      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + context + ", must be a JSON object or a string");
     } else {
-      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + ", must be a JSON object");
+      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + context + ", must be a JSON object");
     }
+  }
+
+  @Override
+  public T convert(JsonElement element, String key) throws JsonSyntaxException {
+    return convertInternal(element, " at '" + key + '\'');
   }
 
   /**
    * Deserializes the object from JSON
-   * @param parent  JSON object parent
-   * @param key     Key in the parent
+   * @param element  JSON element
    * @return  Deserialized object
    */
+  public T deserialize(JsonElement element) {
+    return convertInternal(element, "");
+  }
+
+  @Override
   public T getAndDeserialize(JsonObject parent, String key) {
     if (defaultInstance != null && !parent.has(key)) {
       return defaultInstance;
     }
-    if (compact) {
-      return deserialize(JsonHelper.getElement(parent, key));
-    }
-    return deserialize(GsonHelper.getAsJsonObject(parent, key));
+    return Loadable.super.getAndDeserialize(parent, key);
   }
 
   @Override
@@ -121,7 +124,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     return json;
   }
 
-  /** Serializes the object to JSON */
+  @Override
   public JsonElement serialize(T src) {
     return serialize(src.getLoader(), src);
   }
@@ -140,7 +143,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     loader.toNetwork((L)src, buffer);
   }
 
-  /** Writes the object to the network */
+  @Override
   public void toNetwork(T src, FriendlyByteBuf buffer) {
     // if we have a default instance, reading the loader is optional
     // if we match the default instance write no loader to save network space
@@ -156,11 +159,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     toNetwork(src.getLoader(), src, buffer);
   }
 
-  /**
-   * Reads the object from the buffer
-   * @param buffer  Buffer instance
-   * @return  Read object
-   */
+  @Override
   public T fromNetwork(FriendlyByteBuf buffer) {
     IGenericLoader<? extends T> loader;
     // if we have a default instance, reading the loader is optional
@@ -174,6 +173,19 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
       loader = loaders.fromNetwork(buffer);
     }
     return loader.fromNetwork(buffer);
+  }
+
+  @Override
+  public <P> LoadableField<T,P> field(String key, Function<P,T> getter) {
+    if (defaultInstance != null) {
+      return new DefaultingField<>(this, key, defaultInstance, true, getter);
+    }
+    return Loadable.super.field(key, getter);
+  }
+
+  /** Creates a field that loads this object directly into the parent JSON object */
+  public <P> LoadableField<T,P> directField(String typeKey, Function<P,T> getter) {
+    return new DirectRegistryField<>(this, typeKey, getter);
   }
 
   /** Interface for a loader */

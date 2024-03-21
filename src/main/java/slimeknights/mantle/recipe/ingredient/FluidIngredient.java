@@ -9,6 +9,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+// TODO: fluid ingredient loadable
 @SuppressWarnings("unused")
 public abstract class FluidIngredient {
   /** Empty fluid ingredient, matches nothing */
@@ -161,7 +164,19 @@ public abstract class FluidIngredient {
    * @throws JsonSyntaxException if syntax is invalid
    */
   public static FluidIngredient deserialize(JsonObject parent, String name) {
-    return deserialize(JsonHelper.getElement(parent, name), name);
+    return deserialize(parent, name, true);
+  }
+
+  /**
+   * Deserializes the fluid ingredient from JSON
+   * @param parent      Parent containing the fluid JSON
+   * @param name        Name of the key to fetch from the parent object
+   * @param allowEmpty  If true, empty ingredient may be returned
+   * @return  Fluid ingredient instance
+   * @throws JsonSyntaxException if syntax is invalid
+   */
+  public static FluidIngredient deserialize(JsonObject parent, String name, boolean allowEmpty) {
+    return deserialize(JsonHelper.getElement(parent, name), name, allowEmpty);
   }
 
   /**
@@ -172,9 +187,21 @@ public abstract class FluidIngredient {
    * @throws JsonSyntaxException if syntax is invalid
    */
   public static FluidIngredient deserialize(JsonElement json, String name) {
+    return deserialize(json, name, true);
+  }
+
+  /**
+   * Deserializes the fluid ingredient from JSON
+   * @param json        Json element instance
+   * @param name        Name of the object for error messages
+   * @param allowEmpty  If true, empty ingredient may be returned
+   * @return  Fluid ingredient instance
+   * @throws JsonSyntaxException if syntax is invalid
+   */
+  public static FluidIngredient deserialize(JsonElement json, String name, boolean allowEmpty) {
     // single ingredient object
     if (json.isJsonObject()) {
-      return deserializeObject(json.getAsJsonObject());
+      return deserializeObject(json.getAsJsonObject(), allowEmpty);
     }
 
     // array
@@ -187,12 +214,13 @@ public abstract class FluidIngredient {
 
   /**
    * Deserializes the fluid ingredient from JSON
-   * @param json  JSON object
+   * @param json        JSON object
+   * @param allowEmpty  If true, empty is a valid result
    * @return  Fluid Ingredient
    * @throws JsonSyntaxException if syntax is invalid
    */
-  private static FluidIngredient deserializeObject(JsonObject json) {
-    if (json.entrySet().isEmpty()) {
+  private static FluidIngredient deserializeObject(JsonObject json, boolean allowEmpty) {
+    if (allowEmpty && json.entrySet().isEmpty()) {
       return EMPTY;
     }
 
@@ -435,7 +463,7 @@ public abstract class FluidIngredient {
       FluidIngredient[] ingredients = new FluidIngredient[size];
       for (int i = 0; i < size; i++) {
         // no reason to an array in an array
-        ingredients[i] = deserializeObject(GsonHelper.convertToJsonObject(array.get(i), name + "[" + i + "]"));
+        ingredients[i] = deserializeObject(GsonHelper.convertToJsonObject(array.get(i), name + "[" + i + "]"), false);
       }
       return new Compound(ingredients);
     }
@@ -453,6 +481,45 @@ public abstract class FluidIngredient {
     @Override
     public JsonElement serialize(FluidIngredient src, Type typeOfSrc, JsonSerializationContext context) {
       return src.serialize();
+    }
+  }
+
+  /**
+   * Loadable logic for fluid ingredients
+   */
+  public enum Loadable implements slimeknights.mantle.data.loadable.Loadable<FluidIngredient> {
+    ALLOW_EMPTY,
+    DISALLOW_EMPTY;
+
+    @Override
+    public FluidIngredient getAndDeserialize(JsonObject parent, String key) {
+      if (this == ALLOW_EMPTY && !parent.has(key)) {
+        return FluidIngredient.EMPTY;
+      }
+      return slimeknights.mantle.data.loadable.Loadable.super.getAndDeserialize(parent, key);
+    }
+
+    @Override
+    public FluidIngredient convert(JsonElement element, String key) throws JsonSyntaxException {
+      return FluidIngredient.deserialize(element, key, this == ALLOW_EMPTY);
+    }
+
+    @Override
+    public JsonElement serialize(FluidIngredient object) throws RuntimeException {
+      if (object == EMPTY && this == DISALLOW_EMPTY) {
+        throw new IllegalArgumentException("Empty ingredient not allowed");
+      }
+      return object.serialize();
+    }
+
+    @Override
+    public FluidIngredient fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+      return FluidIngredient.read(buffer);
+    }
+
+    @Override
+    public void toNetwork(FluidIngredient object, FriendlyByteBuf buffer) throws EncoderException {
+      object.write(buffer);
     }
   }
 }

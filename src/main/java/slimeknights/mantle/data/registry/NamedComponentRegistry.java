@@ -3,11 +3,12 @@ package slimeknights.mantle.data.registry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -16,7 +17,7 @@ import javax.annotation.Nullable;
  * Generic registry of a component named by a resource location. Supports any arbitrary object without making any changes to it.
  * @param <T> Type of the component being registered.
  */
-public class NamedComponentRegistry<T> {
+public class NamedComponentRegistry<T> implements Loadable<T> {
   /** Registered box expansion types */
   private final BiMap<ResourceLocation,T> values = HashBiMap.create();
   /** Name to make exceptions clearer */
@@ -58,29 +59,26 @@ public class NamedComponentRegistry<T> {
 
   /* Json */
 
-  /** Shared logic for deserialize */
-  private T deserialize(ResourceLocation name) {
+  @Override
+  public T convert(JsonElement element, String key) {
+    ResourceLocation name = JsonHelper.convertToResourceLocation(element, key);
     T value = getValue(name);
     if (value == null) {
-      throw new JsonSyntaxException(errorText + name);
+      throw new JsonSyntaxException(errorText + name + " at '" + key + '\'');
     }
     return value;
   }
 
-  /** Parse the value from JSON */
-  public T convert(JsonElement element, String key) {
-    return deserialize(JsonHelper.convertToResourceLocation(element, key));
-  }
-
-  /** Parse the value from JSON */
-  public T deserialize(JsonObject parent, String key) {
-    return deserialize(JsonHelper.getResourceLocation(parent, key));
+  @Override
+  public JsonElement serialize(T object) throws RuntimeException {
+    return new JsonPrimitive(getKey(object).toString());
   }
 
 
   /* Network */
 
   /** Writes the value to the buffer */
+  @Override
   public void toNetwork(T value, FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(getKey(value));
   }
@@ -105,6 +103,7 @@ public class NamedComponentRegistry<T> {
   }
 
   /** Parse the value from JSON */
+  @Override
   public T fromNetwork(FriendlyByteBuf buffer) {
     return fromNetwork(buffer.readResourceLocation());
   }

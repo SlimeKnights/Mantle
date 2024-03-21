@@ -5,17 +5,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import slimeknights.mantle.data.JsonCodec;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.common.ItemStackLoadable;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.function.Supplier;
@@ -39,6 +41,28 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     @Override
     public String toString() {
       return "ItemOutput";
+    }
+  };
+  /** Loadable instance for an item output. Custom to handle the eithering behavior */
+  public static Loadable<ItemOutput> LOADABLE = new Loadable<>() {
+    @Override
+    public ItemOutput convert(JsonElement element, String key) throws JsonSyntaxException {
+      return ItemOutput.fromJson(element);
+    }
+
+    @Override
+    public JsonElement serialize(ItemOutput object) throws RuntimeException {
+      return object.serialize();
+    }
+
+    @Override
+    public ItemOutput fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+      return ItemOutput.read(buffer);
+    }
+
+    @Override
+    public void toNetwork(ItemOutput object, FriendlyByteBuf buffer) throws EncoderException {
+      object.write(buffer);
     }
   };
 
@@ -113,8 +137,8 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
       return fromTag(tag, count);
     }
 
-    // default: parse as item stack using Forge
-    return fromStack(CraftingHelper.getItemStack(json, true));
+    // default: parse as item stack using loadables
+    return fromStack(ItemStackLoadable.NON_EMPTY_NBT.convert(json, "item"));
   }
 
   /**
@@ -175,23 +199,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
     @Override
     public JsonElement serialize() {
-      String itemName = Registry.ITEM.getKey(stack.getItem()).toString();
-      int count = stack.getCount();
-      // if the item has NBT or a count, write as object
-      if (stack.hasTag() || count > 1) {
-        JsonObject jsonResult = new JsonObject();
-        jsonResult.addProperty("item", itemName);
-        if (count > 1) {
-          jsonResult.addProperty("count", count);
-        }
-        CompoundTag nbt = stack.getTag();
-        if (nbt != null) {
-          jsonResult.addProperty("nbt", nbt.toString());
-        }
-        return jsonResult;
-      } else {
-        return new JsonPrimitive(itemName);
-      }
+      return ItemStackLoadable.NON_EMPTY_NBT.serialize(stack);
     }
   }
 
