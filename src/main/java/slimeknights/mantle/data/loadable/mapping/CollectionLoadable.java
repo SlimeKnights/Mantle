@@ -34,7 +34,7 @@ public abstract class CollectionLoadable<T,C extends Collection<T>,B extends Imm
     }
     B builder = makeBuilder();
     for (int i = 0; i < array.size(); i++) {
-      builder.add(base.convert(element, key + '[' + i + ']'));
+      builder.add(base.convert(array.get(i), key + '[' + i + ']'));
     }
     return build(builder);
   }
