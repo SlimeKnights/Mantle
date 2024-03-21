@@ -1,7 +1,12 @@
 package slimeknights.mantle.data.loadable;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
@@ -14,6 +19,7 @@ import slimeknights.mantle.data.loadable.mapping.ListLoadable;
 import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
 import slimeknights.mantle.data.loadable.mapping.SetLoadable;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -21,7 +27,7 @@ import java.util.function.Function;
 
 /** Interface for a generic loadable object */
 @SuppressWarnings("unused")  // API
-public interface Loadable<T> {
+public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
   /** Deserializes the object from json */
   T convert(JsonElement element, String key) throws JsonSyntaxException;
 
@@ -46,6 +52,19 @@ public interface Loadable<T> {
 
   /** Writes this object to the packet buffer */
   void toNetwork(T object, FriendlyByteBuf buffer) throws EncoderException;
+
+
+  /* GSON methods, lets us easily use loadables with GSON adapters */
+
+  @Override
+  default T deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+    return convert(json, type.getTypeName());
+  }
+
+  @Override
+  default JsonElement serialize(T object, Type type, JsonSerializationContext context) {
+    return serialize(object);
+  }
 
 
   /* Fields */
