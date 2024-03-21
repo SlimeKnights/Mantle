@@ -5,6 +5,9 @@ import com.google.gson.JsonPrimitive;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.field.LoadableField;
+
+import java.util.function.Function;
 
 /** Loadable for a boolean */
 public enum BooleanLoadable implements Loadable<Boolean> {
@@ -28,5 +31,11 @@ public enum BooleanLoadable implements Loadable<Boolean> {
   @Override
   public void toNetwork(Boolean object, FriendlyByteBuf buffer) {
     buffer.writeBoolean(object);
+  }
+
+  @Override
+  public <P> LoadableField<Boolean,P> defaultField(String key, Boolean defaultValue, Function<P,Boolean> getter) {
+    // booleans are cleaner if they serialize by default
+    return defaultField(key, defaultValue, true, getter);
   }
 }
