@@ -1,33 +1,32 @@
 package slimeknights.mantle.data.loader;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.data.registry.DirectRegistryField;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 
-import java.util.Map.Entry;
 import java.util.function.Function;
 
 /**
  * Loader that loads from another loader
  * @param <T>  Object being loaded
  * @param <N>  Nested object type
+ * @deprecated use {@link RecordLoadable} with {@link GenericLoaderRegistry#directField(String, Function)}
  */
+@Deprecated
 public record NestedLoader<T,N extends IHaveLoader<N>>(
   String typeKey,
   GenericLoaderRegistry<N> nestedLoader,
   Function<N, T> constructor,
   Function<T, N> getter
-) implements IGenericLoader<T> {
-  /** Moves the passed type key to "type" */
+) implements IGenericLoader<T>, RecordLoadable<T> {
+  /** @deprecated use {@link DirectRegistryField#mapType(JsonObject, String)} */
+  @Deprecated
   public static void mapType(JsonObject json, String typeKey) {
-    // replace our type with the nested type, then run the nested loader
-    json.addProperty("type", GsonHelper.getAsString(json, typeKey));
-    json.remove(typeKey);
+    DirectRegistryField.mapType(json, typeKey);
   }
 
   @Override
@@ -36,35 +35,10 @@ public record NestedLoader<T,N extends IHaveLoader<N>>(
     return constructor.apply(nestedLoader.deserialize(json));
   }
 
-  /**
-   * Serializes the passed object into the passed JSON
-   * @param json      JSON target for serializing
-   * @param typeKey   Key to use for "type" in the serialized value
-   * @param loader    Loader for serializing the value
-   * @param value     Value to serialized
-   * @param <N>  Type of value
-   */
+  /** @deprecated use {@link DirectRegistryField#serializeInto(JsonObject, String, GenericLoaderRegistry, IHaveLoader)} */
+  @Deprecated
   public static <N extends IHaveLoader<N>> void serializeInto(JsonObject json, String typeKey, GenericLoaderRegistry<N> loader, N value) {
-    JsonElement element = loader.serialize(value);
-    // if its an object, copy all the data over
-    if (element.isJsonObject()) {
-      JsonObject nestedObject = element.getAsJsonObject();
-      for (Entry<String, JsonElement> entry : nestedObject.entrySet()) {
-        String key = entry.getKey();
-        if (typeKey.equals(key)) {
-          throw new JsonIOException("Unable to serialize nested object, object already has key " + typeKey);
-        }
-        if ("type".equals(key)) {
-          key = typeKey;
-        }
-        json.add(key, entry.getValue());
-      }
-    } else if (element.isJsonPrimitive()){
-      // if its a primitive, its the type ID, add just that by itself
-      json.add(typeKey, element);
-    } else {
-      throw new JsonIOException("Unable to serialize nested object, expected string or object");
-    }
+    DirectRegistryField.serializeInto(json, typeKey, loader, value);
   }
 
   @Override

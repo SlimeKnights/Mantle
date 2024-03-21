@@ -2,6 +2,7 @@ package slimeknights.mantle.data.loader;
 
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -12,13 +13,15 @@ import java.util.function.Function;
  * Loader for an object with a single enum key
  * @param <O>  Object type
  * @param <T>  Loader type
+ * @deprecated use {@link RecordLoadable} with {@link slimeknights.mantle.data.loadable.primitive.EnumLoadable}
  */
+@Deprecated
 public record EnumLoader<O, T extends Enum<T>>(
   String key,
   Class<T> enumClass,
   Function<T,O> constructor,
   Function<O,T> getter
-) implements IGenericLoader<O> {
+) implements IGenericLoader<O>, RecordLoadable<O> {
   @Override
   public O deserialize(JsonObject json) {
     return constructor.apply(JsonHelper.getAsEnum(json, key, enumClass));

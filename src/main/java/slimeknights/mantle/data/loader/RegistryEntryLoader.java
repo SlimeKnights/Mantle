@@ -3,6 +3,7 @@ package slimeknights.mantle.data.loader;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -14,13 +15,15 @@ import java.util.function.Function;
  * @param <O>  Object type
  * @param <V>  Registry entry type
  * @see RegistrySetLoader
+ * @deprecated use {@link RecordLoadable} with {@link slimeknights.mantle.data.loadable.Loadables}
  */
+@Deprecated
 public record RegistryEntryLoader<O,V>(
   String key,
   IForgeRegistry<V> registry,
   Function<V,O> constructor,
   Function<O,V> getter
-) implements IGenericLoader<O> {
+) implements IGenericLoader<O>, RecordLoadable<O> {
 
   @Override
   public O deserialize(JsonObject json) {

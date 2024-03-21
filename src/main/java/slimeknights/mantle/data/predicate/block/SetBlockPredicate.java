@@ -1,22 +1,18 @@
 package slimeknights.mantle.data.predicate.block;
 
-import lombok.RequiredArgsConstructor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
+import slimeknights.mantle.data.loadable.Loadables;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.loader.RegistrySetLoader;
 
 import java.util.Set;
 
 /**
  * Modifier matching a block
  */
-@RequiredArgsConstructor
-public class SetBlockPredicate implements BlockPredicate {
-  public static final IGenericLoader<SetBlockPredicate> LOADER = new RegistrySetLoader<>("blocks", ForgeRegistries.BLOCKS, SetBlockPredicate::new, predicate -> predicate.blocks);
-
-  private final Set<Block> blocks;
+public record SetBlockPredicate(Set<Block> blocks) implements BlockPredicate {
+  public static final IGenericLoader<SetBlockPredicate> LOADER = RecordLoadable.create(Loadables.BLOCK.set().field("blocks", SetBlockPredicate::blocks), SetBlockPredicate::new);
 
   @Override
   public boolean matches(BlockState state) {

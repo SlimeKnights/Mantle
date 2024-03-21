@@ -3,9 +3,10 @@ package slimeknights.mantle.data.predicate;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.data.registry.DirectRegistryField;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.loader.NestedLoader;
 
 /**
  * Predicate that inverts the condition.
@@ -33,7 +34,7 @@ public class InvertedJsonPredicate<I> implements IJsonPredicate<I> {
 
   /** Loader for an inverted JSON predicate */
   @RequiredArgsConstructor
-  public static class Loader<I> implements IGenericLoader<InvertedJsonPredicate<I>> {
+  public static class Loader<I> implements IGenericLoader<InvertedJsonPredicate<I>>, RecordLoadable<InvertedJsonPredicate<I>> {
     /** Loader for predicates of this type */
     private final GenericLoaderRegistry<IJsonPredicate<I>> loader;
     /** If true, will support the nested method for predicates as a fallback, will still prefer the non-nested method for serializing */
@@ -53,7 +54,7 @@ public class InvertedJsonPredicate<I> implements IJsonPredicate<I> {
       if (allowNested && json.has("predicate")) {
         return create(loader.getAndDeserialize(json, "predicate"));
       }
-      NestedLoader.mapType(json, "inverted_type");
+      DirectRegistryField.mapType(json, "inverted_type");
       return create(loader.deserialize(json));
     }
 
@@ -64,12 +65,12 @@ public class InvertedJsonPredicate<I> implements IJsonPredicate<I> {
 
     @Override
     public void serialize(InvertedJsonPredicate<I> object, JsonObject json) {
-      NestedLoader.serializeInto(json, "inverted_type", loader, object.base);
+      DirectRegistryField.serializeInto(json, "inverted_type", loader, object.base);
     }
 
     @Override
     public void toNetwork(InvertedJsonPredicate<I> object, FriendlyByteBuf buffer) {
       loader.toNetwork(object.base, buffer);
     }
-  };
+  }
 }

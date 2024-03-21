@@ -1,23 +1,20 @@
 package slimeknights.mantle.data.predicate.entity;
 
-import com.google.gson.JsonObject;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.registry.NamedComponentRegistry;
 
 /** Predicate matching a specific mob type */
-@RequiredArgsConstructor
-public class MobTypePredicate implements LivingEntityPredicate {
+public record MobTypePredicate(MobType type) implements LivingEntityPredicate {
   /**
    * Registry of mob types, to allow addons to register types
    * TODO: support registering via IMC
    */
   public static final NamedComponentRegistry<MobType> MOB_TYPES = new NamedComponentRegistry<>("Unknown mob type");
-
-  private final MobType type;
+  /** Loader for a mob type predicate */
+  public static RecordLoadable<MobTypePredicate> LOADER = RecordLoadable.create(MOB_TYPES.field("mobs", MobTypePredicate::type), MobTypePredicate::new);
 
   @Override
   public boolean matches(LivingEntity input) {
@@ -28,27 +25,4 @@ public class MobTypePredicate implements LivingEntityPredicate {
   public IGenericLoader<? extends LivingEntityPredicate> getLoader() {
     return LOADER;
   }
-
-  /** Loader for a mob type predicate */
-  public static final IGenericLoader<MobTypePredicate> LOADER = new IGenericLoader<>() {
-    @Override
-    public MobTypePredicate deserialize(JsonObject json) {
-      return new MobTypePredicate(MOB_TYPES.deserialize(json, "mobs"));
-    }
-
-    @Override
-    public MobTypePredicate fromNetwork(FriendlyByteBuf buffer) {
-      return new MobTypePredicate(MOB_TYPES.fromNetwork(buffer));
-    }
-
-    @Override
-    public void serialize(MobTypePredicate object, JsonObject json) {
-      json.addProperty("mobs", MOB_TYPES.getKey(object.type).toString());
-    }
-
-    @Override
-    public void toNetwork(MobTypePredicate object, FriendlyByteBuf buffer) {
-      MOB_TYPES.toNetwork(object.type, buffer);
-    }
-  };
 }

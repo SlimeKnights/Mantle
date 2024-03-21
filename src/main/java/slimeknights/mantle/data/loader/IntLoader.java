@@ -4,14 +4,16 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 
-/** Generic serializer for classes that just have a single int value. */
+/** @deprecated use {@link slimeknights.mantle.data.loadable.record.RecordLoadable} with {@link slimeknights.mantle.data.loadable.primitive.IntLoadable} */
+@Deprecated
 @RequiredArgsConstructor
-public class IntLoader<T> implements IGenericLoader<T> {
+public class IntLoader<T> implements IGenericLoader<T>, RecordLoadable<T> {
   private final String key;
   private final IntFunction<T> constructor;
   private final ToIntFunction<T> getter;

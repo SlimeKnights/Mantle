@@ -7,6 +7,8 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -19,13 +21,15 @@ import java.util.function.Function;
  * @param <R>  Registry type
  * @param <T>  Loader object type
  * @see RegistryEntryLoader
+ * @deprecated use {@link RecordLoadable}, {@link slimeknights.mantle.data.loadable.Loadables} and {@link Loadable#set()}
  */
+@Deprecated
 public record RegistrySetLoader<R,T>(
   String key,
   IForgeRegistry<R> registry,
   Function<Set<R>, T> constructor,
   Function<T, Set<R>> getter
-) implements IGenericLoader<T> {
+) implements IGenericLoader<T>, RecordLoadable<T> {
   @Override
   public T deserialize(JsonObject json) {
     Set<R> set = ImmutableSet.copyOf(JsonHelper.parseList(json, key, (element, jsonKey) -> {

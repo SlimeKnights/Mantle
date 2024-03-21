@@ -1,20 +1,17 @@
 package slimeknights.mantle.data.predicate.block;
 
-import lombok.RequiredArgsConstructor;
-import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import slimeknights.mantle.data.loadable.Loadables;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.loader.TagKeyLoader;
 
 /**
  * Modifier matching a block tag
  */
-@RequiredArgsConstructor
-public class TagBlockPredicate implements BlockPredicate {
-  public static final TagKeyLoader<Block,TagBlockPredicate> LOADER = new TagKeyLoader<>(Registry.BLOCK_REGISTRY, TagBlockPredicate::new, c -> c.tag);
-  private final TagKey<Block> tag;
+public record TagBlockPredicate(TagKey<Block> tag) implements BlockPredicate {
+  public static final RecordLoadable<TagBlockPredicate> LOADER = RecordLoadable.create(Loadables.BLOCK_TAG.field("tag", TagBlockPredicate::tag), TagBlockPredicate::new);
 
   @Override
   public boolean matches(BlockState state) {

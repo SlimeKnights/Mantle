@@ -1,21 +1,17 @@
 package slimeknights.mantle.data.predicate.entity;
 
-import lombok.RequiredArgsConstructor;
-import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import slimeknights.mantle.data.loader.TagKeyLoader;
+import slimeknights.mantle.data.loadable.Loadables;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 /**
  * Predicate matching an entity tag
  */
-@RequiredArgsConstructor
-public class TagEntityPredicate implements LivingEntityPredicate {
-  public static final TagKeyLoader<EntityType<?>,TagEntityPredicate> LOADER = new TagKeyLoader<>(Registry.ENTITY_TYPE_REGISTRY, TagEntityPredicate::new, c -> c.tag);
-
-  private final TagKey<EntityType<?>> tag;
+public record TagEntityPredicate(TagKey<EntityType<?>> tag) implements LivingEntityPredicate {
+  public static final RecordLoadable<TagEntityPredicate> LOADER = RecordLoadable.create(Loadables.ENTITY_TYPE_TAG.field("tag", TagEntityPredicate::tag), TagEntityPredicate::new);
 
   @Override
   public boolean matches(LivingEntity entity) {
