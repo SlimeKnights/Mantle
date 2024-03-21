@@ -30,6 +30,7 @@ import java.util.function.Function;
  * Record loaders directly serialize into JSON objects, meaning they are compatible with {@link slimeknights.mantle.data.registry.GenericLoaderRegistry}.
  * @param <T>  Type being loaded
  */
+@SuppressWarnings("unused")  // API
 public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
   @Override
   T deserialize(JsonObject json);
@@ -59,7 +60,7 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 1 parameters */
   static <A,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
+    LoadableField<A,? super R> fieldA,
     Function<A,R> constructor) {
     return new RecordLoadable1<>(
       fieldA,
@@ -69,8 +70,8 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 2 parameters */
   static <A,B,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
     BiFunction<A,B,R> constructor) {
     return new RecordLoadable2<>(
       fieldA,
@@ -81,9 +82,9 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 3 parameters */
   static <A,B,C,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
     Function3<A,B,C,R> constructor) {
     return new RecordLoadable3<>(
       fieldA,
@@ -95,10 +96,10 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 4 parameters */
   static <A,B,C,D,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
     Function4<A,B,C,D,R> constructor) {
     return new RecordLoadable4<>(
       fieldA,
@@ -111,11 +112,11 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 5 parameters */
   static <A,B,C,D,E,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
     Function5<A,B,C,D,E,R> constructor) {
     return new RecordLoadable5<>(
       fieldA,
@@ -129,12 +130,12 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 6 parameters */
   static <A,B,C,D,E,F,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
     Function6<A,B,C,D,E,F,R> constructor) {
     return new RecordLoadable6<>(
       fieldA,
@@ -149,13 +150,13 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 7 parameters */
   static <A,B,C,D,E,F,G,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
     Function7<A,B,C,D,E,F,G,R> constructor) {
     return new RecordLoadable7<>(
       fieldA,
@@ -171,14 +172,14 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 8 parameters */
   static <A,B,C,D,E,F,G,H,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
     Function8<A,B,C,D,E,F,G,H,R> constructor) {
     return new RecordLoadable8<>(
       fieldA,
@@ -195,15 +196,15 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 9 parameters */
   static <A,B,C,D,E,F,G,H,I,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
     Function9<A,B,C,D,E,F,G,H,I,R> constructor) {
     return new RecordLoadable9<>(
       fieldA,
@@ -221,16 +222,16 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 10 parameters */
   static <A,B,C,D,E,F,G,H,I,J,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
     Function10<A,B,C,D,E,F,G,H,I,J,R> constructor) {
     return new RecordLoadable10<>(
       fieldA,
@@ -249,17 +250,17 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 11 parameters */
   static <A,B,C,D,E,F,G,H,I,J,K,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
-    LoadableField<K,R> fieldK,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
+    LoadableField<K,? super R> fieldK,
     Function11<A,B,C,D,E,F,G,H,I,J,K,R> constructor) {
     return new RecordLoadable11<>(
       fieldA,
@@ -279,18 +280,18 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 12 parameters */
   static <A,B,C,D,E,F,G,H,I,J,K,L,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
-    LoadableField<K,R> fieldK,
-    LoadableField<L,R> fieldL,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
+    LoadableField<K,? super R> fieldK,
+    LoadableField<L,? super R> fieldL,
     Function12<A,B,C,D,E,F,G,H,I,J,K,L,R> constructor) {
     return new RecordLoadable12<>(
       fieldA,
@@ -311,19 +312,19 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 13 parameters */
   static <A,B,C,D,E,F,G,H,I,J,K,L,M,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
-    LoadableField<K,R> fieldK,
-    LoadableField<L,R> fieldL,
-    LoadableField<M,R> fieldM,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
+    LoadableField<K,? super R> fieldK,
+    LoadableField<L,? super R> fieldL,
+    LoadableField<M,? super R> fieldM,
     Function13<A,B,C,D,E,F,G,H,I,J,K,L,M,R> constructor) {
     return new RecordLoadable13<>(
       fieldA,
@@ -345,20 +346,20 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 14 parameters */
   static <A,B,C,D,E,F,G,H,I,J,K,L,M,N,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
-    LoadableField<K,R> fieldK,
-    LoadableField<L,R> fieldL,
-    LoadableField<M,R> fieldM,
-    LoadableField<N,R> fieldN,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
+    LoadableField<K,? super R> fieldK,
+    LoadableField<L,? super R> fieldL,
+    LoadableField<M,? super R> fieldM,
+    LoadableField<N,? super R> fieldN,
     Function14<A,B,C,D,E,F,G,H,I,J,K,L,M,N,R> constructor) {
     return new RecordLoadable14<>(
       fieldA,
@@ -381,21 +382,21 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 15 parameters */
   static <A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
-    LoadableField<K,R> fieldK,
-    LoadableField<L,R> fieldL,
-    LoadableField<M,R> fieldM,
-    LoadableField<N,R> fieldN,
-    LoadableField<O,R> fieldO,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
+    LoadableField<K,? super R> fieldK,
+    LoadableField<L,? super R> fieldL,
+    LoadableField<M,? super R> fieldM,
+    LoadableField<N,? super R> fieldN,
+    LoadableField<O,? super R> fieldO,
     Function15<A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,R> constructor) {
     return new RecordLoadable15<>(
       fieldA,
@@ -419,22 +420,22 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
 
   /** Creates a loadable with 16 parameters */
   static <A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,R> RecordLoadable<R> create(
-    LoadableField<A,R> fieldA,
-    LoadableField<B,R> fieldB,
-    LoadableField<C,R> fieldC,
-    LoadableField<D,R> fieldD,
-    LoadableField<E,R> fieldE,
-    LoadableField<F,R> fieldF,
-    LoadableField<G,R> fieldG,
-    LoadableField<H,R> fieldH,
-    LoadableField<I,R> fieldI,
-    LoadableField<J,R> fieldJ,
-    LoadableField<K,R> fieldK,
-    LoadableField<L,R> fieldL,
-    LoadableField<M,R> fieldM,
-    LoadableField<N,R> fieldN,
-    LoadableField<O,R> fieldO,
-    LoadableField<P,R> fieldP,
+    LoadableField<A,? super R> fieldA,
+    LoadableField<B,? super R> fieldB,
+    LoadableField<C,? super R> fieldC,
+    LoadableField<D,? super R> fieldD,
+    LoadableField<E,? super R> fieldE,
+    LoadableField<F,? super R> fieldF,
+    LoadableField<G,? super R> fieldG,
+    LoadableField<H,? super R> fieldH,
+    LoadableField<I,? super R> fieldI,
+    LoadableField<J,? super R> fieldJ,
+    LoadableField<K,? super R> fieldK,
+    LoadableField<L,? super R> fieldL,
+    LoadableField<M,? super R> fieldM,
+    LoadableField<N,? super R> fieldN,
+    LoadableField<O,? super R> fieldO,
+    LoadableField<P,? super R> fieldP,
     Function16<A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,R> constructor) {
     return new RecordLoadable16<>(
       fieldA,

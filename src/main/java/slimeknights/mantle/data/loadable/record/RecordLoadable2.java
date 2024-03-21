@@ -10,8 +10,8 @@ import java.util.function.BiFunction;
 
 /** Record loadable with 2 fields */
 record RecordLoadable2<A,B,R>(
-  LoadableField<A,R> fieldA,
-  LoadableField<B,R> fieldB,
+  LoadableField<A,? super R> fieldA,
+  LoadableField<B,? super R> fieldB,
   BiFunction<A,B,R> constructor
 ) implements RecordLoadable<R> {
   @Override

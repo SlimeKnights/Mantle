@@ -9,10 +9,10 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 
 /** Record loadable with 4 fields */
 record RecordLoadable4<A,B,C,D,R>(
-  LoadableField<A,R> fieldA,
-  LoadableField<B,R> fieldB,
-  LoadableField<C,R> fieldC,
-  LoadableField<D,R> fieldD,
+  LoadableField<A,? super R> fieldA,
+  LoadableField<B,? super R> fieldB,
+  LoadableField<C,? super R> fieldC,
+  LoadableField<D,? super R> fieldD,
   Function4<A,B,C,D,R> constructor
 ) implements RecordLoadable<R> {
   @Override

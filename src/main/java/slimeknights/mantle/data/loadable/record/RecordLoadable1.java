@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 /** Record loadable with a single field */
 record RecordLoadable1<A,R>(
-  LoadableField<A,R> fieldA,
+  LoadableField<A,? super R> fieldA,
   Function<A,R> constructor
 ) implements RecordLoadable<R> {
   @Override

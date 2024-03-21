@@ -10,19 +10,19 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 /** Record loadable with 13 fields */
 @SuppressWarnings("DuplicatedCode")
 record RecordLoadable13<A,B,C,D,E,F,G,H,I,J,K,L,M,R>(
-  LoadableField<A,R> fieldA,
-  LoadableField<B,R> fieldB,
-  LoadableField<C,R> fieldC,
-  LoadableField<D,R> fieldD,
-  LoadableField<E,R> fieldE,
-  LoadableField<F,R> fieldF,
-  LoadableField<G,R> fieldG,
-  LoadableField<H,R> fieldH,
-  LoadableField<I,R> fieldI,
-  LoadableField<J,R> fieldJ,
-  LoadableField<K,R> fieldK,
-  LoadableField<L,R> fieldL,
-  LoadableField<M,R> fieldM,
+  LoadableField<A,? super R> fieldA,
+  LoadableField<B,? super R> fieldB,
+  LoadableField<C,? super R> fieldC,
+  LoadableField<D,? super R> fieldD,
+  LoadableField<E,? super R> fieldE,
+  LoadableField<F,? super R> fieldF,
+  LoadableField<G,? super R> fieldG,
+  LoadableField<H,? super R> fieldH,
+  LoadableField<I,? super R> fieldI,
+  LoadableField<J,? super R> fieldJ,
+  LoadableField<K,? super R> fieldK,
+  LoadableField<L,? super R> fieldL,
+  LoadableField<M,? super R> fieldM,
   Function13<A,B,C,D,E,F,G,H,I,J,K,L,M,R> constructor
 ) implements RecordLoadable<R> {
   @Override
