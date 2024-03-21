@@ -13,7 +13,7 @@ import slimeknights.mantle.data.loadable.Loadable;
 /** Loadable to fetch colors from JSON */
 @RequiredArgsConstructor
 public enum ColorLoadable implements Loadable<Integer> {
-  ALPHA("%08.8X") {
+  ALPHA {
     @Override
     public int parseColor(String color) {
       // two options, 6 character or 8 character, must not start with - sign
@@ -33,8 +33,13 @@ public enum ColorLoadable implements Loadable<Integer> {
       }
       throw new JsonSyntaxException("Invalid color '" + color + "'");
     }
+
+    @Override
+    public String colorString(int color) {
+      return String.format("%08X", color);
+    }
   },
-  NO_ALPHA("%06.6X") {
+  NO_ALPHA {
     @Override
     public int parseColor(String color) {
       // only consider 6 digits with no alpha, will force to full alpha
@@ -47,9 +52,12 @@ public enum ColorLoadable implements Loadable<Integer> {
       }
       throw new JsonSyntaxException("Invalid color '" + color + "'");
     }
-  };
 
-  private final String format;
+    @Override
+    public String colorString(int color) {
+      return String.format("%06X", color & 0xFFFFFF);
+    }
+  };
 
   /**
    * Parses the color from the given string
@@ -58,6 +66,9 @@ public enum ColorLoadable implements Loadable<Integer> {
    */
   public abstract int parseColor(String color);
 
+  /** Writes the given color as a string */
+  public abstract String colorString(int color);
+
   @Override
   public Integer convert(JsonElement element, String key) throws JsonSyntaxException {
     return parseColor(GsonHelper.convertToString(element, key));
@@ -65,7 +76,7 @@ public enum ColorLoadable implements Loadable<Integer> {
 
   @Override
   public JsonElement serialize(Integer color) throws RuntimeException {
-    return new JsonPrimitive(String.format(format, color));
+    return new JsonPrimitive(colorString(color));
   }
 
   @Override
