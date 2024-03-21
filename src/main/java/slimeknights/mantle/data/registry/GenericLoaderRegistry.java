@@ -175,12 +175,19 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
     return loader.fromNetwork(buffer);
   }
 
-  @Override
-  public <P> LoadableField<T,P> field(String key, Function<P,T> getter) {
+  /**
+   * Creates a defaulting for this registry, using the internal default instance as the default
+   * @param key               Json key
+   * @param serializeDefault  If true, serializes the default instance. If false skips it
+   * @param getter            Getter function
+   * @param <P>  Field target
+   * @return  Defaulting field instance
+   */
+  public <P> LoadableField<T,P> defaultField(String key, boolean serializeDefault, Function<P,T> getter) {
     if (defaultInstance != null) {
-      return new DefaultingField<>(this, key, defaultInstance, true, getter);
+      return new DefaultingField<>(this, key, defaultInstance, serializeDefault, getter);
     }
-    return Loadable.super.field(key, getter);
+    throw new IllegalStateException("Registry has no default instance, cannot make a default field");
   }
 
   /** Creates a field that loads this object directly into the parent JSON object */
