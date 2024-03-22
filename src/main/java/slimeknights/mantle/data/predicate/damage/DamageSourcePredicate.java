@@ -2,13 +2,13 @@ package slimeknights.mantle.data.predicate.damage;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.data.predicate.AndJsonPredicate;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.InvertedJsonPredicate;
 import slimeknights.mantle.data.predicate.NestedJsonPredicateLoader;
 import slimeknights.mantle.data.predicate.OrJsonPredicate;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.function.Predicate;
 
@@ -63,6 +63,10 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
     return INVERTED.create(this);
   }
 
+  // override to tighten generics
+  @Override
+  IGenericLoader<? extends DamageSourcePredicate> getLoader();
+
   /** Creates a simple predicate with no parameters */
   static DamageSourcePredicate simple(Predicate<DamageSource> predicate) {
     return singleton(loader -> new DamageSourcePredicate() {
@@ -72,7 +76,7 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
       }
 
       @Override
-      public IGenericLoader<? extends IJsonPredicate<DamageSource>> getLoader() {
+      public IGenericLoader<? extends DamageSourcePredicate> getLoader() {
         return loader;
       }
     });

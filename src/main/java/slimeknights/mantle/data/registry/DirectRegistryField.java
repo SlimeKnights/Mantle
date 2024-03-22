@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 /** Direct field for a registry, will automatically handle mapping the type from the JSON object */
-public record DirectRegistryField<T extends IHaveLoader<T>,P>(GenericLoaderRegistry<T> loadable, String typeKey, Function<P,T> getter) implements AlwaysPresentLoadableField<T,P> {
+public record DirectRegistryField<T extends IHaveLoader,P>(GenericLoaderRegistry<T> loadable, String typeKey, Function<P,T> getter) implements AlwaysPresentLoadableField<T,P> {
   /** Moves the passed type key to "type" */
   public static void mapType(JsonObject json, String typeKey) {
     json.addProperty("type", GsonHelper.getAsString(json, typeKey));
@@ -27,7 +27,7 @@ public record DirectRegistryField<T extends IHaveLoader<T>,P>(GenericLoaderRegis
    * @param value     Value to serialized
    * @param <N>  Type of value
    */
-  public static <N extends IHaveLoader<N>> void serializeInto(JsonObject json, String typeKey, GenericLoaderRegistry<N> loader, N value) {
+  public static <N extends IHaveLoader> void serializeInto(JsonObject json, String typeKey, GenericLoaderRegistry<N> loader, N value) {
     JsonElement element = loader.serialize(value);
     // if its an object, copy all the data over
     if (element.isJsonObject()) {

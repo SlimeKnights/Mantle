@@ -19,7 +19,7 @@ public record SourceAttackerPredicate(IJsonPredicate<LivingEntity> attacker) imp
   }
 
   @Override
-  public IGenericLoader<? extends IJsonPredicate<DamageSource>> getLoader() {
+  public IGenericLoader<? extends DamageSourcePredicate> getLoader() {
     return LOADER;
   }
 }

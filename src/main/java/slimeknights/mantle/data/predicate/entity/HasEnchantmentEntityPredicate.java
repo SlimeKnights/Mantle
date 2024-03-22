@@ -5,7 +5,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 /**
@@ -20,7 +19,7 @@ public record HasEnchantmentEntityPredicate(Enchantment enchantment) implements 
   }
 
   @Override
-  public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
+  public IGenericLoader<? extends LivingEntityPredicate> getLoader() {
     return LOADER;
   }
 }

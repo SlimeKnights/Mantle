@@ -33,6 +33,9 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
     return INVERTED.create(this);
   }
 
+  @Override
+  IGenericLoader<? extends LivingEntityPredicate> getLoader();
+
   /* Singletons */
 
   /** Predicate that matches water sensitive entities */
@@ -65,7 +68,7 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
       }
 
       @Override
-      public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
+      public IGenericLoader<? extends LivingEntityPredicate> getLoader() {
         return loader;
       }
     });

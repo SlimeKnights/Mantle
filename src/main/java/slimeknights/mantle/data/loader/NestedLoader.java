@@ -17,7 +17,7 @@ import java.util.function.Function;
  * @deprecated use {@link RecordLoadable} with {@link GenericLoaderRegistry#directField(String, Function)}
  */
 @Deprecated
-public record NestedLoader<T,N extends IHaveLoader<N>>(
+public record NestedLoader<T,N extends IHaveLoader>(
   String typeKey,
   GenericLoaderRegistry<N> nestedLoader,
   Function<N, T> constructor,
@@ -37,7 +37,7 @@ public record NestedLoader<T,N extends IHaveLoader<N>>(
 
   /** @deprecated use {@link DirectRegistryField#serializeInto(JsonObject, String, GenericLoaderRegistry, IHaveLoader)} */
   @Deprecated
-  public static <N extends IHaveLoader<N>> void serializeInto(JsonObject json, String typeKey, GenericLoaderRegistry<N> loader, N value) {
+  public static <N extends IHaveLoader> void serializeInto(JsonObject json, String typeKey, GenericLoaderRegistry<N> loader, N value) {
     DirectRegistryField.serializeInto(json, typeKey, loader, value);
   }
 

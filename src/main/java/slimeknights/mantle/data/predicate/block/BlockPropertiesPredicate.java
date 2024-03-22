@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -55,7 +54,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
   }
 
   @Override
-  public IGenericLoader<? extends IJsonPredicate<BlockState>> getLoader() {
+  public IGenericLoader<? extends BlockPredicate> getLoader() {
     return LOADER;
   }
 

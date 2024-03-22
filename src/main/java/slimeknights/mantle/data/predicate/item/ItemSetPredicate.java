@@ -3,7 +3,6 @@ package slimeknights.mantle.data.predicate.item;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.Set;
@@ -22,7 +21,7 @@ public record ItemSetPredicate(Set<Item> items) implements ItemPredicate {
   }
 
   @Override
-  public IGenericLoader<? extends IJsonPredicate<Item>> getLoader() {
+  public IGenericLoader<? extends ItemPredicate> getLoader() {
     return LOADER;
   }
 }

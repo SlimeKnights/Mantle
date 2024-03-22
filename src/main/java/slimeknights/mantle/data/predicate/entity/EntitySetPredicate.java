@@ -4,7 +4,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.Set;
@@ -19,7 +18,7 @@ public record EntitySetPredicate(Set<EntityType<?>> entities) implements LivingE
   }
 
   @Override
-  public IGenericLoader<? extends IJsonPredicate<LivingEntity>> getLoader() {
+  public IGenericLoader<? extends LivingEntityPredicate> getLoader() {
     return LOADER;
   }
 }

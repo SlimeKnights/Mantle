@@ -1,14 +1,14 @@
 package slimeknights.mantle.data.predicate.item;
 
 import net.minecraft.world.item.Item;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.SingletonLoader;
 import slimeknights.mantle.data.predicate.AndJsonPredicate;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.InvertedJsonPredicate;
 import slimeknights.mantle.data.predicate.NestedJsonPredicateLoader;
 import slimeknights.mantle.data.predicate.OrJsonPredicate;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.SingletonLoader;
 
 import java.util.function.Predicate;
 
@@ -31,6 +31,10 @@ public interface ItemPredicate extends IJsonPredicate<Item> {
     return INVERTED.create(this);
   }
 
+  // override to tighten bounds for the sake of singletons
+  @Override
+  IGenericLoader<? extends ItemPredicate> getLoader();
+
   /** Creates a new predicate singleton */
   static ItemPredicate simple(Predicate<Item> predicate) {
     return SingletonLoader.singleton(loader -> new ItemPredicate() {
@@ -40,7 +44,7 @@ public interface ItemPredicate extends IJsonPredicate<Item> {
       }
 
       @Override
-      public IGenericLoader<? extends IJsonPredicate<Item>> getLoader() {
+      public IGenericLoader<? extends ItemPredicate> getLoader() {
         return loader;
       }
     });

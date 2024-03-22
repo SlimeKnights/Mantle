@@ -4,7 +4,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.RegistryHelper;
 
@@ -18,7 +17,7 @@ public record ItemTagPredicate(TagKey<Item> tag) implements ItemPredicate {
   }
 
   @Override
-  public IGenericLoader<? extends IJsonPredicate<Item>> getLoader() {
+  public IGenericLoader<? extends ItemPredicate> getLoader() {
     return LOADER;
   }
 }

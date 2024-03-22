@@ -1,14 +1,10 @@
 package slimeknights.mantle.data.registry;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +25,9 @@ import java.util.function.Function;
  * @param <T>  Type of the serializable object
  * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
  */
+@SuppressWarnings("unused")  // API
 @RequiredArgsConstructor
-public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSerializer<T>, JsonDeserializer<T>, Loadable<T> {
+public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T> {
   /** Empty object instance for compact deserialization */
   private static final JsonObject EMPTY_OBJECT = new JsonObject();
   /** Map of all serializers for implementations */
@@ -61,7 +58,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
   }
 
   /** Shared logic for {@link #deserialize(JsonElement)} and {@link #convert(JsonElement, String)} */
-  private T convertInternal(JsonElement element, String context) throws JsonSyntaxException {
+  protected T convertInternal(JsonElement element, String context) throws JsonSyntaxException {
     if (defaultInstance != null && element.isJsonNull()) {
       return defaultInstance;
     }
@@ -109,7 +106,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
 
   /** Serializes the object to json, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L extends IHaveLoader<T>> JsonElement serialize(IGenericLoader<L> loader, T src) {
+  private <L extends IHaveLoader> JsonElement serialize(IGenericLoader<L> loader, T src) {
     JsonObject json = new JsonObject();
     JsonElement type = new JsonPrimitive(loaders.getKey((IGenericLoader<? extends T>)loader).toString());
     json.add("type", type);
@@ -139,22 +136,24 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
 
   /** Writes the object to the network, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L extends IHaveLoader<T>> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
+  private <L extends IHaveLoader> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
     loader.toNetwork((L)src, buffer);
   }
 
+  @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
   public void toNetwork(T src, FriendlyByteBuf buffer) {
     // if we have a default instance, reading the loader is optional
     // if we match the default instance write no loader to save network space
+    IGenericLoader<? extends T> loader = (IGenericLoader<? extends T>)src.getLoader();
     if (defaultInstance != null) {
       if (src == defaultInstance) {
         loaders.toNetworkOptional(null, buffer);
         return;
       }
-      loaders.toNetworkOptional(src.getLoader(), buffer);
+      loaders.toNetworkOptional(loader, buffer);
     } else {
-      loaders.toNetwork(src.getLoader(), buffer);
+      loaders.toNetwork(loader, buffer);
     }
     toNetwork(src.getLoader(), src, buffer);
   }
@@ -211,9 +210,9 @@ public class GenericLoaderRegistry<T extends IHaveLoader<T>> implements JsonSeri
   }
 
   /** Interface for an object with a loader */
-  public interface IHaveLoader<T> {
+  public interface IHaveLoader {
     /** Gets the loader for the object */
-    IGenericLoader<? extends T> getLoader();
+    IGenericLoader<? extends IHaveLoader> getLoader();
   }
 
   /** Loader instance for an object with only a single implementation */

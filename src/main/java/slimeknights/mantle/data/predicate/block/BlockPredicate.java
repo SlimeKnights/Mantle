@@ -2,14 +2,14 @@ package slimeknights.mantle.data.predicate.block;
 
 import net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase;
 import net.minecraft.world.level.block.state.BlockState;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry.SingletonLoader;
 import slimeknights.mantle.data.predicate.AndJsonPredicate;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.InvertedJsonPredicate;
 import slimeknights.mantle.data.predicate.NestedJsonPredicateLoader;
 import slimeknights.mantle.data.predicate.OrJsonPredicate;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.SingletonLoader;
 
 import java.util.function.Predicate;
 
@@ -34,6 +34,10 @@ public interface BlockPredicate extends IJsonPredicate<BlockState> {
     return INVERTED.create(this);
   }
 
+  // override to tighten bounds on generics
+  @Override
+  IGenericLoader<? extends BlockPredicate> getLoader();
+
 
   /* Singleton */
 
@@ -49,7 +53,7 @@ public interface BlockPredicate extends IJsonPredicate<BlockState> {
       }
 
       @Override
-      public IGenericLoader<? extends IJsonPredicate<BlockState>> getLoader() {
+      public IGenericLoader<? extends BlockPredicate> getLoader() {
         return loader;
       }
     });
