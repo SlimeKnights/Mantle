@@ -21,7 +21,7 @@ public interface BlockPredicate extends IJsonPredicate<BlockState> {
   /** Predicate that matches any block */
   BlockPredicate ANY = simple(state -> true);
   /** Loader for block state predicates */
-  RegistryPredicateRegistry<Block,BlockState> LOADER = new RegistryPredicateRegistry<>(ANY, Loadables.BLOCK, BlockState::getBlock, "blocks", Loadables.BLOCK_TAG, (tag, state) -> state.is(tag));
+  RegistryPredicateRegistry<Block,BlockState> LOADER = new RegistryPredicateRegistry<>("Block Predicate", ANY, Loadables.BLOCK, BlockState::getBlock, "blocks", Loadables.BLOCK_TAG, (tag, state) -> state.is(tag));
 
   /** Gets an inverted condition */
   @Override

@@ -26,29 +26,30 @@ import java.util.function.Function;
  * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
  */
 @SuppressWarnings("unused")  // API
-@RequiredArgsConstructor
 public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T> {
   /** Empty object instance for compact deserialization */
   protected static final JsonObject EMPTY_OBJECT = new JsonObject();
-  /** Map of all serializers for implementations */
-  protected final NamedComponentRegistry<IGenericLoader<? extends T>> loaders = new NamedComponentRegistry<>("Unknown loader");
 
+  /** Display name for this registry */
+  @Getter
+  private final String name;
+  /** Map of all serializers for implementations */
+  protected final NamedComponentRegistry<IGenericLoader<? extends T>> loaders;
   /** Default instance, used for null values instead of null */
   @Nullable
   protected final T defaultInstance;
   /** If true, single key serializations will not use a JSON object to serialize, ideal for loaders with many singletons */
   protected final boolean compact;
 
-  public GenericLoaderRegistry(T defaultInstance) {
-    this(defaultInstance, false);
+  public GenericLoaderRegistry(String name, @Nullable T defaultInstance, boolean compact) {
+    this.name = name;
+    this.defaultInstance = defaultInstance;
+    this.compact = compact;
+    this.loaders = new NamedComponentRegistry<>("Unknown " + name + " loader");
   }
 
-  public GenericLoaderRegistry(boolean compact) {
-    this(null, compact);
-  }
-
-  public GenericLoaderRegistry() {
-    this(null, false);
+  public GenericLoaderRegistry(String name, boolean compact) {
+    this(name, null, compact);
   }
 
   /** Registers a deserializer by name */
@@ -72,7 +73,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
       return loaders.convert(element, "type").deserialize(EMPTY_OBJECT);
     }
     // neither? failed to parse
-    throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + " at " + key + ", must be a JSON object" + (compact ? " or a string" : ""));
+    throw new JsonSyntaxException("Invalid " + name + " JSON at " + key + ", must be a JSON object" + (compact ? " or a string" : ""));
   }
 
   /**
@@ -100,7 +101,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     json.add("type", type);
     loader.serialize((L)src, json);
     if (json.get("type") != type) {
-      throw new IllegalStateException("Serializer " + type.getAsString() + " modified the type key, this is not allowed as it breaks deserialization");
+      throw new IllegalStateException(name + " serializer " + type.getAsString() + " modified the type key, this is not allowed as it breaks deserialization");
     }
     // nothing to serialize? use type directly
     if (compact && json.entrySet().size() == 1) {
@@ -173,12 +174,17 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     if (defaultInstance != null) {
       return new DefaultingField<>(this, key, defaultInstance, serializeDefault, getter);
     }
-    throw new IllegalStateException("Registry has no default instance, cannot make a default field");
+    throw new IllegalStateException(name + " registry has no default instance, cannot make a default field");
   }
 
   /** Creates a field that loads this object directly into the parent JSON object */
   public <P> LoadableField<T,P> directField(String typeKey, Function<P,T> getter) {
     return new DirectRegistryField<>(this, typeKey, getter);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName() + "('" + name + "')";
   }
 
   /** Interface for a loader */

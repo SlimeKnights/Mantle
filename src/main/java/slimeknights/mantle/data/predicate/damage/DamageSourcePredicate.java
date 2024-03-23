@@ -18,7 +18,7 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   /** Predicate that matches all sources */
   DamageSourcePredicate ANY = simple(source -> true);
   /** Loader for item predicates */
-  PredicateRegistry<DamageSource> LOADER = new PredicateRegistry<>(ANY);
+  PredicateRegistry<DamageSource> LOADER = new PredicateRegistry<>("Damage Source Predicate", ANY);
 
   /* Vanilla getters */
   DamageSourcePredicate PROJECTILE = simple(DamageSource::isProjectile);

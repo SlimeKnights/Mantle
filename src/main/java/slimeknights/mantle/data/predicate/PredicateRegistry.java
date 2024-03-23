@@ -19,10 +19,11 @@ public class PredicateRegistry<T> extends GenericLoaderRegistry<IJsonPredicate<T
 
   /**
    * Creates a new instance
-   * @param defaultInstance   Default instance, typically expected to be an any predicate.
+   * @param name              Name to display in error messages
+   * @param defaultInstance   Default instance, typically expected to be an any predicate. Will be used for nulls and missing fields
    */
-  public PredicateRegistry(IJsonPredicate<T> defaultInstance) {
-    super(defaultInstance, true);
+  public PredicateRegistry(String name, IJsonPredicate<T> defaultInstance) {
+    super(name, defaultInstance, true);
     // create common types
     Loadable<List<IJsonPredicate<T>>> list = this.list(2);
     invertedLoader = RecordLoadable.create(directField("inverted_type", p -> p.predicate), InvertedJsonPredicate::new);

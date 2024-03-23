@@ -19,7 +19,7 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   /** Predicate that matches all entities */
   LivingEntityPredicate ANY = simple(entity -> true);
   /** Loader for block state predicates */
-  RegistryPredicateRegistry<EntityType<?>,LivingEntity> LOADER = new RegistryPredicateRegistry<>(ANY, Loadables.ENTITY_TYPE, Entity::getType, "entities", Loadables.ENTITY_TYPE_TAG, (tag, entity) -> entity.getType().is(tag));
+  RegistryPredicateRegistry<EntityType<?>,LivingEntity> LOADER = new RegistryPredicateRegistry<>("Entity Predicate", ANY, Loadables.ENTITY_TYPE, Entity::getType, "entities", Loadables.ENTITY_TYPE_TAG, (tag, entity) -> entity.getType().is(tag));
 
   /** Gets an inverted condition */
   @Override

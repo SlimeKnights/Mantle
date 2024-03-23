@@ -21,8 +21,8 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
    * Creates a new instance
    * @param defaultInstance Default instance, typically expected to be an any predicate.
    */
-  public FallbackPredicateRegistry(IJsonPredicate<T> defaultInstance, PredicateRegistry<F> fallback, Function<T,F> getter, String fallbackName) {
-    super(defaultInstance);
+  public FallbackPredicateRegistry(String name, IJsonPredicate<T> defaultInstance, PredicateRegistry<F> fallback, Function<T,F> getter, String fallbackName) {
+    super(name, defaultInstance);
     this.fallback = fallback;
     this.getter = getter;
     this.fallbackLoader = RecordLoadable.create(fallback.directField(fallbackName + "_type", p -> p.predicate), FallbackPredicate::new);
@@ -50,7 +50,7 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
       object = EMPTY_OBJECT;
       type = JsonHelper.convertToResourceLocation(object, "type");
     } else {
-      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + " at " + key + ", must be a JSON object" + (compact ? " or a string" : ""));
+      throw new JsonSyntaxException("Invalid " + getName() + " JSON at " + key + ", must be a JSON object" + (compact ? " or a string" : ""));
     }
     //  see if we have a primary loader, if so parse that
     IGenericLoader<? extends IJsonPredicate<T>> loader = loaders.getValue(type);
@@ -71,6 +71,7 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
     return super.serialize(src);
   }
 
+  /** Helper interface to make the cast work */
   private interface NestedPredicate<F> {
     IJsonPredicate<F> predicate();
   }

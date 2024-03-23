@@ -26,8 +26,8 @@ public class RegistryPredicateRegistry<R,T> extends PredicateRegistry<T> {
    * @param tagKey          Loader for tag keys
    * @param tagMatcher      Logic to match a tag for the passed type
    */
-  public RegistryPredicateRegistry(IJsonPredicate<T> defaultInstance, Loadable<R> registry, Function<T,R> getter, String setKey, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
-    super(defaultInstance);
+  public RegistryPredicateRegistry(String name, IJsonPredicate<T> defaultInstance, Loadable<R> registry, Function<T,R> getter, String setKey, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
+    super(name, defaultInstance);
     // fields for loaders
     this.getter = getter;
     this.tagMatcher = tagMatcher;

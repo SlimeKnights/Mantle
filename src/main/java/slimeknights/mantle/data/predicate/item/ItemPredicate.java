@@ -19,7 +19,7 @@ public interface ItemPredicate extends IJsonPredicate<Item> {
   /** Predicate that matches all items */
   ItemPredicate ANY = simple(item -> true);
   /** Loader for item predicates */
-  RegistryPredicateRegistry<Item,Item> LOADER = new RegistryPredicateRegistry<>(ANY, Loadables.ITEM, Function.identity(), "items", Loadables.ITEM_TAG, RegistryHelper::contains);
+  RegistryPredicateRegistry<Item,Item> LOADER = new RegistryPredicateRegistry<>("Item Predicate", ANY, Loadables.ITEM, Function.identity(), "items", Loadables.ITEM_TAG, RegistryHelper::contains);
 
   @Override
   default IJsonPredicate<Item> inverted() {
