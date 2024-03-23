@@ -145,15 +145,14 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
   public void toNetwork(T src, FriendlyByteBuf buffer) {
     // if we have a default instance, reading the loader is optional
     // if we match the default instance write no loader to save network space
-    IGenericLoader<? extends T> loader = (IGenericLoader<? extends T>)src.getLoader();
     if (defaultInstance != null) {
       if (src == defaultInstance) {
         loaders.toNetworkOptional(null, buffer);
         return;
       }
-      loaders.toNetworkOptional(loader, buffer);
+      loaders.toNetworkOptional((IGenericLoader<? extends T>)src.getLoader(), buffer);
     } else {
-      loaders.toNetwork(loader, buffer);
+      loaders.toNetwork((IGenericLoader<? extends T>)src.getLoader(), buffer);
     }
     toNetwork(src.getLoader(), src, buffer);
   }
