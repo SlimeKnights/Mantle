@@ -29,16 +29,15 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T> {
   /** Empty object instance for compact deserialization */
-  private static final JsonObject EMPTY_OBJECT = new JsonObject();
+  protected static final JsonObject EMPTY_OBJECT = new JsonObject();
   /** Map of all serializers for implementations */
-  private final NamedComponentRegistry<IGenericLoader<? extends T>> loaders = new NamedComponentRegistry<>("Unknown loader");
-
+  protected final NamedComponentRegistry<IGenericLoader<? extends T>> loaders = new NamedComponentRegistry<>("Unknown loader");
 
   /** Default instance, used for null values instead of null */
   @Nullable
-  private final T defaultInstance;
+  protected final T defaultInstance;
   /** If true, single key serializations will not use a JSON object to serialize, ideal for loaders with many singletons */
-  private final boolean compact;
+  protected final boolean compact;
 
   public GenericLoaderRegistry(T defaultInstance) {
     this(defaultInstance, false);
@@ -57,29 +56,23 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     loaders.register(name, loader);
   }
 
-  /** Shared logic for {@link #deserialize(JsonElement)} and {@link #convert(JsonElement, String)} */
-  protected T convertInternal(JsonElement element, String context) throws JsonSyntaxException {
+  @Override
+  public T convert(JsonElement element, String key) throws JsonSyntaxException {
     if (defaultInstance != null && element.isJsonNull()) {
       return defaultInstance;
     }
+    // first try object
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();
       return loaders.getAndDeserialize(object, "type").deserialize(object);
     }
-    if (compact) {
-      if (element.isJsonPrimitive()) {
-        EMPTY_OBJECT.entrySet().clear();
-        return loaders.convert(element, "type").deserialize(EMPTY_OBJECT);
-      }
-      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + context + ", must be a JSON object or a string");
-    } else {
-      throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + context + ", must be a JSON object");
+    // try primitive if allowed
+    if (compact && element.isJsonPrimitive()) {
+      EMPTY_OBJECT.entrySet().clear();
+      return loaders.convert(element, "type").deserialize(EMPTY_OBJECT);
     }
-  }
-
-  @Override
-  public T convert(JsonElement element, String key) throws JsonSyntaxException {
-    return convertInternal(element, " at '" + key + '\'');
+    // neither? failed to parse
+    throw new JsonSyntaxException("Invalid JSON for " + getClass().getSimpleName() + " at " + key + ", must be a JSON object" + (compact ? " or a string" : ""));
   }
 
   /**
@@ -88,7 +81,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
    * @return  Deserialized object
    */
   public T deserialize(JsonElement element) {
-    return convertInternal(element, "");
+    return convert(element, "[unknown]");
   }
 
   @Override
@@ -97,11 +90,6 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
       return defaultInstance;
     }
     return Loadable.super.getAndDeserialize(parent, key);
-  }
-
-  @Override
-  public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-    return deserialize(json);
   }
 
   /** Serializes the object to json, fighting generics */

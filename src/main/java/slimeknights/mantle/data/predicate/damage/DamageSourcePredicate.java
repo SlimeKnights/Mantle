@@ -2,14 +2,11 @@ package slimeknights.mantle.data.predicate.damage;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
-import slimeknights.mantle.data.predicate.AndJsonPredicate;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
-import slimeknights.mantle.data.predicate.InvertedJsonPredicate;
-import slimeknights.mantle.data.predicate.NestedJsonPredicateLoader;
-import slimeknights.mantle.data.predicate.OrJsonPredicate;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.predicate.PredicateRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import static slimeknights.mantle.data.registry.GenericLoaderRegistry.SingletonLoader.singleton;
@@ -21,13 +18,7 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   /** Predicate that matches all sources */
   DamageSourcePredicate ANY = simple(source -> true);
   /** Loader for item predicates */
-  GenericLoaderRegistry<IJsonPredicate<DamageSource>> LOADER = new GenericLoaderRegistry<>(ANY, true);
-  /** Loader for inverted conditions */
-  InvertedJsonPredicate.Loader<DamageSource> INVERTED = new InvertedJsonPredicate.Loader<>(LOADER, false);
-  /** Loader for and conditions */
-  NestedJsonPredicateLoader<DamageSource,AndJsonPredicate<DamageSource>> AND = AndJsonPredicate.createLoader(LOADER, INVERTED);
-  /** Loader for or conditions */
-  NestedJsonPredicateLoader<DamageSource,OrJsonPredicate<DamageSource>> OR = OrJsonPredicate.createLoader(LOADER, INVERTED);
+  PredicateRegistry<DamageSource> LOADER = new PredicateRegistry<>(ANY);
 
   /* Vanilla getters */
   DamageSourcePredicate PROJECTILE = simple(DamageSource::isProjectile);
@@ -60,12 +51,8 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
 
   @Override
   default IJsonPredicate<DamageSource> inverted() {
-    return INVERTED.create(this);
+    return LOADER.invert(this);
   }
-
-  // override to tighten generics
-  @Override
-  IGenericLoader<? extends DamageSourcePredicate> getLoader();
 
   /** Creates a simple predicate with no parameters */
   static DamageSourcePredicate simple(Predicate<DamageSource> predicate) {
@@ -80,5 +67,20 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
         return loader;
       }
     });
+  }
+
+
+  /* Helper methods */
+
+  /** Creates an and predicate */
+  @SafeVarargs
+  static IJsonPredicate<DamageSource> and(IJsonPredicate<DamageSource>... predicates) {
+    return LOADER.and(List.of(predicates));
+  }
+
+  /** Creates an or predicate */
+  @SafeVarargs
+  static IJsonPredicate<DamageSource> or(IJsonPredicate<DamageSource>... predicates) {
+    return LOADER.or(List.of(predicates));
   }
 }
