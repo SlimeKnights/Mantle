@@ -115,28 +115,23 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
 
   /* Mapping */
 
-  /** Flattens the given mapping function */
-  private static <T,R> BiFunction<T,ErrorFactory,R> flatten(Function<T,R> function) {
-    return (value, error) -> function.apply(value);
-  }
-
   /** Maps this loader to another type, with error factory on both from and to */
   default <M> Loadable<M> map(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return new MappedLoadable<>(this, from, to);
+    return MappedLoadable.of(this, from, to);
   }
 
   /** Maps this loader to another type, with error factory on from */
   default <M> Loadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
-    return map(from, flatten(to));
+    return map(from, MappedLoadable.flatten(to));
   }
 
   /** Maps this loader to another type */
   default <M> Loadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return map(flatten(from), to);
+    return map(MappedLoadable.flatten(from), to);
   }
 
   /** Maps this loader to another type */
   default <M> Loadable<M> flatMap(Function<T,M> from, Function<M,T> to) {
-    return map(flatten(from), flatten(to));
+    return map(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
 }
