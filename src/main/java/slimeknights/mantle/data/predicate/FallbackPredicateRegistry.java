@@ -36,8 +36,8 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
 
   @Override
   public IJsonPredicate<T> convert(JsonElement element, String key) throws JsonSyntaxException {
-    if (defaultInstance != null && element.isJsonNull()) {
-      return defaultInstance;
+    if (element.isJsonNull()) {
+      return getDefault();
     }
     // identify type key, and the object we will load from
     JsonObject object;

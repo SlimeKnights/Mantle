@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.DefaultingLoaderRegistry;
 
 import java.util.List;
 
 /** Extension of generic loader registry providing default implementations for common predicates */
-public class PredicateRegistry<T> extends GenericLoaderRegistry<IJsonPredicate<T>> {
+public class PredicateRegistry<T> extends DefaultingLoaderRegistry<IJsonPredicate<T>> {
   /** Loader for inverted predicates */
   private final RecordLoadable<InvertedJsonPredicate> invertedLoader;
   /** Loader for and predicates */

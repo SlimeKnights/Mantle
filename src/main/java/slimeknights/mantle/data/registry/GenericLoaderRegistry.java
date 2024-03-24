@@ -1,10 +1,8 @@
 package slimeknights.mantle.data.registry;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,18 +10,16 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
 import slimeknights.mantle.data.loadable.Loadable;
-import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 
-import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.function.Function;
 
 /**
  * Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON.
  * @param <T>  Type of the serializable object
  * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
+ * @see DefaultingLoaderRegistry
  */
 @SuppressWarnings("unused")  // API
 public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T> {
@@ -35,21 +31,13 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
   private final String name;
   /** Map of all serializers for implementations */
   protected final NamedComponentRegistry<IGenericLoader<? extends T>> loaders;
-  /** Default instance, used for null values instead of null */
-  @Nullable
-  protected final T defaultInstance;
   /** If true, single key serializations will not use a JSON object to serialize, ideal for loaders with many singletons */
   protected final boolean compact;
 
-  public GenericLoaderRegistry(String name, @Nullable T defaultInstance, boolean compact) {
+  public GenericLoaderRegistry(String name, boolean compact) {
     this.name = name;
-    this.defaultInstance = defaultInstance;
     this.compact = compact;
     this.loaders = new NamedComponentRegistry<>("Unknown " + name + " loader");
-  }
-
-  public GenericLoaderRegistry(String name, boolean compact) {
-    this(name, null, compact);
   }
 
   /** Registers a deserializer by name */
@@ -59,9 +47,6 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
 
   @Override
   public T convert(JsonElement element, String key) throws JsonSyntaxException {
-    if (defaultInstance != null && element.isJsonNull()) {
-      return defaultInstance;
-    }
     // first try object
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();
@@ -107,71 +92,22 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     return serialize(src.getLoader(), src);
   }
 
-  @Override
-  public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
-    if (src == defaultInstance) {
-      return JsonNull.INSTANCE;
-    }
-    return serialize(src);
-  }
-
   /** Writes the object to the network, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L extends IHaveLoader> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
+  protected  <L extends IHaveLoader> void toNetwork(IGenericLoader<L> loader, T src, FriendlyByteBuf buffer) {
     loader.toNetwork((L)src, buffer);
   }
 
   @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
   public void toNetwork(T src, FriendlyByteBuf buffer) {
-    // if we have a default instance, reading the loader is optional
-    // if we match the default instance write no loader to save network space
-    if (defaultInstance != null) {
-      if (src == defaultInstance) {
-        loaders.toNetworkOptional(null, buffer);
-        return;
-      }
-      loaders.toNetworkOptional((IGenericLoader<? extends T>)src.getLoader(), buffer);
-    } else {
-      loaders.toNetwork((IGenericLoader<? extends T>)src.getLoader(), buffer);
-    }
+    loaders.toNetwork((IGenericLoader<? extends T>)src.getLoader(), buffer);
     toNetwork(src.getLoader(), src, buffer);
   }
 
   @Override
   public T fromNetwork(FriendlyByteBuf buffer) {
-    IGenericLoader<? extends T> loader;
-    // if we have a default instance, reading the loader is optional
-    // if missing, use default instance
-    if (defaultInstance != null) {
-      loader = loaders.fromNetworkOptional(buffer);
-      if (loader == null) {
-        return defaultInstance;
-      }
-    } else {
-      loader = loaders.fromNetwork(buffer);
-    }
-    return loader.fromNetwork(buffer);
-  }
-
-  /**
-   * Creates a defaulting for this registry, using the internal default instance as the default
-   * @param key               Json key
-   * @param serializeDefault  If true, serializes the default instance. If false skips it
-   * @param getter            Getter function
-   * @param <P>  Field target
-   * @return  Defaulting field instance
-   */
-  public <P> LoadableField<T,P> defaultField(String key, boolean serializeDefault, Function<P,T> getter) {
-    if (defaultInstance != null) {
-      return new DefaultingField<>(this, key, defaultInstance, serializeDefault, getter);
-    }
-    throw new IllegalStateException(name + " registry has no default instance, cannot make a default field");
-  }
-
-  /** Creates a defaulting field that does not serialize */
-  public <P> LoadableField<T,P> defaultField(String key, Function<P,T> getter) {
-    return defaultField(key, false, getter);
+    return loaders.fromNetwork(buffer).fromNetwork(buffer);
   }
 
   /** Creates a field that loads this object directly into the parent JSON object */
