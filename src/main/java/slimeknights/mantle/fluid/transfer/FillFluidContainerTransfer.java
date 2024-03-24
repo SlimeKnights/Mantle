@@ -72,7 +72,7 @@ public class FillFluidContainerTransfer implements IFluidContainerTransfer {
     JsonObject json = new JsonObject();
     json.addProperty("type", ID.toString());
     json.add("input", input.toJson());
-    json.add("filled", filled.serialize());
+    json.add("filled", filled.serialize(false));
     json.add("fluid", fluid.serialize());
     return json;
   }
@@ -87,7 +87,7 @@ public class FillFluidContainerTransfer implements IFluidContainerTransfer {
     public T deserialize(JsonElement element, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
       JsonObject json = element.getAsJsonObject();
       Ingredient input = Ingredient.fromJson(JsonHelper.getElement(json, "input"));
-      ItemOutput filled = ItemOutput.fromJson(JsonHelper.getElement(json, "filled"));
+      ItemOutput filled = ItemOutput.Loadable.REQUIRED_ITEM.getIfPresent(json, "filled");
       FluidIngredient fluid = FluidIngredient.deserialize(json, "fluid");
       return factory.apply(input, filled, fluid);
     }

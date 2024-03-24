@@ -2,9 +2,7 @@ package slimeknights.mantle.recipe.helper;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
-import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,57 +11,26 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.data.JsonCodec;
-import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.LoadableCodec;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.common.ItemStackLoadable;
+import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * Class representing an item stack output. Supports both direct stacks and tag output, behaving like an ingredient used for output
  */
 public abstract class ItemOutput implements Supplier<ItemStack> {
-  /** Codec instance */ // TODO: implement as a proper codec
-  public static Codec<ItemOutput> CODEC = new JsonCodec<>() {
-    @Override
-    public ItemOutput deserialize(JsonElement element) {
-      return ItemOutput.fromJson(element);
-    }
+  /* Codecs - just adding these as needed */
+  /** Codec for an output that may not be empty with any size */
+  public static Codec<ItemOutput> REQUIRED_STACK_CODEC = new LoadableCodec<>(Loadable.REQUIRED_STACK);
 
-    @Override
-    public JsonElement serialize(ItemOutput output) {
-      return output.serialize();
-    }
-
-    @Override
-    public String toString() {
-      return "ItemOutput";
-    }
-  };
-  /** Loadable instance for an item output. Not using EitherLoadable as we just always sync items to keep thing simplier. */
-  public static Loadable<ItemOutput> LOADABLE = new Loadable<>() {
-    @Override
-    public ItemOutput convert(JsonElement element, String key) throws JsonSyntaxException {
-      return ItemOutput.fromJson(element);
-    }
-
-    @Override
-    public JsonElement serialize(ItemOutput object) throws RuntimeException {
-      return object.serialize();
-    }
-
-    @Override
-    public ItemOutput fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
-      return ItemOutput.read(buffer);
-    }
-
-    @Override
-    public void toNetwork(ItemOutput object, FriendlyByteBuf buffer) throws EncoderException {
-      object.write(buffer);
-    }
-  };
+  /** Empty instance */
+  public static final ItemOutput EMPTY = new OfStack(ItemStack.EMPTY);
 
 
   /**
@@ -75,9 +42,10 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
   /**
    * Writes this output to JSON
+   * @param  writeCount  If true, serializes the count
    * @return  Json element
    */
-  public abstract JsonElement serialize();
+  public abstract JsonElement serialize(boolean writeCount);
 
   /**
    * Creates a new output for the given stack
@@ -85,6 +53,9 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * @return  Output
    */
   public static ItemOutput fromStack(ItemStack stack) {
+    if (stack.isEmpty()) {
+      return EMPTY;
+    }
     return new OfStack(stack);
   }
 
@@ -114,30 +85,6 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    */
   public static ItemOutput fromTag(TagKey<Item> tag, int count) {
     return new OfTagPreference(tag, count);
-  }
-
-  /**
-   * Reads an item output from JSON
-   * @param element  Json element
-   * @return  Read output
-   */
-  public static ItemOutput fromJson(JsonElement element) {
-    if (element.isJsonPrimitive()) {
-      return fromItem(GsonHelper.convertToItem(element, "item"));
-    }
-    if (!element.isJsonObject()) {
-      throw new JsonSyntaxException("Invalid item output, must be a string or an object");
-    }
-    // if it has a tag, parse as tag
-    JsonObject json = element.getAsJsonObject();
-    if (json.has("tag")) {
-      TagKey<Item> tag = Loadables.ITEM_TAG.getIfPresent(json, "tag");
-      int count = IntLoadable.FROM_ONE.getOrDefault(json, "count", 1);
-      return fromTag(tag, count);
-    }
-
-    // default: parse as item stack using loadables
-    return fromStack(ItemStackLoadable.REQUIRED_STACK_NBT.deserialize(json));
   }
 
   /**
@@ -173,9 +120,9 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize() {
+    public JsonElement serialize(boolean writeCount) {
       JsonElement item = Loadables.ITEM.serialize(this.item);
-      if (count > 1) {
+      if (writeCount && count > 1) {
         JsonObject json = new JsonObject();
         json.add("item", item);
         json.addProperty("count", count);
@@ -197,8 +144,11 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize() {
-      return ItemStackLoadable.REQUIRED_STACK_NBT.serialize(stack);
+    public JsonElement serialize(boolean writeCount) {
+      if (writeCount) {
+        ItemStackLoadable.OPTIONAL_STACK_NBT.serialize(stack);
+      }
+      return ItemStackLoadable.OPTIONAL_ITEM_NBT.serialize(stack);
     }
   }
 
@@ -222,13 +172,96 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize() {
+    public JsonElement serialize(boolean writeCount) {
       JsonObject json = new JsonObject();
       json.addProperty("tag", tag.location().toString());
-      if (count != 1) {
+      if (writeCount) {
         json.addProperty("count", count);
       }
       return json;
+    }
+  }
+
+  /** Loadable logic for an ItemOutput */
+  public enum Loadable implements slimeknights.mantle.data.loadable.Loadable<ItemOutput> {
+    /** Loadable for an output that may be empty with a fixed size of 1 */
+    OPTIONAL_ITEM(false, false),
+    /** Loadable for an output that may be empty with any size */
+    OPTIONAL_STACK(false, true),
+    /** Loadable for an output that may not empty with a fixed size of 1 */
+    REQUIRED_ITEM(true, false),
+    /** Loadable for an output that may not be empty with any size */
+    REQUIRED_STACK(true, true);
+
+    private final boolean nonEmpty;
+    private final boolean readCount;
+    private final RecordLoadable<ItemStack> stack;
+    Loadable(boolean nonEmpty, boolean readCount) {
+      this.nonEmpty = nonEmpty;
+      this.readCount = readCount;
+      // figure out the stack serializer to use based on the two parameters
+      // we always do NBT, just those that vary
+      if (nonEmpty) {
+        this.stack = readCount ? ItemStackLoadable.REQUIRED_STACK_NBT : ItemStackLoadable.REQUIRED_ITEM_NBT;
+      } else {
+        this.stack = readCount ? ItemStackLoadable.OPTIONAL_STACK_NBT : ItemStackLoadable.OPTIONAL_ITEM_NBT;
+      }
+    }
+
+    @Override
+    public ItemOutput convert(JsonElement element, String key) {
+      // if it's a primitive, parse it directly with the stack logic
+      // that handles single items and ensures both count and non-empty
+      if (element.isJsonPrimitive()) {
+        return fromStack(stack.convert(element, key));
+      }
+      JsonObject json = GsonHelper.convertToJsonObject(element, key);
+      if (json.has("tag")) {
+        TagKey<Item> tag = Loadables.ITEM_TAG.getIfPresent(json, "tag");
+        int count = 1;
+        // 0 count field means we load count from JSON
+        if (readCount) {
+          count = IntLoadable.FROM_ONE.getOrDefault(json, "count", 1);
+        }
+        return fromTag(tag, count);
+      }
+      return fromStack(stack.deserialize(json));
+    }
+
+    @Override
+    public JsonElement serialize(ItemOutput output) {
+      if (nonEmpty && (output instanceof OfItem || output instanceof OfStack) && output.get().isEmpty()) {
+        throw new IllegalArgumentException("ItemOutput cannot be empty for this recipe");
+      }
+      return output.serialize(readCount);
+    }
+
+    @Override
+    public ItemOutput fromNetwork(FriendlyByteBuf buffer) {
+      return fromStack(stack.fromNetwork(buffer));
+    }
+
+    @Override
+    public void toNetwork(ItemOutput object, FriendlyByteBuf buffer) throws EncoderException {
+      stack.toNetwork(object.get(), buffer);
+    }
+
+
+    /* Defaulting behavior */
+
+    /** Gets the output, defaulting to empty. Note this will not stop you from getting empty with a non-empty loadable, thats on you for weirdly calling. */
+    public ItemOutput getOrEmpty(JsonObject parent, String key) {
+      return getOrDefault(parent, key, ItemOutput.EMPTY);
+    }
+
+    /** Creates a field defaulting to empty */
+    public <P> LoadableField<ItemOutput,P> emptyField(String key, boolean serializeDefault, Function<P,ItemOutput> getter) {
+      return defaultField(key, ItemOutput.EMPTY, serializeDefault, getter);
+    }
+
+    /** Creates a field defaulting to empty that does not serialize if empty */
+    public <P> LoadableField<ItemOutput,P> emptyField(String key, Function<P,ItemOutput> getter) {
+      return emptyField(key, false, getter);
     }
   }
 }

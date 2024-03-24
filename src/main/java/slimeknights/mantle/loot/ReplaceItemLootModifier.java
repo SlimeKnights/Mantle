@@ -28,7 +28,7 @@ public class ReplaceItemLootModifier extends LootModifier {
   public static final Codec<ReplaceItemLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).and(
     inst.group(
       MantleCodecs.INGREDIENT.fieldOf("original").forGetter(m -> m.original),
-      ItemOutput.CODEC.fieldOf("replacement").forGetter(m -> m.replacement),
+      ItemOutput.REQUIRED_STACK_CODEC.fieldOf("replacement").forGetter(m -> m.replacement),
       MantleCodecs.LOOT_FUNCTIONS.fieldOf("functions").forGetter(m -> m.functions)
     )).apply(inst, ReplaceItemLootModifier::new));
 
