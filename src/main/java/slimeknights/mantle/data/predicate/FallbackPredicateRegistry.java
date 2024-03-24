@@ -48,7 +48,7 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
     } else if (compact && element.isJsonPrimitive()) {
       EMPTY_OBJECT.entrySet().clear();
       object = EMPTY_OBJECT;
-      type = JsonHelper.convertToResourceLocation(object, "type");
+      type = JsonHelper.convertToResourceLocation(element, "type");
     } else {
       throw new JsonSyntaxException("Invalid " + getName() + " JSON at " + key + ", must be a JSON object" + (compact ? " or a string" : ""));
     }
