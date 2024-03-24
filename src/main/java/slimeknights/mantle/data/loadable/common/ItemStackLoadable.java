@@ -1,135 +1,170 @@
 package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.EncoderException;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import slimeknights.mantle.data.loadable.ErrorFactory;
+import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
+import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
+import javax.annotation.Nullable;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 /** Loadable for an item stack */
-@RequiredArgsConstructor
-public enum ItemStackLoadable implements RecordLoadable<ItemStack> {
-  /** Loads a non-empty item stack, ignoring NBT */
-  NON_EMPTY(false, true),
-  /** Loads a non-empty item stack, including NBT */
-  NON_EMPTY_NBT(true, true),
-  /** Loads an item stack that may be empty, ignoring NBT */
-  EMPTY(false, false),
-  /** Loads an item stack that may be empty, including NBT */
-  EMPTY_NBT(true, false);
+@SuppressWarnings("unused")  // API
+public class ItemStackLoadable {
+  private ItemStackLoadable() {}
 
-  /** If true, we read NBT */
-  private final boolean readNBT;
-  /** If true, we disallow reading empty stacks */
-  private final boolean disallowEmpty;
+  /* reused lambdas */
+  /** Getter for an item from a stack */
+  private static final Function<ItemStack,Item> ITEM_GETTER = ItemStack::getItem;
+  /** Maps an item stack that may be empty to a strictly not empty one */
+  private static final BiFunction<ItemStack,ErrorFactory,ItemStack> NOT_EMPTY = (stack, error) -> {
+    if (stack.isEmpty()) {
+      throw error.create("ItemStack cannot be empty");
+    }
+    return stack;
+  };
 
-  @Override
-  public ItemStack convert(JsonElement element, String key) {
-    if (!disallowEmpty && element.isJsonNull()) {
+  /* fields */
+  /** Field for an optional item */
+  private static final LoadableField<Item,ItemStack> ITEM = Loadables.ITEM.defaultField("item", Items.AIR, false, ITEM_GETTER);
+  /** Field for item stack count that allows empty */
+  private static final LoadableField<Integer,ItemStack> COUNT = IntLoadable.FROM_ZERO.defaultField("count", 1, true, ItemStack::getCount);
+  /** Field for item stack count that allows empty */
+  private static final LoadableField<CompoundTag,ItemStack> NBT = NBTLoadable.ALLOW_STRING.nullableField("nbt", ItemStack::getTag);
+
+
+  /* Optional */
+  /** Single item which may be empty with a count of 1 */
+  public static final Loadable<ItemStack> OPTIONAL_ITEM = Loadables.ITEM.flatMap(item -> makeStack(item, 1, null), ITEM_GETTER);
+  /** Loadable for a stack that may be empty with variable count */
+  public static final RecordLoadable<ItemStack> OPTIONAL_STACK = RecordLoadable.create(ITEM, COUNT, (item, count) -> makeStack(item, count, null))
+                                                                               .compact(OPTIONAL_ITEM, stack -> stack.getCount() == 1);
+  /** Loadable for a stack that may be empty with NBT and a count of 1 */
+  public static final RecordLoadable<ItemStack> OPTIONAL_ITEM_NBT = NBTStack.FIXED_COUNT;
+  /** Loadable for a stack that may be empty with variable count and NBT */
+  public static final RecordLoadable<ItemStack> OPTIONAL_STACK_NBT = NBTStack.READ_COUNT;
+
+  /* Required */
+  /** Single item which may not be empty with a count of 1 */
+  public static final Loadable<ItemStack> REQUIRED_ITEM = notEmpty(OPTIONAL_ITEM);
+  /** Loadable for a stack that may not be empty with variable count */
+  public static final RecordLoadable<ItemStack> REQUIRED_STACK = notEmpty(OPTIONAL_STACK);
+  /** Loadable for a stack that may not be empty with NBT and a count of 1 */
+  public static final RecordLoadable<ItemStack> REQUIRED_ITEM_NBT = notEmpty(OPTIONAL_ITEM_NBT);
+  /** Loadable for a stack that may not be empty with variable count and NBT */
+  public static final RecordLoadable<ItemStack> REQUIRED_STACK_NBT = notEmpty(OPTIONAL_STACK_NBT);
+
+
+  /* Helpers */
+
+  /** Makes an item stack from the given parameters */
+  private static ItemStack makeStack(Item item, int count, @Nullable CompoundTag nbt) {
+    if (item == Items.AIR || count == 0) {
       return ItemStack.EMPTY;
-    }
-    if (element.isJsonPrimitive()) {
-      Item item = Loadables.ITEM.convert(element, key);
-      // air is empty, that may be disallowed
-      if (disallowEmpty && item == Items.AIR) {
-        throw new JsonSyntaxException("ItemStack at " + key + " may not be empty");
-      }
-      return new ItemStack(item);
-    }
-    return RecordLoadable.super.convert(element, key);
-  }
-
-  @Override
-  public ItemStack getAndDeserialize(JsonObject parent, String key) {
-    if (!disallowEmpty && !parent.has(key)) {
-      return ItemStack.EMPTY;
-    }
-    return RecordLoadable.super.getAndDeserialize(parent, key);
-  }
-
-  /** Deserializes this stack from an object */
-  @Override
-  public ItemStack deserialize(JsonObject json) {
-    Item item = Items.AIR;
-    // if we disallow empty, force parsing the item so we get a missing field error
-    // item field is optional if we allow empty
-    if (json.has("item") || disallowEmpty) {
-      item = Loadables.ITEM.getAndDeserialize(json, "item");
-    }
-    // air may come from the default or the registry, either is disallowed if we disallow empty
-    if (item == Items.AIR) {
-      if (disallowEmpty) {
-        throw new JsonSyntaxException("ItemStack may not be empty");
-      }
-      return ItemStack.EMPTY;
-    }
-    // we handle empty via item, so count is not even considered, thus count of 0 is invalid
-    int count = GsonHelper.getAsInt(json, "count", 1);
-    if (count <= 0) {
-      throw new JsonSyntaxException("ItemStack count must greater than 0");
     }
     ItemStack stack = new ItemStack(item, count);
-    if (readNBT && json.has("nbt")) {
-      stack.setTag(NBTLoadable.ALLOW_STRING.convert(json.get("nbt"), "nbt"));
+    if (nbt != null) {
+      stack.setTag(nbt);
     }
     return stack;
   }
 
-  @Override
-  public JsonElement serialize(ItemStack stack) {
-    if (stack.isEmpty()) {
-      if (disallowEmpty) {
-        throw new IllegalArgumentException("FluidStack must not be empty");
+  /** Creates a non-empty variant of the loadable */
+  public static Loadable<ItemStack> notEmpty(Loadable<ItemStack> loadable) {
+    return loadable.map(NOT_EMPTY, NOT_EMPTY);
+  }
+
+  /** Creates a non-empty variant of the loadable */
+  public static RecordLoadable<ItemStack> notEmpty(RecordLoadable<ItemStack> loadable) {
+    return loadable.map(NOT_EMPTY, NOT_EMPTY);
+  }
+
+  /** Loadable for an item stack with NBT, requires special logic due to forges share tags */
+  private enum NBTStack implements RecordLoadable<ItemStack> {
+    /** Reads count from JSON */
+    READ_COUNT,
+    /** Count is always 1 */
+    FIXED_COUNT;
+
+
+    /* General JSON */
+
+    @Override
+    public ItemStack deserialize(JsonObject json) {
+      int count = 1;
+      if (this == READ_COUNT) {
+        count = COUNT.get(json);
       }
-      return JsonNull.INSTANCE;
+      return makeStack(ITEM.get(json), count, NBT.get(json));
     }
-    JsonElement item = Loadables.ITEM.serialize(stack.getItem());
-    int count = stack.getCount();
-    CompoundTag tag = readNBT ? stack.getTag() : null;
-    if (count == 1 && tag == null) {
-      return item;
-    }
-    JsonObject json = new JsonObject();
-    json.add("item", item);
-    json.addProperty("count", count);
-    if (tag != null) {
-      json.add("nbt", NBTLoadable.ALLOW_STRING.serialize(tag));
-    }
-    return json;
-  }
 
-  @Override
-  public void serialize(ItemStack stack, JsonObject json) {
-    if (stack.isEmpty()) {
-      if (disallowEmpty) {
-        throw new IllegalArgumentException("ItemStack must not be empty");
+    @Override
+    public void serialize(ItemStack stack, JsonObject json) {
+      ITEM.serialize(stack, json);
+      if (this == READ_COUNT) {
+        COUNT.serialize(stack, json);
       }
-      return;
+      NBT.serialize(stack, json);
     }
-    json.add("item", Loadables.ITEM.serialize(stack.getItem()));
-    json.addProperty("count", stack.getCount());
-    CompoundTag tag = readNBT ? stack.getTag() : null;
-    if (tag != null) {
-      json.add("nbt", NBTLoadable.ALLOW_STRING.serialize(tag));
+
+
+    /* Compact JSON */
+
+    @Override
+    public ItemStack convert(JsonElement element, String key) {
+      if (element.isJsonPrimitive()) {
+        return OPTIONAL_ITEM.convert(element, key);
+      }
+      return RecordLoadable.super.convert(element, key);
     }
-  }
 
-  @Override
-  public ItemStack fromNetwork(FriendlyByteBuf buffer) {
-    return buffer.readItem();
-  }
+    @Override
+    public JsonElement serialize(ItemStack stack) {
+      if ((this == FIXED_COUNT || stack.getCount() == 1) && !stack.hasTag()) {
+        return OPTIONAL_ITEM.serialize(stack);
+      }
+      return RecordLoadable.super.serialize(stack);
+    }
 
-  @Override
-  public void toNetwork(ItemStack stack, FriendlyByteBuf buffer) throws EncoderException {
-    buffer.writeItem(stack);
+
+    /* Buffer */
+
+    @Override
+    public ItemStack fromNetwork(FriendlyByteBuf buffer) {
+      // not using makeItemStack as we need to set the share tag NBT here
+      Item item = ITEM.fromNetwork(buffer);
+      int count = 0;
+      if (this == READ_COUNT) {
+        count = COUNT.fromNetwork(buffer);
+      }
+      CompoundTag nbt = buffer.readNbt();
+      // not using make stack because we want to set share tag
+      if (item == Items.AIR || count <= 0) {
+        return ItemStack.EMPTY;
+      }
+      ItemStack stack = new ItemStack(item, count);
+      stack.readShareTag(nbt);
+      return stack;
+    }
+
+    @Override
+    public void toNetwork(ItemStack stack, FriendlyByteBuf buffer) throws EncoderException {
+      ITEM.toNetwork(stack, buffer);
+      if (this == READ_COUNT) {
+        COUNT.toNetwork(stack, buffer);
+      }
+      buffer.writeNbt(stack.getShareTag());
+    }
   }
 }

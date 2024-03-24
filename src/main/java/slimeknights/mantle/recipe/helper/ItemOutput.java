@@ -138,7 +138,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     // default: parse as item stack using loadables
-    return fromStack(ItemStackLoadable.NON_EMPTY_NBT.convert(json, "item"));
+    return fromStack(ItemStackLoadable.REQUIRED_STACK_NBT.convert(json, "item"));
   }
 
   /**
@@ -199,7 +199,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
     @Override
     public JsonElement serialize() {
-      return ItemStackLoadable.NON_EMPTY_NBT.serialize(stack);
+      return ItemStackLoadable.REQUIRED_STACK_NBT.serialize(stack);
     }
   }
 
