@@ -11,8 +11,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.JsonHelper;
+
+import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /** Loadable for reading NBT, converting from a JSON object to a tag.*/
 public enum NBTLoadable implements RecordLoadable<CompoundTag> {
@@ -60,5 +65,43 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   @Override
   public void toNetwork(CompoundTag object, FriendlyByteBuf buffer) throws EncoderException {
     buffer.writeNbt(object);
+  }
+
+  @Override
+  public <P> LoadableField<CompoundTag,P> nullableField(String key, Function<P,CompoundTag> getter) {
+    return new NullableNBTField<>(this, key, getter);
+  }
+
+
+  /** Special implementation of nullable field to compact the buffer since it natively handles nullable NBT */
+  private record NullableNBTField<P>(Loadable<CompoundTag> loadable, String key, Function<P,CompoundTag> getter) implements LoadableField<CompoundTag,P> {
+    @Nullable
+    @Override
+    public CompoundTag get(JsonObject json) throws JsonSyntaxException {
+      JsonElement element = json.get(key);
+      if (element != null) {
+        return loadable.convert(element, key);
+      }
+      return null;
+    }
+
+    @Override
+    public void serialize(P parent, JsonObject json) {
+      CompoundTag nbt = getter.apply(parent);
+      if (nbt != null) {
+        json.add(key, loadable.serialize(nbt));
+      }
+    }
+
+    @Nullable
+    @Override
+    public CompoundTag fromNetwork(FriendlyByteBuf buffer) {
+      return buffer.readNbt();
+    }
+
+    @Override
+    public void toNetwork(P parent, FriendlyByteBuf buffer) {
+      buffer.writeNbt(getter.apply(parent));
+    }
   }
 }
