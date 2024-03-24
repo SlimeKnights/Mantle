@@ -80,11 +80,21 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
   /**
    * Creates a new output for the given tag
-   * @param tag  Tag
+   * @param tag   Tag
+   * @param count Stack count
    * @return Output
    */
   public static ItemOutput fromTag(TagKey<Item> tag, int count) {
     return new OfTagPreference(tag, count);
+  }
+
+  /**
+   * Creates a new output for the given tag
+   * @param tag  Tag
+   * @return Output
+   */
+  public static ItemOutput fromTag(TagKey<Item> tag) {
+    return fromTag(tag, 1);
   }
 
   /**
