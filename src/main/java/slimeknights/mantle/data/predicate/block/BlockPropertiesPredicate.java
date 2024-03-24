@@ -20,6 +20,7 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
@@ -70,7 +71,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
   /** Loader instance */
   public static final RecordLoadable<BlockPropertiesPredicate> LOADER = new RecordLoadable<>() {
     @Override
-    public BlockPropertiesPredicate deserialize(JsonObject json) {
+    public BlockPropertiesPredicate deserialize(JsonObject json, TypedMap<Object> context) {
       Block block = Loadables.BLOCK.getIfPresent(json, "block");
       // TODO: this is a bit of a unique case for matcher, as its parsing from a map into a list, think about whether we can do something generic
       ImmutableList.Builder<Matcher> builder = ImmutableList.builder();
@@ -92,7 +93,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public BlockPropertiesPredicate fromNetwork(FriendlyByteBuf buffer) {
+    public BlockPropertiesPredicate fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
       Block block = Loadables.BLOCK.fromNetwork(buffer);
       int size = buffer.readVarInt();
       ImmutableList.Builder<Matcher> builder = ImmutableList.builder();

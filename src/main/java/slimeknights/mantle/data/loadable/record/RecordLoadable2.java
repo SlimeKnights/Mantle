@@ -1,24 +1,23 @@
 package slimeknights.mantle.data.loadable.record;
 
 import com.google.gson.JsonObject;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.network.FriendlyByteBuf;
-import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.field.RecordField;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.BiFunction;
 
 /** Record loadable with 2 fields */
 record RecordLoadable2<A,B,R>(
-  LoadableField<A,? super R> fieldA,
-  LoadableField<B,? super R> fieldB,
+  RecordField<A,? super R> fieldA,
+  RecordField<B,? super R> fieldB,
   BiFunction<A,B,R> constructor
 ) implements RecordLoadable<R> {
   @Override
-  public R deserialize(JsonObject json) {
+  public R deserialize(JsonObject json, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.get(json),
-      fieldB.get(json)
+      fieldA.get(json, context),
+      fieldB.get(json, context)
     );
   }
 
@@ -29,15 +28,15 @@ record RecordLoadable2<A,B,R>(
   }
 
   @Override
-  public R fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public R fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.fromNetwork(buffer),
-      fieldB.fromNetwork(buffer)
+      fieldA.fromNetwork(buffer, context),
+      fieldB.fromNetwork(buffer, context)
     );
   }
 
   @Override
-  public void toNetwork(R object, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(R object, FriendlyByteBuf buffer) {
     fieldA.toNetwork(object, buffer);
     fieldB.toNetwork(object, buffer);
   }

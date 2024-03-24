@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.Predicate;
 
@@ -80,13 +81,18 @@ public class CompactLoadable<T> implements Loadable<T> {
     }
 
     @Override
-    public T deserialize(JsonObject json) {
-      return loadable.deserialize(json);
+    public T deserialize(JsonObject json, TypedMap<Object> context) {
+      return loadable.deserialize(json, context);
     }
 
     @Override
     public void serialize(T object, JsonObject json) {
       loadable.serialize(object, json);
+    }
+
+    @Override
+    public T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+      return loadable.fromNetwork(buffer, context);
     }
   }
 }

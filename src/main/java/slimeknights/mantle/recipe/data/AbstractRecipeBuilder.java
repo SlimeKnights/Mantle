@@ -10,6 +10,9 @@ import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -133,6 +136,27 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
         return null;
       }
       return advancementBuilder.serializeToJson();
+    }
+  }
+
+  /** Finished recipe using a loadable */
+  protected class LoadableFinishedRecipe<R extends Recipe<?>> extends AbstractFinishedRecipe {
+    private final R recipe;
+    private final RecordLoadable<R> loadable;
+    public LoadableFinishedRecipe(R recipe, RecordLoadable<R> loadable, @Nullable ResourceLocation advancementId) {
+      super(recipe.getId(), advancementId);
+      this.recipe = recipe;
+      this.loadable = loadable;
+    }
+
+    @Override
+    public void serializeRecipeData(JsonObject json) {
+      loadable.serialize(recipe, json);
+    }
+
+    @Override
+    public RecipeSerializer<?> getType() {
+      return recipe.getSerializer();
     }
   }
 }

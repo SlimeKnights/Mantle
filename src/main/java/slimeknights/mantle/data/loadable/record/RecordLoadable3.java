@@ -2,24 +2,23 @@ package slimeknights.mantle.data.loadable.record;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Function3;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.network.FriendlyByteBuf;
-import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.field.RecordField;
+import slimeknights.mantle.util.typed.TypedMap;
 
 /** Record loadable with 3 fields */
 record RecordLoadable3<A,B,C,R>(
-  LoadableField<A,? super R> fieldA,
-  LoadableField<B,? super R> fieldB,
-  LoadableField<C,? super R> fieldC,
+  RecordField<A,? super R> fieldA,
+  RecordField<B,? super R> fieldB,
+  RecordField<C,? super R> fieldC,
   Function3<A,B,C,R> constructor
 ) implements RecordLoadable<R> {
   @Override
-  public R deserialize(JsonObject json) {
+  public R deserialize(JsonObject json, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.get(json),
-      fieldB.get(json),
-      fieldC.get(json)
+      fieldA.get(json, context),
+      fieldB.get(json, context),
+      fieldC.get(json, context)
     );
   }
 
@@ -31,16 +30,16 @@ record RecordLoadable3<A,B,C,R>(
   }
 
   @Override
-  public R fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public R fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.fromNetwork(buffer),
-      fieldB.fromNetwork(buffer),
-      fieldC.fromNetwork(buffer)
+      fieldA.fromNetwork(buffer, context),
+      fieldB.fromNetwork(buffer, context),
+      fieldC.fromNetwork(buffer, context)
     );
   }
 
   @Override
-  public void toNetwork(R object, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(R object, FriendlyByteBuf buffer) {
     fieldA.toNetwork(object, buffer);
     fieldB.toNetwork(object, buffer);
     fieldC.toNetwork(object, buffer);

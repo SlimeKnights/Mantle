@@ -14,6 +14,7 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -101,12 +102,12 @@ public class ItemStackLoadable {
     /* General JSON */
 
     @Override
-    public ItemStack deserialize(JsonObject json) {
+    public ItemStack deserialize(JsonObject json, TypedMap<Object> context) {
       int count = 1;
       if (this == READ_COUNT) {
-        count = COUNT.get(json);
+        count = COUNT.get(json, context);
       }
-      return makeStack(ITEM.get(json), count, NBT.get(json));
+      return makeStack(ITEM.get(json, context), count, NBT.get(json, context));
     }
 
     @Override
@@ -141,12 +142,12 @@ public class ItemStackLoadable {
     /* Buffer */
 
     @Override
-    public ItemStack fromNetwork(FriendlyByteBuf buffer) {
+    public ItemStack fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
       // not using makeItemStack as we need to set the share tag NBT here
-      Item item = ITEM.fromNetwork(buffer);
+      Item item = ITEM.fromNetwork(buffer, context);
       int count = 0;
       if (this == READ_COUNT) {
-        count = COUNT.fromNetwork(buffer);
+        count = COUNT.fromNetwork(buffer, context);
       }
       CompoundTag nbt = buffer.readNbt();
       // not using make stack because we want to set share tag

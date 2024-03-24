@@ -13,6 +13,7 @@ import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -25,7 +26,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   ALLOW_STRING;
 
   @Override
-  public CompoundTag deserialize(JsonObject json) {
+  public CompoundTag deserialize(JsonObject json, TypedMap<Object> context) {
     return (CompoundTag)JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, json);
   }
 
@@ -52,7 +53,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public CompoundTag fromNetwork(FriendlyByteBuf buffer) {
+  public CompoundTag fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
     CompoundTag tag = buffer.readNbt();
     if (tag == null) {
       return new CompoundTag();

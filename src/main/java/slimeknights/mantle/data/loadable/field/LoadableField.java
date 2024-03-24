@@ -3,13 +3,14 @@ package slimeknights.mantle.data.loadable.field;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 /**
- * Interface for fields in a {@link RecordLoadable}
+ * Interface for a field in a JSON object, typically used in {@link RecordLoadable} but also usable statically.
  * @param <P>  Parent object
  * @param <T>  Loadable type
  */
-public interface LoadableField<T,P> {
+public interface LoadableField<T,P> extends RecordField<T,P> {
   /**
    * Gets the loadable from the given JSON
    * @param json  JSON object
@@ -18,13 +19,10 @@ public interface LoadableField<T,P> {
    */
   T get(JsonObject json);
 
-  /**
-   * Serializes the passed object into the JSON instance
-   * @param json    JSON instance
-   * @param parent  Parent being serialized
-   * @throws RuntimeException  If unable to save the element
-   */
-  void serialize(P parent, JsonObject json);
+  @Override
+  default T get(JsonObject json, TypedMap<Object> context) {
+    return get(json);
+  }
 
   /**
    * Parses this loadable from the network
@@ -34,11 +32,8 @@ public interface LoadableField<T,P> {
    */
   T fromNetwork(FriendlyByteBuf buffer);
 
-  /**
-   * Writes this field to the buffer
-   * @param parent  Parent to read values from
-   * @param buffer  Buffer instance
-   * @throws io.netty.handler.codec.EncoderException  If unable to write a value
-   */
-  void toNetwork(P parent, FriendlyByteBuf buffer);
+  @Override
+  default T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    return fromNetwork(buffer);
+  }
 }

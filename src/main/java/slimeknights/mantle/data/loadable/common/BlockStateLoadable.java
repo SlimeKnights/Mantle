@@ -3,8 +3,6 @@ package slimeknights.mantle.data.loadable.common;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
@@ -13,6 +11,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -64,7 +63,7 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public BlockState deserialize(JsonObject json) {
+  public BlockState deserialize(JsonObject json, TypedMap<Object> context) {
     Block block = Loadables.BLOCK.getIfPresent(json, "block");
     BlockState state = block.defaultBlockState();
     if (json.has("properties")) {
@@ -108,12 +107,12 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public BlockState fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public BlockState fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return Block.stateById(buffer.readVarInt());
   }
 
   @Override
-  public void toNetwork(BlockState object, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(BlockState object, FriendlyByteBuf buffer) {
     buffer.writeVarInt(Block.getId(object));
   }
 }

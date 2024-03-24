@@ -1,7 +1,9 @@
 package slimeknights.mantle.data.loadable.field;
 
 import com.google.gson.JsonObject;
+import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.Function;
 
@@ -17,7 +19,17 @@ public record DirectField<T,P>(RecordLoadable<T> loadable, Function<P,T> getter)
   }
 
   @Override
+  public T get(JsonObject json, TypedMap<Object> context) {
+    return loadable.deserialize(json, context);
+  }
+
+  @Override
   public void serialize(P parent, JsonObject json) {
     loadable.serialize(getter.apply(parent), json);
+  }
+
+  @Override
+  public T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    return loadable.fromNetwork(buffer, context);
   }
 }

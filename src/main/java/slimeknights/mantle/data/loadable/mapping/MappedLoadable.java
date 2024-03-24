@@ -8,6 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -63,13 +64,18 @@ public class MappedLoadable<F,T> implements Loadable<T> {
     }
 
     @Override
-    public T deserialize(JsonObject json) {
-      return from.apply(base.deserialize(json), ErrorFactory.JSON_SYNTAX_ERROR);
+    public T deserialize(JsonObject json, TypedMap<Object> context) {
+      return from.apply(base.deserialize(json, context), ErrorFactory.JSON_SYNTAX_ERROR);
     }
 
     @Override
     public void serialize(T object, JsonObject json) {
       base.serialize(to.apply(object, ErrorFactory.RUNTIME), json);
+    }
+
+    @Override
+    public T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+      return from.apply(base.fromNetwork(buffer, context), ErrorFactory.DECODER_EXCEPTION);
     }
   }
 }
