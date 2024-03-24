@@ -16,7 +16,7 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E... allowedVa
   }
 
   @Override
-  public E convert(JsonElement element, String key) throws JsonSyntaxException {
+  public E convert(JsonElement element, String key) {
     String name = GsonHelper.convertToString(element, key);
     for (E value : allowedValues) {
       if (value.name().toLowerCase(Locale.ROOT).equals(name)) {

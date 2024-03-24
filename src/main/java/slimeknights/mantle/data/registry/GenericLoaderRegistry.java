@@ -46,7 +46,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
   }
 
   @Override
-  public T convert(JsonElement element, String key) throws JsonSyntaxException {
+  public T convert(JsonElement element, String key) {
     // first try object
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();

@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -34,7 +33,7 @@ public class DefaultingLoaderRegistry<T extends IHaveLoader> extends GenericLoad
   /* Default in JSON */
 
   @Override
-  public T convert(JsonElement element, String key) throws JsonSyntaxException {
+  public T convert(JsonElement element, String key) {
     if (element.isJsonNull()) {
       return defaultInstance;
     }

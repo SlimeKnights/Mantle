@@ -26,7 +26,7 @@ public abstract class CollectionLoadable<T,C extends Collection<T>,B extends Imm
   protected abstract C build(B builder);
 
   @Override
-  public C convert(JsonElement element, String key) throws JsonSyntaxException {
+  public C convert(JsonElement element, String key) {
     JsonArray array = GsonHelper.convertToJsonArray(element, key);
     if (array.size() < minSize) {
       throw new JsonSyntaxException(key + " must have at least " + minSize + " elements");

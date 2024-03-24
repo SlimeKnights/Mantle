@@ -2,7 +2,6 @@ package slimeknights.mantle.data.loadable.mapping;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
@@ -36,7 +35,7 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   }
 
   @Override
-  public T convert(JsonElement element, String key) throws JsonSyntaxException {
+  public T convert(JsonElement element, String key) {
     return from.apply(base.convert(element, key), ErrorFactory.JSON_SYNTAX_ERROR);
   }
 

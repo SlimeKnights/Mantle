@@ -3,7 +3,6 @@ package slimeknights.mantle.data.registry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.loadable.field.AlwaysPresentLoadableField;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
@@ -51,7 +50,7 @@ public record DirectRegistryField<T extends IHaveLoader,P>(GenericLoaderRegistry
   }
 
   @Override
-  public T get(JsonObject json) throws JsonSyntaxException {
+  public T get(JsonObject json) {
     // replace our type with the nested type, then run the nested loader
     mapType(json, typeKey);
     return loadable.deserialize(json);

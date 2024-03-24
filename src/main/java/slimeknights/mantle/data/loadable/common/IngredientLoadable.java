@@ -3,8 +3,6 @@ package slimeknights.mantle.data.loadable.common;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.data.loadable.Loadable;
@@ -15,7 +13,7 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   DISALLOW_EMPTY;
 
   @Override
-  public Ingredient convert(JsonElement element, String key) throws JsonSyntaxException {
+  public Ingredient convert(JsonElement element, String key) {
     Ingredient ingredient = Ingredient.fromJson(element);
     if (ingredient == Ingredient.EMPTY && this == DISALLOW_EMPTY) {
       throw new JsonSyntaxException("Ingredient cannot be empty");
@@ -24,7 +22,7 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   }
 
   @Override
-  public JsonElement serialize(Ingredient object) throws RuntimeException {
+  public JsonElement serialize(Ingredient object) {
     if (object == Ingredient.EMPTY) {
       if (this == ALLOW_EMPTY) {
         return JsonNull.INSTANCE;
@@ -35,12 +33,12 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   }
 
   @Override
-  public Ingredient fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public Ingredient fromNetwork(FriendlyByteBuf buffer) {
     return Ingredient.fromNetwork(buffer);
   }
 
   @Override
-  public void toNetwork(Ingredient object, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(Ingredient object, FriendlyByteBuf buffer) {
     object.toNetwork(buffer);
   }
 }

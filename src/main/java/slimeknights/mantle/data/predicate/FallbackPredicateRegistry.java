@@ -35,7 +35,7 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
   }
 
   @Override
-  public IJsonPredicate<T> convert(JsonElement element, String key) throws JsonSyntaxException {
+  public IJsonPredicate<T> convert(JsonElement element, String key) {
     if (element.isJsonNull()) {
       return getDefault();
     }

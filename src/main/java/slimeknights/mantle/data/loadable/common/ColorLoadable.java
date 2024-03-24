@@ -3,8 +3,6 @@ package slimeknights.mantle.data.loadable.common;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
@@ -70,22 +68,22 @@ public enum ColorLoadable implements Loadable<Integer> {
   public abstract String colorString(int color);
 
   @Override
-  public Integer convert(JsonElement element, String key) throws JsonSyntaxException {
+  public Integer convert(JsonElement element, String key) {
     return parseColor(GsonHelper.convertToString(element, key));
   }
 
   @Override
-  public JsonElement serialize(Integer color) throws RuntimeException {
+  public JsonElement serialize(Integer color) {
     return new JsonPrimitive(colorString(color));
   }
 
   @Override
-  public Integer fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public Integer fromNetwork(FriendlyByteBuf buffer) {
     return buffer.readInt();
   }
 
   @Override
-  public void toNetwork(Integer color, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(Integer color, FriendlyByteBuf buffer) {
     buffer.writeInt(color);
   }
 }

@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
@@ -54,7 +52,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public CompoundTag fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public CompoundTag fromNetwork(FriendlyByteBuf buffer) {
     CompoundTag tag = buffer.readNbt();
     if (tag == null) {
       return new CompoundTag();
@@ -63,7 +61,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public void toNetwork(CompoundTag object, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(CompoundTag object, FriendlyByteBuf buffer) {
     buffer.writeNbt(object);
   }
 
@@ -77,7 +75,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   private record NullableNBTField<P>(Loadable<CompoundTag> loadable, String key, Function<P,CompoundTag> getter) implements LoadableField<CompoundTag,P> {
     @Nullable
     @Override
-    public CompoundTag get(JsonObject json) throws JsonSyntaxException {
+    public CompoundTag get(JsonObject json) {
       return loadable.getOrDefault(json, key, null);
     }
 

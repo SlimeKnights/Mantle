@@ -9,8 +9,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -492,12 +490,12 @@ public abstract class FluidIngredient {
     DISALLOW_EMPTY;
 
     @Override
-    public FluidIngredient convert(JsonElement element, String key) throws JsonSyntaxException {
+    public FluidIngredient convert(JsonElement element, String key) {
       return FluidIngredient.deserialize(element, key, this == ALLOW_EMPTY);
     }
 
     @Override
-    public JsonElement serialize(FluidIngredient object) throws RuntimeException {
+    public JsonElement serialize(FluidIngredient object) {
       if (object == EMPTY && this == DISALLOW_EMPTY) {
         throw new IllegalArgumentException("Empty ingredient not allowed");
       }
@@ -505,12 +503,12 @@ public abstract class FluidIngredient {
     }
 
     @Override
-    public FluidIngredient fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+    public FluidIngredient fromNetwork(FriendlyByteBuf buffer) {
       return FluidIngredient.read(buffer);
     }
 
     @Override
-    public void toNetwork(FluidIngredient object, FriendlyByteBuf buffer) throws EncoderException {
+    public void toNetwork(FluidIngredient object, FriendlyByteBuf buffer) {
       object.write(buffer);
     }
   }

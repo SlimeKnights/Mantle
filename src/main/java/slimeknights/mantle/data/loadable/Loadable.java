@@ -4,12 +4,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
@@ -30,23 +27,44 @@ import java.util.function.Function;
 /** Interface for a generic loadable object */
 @SuppressWarnings("unused")  // API
 public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
-  /** Deserializes the object from json */
-  T convert(JsonElement element, String key) throws JsonSyntaxException;
+  /**
+   * Deserializes the object from the passed JSON element
+   * @param element  Element of an unknown type to parse
+   * @param key      Key that contained this element
+   * @return  Parsed loadable value
+   * @throws com.google.gson.JsonSyntaxException  If unable to read from JSON
+   */
+  T convert(JsonElement element, String key);
 
-  /** Writes this object to json */
-  JsonElement serialize(T object) throws RuntimeException;
+  /**
+   * Writes the passed object to json
+   * @param object  Object to serialize
+   * @return  Serialized object
+   * @throws RuntimeException  If unable to serialize the object
+   */
+  JsonElement serialize(T object);
 
-  /** Reads the object from the packet buffer */
-  T fromNetwork(FriendlyByteBuf buffer) throws DecoderException;
+  /**
+   * Reads the object from the packet buffer
+   * @param buffer  Buffer instance
+   * @return  Instance read from network
+   * @throws io.netty.handler.codec.DecoderException  If unable to decode a value from network
+   */
+  T fromNetwork(FriendlyByteBuf buffer);
 
-  /** Writes this object to the packet buffer */
-  void toNetwork(T object, FriendlyByteBuf buffer) throws EncoderException;
+  /**
+   * Writes this object to the packet buffer
+   * @param object  Object to write
+   * @param buffer  Buffer instance
+   * @throws io.netty.handler.codec.EncoderException  If unable to encode a value to network
+   */
+  void toNetwork(T object, FriendlyByteBuf buffer);
 
 
-  /* GSON methods, lets us easily use loadables with GSON adapters */
+  /* GSON methods, lets us easily use loadables with GSON adapters. Generally should not override. */
 
   @Override
-  default T deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+  default T deserialize(JsonElement json, Type type, JsonDeserializationContext context) {
     return convert(json, type.getTypeName());
   }
 
@@ -65,6 +83,7 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
    * @param parent  Parent to fetch field from
    * @param key     Field to get
    * @return  Value, or throws if missing
+   * @throws JsonSyntaxException  If the field is missing or cannot be parsed.
    */
   default T getIfPresent(JsonObject parent, String key) {
     if (parent.has(key)) {
@@ -81,6 +100,7 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
    * @param key           Field to get
    * @param defaultValue  Default value to fetch
    * @return  Value or default.
+   * @throws JsonSyntaxException  If the field cannot be parsed.
    */
   @Nullable
   @Contract("_,_,!null->!null")

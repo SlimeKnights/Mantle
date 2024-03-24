@@ -2,8 +2,6 @@ package slimeknights.mantle.data.loadable.mapping;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
@@ -53,7 +51,7 @@ public class CompactLoadable<T> implements Loadable<T> {
   }
 
   @Override
-  public JsonElement serialize(T object) throws RuntimeException {
+  public JsonElement serialize(T object) {
     if (compactCondition.test(object)) {
       return compact.serialize(object);
     }
@@ -64,12 +62,12 @@ public class CompactLoadable<T> implements Loadable<T> {
   /* Networking */
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) throws DecoderException {
+  public T fromNetwork(FriendlyByteBuf buffer) {
     return loadable.fromNetwork(buffer);
   }
 
   @Override
-  public void toNetwork(T object, FriendlyByteBuf buffer) throws EncoderException {
+  public void toNetwork(T object, FriendlyByteBuf buffer) {
     loadable.toNetwork(object, buffer);
   }
 

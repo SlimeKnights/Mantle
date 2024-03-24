@@ -3,7 +3,6 @@ package slimeknights.mantle.recipe.helper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import io.netty.handler.codec.EncoderException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
@@ -252,7 +251,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public void toNetwork(ItemOutput object, FriendlyByteBuf buffer) throws EncoderException {
+    public void toNetwork(ItemOutput object, FriendlyByteBuf buffer) {
       stack.toNetwork(object.get(), buffer);
     }
 

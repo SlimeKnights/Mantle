@@ -70,7 +70,7 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
   }
 
   @Override
-  public JsonElement serialize(T object) throws RuntimeException {
+  public JsonElement serialize(T object) {
     return new JsonPrimitive(getKey(object).toString());
   }
 

@@ -1,7 +1,6 @@
 package slimeknights.mantle.data.loadable.field;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 
@@ -14,7 +13,7 @@ import java.util.function.Function;
  */
 public record NullableField<T,P>(Loadable<T> loadable, String key, Function<P,T> getter) implements LoadableField<T,P> {
   @Override
-  public T get(JsonObject json) throws JsonSyntaxException {
+  public T get(JsonObject json) {
     return loadable.getOrDefault(json, key, null);
   }
 
