@@ -1,13 +1,11 @@
 package slimeknights.mantle.loot;
 
-import com.google.gson.Gson;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.Deserializers;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -30,8 +28,6 @@ public class AddEntryLootModifier extends LootModifier {
     ILootModifierCondition.CODEC.listOf().fieldOf("post_conditions").forGetter(m -> m.modifierConditions),
     MantleCodecs.LOOT_ENTRY.fieldOf("entry").forGetter(m -> m.entry),
     MantleCodecs.LOOT_FUNCTIONS.fieldOf("functions").forGetter(m -> m.functions))).apply(inst, AddEntryLootModifier::new));
-
-	static final Gson GSON = Deserializers.createFunctionSerializer().registerTypeHierarchyAdapter(ILootModifierCondition.class, ILootModifierCondition.MODIFIER_CONDITIONS).create();
 
   /** Additional conditions that can consider the previously generated loot */
   private final List<ILootModifierCondition> modifierConditions;
