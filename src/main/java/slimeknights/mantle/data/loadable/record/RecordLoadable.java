@@ -17,13 +17,17 @@ import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.DirectField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.mapping.CompactLoadable;
+import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Base interface for record type loadables, and the home of their factory methods.
@@ -53,6 +57,11 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
   /** Creates a field that loads this object directly into the parent JSON object */
   default <P> DirectField<T,P> directField(Function<P,T> getter) {
     return new DirectField<>(this, getter);
+  }
+
+  /** Allows parsing from JSon primitives and serializes compactly if the condition is met */
+  default RecordLoadable<T> compact(Loadable<T> compact, Predicate<T> condition) {
+    return CompactLoadable.of(this, compact, condition);
   }
 
 
