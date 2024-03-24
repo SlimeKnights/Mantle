@@ -146,7 +146,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     @Override
     public JsonElement serialize(boolean writeCount) {
       if (writeCount) {
-        ItemStackLoadable.OPTIONAL_STACK_NBT.serialize(stack);
+        return ItemStackLoadable.OPTIONAL_STACK_NBT.serialize(stack);
       }
       return ItemStackLoadable.OPTIONAL_ITEM_NBT.serialize(stack);
     }
