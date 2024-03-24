@@ -32,8 +32,8 @@ public class RegistryPredicateRegistry<R,T> extends PredicateRegistry<T> {
     this.getter = getter;
     this.tagMatcher = tagMatcher;
     // create loaders
-    this.setLoader = RecordLoadable.create(registry.set().field(setKey, p -> p.set), SetPredicate::new);
-    this.tagLoader = RecordLoadable.create(tagKey.field("tag", p -> p.tag), TagPredicate::new);
+    this.setLoader = RecordLoadable.create(registry.set().requiredField(setKey, p -> p.set), SetPredicate::new);
+    this.tagLoader = RecordLoadable.create(tagKey.requiredField("tag", p -> p.tag), TagPredicate::new);
     // register loaders
     this.register(Mantle.getResource("set"), setLoader);
     this.register(Mantle.getResource("tag"), tagLoader);

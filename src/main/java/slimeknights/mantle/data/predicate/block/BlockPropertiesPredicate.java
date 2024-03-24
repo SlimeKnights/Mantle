@@ -71,7 +71,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
   public static final RecordLoadable<BlockPropertiesPredicate> LOADER = new RecordLoadable<>() {
     @Override
     public BlockPropertiesPredicate deserialize(JsonObject json) {
-      Block block = Loadables.BLOCK.getAndDeserialize(json, "block");
+      Block block = Loadables.BLOCK.getIfPresent(json, "block");
       // TODO: this is a bit of a unique case for matcher, as its parsing from a map into a list, think about whether we can do something generic
       ImmutableList.Builder<Matcher> builder = ImmutableList.builder();
       for (Entry<String, JsonElement> entry : GsonHelper.getAsJsonObject(json, "properties").entrySet()) {

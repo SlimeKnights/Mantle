@@ -27,8 +27,8 @@ public class PredicateRegistry<T> extends GenericLoaderRegistry<IJsonPredicate<T
     // create common types
     Loadable<List<IJsonPredicate<T>>> list = this.list(2);
     invertedLoader = RecordLoadable.create(directField("inverted_type", p -> p.predicate), InvertedJsonPredicate::new);
-    andLoader = RecordLoadable.create(list.field("predicates", p -> p.children), AndJsonPredicate::new);
-    orLoader = RecordLoadable.create(list.field("predicates", p -> p.children), OrJsonPredicate::new);
+    andLoader = RecordLoadable.create(list.requiredField("predicates", p -> p.children), AndJsonPredicate::new);
+    orLoader = RecordLoadable.create(list.requiredField("predicates", p -> p.children), OrJsonPredicate::new);
     // register common types
     this.register(Mantle.getResource("any"), defaultInstance.getLoader());
     this.register(Mantle.getResource("inverted"), invertedLoader);

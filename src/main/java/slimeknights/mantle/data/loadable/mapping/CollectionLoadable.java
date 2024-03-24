@@ -3,7 +3,6 @@ package slimeknights.mantle.data.loadable.mapping;
 import com.google.common.collect.ImmutableCollection;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,14 +36,6 @@ public abstract class CollectionLoadable<T,C extends Collection<T>,B extends Imm
       builder.add(base.convert(array.get(i), key + '[' + i + ']'));
     }
     return build(builder);
-  }
-
-  @Override
-  public C getAndDeserialize(JsonObject parent, String key) {
-    if (minSize == 0 && !parent.has(key)) {
-      return build(makeBuilder());
-    }
-    return Loadable.super.getAndDeserialize(parent, key);
   }
 
   @Override

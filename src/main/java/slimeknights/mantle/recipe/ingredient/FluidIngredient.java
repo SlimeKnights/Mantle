@@ -492,14 +492,6 @@ public abstract class FluidIngredient {
     DISALLOW_EMPTY;
 
     @Override
-    public FluidIngredient getAndDeserialize(JsonObject parent, String key) {
-      if (this == ALLOW_EMPTY && !parent.has(key)) {
-        return FluidIngredient.EMPTY;
-      }
-      return slimeknights.mantle.data.loadable.Loadable.super.getAndDeserialize(parent, key);
-    }
-
-    @Override
     public FluidIngredient convert(JsonElement element, String key) throws JsonSyntaxException {
       return FluidIngredient.deserialize(element, key, this == ALLOW_EMPTY);
     }

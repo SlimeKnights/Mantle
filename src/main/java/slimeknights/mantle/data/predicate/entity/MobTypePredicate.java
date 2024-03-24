@@ -14,7 +14,7 @@ public record MobTypePredicate(MobType type) implements LivingEntityPredicate {
    */
   public static final NamedComponentRegistry<MobType> MOB_TYPES = new NamedComponentRegistry<>("Unknown mob type");
   /** Loader for a mob type predicate */
-  public static RecordLoadable<MobTypePredicate> LOADER = RecordLoadable.create(MOB_TYPES.field("mobs", MobTypePredicate::type), MobTypePredicate::new);
+  public static RecordLoadable<MobTypePredicate> LOADER = RecordLoadable.create(MOB_TYPES.requiredField("mobs", MobTypePredicate::type), MobTypePredicate::new);
 
   @Override
   public boolean matches(LivingEntity input) {

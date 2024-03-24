@@ -65,7 +65,7 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
 
   @Override
   public BlockState deserialize(JsonObject json) {
-    Block block = Loadables.BLOCK.getAndDeserialize(json, "block");
+    Block block = Loadables.BLOCK.getIfPresent(json, "block");
     BlockState state = block.defaultBlockState();
     if (json.has("properties")) {
       StateDefinition<Block,BlockState> definition = block.getStateDefinition();

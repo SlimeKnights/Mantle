@@ -78,11 +78,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
     @Nullable
     @Override
     public CompoundTag get(JsonObject json) throws JsonSyntaxException {
-      JsonElement element = json.get(key);
-      if (element != null) {
-        return loadable.convert(element, key);
-      }
-      return null;
+      return loadable.getOrDefault(json, key, null);
     }
 
     @Override

@@ -336,7 +336,7 @@ public class JsonHelper {
    * @throws JsonSyntaxException  if a property does not parse or the element is missing or the wrong type
    */
   public static BlockState getAsBlockState(JsonObject parent, String key) {
-    return BlockStateLoadable.DIFFERENCE.getAndDeserialize(parent, key);
+    return BlockStateLoadable.DIFFERENCE.getIfPresent(parent, key);
   }
 
   /**

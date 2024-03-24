@@ -39,7 +39,7 @@ public class FluidStackLoadable {
   /** Field for an optional fluid */
   private static final LoadableField<Fluid,FluidStack> FLUID = Loadables.FLUID.defaultField("fluid", Fluids.EMPTY, false, FLUID_GETTER);
   /** Field for fluid stack count that allows empty */
-  private static final LoadableField<Integer,FluidStack> AMOUNT = IntLoadable.FROM_ZERO.field("amount", FluidStack::getAmount);
+  private static final LoadableField<Integer,FluidStack> AMOUNT = IntLoadable.FROM_ZERO.requiredField("amount", FluidStack::getAmount);
   /** Field for fluid stack count */
   private static final LoadableField<CompoundTag,FluidStack> NBT = NBTLoadable.ALLOW_STRING.nullableField("nbt", FluidStack::getTag);
 

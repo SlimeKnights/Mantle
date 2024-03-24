@@ -13,10 +13,10 @@ import java.util.function.Function;
  * @param <P>  Parent object
  * @param <T>  Loadable type
  */
-public record NamedField<T,P>(Loadable<T> loadable, String key, boolean serializeNull, Function<P,T> getter) implements AlwaysPresentLoadableField<T,P> {
+public record RequiredField<T,P>(Loadable<T> loadable, String key, boolean serializeNull, Function<P,T> getter) implements AlwaysPresentLoadableField<T,P> {
   @Override
   public T get(JsonObject json) throws JsonSyntaxException {
-    return loadable.getAndDeserialize(json, key);
+    return loadable.getIfPresent(json, key);
   }
 
   @Override

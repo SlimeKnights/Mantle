@@ -2,13 +2,11 @@ package slimeknights.mantle.recipe.helper;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -17,8 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.data.JsonCodec;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.common.ItemStackLoadable;
-import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 
 import java.util.function.Supplier;
 
@@ -43,7 +42,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
       return "ItemOutput";
     }
   };
-  /** Loadable instance for an item output. Custom to handle the eithering behavior */
+  /** Loadable instance for an item output. Not using EitherLoadable as we just always sync items to keep thing simplier. */
   public static Loadable<ItemOutput> LOADABLE = new Loadable<>() {
     @Override
     public ItemOutput convert(JsonElement element, String key) throws JsonSyntaxException {
@@ -132,13 +131,13 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     // if it has a tag, parse as tag
     JsonObject json = element.getAsJsonObject();
     if (json.has("tag")) {
-      TagKey<Item> tag = TagKey.create(Registry.ITEM_REGISTRY, JsonHelper.getResourceLocation(json, "tag"));
-      int count = GsonHelper.getAsInt(json, "count", 1);
+      TagKey<Item> tag = Loadables.ITEM_TAG.getIfPresent(json, "tag");
+      int count = IntLoadable.FROM_ONE.getOrDefault(json, "count", 1);
       return fromTag(tag, count);
     }
 
     // default: parse as item stack using loadables
-    return fromStack(ItemStackLoadable.REQUIRED_STACK_NBT.convert(json, "item"));
+    return fromStack(ItemStackLoadable.REQUIRED_STACK_NBT.deserialize(json));
   }
 
   /**
@@ -175,14 +174,14 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
 
     @Override
     public JsonElement serialize() {
-      String itemName = Registry.ITEM.getKey(item).toString();
+      JsonElement item = Loadables.ITEM.serialize(this.item);
       if (count > 1) {
         JsonObject json = new JsonObject();
-        json.addProperty("item", itemName);
+        json.add("item", item);
         json.addProperty("count", count);
         return json;
       } else {
-        return new JsonPrimitive(itemName);
+        return item;
       }
     }
   }

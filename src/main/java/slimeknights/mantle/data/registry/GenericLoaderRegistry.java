@@ -65,7 +65,7 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     // first try object
     if (element.isJsonObject()) {
       JsonObject object = element.getAsJsonObject();
-      return loaders.getAndDeserialize(object, "type").deserialize(object);
+      return loaders.getIfPresent(object, "type").deserialize(object);
     }
     // try primitive if allowed
     if (compact && element.isJsonPrimitive()) {
@@ -83,14 +83,6 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
    */
   public T deserialize(JsonElement element) {
     return convert(element, "[unknown]");
-  }
-
-  @Override
-  public T getAndDeserialize(JsonObject parent, String key) {
-    if (defaultInstance != null && !parent.has(key)) {
-      return defaultInstance;
-    }
-    return Loadable.super.getAndDeserialize(parent, key);
   }
 
   /** Serializes the object to json, fighting generics */
@@ -175,6 +167,11 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
       return new DefaultingField<>(this, key, defaultInstance, serializeDefault, getter);
     }
     throw new IllegalStateException(name + " registry has no default instance, cannot make a default field");
+  }
+
+  /** Creates a defaulting field that does not serialize */
+  public <P> LoadableField<T,P> defaultField(String key, Function<P,T> getter) {
+    return defaultField(key, false, getter);
   }
 
   /** Creates a field that loads this object directly into the parent JSON object */

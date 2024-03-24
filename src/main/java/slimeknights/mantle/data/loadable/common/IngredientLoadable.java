@@ -2,7 +2,6 @@ package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
@@ -14,14 +13,6 @@ import slimeknights.mantle.data.loadable.Loadable;
 public enum IngredientLoadable implements Loadable<Ingredient> {
   ALLOW_EMPTY,
   DISALLOW_EMPTY;
-
-  @Override
-  public Ingredient getAndDeserialize(JsonObject parent, String key) {
-    if (this == ALLOW_EMPTY && !parent.has(key)) {
-      return Ingredient.EMPTY;
-    }
-    return Loadable.super.getAndDeserialize(parent, key);
-  }
 
   @Override
   public Ingredient convert(JsonElement element, String key) throws JsonSyntaxException {
