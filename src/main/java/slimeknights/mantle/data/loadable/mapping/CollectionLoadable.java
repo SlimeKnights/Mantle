@@ -40,6 +40,9 @@ public abstract class CollectionLoadable<T,C extends Collection<T>,B extends Imm
 
   @Override
   public JsonArray serialize(C collection) {
+    if (collection.size() < minSize) {
+      throw new RuntimeException("Collection must have at least " + minSize + " elements");
+    }
     JsonArray array = new JsonArray();
     for (T element : collection) {
       array.add(base.serialize(element));
