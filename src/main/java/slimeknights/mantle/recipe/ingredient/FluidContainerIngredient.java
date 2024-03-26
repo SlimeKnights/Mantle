@@ -130,11 +130,11 @@ public class FluidContainerIngredient extends AbstractIngredient {
     @Override
     public FluidContainerIngredient parse(JsonObject json) {
       FluidIngredient fluidIngredient;
-      // if we have fluid, its a nested ingredient. Otherwise this object itself is the ingredient
-      if (json.has("fluid")) {
-        fluidIngredient = FluidIngredient.deserialize(json, "fluid");
+      // if we have fluid and its not a primitive, then its nested
+      if (json.has("fluid") && !json.get("fluid").isJsonPrimitive()) {
+        fluidIngredient = FluidIngredient.LOADABLE.getIfPresent(json, "fluid");
       } else {
-        fluidIngredient = FluidIngredient.deserialize((JsonElement) json, "fluid");
+        fluidIngredient = FluidIngredient.LOADABLE.convert(json, "fluid");
       }
       Ingredient display = null;
       if (json.has("display")) {

@@ -11,14 +11,19 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.ToolAction;
 import slimeknights.mantle.data.loadable.common.RegistryLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+
+import java.util.function.BiFunction;
 
 /** Various loadable instances provided by this mod */
 @SuppressWarnings({"deprecation", "unused"})
@@ -48,6 +53,11 @@ public class Loadables {
   public static final Loadable<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new RegistryLoadable<>(Registry.BLOCK_ENTITY_TYPE);
   public static final Loadable<Attribute> ATTRIBUTE = new RegistryLoadable<>(Registry.ATTRIBUTE);
 
+  /* Non-default registries */
+  public static final Loadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid cannot be empty");
+  public static final Loadable<Block> NON_EMPTY_BLOCK = notValue(BLOCK, Blocks.AIR, "Block cannot be air");
+  public static final Loadable<Item> NON_EMPTY_ITEM = notValue(ITEM, Items.AIR, "Item cannot be empty");
+
 
   /* Tag keys */
   public static final Loadable<TagKey<Fluid>> FLUID_TAG = tagKey(Registry.FLUID_REGISTRY);
@@ -65,5 +75,16 @@ public class Loadables {
   /** Creates a tag key loadable */
   public static <T> Loadable<TagKey<T>> tagKey(ResourceKey<? extends Registry<T>> registry) {
     return RESOURCE_LOCATION.flatMap(key -> TagKey.create(registry, key), TagKey::location);
+  }
+
+  /** Maps a loadable to a variant that disallows a particular value */
+  public static <T> Loadable<T> notValue(Loadable<T> loadable, T notValue, String errorMsg) {
+    BiFunction<T,ErrorFactory,T> mapper = (value, error) -> {
+      if (value == notValue) {
+        throw error.create(errorMsg);
+      }
+      return value;
+    };
+    return loadable.map(mapper, mapper);
   }
 }

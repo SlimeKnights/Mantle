@@ -50,7 +50,7 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
   // TODO: do we even need GSON here? I feel a classical serializer is sufficient as this class is pretty simple
   public static final Gson GSON = (new GsonBuilder())
     .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-    .registerTypeAdapter(FluidIngredient.class, FluidIngredient.SERIALIZER)
+    .registerTypeAdapter(FluidIngredient.class, FluidIngredient.LOADABLE)
     .registerTypeAdapter(TagKey.class, new TagKeySerializer<>(Registry.FLUID_REGISTRY))
     .setPrettyPrinting()
     .disableHtmlEscaping()
