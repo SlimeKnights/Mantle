@@ -13,6 +13,7 @@ import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.field.NullableField;
 import slimeknights.mantle.data.loadable.field.RequiredField;
+import slimeknights.mantle.data.loadable.field.TryDirectField;
 import slimeknights.mantle.data.loadable.mapping.ListLoadable;
 import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
 import slimeknights.mantle.data.loadable.mapping.SetLoadable;
@@ -133,6 +134,11 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
   /** Creates a defaulting field that uses a default value when missing */
   default <P> LoadableField<T,P> defaultField(String key, T defaultValue, Function<P,T> getter) {
     return defaultField(key, defaultValue, false, getter);
+  }
+
+  /** Creates a field that loads this object directly into the parent JSON object if possible (it serialized to JSON), otherwise loads it into a field */
+  default <P> LoadableField<T,P> tryDirectField(String key, Function<P,T> getter, String... conflicts) {
+    return new TryDirectField<>(this, key, getter, conflicts);
   }
 
 
