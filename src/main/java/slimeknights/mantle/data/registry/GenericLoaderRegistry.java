@@ -148,9 +148,15 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     void toNetwork(T object, FriendlyByteBuf buffer);
   }
 
-  /** Interface for an object with a loader */
+  /**
+   * Interface for an object with a loader.
+   * TODO 1.20: replace with {@link slimeknights.mantle.data.loadable.IAmLoadable.Record}
+   */
   public interface IHaveLoader {
-    /** Gets the loader for the object */
+    /**
+     * Gets the loader for the object.
+     * If you wish to suppress the deprecation warning, change the return type to {@link slimeknights.mantle.data.loadable.record.RecordLoadable}.
+     */
     IGenericLoader<? extends IHaveLoader> getLoader();
   }
 
