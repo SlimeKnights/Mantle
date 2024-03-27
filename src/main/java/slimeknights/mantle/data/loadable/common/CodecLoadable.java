@@ -20,12 +20,12 @@ public record CodecLoadable<T>(Codec<T> codec) implements Loadable<T> {
   }
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
+  public T decode(FriendlyByteBuf buffer) {
     return buffer.readWithCodec(codec);
   }
 
   @Override
-  public void toNetwork(T object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, T object) {
     buffer.writeWithCodec(codec, object);
   }
 }

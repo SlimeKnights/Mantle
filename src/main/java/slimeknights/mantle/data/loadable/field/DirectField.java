@@ -29,7 +29,7 @@ public record DirectField<T,P>(RecordLoadable<T> loadable, Function<P,T> getter)
   }
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
-    return loadable.fromNetwork(buffer, context);
+  public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    return loadable.decode(buffer, context);
   }
 }

@@ -100,14 +100,26 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
 
   @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
-  public void toNetwork(T src, FriendlyByteBuf buffer) {
-    loaders.toNetwork((IGenericLoader<? extends T>)src.getLoader(), buffer);
+  public void encode(FriendlyByteBuf buffer, T src) {
+    loaders.encode(buffer, (IGenericLoader<? extends T>)src.getLoader());
     toNetwork(src.getLoader(), src, buffer);
   }
 
   @Override
+  public T decode(FriendlyByteBuf buffer) {
+    return loaders.decode(buffer).fromNetwork(buffer);
+  }
+
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Deprecated(forRemoval = true)
+  public void toNetwork(T src, FriendlyByteBuf buffer) {
+    encode(buffer, src);
+  }
+
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Deprecated(forRemoval = true)
   public T fromNetwork(FriendlyByteBuf buffer) {
-    return loaders.fromNetwork(buffer).fromNetwork(buffer);
+    return decode(buffer);
   }
 
   /** Creates a field that loads this object directly into the parent JSON object */
@@ -120,7 +132,8 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     return getClass().getName() + "('" + name + "')";
   }
 
-  /** Interface for a loader */
+  /** @deprecated use {@link slimeknights.mantle.data.loadable.record.RecordLoadable} */
+  @Deprecated(forRemoval = true)
   public interface IGenericLoader<T> {
     /** Deserializes the object from json */
     T deserialize(JsonObject json);

@@ -30,10 +30,10 @@ public interface LoadableField<T,P> extends RecordField<T,P> {
    * @return  Parsed field value
    * @throws io.netty.handler.codec.DecoderException  If unable to decode
    */
-  T fromNetwork(FriendlyByteBuf buffer);
+  T decode(FriendlyByteBuf buffer);
 
   @Override
-  default T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
-    return fromNetwork(buffer);
+  default T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    return decode(buffer);
   }
 }

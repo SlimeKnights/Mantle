@@ -46,13 +46,13 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   }
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
-    return from.apply(base.fromNetwork(buffer), ErrorFactory.DECODER_EXCEPTION);
+  public T decode(FriendlyByteBuf buffer) {
+    return from.apply(base.decode(buffer), ErrorFactory.DECODER_EXCEPTION);
   }
 
   @Override
-  public void toNetwork(T object, FriendlyByteBuf buffer) {
-    base.toNetwork(to.apply(object, ErrorFactory.ENCODER_EXCEPTION), buffer);
+  public void encode(FriendlyByteBuf buffer, T object) {
+    base.encode(buffer, to.apply(object, ErrorFactory.ENCODER_EXCEPTION));
   }
 
   /** Implementation for records */
@@ -74,8 +74,8 @@ public class MappedLoadable<F,T> implements Loadable<T> {
     }
 
     @Override
-    public T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
-      return from.apply(base.fromNetwork(buffer, context), ErrorFactory.DECODER_EXCEPTION);
+    public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+      return from.apply(base.decode(buffer, context), ErrorFactory.DECODER_EXCEPTION);
     }
   }
 }

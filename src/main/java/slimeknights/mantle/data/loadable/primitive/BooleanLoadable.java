@@ -24,12 +24,12 @@ public enum BooleanLoadable implements Loadable<Boolean> {
   }
 
   @Override
-  public Boolean fromNetwork(FriendlyByteBuf buffer) {
+  public Boolean decode(FriendlyByteBuf buffer) {
     return buffer.readBoolean();
   }
 
   @Override
-  public void toNetwork(Boolean object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, Boolean object) {
     buffer.writeBoolean(object);
   }
 

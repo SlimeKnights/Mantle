@@ -46,28 +46,28 @@ record RecordLoadable8<A,B,C,D,E,F,G,H,R>(
   }
 
   @Override
-  public R fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public R decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.fromNetwork(buffer, context),
-      fieldB.fromNetwork(buffer, context),
-      fieldC.fromNetwork(buffer, context),
-      fieldD.fromNetwork(buffer, context),
-      fieldE.fromNetwork(buffer, context),
-      fieldF.fromNetwork(buffer, context),
-      fieldG.fromNetwork(buffer, context),
-      fieldH.fromNetwork(buffer, context)
+      fieldA.decode(buffer, context),
+      fieldB.decode(buffer, context),
+      fieldC.decode(buffer, context),
+      fieldD.decode(buffer, context),
+      fieldE.decode(buffer, context),
+      fieldF.decode(buffer, context),
+      fieldG.decode(buffer, context),
+      fieldH.decode(buffer, context)
     );
   }
 
   @Override
-  public void toNetwork(R object, FriendlyByteBuf buffer) {
-    fieldA.toNetwork(object, buffer);
-    fieldB.toNetwork(object, buffer);
-    fieldC.toNetwork(object, buffer);
-    fieldD.toNetwork(object, buffer);
-    fieldE.toNetwork(object, buffer);
-    fieldF.toNetwork(object, buffer);
-    fieldG.toNetwork(object, buffer);
-    fieldH.toNetwork(object, buffer);
+  public void encode(FriendlyByteBuf buffer, R object) {
+    fieldA.encode(buffer, object);
+    fieldB.encode(buffer, object);
+    fieldC.encode(buffer, object);
+    fieldD.encode(buffer, object);
+    fieldE.encode(buffer, object);
+    fieldF.encode(buffer, object);
+    fieldG.encode(buffer, object);
+    fieldH.encode(buffer, object);
   }
 }

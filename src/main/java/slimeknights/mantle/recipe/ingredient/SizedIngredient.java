@@ -129,7 +129,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @param buffer  Buffer instance
    */
   public void write(FriendlyByteBuf buffer) {
-    LOADABLE.toNetwork(this, buffer);
+    LOADABLE.encode(buffer, this);
   }
 
   /**
@@ -148,7 +148,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
    * @return  Sized ingredient
    */
   public static SizedIngredient read(FriendlyByteBuf buffer) {
-    return LOADABLE.fromNetwork(buffer);
+    return LOADABLE.decode(buffer);
   }
 
   /**

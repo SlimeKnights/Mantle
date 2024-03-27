@@ -70,44 +70,44 @@ record RecordLoadable16<A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,R>(
   }
 
   @Override
-  public R fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public R decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.fromNetwork(buffer, context),
-      fieldB.fromNetwork(buffer, context),
-      fieldC.fromNetwork(buffer, context),
-      fieldD.fromNetwork(buffer, context),
-      fieldE.fromNetwork(buffer, context),
-      fieldF.fromNetwork(buffer, context),
-      fieldG.fromNetwork(buffer, context),
-      fieldH.fromNetwork(buffer, context),
-      fieldI.fromNetwork(buffer, context),
-      fieldJ.fromNetwork(buffer, context),
-      fieldK.fromNetwork(buffer, context),
-      fieldL.fromNetwork(buffer, context),
-      fieldM.fromNetwork(buffer, context),
-      fieldN.fromNetwork(buffer, context),
-      fieldO.fromNetwork(buffer, context),
-      fieldP.fromNetwork(buffer, context)
+      fieldA.decode(buffer, context),
+      fieldB.decode(buffer, context),
+      fieldC.decode(buffer, context),
+      fieldD.decode(buffer, context),
+      fieldE.decode(buffer, context),
+      fieldF.decode(buffer, context),
+      fieldG.decode(buffer, context),
+      fieldH.decode(buffer, context),
+      fieldI.decode(buffer, context),
+      fieldJ.decode(buffer, context),
+      fieldK.decode(buffer, context),
+      fieldL.decode(buffer, context),
+      fieldM.decode(buffer, context),
+      fieldN.decode(buffer, context),
+      fieldO.decode(buffer, context),
+      fieldP.decode(buffer, context)
     );
   }
 
   @Override
-  public void toNetwork(R object, FriendlyByteBuf buffer) {
-    fieldA.toNetwork(object, buffer);
-    fieldB.toNetwork(object, buffer);
-    fieldC.toNetwork(object, buffer);
-    fieldD.toNetwork(object, buffer);
-    fieldE.toNetwork(object, buffer);
-    fieldF.toNetwork(object, buffer);
-    fieldG.toNetwork(object, buffer);
-    fieldH.toNetwork(object, buffer);
-    fieldI.toNetwork(object, buffer);
-    fieldJ.toNetwork(object, buffer);
-    fieldK.toNetwork(object, buffer);
-    fieldL.toNetwork(object, buffer);
-    fieldM.toNetwork(object, buffer);
-    fieldN.toNetwork(object, buffer);
-    fieldO.toNetwork(object, buffer);
-    fieldP.toNetwork(object, buffer);
+  public void encode(FriendlyByteBuf buffer, R object) {
+    fieldA.encode(buffer, object);
+    fieldB.encode(buffer, object);
+    fieldC.encode(buffer, object);
+    fieldD.encode(buffer, object);
+    fieldE.encode(buffer, object);
+    fieldF.encode(buffer, object);
+    fieldG.encode(buffer, object);
+    fieldH.encode(buffer, object);
+    fieldI.encode(buffer, object);
+    fieldJ.encode(buffer, object);
+    fieldK.encode(buffer, object);
+    fieldL.encode(buffer, object);
+    fieldM.encode(buffer, object);
+    fieldN.encode(buffer, object);
+    fieldO.encode(buffer, object);
+    fieldP.encode(buffer, object);
   }
 }

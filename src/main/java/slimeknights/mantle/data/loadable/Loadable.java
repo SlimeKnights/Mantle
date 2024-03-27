@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -27,7 +26,7 @@ import java.util.function.Function;
 
 /** Interface for a generic loadable object */
 @SuppressWarnings("unused")  // API
-public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
+public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Streamable<T> {
   /**
    * Deserializes the object from the passed JSON element
    * @param element  Element of an unknown type to parse
@@ -44,22 +43,6 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T> {
    * @throws RuntimeException  If unable to serialize the object
    */
   JsonElement serialize(T object);
-
-  /**
-   * Reads the object from the packet buffer
-   * @param buffer  Buffer instance
-   * @return  Instance read from network
-   * @throws io.netty.handler.codec.DecoderException  If unable to decode a value from network
-   */
-  T fromNetwork(FriendlyByteBuf buffer);
-
-  /**
-   * Writes this object to the packet buffer
-   * @param object  Object to write
-   * @param buffer  Buffer instance
-   * @throws io.netty.handler.codec.EncoderException  If unable to encode a value to network
-   */
-  void toNetwork(T object, FriendlyByteBuf buffer);
 
 
   /* GSON methods, lets us easily use loadables with GSON adapters. Generally should not override. */

@@ -23,12 +23,12 @@ record RecordLoadable1<A,R>(
   }
 
   @Override
-  public R fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
-    return constructor.apply(fieldA.fromNetwork(buffer, context));
+  public R decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    return constructor.apply(fieldA.decode(buffer, context));
   }
 
   @Override
-  public void toNetwork(R object, FriendlyByteBuf buffer) {
-    fieldA.toNetwork(object, buffer);
+  public void encode(FriendlyByteBuf buffer, R object) {
+    fieldA.encode(buffer, object);
   }
 }

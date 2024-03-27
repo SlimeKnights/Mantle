@@ -58,7 +58,7 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
 
   @Override
   public T fromNetworkSafe(ResourceLocation id, FriendlyByteBuf buffer) {
-    return loadable.fromNetwork(buffer, buildContext(id).build());
+    return loadable.decode(buffer, buildContext(id).build());
   }
 
   @Nullable
@@ -74,7 +74,7 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
 
   @Override
   public void toNetworkSafe(FriendlyByteBuf buffer, T recipe) {
-    loadable.toNetwork(recipe, buffer);
+    loadable.encode(buffer, recipe);
   }
 
   public static class TypeAware<T extends Recipe<?>> extends LoadableRecipeSerializer<T> implements TypeAwareRecipeSerializer<T> {

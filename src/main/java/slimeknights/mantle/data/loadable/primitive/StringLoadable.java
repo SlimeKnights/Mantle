@@ -30,12 +30,12 @@ public record StringLoadable(int maxLength) implements Loadable<String> {
   }
 
   @Override
-  public String fromNetwork(FriendlyByteBuf buffer) {
+  public String decode(FriendlyByteBuf buffer) {
     return buffer.readUtf(maxLength);
   }
 
   @Override
-  public void toNetwork(String object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, String object) {
     buffer.writeUtf(object, maxLength);
   }
 }

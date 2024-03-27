@@ -47,7 +47,7 @@ public record RegistryLoadable<T>(Registry<T> registry, ResourceLocation registr
   }
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
+  public T decode(FriendlyByteBuf buffer) {
     int id = buffer.readVarInt();
     T value = registry.byId(id);
     if (value == null) {
@@ -57,7 +57,7 @@ public record RegistryLoadable<T>(Registry<T> registry, ResourceLocation registr
   }
 
   @Override
-  public void toNetwork(T object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, T object) {
     buffer.writeId(registry, object);
   }
 }

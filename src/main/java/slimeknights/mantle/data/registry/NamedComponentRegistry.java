@@ -79,12 +79,12 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
 
   /** Writes the value to the buffer */
   @Override
-  public void toNetwork(T value, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, T value) {
     buffer.writeResourceLocation(getKey(value));
   }
 
   /** Writes the value to the buffer */
-  public void toNetworkOptional(@Nullable T value, FriendlyByteBuf buffer) {
+  public void encodeOptional(FriendlyByteBuf buffer, @Nullable T value) {
     // if null, just write an empty string, that is not a valid resource location anyways and saves us a byte
     if (value != null) {
       buffer.writeUtf(getKey(value).toString());
@@ -94,7 +94,7 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
   }
 
   /** Reads the given value from the network by resource location */
-  private T fromNetwork(ResourceLocation name) {
+  private T decodeInternal(ResourceLocation name) {
     T value = getValue(name);
     if (value == null) {
       throw new DecoderException(errorText + name);
@@ -104,18 +104,46 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
 
   /** Parse the value from JSON */
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
-    return fromNetwork(buffer.readResourceLocation());
+  public T decode(FriendlyByteBuf buffer) {
+    return decodeInternal(buffer.readResourceLocation());
   }
 
   /** Parse the value from JSON */
   @Nullable
-  public T fromNetworkOptional(FriendlyByteBuf buffer) {
+  public T decodeOptional(FriendlyByteBuf buffer) {
     // empty string is not a valid resource location, so its a nice value to use for null, saves us a byte
     String key = buffer.readUtf(Short.MAX_VALUE);
     if (key.isEmpty()) {
       return null;
     }
-    return fromNetwork(new ResourceLocation(key));
+    return decodeInternal(new ResourceLocation(key));
+  }
+
+
+  /* Deprecated aliases */
+
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Deprecated(forRemoval = true)
+  public void toNetwork(T src, FriendlyByteBuf buffer) {
+    encode(buffer, src);
+  }
+
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Deprecated(forRemoval = true)
+  public T fromNetwork(FriendlyByteBuf buffer) {
+    return decode(buffer);
+  }
+
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Deprecated(forRemoval = true)
+  public void toNetworkOptional(@Nullable T src, FriendlyByteBuf buffer) {
+    encodeOptional(buffer, src);
+  }
+
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Nullable
+  @Deprecated(forRemoval = true)
+  public T fromNetworkOptional(FriendlyByteBuf buffer) {
+    return decodeOptional(buffer);
   }
 }

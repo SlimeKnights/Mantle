@@ -33,12 +33,12 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   }
 
   @Override
-  public Ingredient fromNetwork(FriendlyByteBuf buffer) {
+  public Ingredient decode(FriendlyByteBuf buffer) {
     return Ingredient.fromNetwork(buffer);
   }
 
   @Override
-  public void toNetwork(Ingredient object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, Ingredient object) {
     object.toNetwork(buffer);
   }
 }

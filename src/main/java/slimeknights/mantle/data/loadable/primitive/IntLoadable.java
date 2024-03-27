@@ -56,12 +56,12 @@ public record IntLoadable(int min, int max, IntNetwork network) implements Loada
   }
 
   @Override
-  public Integer fromNetwork(FriendlyByteBuf buffer) {
+  public Integer decode(FriendlyByteBuf buffer) {
     return network.fromNetwork(buffer);
   }
 
   @Override
-  public void toNetwork(Integer object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, Integer object) {
     network.toNetwork(object, buffer);
   }
 

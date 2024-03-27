@@ -63,18 +63,18 @@ public class DefaultingLoaderRegistry<T extends IHaveLoader> extends GenericLoad
 
   @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
-  public void toNetwork(T src, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, T src) {
     if (src == defaultInstance) {
-      loaders.toNetworkOptional(null, buffer);
+      loaders.encodeOptional(buffer, null);
       return;
     }
-    loaders.toNetworkOptional((IGenericLoader<? extends T>)src.getLoader(), buffer);
+    loaders.encodeOptional(buffer, (IGenericLoader<? extends T>)src.getLoader());
     toNetwork(src.getLoader(), src, buffer);
   }
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
-    IGenericLoader<? extends T> loader = loaders.fromNetworkOptional(buffer);
+  public T decode(FriendlyByteBuf buffer) {
+    IGenericLoader<? extends T> loader = loaders.decodeOptional(buffer);
     if (loader == null) {
       return defaultInstance;
     }

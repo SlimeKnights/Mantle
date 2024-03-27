@@ -53,7 +53,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public CompoundTag fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public CompoundTag decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
     CompoundTag tag = buffer.readNbt();
     if (tag == null) {
       return new CompoundTag();
@@ -62,7 +62,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public void toNetwork(CompoundTag object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, CompoundTag object) {
     buffer.writeNbt(object);
   }
 
@@ -90,12 +90,12 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
 
     @Nullable
     @Override
-    public CompoundTag fromNetwork(FriendlyByteBuf buffer) {
+    public CompoundTag decode(FriendlyByteBuf buffer) {
       return buffer.readNbt();
     }
 
     @Override
-    public void toNetwork(P parent, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer, P parent) {
       buffer.writeNbt(getter.apply(parent));
     }
   }

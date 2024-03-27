@@ -78,12 +78,12 @@ public enum ColorLoadable implements Loadable<Integer> {
   }
 
   @Override
-  public Integer fromNetwork(FriendlyByteBuf buffer) {
+  public Integer decode(FriendlyByteBuf buffer) {
     return buffer.readInt();
   }
 
   @Override
-  public void toNetwork(Integer color, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, Integer color) {
     buffer.writeInt(color);
   }
 }

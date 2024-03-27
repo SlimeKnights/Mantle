@@ -32,12 +32,12 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E... allowedVa
   }
 
   @Override
-  public E fromNetwork(FriendlyByteBuf buffer) {
+  public E decode(FriendlyByteBuf buffer) {
     return buffer.readEnum(enumClass);
   }
 
   @Override
-  public void toNetwork(E object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, E object) {
     buffer.writeEnum(object);
   }
 }

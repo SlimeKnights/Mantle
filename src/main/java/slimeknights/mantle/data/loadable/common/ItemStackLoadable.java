@@ -142,12 +142,12 @@ public class ItemStackLoadable {
     /* Buffer */
 
     @Override
-    public ItemStack fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public ItemStack decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
       // not using makeItemStack as we need to set the share tag NBT here
-      Item item = ITEM.fromNetwork(buffer, context);
+      Item item = ITEM.decode(buffer, context);
       int count = 1;
       if (this == READ_COUNT) {
-        count = COUNT.fromNetwork(buffer, context);
+        count = COUNT.decode(buffer, context);
       }
       CompoundTag nbt = buffer.readNbt();
       // not using make stack because we want to set share tag
@@ -160,10 +160,10 @@ public class ItemStackLoadable {
     }
 
     @Override
-    public void toNetwork(ItemStack stack, FriendlyByteBuf buffer) throws EncoderException {
-      ITEM.toNetwork(stack, buffer);
+    public void encode(FriendlyByteBuf buffer, ItemStack stack) throws EncoderException {
+      ITEM.encode(buffer, stack);
       if (this == READ_COUNT) {
-        COUNT.toNetwork(stack, buffer);
+        COUNT.encode(buffer, stack);
       }
       buffer.writeNbt(stack.getShareTag());
     }

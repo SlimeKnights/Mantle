@@ -63,13 +63,13 @@ public class CompactLoadable<T> implements Loadable<T> {
   /* Networking */
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
-    return loadable.fromNetwork(buffer);
+  public T decode(FriendlyByteBuf buffer) {
+    return loadable.decode(buffer);
   }
 
   @Override
-  public void toNetwork(T object, FriendlyByteBuf buffer) {
-    loadable.toNetwork(object, buffer);
+  public void encode(FriendlyByteBuf buffer, T object) {
+    loadable.encode(buffer, object);
   }
 
   /** Extension for records */
@@ -91,8 +91,8 @@ public class CompactLoadable<T> implements Loadable<T> {
     }
 
     @Override
-    public T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
-      return loadable.fromNetwork(buffer, context);
+    public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+      return loadable.decode(buffer, context);
     }
   }
 }

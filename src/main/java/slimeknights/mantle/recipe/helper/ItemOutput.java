@@ -246,13 +246,13 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public ItemOutput fromNetwork(FriendlyByteBuf buffer) {
-      return fromStack(stack.fromNetwork(buffer));
+    public ItemOutput decode(FriendlyByteBuf buffer) {
+      return fromStack(stack.decode(buffer));
     }
 
     @Override
-    public void toNetwork(ItemOutput object, FriendlyByteBuf buffer) {
-      stack.toNetwork(object.get(), buffer);
+    public void encode(FriendlyByteBuf buffer, ItemOutput object) {
+      stack.encode(buffer, object.get());
     }
 
 

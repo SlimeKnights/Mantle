@@ -93,8 +93,8 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public BlockPropertiesPredicate fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
-      Block block = Loadables.BLOCK.fromNetwork(buffer);
+    public BlockPropertiesPredicate decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+      Block block = Loadables.BLOCK.decode(buffer);
       int size = buffer.readVarInt();
       ImmutableList.Builder<Matcher> builder = ImmutableList.builder();
       for (int i = 0; i < size; i++) {
@@ -104,8 +104,8 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public void toNetwork(BlockPropertiesPredicate object, FriendlyByteBuf buffer) {
-      Loadables.BLOCK.toNetwork(object.block, buffer);
+    public void encode(FriendlyByteBuf buffer, BlockPropertiesPredicate object) {
+      Loadables.BLOCK.encode(buffer, object.block);
       buffer.writeVarInt(object.properties.size());
       for (Matcher matcher : object.properties) {
         matcher.toNetwork(buffer);

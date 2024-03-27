@@ -18,6 +18,7 @@ import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.loadable.ContextStreamable;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.DirectField;
@@ -38,7 +39,7 @@ import java.util.function.Predicate;
  * @param <T>  Type being loaded
  */
 @SuppressWarnings("unused")  // API
-public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
+public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T>, ContextStreamable<T> {
   /* Deserializing */
 
   /**
@@ -76,24 +77,21 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T> {
   }
 
 
-  /* Network */
+  /* IGenericLoader methods */
 
-  /**
-   * Parses this loadable from the network
-   * @param buffer  Buffer instance
-   * @param context  Additional parsing context, used notably by recipe serializers to store the ID and serializer.
-   *                 Will be {@link TypedMap#EMPTY} in nested usages unless {@link DirectField} is used.
-   * @return  Parsed object
-   * @throws io.netty.handler.codec.DecoderException  If unable to decode
-   */
-  T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context);
-
-  /** Contextless implementation of {@link #fromNetwork(FriendlyByteBuf, TypedMap)} for {@link Loadable}. */
+  /** @deprecated use {@link #decode(FriendlyByteBuf)} */
+  @Deprecated(forRemoval = true)
   @Override
   default T fromNetwork(FriendlyByteBuf buffer) {
-    return fromNetwork(buffer, TypedMap.empty());
+    return decode(buffer);
   }
 
+  /** @deprecated use {@link #encode(FriendlyByteBuf, Object)} */
+  @Deprecated(forRemoval = true)
+  @Override
+  default void toNetwork(T object, FriendlyByteBuf buffer) {
+    encode(buffer, object);
+  }
 
   /* Fields */
 

@@ -30,10 +30,10 @@ public interface ContextField<T> extends RecordField<T,Object> {
   default void serialize(Object parent, JsonObject json) {}
 
   @Override
-  default T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  default T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return get(context, ErrorFactory.DECODER_EXCEPTION);
   }
 
   @Override
-  default void toNetwork(Object parent, FriendlyByteBuf buffer) {}
+  default void encode(FriendlyByteBuf buffer, Object parent) {}
 }

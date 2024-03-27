@@ -47,7 +47,7 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
   }
 
   @Override
-  public Float fromNetwork(FriendlyByteBuf buffer) {
+  public Float decode(FriendlyByteBuf buffer) {
     return buffer.readFloat();
   }
 
@@ -57,7 +57,7 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
   }
 
   @Override
-  public void toNetwork(Float object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, Float object) {
     buffer.writeFloat(object);
   }
 }

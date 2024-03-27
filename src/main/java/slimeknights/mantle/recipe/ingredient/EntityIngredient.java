@@ -100,7 +100,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
 
   /** Writes this ingredient to the packet buffer */
   public void write(FriendlyByteBuf buffer) {
-    SET_MATCH.toNetwork(this, buffer);
+    SET_MATCH.encode(buffer, this);
   }
 
   /**
@@ -109,7 +109,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
    * @return  Ingredient instance
    */
   public static EntityIngredient read(FriendlyByteBuf buffer) {
-    return SET_MATCH.fromNetwork(buffer);
+    return SET_MATCH.decode(buffer);
   }
 
 

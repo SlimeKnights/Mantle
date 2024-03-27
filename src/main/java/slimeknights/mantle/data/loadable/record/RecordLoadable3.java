@@ -30,18 +30,18 @@ record RecordLoadable3<A,B,C,R>(
   }
 
   @Override
-  public R fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public R decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return constructor.apply(
-      fieldA.fromNetwork(buffer, context),
-      fieldB.fromNetwork(buffer, context),
-      fieldC.fromNetwork(buffer, context)
+      fieldA.decode(buffer, context),
+      fieldB.decode(buffer, context),
+      fieldC.decode(buffer, context)
     );
   }
 
   @Override
-  public void toNetwork(R object, FriendlyByteBuf buffer) {
-    fieldA.toNetwork(object, buffer);
-    fieldB.toNetwork(object, buffer);
-    fieldC.toNetwork(object, buffer);
+  public void encode(FriendlyByteBuf buffer, R object) {
+    fieldA.encode(buffer, object);
+    fieldB.encode(buffer, object);
+    fieldC.encode(buffer, object);
   }
 }

@@ -178,7 +178,7 @@ public abstract class FluidIngredient implements IAmLoadable {
    * @param buffer Packet buffer instance
    */
   public void write(FriendlyByteBuf buffer) {
-    NETWORK.toNetwork(this, buffer);
+    NETWORK.encode(buffer, this);
   }
 
   /**
@@ -187,7 +187,7 @@ public abstract class FluidIngredient implements IAmLoadable {
    * @return  Fluid ingredient instance
    */
   public static FluidIngredient read(FriendlyByteBuf buffer) {
-    return NETWORK.fromNetwork(buffer);
+    return NETWORK.decode(buffer);
   }
 
 

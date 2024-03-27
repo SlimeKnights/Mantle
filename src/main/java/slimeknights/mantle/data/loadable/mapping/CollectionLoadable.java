@@ -51,20 +51,20 @@ public abstract class CollectionLoadable<T,C extends Collection<T>,B extends Imm
   }
 
   @Override
-  public C fromNetwork(FriendlyByteBuf buffer) {
+  public C decode(FriendlyByteBuf buffer) {
     B builder = makeBuilder();
     int max = buffer.readVarInt();
     for (int i = 0; i < max; i++) {
-      builder.add(base.fromNetwork(buffer));
+      builder.add(base.decode(buffer));
     }
     return build(builder);
   }
 
   @Override
-  public void toNetwork(C collection, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, C collection) {
     buffer.writeVarInt(collection.size());
     for (T element : collection) {
-      base.toNetwork(element, buffer);
+      base.encode(buffer, element);
     }
   }
 }

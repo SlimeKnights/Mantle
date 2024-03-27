@@ -107,12 +107,12 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public BlockState fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public BlockState decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
     return Block.stateById(buffer.readVarInt());
   }
 
   @Override
-  public void toNetwork(BlockState object, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, BlockState object) {
     buffer.writeVarInt(Block.getId(object));
   }
 }

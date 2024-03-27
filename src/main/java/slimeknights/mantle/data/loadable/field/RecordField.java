@@ -38,13 +38,13 @@ public interface RecordField<T,P> {
    * @return  Parsed field value
    * @throws io.netty.handler.codec.DecoderException  If unable to decode a value from network
    */
-  T fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context);
+  T decode(FriendlyByteBuf buffer, TypedMap<Object> context);
 
   /**
    * Writes this field to the buffer
-   * @param parent  Parent to read values from
    * @param buffer  Buffer instance
+   * @param parent  Parent to read values from
    * @throws io.netty.handler.codec.EncoderException  If unable to encode a value to network
    */
-  void toNetwork(P parent, FriendlyByteBuf buffer);
+  void encode(FriendlyByteBuf buffer, P parent);
 }

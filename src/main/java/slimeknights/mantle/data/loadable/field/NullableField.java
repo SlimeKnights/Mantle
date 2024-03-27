@@ -26,19 +26,19 @@ public record NullableField<T,P>(Loadable<T> loadable, String key, Function<P,T>
   }
 
   @Override
-  public T fromNetwork(FriendlyByteBuf buffer) {
+  public T decode(FriendlyByteBuf buffer) {
     if (buffer.readBoolean()) {
-      return loadable.fromNetwork(buffer);
+      return loadable.decode(buffer);
     }
     return null;
   }
 
   @Override
-  public void toNetwork(P parent, FriendlyByteBuf buffer) {
+  public void encode(FriendlyByteBuf buffer, P parent) {
     T object = getter.apply(parent);
     if (object != null) {
       buffer.writeBoolean(true);
-      loadable.toNetwork(object, buffer);
+      loadable.encode(buffer, object);
     } else {
       buffer.writeBoolean(false);
     }
