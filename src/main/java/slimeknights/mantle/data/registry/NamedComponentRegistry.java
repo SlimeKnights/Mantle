@@ -3,15 +3,18 @@ package slimeknights.mantle.data.registry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /**
  * Generic registry of a component named by a resource location. Supports any arbitrary object without making any changes to it.
@@ -145,5 +148,41 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
   @Deprecated(forRemoval = true)
   public T fromNetworkOptional(FriendlyByteBuf buffer) {
     return decodeOptional(buffer);
+  }
+
+
+  /* Fields */
+
+  @Override
+  public <P> LoadableField<T,P> nullableField(String key, Function<P,T> getter) {
+    return new NullableField<>(this, key, getter);
+  }
+
+  /** Custom implementation of nullable field using our networking optional logic */
+  private record NullableField<T,P>(NamedComponentRegistry<T> registry, String key, Function<P,T> getter) implements LoadableField<T,P> {
+    @Nullable
+    @Override
+    public T get(JsonObject json) {
+      return registry.getOrDefault(json, key, null);
+    }
+
+    @Override
+    public void serialize(P parent, JsonObject json) {
+      T object = getter.apply(parent);
+      if (object != null) {
+        json.add(key, registry.serialize(object));
+      }
+    }
+
+    @Nullable
+    @Override
+    public T decode(FriendlyByteBuf buffer) {
+      return registry.decodeOptional(buffer);
+    }
+
+    @Override
+    public void encode(FriendlyByteBuf buffer, P parent) {
+      registry.encodeOptional(buffer, getter.apply(parent));
+    }
   }
 }
