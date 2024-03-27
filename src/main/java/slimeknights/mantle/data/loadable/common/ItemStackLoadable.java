@@ -145,7 +145,7 @@ public class ItemStackLoadable {
     public ItemStack fromNetwork(FriendlyByteBuf buffer, TypedMap<Object> context) {
       // not using makeItemStack as we need to set the share tag NBT here
       Item item = ITEM.fromNetwork(buffer, context);
-      int count = 0;
+      int count = 1;
       if (this == READ_COUNT) {
         count = COUNT.fromNetwork(buffer, context);
       }
