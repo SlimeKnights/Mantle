@@ -8,12 +8,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -32,7 +34,7 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
   public static final LoadableField<String,Recipe<?>> RECIPE_GROUP = StringLoadable.DEFAULT.defaultField("group", "", Recipe::getGroup);
 
 
-  private final RecordLoadable<T> loadable;
+  protected final RecordLoadable<T> loadable;
 
   /** Creates a standard serializer from a loadable */
   public static <T extends Recipe<?>> RecipeSerializer<T> of(RecordLoadable<T> loadable) {
@@ -59,6 +61,17 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
     return loadable.fromNetwork(buffer, buildContext(id).build());
   }
 
+  @Nullable
+  @Override
+  public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
+    try {
+      return fromNetworkSafe(id, buffer);
+    } catch (RuntimeException e) {
+      Mantle.logger.error("{}: Error reading recipe {} from packet using loadable {}", this.getClass().getSimpleName(), id, loadable, e);
+      throw e;
+    }
+  }
+
   @Override
   public void toNetworkSafe(FriendlyByteBuf buffer, T recipe) {
     loadable.toNetwork(recipe, buffer);
@@ -79,6 +92,17 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
     @Override
     public RecipeType<?> getType() {
       return type.get();
+    }
+
+    @Nullable
+    @Override
+    public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
+      try {
+        return fromNetworkSafe(id, buffer);
+      } catch (RuntimeException e) {
+        Mantle.logger.error("{}: Error reading recipe {} of type {} from packet using loadable {}", this.getClass().getSimpleName(), id, getType(), loadable, e);
+        throw e;
+      }
     }
   }
 }

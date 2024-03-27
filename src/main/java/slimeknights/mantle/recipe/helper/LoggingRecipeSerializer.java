@@ -37,7 +37,7 @@ public interface LoggingRecipeSerializer<T extends Recipe<?>> extends RecipeSeri
     try {
       return fromNetworkSafe(id, buffer);
     } catch (RuntimeException e) {
-      Mantle.logger.error("{}: Error writing recipe to packet", this.getClass().getSimpleName(), e);
+      Mantle.logger.error("{}: Error reading recipe {} from packet", this.getClass().getSimpleName(), id, e);
       throw e;
     }
   }
@@ -47,7 +47,7 @@ public interface LoggingRecipeSerializer<T extends Recipe<?>> extends RecipeSeri
     try {
       toNetworkSafe(buffer, recipe);
     } catch (RuntimeException e) {
-      Mantle.logger.error("{}: Error reading recipe from packet", this.getClass().getSimpleName(), e);
+      Mantle.logger.error("{}: Error writing recipe {} of class {} and type {} to packet", this.getClass().getSimpleName(), recipe.getId(), recipe.getClass().getSimpleName(), recipe.getType(), e);
       throw e;
     }
   }
