@@ -1,23 +1,18 @@
 package slimeknights.mantle.data.loadable.primitive;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
-import slimeknights.mantle.data.loadable.Loadable;
 
 import java.util.Locale;
 
 /** Loadable for an enum value */
-public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E... allowedValues) implements Loadable<E> {
+public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedValues) implements StringLoadable<E> {
   public EnumLoadable(Class<E> enumClass) {
     this(enumClass, enumClass.getEnumConstants());
   }
 
   @Override
-  public E convert(JsonElement element, String key) {
-    String name = GsonHelper.convertToString(element, key);
+  public E parseString(String name, String key) {
     for (E value : allowedValues) {
       if (value.name().toLowerCase(Locale.ROOT).equals(name)) {
         return value;
@@ -27,8 +22,8 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E... allowedVa
   }
 
   @Override
-  public JsonElement serialize(E object) {
-    return new JsonPrimitive(object.name().toLowerCase(Locale.ROOT));
+  public String getString(E object) {
+    return object.name().toLowerCase(Locale.ROOT);
   }
 
   @Override

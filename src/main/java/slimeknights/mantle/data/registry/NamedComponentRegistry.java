@@ -2,16 +2,13 @@ package slimeknights.mantle.data.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.LoadableField;
-import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -20,7 +17,7 @@ import java.util.function.Function;
  * Generic registry of a component named by a resource location. Supports any arbitrary object without making any changes to it.
  * @param <T> Type of the component being registered.
  */
-public class NamedComponentRegistry<T> implements Loadable<T> {
+public class NamedComponentRegistry<T> implements ResourceLocationLoadable<T> {
   /** Registered box expansion types */
   private final BiMap<ResourceLocation,T> values = HashBiMap.create();
   /** Name to make exceptions clearer */
@@ -50,7 +47,7 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
     return values.inverse().get(value);
   }
 
-  /** Gets the key associated with a value */
+  @Override
   public ResourceLocation getKey(T value) {
     ResourceLocation key = getOptionalKey(value);
     if (key == null) {
@@ -63,18 +60,12 @@ public class NamedComponentRegistry<T> implements Loadable<T> {
   /* Json */
 
   @Override
-  public T convert(JsonElement element, String key) {
-    ResourceLocation name = JsonHelper.convertToResourceLocation(element, key);
+  public T fromKey(ResourceLocation name, String key) {
     T value = getValue(name);
-    if (value == null) {
-      throw new JsonSyntaxException(errorText + name + " at '" + key + '\'');
+    if (value != null) {
+      return value;
     }
-    return value;
-  }
-
-  @Override
-  public JsonElement serialize(T object) {
-    return new JsonPrimitive(getKey(object).toString());
+    throw new JsonSyntaxException(errorText + name + " at '" + key + '\'');
   }
 
 

@@ -157,7 +157,7 @@ public class JsonHelper {
     String text = GsonHelper.convertToString(json, key);
     ResourceLocation location = ResourceLocation.tryParse(text);
     if (location == null) {
-      throw new JsonSyntaxException("Expected " + key + " to be a Resource location, was '" + text + "'");
+      throw new JsonSyntaxException("Expected " + key + " to be a resource location, was '" + text + "'");
     }
     return location;
   }
@@ -228,7 +228,7 @@ public class JsonHelper {
     if (color == null || color.isEmpty()) {
       return -1;
     }
-    return ColorLoadable.ALPHA.parseColor(color);
+    return ColorLoadable.ALPHA.parseString(color, "[unknown]");
   }
 
 

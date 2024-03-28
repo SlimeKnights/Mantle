@@ -3,17 +3,17 @@ package slimeknights.mantle.data.loadable.primitive;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.loadable.Loadable;
 
 /**
- * Loadable for an integer
- * @param min      Minimum allowed value
- * @param max      Maximum allowed value
- * @param network  Method of writing to the network
+ * Loadable for an integer.
+ * @see slimeknights.mantle.data.loadable.common.ColorLoadable
  */
-public record IntLoadable(int min, int max, IntNetwork network) implements Loadable<Integer> {
+@RequiredArgsConstructor
+public class IntLoadable implements Loadable<Integer> {
   /** Loadable ranging from integer min to integer max */
   public static final IntLoadable ANY_FULL = range(Integer.MIN_VALUE, Integer.MAX_VALUE);
   /** Loadable ranging from short min to short max */
@@ -25,6 +25,13 @@ public record IntLoadable(int min, int max, IntNetwork network) implements Loada
   /** Loadable ranging from one to short max */
   public static final IntLoadable FROM_ONE = min(1);
 
+  /** Minimum allowed value */
+  private final int min;
+  /** Maximum allowed value */
+  private final int max;
+  /** Method of writing to the network */
+  private final IntNetwork network;
+
   /** Creates a loadable with defaulting networking */
   public static IntLoadable range(int min, int max) {
     return new IntLoadable(min, max, IntNetwork.recommended(min, max));
@@ -35,9 +42,8 @@ public record IntLoadable(int min, int max, IntNetwork network) implements Loada
     return range(min, Short.MAX_VALUE);
   }
 
-  @Override
-  public Integer convert(JsonElement element, String key) {
-    int value = GsonHelper.convertToInt(element, key);
+  /** ensures the int is within valid ranges */
+  protected int validate(int value, String key) {
     if (min <= value && value <= max) {
       return value;
     }
@@ -51,9 +57,17 @@ public record IntLoadable(int min, int max, IntNetwork network) implements Loada
   }
 
   @Override
-  public JsonElement serialize(Integer object) {
-    return new JsonPrimitive(object);
+  public Integer convert(JsonElement element, String key) {
+    return validate(GsonHelper.convertToInt(element, key), key);
   }
+
+  @Override
+  public JsonElement serialize(Integer value) {
+    return new JsonPrimitive(value);
+  }
+
+
+  /* Networking */
 
   @Override
   public Integer decode(FriendlyByteBuf buffer) {
@@ -116,6 +130,54 @@ public record IntLoadable(int min, int max, IntNetwork network) implements Loada
         return IntNetwork.SHORT;
       }
       return IntNetwork.INT;
+    }
+  }
+
+
+  /* Strings */
+
+  /**
+   * Creates an int loadable that writes to JSON as a string, can be used as a map key.
+   * @param radix  Base for conversion, base 10 is standard JSON numbers.
+   */
+  public StringLoadable<Integer> asString(int radix) {
+    return new StringIntLoadable(min, max, radix, network);
+  }
+
+
+  /** Writes to a string instead of to an integer */
+  private static class StringIntLoadable extends IntLoadable implements StringLoadable<Integer> {
+    private final int radix;
+    public StringIntLoadable(int min, int max, int radix, IntNetwork network) {
+      super(min, max, network);
+      if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX) {
+        throw new IllegalArgumentException("Invalid radix " + radix + ", must be between " + Character.MIN_RADIX + " and " + Character.MAX_RADIX);
+      }
+      this.radix = radix;
+    }
+
+    @Override
+    public Integer parseString(String value, String key) {
+      try {
+        return validate(Integer.parseInt(value, radix), key);
+      } catch (NumberFormatException e) {
+        throw new JsonSyntaxException("Failed to parse integer at " + key, e);
+      }
+    }
+
+    @Override
+    public Integer convert(JsonElement element, String key) {
+      return parseString(GsonHelper.convertToString(element, key), key);
+    }
+
+    @Override
+    public String getString(Integer value) {
+      return Integer.toString(value, radix);
+    }
+
+    @Override
+    public JsonElement serialize(Integer value) {
+      return new JsonPrimitive(getString(value));
     }
   }
 }

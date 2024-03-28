@@ -2,40 +2,97 @@ package slimeknights.mantle.data.loadable.primitive;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.mapping.MapLoadable;
+import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
+
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
- * Loadable for an integer
- * @param maxLength   Maximum length of string allowed
+ * Loadable that maps to a string, can be used as a key for a {@link com.google.gson.JsonObject} parsed as a {@link java.util.Map}.
+ * @param <T>
  */
-public record StringLoadable(int maxLength) implements Loadable<String> {
+public interface StringLoadable<T> extends Loadable<T> {
   /** Loadable for the default max string length */
-  public static final StringLoadable DEFAULT = new StringLoadable(Short.MAX_VALUE);
+  StringLoadable<String> DEFAULT = maxLength(Short.MAX_VALUE);
+
+  /** Creates a new string loadable with the given max length */
+  static StringLoadable<String> maxLength(int maxLength) {
+    return new MaxLengthStringLoadable(maxLength);
+  }
+
+  /**
+   * Converts this value from a string.
+   * @param value  Value to parse
+   * @param key    Json key containing the value used for exceptions only.
+   * @return  Converted value.'
+   * @throws com.google.gson.JsonSyntaxException  If unable to parse the value
+   */
+  T parseString(String value, String key);
 
   @Override
-  public String convert(JsonElement element, String key) {
-    String value = GsonHelper.convertToString(element, key);
-    if (value.length() > maxLength) {
-      throw new JsonSyntaxException(key + " may not be longer than " + maxLength);
-    }
-    return value;
+  default T convert(JsonElement element, String key) {
+    return parseString(GsonHelper.convertToString(element, key), key);
+  }
+
+  /**
+   * Converts this object to its serialized representation.
+   * @param object  Object to serialize
+   * @return  String representation of the object.
+   * @throws RuntimeException  if unable to serialize this to a string
+   */
+  String getString(T object);
+
+  @Override
+  default JsonElement serialize(T object) {
+    return new JsonPrimitive(getString(object));
+  }
+
+
+  /* Mapping - switches to the string version of the methods */
+
+  /**
+   * Creates a map loadable with this as the key
+   * @param valueLoadable  Loadable for the map values
+   * @param minSize        Min size of the map
+   * @param <V>  Map value type
+   * @return  Map loadable
+   */
+  default <V> Loadable<Map<T,V>> mapWithValues(Loadable<V> valueLoadable, int minSize) {
+    return new MapLoadable<>(this, valueLoadable, minSize);
+  }
+
+  /**
+   * Creates a map loadable with this as the key with a min size of 1
+   * @param valueLoadable  Loadable for the map values
+   * @param <V>  Map value type
+   * @return  Map loadable
+   */
+  default <V> Loadable<Map<T,V>> mapWithValues(Loadable<V> valueLoadable) {
+    return mapWithValues(valueLoadable, 1);
   }
 
   @Override
-  public JsonElement serialize(String object) {
-    return new JsonPrimitive(object);
+  default <M> StringLoadable<M> map(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
+    return MappedLoadable.of(this, from, to);
   }
 
   @Override
-  public String decode(FriendlyByteBuf buffer) {
-    return buffer.readUtf(maxLength);
+  default <M> StringLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
+    return map(from, MappedLoadable.flatten(to));
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, String object) {
-    buffer.writeUtf(object, maxLength);
+  default <M> StringLoadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
+    return map(MappedLoadable.flatten(from), to);
+  }
+
+  @Override
+  default <M> StringLoadable<M> flatMap(Function<T,M> from, Function<M,T> to) {
+    return map(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
 }

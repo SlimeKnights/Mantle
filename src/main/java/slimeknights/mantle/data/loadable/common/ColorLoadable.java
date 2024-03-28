@@ -1,19 +1,16 @@
 package slimeknights.mantle.data.loadable.common;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
-import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 
 /** Loadable to fetch colors from JSON */
 @RequiredArgsConstructor
-public enum ColorLoadable implements Loadable<Integer> {
+public enum ColorLoadable implements StringLoadable<Integer> {
   ALPHA {
     @Override
-    public int parseColor(String color) {
+    public Integer parseString(String color, String key) {
       // two options, 6 character or 8 character, must not start with - sign
       if (color.charAt(0) != '-') {
         try {
@@ -29,17 +26,17 @@ public enum ColorLoadable implements Loadable<Integer> {
           // NO-OP
         }
       }
-      throw new JsonSyntaxException("Invalid color '" + color + "'");
+      throw new JsonSyntaxException("Invalid color '" + color + "' at " + key);
     }
 
     @Override
-    public String colorString(int color) {
+    public String getString(Integer color) {
       return String.format("%08X", color);
     }
   },
   NO_ALPHA {
     @Override
-    public int parseColor(String color) {
+    public Integer parseString(String color, String key) {
       // only consider 6 digits with no alpha, will force to full alpha
       if (color.charAt(0) != '-' && color.length() == 6) {
         try {
@@ -48,34 +45,14 @@ public enum ColorLoadable implements Loadable<Integer> {
           // NO-OP
         }
       }
-      throw new JsonSyntaxException("Invalid color '" + color + "'");
+      throw new JsonSyntaxException("Invalid color '" + color + "' at " + key);
     }
 
     @Override
-    public String colorString(int color) {
+    public String getString(Integer color) {
       return String.format("%06X", color & 0xFFFFFF);
     }
   };
-
-  /**
-   * Parses the color from the given string
-   * @param color  Color string
-   * @return  Color value
-   */
-  public abstract int parseColor(String color);
-
-  /** Writes the given color as a string */
-  public abstract String colorString(int color);
-
-  @Override
-  public Integer convert(JsonElement element, String key) {
-    return parseColor(GsonHelper.convertToString(element, key));
-  }
-
-  @Override
-  public JsonElement serialize(Integer color) {
-    return new JsonPrimitive(colorString(color));
-  }
 
   @Override
   public Integer decode(FriendlyByteBuf buffer) {

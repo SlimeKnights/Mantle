@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
@@ -28,6 +29,11 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   /** Creates a new loadable for a record loadable */
   public static <T,F> RecordLoadable<T> of(RecordLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
     return new Record<>(base, from, to);
+  }
+
+  /** Creates a new loadable for a record loadable */
+  public static <T,F> StringLoadable<T> of(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
+    return new StringMapped<>(base, from, to);
   }
 
   /** Flattens the given mapping function */
@@ -76,6 +82,25 @@ public class MappedLoadable<F,T> implements Loadable<T> {
     @Override
     public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
       return from.apply(base.decode(buffer, context), ErrorFactory.DECODER_EXCEPTION);
+    }
+  }
+
+  /** Implementation for strings */
+  private static class StringMapped<F,T> extends MappedLoadable<F,T> implements StringLoadable<T> {
+    private final StringLoadable<F> base;
+    protected StringMapped(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
+      super(base, from, to);
+      this.base = base;
+    }
+
+    @Override
+    public T parseString(String value, String key) {
+      return from.apply(base.parseString(value, key), ErrorFactory.JSON_SYNTAX_ERROR);
+    }
+
+    @Override
+    public String getString(T object) {
+      return base.getString(to.apply(object, ErrorFactory.RUNTIME));
     }
   }
 }
