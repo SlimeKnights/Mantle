@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.ForgeRegistries;
+import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.util.IdExtender.LocationExtender;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -43,7 +43,7 @@ public record FluidTexture(ResourceLocation still, ResourceLocation flowing, @Nu
     if (json.has("camera")) {
       camera = LocationExtender.INSTANCE.wrap(JsonHelper.getResourceLocation(json, "camera"), "textures/", ".png");
     }
-    int color = JsonHelper.parseColor(GsonHelper.getAsString(json, "color"));
+    int color = ColorLoadable.ALPHA.getOrDefault(json, "color", -1);
     return new FluidTexture(still, flowing, overlay, camera, color);
   }
 

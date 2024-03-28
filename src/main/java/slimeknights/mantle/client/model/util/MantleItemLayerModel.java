@@ -30,6 +30,7 @@ import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.client.model.geometry.UnbakedGeometryHelper;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.minecraftforge.client.model.pipeline.TransformingVertexPipeline;
+import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.LogicHelper;
@@ -500,7 +501,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
      * Parses the layer data from JSON
      */
     public static LayerData fromJson(JsonObject json) {
-      int color = JsonHelper.parseColor(GsonHelper.getAsString(json, "color", ""));
+      int color = ColorLoadable.ALPHA.getOrDefault(json, "color", -1);
       // TODO: rename this field?
       int luminosity = GsonHelper.getAsInt(json, "luminosity");
       boolean noTint = GsonHelper.getAsBoolean(json, "no_tint", false);

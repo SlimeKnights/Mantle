@@ -221,7 +221,9 @@ public class JsonHelper {
    * Parses a color as a string
    * @param color  Color to parse
    * @return  Parsed string
+   * @deprecated use {@link ColorLoadable#parseString(String, String)}
    */
+  @Deprecated(forRemoval = true)
   public static int parseColor(@Nullable String color) {
     if (color == null || color.isEmpty()) {
       return -1;

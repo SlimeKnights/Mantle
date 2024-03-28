@@ -30,6 +30,7 @@ import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.LogicHelper;
 
@@ -162,7 +163,7 @@ public class ColoredBlockModel extends SimpleBlockModel {
      * Parses the color data from JSON
      */
     public static ColorData fromJson(JsonObject json) {
-      int color = JsonHelper.parseColor(GsonHelper.getAsString(json, "color", ""));
+      int color = ColorLoadable.ALPHA.getOrDefault(json, "color", -1);
       int luminosity = GsonHelper.getAsInt(json, "luminosity", -1);
       Boolean uvlock = null;
       if (json.has("uvlock")) {
