@@ -13,6 +13,7 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.field.NullableField;
 import slimeknights.mantle.data.loadable.field.RequiredField;
 import slimeknights.mantle.data.loadable.field.TryDirectField;
+import slimeknights.mantle.data.loadable.mapping.AnyCollectionLoadable;
 import slimeknights.mantle.data.loadable.mapping.ListLoadable;
 import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
 import slimeknights.mantle.data.loadable.mapping.SetLoadable;
@@ -20,6 +21,7 @@ import slimeknights.mantle.data.loadable.mapping.SetLoadable;
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -125,7 +127,7 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Str
   }
 
 
-  /* Builders */
+  /* Collections */
 
   /** Makes a list of this loadable */
   default Loadable<List<T>> list(int minSize) {
@@ -145,6 +147,16 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Str
   /** Makes a set of this loadable */
   default Loadable<Set<T>> set() {
     return set(1);
+  }
+
+  /** Makes a map from this loadable with this as values using the getter to determine map keys */
+  default <K> Loadable<Map<K,T>> mapWithKeys(int minSize, Function<T,K> keyGetter) {
+    return AnyCollectionLoadable.setBacked(this, minSize).mapWithKeys(keyGetter);
+  }
+
+  /** Makes a map from this loadable with this as keys using the getter to determine map values */
+  default  <V> Loadable<Map<T,V>> mapWithValues(int minSize, Function<T,V> valueGetter) {
+    return AnyCollectionLoadable.setBacked(this, minSize).mapWithValues(valueGetter);
   }
 
 
