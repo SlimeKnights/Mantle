@@ -38,7 +38,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
   /** Loadable for a tag match */
   private static final RecordLoadable<TagMatch> TAG_MATCH = RecordLoadable.create(Loadables.ENTITY_TYPE_TAG.requiredField("tag", t -> t.tag), TagMatch::new);
   /** Loadable disallows nested lists, just handles nested tags and sets */
-  private static final Loadable<Compound> COMPOUND = EntityIngredient.loadableBuilder().build(SET_MATCH).list(2).flatMap(Compound::new, c -> c.ingredients);
+  private static final Loadable<Compound> COMPOUND = EntityIngredient.loadableBuilder().build(SET_MATCH).list(2).flatXmap(Compound::new, c -> c.ingredients);
   /** Loadable for any fluid ingredient */
   public static final Loadable<EntityIngredient> LOADABLE = loadableBuilder().array(COMPOUND).build(SET_MATCH);
 

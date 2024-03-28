@@ -41,11 +41,11 @@ public class AnyCollectionLoadable<T> extends CollectionLoadable<T,Collection<T>
 
   /** Creates a map from this collection using the given getter to find keys for the map */
   public <K> Loadable<Map<K,T>> mapWithKeys(Function<T,K> keyGetter) {
-    return flatMap(collection -> collection.stream().collect(Collectors.toUnmodifiableMap(keyGetter, Function.identity())), Map::values);
+    return flatXmap(collection -> collection.stream().collect(Collectors.toUnmodifiableMap(keyGetter, Function.identity())), Map::values);
   }
 
   /** Creates a map from this collection using the given getter to find values for the map */
   public <V> Loadable<Map<T,V>> mapWithValues(Function<T,V> valueGetter) {
-    return flatMap(collection -> collection.stream().collect(Collectors.toUnmodifiableMap(Function.identity(), valueGetter)), Map::keySet);
+    return flatXmap(collection -> collection.stream().collect(Collectors.toUnmodifiableMap(Function.identity(), valueGetter)), Map::keySet);
   }
 }

@@ -31,14 +31,14 @@ public class Loadables {
   private Loadables() {}
 
   /** Loadable for a resource location */
-  public static final StringLoadable<ResourceLocation> RESOURCE_LOCATION = StringLoadable.DEFAULT.map((s, e) -> {
+  public static final StringLoadable<ResourceLocation> RESOURCE_LOCATION = StringLoadable.DEFAULT.xmap((s, e) -> {
     try {
       return new ResourceLocation(s);
     } catch (ResourceLocationException ex) {
       throw e.create(ex);
     }
   }, (r, e) -> r.toString());
-  public static final StringLoadable<ToolAction> TOOL_ACTION = StringLoadable.DEFAULT.flatMap(ToolAction::get, ToolAction::name);
+  public static final StringLoadable<ToolAction> TOOL_ACTION = StringLoadable.DEFAULT.flatXmap(ToolAction::get, ToolAction::name);
 
   /* Registries */
   public static final StringLoadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(Registry.SOUND_EVENT);
@@ -73,7 +73,7 @@ public class Loadables {
 
   /** Creates a tag key loadable */
   public static <T> StringLoadable<TagKey<T>> tagKey(ResourceKey<? extends Registry<T>> registry) {
-    return RESOURCE_LOCATION.flatMap(key -> TagKey.create(registry, key), TagKey::location);
+    return RESOURCE_LOCATION.flatXmap(key -> TagKey.create(registry, key), TagKey::location);
   }
 
   /** Maps a loadable to a variant that disallows a particular value */
@@ -84,6 +84,6 @@ public class Loadables {
       }
       return value;
     };
-    return loadable.map(mapper, mapper);
+    return loadable.xmap(mapper, mapper);
   }
 }

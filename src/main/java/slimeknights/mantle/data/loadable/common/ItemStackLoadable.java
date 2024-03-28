@@ -47,7 +47,7 @@ public class ItemStackLoadable {
 
   /* Optional */
   /** Single item which may be empty with a count of 1 */
-  public static final Loadable<ItemStack> OPTIONAL_ITEM = Loadables.ITEM.flatMap(item -> makeStack(item, 1, null), ITEM_GETTER);
+  public static final Loadable<ItemStack> OPTIONAL_ITEM = Loadables.ITEM.flatXmap(item -> makeStack(item, 1, null), ITEM_GETTER);
   /** Loadable for a stack that may be empty with variable count */
   public static final RecordLoadable<ItemStack> OPTIONAL_STACK = RecordLoadable.create(ITEM, COUNT, (item, count) -> makeStack(item, count, null))
                                                                                .compact(OPTIONAL_ITEM, stack -> stack.getCount() == 1);
@@ -83,12 +83,12 @@ public class ItemStackLoadable {
 
   /** Creates a non-empty variant of the loadable */
   public static Loadable<ItemStack> notEmpty(Loadable<ItemStack> loadable) {
-    return loadable.map(NOT_EMPTY, NOT_EMPTY);
+    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
   }
 
   /** Creates a non-empty variant of the loadable */
   public static RecordLoadable<ItemStack> notEmpty(RecordLoadable<ItemStack> loadable) {
-    return loadable.map(NOT_EMPTY, NOT_EMPTY);
+    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
   }
 
   /** Loadable for an item stack with NBT, requires special logic due to forges share tags */

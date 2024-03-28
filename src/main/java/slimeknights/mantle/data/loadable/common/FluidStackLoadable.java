@@ -81,7 +81,7 @@ public class FluidStackLoadable {
     if (amount <= 0) {
       throw new IllegalArgumentException("Count must be positive, received " + amount);
     }
-    return Loadables.FLUID.flatMap(fluid -> makeStack(fluid, amount, null), FLUID_GETTER);
+    return Loadables.FLUID.flatXmap(fluid -> makeStack(fluid, amount, null), FLUID_GETTER);
   }
 
   /** Creates a loadable for a stack with a single item */
@@ -95,11 +95,11 @@ public class FluidStackLoadable {
 
   /** Creates a non-empty variant of the loadable */
   public static Loadable<FluidStack> notEmpty(Loadable<FluidStack> loadable) {
-    return loadable.map(NOT_EMPTY, NOT_EMPTY);
+    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
   }
 
   /** Creates a non-empty variant of the loadable */
   public static RecordLoadable<FluidStack> notEmpty(RecordLoadable<FluidStack> loadable) {
-    return loadable.map(NOT_EMPTY, NOT_EMPTY);
+    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
   }
 }

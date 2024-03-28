@@ -109,23 +109,23 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T>, Conte
   /* Mapping - switches to the record version of the methods */
 
   @Override
-  default <M> RecordLoadable<M> map(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
+  default <M> RecordLoadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
     return MappedLoadable.of(this, from, to);
   }
 
   @Override
   default <M> RecordLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
-    return map(from, MappedLoadable.flatten(to));
+    return xmap(from, MappedLoadable.flatten(to));
   }
 
   @Override
   default <M> RecordLoadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return map(MappedLoadable.flatten(from), to);
+    return xmap(MappedLoadable.flatten(from), to);
   }
 
   @Override
-  default <M> RecordLoadable<M> flatMap(Function<T,M> from, Function<M,T> to) {
-    return map(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
+  default <M> RecordLoadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
+    return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
 
 

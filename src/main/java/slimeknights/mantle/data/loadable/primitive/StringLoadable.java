@@ -77,22 +77,22 @@ public interface StringLoadable<T> extends Loadable<T> {
   }
 
   @Override
-  default <M> StringLoadable<M> map(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
+  default <M> StringLoadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
     return MappedLoadable.of(this, from, to);
   }
 
   @Override
   default <M> StringLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
-    return map(from, MappedLoadable.flatten(to));
+    return xmap(from, MappedLoadable.flatten(to));
   }
 
   @Override
   default <M> StringLoadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return map(MappedLoadable.flatten(from), to);
+    return xmap(MappedLoadable.flatten(from), to);
   }
 
   @Override
-  default <M> StringLoadable<M> flatMap(Function<T,M> from, Function<M,T> to) {
-    return map(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
+  default <M> StringLoadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
+    return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
 }
