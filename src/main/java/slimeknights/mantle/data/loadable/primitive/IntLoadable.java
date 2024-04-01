@@ -18,11 +18,11 @@ public class IntLoadable implements Loadable<Integer> {
   public static final IntLoadable ANY_FULL = range(Integer.MIN_VALUE, Integer.MAX_VALUE);
   /** Loadable ranging from short min to short max */
   public static final IntLoadable ANY_SHORT = range(Short.MIN_VALUE, Short.MAX_VALUE);
-  /** Loadable ranging from -1 to short max */
-  public static final IntLoadable FROM_MINUS_ONE = min(-1);
-  /** Loadable ranging from zero to short max */
+  /** Loadable ranging from -1 to integer max */
+  public static final IntLoadable FROM_MINUS_ONE = range(-1, Short.MAX_VALUE);
+  /** Loadable ranging from zero to integer max */
   public static final IntLoadable FROM_ZERO = min(0);
-  /** Loadable ranging from one to short max */
+  /** Loadable ranging from one to integer max */
   public static final IntLoadable FROM_ONE = min(1);
 
   /** Minimum allowed value */
@@ -39,7 +39,7 @@ public class IntLoadable implements Loadable<Integer> {
 
   /** Creates a loadable ranging from the parameter to short max */
   public static IntLoadable min(int min) {
-    return range(min, Short.MAX_VALUE);
+    return range(min, Integer.MAX_VALUE);
   }
 
   /** ensures the int is within valid ranges */
