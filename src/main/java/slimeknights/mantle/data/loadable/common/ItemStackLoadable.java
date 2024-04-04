@@ -83,12 +83,12 @@ public class ItemStackLoadable {
 
   /** Creates a non-empty variant of the loadable */
   public static Loadable<ItemStack> notEmpty(Loadable<ItemStack> loadable) {
-    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
+    return loadable.validate(NOT_EMPTY);
   }
 
   /** Creates a non-empty variant of the loadable */
   public static RecordLoadable<ItemStack> notEmpty(RecordLoadable<ItemStack> loadable) {
-    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
+    return loadable.validate(NOT_EMPTY);
   }
 
   /** Loadable for an item stack with NBT, requires special logic due to forges share tags */

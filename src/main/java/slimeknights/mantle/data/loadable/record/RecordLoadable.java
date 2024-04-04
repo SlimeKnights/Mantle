@@ -128,6 +128,11 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T>, Conte
     return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
 
+  @Override
+  default RecordLoadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
+    return xmap(validator, validator);
+  }
+
 
   /* Helpers to create the final loadable */
 
