@@ -11,6 +11,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.IAmLoadable;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -37,12 +38,19 @@ public abstract class FluidIngredient implements IAmLoadable {
 
   /** Creates a builder with set and tag */
   private static EitherLoadable.TypedBuilder<FluidIngredient> loadableBuilder() {
-    return EitherLoadable.<FluidIngredient>typed().key("fluid", FLUID_MATCH).key("tag", TAG_MATCH);
+    return EitherLoadable.<FluidIngredient>typed().key("fluid", FLUID_MATCH).key("tag", TAG_MATCH).key("name", NAME_MATCH);
   }
   /** Loadable for network writing of fluids */
   private static final Loadable<FluidIngredient> NETWORK = FluidStackLoadable.REQUIRED_STACK.list(0).flatXmap(fluids -> FluidIngredient.of(fluids.stream().map(FluidIngredient::of).toList()), FluidIngredient::getFluids);
   /** Loadable for fluid matches */
   private static final RecordLoadable<FluidMatch> FLUID_MATCH = RecordLoadable.create(Loadables.FLUID.requiredField("fluid", i -> i.fluid), IntLoadable.FROM_ONE.requiredField("amount", i -> i.amount), FluidIngredient::of);
+  /** @deprecated Old key for fluid ingredients, remove sometime in 1.20 or 1.21 */
+  @Deprecated(forRemoval = true)
+  private static final RecordLoadable<FluidMatch> NAME_MATCH = RecordLoadable.create(Loadables.FLUID.requiredField("name", i -> i.fluid), IntLoadable.FROM_ONE.requiredField("amount", i -> i.amount), (fluid, amount) -> {
+    // TODO: is there a good way to get recipe context here? Cannot think of a way short of a global static context.
+    Mantle.logger.warn("Using deprecated key 'name' for fluid ingredient, use 'fluid' instead. This will be removed in the future");
+    return FluidIngredient.of(fluid, amount);
+  });
   /** Loadable for tag matches */
   private static final RecordLoadable<TagMatch> TAG_MATCH = RecordLoadable.create(Loadables.FLUID_TAG.requiredField("tag", i -> i.tag), IntLoadable.FROM_ONE.requiredField("amount", i -> i.amount), FluidIngredient::of);
   /** Loadable for tag matches */
