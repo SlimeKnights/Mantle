@@ -132,8 +132,8 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     return getClass().getName() + "('" + name + "')";
   }
 
-  /** @deprecated use {@link slimeknights.mantle.data.loadable.record.RecordLoadable} */
-  @Deprecated(forRemoval = true)
+  /** @deprecated use {@link slimeknights.mantle.data.loadable.record.RecordLoadable}. Will fully replace it in 1.20. */
+  @Deprecated
   public interface IGenericLoader<T> {
     /** Deserializes the object from json */
     T deserialize(JsonObject json);
