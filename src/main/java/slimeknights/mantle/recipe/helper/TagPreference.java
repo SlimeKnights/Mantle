@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -26,10 +27,9 @@ public class TagPreference {
   /** Just an alphabetically late RL to simplify null checks */
   private static final ResourceLocation DEFAULT_ID = new ResourceLocation("zzzzz:zzzzz"); // simplfies null checks
 
-  /** Specific cache to this tag preference class type */
-  private static final Map<TagKey<?>, Optional<?>> PREFERENCE_CACHE = new HashMap<>();
-
-  /** Specific cache to this tag preference class type */
+  /** Cache from any tag key to its value */
+  private static final Map<TagKey<?>, Optional<?>> PREFERENCE_CACHE = new ConcurrentHashMap<>();
+  /** Cache of comparator instances, not concurrent because it's only used inside {@link #getUncachedPreference(TagKey)} which is only used inside the concurrent {@link #PREFERENCE_CACHE}. */
   private static final Map<ResourceKey<?>, RegistryComparator<?>> COMPARATOR_CACHE = new HashMap<>();
 
   /** Registers the listener with the event bus */
