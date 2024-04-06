@@ -3,11 +3,11 @@ package slimeknights.mantle.client.model.fluid;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.math.Vector3f;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.core.Direction;
 import net.minecraft.util.GsonHelper;
+import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -67,7 +67,7 @@ public class FluidCuboid {
    */
   public Vector3f getFromScaled() {
     if (fromScaled == null) {
-      fromScaled = from.copy();
+      fromScaled = new Vector3f(from);
       fromScaled.mul(1 / 16f);
     }
     return fromScaled;
@@ -79,7 +79,7 @@ public class FluidCuboid {
    */
   public Vector3f getToScaled() {
     if (toScaled == null) {
-      toScaled = to.copy();
+      toScaled = new Vector3f(to);
       toScaled.mul(1 / 16f);
     }
     return toScaled;

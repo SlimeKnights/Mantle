@@ -3,7 +3,7 @@
 package slimeknights.mantle.client.book.structure.level;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -27,21 +27,20 @@ public class TemplateChunk extends EmptyLevelChunk {
   private final Predicate<BlockPos> shouldShow;
 
   public TemplateChunk(Level level, ChunkPos chunkPos, List<StructureBlockInfo> blocksInChunk, Predicate<BlockPos> shouldShow) {
-    super(level, chunkPos, BuiltinRegistries.BIOME.getHolderOrThrow(Biomes.PLAINS));
+    super(level, chunkPos, level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
     this.shouldShow = shouldShow;
     this.blocksInChunk = new HashMap<>();
     this.tiles = new HashMap<>();
 
     for (StructureBlockInfo info : blocksInChunk) {
-      this.blocksInChunk.put(info.pos, info);
+      this.blocksInChunk.put(info.pos(), info);
 
-      //noinspection ConstantConditions wrong nullability annotations
-      if (info.nbt != null) {
-        BlockEntity tile = BlockEntity.loadStatic(info.pos, info.state, info.nbt);
+      if (info.nbt() != null) {
+        BlockEntity tile = BlockEntity.loadStatic(info.pos(), info.state(), info.nbt());
 
         if (tile != null) {
           tile.setLevel(level);
-          this.tiles.put(info.pos, tile);
+          this.tiles.put(info.pos(), tile);
         }
       }
     }
@@ -53,7 +52,7 @@ public class TemplateChunk extends EmptyLevelChunk {
       StructureBlockInfo result = this.blocksInChunk.get(pos);
 
       if (result != null)
-        return result.state;
+        return result.state();
     }
 
     return Blocks.VOID_AIR.defaultBlockState();

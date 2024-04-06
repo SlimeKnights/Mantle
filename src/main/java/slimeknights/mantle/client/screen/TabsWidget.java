@@ -1,10 +1,7 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -18,8 +15,6 @@ public class TabsWidget extends Widget {
   private final ElementScreen[] tabActive = new ElementScreen[3];
   private final ElementScreen[] tab = new ElementScreen[3];
 
-  // change this if you need different tabs
-  public ResourceLocation tabsResource = creativeInventoryTabs;
   // changes the y-offset of the tab row
   public int yOffset = 4;
   // space between 2 tabs
@@ -115,7 +110,7 @@ public class TabsWidget extends Widget {
   }
 
   @Override
-  public void draw(PoseStack matrixStack) {
+  public void draw(GuiGraphics graphics) {
     int y = this.yPos + this.yOffset;
     for (int i = 0; i < this.icons.size(); i++) {
       int x = this.xPos + i * this.tab[0].w;
@@ -141,27 +136,13 @@ public class TabsWidget extends Widget {
       }
 
       // todo: draw all the tabs first and then all the itemstacks so it doesn't have to switch texture in between all the time
-
-      // rebind texture from drawing an itemstack
-      RenderSystem.setShaderTexture(0, this.tabsResource);
-      actualTab.draw(matrixStack,x, y);
+      // is above TODO still valid since mojang now auto-stitches every time?
+      actualTab.draw(graphics, x, y);
 
       ItemStack icon = this.icons.get(i);
       if (icon != null) {
-        this.drawItemStack(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
-        // Lighting.turnOff(); TODO: still needed?
+        graphics.renderItem(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
       }
     }
-  }
-
-  /** Based on {@link net.minecraft.client.gui.screens.inventory.AbstractContainerScreen#renderFloatingItem(net.minecraft.world.item.ItemStack, int, int, java.lang.String)} */
-  private void drawItemStack(ItemStack stack, int x, int y) {
-    PoseStack poses = RenderSystem.getModelViewStack();
-    poses.translate(0, 0, 32f);
-    RenderSystem.applyModelViewMatrix();
-    ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
-    itemRender.blitOffset = 200.0F;
-    itemRender.renderAndDecorateItem(stack, x, y);
-    itemRender.blitOffset = 0.0F;
   }
 }

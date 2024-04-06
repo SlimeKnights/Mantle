@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.deferred;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -14,7 +14,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class MenuTypeDeferredRegister extends DeferredRegisterWrapper<MenuType<?>> {
 
   public MenuTypeDeferredRegister(String modID) {
-    super(Registry.MENU_REGISTRY, modID);
+    super(Registries.MENU, modID);
   }
 
   /**

@@ -1,6 +1,6 @@
 package slimeknights.mantle.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -84,22 +84,22 @@ public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Abs
   /**
    * Callback to draw background elements
    */
-  public void handleDrawGuiContainerBackgroundLayer(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-    this.renderBg(matrixStack,partialTicks, mouseX, mouseY);
+  public void handleDrawGuiContainerBackgroundLayer(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    this.renderBg(graphics, partialTicks, mouseX, mouseY);
   }
 
   /**
    * Callback to draw foreground elements
    */
-  public void handleDrawGuiContainerForegroundLayer(PoseStack matrixStack, int mouseX, int mouseY) {
-    this.renderLabels(matrixStack, mouseX, mouseY);
+  public void handleDrawGuiContainerForegroundLayer(GuiGraphics graphics, int mouseX, int mouseY) {
+    this.renderLabels(graphics, mouseX, mouseY);
   }
 
   /**
    * Callback to draw hovering tooltips
    */
-  public void handleRenderHoveredTooltip(PoseStack matrixStack, int mouseX, int mouseY) {
-    this.renderTooltip(matrixStack, mouseX, mouseY);
+  public void handleRenderHoveredTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+    this.renderTooltip(graphics, mouseX, mouseY);
   }
 
   /**

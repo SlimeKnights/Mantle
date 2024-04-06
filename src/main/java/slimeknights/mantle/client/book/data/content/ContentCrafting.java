@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
@@ -109,8 +110,9 @@ public class ContentCrafting extends PageContent {
     if (!StringUtils.isEmpty(recipe) && ResourceLocation.isValidResourceLocation(recipe)) {
       int w = 0, h = 0;
 
-      assert Minecraft.getInstance().level != null;
-      Recipe<?> recipe = Minecraft.getInstance().level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
+      Level level = Minecraft.getInstance().level;
+      assert level != null;
+      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
       if (recipe instanceof CraftingRecipe) {
         if(grid_size.equalsIgnoreCase("auto")) {
           if(recipe.canCraftInDimensions(2, 2)) {
@@ -129,7 +131,7 @@ public class ContentCrafting extends PageContent {
           throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
         }
 
-        result = IngredientData.getItemStackData(recipe.getResultItem());
+        result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
 
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
 

@@ -7,13 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -50,11 +50,11 @@ public class TemplateLevel extends Level {
   private final Scoreboard scoreboard = new Scoreboard();
   private final RecipeManager recipeManager = new RecipeManager();
   private final TemplateChunkSource chunkSource;
-  private final RegistryAccess registries = Objects.requireNonNull(Minecraft.getInstance().level).registryAccess();
 
   public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
-      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
+      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess(),
+      Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
       () -> InactiveProfiler.INSTANCE, true, false, 0, 0
     );
 
@@ -65,10 +65,10 @@ public class TemplateLevel extends Level {
   public void sendBlockUpdated(@Nonnull BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newState, int flags) {}
 
   @Override
-  public void playSeededSound(@Nullable Player pPlayer, double pX, double pY, double pZ, SoundEvent pSoundEvent, SoundSource pSoundSource, float pVolume, float pPitch, long pSeed) {}
+  public void playSeededSound(@Nullable Player pPlayer, double pX, double pY, double pZ, Holder<SoundEvent> pSound, SoundSource pSource, float pVolume, float pPitch, long pSeed) {}
 
   @Override
-  public void playSeededSound(@Nullable Player pPlayer, Entity pEntity, SoundEvent pSoundEvent, SoundSource pSoundSource, float pVolume, float pPitch, long pSeed) {}
+  public void playSeededSound(@Nullable Player pPlayer, Entity pEntity, Holder<SoundEvent> pSound, SoundSource pCategory, float pVolume, float pPitch, long pSeed) {}
 
   @Override
   public String gatherChunkSourceStats() {
@@ -141,10 +141,9 @@ public class TemplateLevel extends Level {
   @Override
   public void gameEvent(GameEvent pEvent, Vec3 pPosition, Context pContext) {}
 
-  @Nonnull
   @Override
-  public RegistryAccess registryAccess() {
-    return this.registries;
+  public FeatureFlagSet enabledFeatures() {
+    return FeatureFlagSet.of();
   }
 
   @Override
@@ -161,6 +160,6 @@ public class TemplateLevel extends Level {
   @Nonnull
   @Override
   public Holder<Biome> getUncachedNoiseBiome(int x, int y, int z) {
-    return registries.registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS);
+    return registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS);
   }
 }

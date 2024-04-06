@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -20,7 +20,7 @@ import slimeknights.mantle.item.BurnableBlockItem;
 import slimeknights.mantle.item.BurnableSignItem;
 import slimeknights.mantle.item.BurnableTallBlockItem;
 import slimeknights.mantle.item.TooltipItem;
-import slimeknights.mantle.registration.ItemProperties;
+import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
@@ -106,7 +106,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
 
   /** Registers a block item using the passed block as the name */
   protected  <I extends BlockItem> I register(I entry, Block name) {
-    return this.register(entry, Objects.requireNonNull(Registry.BLOCK.getKey(name)));
+    return this.register(entry, Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(name)));
   }
 
   /**
@@ -186,7 +186,6 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * Registers block items for all entries in a fence building block object
    * @param object  Building block object instance
    */
-  @SuppressWarnings("ConstantConditions")
   public void registerDefaultBlockItem(WoodBlockObject object, boolean isBurnable) {
     // many of these are already burnable via tags, but simplier to set them all here
     BiFunction<? super Block, Integer, ? extends BlockItem> burnableItem;
@@ -220,7 +219,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
     registerBlockItem(burnableItem.apply(object.getPressurePlate(), 300));
     registerBlockItem(burnableItem.apply(object.getButton(), 100));
     // sign
-    registerBlockItem(burnableSignItem.apply(new Item.Properties().stacksTo(16).tab(planks.getItemCategory()), object.getSign(), object.getWallSign()));
+    registerBlockItem(burnableSignItem.apply(new Item.Properties().stacksTo(16), object.getSign(), object.getWallSign()));
   }
 
   /**
@@ -259,7 +258,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return  Bucket instance
    */
   public BucketItem registerBucket(Supplier<? extends Fluid> fluid, String baseName) {
-    return register(new BucketItem(fluid, ItemProperties.BUCKET_PROPS), baseName + "_bucket");
+    return register(new BucketItem(fluid, RegistrationHelper.BUCKET_PROPS), baseName + "_bucket");
   }
 
   /**
@@ -271,6 +270,6 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return  Spawn egg item instance
    */
   public SpawnEggItem registerSpawnEgg(Supplier<? extends EntityType<? extends Mob>> type, int primary, int secondary, String baseName) {
-    return register(new ForgeSpawnEggItem(type, primary, secondary, ItemProperties.EGG_PROPS), baseName + "_spawn_egg");
+    return register(new ForgeSpawnEggItem(type, primary, secondary, new Properties()), baseName + "_spawn_egg");
   }
 }

@@ -4,7 +4,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
 import lombok.Getter;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
@@ -16,7 +15,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.client.resources.model.SimpleBakedModel.Builder;
@@ -29,6 +28,7 @@ import net.minecraftforge.client.model.IQuadTransformer;
 import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import org.joml.Vector3f;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.util.JsonHelper;
@@ -136,7 +136,7 @@ public class ColoredBlockModel extends SimpleBlockModel {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
     return bakeModel(owner, getElements(), colorData, spriteGetter, modelTransform, overrides, modelLocation);
   }
 
@@ -271,8 +271,9 @@ public class ColoredBlockModel extends SimpleBlockModel {
     // bake final quad
     BakedQuad quad = new BakedQuad(vertexData, face.tintIndex, direction, sprite, shade);
     // use our override if specified, fallback to Forge
+    // TODO: forge colors
     if (emissivity == -1) {
-      emissivity = face.emissivity;
+      emissivity = face.getFaceData().blockLight();
     }
     if (emissivity > 0) {
       QuadTransformers.settingEmissivity(emissivity).processInPlace(quad);

@@ -2,11 +2,10 @@ package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -17,6 +16,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraftforge.client.model.data.ModelData;
+import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import slimeknights.mantle.client.book.structure.StructureInfo;
 import slimeknights.mantle.client.book.structure.level.TemplateLevel;
 import slimeknights.mantle.client.render.MantleRenderTypes;
@@ -58,12 +60,13 @@ public class StructureElement extends SizedBookElement {
     this.transX = x + width / 2F;
     this.transY = y + height / 2F;
 
-    this.additionalTransform = new Transformation(null, new Quaternion(25, 0, 0, true), null, new Quaternion(0, -45, 0, true));
+    this.additionalTransform = new Transformation(null, new Quaternionf().rotateYXZ(0, (float)(25 * Math.PI / 180f), 0), null, new Quaternionf().rotateYXZ((float)(-45 * Math.PI / 180f), 0, 0));
   }
 
   @Override
-  public void draw(PoseStack transform, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
+  public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+    PoseStack transform = graphics.pose();
     PoseStack.Pose lastEntryBeforeTry = transform.last();
 
     try {
@@ -90,8 +93,8 @@ public class StructureElement extends SizedBookElement {
 
       transform.translate(this.transX, this.transY, Math.max(structureHeight, Math.max(structureWidth, structureLength)));
       transform.scale(this.scale, -this.scale, 1);
-      this.additionalTransform.push(transform);
-      transform.mulPose(new Quaternion(0, 0, 0, true));
+      transform.pushTransformation(this.additionalTransform);
+      transform.mulPose(new Quaternionf().rotateYXZ(0, 0, 0));
 
       transform.translate(structureLength / -2f, structureHeight / -2f, structureWidth / -2f);
 
@@ -171,11 +174,13 @@ public class StructureElement extends SizedBookElement {
 
   private Transformation forRotation(double rX, double rY) {
     Vector3f axis = new Vector3f((float) rY, (float) rX, 0);
-    float angle = (float) Math.sqrt(axis.dot(axis));
-
-    if (!axis.normalize())
+    float dot = axis.dot(axis);
+    if (dot < Float.MIN_NORMAL) {
       return Transformation.identity();
+    }
 
-    return new Transformation(null, new Quaternion(axis, angle, true), null, null);
+    float angle = (float) (Math.sqrt(axis.dot(axis)) * Math.PI / 180f);
+    axis.normalize();
+    return new Transformation(null, new Quaternionf(new AxisAngle4f(angle, axis)), null, null);
   }
 }

@@ -100,10 +100,10 @@ public class DumpLootModifiers {
       } catch (IOException ex) {
         Mantle.logger.error("Couldn't save global loot manager to {}", path, ex);
       }
-      context.getSource().sendSuccess(Component.translatable("command.mantle.dump_loot_modifiers.success_save", DumpAllTagsCommand.getOutputComponent(output)), true);
+      context.getSource().sendSuccess(() -> Component.translatable("command.mantle.dump_loot_modifiers.success_save", DumpAllTagsCommand.getOutputComponent(output)), true);
     } else {
       // print to console
-      context.getSource().sendSuccess(LOOT_MODIFIER_SUCCESS_LOG, true);
+      context.getSource().sendSuccess(() -> LOOT_MODIFIER_SUCCESS_LOG, true);
       Mantle.logger.info("Dump of global loot modifiers:\n{}", DumpTagCommand.GSON.toJson(json));
     }
     // return a number to finish

@@ -2,7 +2,7 @@ package slimeknights.mantle.fluid.texture;
 
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.server.packs.PackType;
+import net.minecraft.data.PackOutput.Target;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -12,13 +12,13 @@ import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Data provider for {@link FluidTexture}
@@ -31,12 +31,12 @@ public abstract class AbstractFluidTextureProvider extends GenericDataProvider {
   private final String modId;
 
   public AbstractFluidTextureProvider(DataGenerator generator, @Nullable String modId) {
-    super(generator, PackType.CLIENT_RESOURCES, FluidTextureManager.FOLDER, JsonHelper.DEFAULT_GSON);
+    super(generator, Target.RESOURCE_PACK, FluidTextureManager.FOLDER, JsonHelper.DEFAULT_GSON);
     this.modId = modId;
   }
 
   @Override
-  public final void run(CachedOutput cache) throws IOException {
+  public final CompletableFuture<?> run(CachedOutput cache) {
     addTextures();
     IForgeRegistry<FluidType> fluidTypeRegistry = ForgeRegistries.FLUID_TYPES.get();
 
@@ -48,7 +48,7 @@ public abstract class AbstractFluidTextureProvider extends GenericDataProvider {
       }
     }
     // save files
-    allTextures.forEach((type, data) -> saveJson(cache, Objects.requireNonNull(fluidTypeRegistry.getKey(type)), data.build().serialize()));
+    return allOf(allTextures.entrySet().stream().map(entry -> saveJson(cache, Objects.requireNonNull(fluidTypeRegistry.getKey(entry.getKey())), entry.getValue().build().serialize())));
   }
 
   /** Override to add your textures at the proper time */

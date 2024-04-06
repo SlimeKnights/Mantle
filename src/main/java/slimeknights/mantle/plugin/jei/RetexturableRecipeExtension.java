@@ -8,14 +8,17 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -36,11 +39,12 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
     // set the output to display all variants from the texture ingredient
     Ingredient texture = recipe.getTexture();
     // fetch all stacks from the ingredient, note any variants that are not blocks will get a blank look
+    RegistryAccess access = Objects.requireNonNull(SafeClientAccess.getRegistryAccess());
     List<ItemStack> displayOutputs = Arrays.stream(texture.getItems())
-                                           .map(stack -> recipe.getRecipeOutput(stack.getItem()))
+                                           .map(stack -> recipe.getResultItem(stack.getItem(), access))
                                            .toList();
     // empty display means the tag found nothing, so just use the original output
-    this.displayOutputs = displayOutputs.isEmpty() ? List.of(this.recipe.getResultItem()) : displayOutputs;
+    this.displayOutputs = displayOutputs.isEmpty() ? List.of(this.recipe.getResultItem(access)) : displayOutputs;
 
     // find out which inputs match the texture, we will need to use those for the focus link
     List<Ingredient> inputs = recipe.getIngredients();
@@ -81,7 +85,7 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
   public void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 //    guiItemStacks.addTooltipCallback(this);
     // we need the blank version for the sake of recipe lookup due to the subtype interpreter making it not the same
-    builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(recipe.getResultItem());
+    builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(recipe.getResultItem(Objects.requireNonNull(SafeClientAccess.getRegistryAccess())));
 
     // add the itemstacks to the grid
     List<List<ItemStack>> inputStacks = recipe.getIngredients().stream().map(ingredient -> List.of(ingredient.getItems())).toList();

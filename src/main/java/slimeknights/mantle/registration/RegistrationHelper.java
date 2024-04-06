@@ -6,6 +6,8 @@ import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.registries.MissingMappingsEvent;
 import net.minecraftforge.registries.MissingMappingsEvent.Mapping;
@@ -22,6 +24,9 @@ import java.util.function.Supplier;
 public class RegistrationHelper {
   /** Wood types to register with the texture atlas */
   private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
+
+  /** Properties for a standard bucket item */
+  public static final Item.Properties BUCKET_PROPS = new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1);
 
   /**
    * Used to mark injected registry objects, as despite being set to null they will be nonnull at runtime.

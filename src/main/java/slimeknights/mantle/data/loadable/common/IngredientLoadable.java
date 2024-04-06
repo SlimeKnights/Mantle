@@ -1,8 +1,6 @@
 package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.data.loadable.Loadable;
@@ -14,19 +12,12 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
 
   @Override
   public Ingredient convert(JsonElement element, String key) {
-    Ingredient ingredient = Ingredient.fromJson(element);
-    if (ingredient == Ingredient.EMPTY && this == DISALLOW_EMPTY) {
-      throw new JsonSyntaxException("Ingredient cannot be empty");
-    }
-    return ingredient;
+    return Ingredient.fromJson(element, this == ALLOW_EMPTY);
   }
 
   @Override
   public JsonElement serialize(Ingredient object) {
-    if (object == Ingredient.EMPTY) {
-      if (this == ALLOW_EMPTY) {
-        return JsonNull.INSTANCE;
-      }
+    if (object.isEmpty() && this == DISALLOW_EMPTY) {
       throw new IllegalArgumentException("Ingredient cannot be empty");
     }
     return object.toJson();

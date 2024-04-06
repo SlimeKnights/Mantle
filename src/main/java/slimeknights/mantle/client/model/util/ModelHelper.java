@@ -3,7 +3,6 @@ package slimeknights.mantle.client.model.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.math.Vector3f;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
@@ -18,6 +17,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -95,7 +95,7 @@ public class ModelHelper {
     TextureAtlasSprite particle = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(block.defaultBlockState()).getParticleIcon();
     //noinspection ConstantConditions  dumb mods returning null particle icons
     if (particle != null) {
-      return particle.getName();
+      return particle.contents().name();
     }
     return MissingTextureAtlasSprite.getLocation();
   }

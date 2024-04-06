@@ -43,16 +43,16 @@ public class BaseContainerMenu<TILE extends BlockEntity> extends AbstractContain
 
   public void syncOnOpen(ServerPlayer playerOpened) {
     // find another player that already has the gui for this tile open
-    ServerLevel server = playerOpened.getLevel();
+    ServerLevel server = playerOpened.serverLevel();
 
     for (Player player : server.players()) {
       if (player == playerOpened) {
         continue;
       }
 
-      if (player.containerMenu instanceof BaseContainerMenu) {
-        if (this.sameGui((BaseContainerMenu) player.containerMenu)) {
-          this.syncWithOtherContainer((BaseContainerMenu) player.containerMenu, playerOpened);
+      if (player.containerMenu instanceof BaseContainerMenu<?> baseMenu) {
+        if (this.sameGui(baseMenu)) {
+          this.syncWithOtherContainer(baseMenu, playerOpened);
           return;
         }
       }
@@ -66,7 +66,7 @@ public class BaseContainerMenu<TILE extends BlockEntity> extends AbstractContain
    * Called when the container is opened and another player already has a container for this tile open
    * Sync to the same state here.
    */
-  protected void syncWithOtherContainer(BaseContainerMenu otherContainer, ServerPlayer player) {
+  protected void syncWithOtherContainer(BaseContainerMenu<?> otherContainer, ServerPlayer player) {
   }
 
   /**
@@ -76,7 +76,7 @@ public class BaseContainerMenu<TILE extends BlockEntity> extends AbstractContain
   protected void syncNewContainer(ServerPlayer player) {
   }
 
-  public boolean sameGui(BaseContainerMenu otherContainer) {
+  public boolean sameGui(BaseContainerMenu<?> otherContainer) {
     if (this.tile == null) {
       return false;
     }
@@ -232,7 +232,7 @@ public class BaseContainerMenu<TILE extends BlockEntity> extends AbstractContain
         slot = this.slots.get(k);
         itemstack1 = slot.getItem();
 
-        if (!itemstack1.isEmpty() && itemstack1.getItem() == stack.getItem() && ItemStack.tagMatches(stack, itemstack1) && this.canTakeItemForPickAll(stack, slot)) {
+        if (!itemstack1.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack1) && this.canTakeItemForPickAll(stack, slot)) {
           int l = itemstack1.getCount() + stack.getCount();
           int limit = Math.min(stack.getMaxStackSize(), slot.getMaxStackSize(stack));
 

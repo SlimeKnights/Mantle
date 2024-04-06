@@ -5,11 +5,10 @@ import com.mojang.serialization.Codec;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.registries.RegisterEvent;
@@ -24,6 +23,8 @@ import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
 import java.util.Objects;
+
+import static slimeknights.mantle.loot.condition.ILootModifierCondition.MODIFIER_CONDITIONS;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MantleLoot {
@@ -47,12 +48,12 @@ public class MantleLoot {
     SET_FLUID_FUNCTION = registerFunction("set_fluid", SetFluidLootFunction.SERIALIZER);
 
     // conditions
-    BLOCK_TAG_CONDITION = registerCondition("block_tag", BlockTagLootCondition.SERIALIZER);
+    BLOCK_TAG_CONDITION = Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, Mantle.getResource("block_tag"), new LootItemConditionType(BlockTagLootCondition.SERIALIZER));
 
     // loot modifier conditions
-    registerCondition(InvertedModifierLootCondition.ID, InvertedModifierLootCondition::deserialize);
-    registerCondition(EmptyModifierLootCondition.ID, EmptyModifierLootCondition.INSTANCE);
-    registerCondition(ContainsItemModifierLootCondition.ID, ContainsItemModifierLootCondition::deserialize);
+    MODIFIER_CONDITIONS.registerDeserializer(InvertedModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)InvertedModifierLootCondition::deserialize);
+    MODIFIER_CONDITIONS.registerDeserializer(EmptyModifierLootCondition.ID, EmptyModifierLootCondition.INSTANCE);
+    MODIFIER_CONDITIONS.registerDeserializer(ContainsItemModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)ContainsItemModifierLootCondition::deserialize);
   }
 
   /**
@@ -62,25 +63,6 @@ public class MantleLoot {
    * @return  Registered loot function
    */
   private static LootItemFunctionType registerFunction(String name, Serializer<? extends LootItemFunction> serializer) {
-    return Registry.register(Registry.LOOT_FUNCTION_TYPE, Mantle.getResource(name), new LootItemFunctionType(serializer));
-  }
-
-  /**
-   * Registers a loot function
-   * @param name        Loot function name
-   * @param serializer  Loot function serializer
-   * @return  Registered loot function
-   */
-  private static LootItemConditionType registerCondition(String name, Serializer<? extends LootItemCondition> serializer) {
-    return Registry.register(Registry.LOOT_CONDITION_TYPE, Mantle.getResource(name), new LootItemConditionType(serializer));
-  }
-
-  /**
-   * Registers a loot condition
-   * @param id            Loot condition id
-   * @param deserializer  Loot condition deserializer
-   */
-  private static void registerCondition(ResourceLocation id, JsonDeserializer<? extends ILootModifierCondition> deserializer) {
-    ILootModifierCondition.MODIFIER_CONDITIONS.registerDeserializer(id, deserializer);
+    return Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, Mantle.getResource(name), new LootItemFunctionType(serializer));
   }
 }

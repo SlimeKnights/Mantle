@@ -1,7 +1,6 @@
 package slimeknights.mantle.item;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
@@ -14,8 +13,8 @@ import java.util.List;
 
 public class ArmorTooltipItem extends ArmorItem {
 
-  public ArmorTooltipItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Properties builder) {
-    super(armorMaterial, equipmentSlot, builder);
+  public ArmorTooltipItem(ArmorMaterial armorMaterial, ArmorItem.Type type, Properties builder) {
+    super(armorMaterial, type, builder);
   }
 
   @Override

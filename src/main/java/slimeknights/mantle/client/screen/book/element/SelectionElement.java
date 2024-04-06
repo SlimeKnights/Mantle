@@ -1,9 +1,9 @@
 package slimeknights.mantle.client.screen.book.element;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
@@ -18,8 +18,8 @@ public class SelectionElement extends SizedBookElement {
   public static final int WIDTH = 42;
   public static final int HEIGHT = 42;
 
-  private SectionData section;
-  private ImageElement iconRenderer;
+  private final SectionData section;
+  private final ImageElement iconRenderer;
 
   private final int iconX;
   private final int iconY;
@@ -35,12 +35,12 @@ public class SelectionElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
+  public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     boolean unlocked = this.section.isUnlocked(this.parent.advancementCache);
     boolean hover = this.isHovered(mouseX, mouseY);
 
     if (hover) {
-      fill(matrixStack, this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
+      graphics.fill(this.iconX, this.iconY, this.iconX + IMG_SIZE, this.iconY + IMG_SIZE, this.parent.book.appearance.hoverColor);
     }
     if (unlocked) {
       RenderSystem.setShaderColor(1F, 1F, 1F, hover ? 1F : 0.5F);
@@ -51,7 +51,7 @@ public class SelectionElement extends SizedBookElement {
       RenderSystem.setShaderColor(r, g, b, 0.75F);
     }
 
-    this.iconRenderer.draw(matrixStack, mouseX, mouseY, partialTicks, fontRenderer);
+    this.iconRenderer.draw(graphics, mouseX, mouseY, partialTicks, fontRenderer);
 
     if (this.section.parent.appearance.drawSectionListText) {
       String title = this.section.getTitle().replace("\\n", "\n");
@@ -62,17 +62,13 @@ public class SelectionElement extends SizedBookElement {
         int textW = fontRenderer.width(splitTitle[i]);
         int textX = this.x + WIDTH / 2 - textW / 2;
         int textY = this.y + HEIGHT - fontRenderer.lineHeight / 2 + fontRenderer.lineHeight * i;
-
-        fontRenderer.draw(matrixStack, splitTitle[i],
-          textX,
-          textY,
-          hover ? 0xFF000000 : 0x7F000000);
+        graphics.drawString(fontRenderer, splitTitle[i], textX, textY, hover ? 0xFF000000 : 0x7F000000, false);
       }
     }
   }
 
   @Override
-  public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
+  public void drawOverlay(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (this.section != null && this.isHovered(mouseX, mouseY)) {
       List<Component> text = new ArrayList<>();
 
@@ -87,7 +83,7 @@ public class SelectionElement extends SizedBookElement {
         }
       }
 
-      this.drawTooltip(matrixStack, text, mouseX, mouseY, fontRenderer);
+      this.drawTooltip(graphics, text, mouseX, mouseY, fontRenderer);
     }
   }
 

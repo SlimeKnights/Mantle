@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen.book.element;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
@@ -37,14 +37,14 @@ public class TextComponentElement extends SizedBookElement {
   }
 
   @Override
-  public void draw(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
-    lastAction = TextComponentDataRenderer.drawText(matrixStack, this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
+  public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
+    lastAction = TextComponentDataRenderer.drawText(graphics, this.x, this.y, this.width, this.height, this.text, mouseX, mouseY, fontRenderer, this.tooltip);
   }
 
   @Override
-  public void drawOverlay(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
+  public void drawOverlay(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     if (this.tooltip.size() > 0) {
-      drawTooltip(matrixStack, this.tooltip, mouseX, mouseY, fontRenderer);
+      drawTooltip(graphics, this.tooltip, mouseX, mouseY, fontRenderer);
       this.tooltip.clear();
     }
   }

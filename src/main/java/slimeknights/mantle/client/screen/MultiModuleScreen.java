@@ -1,11 +1,10 @@
 package slimeknights.mantle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,7 +32,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 
     this.realWidth = -1;
     this.realHeight = -1;
-    this.passEvents = true;
+//    this.passEvents = true;  // TODO: needed?
   }
 
   protected void addModule(ModuleScreen<?,?> module) {
@@ -85,50 +84,49 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 //  }
 
   @Override
-  protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+  protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
     for (ModuleScreen<?,?> module : this.modules) {
-      module.handleDrawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
+      module.handleDrawGuiContainerBackgroundLayer(graphics, partialTicks, mouseX, mouseY);
     }
   }
 
   @Override
-  protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-    this.drawContainerName(matrixStack);
-    this.drawPlayerInventoryName(matrixStack);
+  protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    this.drawContainerName(graphics);
+    this.drawPlayerInventoryName(graphics);
 
+    PoseStack poses = graphics.pose();
     for (ModuleScreen<?,?> module : this.modules) {
       // set correct state for the module
-      matrixStack.pushPose();
-      matrixStack.translate(module.leftPos - this.leftPos, module.topPos - this.topPos, 0.0F);
-      module.handleDrawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
-      matrixStack.popPose();
+      poses.pushPose();
+      poses.translate(module.leftPos - this.leftPos, module.topPos - this.topPos, 0.0F);
+      module.handleDrawGuiContainerForegroundLayer(graphics, mouseX, mouseY);
+      poses.popPose();
     }
   }
 
   @Override
-  protected void renderTooltip(PoseStack matrixStack, int mouseX, int mouseY) {
-    super.renderTooltip(matrixStack, mouseX, mouseY);
+  protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+    super.renderTooltip(graphics, mouseX, mouseY);
 
     for (ModuleScreen<?,?> module : this.modules) {
-      module.handleRenderHoveredTooltip(matrixStack, mouseX, mouseY);
+      module.handleRenderHoveredTooltip(graphics, mouseX, mouseY);
     }
   }
 
-  protected void drawBackground(PoseStack matrixStack, ResourceLocation background) {
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    RenderSystem.setShaderTexture(0, background);
-    this.blit(matrixStack, this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
+  protected void drawBackground(GuiGraphics graphics, ResourceLocation background) {
+    graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+    graphics.blit(background, this.cornerX, this.cornerY, 0, 0, this.realWidth, this.realHeight);
   }
 
-  protected void drawContainerName(PoseStack matrixStack) {
-    this.font.draw(matrixStack, this.getTitle().getVisualOrderText(), 8, 6, 0x404040);
+  protected void drawContainerName(GuiGraphics graphics) {
+    graphics.drawString(this.font, this.getTitle().getVisualOrderText(), 8, 6, 0x404040, false);
   }
 
-  protected void drawPlayerInventoryName(PoseStack matrixStack) {
+  protected void drawPlayerInventoryName(GuiGraphics graphics) {
     assert Minecraft.getInstance().player != null;
     Component localizedName = Minecraft.getInstance().player.getInventory().getDisplayName();
-    this.font.draw(matrixStack, localizedName.getVisualOrderText(), 8, this.imageHeight - 96 + 2, 0x404040);
+    graphics.drawString(this.font, localizedName.getVisualOrderText(), 8, this.imageHeight - 96 + 2, 0x404040, false);
   }
 
   @Override
@@ -142,8 +140,8 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   }
 
   @Override
-  public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground(matrixStack);
+  public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    this.renderBackground(graphics);
     int oldX = this.leftPos;
     int oldY = this.topPos;
     int oldW = this.imageWidth;
@@ -153,8 +151,8 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
     this.topPos = this.cornerY;
     this.imageWidth = this.realWidth;
     this.imageHeight = this.realHeight;
-    super.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.renderTooltip(matrixStack, mouseX, mouseY);
+    super.render(graphics, mouseX, mouseY, partialTicks);
+    this.renderTooltip(graphics, mouseX, mouseY);
     this.leftPos = oldX;
     this.topPos = oldY;
     this.imageWidth = oldW;
@@ -192,7 +190,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   }
 
   @Override
-  public void renderSlot(PoseStack matrixStack, Slot slotIn) {
+  public void renderSlot(GuiGraphics graphics, Slot slotIn) {
     ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.index);
 
     if (module != null) {
@@ -213,7 +211,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
       slotIn.y = ((WrapperSlot) slotIn).parent.y;
     }
 
-    super.renderSlot(matrixStack, slotIn);
+    super.renderSlot(graphics, slotIn);
   }
 
   @Override

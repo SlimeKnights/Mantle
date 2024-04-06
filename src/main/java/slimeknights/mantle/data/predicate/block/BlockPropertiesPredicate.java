@@ -10,7 +10,7 @@ import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
@@ -63,7 +63,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
   private static Property<?> parseProperty(Block block, String name, Function<String, RuntimeException> exception) {
     Property<?> property = block.getStateDefinition().getProperty(name);
     if (property == null) {
-      throw exception.apply("Property " + name + " does not exist in block " + Registry.BLOCK.getKey(block));
+      throw exception.apply("Property " + name + " does not exist in block " + BuiltInRegistries.BLOCK.getKey(block));
     }
     return property;
   }

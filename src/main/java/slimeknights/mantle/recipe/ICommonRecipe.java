@@ -1,5 +1,6 @@
 package slimeknights.mantle.recipe;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -10,8 +11,8 @@ import net.minecraft.world.item.crafting.Recipe;
  */
 public interface ICommonRecipe<C extends Container> extends Recipe<C> {
   @Override
-  default ItemStack assemble(C inv) {
-    return getResultItem().copy();
+  default ItemStack assemble(C inv, RegistryAccess access) {
+    return getResultItem(access).copy();
   }
 
   /** @deprecated Means nothing outside of crafting tables */
