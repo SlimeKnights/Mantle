@@ -2,8 +2,10 @@ package slimeknights.mantle.data.predicate.damage;
 
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.PredicateRegistry;
+import slimeknights.mantle.data.predicate.TagPredicateRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
 
 import java.util.List;
@@ -18,8 +20,7 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   /** Predicate that matches all sources */
   DamageSourcePredicate ANY = simple(source -> true);
   /** Loader for item predicates */
-  // TODO: make a registry predicate registry, requires finding registry access during reading
-  PredicateRegistry<DamageSource> LOADER = new PredicateRegistry<>("Damage Source Predicate", ANY);
+  PredicateRegistry<DamageSource> LOADER = new TagPredicateRegistry<>("Damage Source Predicate", ANY, Loadables.DAMAGE_TYPE_TAG, (tag, source) -> source.is(tag));
 
   /** Damage that protection works against */
   DamageSourcePredicate CAN_PROTECT = simple(source -> !source.is(DamageTypeTags.BYPASSES_ENCHANTMENTS) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY));
