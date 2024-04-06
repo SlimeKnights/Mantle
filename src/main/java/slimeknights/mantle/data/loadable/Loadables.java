@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -69,6 +70,7 @@ public class Loadables {
   public static final StringLoadable<TagKey<Item>> ITEM_TAG = tagKey(Registries.ITEM);
   public static final StringLoadable<TagKey<Potion>> POTION_TAG = tagKey(Registries.POTION);
   public static final StringLoadable<TagKey<BlockEntityType<?>>> BLOCK_ENTITY_TYPE_TAG = tagKey(Registries.BLOCK_ENTITY_TYPE);
+  public static final StringLoadable<TagKey<DamageType>> DAMAGE_TYPE_TAG = tagKey(Registries.DAMAGE_TYPE);
 
 
   /* Helpers */
