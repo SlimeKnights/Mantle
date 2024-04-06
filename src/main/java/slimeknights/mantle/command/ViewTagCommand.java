@@ -59,7 +59,7 @@ public class ViewTagCommand {
               .sorted((a, b) -> Objects.requireNonNull(a).compareNamespaced(Objects.requireNonNull(b)))
               .forEach(value -> output.append("\n* " + Objects.requireNonNull(value)));
       }
-      context.getSource().sendSuccess(output, true);
+      context.getSource().sendSuccess(() -> output, true);
       return values.size();
     }
     throw TAG_NOT_FOUND.create(registry.key().location(), name);

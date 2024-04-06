@@ -1,8 +1,9 @@
 package slimeknights.mantle;
 
 import net.minecraft.Util;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -111,7 +112,7 @@ public class Mantle {
 
   private void register(RegisterEvent event) {
     ResourceKey<?> key = event.getRegistryKey();
-    if (key == Registry.RECIPE_SERIALIZER_REGISTRY) {
+    if (key == Registries.RECIPE_SERIALIZER) {
       RegistryAdapter<RecipeSerializer<?>> adapter = new RegistryAdapter<>(Objects.requireNonNull(event.getForgeRegistry()));
       adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
       adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
@@ -157,25 +158,13 @@ public class Mantle {
         MobTypePredicate.MOB_TYPES.register(new ResourceLocation("water"), MobType.WATER);
 
         // damage predicates
-        // vanilla properties
-        DamageSourcePredicate.LOADER.register(getResource("projectile"), DamageSourcePredicate.PROJECTILE.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("explosion"), DamageSourcePredicate.EXPLOSION.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("bypass_armor"), DamageSourcePredicate.BYPASS_ARMOR.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("damage_helmet"), DamageSourcePredicate.DAMAGE_HELMET.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("bypass_invulnerable"), DamageSourcePredicate.BYPASS_INVULNERABLE.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("bypass_magic"), DamageSourcePredicate.BYPASS_MAGIC.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("bypass_enchantments"), DamageSourcePredicate.BYPASS_ENCHANTMENTS.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("fire"), DamageSourcePredicate.FIRE.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("magic"), DamageSourcePredicate.MAGIC.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("fall"), DamageSourcePredicate.FALL.getLoader());
         // custom
         DamageSourcePredicate.LOADER.register(getResource("can_protect"), DamageSourcePredicate.CAN_PROTECT.getLoader());
-        DamageSourcePredicate.LOADER.register(getResource("melee"), DamageSourcePredicate.MELEE.getLoader());
         DamageSourcePredicate.LOADER.register(getResource("message"), SourceMessagePredicate.LOADER);
         DamageSourcePredicate.LOADER.register(getResource("attacker"), SourceAttackerPredicate.LOADER);
       }
     }
-    else if (key == Registry.BLOCK_ENTITY_TYPE_REGISTRY) {
+    else if (key == Registries.BLOCK_ENTITY_TYPE) {
       BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(Objects.requireNonNull(event.getForgeRegistry()));
       adapter.register(MantleSignBlockEntity::new, "sign", MantleSignBlockEntity::buildSignBlocks);
     }
@@ -188,8 +177,9 @@ public class Mantle {
     DataGenerator generator = event.getGenerator();
     boolean server = event.includeServer();
     boolean client = event.includeClient();
-    generator.addProvider(server, new MantleFluidTagProvider(generator, event.getExistingFileHelper()));
-    generator.addProvider(client, new MantleFluidTooltipProvider(generator));
+    PackOutput packOutput = generator.getPackOutput();
+    generator.addProvider(server, new MantleFluidTagProvider(packOutput, event.getLookupProvider(), event.getExistingFileHelper()));
+    generator.addProvider(client, new MantleFluidTooltipProvider(packOutput));
   }
 
   /**

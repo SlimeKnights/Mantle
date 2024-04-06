@@ -26,10 +26,11 @@ public class StructureInfo implements Predicate<BlockPos> {
     int structureLength = 0;
 
     for (StructureBlockInfo block : structure) {
-      structureHeight = Math.max(structureHeight, block.pos.getY() + 1);
-      structureWidth = Math.max(structureWidth, block.pos.getZ() + 1);
-      structureLength = Math.max(structureLength, block.pos.getX() + 1);
-      data.put(block.pos, block);
+      BlockPos pos = block.pos();
+      structureHeight = Math.max(structureHeight, pos.getY() + 1);
+      structureWidth = Math.max(structureWidth, pos.getZ() + 1);
+      structureLength = Math.max(structureLength, pos.getX() + 1);
+      data.put(pos, block);
     }
 
     this.maxBlockIndex = this.blockIndex = structureHeight * structureLength * structureWidth;

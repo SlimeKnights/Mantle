@@ -4,16 +4,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
@@ -43,8 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.PrimitiveIterator.OfInt;
-import java.util.Set;
+import java.util.PrimitiveIterator;
 import java.util.function.Function;
 
 /**
@@ -70,13 +69,12 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   }
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext owner) {
     ImmutableList.Builder<Material> builder = ImmutableList.builder();
     for (int i = 0; owner.hasMaterial("layer" + i); i++) {
       builder.add(owner.getMaterial("layer" + i));
     }
     textures = builder.build();
-    return textures;
   }
 
   /** Gets the default render type for an item layer */
@@ -101,7 +99,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
     if (textures.isEmpty()) {
       throw new IllegalStateException("Empty textures list");
     }
@@ -158,15 +156,16 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, Transformation transform, int emissivity, @Nullable ItemLayerPixels pixels) {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
-    int uMax = sprite.getWidth();
-    int vMax = sprite.getHeight();
+    SpriteContents contents = sprite.contents();
+    int uMax = contents.width();
+    int vMax = contents.height();
     FaceData faceData = new FaceData(uMax, vMax);
     boolean translucent = false;
 
-    OfInt frames = sprite.getUniqueFrames().iterator();
-    boolean hasFrames = frames.hasNext();
-    while (frames.hasNext()) {
-      int f = frames.nextInt();
+    PrimitiveIterator.OfInt iterator = sprite.contents().getUniqueFrames().iterator();
+    boolean hasFrames = iterator.hasNext();
+    while (iterator.hasNext()) {
+      int f = iterator.nextInt();
       boolean ptu;
       boolean[] ptv = new boolean[uMax];
       Arrays.fill(ptv, true);
@@ -377,8 +376,9 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
    */
   private static void buildSideQuad(QuadBakingVertexConsumer builder, VertexConsumer consumer, Direction side, int color, TextureAtlasSprite sprite, int u, int v, int size, int luminosity) {
     final float eps = 1e-2f;
-    int width = sprite.getWidth();
-    int height = sprite.getHeight();
+    SpriteContents contents = sprite.contents();
+    int width = contents.width();
+    int height = contents.height();
     float x0 = (float) u / width;
     float y0 = (float) v / height;
     float x1 = x0, y1 = y0;

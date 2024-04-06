@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resources.ResourceLocation;
@@ -53,7 +54,7 @@ public class ContentStructure extends PageContent {
 
     try {
       CompoundTag compoundnbt = NbtIo.readCompressed(resource.open());
-      this.template.load(compoundnbt);
+      this.template.load(BuiltInRegistries.BLOCK.asLookup(), compoundnbt);
     } catch (IOException e) {
       e.printStackTrace();
       return;
@@ -63,10 +64,10 @@ public class ContentStructure extends PageContent {
 
     for (int i = 0; i < this.templateBlocks.size(); i++) {
       StructureTemplate.StructureBlockInfo info = this.templateBlocks.get(i);
-      if (info.state == Blocks.AIR.defaultBlockState()) {
+      if (info.state() == Blocks.AIR.defaultBlockState()) {
         this.templateBlocks.remove(i);
         i--;
-      } else if (info.state.isAir())
+      } else if (info.state().isAir())
         // Usually means it contains a block that has been renamed
         Mantle.logger.error("Found non-default air block in template " + this.data);
     }

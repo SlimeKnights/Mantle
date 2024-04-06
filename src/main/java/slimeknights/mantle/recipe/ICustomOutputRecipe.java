@@ -1,5 +1,6 @@
 package slimeknights.mantle.recipe;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 
@@ -11,14 +12,14 @@ public interface ICustomOutputRecipe<C extends Container> extends ICommonRecipe<
   /** @deprecated Item stack output not supported */
   @Override
   @Deprecated
-  default ItemStack getResultItem() {
+  default ItemStack getResultItem(RegistryAccess access) {
     return ItemStack.EMPTY;
   }
 
   /** @deprecated Item stack output not supported */
   @Override
   @Deprecated
-  default ItemStack assemble(C inv) {
+  default ItemStack assemble(C inv, RegistryAccess access) {
     return ItemStack.EMPTY;
   }
 }

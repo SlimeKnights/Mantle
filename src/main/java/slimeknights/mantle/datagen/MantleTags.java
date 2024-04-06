@@ -1,6 +1,6 @@
 package slimeknights.mantle.datagen;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.Mantle;
@@ -26,7 +26,7 @@ public class MantleTags {
     public static final TagKey<Fluid> LAVA = tag("lava");
 
     private static TagKey<Fluid> tag(String name) {
-      return TagKey.create(Registry.FLUID_REGISTRY, Mantle.getResource(name));
+      return TagKey.create(Registries.FLUID, Mantle.getResource(name));
     }
   }
 }

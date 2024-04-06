@@ -2,15 +2,17 @@ package slimeknights.mantle.registration.deferred;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
@@ -21,7 +23,7 @@ import slimeknights.mantle.fluid.TextureFluidType;
 import slimeknights.mantle.fluid.UnplaceableFluid;
 import slimeknights.mantle.registration.DelayedSupplier;
 import slimeknights.mantle.registration.FluidBuilder;
-import slimeknights.mantle.registration.ItemProperties;
+import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 
@@ -38,10 +40,10 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
   private final SynchronizedDeferredRegister<Item> itemRegister;
 
   public FluidDeferredRegister(String modID) {
-    super(Registry.FLUID_REGISTRY, modID);
+    super(Registries.FLUID, modID);
     this.fluidTypeRegister = SynchronizedDeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, modID);
-    this.blockRegister = SynchronizedDeferredRegister.create(Registry.BLOCK_REGISTRY, modID);
-    this.itemRegister = SynchronizedDeferredRegister.create(Registry.ITEM_REGISTRY, modID);
+    this.blockRegister = SynchronizedDeferredRegister.create(Registries.BLOCK, modID);
+    this.itemRegister = SynchronizedDeferredRegister.create(Registries.ITEM, modID);
   }
 
   @Override
@@ -126,7 +128,7 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
 
     /** Creates the default bucket */
     public Builder bucket() {
-      return bucket(itemRegister.register(name + "_bucket", () -> new BucketItem(stillDelayed, ItemProperties.BUCKET_PROPS)));
+      return bucket(itemRegister.register(name + "_bucket", () -> new BucketItem(stillDelayed, RegistrationHelper.BUCKET_PROPS)));
     }
 
 
@@ -142,13 +144,8 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
     }
 
     /** Creates the default block from the given material and light level */
-    public Builder block(Material material, int lightLevel) {
-      return block(sup -> new LiquidBlock(sup, BlockBehaviour.Properties.of(material).lightLevel(state -> lightLevel).noCollission().strength(100.0F).noLootTable()));
-    }
-
-    /** Creates the default block from the given material */
-    public Builder block(Material material) {
-      return block(material, material == Material.LAVA ? 15 : 0);
+    public Builder block(MapColor color, int lightLevel) {
+      return block(sup -> new LiquidBlock(sup, BlockBehaviour.Properties.of().mapColor(color).replaceable().noCollission().randomTicks().strength(100.0F).lightLevel(state -> lightLevel).pushReaction(PushReaction.DESTROY).noLootTable().liquid().sound(SoundType.EMPTY)));
     }
 
 

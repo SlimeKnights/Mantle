@@ -1,10 +1,9 @@
 package slimeknights.mantle.client.screen.book;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.data.BookData;
 
 import javax.annotation.Nullable;
@@ -23,8 +22,8 @@ public class ArrowButton extends Button {
   public int color;
   public int hoverColor;
 
-  public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress iPressable) {
-    super(x, y, arrowType.w, arrowType.h, Component.empty(), iPressable);
+  public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress onPress) {
+    super(x, y, arrowType.w, arrowType.h, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 
     this.arrowType = arrowType;
     this.color = color;
@@ -32,19 +31,18 @@ public class ArrowButton extends Button {
     this.bookData = bookData;
   }
 
-  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress iPressable) {
-    this(null, x, y, arrowType, color, hoverColor, iPressable);
+  public ArrowButton(int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress onPress) {
+    this(null, x, y, arrowType, color, hoverColor, onPress);
   }
 
-  public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, @Nullable BookData bookData) {
-    Minecraft minecraft = Minecraft.getInstance();
+  /** Shared logic between public method and vanilla method */
+  private void renderButton(GuiGraphics graphics, @Nullable BookData bookData) {
+    ResourceLocation texture;
     if (bookData != null) {
-      RenderSystem.setShaderTexture(0, bookData.appearance.getBookTexture());
+      texture = bookData.appearance.getBookTexture();
     } else {
-      RenderSystem.setShaderTexture(0, TEX_BOOK);
+      texture = TEX_BOOK;
     }
-
-    this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
     int color = this.isHovered ? this.hoverColor : this.color;
 
@@ -52,14 +50,21 @@ public class ArrowButton extends Button {
     float g = ((color >> 8) & 0xff) / 255.F;
     float b = (color & 0xff) / 255.F;
 
-    RenderSystem.setShaderColor(r, g, b, 1f);
-    blit(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
-    this.renderBg(matrixStack, minecraft, mouseX, mouseY);
+    graphics.setColor(r, g, b, 1f);
+    graphics.blit(texture, this.getX(), this.getY(), this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
+    graphics.setColor(1, 1, 1, 1);
+//    this.renderBg(graphics, mouseX, mouseY, partialTicks);
+  }
+
+  /** Public method to swap out book data on rendering */
+  public void renderButton(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick, @Nullable BookData bookData) {
+    this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
+    renderButton(graphics, bookData);
   }
 
   @Override
-  public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-    renderButton(matrixStack, mouseX, mouseY, partialTicks, bookData);
+  protected void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    renderButton(graphics, bookData);
   }
 
   public enum ArrowType {

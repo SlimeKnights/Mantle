@@ -4,7 +4,7 @@ package slimeknights.mantle.client.book.structure.level;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -38,7 +38,7 @@ public class TemplateChunkSource extends ChunkSource {
     Map<ChunkPos, List<StructureBlockInfo>> byChunk = new HashMap<>();
 
     for (StructureBlockInfo info : blocks) {
-      byChunk.computeIfAbsent(new ChunkPos(info.pos), $ -> new ArrayList<>()).add(info);
+      byChunk.computeIfAbsent(new ChunkPos(info.pos()), $ -> new ArrayList<>()).add(info);
     }
 
     this.chunks = byChunk.entrySet().stream()
@@ -49,7 +49,7 @@ public class TemplateChunkSource extends ChunkSource {
   @Nullable
   @Override
   public ChunkAccess getChunk(int chunkX, int chunkZ, @Nonnull ChunkStatus requiredStatus, boolean load) {
-    return this.chunks.computeIfAbsent(new ChunkPos(chunkX, chunkZ), p -> new EmptyLevelChunk(level, p, BuiltinRegistries.BIOME.getHolderOrThrow(Biomes.PLAINS)));
+    return this.chunks.computeIfAbsent(new ChunkPos(chunkX, chunkZ), p -> new EmptyLevelChunk(level, p, level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS)));
   }
 
   @Override

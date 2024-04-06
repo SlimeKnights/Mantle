@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
@@ -98,12 +99,14 @@ public class ContentSmelting extends PageContent {
     super.load();
 
     if (!StringUtils.isEmpty(this.recipe) && ResourceLocation.isValidResourceLocation(this.recipe)) {
-      Recipe<?> recipe = Minecraft.getInstance().level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
+      Level level = Minecraft.getInstance().level;
+      assert level != null;
+      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
 
       if (recipe instanceof AbstractCookingRecipe) {
         this.input = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, recipe.getIngredients().get(0).getItems()));
         this.cookTime = ((AbstractCookingRecipe) recipe).getCookingTime();
-        this.result = IngredientData.getItemStackData(recipe.getResultItem());
+        this.result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
       }
     }
   }

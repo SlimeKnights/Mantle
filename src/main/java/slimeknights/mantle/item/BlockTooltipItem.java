@@ -19,7 +19,7 @@ public class BlockTooltipItem extends BlockItem {
 
   @Override
   public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    TranslationHelper.addOptionalTooltip(stack, tooltip);
     super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    TranslationHelper.addOptionalTooltip(stack, tooltip);
   }
 }

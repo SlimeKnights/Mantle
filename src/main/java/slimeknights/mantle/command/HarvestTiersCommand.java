@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.ClickEvent.Action;
 import net.minecraft.network.chat.Component;
@@ -52,7 +52,7 @@ public class HarvestTiersCommand {
   /** Creates a clickable component for a block tag */
   private static Object getTagComponent(TagKey<Block> tag) {
     ResourceLocation id = tag.location();
-    return Component.literal(id.toString()).withStyle(style -> style.withUnderlined(true).withClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/mantle dump_tag " + Registry.BLOCK_REGISTRY.location() + " " + id + " save")));
+    return Component.literal(id.toString()).withStyle(style -> style.withUnderlined(true).withClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/mantle dump_tag " + Registries.BLOCK.location() + " " + id + " save")));
   }
 
   /** Runs the command, dumping the tag */
@@ -76,7 +76,7 @@ public class HarvestTiersCommand {
         }
       }
     }
-    context.getSource().sendSuccess(output, true);
+    context.getSource().sendSuccess(() -> output, true);
     return sortedTiers.size();
   }
 
@@ -105,10 +105,10 @@ public class HarvestTiersCommand {
       } catch (IOException ex) {
         Mantle.logger.error("Couldn't save harvests tiers to {}", path, ex);
       }
-      context.getSource().sendSuccess(Component.translatable("command.mantle.harvest_tiers.success_save", DumpAllTagsCommand.getOutputComponent(output)), true);
+      context.getSource().sendSuccess(() -> Component.translatable("command.mantle.harvest_tiers.success_save", DumpAllTagsCommand.getOutputComponent(output)), true);
     } else {
       // print to console
-      context.getSource().sendSuccess(SUCCESS_LOG, true);
+      context.getSource().sendSuccess(() -> SUCCESS_LOG, true);
       Mantle.logger.info("Dump of harvests tiers:\n{}", DumpTagCommand.GSON.toJson(json));
     }
     // return a number to finish

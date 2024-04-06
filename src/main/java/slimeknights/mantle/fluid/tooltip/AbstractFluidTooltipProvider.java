@@ -7,26 +7,28 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.data.GenericDataProvider;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /** Provider for fluid tooltip information */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SameParameterValue"})  // API
 public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
   private final Map<ResourceLocation,ResourceLocation> redirects = new HashMap<>();;
   private final Map<ResourceLocation,FluidUnitListBuilder> builders = new HashMap<>();
   private final String modId;
 
-  public AbstractFluidTooltipProvider(DataGenerator generator, String modId) {
-    super(generator, PackType.CLIENT_RESOURCES, FluidTooltipHandler.FOLDER, FluidTooltipHandler.GSON);
+  public AbstractFluidTooltipProvider(PackOutput output, String modId) {
+    super(output, Target.RESOURCE_PACK, FluidTooltipHandler.FOLDER, FluidTooltipHandler.GSON);
     this.modId = modId;
   }
 
@@ -34,14 +36,15 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
   protected abstract void addFluids();
 
   @Override
-  public final void run(CachedOutput cache) throws IOException {
+  public final CompletableFuture<?> run(CachedOutput cache) {
     addFluids();
-    builders.forEach((key, builder) -> saveJson(cache, key, builder.build()));
-    redirects.forEach((key, target) -> {
+    return allOf(Stream.concat(
+      builders.entrySet().stream().map(entry -> saveJson(cache, entry.getKey(), entry.getValue().build())),
+      redirects.entrySet().stream().map(entry -> {
       JsonObject json = new JsonObject();
-      json.addProperty("redirect", target.toString());
-      saveJson(cache, key, json);
-    });
+      json.addProperty("redirect", entry.getValue().toString());
+      return saveJson(cache, entry.getKey(), json);
+    })));
   }
 
 

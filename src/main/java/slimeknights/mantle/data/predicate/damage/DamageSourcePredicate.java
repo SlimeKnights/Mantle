@@ -1,7 +1,7 @@
 package slimeknights.mantle.data.predicate.damage;
 
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.PredicateRegistry;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IGenericLoader;
@@ -18,37 +18,11 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   /** Predicate that matches all sources */
   DamageSourcePredicate ANY = simple(source -> true);
   /** Loader for item predicates */
+  // TODO: make a registry predicate registry, requires finding registry access during reading
   PredicateRegistry<DamageSource> LOADER = new PredicateRegistry<>("Damage Source Predicate", ANY);
 
-  /* Vanilla getters */
-  DamageSourcePredicate PROJECTILE = simple(DamageSource::isProjectile);
-  DamageSourcePredicate EXPLOSION = simple(DamageSource::isExplosion);
-  DamageSourcePredicate BYPASS_ARMOR = simple(DamageSource::isBypassArmor);
-  DamageSourcePredicate DAMAGE_HELMET = simple(DamageSource::isDamageHelmet);
-  DamageSourcePredicate BYPASS_INVULNERABLE = simple(DamageSource::isBypassInvul);
-  DamageSourcePredicate BYPASS_MAGIC = simple(DamageSource::isBypassMagic);
-  DamageSourcePredicate BYPASS_ENCHANTMENTS = simple(DamageSource::isBypassEnchantments);
-  DamageSourcePredicate FIRE = simple(DamageSource::isFire);
-  DamageSourcePredicate MAGIC = simple(DamageSource::isMagic);
-  DamageSourcePredicate FALL = simple(DamageSource::isFall);
-
   /** Damage that protection works against */
-  DamageSourcePredicate CAN_PROTECT = simple(source -> !source.isBypassMagic() && !source.isBypassEnchantments() && !source.isBypassInvul());
-  /** Custom concept: damage dealt by non-projectile entities */
-  DamageSourcePredicate MELEE = simple(source -> {
-    if (source.isProjectile()) {
-      return false;
-    }
-    // if it's caused by an entity, require it to simply not be thorns
-    // meets most normal melee attacks, like zombies, but also means a melee fire or melee magic attack will work
-    if (source.getEntity() != null) {
-      return source instanceof EntityDamageSource entityDamage && !entityDamage.isThorns();
-    } else {
-      // for non-entity damage, require it to not be any other type
-      // blocks fall damage, falling blocks, cactus, but not starving, drowning, freezing
-      return !source.isBypassArmor() && !source.isFire() && !source.isMagic() && !source.isExplosion();
-    }
-  });
+  DamageSourcePredicate CAN_PROTECT = simple(source -> !source.is(DamageTypeTags.BYPASSES_ENCHANTMENTS) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY));
 
   @Override
   default IJsonPredicate<DamageSource> inverted() {

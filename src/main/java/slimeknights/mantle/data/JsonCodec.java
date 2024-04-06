@@ -36,7 +36,7 @@ public interface JsonCodec<T> extends Codec<T> {
       return DataResult.success(Pair.of(deserialize(ops.convertTo(JsonOps.INSTANCE, input)), input));
     } catch (JsonParseException e) {
       Mantle.logger.warn("Unable to decode {}", codecError(), e);
-      return DataResult.error(e.getMessage());
+      return DataResult.error(e::getMessage);
     }
   }
 
@@ -46,7 +46,7 @@ public interface JsonCodec<T> extends Codec<T> {
       return DataResult.success(JsonOps.INSTANCE.convertTo(ops, serialize(input)));
     } catch (JsonParseException e) {
       Mantle.logger.warn("Unable to encode {}", codecError(), e);
-      return DataResult.error(e.getMessage());
+      return DataResult.error(e::getMessage);
     }
   }
 

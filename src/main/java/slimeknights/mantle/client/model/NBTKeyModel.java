@@ -11,11 +11,10 @@ import com.mojang.math.Transformation;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.nbt.CompoundTag;
@@ -34,13 +33,10 @@ import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 
 /** Model which uses a key in NBT to select which texture variant to load. */
@@ -73,14 +69,11 @@ public class NBTKeyModel implements IUnbakedGeometry<NBTKeyModel> {
   private Map<String,Material> textures = Collections.emptyMap();
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext owner) {
     textures = new HashMap<>();
     // must have a default
     Material defaultTexture = owner.getMaterial("default");
     textures.put("default", defaultTexture);
-    if (Objects.equals(defaultTexture.texture(), MissingTextureAtlasSprite.getLocation())) {
-      missingTextureErrors.add(Pair.of("default", owner.getModelName()));
-    }
     // fetch others, not sure if there is a better way to get all defined textures
     if (owner instanceof BlockGeometryBakingContext blockContext) {
       ModelTextureIteratable iterable = new ModelTextureIteratable(null, blockContext.owner);
@@ -101,8 +94,6 @@ public class NBTKeyModel implements IUnbakedGeometry<NBTKeyModel> {
         }
       }
     }
-    // map doubles as a useful set for the return
-    return textures.values();
   }
 
   /** Bakes a model for the given texture */
@@ -114,7 +105,7 @@ public class NBTKeyModel implements IUnbakedGeometry<NBTKeyModel> {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
     // setup transforms
     Transformation transform = MantleItemLayerModel.applyTransform(modelTransform, owner.getRootTransform()).getRotation();
     // build variants map

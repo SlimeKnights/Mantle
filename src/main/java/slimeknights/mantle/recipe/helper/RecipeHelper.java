@@ -5,7 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -138,7 +138,7 @@ public class RecipeHelper {
    */
   public static JsonObject serializeFluidStack(FluidStack stack) {
     JsonObject json = new JsonObject();
-    json.addProperty("fluid", Registry.FLUID.getKey(stack.getFluid()).toString());
+    json.addProperty("fluid", BuiltInRegistries.FLUID.getKey(stack.getFluid()).toString());
     json.addProperty("amount", stack.getAmount());
     return json;
   }
@@ -202,7 +202,7 @@ public class RecipeHelper {
   public static <T> T readItem(FriendlyByteBuf buffer, Class<T> clazz) {
     Item item = readItem(buffer);
     if (!clazz.isInstance(item)) {
-      throw new DecoderException("Invalid item '" + Registry.ITEM.getKey(item) + "', must be " + clazz.getSimpleName());
+      throw new DecoderException("Invalid item '" + BuiltInRegistries.ITEM.getKey(item) + "', must be " + clazz.getSimpleName());
     }
     return clazz.cast(item);
   }

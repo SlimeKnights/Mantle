@@ -40,7 +40,7 @@ public class FileRepository extends BookRepository {
 
       //noinspection ConstantConditions - this was proven to be null once
       if (Minecraft.getInstance().getLanguageManager() != null && Minecraft.getInstance().getLanguageManager().getSelected() != null) {
-        langPath = Minecraft.getInstance().getLanguageManager().getSelected().getCode();
+        langPath = Minecraft.getInstance().getLanguageManager().getSelected();
       }
 
       String defaultLangPath = "en_us";

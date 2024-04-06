@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -17,9 +17,9 @@ import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /** Data gen for fluid transfer logic */
 @SuppressWarnings("unused")
@@ -28,7 +28,7 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericData
   private final String modId;
 
   public AbstractFluidContainerTransferProvider(DataGenerator generator, String modId) {
-    super(generator, PackType.SERVER_DATA, FluidContainerTransferManager.FOLDER, FluidContainerTransferManager.GSON);
+    super(generator, Target.DATA_PACK, FluidContainerTransferManager.FOLDER, FluidContainerTransferManager.GSON);
     this.modId = modId;
   }
 
@@ -61,15 +61,15 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericData
   }
 
   @Override
-  public void run(CachedOutput cache) throws IOException {
+  public CompletableFuture<?> run(CachedOutput cache) {
     addTransfers();
-    allTransfers.forEach((id, data) -> saveJson(cache, id, data.toJson()));
+    return allOf(allTransfers.entrySet().stream().map(entry -> saveJson(cache, entry.getKey(), entry.getValue().toJson())));
   }
 
   /** Json with transfer and condition */
   private record TransferJson(IFluidContainerTransfer transfer, ICondition[] conditions) {
     /** Serializes this to JSON */
-    private JsonElement toJson() {
+    public JsonElement toJson() {
       JsonElement element = FluidContainerTransferManager.GSON.toJsonTree(transfer, IFluidContainerTransfer.class);
       assert element.isJsonObject();
       if (conditions.length != 0) {

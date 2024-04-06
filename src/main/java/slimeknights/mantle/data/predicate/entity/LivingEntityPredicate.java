@@ -37,7 +37,7 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   /** Predicate that matches fire immune entities */
   LivingEntityPredicate ON_FIRE = simple(Entity::isOnFire);
   /** Checks if the entity is on the ground */
-  LivingEntityPredicate ON_GROUND = simple(Entity::isOnGround);
+  LivingEntityPredicate ON_GROUND = simple(Entity::onGround);
   /** Entities that are in the air */
   LivingEntityPredicate CROUCHING = simple(Entity::isCrouching);
 
@@ -49,7 +49,7 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   /** Entities with head and feet are in water */
   LivingEntityPredicate UNDERWATER = simple(Entity::isUnderWater);
   /** Checks if the entity is being hit by rain at their location */
-  LivingEntityPredicate RAINING = simple(entity -> entity.level.isRainingAt(entity.blockPosition()));
+  LivingEntityPredicate RAINING = simple(entity -> entity.level().isRainingAt(entity.blockPosition()));
 
   /** Creates a new predicate singleton */
   static LivingEntityPredicate simple(Predicate<LivingEntity> predicate) {

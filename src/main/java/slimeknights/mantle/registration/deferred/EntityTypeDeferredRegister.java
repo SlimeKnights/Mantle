@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.deferred;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -8,7 +8,6 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.RegistryObject;
-import slimeknights.mantle.registration.ItemProperties;
 
 import java.util.function.Supplier;
 
@@ -20,8 +19,8 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
 
   private final SynchronizedDeferredRegister<Item> itemRegistry;
   public EntityTypeDeferredRegister(String modID) {
-    super(Registry.ENTITY_TYPE_REGISTRY, modID);
-    itemRegistry = SynchronizedDeferredRegister.create(Registry.ITEM_REGISTRY, modID);
+    super(Registries.ENTITY_TYPE, modID);
+    itemRegistry = SynchronizedDeferredRegister.create(Registries.ITEM, modID);
   }
 
   @Override
@@ -52,7 +51,7 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
    */
   public <T extends Mob> RegistryObject<EntityType<T>> registerWithEgg(String name, Supplier<EntityType.Builder<T>> sup, int primary, int secondary) {
     RegistryObject<EntityType<T>> object = register(name, sup);
-    itemRegistry.register(name + "_spawn_egg", () -> new ForgeSpawnEggItem(object, primary, secondary, ItemProperties.EGG_PROPS));
+    itemRegistry.register(name + "_spawn_egg", () -> new ForgeSpawnEggItem(object, primary, secondary, new Item.Properties()));
     return object;
   }
 }

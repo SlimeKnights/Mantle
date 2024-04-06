@@ -8,7 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,7 +18,7 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
@@ -42,12 +41,10 @@ import slimeknights.mantle.client.model.util.GeometryContextWrapper;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.client.model.util.SimpleBlockModel;
-import slimeknights.mantle.item.RetexturedBlockItem;
 import slimeknights.mantle.util.RetexturedHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,14 +64,14 @@ public class RetexturedModel implements IUnbakedGeometry<RetexturedModel> {
   private final Set<String> retextured;
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    return model.getMaterials(owner, modelGetter, missingTextureErrors);
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext context) {
+    model.resolveParents(modelGetter, context);
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     // bake the model and return
-    BakedModel baked = model.bake(owner, bakery, spriteGetter, transform, overrides, location);
+    BakedModel baked = model.bake(owner, baker, spriteGetter, transform, overrides, location);
     return new Baked(baked, owner, model, transform, getAllRetextured(owner, this.model, retextured));
   }
 
@@ -253,7 +250,7 @@ public class RetexturedModel implements IUnbakedGeometry<RetexturedModel> {
       }
 
       // get the block first, ensuring its valid
-      Block block = RetexturedBlockItem.getTexture(stack);
+      Block block = RetexturedHelper.getTexture(stack);
       if (block == Blocks.AIR) {
         return originalModel;
       }

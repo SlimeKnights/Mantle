@@ -2,15 +2,17 @@ package slimeknights.mantle.client.model.inventory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.math.Vector3f;
 import lombok.Getter;
-import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemDisplayContext;
+import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class ModelItem {
   /** Model item for rendering no item */
   private static final ModelItem EMPTY = new ModelItem(new Vector3f(0, 0, 0), 0, 0, 0);
@@ -28,7 +30,7 @@ public class ModelItem {
   @Getter
   private final float y;
   @Getter
-  private final TransformType transform;
+  private final ItemDisplayContext transform;
 
   /** Item center location in percentages, lazy loaded */
   private Vector3f centerScaled;
@@ -36,15 +38,7 @@ public class ModelItem {
   private Float sizeScaled;
 
   public ModelItem(Vector3f center, float size, float x, float y) {
-    this(center, size, x, y, TransformType.NONE);
-  }
-
-  public ModelItem(Vector3f center, float size, float x, float y, TransformType transform) {
-    this.center = center;
-    this.size = size;
-    this.x = x;
-    this.y = y;
-    this.transform = transform;
+    this(center, size, x, y, ItemDisplayContext.NONE);
   }
 
   /**
@@ -53,7 +47,7 @@ public class ModelItem {
    */
   public Vector3f getCenterScaled() {
     if (centerScaled == null) {
-      centerScaled = center.copy();
+      centerScaled = new Vector3f(center);
       centerScaled.mul(1f / 16f);
     }
     return centerScaled;
@@ -79,12 +73,18 @@ public class ModelItem {
   }
 
   /** Parses a transform type from a string */
-  private static TransformType parseTransformType(JsonObject json, String key) {
+  private static ItemDisplayContext parseTransformType(JsonObject json, String key) {
     String name = GsonHelper.getAsString(json, key, "none");
-    for (TransformType type : TransformType.values()) {
-      if (name.equals(type.getSerializeName())) {
-        return type;
-      }
+    switch (name) {
+      case "none":   return ItemDisplayContext.NONE;
+      case "head":   return ItemDisplayContext.HEAD;
+      case "gui":    return ItemDisplayContext.GUI;
+      case "ground": return ItemDisplayContext.GROUND;
+      case "fixed":  return ItemDisplayContext.FIXED;
+      case "thirdperson_righthand": return ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+      case "thirdperson_lefthand":  return ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+      case "firstperson_righthand": return ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
+      case "firstperson_lefthand":  return ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
     }
     throw new JsonSyntaxException("Unknown transform type " + name);
   }
@@ -103,7 +103,7 @@ public class ModelItem {
     Vector3f center = ModelHelper.arrayToVector(json, "center");
     float x = ModelHelper.getRotation(json, "x");
     float y = ModelHelper.getRotation(json, "y");
-    TransformType transformType = parseTransformType(json, "transform");
+    ItemDisplayContext transformType = parseTransformType(json, "transform");
     return new ModelItem(center, size, x, y, transformType);
   }
 

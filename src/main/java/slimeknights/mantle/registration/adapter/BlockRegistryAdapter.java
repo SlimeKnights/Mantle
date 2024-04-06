@@ -1,8 +1,9 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -16,17 +17,18 @@ import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.WallSignBlock;
-import net.minecraft.world.level.block.WoodButtonBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallSignBlock;
 import slimeknights.mantle.block.StrippableLogBlock;
-import slimeknights.mantle.block.WoodenDoorBlock;
 import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
@@ -122,31 +124,34 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @return Wood object
    */
   public WoodBlockObject registerWood(String name, Function<WoodVariant,BlockBehaviour.Properties> behaviorCreator) {
-    WoodType woodType = WoodType.create(resourceName(name));
+    BlockSetType setType = new BlockSetType(resourceName(name));
+    WoodType woodType = new WoodType(resourceName(name), setType);
+    BlockSetType.register(setType);
+    WoodType.register(woodType);
     RegistrationHelper.registerWoodType(woodType);
 
     // planks
-    BlockBehaviour.Properties planksProps = behaviorCreator.apply(WoodVariant.PLANKS).strength(2.0f, 3.0f);
+    BlockBehaviour.Properties planksProps = behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(2.0f, 3.0f);
     BuildingBlockObject planks = registerBuilding(new Block(planksProps), name + "_planks");
-    FenceBlock fence = register(new FenceBlock(Properties.copy(planks.get())), name + "_fence");
+    FenceBlock fence = register(new FenceBlock(Properties.copy(planks.get()).forceSolidOn()), name + "_fence");
     // logs and wood
-    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(2.0f));
+    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(2.0f));
     RotatedPillarBlock strippedLog = register(stripped.get(), "stripped_" + name + "_log");
     RotatedPillarBlock strippedWood = register(stripped.get(), "stripped_" + name + "_wood");
-    RotatedPillarBlock log = register(new StrippableLogBlock(getHolder(Registry.BLOCK, strippedLog), behaviorCreator.apply(WoodVariant.LOG).strength(2.0f)), name + "_log");
-    RotatedPillarBlock wood = register(new StrippableLogBlock(getHolder(Registry.BLOCK, strippedWood), behaviorCreator.apply(WoodVariant.WOOD).strength(2.0f)), name + "_wood");
+    RotatedPillarBlock log = register(new StrippableLogBlock(getHolder(BuiltInRegistries.BLOCK, strippedLog), behaviorCreator.apply(WoodVariant.LOG).instrument(NoteBlockInstrument.BASS).strength(2.0f)), name + "_log");
+    RotatedPillarBlock wood = register(new StrippableLogBlock(getHolder(BuiltInRegistries.BLOCK, strippedWood), behaviorCreator.apply(WoodVariant.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0f)), name + "_wood");
 
     // doors
-    DoorBlock door = register(new WoodenDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion()), name + "_door");
-    TrapDoorBlock trapdoor = register(new TrapDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never)), name + "_trapdoor");
-    FenceGateBlock fenceGate = register(new FenceGateBlock(planksProps), name + "_fence_gate");
+    DoorBlock door = register(new DoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY), setType), name + "_door");
+    TrapDoorBlock trapdoor = register(new TrapDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never), setType), name + "_trapdoor");
+    FenceGateBlock fenceGate = register(new FenceGateBlock(Properties.copy(fence), woodType), name + "_fence_gate");
     // redstone
-    BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(0.5F);
-    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), name + "_pressure_plate");
-    WoodButtonBlock button = register(new WoodButtonBlock(redstoneProps), name + "_button");
+    BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().pushReaction(PushReaction.DESTROY).strength(0.5F);
+    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps, setType), name + "_pressure_plate");
+    ButtonBlock button = register(new ButtonBlock(redstoneProps, setType, 30, true), name + "_button");
     // signs
-    StandingSignBlock standingSign = register(new MantleStandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F), woodType), name + "_sign");
-    WallSignBlock wallSign = register(new MantleWallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F).dropsLike(standingSign), woodType), name + "_wall_sign");
+    StandingSignBlock standingSign = register(new MantleStandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F), woodType), name + "_sign");
+    WallSignBlock wallSign = register(new MantleWallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).dropsLike(standingSign), woodType), name + "_wall_sign");
     // tell mantle to inject these into the TE
     MantleSignBlockEntity.registerSignBlock(() -> standingSign);
     MantleSignBlockEntity.registerSignBlock(() -> wallSign);
@@ -159,18 +164,14 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   /**
    * Registers a fluid block from a fluid
    * @param fluid       Fluid supplier
-   * @param material    Fluid material
+   * @param color       Fluid color
    * @param lightLevel  Fluid light level
    * @param name        Fluid name, unfortunately no way to fetch from the fluid as it does not exist yet
    * @return  Fluid block instance
    */
-  public LiquidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, Material material, int lightLevel, String name) {
+  public LiquidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, MapColor color, int lightLevel, String name) {
     return register(
-        new LiquidBlock(fluid, BlockBehaviour.Properties.of(material)
-                                                     .noCollission()
-                                                     .strength(100.0F)
-                                                     .noLootTable()
-                                                     .lightLevel((state) -> lightLevel)),
+        new LiquidBlock(fluid, BlockBehaviour.Properties.of().mapColor(color).noCollission().strength(100.0F).noLootTable().lightLevel((state) -> lightLevel)),
         name + "_fluid");
   }
 }

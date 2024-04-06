@@ -1,14 +1,13 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraftforge.client.gui.ScreenUtils;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class TextComponentDataRenderer {
   /**
    * Renders the given Text Components on the screen and returns the action if any of them have one.
    *
-   * @param matrixStack the matrix stack to render with
+   * @param graphics the matrix stack to render with
    * @param x           the x position to render at
    * @param y           the y position to render at
    * @param boxWidth    the width of the given render box
@@ -32,7 +31,7 @@ public class TextComponentDataRenderer {
    * @param tooltip     the list of tooltips
    * @return the action if there's any
    */
-  public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextComponentData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
+  public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextComponentData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
     String action = "";
 
     int atX = x;
@@ -76,7 +75,7 @@ public class TextComponentDataRenderer {
         }
 
         FormattedText textComponent = textLines.get(lineNumber);
-        drawScaledTextComponent(matrixStack, fr, textComponent, atX, atY, item.dropShadow, item.scale);
+        drawScaledTextComponent(graphics, fr, textComponent, atX, atY, item.dropShadow, item.scale);
 
         if (lineNumber < textLines.size() - 1) {
           atY += fr.lineHeight;
@@ -108,13 +107,12 @@ public class TextComponentDataRenderer {
       boolean mouseCheck = (mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H) || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H) || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H);
 
       if (item.tooltips != null && item.tooltips.length > 0) {
-        // Uncomment to render bounding boxes for event handling
+        // render bounding boxes for event handling
         if (BookScreen.debug) {
-          Matrix4f matrix = matrixStack.last().pose();
-          ScreenUtils.drawGradientRect(matrix, 0, box1X,  box1Y,  box1W,      box1H,      0xFF00FF00, 0xFF00FF00);
-          ScreenUtils.drawGradientRect(matrix, 0, box2X,  box2Y,  box2W,      box2H,      0xFFFF0000, 0xFFFF0000);
-          ScreenUtils.drawGradientRect(matrix, 0, box3X,  box3Y,  box3W,      box3H,      0xFF0000FF, 0xFF0000FF);
-          ScreenUtils.drawGradientRect(matrix, 0, mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
+          graphics.fillGradient(box1X,  box1Y,  box1W,      box1H,      0xFF00FF00, 0xFF00FF00);
+          graphics.fillGradient(box2X,  box2Y,  box2W,      box2H,      0xFFFF0000, 0xFFFF0000);
+          graphics.fillGradient(box3X,  box3Y,  box3W,      box3H,      0xFF0000FF, 0xFF0000FF);
+          graphics.fillGradient(mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
         }
 
         if (mouseCheck) {
@@ -129,11 +127,7 @@ public class TextComponentDataRenderer {
       }
 
       if (atY >= y + boxHeight) {
-        if (item.dropShadow) {
-          fr.drawShadow(matrixStack, "...", atX, atY, 0);
-        } else {
-          fr.draw(matrixStack, "...", atX, atY, 0);
-        }
+        graphics.drawString(fr, "...", atX, atY, 0, item.dropShadow);
         break;
       }
 
@@ -180,7 +174,7 @@ public class TextComponentDataRenderer {
   /**
    * Draws a text component with the given scale at the given position
    *
-   * @param matrixStack   the given matrix stack used for rendering.
+   * @param graphics      the given graphics used for rendering.
    * @param font          the font renderer to render with
    * @param textComponent the text component to render
    * @param x             the x position to render at
@@ -188,17 +182,13 @@ public class TextComponentDataRenderer {
    * @param dropShadow    if there should be a shadow on the text
    * @param scale         the scale to render as
    */
-  public static void drawScaledTextComponent(PoseStack matrixStack, Font font, FormattedText textComponent, float x, float y, boolean dropShadow, float scale) {
-    matrixStack.pushPose();
-    matrixStack.translate(x, y, 0);
-    matrixStack.scale(scale, scale, 1F);
+  public static void drawScaledTextComponent(GuiGraphics graphics, Font font, FormattedText textComponent, float x, float y, boolean dropShadow, float scale) {
+    PoseStack poseStack = graphics.pose();
+    poseStack.pushPose();
+    poseStack.translate(x, y, 0);
+    poseStack.scale(scale, scale, 1F);
 
-    if (dropShadow) {
-      font.drawShadow(matrixStack, Language.getInstance().getVisualOrder(textComponent), 0, 0, 0);
-    } else {
-      font.draw(matrixStack, Language.getInstance().getVisualOrder(textComponent), 0, 0, 0);
-    }
-
-    matrixStack.popPose();
+    graphics.drawString(font, Language.getInstance().getVisualOrder(textComponent), 0, 0, 0, dropShadow);
+    poseStack.popPose();
   }
 }

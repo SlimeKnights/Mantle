@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -64,7 +64,7 @@ public class BlockTagLootCondition implements LootItemCondition {
 
     @Override
     public BlockTagLootCondition deserialize(JsonObject json, JsonDeserializationContext context) {
-      TagKey<Block> tag = TagKey.create(Registry.BLOCK_REGISTRY, JsonHelper.getResourceLocation(json, "tag"));
+      TagKey<Block> tag = TagKey.create(Registries.BLOCK, JsonHelper.getResourceLocation(json, "tag"));
       StatePropertiesPredicate predicate = StatePropertiesPredicate.ANY;
       if (json.has("properties")) {
         predicate = StatePropertiesPredicate.fromJson(json.get("properties"));

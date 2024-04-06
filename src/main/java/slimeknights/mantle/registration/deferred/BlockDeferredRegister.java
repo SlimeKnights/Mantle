@@ -1,14 +1,14 @@
 package slimeknights.mantle.registration.deferred;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SignItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -21,17 +21,17 @@ import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.WallSignBlock;
-import net.minecraft.world.level.block.WoodButtonBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallSignBlock;
 import slimeknights.mantle.block.StrippableLogBlock;
-import slimeknights.mantle.block.WoodenDoorBlock;
 import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.item.BurnableBlockItem;
 import slimeknights.mantle.item.BurnableSignItem;
@@ -58,8 +58,8 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
 
   protected final SynchronizedDeferredRegister<Item> itemRegister;
   public BlockDeferredRegister(String modID) {
-    super(Registry.BLOCK_REGISTRY, modID);
-    this.itemRegister = SynchronizedDeferredRegister.create(ForgeRegistries.ITEMS, modID);
+    super(Registries.BLOCK, modID);
+    this.itemRegister = SynchronizedDeferredRegister.create(Registries.ITEM, modID);
   }
 
   @Override
@@ -210,19 +210,21 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param name             Name of the wood object
    * @param behaviorCreator  Logic to create the behavior
    * @param flammable        If true, this wood type is flammable
-   * @param group            Item group
    * @return Wood object
    */
-  public WoodBlockObject registerWood(String name, Function<WoodVariant,BlockBehaviour.Properties> behaviorCreator, boolean flammable, CreativeModeTab group) {
-    WoodType woodType = WoodType.create(resourceName(name));
+  public WoodBlockObject registerWood(String name, Function<WoodVariant,BlockBehaviour.Properties> behaviorCreator, boolean flammable) {
+    BlockSetType setType = new BlockSetType(resourceName(name));
+    WoodType woodType = new WoodType(resourceName(name), setType);
+    BlockSetType.register(setType);
+    WoodType.register(woodType);
     RegistrationHelper.registerWoodType(woodType);
-    Item.Properties itemProps = new Item.Properties().tab(group);
+    Item.Properties itemProps = new Item.Properties();
 
     // many of these are already burnable via tags, but simplier to set them all here
     Function<Integer, Function<? super Block, ? extends BlockItem>> burnableItem;
     Function<? super Block, ? extends BlockItem> burnableTallItem;
     BiFunction<? super Block, ? super Block, ? extends BlockItem> burnableSignItem;
-    Item.Properties signProps = new Item.Properties().stacksTo(16).tab(group);
+    Item.Properties signProps = new Item.Properties().stacksTo(16);
     if (flammable) {
       burnableItem     = burnTime -> block -> new BurnableBlockItem(block, itemProps, burnTime);
       burnableTallItem = block -> new BurnableTallBlockItem(block, itemProps, 200);
@@ -236,27 +238,27 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
 
     // planks
     Function<? super Block, ? extends BlockItem> burnable300 = burnableItem.apply(300);
-    BlockBehaviour.Properties planksProps = behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).strength(2.0f, 3.0f);
+    BlockBehaviour.Properties planksProps = behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(2.0f, 3.0f);
     BuildingBlockObject planks = registerBuilding(name + "_planks", planksProps, block -> burnableItem.apply(block instanceof SlabBlock ? 150 : 300).apply(block));
-    ItemObject<FenceBlock> fence = register(name + "_fence", () -> new FenceBlock(Properties.copy(planks.get())), burnable300);
+    ItemObject<FenceBlock> fence = register(name + "_fence", () -> new FenceBlock(Properties.copy(planks.get()).forceSolidOn()), burnable300);
     // logs and wood
-    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).strength(2.0f));
+    Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(2.0f));
     ItemObject<RotatedPillarBlock> strippedLog = register("stripped_" + name + "_log", stripped, burnable300);
     ItemObject<RotatedPillarBlock> strippedWood = register("stripped_" + name + "_wood", stripped, burnable300);
-    ItemObject<RotatedPillarBlock> log = register(name + "_log", () -> new StrippableLogBlock(strippedLog, behaviorCreator.apply(WoodBlockObject.WoodVariant.LOG).strength(2.0f)), burnable300);
-    ItemObject<RotatedPillarBlock> wood = register(name + "_wood", () -> new StrippableLogBlock(strippedWood, behaviorCreator.apply(WoodBlockObject.WoodVariant.WOOD).strength(2.0f)), burnable300);
+    ItemObject<RotatedPillarBlock> log = register(name + "_log", () -> new StrippableLogBlock(strippedLog, behaviorCreator.apply(WoodBlockObject.WoodVariant.LOG).instrument(NoteBlockInstrument.BASS).strength(2.0f)), burnable300);
+    ItemObject<RotatedPillarBlock> wood = register(name + "_wood", () -> new StrippableLogBlock(strippedWood, behaviorCreator.apply(WoodBlockObject.WoodVariant.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0f)), burnable300);
 
     // doors
-    ItemObject<DoorBlock> door = register(name + "_door", () -> new WoodenDoorBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).strength(3.0F).noOcclusion()), burnableTallItem);
-    ItemObject<TrapDoorBlock> trapdoor = register(name + "_trapdoor", () -> new TrapDoorBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never)), burnable300);
-    ItemObject<FenceGateBlock> fenceGate = register(name + "_fence_gate", () -> new FenceGateBlock(planksProps), burnable300);
+    ItemObject<DoorBlock> door = register(name + "_door", () -> new DoorBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY), setType), burnableTallItem);
+    ItemObject<TrapDoorBlock> trapdoor = register(name + "_trapdoor", () -> new TrapDoorBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never), setType), burnable300);
+    ItemObject<FenceGateBlock> fenceGate = register(name + "_fence_gate", () -> new FenceGateBlock(BlockBehaviour.Properties.copy(fence.get()), woodType), burnable300);
     // redstone
-    BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).noCollission().strength(0.5F);
-    ItemObject<PressurePlateBlock> pressurePlate = register(name + "_pressure_plate", () -> new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), burnable300);
-    ItemObject<WoodButtonBlock> button = register(name + "_button", () -> new WoodButtonBlock(redstoneProps), burnableItem.apply(100));
+    BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().pushReaction(PushReaction.DESTROY).strength(0.5F);
+    ItemObject<PressurePlateBlock> pressurePlate = register(name + "_pressure_plate", () -> new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps, setType), burnable300);
+    ItemObject<ButtonBlock> button = register(name + "_button", () -> new ButtonBlock(redstoneProps, setType, 30, true), burnableItem.apply(100));
     // signs
-    RegistryObject<StandingSignBlock> standingSign = registerNoItem(name + "_sign", () -> new MantleStandingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).noCollission().strength(1.0F), woodType));
-    RegistryObject<WallSignBlock> wallSign = registerNoItem(name + "_wall_sign", () -> new MantleWallSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).noCollission().strength(1.0F).lootFrom(standingSign), woodType));
+    RegistryObject<StandingSignBlock> standingSign = registerNoItem(name + "_sign", () -> new MantleStandingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), woodType));
+    RegistryObject<WallSignBlock> wallSign = registerNoItem(name + "_wall_sign", () -> new MantleWallSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F).lootFrom(standingSign), woodType));
     // tell mantle to inject these into the TE
     MantleSignBlockEntity.registerSignBlock(standingSign);
     MantleSignBlockEntity.registerSignBlock(wallSign);

@@ -1,58 +1,41 @@
 package slimeknights.mantle.data;
 
-import com.google.common.hash.Hashing;
-import com.google.common.hash.HashingOutputStream;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 
-import javax.annotation.Nullable;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /** Generic logic to convert any serializable object into JSON. */
-@SuppressWarnings({"unused", "SameParameterValue"})  // API
 @RequiredArgsConstructor
 public abstract class GenericDataProvider implements DataProvider {
-  protected final DataGenerator generator;
-  private final PackType type;
-  private final String folder;
+  protected final PackOutput.PathProvider pathProvider;
   private final Gson gson;
 
-  public GenericDataProvider(DataGenerator generator, PackType type, String folder) {
-    this(generator, type, folder, JsonHelper.DEFAULT_GSON);
+  public GenericDataProvider(PackOutput output, Target type, String folder, Gson gson) {
+    this(output.createPathProvider(type, folder), gson);
   }
 
-  /**
-   * Saves the given object to JSON
-   * @param output         Output for writing
-   * @param location       Location relative to this data provider's root
-   * @param object         Object to save, will be converted using this provider's GSON instance
-   * @param keyComparator  Key comparator to use
-   */
-  protected void saveJson(CachedOutput output, ResourceLocation location, Object object, @Nullable Comparator<String> keyComparator) {
-    try {
-      Path path = this.generator.getOutputFolder().resolve(Paths.get(type.getDirectory(), location.getNamespace(), folder, location.getPath() + ".json"));
-      saveStable(output, gson.toJsonTree(object), path, keyComparator);
-    } catch (IOException e) {
-      Mantle.logger.error("Couldn't create data for {}", location, e);
-    }
+  public GenericDataProvider(DataGenerator generator, Target type, String folder, Gson gson) {
+    this(generator.getPackOutput(), type, folder, gson);
+  }
+
+  public GenericDataProvider(PackOutput output, Target type, String folder) {
+    this(output, type, folder, JsonHelper.DEFAULT_GSON);
+  }
+
+  public GenericDataProvider(DataGenerator generator, Target type, String folder) {
+    this(generator, type, folder, JsonHelper.DEFAULT_GSON);
   }
 
   /**
@@ -61,8 +44,8 @@ public abstract class GenericDataProvider implements DataProvider {
    * @param location   Location relative to this data provider's root
    * @param object     Object to save, will be converted using this provider's GSON instance
    */
-  protected void saveJson(CachedOutput output, ResourceLocation location, Object object) {
-    saveJson(output, location, object, DataProvider.KEY_COMPARATOR);
+  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Object object) {
+    return DataProvider.saveStable(output, gson.toJsonTree(object), this.pathProvider.json(location));
   }
 
   /**
@@ -72,20 +55,12 @@ public abstract class GenericDataProvider implements DataProvider {
    * @param codec      Codec to save the object
    * @param object     Object to save, will be converted using the passed codec
    */
-  protected <T> void saveJson(CachedOutput output, ResourceLocation location, Codec<T> codec, T object) {
-    saveJson(output, location, codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error));
+  protected <T> CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Codec<T> codec, T object) {
+    return saveJson(output, location, codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error));
   }
 
-  /** Recreation of {@link DataProvider#saveStable(CachedOutput, JsonElement, Path)} that allows swapping tke key comparator */
-  @SuppressWarnings("UnstableApiUsage")
-  static void saveStable(CachedOutput cache, JsonElement pJson, Path pPath, @Nullable Comparator<String> keyComparator) throws IOException {
-    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-    HashingOutputStream hashingOutput = new HashingOutputStream(Hashing.sha1(), byteOutput);
-    JsonWriter writer = new JsonWriter(new OutputStreamWriter(hashingOutput, StandardCharsets.UTF_8));
-    writer.setSerializeNulls(false);
-    writer.setIndent("  ");
-    GsonHelper.writeValue(writer, pJson, keyComparator);
-    writer.close();
-    cache.writeIfNeeded(pPath, byteOutput.toByteArray(), hashingOutput.hash());
+  /** Combines a stream of completable futures into a single completable future */
+  protected CompletableFuture<?> allOf(Stream<CompletableFuture<?>> stream) {
+    return CompletableFuture.allOf(stream.toArray(CompletableFuture[]::new));
   }
 }

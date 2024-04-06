@@ -1,12 +1,11 @@
 package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.gui.ScreenUtils;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -22,18 +21,18 @@ public class TextDataRenderer {
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
   @Deprecated
-  public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, BookScreen parent) {
+  public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, BookScreen parent) {
     List<Component> tooltip = new ArrayList<>();
-    String action = drawText(matrixStack, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
+    String action = drawText(graphics, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
     if (tooltip.size() > 0) {
-      parent.renderTooltip(matrixStack, tooltip, Optional.empty(), mouseX, mouseY, fr);
+      graphics.renderTooltip(fr, tooltip, Optional.empty(), mouseX, mouseY);
     }
 
     return action;
   }
 
-  public static String drawText(PoseStack matrixStack, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
+  public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
     String action = "";
 
     int atX = x;
@@ -108,7 +107,7 @@ public class TextDataRenderer {
         }
 
         String s = split[i];
-        drawScaledString(matrixStack, fr, modifiers + s, atX, atY, item.rgbColor, item.dropshadow, item.scale);
+        drawScaledString(graphics, fr, modifiers + s, atX, atY, item.rgbColor, item.dropshadow, item.scale);
 
         if (i < split.length - 1) {
           atY += fr.lineHeight;
@@ -142,11 +141,10 @@ public class TextDataRenderer {
                             || (mouseX >= box3X && mouseX <= box3W && mouseY >= box3Y && mouseY <= box3H && box3X != box3W && box1Y != box3H);
       if (item.tooltip != null && item.tooltip.length > 0) {
         if (BookScreen.debug) {
-          Matrix4f matrix = matrixStack.last().pose();
-          ScreenUtils.drawGradientRect(matrix, 0, box1X,  box1Y,  box1W,      box1H,      0xFF00FF00, 0xFF00FF00);
-          ScreenUtils.drawGradientRect(matrix, 0, box2X,  box2Y,  box2W,      box2H,      0xFFFF0000, 0xFFFF0000);
-          ScreenUtils.drawGradientRect(matrix, 0, box3X,  box3Y,  box3W,      box3H,      0xFF0000FF, 0xFF0000FF);
-          ScreenUtils.drawGradientRect(matrix, 0, mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
+          graphics.fillGradient(box1X,  box1Y,  box1W,      box1H,      0xFF00FF00, 0xFF00FF00);
+          graphics.fillGradient(box2X,  box2Y,  box2W,      box2H,      0xFFFF0000, 0xFFFF0000);
+          graphics.fillGradient(box3X,  box3Y,  box3W,      box3H,      0xFF0000FF, 0xFF0000FF);
+          graphics.fillGradient(mouseX, mouseY, mouseX + 5, mouseY + 5, 0xFFFF00FF, 0xFFFFFF00);
         }
 
         if (mouseInside) {
@@ -161,11 +159,7 @@ public class TextDataRenderer {
       }
 
       if (atY >= y + boxHeight) {
-        if (item.dropshadow) {
-          fr.drawShadow(matrixStack, "...", atX, atY, 0);
-        } else {
-          fr.draw(matrixStack, "...", atX, atY, 0);
-        }
+        graphics.drawString(fr, "...", atX, atY, 0, item.dropshadow);
         break;
       }
       y = atY;
@@ -239,18 +233,16 @@ public class TextDataRenderer {
   }
 
   //BEGIN METHODS FROM GUI
-  public static void drawScaledString(PoseStack matrixStack, Font font, String text, float x, float y, int color, boolean dropShadow, float scale) {
-    matrixStack.pushPose();
-    matrixStack.translate(x, y, 0);
-    matrixStack.scale(scale, scale, 1F);
+  //TODO: does this exist elsewhere now?
+  public static void drawScaledString(GuiGraphics graphics, Font font, String text, float x, float y, int color, boolean dropShadow, float scale) {
+    PoseStack poseStack = graphics.pose();
+    poseStack.pushPose();
+    poseStack.translate(x, y, 0);
+    poseStack.scale(scale, scale, 1F);
 
-    if (dropShadow) {
-      font.drawShadow(matrixStack, text, 0, 0, color);
-    } else {
-      font.draw(matrixStack, text, 0, 0, color);
-    }
+    graphics.drawString(font, text, 0, 0, color, dropShadow);
 
-    matrixStack.popPose();
+    poseStack.popPose();
   }
   //END METHODS FROM GUI
 }

@@ -176,7 +176,7 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
       entity.swingTime = -1;
       entity.swinging = true;
       entity.swingingArm = hand;
-      if (!entity.level.isClientSide) {
+      if (!entity.level().isClientSide) {
         SwingArmPacket packet = new SwingArmPacket(entity, hand);
         if (updateSelf) {
           MantleNetwork.INSTANCE.sendToTrackingAndSelf(packet, entity);

@@ -8,7 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import lombok.Getter;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -16,10 +15,10 @@ import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
@@ -40,12 +39,10 @@ import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -105,11 +102,8 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
 
   /* Textures */
 
-  /**
-   * Fetches parent models for this model and its parents
-   * @param modelGetter  Model getter function
-   */
-  public void fetchParent(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter) {
+  @Override
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext owner) {
     // no work if no parent or the parent is fetched already
     if (parent != null || parentLocation == null) {
       return;
@@ -182,43 +176,6 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
     }
     return (BlockModel) model;
   }
-
-  /**
-   * Gets the texture dependencies for a list of elements, allows calling outside a simple block model
-   * @param owner                 Model configuration
-   * @param elements              List of elements to check for textures
-   * @param missingTextureErrors  Missing texture set
-   * @return  Textures dependencies
-   */
-  public static Collection<Material> getTextures(IGeometryBakingContext owner, List<BlockElement> elements, Set<Pair<String,String>> missingTextureErrors) {
-    // always need a particle texture
-    Set<Material> textures = Sets.newHashSet(owner.getMaterial("particle"));
-    // iterate all elements, fetching needed textures from the material
-    for(BlockElement part : elements) {
-      for(BlockElementFace face : part.faces.values()) {
-        Material material = owner.getMaterial(face.texture);
-        if (Objects.equals(material.texture(), MissingTextureAtlasSprite.getLocation())) {
-          missingTextureErrors.add(Pair.of(face.texture, owner.getModelName()));
-        }
-        textures.add(material);
-      }
-    }
-    return textures;
-  }
-
-  /**
-   * Gets the texture and model dependencies for a block model
-   * @param owner                 Model configuration
-   * @param modelGetter           Model getter to fetch parent models
-   * @param missingTextureErrors  Missing texture set
-   * @return  Textures dependencies
-   */
-  @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    this.fetchParent(owner, modelGetter);
-    return getTextures(owner, getElements(), missingTextureErrors);
-  }
-
 
   /* Baking */
 
@@ -309,12 +266,12 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
     return bakeModel(owner, this.getElements(), spriteGetter, transform, overrides, location);
   }
 
   /**
-   * Same as {@link #bake(IGeometryBakingContext, ModelBakery, Function, ModelState, ItemOverrides, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
+   * Same as {@link #bake(IGeometryBakingContext, ModelBaker, Function, ModelState, ItemOverrides, ResourceLocation)}, but passes in sensible defaults for values unneeded in dynamic models
    * @param owner         Model configuration
    * @param transform     Transform to apply
    * @return  Baked model
