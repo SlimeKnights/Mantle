@@ -172,20 +172,19 @@ tasks.named('jar', Jar).configure {
 
 jar.finalizedBy('reobfJar')
 
-//task sourcesJar(type: Jar) {
-//    from sourceSets.main.allJava
-//    classifier = 'sources'
-//}
+java {
+    withSourcesJar()
+}
 
-//artifacts {
-//    archives sourcesJar
-//}
+artifacts {
+    archives sourcesJar
+}
 
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
             artifact jar
-//            artifact sourcesJar
+            artifact sourcesJar
         }
     }
 
