@@ -7,6 +7,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import slimeknights.mantle.data.loadable.IAmLoadable;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -14,8 +17,10 @@ import slimeknights.mantle.data.loadable.mapping.EitherLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.RegistryHelper;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -121,6 +126,30 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
   }
 
 
+  /* JEI */
+
+  private List<EntityInput> display;
+  private List<ItemStack> eggs;
+
+  /** Gets the list of eggs matching this ingredient, used for display in JEI as it cannot do entity type */
+  public List<EntityInput> getDisplay() {
+    if (display == null) {
+      display = EntityInput.wrap(getTypes());
+    }
+    return display;
+  }
+
+  /** Gets the list of eggs matching this ingredient, used for focus links in JEI */
+  public List<ItemStack> getEggs() {
+    if (eggs == null) {
+      // use getDisplay to guarantee order is the same, just in case
+      eggs = getDisplay().stream().map(type -> new ItemStack(Objects.requireNonNullElse(ForgeSpawnEggItem.fromEntityType(type.type), Items.AIR))).toList();
+    }
+    return eggs;
+  }
+
+
+
   /* Impls */
 
   /** Ingredient that matches any entity from a set */
@@ -198,6 +227,14 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
                               .collect(ImmutableSet.toImmutableSet());
       }
       return allTypes;
+    }
+  }
+
+  /** Simple wrapper around entity type for usage in JEI */
+  public record EntityInput(EntityType<?> type) {
+    /** Wraps the given list into a list of entity inputs */
+    public static List<EntityInput> wrap(Collection<EntityType<?>> types) {
+      return types.stream().map(EntityInput::new).toList();
     }
   }
 }
