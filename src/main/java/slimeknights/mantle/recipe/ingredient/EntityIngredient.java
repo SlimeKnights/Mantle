@@ -31,8 +31,16 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
 
   /** Creates a builder with set and tag */
   private static EitherLoadable.TypedBuilder<EntityIngredient> loadableBuilder() {
-    return EitherLoadable.<EntityIngredient>typed().key("types", SET_MATCH).key("tag", TAG_MATCH);
+    return EitherLoadable.<EntityIngredient>typed().key("types", SET_MATCH).key("type", ENTRY_MATCH).key("tag", TAG_MATCH);
   }
+  /** Loadable for a single value, notably not used for networking (though that probably would still work fine due to how EitherLoadable works) */
+  private static final RecordLoadable<EntityIngredient> ENTRY_MATCH = RecordLoadable.create(Loadables.ENTITY_TYPE.requiredField("type", i -> {
+    Set<EntityType<?>> types = i.getTypes();
+    if (types.size() == 1) {
+      return types.iterator().next();
+    }
+    throw new IllegalStateException("Cannot use entry match to serialize more than 1 entity");
+  }), EntityIngredient::of);
   /** Loadable for a set match */
   private static final RecordLoadable<EntityIngredient> SET_MATCH = RecordLoadable.create(Loadables.ENTITY_TYPE.set().requiredField("types", EntityIngredient::getTypes), EntityIngredient::of);
   /** Loadable for a tag match */
@@ -122,7 +130,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
 
     @Override
     public Loadable<?> loadable() {
-      return SET_MATCH;
+      return types.size() == 1 ? ENTRY_MATCH : SET_MATCH;
     }
 
     @Override
