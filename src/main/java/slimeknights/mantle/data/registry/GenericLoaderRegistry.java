@@ -122,9 +122,14 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     return decode(buffer);
   }
 
-  /** Creates a field that loads this object directly into the parent JSON object */
+  /** Creates a field that loads this object directly into the parent JSON object, will conflict if the parent already has a type */
+  public <P> LoadableField<T,P> directField(Function<P,T> getter) {
+    return new DirectRegistryField<>(this, getter);
+  }
+
+  /** Creates a field that loads this object directly into the parent JSON object by mapping the type key */
   public <P> LoadableField<T,P> directField(String typeKey, Function<P,T> getter) {
-    return new DirectRegistryField<>(this, typeKey, getter);
+    return new MergingRegistryField<>(this, typeKey, getter);
   }
 
   @Override
