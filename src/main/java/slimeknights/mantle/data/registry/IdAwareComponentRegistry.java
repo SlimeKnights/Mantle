@@ -4,8 +4,8 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.registration.object.IdAwareObject;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic registry of a {@link IdAwareObject}.
@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class IdAwareComponentRegistry<T extends IdAwareObject> extends AbstractNamedComponentRegistry<T> {
   /** Registered box expansion types */
-  private final Map<ResourceLocation,T> values = new ConcurrentHashMap<>();
+  private final Map<ResourceLocation,T> values = new HashMap<>();
 
   public IdAwareComponentRegistry(String errorText) {
     super(errorText);
   }
 
   /** Registers the value with the given name */
-  public <V extends T> V register(V value) {
+  public synchronized <V extends T> V register(V value) {
     ResourceLocation name = value.getId();
     if (values.putIfAbsent(name, value) != null) {
       throw new IllegalArgumentException("Duplicate registration " + name);

@@ -19,7 +19,7 @@ public class NamedComponentRegistry<T> extends AbstractNamedComponentRegistry<T>
   }
 
   /** Registers the value with the given name */
-  public <V extends T> V register(ResourceLocation name, V value) {
+  public synchronized <V extends T> V register(ResourceLocation name, V value) {
     if (values.putIfAbsent(name, value) != null) {
       throw new IllegalArgumentException("Duplicate registration " + name);
     }
