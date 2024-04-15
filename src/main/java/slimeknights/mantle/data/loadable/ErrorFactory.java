@@ -3,6 +3,8 @@ package slimeknights.mantle.data.loadable;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import slimeknights.mantle.data.loadable.field.ConstantField;
+import slimeknights.mantle.data.loadable.field.LoadableField;
 
 import java.util.function.Consumer;
 
@@ -26,6 +28,8 @@ public interface ErrorFactory extends Consumer<String> {
       return base;
     }
   };
+  /** Field for constructors wishing to possibly throw */
+  LoadableField<ErrorFactory,Object> FIELD = new ConstantField<>(JSON_SYNTAX_ERROR, DECODER_EXCEPTION);
 
   /** Throws an exception from the given error */
   @Override
