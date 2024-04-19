@@ -6,6 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * Generic registry of a component named by a resource location. Supports any arbitrary object without making any changes to it.
@@ -45,6 +46,16 @@ public class NamedComponentRegistry<T> extends AbstractNamedComponentRegistry<T>
       throw new IllegalStateException(errorText + value);
     }
     return key;
+  }
+
+  @Override
+  public Collection<ResourceLocation> getKeys() {
+    return values.keySet();
+  }
+
+  @Override
+  public Collection<T> getValues() {
+    return values.values();
   }
 
 

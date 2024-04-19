@@ -9,8 +9,10 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.function.Function;
 
+/** Shared logic for registries that map a resource location to an object. */
 public abstract class AbstractNamedComponentRegistry<T> implements ResourceLocationLoadable<T> {
   /** Name to make exceptions clearer */
   protected final String errorText;
@@ -22,6 +24,12 @@ public abstract class AbstractNamedComponentRegistry<T> implements ResourceLocat
   /** Gets a value or null if missing */
   @Nullable
   public abstract T getValue(ResourceLocation name);
+
+  /** Gets all keys registered */
+  public abstract Collection<ResourceLocation> getKeys();
+
+  /** Gets all keys registered */
+  public abstract Collection<T> getValues();
 
 
   /* Json */

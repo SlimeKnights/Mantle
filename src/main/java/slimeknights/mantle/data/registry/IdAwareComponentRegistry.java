@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.registration.object.IdAwareObject;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,5 +39,15 @@ public class IdAwareComponentRegistry<T extends IdAwareObject> extends AbstractN
   @Override
   public ResourceLocation getKey(T object) {
     return object.getId();
+  }
+
+  @Override
+  public Collection<ResourceLocation> getKeys() {
+    return values.keySet();
+  }
+
+  @Override
+  public Collection<T> getValues() {
+    return values.values();
   }
 }
