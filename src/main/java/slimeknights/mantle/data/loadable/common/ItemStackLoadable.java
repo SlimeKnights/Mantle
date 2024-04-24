@@ -102,7 +102,7 @@ public class ItemStackLoadable {
     /* General JSON */
 
     @Override
-    public ItemStack deserialize(JsonObject json, TypedMap<Object> context) {
+    public ItemStack deserialize(JsonObject json, TypedMap context) {
       int count = 1;
       if (this == READ_COUNT) {
         count = COUNT.get(json, context);
@@ -142,7 +142,7 @@ public class ItemStackLoadable {
     /* Buffer */
 
     @Override
-    public ItemStack decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public ItemStack decode(FriendlyByteBuf buffer, TypedMap context) {
       // not using makeItemStack as we need to set the share tag NBT here
       Item item = ITEM.decode(buffer, context);
       int count = 1;

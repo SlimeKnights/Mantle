@@ -13,7 +13,7 @@ record RecordLoadable1<A,R>(
   Function<A,R> constructor
 ) implements RecordLoadable<R> {
   @Override
-  public R deserialize(JsonObject json, TypedMap<Object> context) {
+  public R deserialize(JsonObject json, TypedMap context) {
     return constructor.apply(fieldA.get(json, context));
   }
 
@@ -23,7 +23,7 @@ record RecordLoadable1<A,R>(
   }
 
   @Override
-  public R decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public R decode(FriendlyByteBuf buffer, TypedMap context) {
     return constructor.apply(fieldA.decode(buffer, context));
   }
 

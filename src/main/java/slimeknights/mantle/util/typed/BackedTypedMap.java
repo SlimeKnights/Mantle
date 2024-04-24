@@ -10,7 +10,7 @@ import java.util.Set;
  * Note this class implements {@link MutableTypedMap}, but it will throw if the backing map is not mutable. It is the caller's responsibility to use the correct interface for non-mutable maps.
  */
 @SuppressWarnings("unchecked")  // the nature of this map means we inherently have unchecked operations
-public record BackedTypedMap<T>(Map<Key<? extends T>, T> map) implements MutableTypedMap<T> {
+public record BackedTypedMap(Map<Key<?>, Object> map) implements MutableTypedMap {
   /** Creates a new mutable backed map */
   public BackedTypedMap() {
     // using identity as keys are typically identity objects, if you have non-identity keys you can use the regular constructor.
@@ -28,34 +28,34 @@ public record BackedTypedMap<T>(Map<Key<? extends T>, T> map) implements Mutable
   }
 
   @Override
-  public boolean containsKey(Key<? extends T> key) {
+  public boolean containsKey(Key<?> key) {
     return map.containsKey(key);
   }
 
   @Nullable
   @Override
-  public <K extends T> K get(Key<K> key) {
+  public <K> K get(Key<K> key) {
     return (K) map.get(key);
   }
 
   @Override
-  public Set<Key<? extends T>> keySet() {
+  public Set<Key<?>> keySet() {
     return map.keySet();
   }
 
   @Nullable
   @Override
-  public <R extends T, K extends R> R getOrDefault(Key<K> key, @Nullable R defaultValue) {
+  public <R, K extends R> R getOrDefault(Key<K> key, @Nullable R defaultValue) {
     return (R) map.getOrDefault(key, defaultValue);
   }
 
   @Override
-  public <K extends T> void put(Key<K> key, K value) {
+  public <K> void put(Key<K> key, K value) {
     map.put(key, value);
   }
 
   @Override
-  public void remove(Key<? extends T> key) {
+  public void remove(Key<?> key) {
     map.remove(key);
   }
 
@@ -65,7 +65,7 @@ public record BackedTypedMap<T>(Map<Key<? extends T>, T> map) implements Mutable
   }
 
   @Override
-  public <K extends T> K computeIfAbsent(ComputingKey<K> key) {
+  public <K> K computeIfAbsent(ComputingKey<K> key) {
     return (K) map.computeIfAbsent(key, k -> key.get());
   }
 }

@@ -65,7 +65,7 @@ public class ContextKey<T> implements Key<T> {
   /** Field instance for making the key required */
   private record Required<T,M>(ContextKey<T> key, BiFunction<T,ErrorFactory,M> mapper) implements ContextField<M> {
     @Override
-    public M get(TypedMap<Object> context, ErrorFactory error) {
+    public M get(TypedMap context, ErrorFactory error) {
       T value = context.get(key);
       if (value != null) {
         return mapper.apply(value, error);
@@ -77,7 +77,7 @@ public class ContextKey<T> implements Key<T> {
   /** Field instance that defaults to a given value */
   private record Defaulting<T>(ContextKey<T> key, @Nullable T defaultValue) implements ContextField<T> {
     @Override
-    public T get(TypedMap<Object> context, ErrorFactory error) {
+    public T get(TypedMap context, ErrorFactory error) {
       // it is potentially faster to use get over getOrDefault so call it directly if we have no default value
       if (defaultValue == null) {
         return context.get(key);

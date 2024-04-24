@@ -50,7 +50,7 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T>, Conte
    * @return  Parsed loadable value
    * @throws com.google.gson.JsonSyntaxException  If unable to read from JSON
    */
-  T deserialize(JsonObject json, TypedMap<Object> context);
+  T deserialize(JsonObject json, TypedMap context);
 
   /** Contextless implementation of {@link #deserialize(JsonObject, TypedMap)} for {@link IGenericLoader}. */
   @Override

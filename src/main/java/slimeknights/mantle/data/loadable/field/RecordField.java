@@ -20,7 +20,7 @@ public interface RecordField<T,P> {
    * @return  Parsed loadable value
    * @throws com.google.gson.JsonSyntaxException  If unable to read from JSON
    */
-  T get(JsonObject json, TypedMap<Object> context);
+  T get(JsonObject json, TypedMap context);
 
   /**
    * Serializes the passed object into the JSON instance
@@ -38,7 +38,7 @@ public interface RecordField<T,P> {
    * @return  Parsed field value
    * @throws io.netty.handler.codec.DecoderException  If unable to decode a value from network
    */
-  T decode(FriendlyByteBuf buffer, TypedMap<Object> context);
+  T decode(FriendlyByteBuf buffer, TypedMap context);
 
   /**
    * Writes this field to the buffer

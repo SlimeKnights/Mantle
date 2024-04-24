@@ -20,7 +20,7 @@ public interface LoadableField<T,P> extends RecordField<T,P> {
   T get(JsonObject json);
 
   @Override
-  default T get(JsonObject json, TypedMap<Object> context) {
+  default T get(JsonObject json, TypedMap context) {
     return get(json);
   }
 
@@ -33,7 +33,7 @@ public interface LoadableField<T,P> extends RecordField<T,P> {
   T decode(FriendlyByteBuf buffer);
 
   @Override
-  default T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  default T decode(FriendlyByteBuf buffer, TypedMap context) {
     return decode(buffer);
   }
 }

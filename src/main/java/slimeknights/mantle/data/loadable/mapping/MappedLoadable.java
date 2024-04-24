@@ -70,7 +70,7 @@ public class MappedLoadable<F,T> implements Loadable<T> {
     }
 
     @Override
-    public T deserialize(JsonObject json, TypedMap<Object> context) {
+    public T deserialize(JsonObject json, TypedMap context) {
       return from.apply(base.deserialize(json, context), ErrorFactory.JSON_SYNTAX_ERROR);
     }
 
@@ -80,7 +80,7 @@ public class MappedLoadable<F,T> implements Loadable<T> {
     }
 
     @Override
-    public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public T decode(FriendlyByteBuf buffer, TypedMap context) {
       return from.apply(base.decode(buffer, context), ErrorFactory.DECODER_EXCEPTION);
     }
   }

@@ -71,7 +71,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
   /** Loader instance */
   public static final RecordLoadable<BlockPropertiesPredicate> LOADER = new RecordLoadable<>() {
     @Override
-    public BlockPropertiesPredicate deserialize(JsonObject json, TypedMap<Object> context) {
+    public BlockPropertiesPredicate deserialize(JsonObject json, TypedMap context) {
       Block block = Loadables.BLOCK.getIfPresent(json, "block");
       // TODO: this is a bit of a unique case for matcher, as its parsing from a map into a list, think about whether we can do something generic
       ImmutableList.Builder<Matcher> builder = ImmutableList.builder();
@@ -93,7 +93,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public BlockPropertiesPredicate decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public BlockPropertiesPredicate decode(FriendlyByteBuf buffer, TypedMap context) {
       Block block = Loadables.BLOCK.decode(buffer);
       int size = buffer.readVarInt();
       ImmutableList.Builder<Matcher> builder = ImmutableList.builder();
