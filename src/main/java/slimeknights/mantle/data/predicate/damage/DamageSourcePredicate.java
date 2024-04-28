@@ -27,12 +27,13 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   DamageSourcePredicate DAMAGE_HELMET = simple(DamageSource::isDamageHelmet);
   DamageSourcePredicate BYPASS_INVULNERABLE = simple(DamageSource::isBypassInvul);
   DamageSourcePredicate BYPASS_MAGIC = simple(DamageSource::isBypassMagic);
+  DamageSourcePredicate BYPASS_ENCHANTMENTS = simple(DamageSource::isBypassEnchantments);
   DamageSourcePredicate FIRE = simple(DamageSource::isFire);
   DamageSourcePredicate MAGIC = simple(DamageSource::isMagic);
   DamageSourcePredicate FALL = simple(DamageSource::isFall);
 
   /** Damage that protection works against */
-  DamageSourcePredicate CAN_PROTECT = simple(source -> !source.isBypassMagic() && !source.isBypassInvul());
+  DamageSourcePredicate CAN_PROTECT = simple(source -> !source.isBypassMagic() && !source.isBypassEnchantments() && !source.isBypassInvul());
   /** Custom concept: damage dealt by non-projectile entities */
   DamageSourcePredicate MELEE = simple(source -> {
     if (source.isProjectile()) {
