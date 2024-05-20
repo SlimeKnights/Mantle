@@ -21,6 +21,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.ToolAction;
 import slimeknights.mantle.data.loadable.common.RegistryLoadable;
+import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 
 import java.util.function.BiFunction;
@@ -41,17 +42,17 @@ public class Loadables {
   public static final StringLoadable<ToolAction> TOOL_ACTION = StringLoadable.DEFAULT.flatXmap(ToolAction::get, ToolAction::name);
 
   /* Registries */
-  public static final StringLoadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(Registry.SOUND_EVENT);
-  public static final StringLoadable<Fluid> FLUID = new RegistryLoadable<>(Registry.FLUID);
-  public static final StringLoadable<MobEffect> MOB_EFFECT = new RegistryLoadable<>(Registry.MOB_EFFECT);
-  public static final StringLoadable<Block> BLOCK = new RegistryLoadable<>(Registry.BLOCK);
-  public static final StringLoadable<Enchantment> ENCHANTMENT = new RegistryLoadable<>(Registry.ENCHANTMENT);
-  public static final StringLoadable<EntityType<?>> ENTITY_TYPE = new RegistryLoadable<>(Registry.ENTITY_TYPE);
-  public static final StringLoadable<Item> ITEM = new RegistryLoadable<>(Registry.ITEM);
-  public static final StringLoadable<Potion> POTION = new RegistryLoadable<>(Registry.POTION);
-  public static final StringLoadable<ParticleType<?>> PARTICLE_TYPE = new RegistryLoadable<>(Registry.PARTICLE_TYPE);
-  public static final StringLoadable<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new RegistryLoadable<>(Registry.BLOCK_ENTITY_TYPE);
-  public static final StringLoadable<Attribute> ATTRIBUTE = new RegistryLoadable<>(Registry.ATTRIBUTE);
+  public static final ResourceLocationLoadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(Registry.SOUND_EVENT);
+  public static final ResourceLocationLoadable<Fluid> FLUID = new RegistryLoadable<>(Registry.FLUID);
+  public static final ResourceLocationLoadable<MobEffect> MOB_EFFECT = new RegistryLoadable<>(Registry.MOB_EFFECT);
+  public static final ResourceLocationLoadable<Block> BLOCK = new RegistryLoadable<>(Registry.BLOCK);
+  public static final ResourceLocationLoadable<Enchantment> ENCHANTMENT = new RegistryLoadable<>(Registry.ENCHANTMENT);
+  public static final ResourceLocationLoadable<EntityType<?>> ENTITY_TYPE = new RegistryLoadable<>(Registry.ENTITY_TYPE);
+  public static final ResourceLocationLoadable<Item> ITEM = new RegistryLoadable<>(Registry.ITEM);
+  public static final ResourceLocationLoadable<Potion> POTION = new RegistryLoadable<>(Registry.POTION);
+  public static final ResourceLocationLoadable<ParticleType<?>> PARTICLE_TYPE = new RegistryLoadable<>(Registry.PARTICLE_TYPE);
+  public static final ResourceLocationLoadable<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new RegistryLoadable<>(Registry.BLOCK_ENTITY_TYPE);
+  public static final ResourceLocationLoadable<Attribute> ATTRIBUTE = new RegistryLoadable<>(Registry.ATTRIBUTE);
 
   /* Non-default registries */
   public static final StringLoadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid cannot be empty");
