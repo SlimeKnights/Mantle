@@ -15,6 +15,7 @@ plugins {
 }
 
 repositories {
+    mavenCentral()
     maven {
         // Our maven
         name "Prog's Maven"
