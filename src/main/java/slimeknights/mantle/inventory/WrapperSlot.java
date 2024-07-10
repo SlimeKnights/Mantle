@@ -51,11 +51,6 @@ public class WrapperSlot extends Slot {
   }
 
   @Override
-  public void initialize(ItemStack stack) {
-    this.parent.initialize(stack);
-  }
-
-  @Override
   public void setChanged() {
     this.parent.setChanged();
   }
