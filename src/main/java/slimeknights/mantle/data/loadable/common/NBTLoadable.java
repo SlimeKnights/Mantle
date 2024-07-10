@@ -26,7 +26,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   ALLOW_STRING;
 
   @Override
-  public CompoundTag deserialize(JsonObject json, TypedMap<Object> context) {
+  public CompoundTag deserialize(JsonObject json, TypedMap context) {
     return (CompoundTag)JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, json);
   }
 
@@ -53,7 +53,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public CompoundTag decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public CompoundTag decode(FriendlyByteBuf buffer, TypedMap context) {
     CompoundTag tag = buffer.readNbt();
     if (tag == null) {
       return new CompoundTag();

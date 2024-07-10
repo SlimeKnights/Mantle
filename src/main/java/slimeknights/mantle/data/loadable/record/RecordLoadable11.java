@@ -23,7 +23,7 @@ record RecordLoadable11<A,B,C,D,E,F,G,H,I,J,K,R>(
   Function11<A,B,C,D,E,F,G,H,I,J,K,R> constructor
 ) implements RecordLoadable<R> {
   @Override
-  public R deserialize(JsonObject json, TypedMap<Object> context) {
+  public R deserialize(JsonObject json, TypedMap context) {
     return constructor.apply(
       fieldA.get(json, context),
       fieldB.get(json, context),
@@ -55,7 +55,7 @@ record RecordLoadable11<A,B,C,D,E,F,G,H,I,J,K,R>(
   }
 
   @Override
-  public R decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public R decode(FriendlyByteBuf buffer, TypedMap context) {
     return constructor.apply(
       fieldA.decode(buffer, context),
       fieldB.decode(buffer, context),

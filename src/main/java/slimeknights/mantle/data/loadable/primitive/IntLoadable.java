@@ -63,7 +63,7 @@ public class IntLoadable implements Loadable<Integer> {
 
   @Override
   public JsonElement serialize(Integer value) {
-    return new JsonPrimitive(value);
+    return new JsonPrimitive(validate(value, "Value"));
   }
 
 

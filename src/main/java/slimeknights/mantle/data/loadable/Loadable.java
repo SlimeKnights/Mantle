@@ -181,4 +181,13 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Str
   default <M> Loadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
     return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
+
+  /**
+   * Validates the result of this map using the given function. This is equivelent to {@link #xmap(BiFunction, BiFunction)} with the same argument twice.
+   * @param validator  Validator function, returns instance if valid.
+   * @return Validated loadable
+   */
+  default Loadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
+    return xmap(validator, validator);
+  }
 }

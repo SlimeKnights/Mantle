@@ -133,13 +133,13 @@ public class FluidTransferHelper {
   }
 
   /** Plays the sound from filling a TE */
-  private static void playEmptySound(Level world, BlockPos pos, Player player, FluidStack transferred) {
+  public static void playEmptySound(Level world, BlockPos pos, Player player, FluidStack transferred) {
     world.playSound(null, pos, getEmptySound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
     player.displayClientMessage(Component.translatable(KEY_FILLED, transferred.getAmount(), transferred.getDisplayName()), true);
   }
 
   /** Plays the sound from draining a TE */
-  private static void playFillSound(Level world, BlockPos pos, Player player, FluidStack transferred) {
+  public static void playFillSound(Level world, BlockPos pos, Player player, FluidStack transferred) {
     world.playSound(null, pos, getFillSound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
     player.displayClientMessage(Component.translatable(KEY_DRAINED, transferred.getAmount(), transferred.getDisplayName()), true);
   }

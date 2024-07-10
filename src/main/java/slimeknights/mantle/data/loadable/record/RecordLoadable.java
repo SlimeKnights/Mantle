@@ -50,7 +50,7 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T>, Conte
    * @return  Parsed loadable value
    * @throws com.google.gson.JsonSyntaxException  If unable to read from JSON
    */
-  T deserialize(JsonObject json, TypedMap<Object> context);
+  T deserialize(JsonObject json, TypedMap context);
 
   /** Contextless implementation of {@link #deserialize(JsonObject, TypedMap)} for {@link IGenericLoader}. */
   @Override
@@ -126,6 +126,11 @@ public interface RecordLoadable<T> extends Loadable<T>, IGenericLoader<T>, Conte
   @Override
   default <M> RecordLoadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
     return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
+  }
+
+  @Override
+  default RecordLoadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
+    return xmap(validator, validator);
   }
 
 

@@ -63,7 +63,7 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public BlockState deserialize(JsonObject json, TypedMap<Object> context) {
+  public BlockState deserialize(JsonObject json, TypedMap context) {
     Block block = Loadables.BLOCK.getIfPresent(json, "block");
     BlockState state = block.defaultBlockState();
     if (json.has("properties")) {
@@ -107,7 +107,7 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public BlockState decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public BlockState decode(FriendlyByteBuf buffer, TypedMap context) {
     return Block.stateById(buffer.readVarInt());
   }
 

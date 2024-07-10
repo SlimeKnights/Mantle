@@ -75,16 +75,10 @@ public class ModelItem {
   /** Parses a transform type from a string */
   private static ItemDisplayContext parseTransformType(JsonObject json, String key) {
     String name = GsonHelper.getAsString(json, key, "none");
-    switch (name) {
-      case "none":   return ItemDisplayContext.NONE;
-      case "head":   return ItemDisplayContext.HEAD;
-      case "gui":    return ItemDisplayContext.GUI;
-      case "ground": return ItemDisplayContext.GROUND;
-      case "fixed":  return ItemDisplayContext.FIXED;
-      case "thirdperson_righthand": return ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
-      case "thirdperson_lefthand":  return ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
-      case "firstperson_righthand": return ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
-      case "firstperson_lefthand":  return ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+    for (ItemDisplayContext type : ItemDisplayContext.values()) {
+      if (name.equals(type.getSerializedName())) {
+        return type;
+      }
     }
     throw new JsonSyntaxException("Unknown transform type " + name);
   }

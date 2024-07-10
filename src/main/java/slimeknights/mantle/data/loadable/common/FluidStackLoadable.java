@@ -95,11 +95,11 @@ public class FluidStackLoadable {
 
   /** Creates a non-empty variant of the loadable */
   public static Loadable<FluidStack> notEmpty(Loadable<FluidStack> loadable) {
-    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
+    return loadable.validate(NOT_EMPTY);
   }
 
   /** Creates a non-empty variant of the loadable */
   public static RecordLoadable<FluidStack> notEmpty(RecordLoadable<FluidStack> loadable) {
-    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
+    return loadable.validate(NOT_EMPTY);
   }
 }

@@ -17,6 +17,7 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -173,9 +174,14 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
       // cache the result from the tag preference to save effort, especially helpful if the tag becomes invalid
       // this object should only exist in recipes so no need to invalidate the cache
       if (cachedResult == null) {
-        cachedResult = TagPreference.getPreference(tag)
-                                    .map(item -> new ItemStack(item, count))
-                                    .orElse(ItemStack.EMPTY);
+        // if the preference is empty, do not cache it.
+        // This should only happen if someone scans recipes before tag are computed in which case we cache the wrong resolt.
+        // We protect against empty tags in our recipes via conditions.
+        Optional<Item> preference = TagPreference.getPreference(tag);
+        if (preference.isEmpty()) {
+          return ItemStack.EMPTY;
+        }
+        cachedResult = new ItemStack(preference.orElseThrow(), count);
       }
       return cachedResult;
     }
