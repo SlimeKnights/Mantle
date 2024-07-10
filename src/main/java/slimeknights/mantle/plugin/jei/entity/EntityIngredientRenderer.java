@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -54,7 +56,7 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
   }
 
   @Override
-  public void render(PoseStack matrixStack, @Nullable EntityIngredient.EntityInput input) {
+  public void render(GuiGraphics graphics, @Nullable EntityIngredient.EntityInput input) {
     if (input != null) {
       Level world = Minecraft.getInstance().level;
       EntityType<?> type = input.type();
@@ -79,15 +81,10 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
           }
           // catch exceptions drawing the entity to be safe, any caught exceptions blacklist the entity
           try {
-            PoseStack modelView = RenderSystem.getModelViewStack();
-            modelView.pushPose();
-            modelView.mulPoseMatrix(matrixStack.last().pose());
-            InventoryScreen.renderEntityInInventory(size / 2, size, scale, 0, 10, livingEntity);
-            modelView.popPose();
-            RenderSystem.applyModelViewMatrix();
+            InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, size / 2, size, scale, 0, 10, livingEntity);
             return;
           } catch (Exception e) {
-            Mantle.logger.error("Error drawing entity " + Registry.ENTITY_TYPE.getKey(type), e);
+            Mantle.logger.error("Error drawing entity " + BuiltInRegistries.ENTITY_TYPE.getKey(type), e);
             IGNORED_ENTITIES.add(type);
             ENTITY_MAP.remove(type);
           }
@@ -100,10 +97,9 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
 
       // fallback, draw a pink and black "spawn egg"
       RenderSystem.setShader(GameRenderer::getPositionTexShader);
-      RenderSystem.setShaderTexture(0, MISSING);
       RenderSystem.setShaderColor(1, 1, 1, 1);
       int offset = (size - 16) / 2;
-      Screen.blit(matrixStack, offset, offset, 0, 0, 16, 16, 16, 16);
+      graphics.blit(MISSING, offset, offset, 0, 0, 16, 16, 16, 16);
     }
   }
 
@@ -112,7 +108,7 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
     List<Component> tooltip = new ArrayList<>();
     tooltip.add(type.type().getDescription());
     if (flag.isAdvanced()) {
-      tooltip.add((Component.literal(Registry.ENTITY_TYPE.getKey(type.type()).toString())).withStyle(ChatFormatting.DARK_GRAY));
+      tooltip.add((Component.literal(BuiltInRegistries.ENTITY_TYPE.getKey(type.type()).toString())).withStyle(ChatFormatting.DARK_GRAY));
     }
     return tooltip;
   }
