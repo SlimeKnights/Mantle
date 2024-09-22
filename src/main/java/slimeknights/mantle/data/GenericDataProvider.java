@@ -99,10 +99,10 @@ public abstract class GenericDataProvider implements DataProvider {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         HashingOutputStream hashingOutput = new HashingOutputStream(Hashing.sha1(), byteOutput);
 
-        try (JsonWriter $$5 = new JsonWriter(new OutputStreamWriter(hashingOutput, StandardCharsets.UTF_8))) {
-          $$5.setSerializeNulls(false);
-          $$5.setIndent("  ");
-          GsonHelper.writeValue($$5, pJson, keyComparator);
+        try (JsonWriter writer = new JsonWriter(new OutputStreamWriter(hashingOutput, StandardCharsets.UTF_8))) {
+          writer.setSerializeNulls(false);
+          writer.setIndent("  ");
+          GsonHelper.writeValue(writer, pJson, keyComparator);
         }
         cache.writeIfNeeded(pPath, byteOutput.toByteArray(), hashingOutput.hash());
       } catch (IOException exception) {
