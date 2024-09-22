@@ -122,9 +122,14 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     return decode(buffer);
   }
 
-  /** Creates a field that loads this object directly into the parent JSON object */
+  /** Creates a field that loads this object directly into the parent JSON object, will conflict if the parent already has a type */
+  public <P> LoadableField<T,P> directField(Function<P,T> getter) {
+    return new DirectRegistryField<>(this, getter);
+  }
+
+  /** Creates a field that loads this object directly into the parent JSON object by mapping the type key */
   public <P> LoadableField<T,P> directField(String typeKey, Function<P,T> getter) {
-    return new DirectRegistryField<>(this, typeKey, getter);
+    return new MergingRegistryField<>(this, typeKey, getter);
   }
 
   @Override
@@ -132,8 +137,8 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements Loadable<T>
     return getClass().getName() + "('" + name + "')";
   }
 
-  /** @deprecated use {@link slimeknights.mantle.data.loadable.record.RecordLoadable} */
-  @Deprecated(forRemoval = true)
+  /** @deprecated use {@link slimeknights.mantle.data.loadable.record.RecordLoadable}. Will fully replace it in 1.20. */
+  @Deprecated
   public interface IGenericLoader<T> {
     /** Deserializes the object from json */
     T deserialize(JsonObject json);

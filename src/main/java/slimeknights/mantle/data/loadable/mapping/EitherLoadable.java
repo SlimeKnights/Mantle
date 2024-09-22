@@ -155,7 +155,7 @@ public class EitherLoadable {
     /* JSON */
 
     /** Deserializes from the given JSON object */
-    default T deserializeObject(JsonElement element, TypedMap<Object> context, String key) {
+    default T deserializeObject(JsonElement element, TypedMap context, String key) {
       List<KeyOption<T>> keys = this.keys();
       if (element.isJsonObject()) {
         JsonObject json = element.getAsJsonObject();
@@ -250,7 +250,7 @@ public class EitherLoadable {
   /** Loadable only supporting record */
   private record Record<T extends IAmLoadable.Record>(List<ContextStreamable<T>> network, List<KeyOption<T>> keys) implements RecordLoadable<T>, EitherImpl<T,ContextStreamable<T>> {
     @Override
-    public T deserialize(JsonObject json, TypedMap<Object> context) {
+    public T deserialize(JsonObject json, TypedMap context) {
       return deserializeObject(json, context, "[root]");
     }
 
@@ -261,7 +261,7 @@ public class EitherLoadable {
     }
 
     @Override
-    public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public T decode(FriendlyByteBuf buffer, TypedMap context) {
       return loadableFromNetwork(buffer).decode(buffer, context);
     }
 

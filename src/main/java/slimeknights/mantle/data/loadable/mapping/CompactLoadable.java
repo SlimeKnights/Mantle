@@ -81,7 +81,7 @@ public class CompactLoadable<T> implements Loadable<T> {
     }
 
     @Override
-    public T deserialize(JsonObject json, TypedMap<Object> context) {
+    public T deserialize(JsonObject json, TypedMap context) {
       return loadable.deserialize(json, context);
     }
 
@@ -91,7 +91,7 @@ public class CompactLoadable<T> implements Loadable<T> {
     }
 
     @Override
-    public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public T decode(FriendlyByteBuf buffer, TypedMap context) {
       return loadable.decode(buffer, context);
     }
   }

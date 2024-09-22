@@ -5,12 +5,12 @@ import java.util.function.Supplier;
 /**
  * Extension of {@link TypedMap} for a map that can be actively modified
  */
-public interface MutableTypedMap<T> extends TypedMap<T> {
+public interface MutableTypedMap extends TypedMap {
   /** Adds the given value to the map */
-  <K extends T> void put(Key<K> key, K value);
+  <K> void put(Key<K> key, K value);
 
   /** Gets the value from the map, computing it using the key if absent */
-  default <K extends T> K computeIfAbsent(ComputingKey<K> key) {
+  default <K> K computeIfAbsent(ComputingKey<K> key) {
     K value = get(key);
     if (value == null) {
       value = key.get();
@@ -20,7 +20,7 @@ public interface MutableTypedMap<T> extends TypedMap<T> {
   }
 
   /** Removes the entry associated with the given key */
-  void remove(Key<? extends T> key);
+  void remove(Key<?> key);
 
   /** Removes all keys from the map */
   void clear();

@@ -19,7 +19,7 @@ public record DirectField<T,P>(RecordLoadable<T> loadable, Function<P,T> getter)
   }
 
   @Override
-  public T get(JsonObject json, TypedMap<Object> context) {
+  public T get(JsonObject json, TypedMap context) {
     return loadable.deserialize(json, context);
   }
 
@@ -29,7 +29,7 @@ public record DirectField<T,P>(RecordLoadable<T> loadable, Function<P,T> getter)
   }
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  public T decode(FriendlyByteBuf buffer, TypedMap context) {
     return loadable.decode(buffer, context);
   }
 }

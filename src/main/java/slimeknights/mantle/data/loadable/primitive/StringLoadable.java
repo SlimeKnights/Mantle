@@ -95,4 +95,9 @@ public interface StringLoadable<T> extends Loadable<T> {
   default <M> StringLoadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
     return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
   }
+
+  @Override
+  default Loadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
+    return xmap(validator, validator);
+  }
 }

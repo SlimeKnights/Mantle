@@ -30,10 +30,7 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
     return new FloatLoadable(min, Float.POSITIVE_INFINITY);
   }
 
-  @Override
-  public Float convert(JsonElement element, String key) {
-    float value = GsonHelper.convertToFloat(element, key);
-    // note to prevent NaN we want a condition where true passes rather than false passes, as NaN is always false on these compares
+  protected float validate(float value, String key) {
     if (min <= value && value <= max) {
       return value;
     }
@@ -47,13 +44,18 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
   }
 
   @Override
+  public Float convert(JsonElement element, String key) {
+    return validate(GsonHelper.convertToFloat(element, key), key);
+  }
+
+  @Override
   public Float decode(FriendlyByteBuf buffer) {
     return buffer.readFloat();
   }
 
   @Override
   public JsonElement serialize(Float object) {
-    return new JsonPrimitive(object);
+    return new JsonPrimitive(validate(object, "Value"));
   }
 
   @Override

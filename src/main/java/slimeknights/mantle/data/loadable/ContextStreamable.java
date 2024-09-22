@@ -17,7 +17,7 @@ public interface ContextStreamable<T> extends Streamable<T> {
    * @return  Parsed object
    * @throws io.netty.handler.codec.DecoderException  If unable to decode
    */
-  T decode(FriendlyByteBuf buffer, TypedMap<Object> context);
+  T decode(FriendlyByteBuf buffer, TypedMap context);
 
   /** Contextless implementation of {@link #decode(FriendlyByteBuf, TypedMap)} for {@link Streamable}. */
   @Override

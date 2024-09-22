@@ -83,12 +83,12 @@ public class ItemStackLoadable {
 
   /** Creates a non-empty variant of the loadable */
   public static Loadable<ItemStack> notEmpty(Loadable<ItemStack> loadable) {
-    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
+    return loadable.validate(NOT_EMPTY);
   }
 
   /** Creates a non-empty variant of the loadable */
   public static RecordLoadable<ItemStack> notEmpty(RecordLoadable<ItemStack> loadable) {
-    return loadable.xmap(NOT_EMPTY, NOT_EMPTY);
+    return loadable.validate(NOT_EMPTY);
   }
 
   /** Loadable for an item stack with NBT, requires special logic due to forges share tags */
@@ -102,7 +102,7 @@ public class ItemStackLoadable {
     /* General JSON */
 
     @Override
-    public ItemStack deserialize(JsonObject json, TypedMap<Object> context) {
+    public ItemStack deserialize(JsonObject json, TypedMap context) {
       int count = 1;
       if (this == READ_COUNT) {
         count = COUNT.get(json, context);
@@ -142,7 +142,7 @@ public class ItemStackLoadable {
     /* Buffer */
 
     @Override
-    public ItemStack decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+    public ItemStack decode(FriendlyByteBuf buffer, TypedMap context) {
       // not using makeItemStack as we need to set the share tag NBT here
       Item item = ITEM.decode(buffer, context);
       int count = 1;

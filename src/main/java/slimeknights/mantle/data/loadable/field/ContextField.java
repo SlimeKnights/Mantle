@@ -19,10 +19,10 @@ public interface ContextField<T> extends RecordField<T,Object> {
    * @throws RuntimeException  If the value is missing in context
    */
   @Nullable
-  T get(TypedMap<Object> context, ErrorFactory error);
+  T get(TypedMap context, ErrorFactory error);
 
   @Override
-  default T get(JsonObject json, TypedMap<Object> context) {
+  default T get(JsonObject json, TypedMap context) {
     return get(context, ErrorFactory.JSON_SYNTAX_ERROR);
   }
 
@@ -30,7 +30,7 @@ public interface ContextField<T> extends RecordField<T,Object> {
   default void serialize(Object parent, JsonObject json) {}
 
   @Override
-  default T decode(FriendlyByteBuf buffer, TypedMap<Object> context) {
+  default T decode(FriendlyByteBuf buffer, TypedMap context) {
     return get(context, ErrorFactory.DECODER_EXCEPTION);
   }
 
