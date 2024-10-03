@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.object;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -26,9 +26,9 @@ public class BuildingBlockObject extends ItemObject<Block> {
    * @param stairs  Stairs block, should be an instance of StairsBlock
    */
   public BuildingBlockObject(Block block, Block slab, Block stairs) {
-    super(Registry.BLOCK, block);
-    this.slab = RegistrationHelper.getCastedHolder(Registry.BLOCK, slab);
-    this.stairs = RegistrationHelper.getCastedHolder(Registry.BLOCK, stairs);
+    super(BuiltInRegistries.BLOCK, block);
+    this.slab = RegistrationHelper.getCastedHolder(BuiltInRegistries.BLOCK, slab);
+    this.stairs = RegistrationHelper.getCastedHolder(BuiltInRegistries.BLOCK, stairs);
   }
 
   /**

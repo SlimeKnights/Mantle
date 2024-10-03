@@ -3,7 +3,7 @@ package slimeknights.mantle.registration.deferred;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.types.Type;
 import net.minecraft.Util;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  */
 public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<BlockEntityType<?>> {
   public BlockEntityTypeDeferredRegister(String modID) {
-    super(Registry.BLOCK_ENTITY_TYPE_REGISTRY, modID);
+    super(Registries.BLOCK_ENTITY_TYPE, modID);
   }
 
   /**

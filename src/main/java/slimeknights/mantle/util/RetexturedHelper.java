@@ -2,7 +2,7 @@ package slimeknights.mantle.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -36,7 +36,7 @@ public final class RetexturedHelper {
    */
   public static Block getBlock(String name) {
     if (!name.isEmpty()) {
-      return Registry.BLOCK.get(new ResourceLocation(name));
+      return BuiltInRegistries.BLOCK.get(new ResourceLocation(name));
     }
     return Blocks.AIR;
   }
@@ -62,7 +62,7 @@ public final class RetexturedHelper {
     if (block == Blocks.AIR) {
       return "";
     }
-    return Objects.requireNonNull(Registry.BLOCK.getKey(block)).toString();
+    return Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block)).toString();
   }
 
 

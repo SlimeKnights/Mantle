@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -87,7 +87,7 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
             RenderSystem.applyModelViewMatrix();
             return;
           } catch (Exception e) {
-            Mantle.logger.error("Error drawing entity " + Registry.ENTITY_TYPE.getKey(type), e);
+            Mantle.logger.error("Error drawing entity " + BuiltInRegistries.ENTITY_TYPE.getKey(type), e);
             IGNORED_ENTITIES.add(type);
             ENTITY_MAP.remove(type);
           }
@@ -112,7 +112,7 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
     List<Component> tooltip = new ArrayList<>();
     tooltip.add(type.type().getDescription());
     if (flag.isAdvanced()) {
-      tooltip.add((Component.literal(Registry.ENTITY_TYPE.getKey(type.type()).toString())).withStyle(ChatFormatting.DARK_GRAY));
+      tooltip.add((Component.literal(BuiltInRegistries.ENTITY_TYPE.getKey(type.type()).toString())).withStyle(ChatFormatting.DARK_GRAY));
     }
     return tooltip;
   }

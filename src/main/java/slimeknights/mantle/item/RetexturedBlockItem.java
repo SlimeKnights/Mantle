@@ -2,7 +2,7 @@ package slimeknights.mantle.item;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
@@ -106,7 +106,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
     if (block == null || block == Blocks.AIR) {
       return setTexture(stack, "");
     }
-    return setTexture(stack, Registry.BLOCK.getKey(block).toString());
+    return setTexture(stack, BuiltInRegistries.BLOCK.getKey(block).toString());
   }
 
   /**
@@ -120,7 +120,7 @@ public class RetexturedBlockItem extends BlockTooltipItem {
     boolean added = false;
     // using item tags as that is what will be present in the recipe
     Class<?> clazz = block.getClass();
-    for (Holder<Item> candidate : Registry.ITEM.getTagOrEmpty(tag)) {
+    for (Holder<Item> candidate : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
       if (!candidate.isBound()) {
         continue;
       }

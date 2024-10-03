@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.profiling.InactiveProfiler;
@@ -54,7 +54,7 @@ public class TemplateLevel extends Level {
 
   public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
-      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
+      new FakeLevelData(), Level.OVERWORLD, Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registries.DIMENSION_TYPE).getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),
       () -> InactiveProfiler.INSTANCE, true, false, 0, 0
     );
 
@@ -161,6 +161,6 @@ public class TemplateLevel extends Level {
   @Nonnull
   @Override
   public Holder<Biome> getUncachedNoiseBiome(int x, int y, int z) {
-    return registries.registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS);
+    return registries.registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS);
   }
 }

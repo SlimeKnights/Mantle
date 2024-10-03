@@ -3,6 +3,7 @@ package slimeknights.mantle.data.loadable.common;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +20,7 @@ public record RegistryLoadable<T>(Registry<T> registry, ResourceLocation registr
 
   @SuppressWarnings("unchecked")
   public RegistryLoadable(Registry<T> registry) {
-    this(registry, ((Registry<Registry<?>>)Registry.REGISTRY).getKey(registry));
+    this(registry, ((Registry<Registry<?>>) BuiltInRegistries.REGISTRY).getKey(registry));
   }
 
   @Override

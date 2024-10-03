@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.deferred;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -20,8 +20,8 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
 
   private final SynchronizedDeferredRegister<Item> itemRegistry;
   public EntityTypeDeferredRegister(String modID) {
-    super(Registry.ENTITY_TYPE_REGISTRY, modID);
-    itemRegistry = SynchronizedDeferredRegister.create(Registry.ITEM_REGISTRY, modID);
+    super(Registries.ENTITY_TYPE, modID);
+    itemRegistry = SynchronizedDeferredRegister.create(Registries.ITEM, modID);
   }
 
   @Override

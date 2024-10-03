@@ -1,6 +1,8 @@
 package slimeknights.mantle.recipe.data;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -60,7 +62,7 @@ public interface IRecipeHelper extends LocationExtender {
    */
   @SuppressWarnings("deprecation")  // won't be for long
   default ResourceLocation id(ItemLike item) {
-    return location(Registry.ITEM.getKey(item.asItem()).getPath());
+    return location(BuiltInRegistries.ITEM.getKey(item.asItem()).getPath());
   }
 
   /**
@@ -151,7 +153,7 @@ public interface IRecipeHelper extends LocationExtender {
    * @return  Tag instance
    */
   default TagKey<Item> getItemTag(String modId, String name) {
-    return TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(modId, name));
+    return TagKey.create(Registries.ITEM, new ResourceLocation(modId, name));
   }
 
   /**
@@ -161,7 +163,7 @@ public interface IRecipeHelper extends LocationExtender {
    * @return  Tag instance
    */
   default TagKey<Fluid> getFluidTag(String modId, String name) {
-    return TagKey.create(Registry.FLUID_REGISTRY, new ResourceLocation(modId, name));
+    return TagKey.create(Registries.FLUID, new ResourceLocation(modId, name));
   }
 
   /**

@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -106,7 +106,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
 
   /** Registers a block item using the passed block as the name */
   protected  <I extends BlockItem> I register(I entry, Block name) {
-    return this.register(entry, Objects.requireNonNull(Registry.BLOCK.getKey(name)));
+    return this.register(entry, Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(name)));
   }
 
   /**

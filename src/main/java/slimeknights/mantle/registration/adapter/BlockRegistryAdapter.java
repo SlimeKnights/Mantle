@@ -1,6 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
@@ -133,8 +133,8 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
     Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(2.0f));
     RotatedPillarBlock strippedLog = register(stripped.get(), "stripped_" + name + "_log");
     RotatedPillarBlock strippedWood = register(stripped.get(), "stripped_" + name + "_wood");
-    RotatedPillarBlock log = register(new StrippableLogBlock(getHolder(Registry.BLOCK, strippedLog), behaviorCreator.apply(WoodVariant.LOG).strength(2.0f)), name + "_log");
-    RotatedPillarBlock wood = register(new StrippableLogBlock(getHolder(Registry.BLOCK, strippedWood), behaviorCreator.apply(WoodVariant.WOOD).strength(2.0f)), name + "_wood");
+    RotatedPillarBlock log = register(new StrippableLogBlock(getHolder(BuiltInRegistries.BLOCK, strippedLog), behaviorCreator.apply(WoodVariant.LOG).strength(2.0f)), name + "_log");
+    RotatedPillarBlock wood = register(new StrippableLogBlock(getHolder(BuiltInRegistries.BLOCK, strippedWood), behaviorCreator.apply(WoodVariant.WOOD).strength(2.0f)), name + "_wood");
 
     // doors
     DoorBlock door = register(new WoodenDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion()), name + "_door");

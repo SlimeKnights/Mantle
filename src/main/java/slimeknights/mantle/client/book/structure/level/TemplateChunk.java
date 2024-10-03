@@ -3,7 +3,8 @@
 package slimeknights.mantle.client.book.structure.level;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
@@ -27,7 +28,7 @@ public class TemplateChunk extends EmptyLevelChunk {
   private final Predicate<BlockPos> shouldShow;
 
   public TemplateChunk(Level level, ChunkPos chunkPos, List<StructureBlockInfo> blocksInChunk, Predicate<BlockPos> shouldShow) {
-    super(level, chunkPos, BuiltinRegistries.BIOME.getHolderOrThrow(Biomes.PLAINS));
+    super(level, chunkPos, level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
     this.shouldShow = shouldShow;
     this.blocksInChunk = new HashMap<>();
     this.tiles = new HashMap<>();

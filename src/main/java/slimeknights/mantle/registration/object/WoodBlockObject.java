@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -79,17 +79,17 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
                          Block pressurePlate, Block button, Block sign, Block wallSign) {
     super(planks, fence);
     this.woodType = woodType;
-    this.log = getHolder(Registry.BLOCK, log);
-    this.strippedLog = getHolder(Registry.BLOCK, strippedLog);
-    this.wood = getHolder(Registry.BLOCK, wood);
-    this.strippedWood = getHolder(Registry.BLOCK, strippedWood);
-    this.fenceGate = getCastedHolder(Registry.BLOCK, fenceGate);
-    this.door = getCastedHolder(Registry.BLOCK, door);
-    this.trapdoor = getCastedHolder(Registry.BLOCK, trapdoor);
-    this.pressurePlate = getCastedHolder(Registry.BLOCK, pressurePlate);
-    this.button = getCastedHolder(Registry.BLOCK, button);
-    this.sign = getCastedHolder(Registry.BLOCK, sign);
-    this.wallSign = getCastedHolder(Registry.BLOCK, wallSign);
+    this.log = getHolder(BuiltInRegistries.BLOCK, log);
+    this.strippedLog = getHolder(BuiltInRegistries.BLOCK, strippedLog);
+    this.wood = getHolder(BuiltInRegistries.BLOCK, wood);
+    this.strippedWood = getHolder(BuiltInRegistries.BLOCK, strippedWood);
+    this.fenceGate = getCastedHolder(BuiltInRegistries.BLOCK, fenceGate);
+    this.door = getCastedHolder(BuiltInRegistries.BLOCK, door);
+    this.trapdoor = getCastedHolder(BuiltInRegistries.BLOCK, trapdoor);
+    this.pressurePlate = getCastedHolder(BuiltInRegistries.BLOCK, pressurePlate);
+    this.button = getCastedHolder(BuiltInRegistries.BLOCK, button);
+    this.sign = getCastedHolder(BuiltInRegistries.BLOCK, sign);
+    this.wallSign = getCastedHolder(BuiltInRegistries.BLOCK, wallSign);
     ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
     this.logBlockTag = BlockTags.create(tagName);
     this.logItemTag = ItemTags.create(tagName);

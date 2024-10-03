@@ -1,7 +1,7 @@
 package slimeknights.mantle;
 
 import net.minecraft.Util;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -111,7 +111,7 @@ public class Mantle {
 
   private void register(RegisterEvent event) {
     ResourceKey<?> key = event.getRegistryKey();
-    if (key == Registry.RECIPE_SERIALIZER_REGISTRY) {
+    if (key == Registries.RECIPE_SERIALIZER) {
       RegistryAdapter<RecipeSerializer<?>> adapter = new RegistryAdapter<>(Objects.requireNonNull(event.getForgeRegistry()));
       adapter.register(new ShapedFallbackRecipe.Serializer(), "crafting_shaped_fallback");
       adapter.register(new ShapedRetexturedRecipe.Serializer(), "crafting_shaped_retextured");
@@ -175,7 +175,7 @@ public class Mantle {
         DamageSourcePredicate.LOADER.register(getResource("attacker"), SourceAttackerPredicate.LOADER);
       }
     }
-    else if (key == Registry.BLOCK_ENTITY_TYPE_REGISTRY) {
+    else if (key == Registries.BLOCK_ENTITY_TYPE) {
       BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(Objects.requireNonNull(event.getForgeRegistry()));
       adapter.register(MantleSignBlockEntity::new, "sign", MantleSignBlockEntity::buildSignBlocks);
     }

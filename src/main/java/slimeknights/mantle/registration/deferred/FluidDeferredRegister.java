@@ -2,7 +2,7 @@ package slimeknights.mantle.registration.deferred;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -38,10 +38,10 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
   private final SynchronizedDeferredRegister<Item> itemRegister;
 
   public FluidDeferredRegister(String modID) {
-    super(Registry.FLUID_REGISTRY, modID);
+    super(Registries.FLUID, modID);
     this.fluidTypeRegister = SynchronizedDeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, modID);
-    this.blockRegister = SynchronizedDeferredRegister.create(Registry.BLOCK_REGISTRY, modID);
-    this.itemRegister = SynchronizedDeferredRegister.create(Registry.ITEM_REGISTRY, modID);
+    this.blockRegister = SynchronizedDeferredRegister.create(Registries.BLOCK, modID);
+    this.itemRegister = SynchronizedDeferredRegister.create(Registries.ITEM, modID);
   }
 
   @Override
