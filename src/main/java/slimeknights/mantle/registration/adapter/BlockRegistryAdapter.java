@@ -1,6 +1,7 @@
 package slimeknights.mantle.registration.adapter;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ButtonBlock;
@@ -138,12 +139,12 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
 
     // doors
     DoorBlock door = register(new WoodenDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion()), name + "_door");
-    TrapDoorBlock trapdoor = register(new TrapDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never)), name + "_trapdoor");
-    FenceGateBlock fenceGate = register(new FenceGateBlock(planksProps), name + "_fence_gate");
+    TrapDoorBlock trapdoor = register(new TrapDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never), SoundEvents.WOODEN_TRAPDOOR_CLOSE, SoundEvents.WOODEN_TRAPDOOR_OPEN), name + "_trapdoor");
+    FenceGateBlock fenceGate = register(new FenceGateBlock(planksProps, SoundEvents.FENCE_GATE_CLOSE, SoundEvents.FENCE_GATE_OPEN), name + "_fence_gate");
     // redstone
     BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(0.5F);
-    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps), name + "_pressure_plate");
-    ButtonBlock button = register(new ButtonBlock(redstoneProps, 30, true), name + "_button");
+    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON), name + "_pressure_plate");
+    ButtonBlock button = register(new ButtonBlock(redstoneProps, 30, true, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundEvents.WOODEN_BUTTON_CLICK_ON), name + "_button");
     // signs
     StandingSignBlock standingSign = register(new MantleStandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F), woodType), name + "_sign");
     WallSignBlock wallSign = register(new MantleWallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).noCollission().strength(1.0F).dropsLike(standingSign), woodType), name + "_wall_sign");
