@@ -3,8 +3,6 @@ package slimeknights.mantle.client.screen.book;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
@@ -17,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
@@ -144,11 +144,11 @@ public class BookScreen extends Screen {
     } else {
       // Jank way to copy last matrix in matrix stack, as no proper way is provided
       PoseStack leftMatrix = new PoseStack();
-      leftMatrix.last().pose().multiply(matrixStack.last().pose());
+      leftMatrix.last().pose().mul(matrixStack.last().pose());
       leftMatrix.last().normal().mul(matrixStack.last().normal());
 
       PoseStack rightMatrix = new PoseStack();
-      rightMatrix.last().pose().multiply(matrixStack.last().pose());
+      rightMatrix.last().pose().mul(matrixStack.last().pose());
       rightMatrix.last().normal().mul(matrixStack.last().normal());
 
       drawerTransform(leftMatrix, false);

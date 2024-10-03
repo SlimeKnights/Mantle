@@ -2,8 +2,6 @@ package slimeknights.mantle.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -13,6 +11,8 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import slimeknights.mantle.client.model.fluid.FluidCuboid;
 import slimeknights.mantle.client.model.fluid.FluidCuboid.FluidFace;
 
@@ -326,11 +326,11 @@ public class FluidRenderer {
     float maxY = to.y();
     float height = (fluid.getAmount() - offset) / capacity;
     if (isGas && flipGas) {
-      from = from.copy();
-      from.setY(maxY + (height * (minY - maxY)));
+      from = new Vector3f(from);
+      from.y = maxY + (height * (minY - maxY));
     } else {
-      to = to.copy();
-      to.setY(minY + (height * (maxY - minY)));
+      to = new Vector3f(to);
+      to.y = minY + (height * (maxY - minY));
     }
 
     // draw cuboid
