@@ -8,6 +8,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallSignBlock;
-import net.minecraft.world.level.block.WoodButtonBlock;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
   private final Supplier<? extends TrapDoorBlock> trapdoor;
   // redstone
   private final Supplier<? extends PressurePlateBlock> pressurePlate;
-  private final Supplier<? extends WoodButtonBlock> button;
+  private final Supplier<? extends ButtonBlock> button;
   // signs
   private final Supplier<? extends StandingSignBlock> sign;
   private final Supplier<? extends WallSignBlock> wallSign;
@@ -53,7 +53,7 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
   public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
                          Supplier<? extends Block> log, Supplier<? extends Block> strippedLog, Supplier<? extends Block> wood, Supplier<? extends Block> strippedWood,
                          Supplier<? extends FenceBlock> fence, Supplier<? extends FenceGateBlock> fenceGate, Supplier<? extends DoorBlock> door, Supplier<? extends TrapDoorBlock> trapdoor,
-                         Supplier<? extends PressurePlateBlock> pressurePlate, Supplier<? extends WoodButtonBlock> button,
+                         Supplier<? extends PressurePlateBlock> pressurePlate, Supplier<? extends ButtonBlock> button,
                          Supplier<? extends StandingSignBlock> sign, Supplier<? extends WallSignBlock> wallSign) {
     super(planks, fence);
     this.woodType = woodType;
@@ -140,7 +140,7 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
   }
 
   /** Gets the button for this wood type */
-  public WoodButtonBlock getButton() {
+  public ButtonBlock getButton() {
     return button.get();
   }
 
