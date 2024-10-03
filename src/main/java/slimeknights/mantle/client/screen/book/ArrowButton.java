@@ -24,7 +24,7 @@ public class ArrowButton extends Button {
   public int hoverColor;
 
   public ArrowButton(@Nullable BookData bookData, int x, int y, ArrowType arrowType, int color, int hoverColor, OnPress iPressable) {
-    super(x, y, arrowType.w, arrowType.h, Component.empty(), iPressable);
+    super(x, y, arrowType.w, arrowType.h, Component.empty(), iPressable, DEFAULT_NARRATION);
 
     this.arrowType = arrowType;
     this.color = color;
@@ -44,7 +44,7 @@ public class ArrowButton extends Button {
       RenderSystem.setShaderTexture(0, TEX_BOOK);
     }
 
-    this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+    this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 
     int color = this.isHovered ? this.hoverColor : this.color;
 
@@ -53,7 +53,7 @@ public class ArrowButton extends Button {
     float b = (color & 0xff) / 255.F;
 
     RenderSystem.setShaderColor(r, g, b, 1f);
-    blit(matrixStack, this.x, this.y, this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
+    blit(matrixStack, this.getX(), this.getY(), this.width, this.height, this.arrowType.x, this.arrowType.y, this.width, this.height, 512, 512);
     this.renderBg(matrixStack, minecraft, mouseX, mouseY);
   }
 

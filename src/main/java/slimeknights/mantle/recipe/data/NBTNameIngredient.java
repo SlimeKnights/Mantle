@@ -11,8 +11,6 @@ import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-import net.minecraftforge.common.crafting.StrictNBTIngredient.Serializer;
-
 /**
  * Ingredient for a NBT sensitive item from another mod, should never be used outside datagen
  */
