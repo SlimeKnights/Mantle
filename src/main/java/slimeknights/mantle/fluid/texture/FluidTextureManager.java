@@ -1,32 +1,25 @@
 package slimeknights.mantle.fluid.texture;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /** Manager for handling fluid tooltips */
-public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
+public class FluidTextureManager extends SimpleJsonResourceReloadListener {
   /** Folder containing the logic */
   public static final String FOLDER = "mantle/fluid_texture";
 
@@ -37,59 +30,37 @@ public class FluidTextureManager implements Consumer<TextureStitchEvent.Pre> {
   /** Fallback texture instance */
   private static final FluidTexture FALLBACK = new FluidTexture(new ResourceLocation("block/water_still"), new ResourceLocation("block/water_flow"), null, null, -1);
 
+  private FluidTextureManager() {
+    super(JsonHelper.DEFAULT_GSON, FOLDER);
+  }
+
   /**
    * Initializes this manager, registering it with the resource manager
    */
-  public static void init() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.NORMAL, false, TextureStitchEvent.Pre.class, INSTANCE);
+  public static void init(RegisterClientReloadListenersEvent event) {
+    event.registerReloadListener(INSTANCE);
   }
 
   @Override
-  public void accept(TextureStitchEvent.Pre event) {
-    if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
-      long time = System.nanoTime();
-      // first, load in all fluid texture files, done in this event as otherwise we cannot guarantee it happens before the atlas stitches
-      Map<FluidType, FluidTexture> map = new HashMap<>();
+  public void apply(Map<ResourceLocation, JsonElement> jsons, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    long time = System.nanoTime();
+    Map<FluidType, FluidTexture> map = new HashMap<>();
+    IForgeRegistry<FluidType> fluidTypeRegistry = ForgeRegistries.FLUID_TYPES.get();
 
-      ResourceManager manager = Minecraft.getInstance().getResourceManager();
-      IForgeRegistry<FluidType> fluidTypeRegistry = ForgeRegistries.FLUID_TYPES.get();
-      for (Map.Entry<ResourceLocation,Resource> entry : manager.listResources(FOLDER, location -> location.getPath().endsWith(".json")).entrySet()) {
-        ResourceLocation fullPath = entry.getKey();
-        String path = fullPath.getPath();
-        ResourceLocation id = JsonHelper.localize(fullPath, FOLDER, ".json");
-        try (Reader reader = entry.getValue().openAsReader()) {
-          // first step is to find the matching fluid type, if there is none ignore the file
-          FluidType type = fluidTypeRegistry.getValue(id);
-          if (type == null || !id.equals(fluidTypeRegistry.getKey(type))) {
-            Mantle.logger.debug("Ignoring fluid texture {} from {} as no fluid type exists with that name", id, fullPath);
-          } else {
-            // next step is to read in the JSON from the file
-            JsonObject json = GsonHelper.fromJson(JsonHelper.DEFAULT_GSON, reader, JsonObject.class);
-            if (json == null) {
-              Mantle.logger.warn("Couldn't load fluid texture file {} from {} as it's null or empty", id, fullPath);
-            } else {
-              // finally, parse it
-              map.put(type, FluidTexture.deserialize(json));
-            }
-          }
-        } catch (IllegalArgumentException | IOException | JsonParseException e) {
-          Mantle.logger.error("Couldn't parse fluid texture {} from {}", id, fullPath, e);
-        }
+    for (Map.Entry<ResourceLocation,JsonElement> entry : jsons.entrySet()) {
+      ResourceLocation fullPath = entry.getKey();
+      ResourceLocation id = JsonHelper.localize(fullPath, FOLDER, ".json");
+      // first step is to find the matching fluid type, if there is none ignore the file
+      FluidType type = fluidTypeRegistry.getValue(id);
+      if (type == null || !id.equals(fluidTypeRegistry.getKey(type))) {
+        Mantle.logger.debug("Ignoring fluid texture {} from {} as no fluid type exists with that name", id, fullPath);
+      } else {
+        // parse it if valid
+        map.put(type, FluidTexture.deserialize(GsonHelper.convertToJsonObject(entry.getValue(), "fluid_texture")));
       }
-      this.textures = map;
-
-      // next, register all found textures with the atlas
-      for (FluidTexture texture : map.values()) {
-        event.addSprite(texture.still());
-        event.addSprite(texture.flowing());
-        ResourceLocation overlay = texture.overlay();
-        if (overlay != null) {
-          event.addSprite(overlay);
-        }
-        // no registering camera as its not stitched, its just drawn directly
-      }
-      Mantle.logger.info("Loaded {} fluid textures in {} ms", map.size(), (System.nanoTime() - time) / 1000000f);
     }
+    this.textures = map;
+    Mantle.logger.info("Loaded {} fluid textures in {} ms", map.size(), (System.nanoTime() - time) / 1000000f);
   }
 
   /** Gets the texture for the given fluid */
