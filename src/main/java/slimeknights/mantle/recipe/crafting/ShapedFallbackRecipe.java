@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -33,14 +34,15 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
    * Main constructor, creates a recipe from all parameters
    * @param id             Recipe ID
    * @param group          Recipe group
+   * @param category       Recipe category
    * @param width          Recipe width
    * @param height         Recipe height
    * @param ingredients    Recipe input ingredients
    * @param output         Recipe output
    * @param alternatives   List of recipe names to fail this match if they match
    */
-  public ShapedFallbackRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack output, List<ResourceLocation> alternatives) {
-    super(id, group, width, height, ingredients, output);
+  public ShapedFallbackRecipe(ResourceLocation id, String group, CraftingBookCategory category, int width, int height, NonNullList<Ingredient> ingredients, ItemStack output, List<ResourceLocation> alternatives) {
+    super(id, group, category, width, height, ingredients, output);
     this.alternatives = alternatives;
   }
 
@@ -50,7 +52,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
    * @param alternatives  List of recipe names to fail this match if they match
    */
   public ShapedFallbackRecipe(ShapedRecipe base, List<ResourceLocation> alternatives) {
-    this(base.getId(), base.getGroup(), base.getWidth(), base.getHeight(), base.getIngredients(), base.getResultItem(), alternatives);
+    this(base.getId(), base.getGroup(), base.category(), base.getWidth(), base.getHeight(), base.getIngredients(), base.getResultItem(), alternatives);
   }
 
   @Override
