@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -25,6 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Stream;
 
 /** Generic logic to convert any serializable object into JSON. */
 @SuppressWarnings({"unused", "SameParameterValue"})  // API
@@ -41,18 +45,16 @@ public abstract class GenericDataProvider implements DataProvider {
 
   /**
    * Saves the given object to JSON
-   * @param output         Output for writing
-   * @param location       Location relative to this data provider's root
-   * @param object         Object to save, will be converted using this provider's GSON instance
-   * @param keyComparator  Key comparator to use
+   * @param output     Output for writing
+   * @param location   Location relative to this data provider's root
+   * @param object     Object to save, will be converted using this provider's GSON instance
    */
-  protected void saveJson(CachedOutput output, ResourceLocation location, Object object, @Nullable Comparator<String> keyComparator) {
-    try {
-      Path path = this.generator.getOutputFolder().resolve(Paths.get(type.getDirectory(), location.getNamespace(), folder, location.getPath() + ".json"));
-      saveStable(output, gson.toJsonTree(object), path, keyComparator);
-    } catch (IOException e) {
+  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Object object, @Nullable Comparator<String> keyComparator) {
+    Path path = this.generator.getOutputFolder().resolve(Paths.get(type.getDirectory(), location.getNamespace(), folder, location.getPath() + ".json"));
+    return saveStable(output, gson.toJsonTree(object), path, keyComparator).exceptionally(e -> {
       Mantle.logger.error("Couldn't create data for {}", location, e);
-    }
+      return null;
+    });
   }
 
   /**
@@ -61,8 +63,8 @@ public abstract class GenericDataProvider implements DataProvider {
    * @param location   Location relative to this data provider's root
    * @param object     Object to save, will be converted using this provider's GSON instance
    */
-  protected void saveJson(CachedOutput output, ResourceLocation location, Object object) {
-    saveJson(output, location, object, DataProvider.KEY_COMPARATOR);
+  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Object object) {
+    return saveJson(output, location, object, DataProvider.KEY_COMPARATOR);
   }
 
   /**
@@ -72,20 +74,32 @@ public abstract class GenericDataProvider implements DataProvider {
    * @param codec      Codec to save the object
    * @param object     Object to save, will be converted using the passed codec
    */
-  protected <T> void saveJson(CachedOutput output, ResourceLocation location, Codec<T> codec, T object) {
-    saveJson(output, location, codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error));
+  protected <T> CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Codec<T> codec, T object) {
+    return saveJson(output, location, codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error));
+  }
+
+  /** Combines a stream of completable futures into a single completable future */
+  protected CompletableFuture<?> allOf(Stream<CompletableFuture<?>> stream) {
+    return CompletableFuture.allOf(stream.toArray(CompletableFuture[]::new));
   }
 
   /** Recreation of {@link DataProvider#saveStable(CachedOutput, JsonElement, Path)} that allows swapping tke key comparator */
   @SuppressWarnings("UnstableApiUsage")
-  static void saveStable(CachedOutput cache, JsonElement pJson, Path pPath, @Nullable Comparator<String> keyComparator) throws IOException {
-    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-    HashingOutputStream hashingOutput = new HashingOutputStream(Hashing.sha1(), byteOutput);
-    JsonWriter writer = new JsonWriter(new OutputStreamWriter(hashingOutput, StandardCharsets.UTF_8));
-    writer.setSerializeNulls(false);
-    writer.setIndent("  ");
-    GsonHelper.writeValue(writer, pJson, keyComparator);
-    writer.close();
-    cache.writeIfNeeded(pPath, byteOutput.toByteArray(), hashingOutput.hash());
+  static CompletableFuture<?> saveStable(CachedOutput cache, JsonElement pJson, Path pPath, @Nullable Comparator<String> keyComparator) {
+    return CompletableFuture.runAsync(() -> {
+      try {
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        HashingOutputStream hashingOutput = new HashingOutputStream(Hashing.sha1(), byteOutput);
+
+        try (JsonWriter writer = new JsonWriter(new OutputStreamWriter(hashingOutput, StandardCharsets.UTF_8))) {
+          writer.setSerializeNulls(false);
+          writer.setIndent("  ");
+          GsonHelper.writeValue(writer, pJson, keyComparator);
+        }
+        cache.writeIfNeeded(pPath, byteOutput.toByteArray(), hashingOutput.hash());
+      } catch (IOException exception) {
+        throw new CompletionException(exception);
+      }
+    }, Util.backgroundExecutor());
   }
 }
