@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +48,6 @@ import slimeknights.mantle.client.model.util.SimpleBlockModel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -83,12 +81,12 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
   /** List of sides to check when getting block directions */
   private final Set<Direction> sides;
 
-  /** Map of full texture name to the resulting material, filled during {@link #getMaterials(IGeometryBakingContext, Function, Set)} */
+  /** Map of full texture name to the resulting material, filled during {@link #resolveParents(Function, IGeometryBakingContext)} */
   private Map<String,Material> extraTextures;
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    Collection<Material> textures = model.getMaterials(owner, modelGetter, missingTextureErrors);
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext owner) {
+    model.resolveParents(modelGetter, owner);
     // for all connected textures, add suffix textures
     Map<String, Material> extraTextures = new HashMap<>();
     for (Entry<String,String[]> entry : connectedTextures.entrySet()) {
@@ -120,7 +118,6 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
           } else {
             mat = new Material(atlas, new ResourceLocation(namespace, path + "/" + suffix));
           }
-          textures.add(mat);
           // cache the texture name, we use it a lot in rebaking
           extraTextures.put(suffixedName, mat);
         }
@@ -128,9 +125,6 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
     }
     // copy into immutable for better performance
     this.extraTextures = ImmutableMap.copyOf(extraTextures);
-
-    // return textures list
-    return textures;
   }
 
   @Override

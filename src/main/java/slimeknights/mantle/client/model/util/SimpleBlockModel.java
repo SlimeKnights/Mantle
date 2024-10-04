@@ -106,11 +106,8 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
 
   /* Textures */
 
-  /**
-   * Fetches parent models for this model and its parents
-   * @param modelGetter  Model getter function
-   */
-  public void fetchParent(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter) {
+  @Override
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext owner) {
     // no work if no parent or the parent is fetched already
     if (parent != null || parentLocation == null) {
       return;
@@ -205,19 +202,6 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
       }
     }
     return textures;
-  }
-
-  /**
-   * Gets the texture and model dependencies for a block model
-   * @param owner                 Model configuration
-   * @param modelGetter           Model getter to fetch parent models
-   * @param missingTextureErrors  Missing texture set
-   * @return  Textures dependencies
-   */
-  @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-    this.fetchParent(owner, modelGetter);
-    return getTextures(owner, getElements(), missingTextureErrors);
   }
 
 

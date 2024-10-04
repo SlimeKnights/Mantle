@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.RenderType;
@@ -44,7 +43,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.PrimitiveIterator.OfInt;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -70,13 +68,12 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   }
 
   @Override
-  public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
+  public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext owner) {
     ImmutableList.Builder<Material> builder = ImmutableList.builder();
     for (int i = 0; owner.hasMaterial("layer" + i); i++) {
       builder.add(owner.getMaterial("layer" + i));
     }
     textures = builder.build();
-    return textures;
   }
 
   /** Gets the default render type for an item layer */

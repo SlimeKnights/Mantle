@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.datafixers.util.Pair;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -21,8 +20,6 @@ import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.fml.ModList;
 
-import java.util.Collection;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -81,8 +78,8 @@ public enum FallbackModelLoader implements IGeometryLoader<FallbackModelLoader.B
     }
 
     @Override
-    public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
-      return model.getMaterials(modelGetter, missingTextureErrors);
+    public void resolveParents(Function<ResourceLocation,UnbakedModel> modelGetter, IGeometryBakingContext context) {
+      model.resolveParents(modelGetter);
     }
   }
 }
