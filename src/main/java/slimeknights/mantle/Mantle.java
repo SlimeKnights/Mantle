@@ -3,6 +3,7 @@ package slimeknights.mantle;
 import net.minecraft.Util;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -188,7 +189,8 @@ public class Mantle {
     DataGenerator generator = event.getGenerator();
     boolean server = event.includeServer();
     boolean client = event.includeClient();
-    generator.addProvider(server, new MantleFluidTagProvider(generator, event.getExistingFileHelper()));
+    PackOutput packOutput = generator.getPackOutput();
+    generator.addProvider(server, new MantleFluidTagProvider(packOutput, event.getLookupProvider(), event.getExistingFileHelper()));
     generator.addProvider(client, new MantleFluidTooltipProvider(generator));
   }
 

@@ -272,7 +272,7 @@ public class ColoredBlockModel extends SimpleBlockModel {
     BakedQuad quad = new BakedQuad(vertexData, face.tintIndex, direction, sprite, shade);
     // use our override if specified, fallback to Forge
     if (emissivity == -1) {
-      emissivity = face.emissivity;
+      emissivity = face.getFaceData().blockLight();
     }
     if (emissivity > 0) {
       QuadTransformers.settingEmissivity(emissivity).processInPlace(quad);

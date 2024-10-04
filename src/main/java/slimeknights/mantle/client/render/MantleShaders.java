@@ -18,7 +18,7 @@ public class MantleShaders {
   @SubscribeEvent
   static void registerShaders(RegisterShadersEvent event) throws IOException {
     event.registerShader(
-      new ShaderInstance(event.getResourceManager(), Mantle.getResource("block_fullbright"), DefaultVertexFormat.BLOCK),
+      new ShaderInstance(event.getResourceProvider(), Mantle.getResource("block_fullbright"), DefaultVertexFormat.BLOCK),
       shader -> blockFullBrightShader = shader
     );
   }

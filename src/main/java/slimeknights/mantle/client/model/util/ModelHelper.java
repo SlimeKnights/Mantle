@@ -95,7 +95,7 @@ public class ModelHelper {
     TextureAtlasSprite particle = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(block.defaultBlockState()).getParticleIcon();
     //noinspection ConstantConditions  dumb mods returning null particle icons
     if (particle != null) {
-      return particle.getName();
+      return particle.contents().name();
     }
     return MissingTextureAtlasSprite.getLocation();
   }

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -155,12 +156,13 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   public static ImmutableList<BakedQuad> getQuadsForSprite(int color, int tint, TextureAtlasSprite sprite, Transformation transform, int emissivity, @Nullable ItemLayerPixels pixels) {
     ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
-    int uMax = sprite.getWidth();
-    int vMax = sprite.getHeight();
+    SpriteContents contents = sprite.contents();
+    int uMax = contents.width();
+    int vMax = contents.height();
     FaceData faceData = new FaceData(uMax, vMax);
     boolean translucent = false;
 
-    OfInt frames = sprite.getUniqueFrames().iterator();
+    OfInt frames = contents.getUniqueFrames().iterator();
     boolean hasFrames = frames.hasNext();
     while (frames.hasNext()) {
       int f = frames.nextInt();
@@ -374,8 +376,9 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
    */
   private static void buildSideQuad(QuadBakingVertexConsumer builder, VertexConsumer consumer, Direction side, int color, TextureAtlasSprite sprite, int u, int v, int size, int luminosity) {
     final float eps = 1e-2f;
-    int width = sprite.getWidth();
-    int height = sprite.getHeight();
+    SpriteContents contents = sprite.contents();
+    int width = contents.width();
+    int height = contents.height();
     float x0 = (float) u / width;
     float y0 = (float) v / height;
     float x1 = x0, y1 = y0;

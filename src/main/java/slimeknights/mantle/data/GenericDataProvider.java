@@ -50,7 +50,7 @@ public abstract class GenericDataProvider implements DataProvider {
    * @param object     Object to save, will be converted using this provider's GSON instance
    */
   protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Object object, @Nullable Comparator<String> keyComparator) {
-    Path path = this.generator.getOutputFolder().resolve(Paths.get(type.getDirectory(), location.getNamespace(), folder, location.getPath() + ".json"));
+    Path path = this.generator.getPackOutput().getOutputFolder().resolve(Paths.get(type.getDirectory(), location.getNamespace(), folder, location.getPath() + ".json"));
     return saveStable(output, gson.toJsonTree(object), path, keyComparator).exceptionally(e -> {
       Mantle.logger.error("Couldn't create data for {}", location, e);
       return null;
