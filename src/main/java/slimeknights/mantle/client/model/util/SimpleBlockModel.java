@@ -37,6 +37,7 @@ import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.client.model.geometry.UnbakedGeometryHelper;
+import org.joml.Vector3f;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nonnull;
@@ -257,7 +258,9 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
     if (transformation.isIdentity()) {
       return QuadTransformers.empty();
     } else {
-      return UnbakedGeometryHelper.applyRootTransform(modelState, transformation);
+      // return UnbakedGeometryHelper.applyRootTransform(modelState, transformation);
+      Transformation transform = modelState.getRotation().applyOrigin(new Vector3f(0.5F, 0.5F, 0.5F));
+      return QuadTransformers.applying(transform.compose(transformation).compose(transform.inverse()));
     }
   }
 

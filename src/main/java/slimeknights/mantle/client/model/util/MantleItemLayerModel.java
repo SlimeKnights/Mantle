@@ -24,12 +24,14 @@ import net.minecraftforge.client.ForgeRenderTypes;
 import net.minecraftforge.client.RenderTypeGroup;
 import net.minecraftforge.client.model.CompositeModel;
 import net.minecraftforge.client.model.ItemLayerModel;
+import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.client.model.geometry.UnbakedGeometryHelper;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.minecraftforge.client.model.pipeline.TransformingVertexPipeline;
+import org.joml.Vector3f;
 import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.util.ItemLayerPixels;
 import slimeknights.mantle.util.JsonHelper;
@@ -94,7 +96,9 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
     if (transformation.isIdentity()) {
       return modelState;
     } else {
-      return UnbakedGeometryHelper.composeRootTransformIntoModelState(modelState, transformation);
+      // return UnbakedGeometryHelper.composeRootTransformIntoModelState(modelState, transformation);
+      transformation = transformation.applyOrigin(new Vector3f(-0.5F, -0.5F, -0.5F));
+      return new SimpleModelState(modelState.getRotation().compose(transformation), modelState.isUvLocked());
     }
   }
 
