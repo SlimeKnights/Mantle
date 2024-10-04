@@ -1,10 +1,9 @@
 package slimeknights.mantle.client.book;
 
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class BookHelper {
 
