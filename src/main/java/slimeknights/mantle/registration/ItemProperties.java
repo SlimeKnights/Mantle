@@ -2,8 +2,8 @@ package slimeknights.mantle.registration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

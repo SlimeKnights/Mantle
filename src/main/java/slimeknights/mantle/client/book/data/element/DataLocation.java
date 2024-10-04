@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import slimeknights.mantle.client.book.repository.BookRepository;
 
 public class DataLocation implements IDataElement {

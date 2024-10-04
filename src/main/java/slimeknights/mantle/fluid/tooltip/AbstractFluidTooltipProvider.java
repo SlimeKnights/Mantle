@@ -14,7 +14,6 @@ import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.data.GenericDataProvider;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

@@ -3,11 +3,11 @@ package slimeknights.mantle.client.model.connected;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.PipeBlock;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.core.Direction;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.block.PipeBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.HashMap;
 import java.util.Map;

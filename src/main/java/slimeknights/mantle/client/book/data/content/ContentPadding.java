@@ -3,10 +3,10 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.book.transformer.BookTransformer;
 
 import java.util.Iterator;
 
