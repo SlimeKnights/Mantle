@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -76,8 +76,8 @@ public enum FallbackModelLoader implements IGeometryLoader<FallbackModelLoader.B
    */
   record BlockModelWrapper(BlockModel model) implements IUnbakedGeometry<BlockModelWrapper> {
     @Override
-    public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-      return model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
+    public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+      return model.bake(baker, model, spriteGetter, modelTransform, modelLocation, true);
     }
 
     @Override
