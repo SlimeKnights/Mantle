@@ -15,6 +15,7 @@ import slimeknights.mantle.util.TranslationHelper;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 // TODO: make this more consistent with modern item classes, properties in constructor
 public class EdibleItem extends Item {
@@ -22,12 +23,13 @@ public class EdibleItem extends Item {
   /** if false, does not display effects of food in tooltip */
   private final boolean displayEffectsTooltip;
 
-  public EdibleItem(FoodProperties foodIn, CreativeModeTab itemGroup) {
-    this(foodIn, itemGroup, true);
+  public EdibleItem(FoodProperties foodIn) {
+    this(new Properties().food(foodIn), true);
   }
 
-  public EdibleItem(FoodProperties foodIn, CreativeModeTab itemGroup, boolean displayEffectsTooltip) {
-    super(new Properties().food(foodIn).tab(itemGroup));
+  public EdibleItem(Item.Properties properties, boolean displayEffectsTooltip) {
+    super(properties);
+    Objects.requireNonNull(getFoodProperties(), "Must set food to make an EdibleItem");
     this.displayEffectsTooltip = displayEffectsTooltip;
   }
 

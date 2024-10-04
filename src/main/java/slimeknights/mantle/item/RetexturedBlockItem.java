@@ -1,16 +1,11 @@
 package slimeknights.mantle.item;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -34,13 +29,6 @@ public class RetexturedBlockItem extends BlockTooltipItem {
   public RetexturedBlockItem(Block block, TagKey<Item> textureTag, Properties builder) {
     super(block, builder);
     this.textureTag = textureTag;
-  }
-
-  @Override
-  public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-    if (this.allowedIn(group)) {
-      addTagVariants(this.getBlock(), textureTag, items, true);
-    }
   }
 
   @Override
@@ -109,40 +97,4 @@ public class RetexturedBlockItem extends BlockTooltipItem {
     return setTexture(stack, BuiltInRegistries.BLOCK.getKey(block).toString());
   }
 
-  /**
-   * Adds all blocks from the block tag to the specified block for fillItemGroup
-   * @param block             Dynamic texture item instance
-   * @param tag               Tag for texturing
-   * @param list              List of texture blocks
-   * @param showAllVariants   If true, shows all variants. If false, shows just the first
-   */
-  public static void addTagVariants(ItemLike block, TagKey<Item> tag, NonNullList<ItemStack> list, boolean showAllVariants) {
-    boolean added = false;
-    // using item tags as that is what will be present in the recipe
-    Class<?> clazz = block.getClass();
-    for (Holder<Item> candidate : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
-      if (!candidate.isBound()) {
-        continue;
-      }
-      // non-block items don't have the textures we need
-      Item item = candidate.value();
-      if (!(item instanceof BlockItem)) {
-        continue;
-      }
-      Block textureBlock = ((BlockItem)item).getBlock();
-      // Don't add instances of the block itself, see Inspirations enlightened bushes
-      if (clazz.isInstance(textureBlock)) {
-        continue;
-      }
-      added = true;
-      list.add(setTexture(new ItemStack(block), textureBlock));
-      if (!showAllVariants) {
-        return;
-      }
-    }
-    // if we never got one, just add the textureless one
-    if (!added) {
-      list.add(new ItemStack(block));
-    }
-  }
 }

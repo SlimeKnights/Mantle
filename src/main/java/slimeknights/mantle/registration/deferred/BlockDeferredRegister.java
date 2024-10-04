@@ -211,19 +211,18 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param name             Name of the wood object
    * @param behaviorCreator  Logic to create the behavior
    * @param flammable        If true, this wood type is flammable
-   * @param group            Item group
    * @return Wood object
    */
-  public WoodBlockObject registerWood(String name, Function<WoodVariant,BlockBehaviour.Properties> behaviorCreator, boolean flammable, CreativeModeTab group) {
+  public WoodBlockObject registerWood(String name, Function<WoodVariant,BlockBehaviour.Properties> behaviorCreator, boolean flammable) {
     WoodType woodType = WoodType.create(resourceName(name));
     RegistrationHelper.registerWoodType(woodType);
-    Item.Properties itemProps = new Item.Properties().tab(group);
+    Item.Properties itemProps = new Item.Properties();
 
     // many of these are already burnable via tags, but simplier to set them all here
     Function<Integer, Function<? super Block, ? extends BlockItem>> burnableItem;
     Function<? super Block, ? extends BlockItem> burnableTallItem;
     BiFunction<? super Block, ? super Block, ? extends BlockItem> burnableSignItem;
-    Item.Properties signProps = new Item.Properties().stacksTo(16).tab(group);
+    Item.Properties signProps = new Item.Properties().stacksTo(16);
     if (flammable) {
       burnableItem     = burnTime -> block -> new BurnableBlockItem(block, itemProps, burnTime);
       burnableTallItem = block -> new BurnableTallBlockItem(block, itemProps, 200);
