@@ -39,7 +39,7 @@ public class MantleClientCommand {
 
   /** Event listener to register the Mantle command */
   private static void registerCommand(RegisterClientCommandsEvent event) {
-    LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("mantle_client");
+    LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("mantle");
 
     // sub commands
     register(builder, "book", BookCommand::register);
