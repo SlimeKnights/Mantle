@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,8 +20,10 @@ import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix4f;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
@@ -33,6 +36,10 @@ import java.nio.file.Paths;
 
 /** A command for different book */
 public class BookCommand {
+  private static final String EXPORT_SUCCESS = "command.mantle.book.export.success";
+  private static final String EXPORT_FAIL = "command.mantle.book.export.error_generic";
+  private static final String EXPORT_FAIL_IO = "command.mantle.book.export.error_io";
+
   /**
    * Registers this sub command with the root command
    * @param subCommand  Command builder
@@ -75,6 +82,10 @@ public class BookCommand {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
 
     BookData bookData = BookLoader.getBook(book);
+
+    Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
+    Path screenshotDir = Paths.get(gameDirectory.toString(), Screenshot.SCREENSHOT_DIR, "mantle_book", book.getNamespace(), book.getPath());
+
     if(bookData != null) {
       int width = BookScreen.PAGE_WIDTH_UNSCALED * 2;
       int height = BookScreen.PAGE_HEIGHT_UNSCALED;
@@ -85,10 +96,8 @@ public class BookCommand {
       screen.init(Minecraft.getInstance(), width, height);
       screen.drawArrows = false;
 
-      Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
-      Path screenshotDir = Paths.get(gameDirectory.toString(), Screenshot.SCREENSHOT_DIR, "mantle_book", book.getNamespace(), book.getPath());
       if(!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.literal("Failed to create directory for screenshots"));
+        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO));
       }
 
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
@@ -129,13 +138,14 @@ public class BookCommand {
                 scaled.writeToFile(path);
               } catch (Exception e) {
                 Mantle.logger.error("Failed to save screenshot", e);
+                throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
               }
             } else {
               image.writeToFile(path);
             }
           } catch (Exception e) {
             Mantle.logger.error("Failed to save screenshot", e);
-            throw new CommandRuntimeException(Component.literal("Failed to save screenshot"));
+            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
           }
         } while (screen.nextPage());
       } finally {
@@ -149,6 +159,12 @@ public class BookCommand {
       return 1;
     }
 
+    Player player = Minecraft.getInstance().player;
+    if (player != null) {
+      Component fileComponent = Component.literal(screenshotDir.toString()).withStyle(ChatFormatting.UNDERLINE)
+        .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, screenshotDir.toAbsolutePath().toString())));
+      player.displayClientMessage(Component.translatable(EXPORT_SUCCESS, fileComponent), false);
+    }
     return 0;
   }
 

@@ -15,6 +15,9 @@
   "command.mantle.tags_for.no_targeted_block_entity": "No targeted block entity",
   "command.mantle.tags_for.no_tags": "No tags",
   "command.mantle.book_test.not_found": "Unknown book with ID %s",
+  "command.mantle.book.export.success": "Exported book images to '%s'",
+  "command.mantle.book.export.error_generic": "Failed to export book images, see log for details",
+  "command.mantle.book.export.error_io": "Failed to create directory for book images '%s'",
 
   "command.mantle.dump_tag.success": "Printed combined %s tag '%s' to console log",
   "command.mantle.dump_tag.read_error": "Error reading %s tag '%s':",
