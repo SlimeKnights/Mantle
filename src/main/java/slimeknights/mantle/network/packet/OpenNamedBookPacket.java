@@ -35,8 +35,8 @@ public class OpenNamedBookPacket implements IThreadsafePacket {
     }
   }
 
-  static class ClientOnly {
-    static void errorStatus(ResourceLocation book) {
+  public static class ClientOnly {
+    public static void errorStatus(ResourceLocation book) {
       Player player = Minecraft.getInstance().player;
       if (player != null) {
         player.displayClientMessage(Component.translatable(BOOK_ERROR, book).withStyle(ChatFormatting.RED), false);

@@ -37,6 +37,7 @@ import slimeknights.mantle.client.model.inventory.InventoryModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.command.MantleClientCommand;
 import slimeknights.mantle.fluid.texture.FluidTextureManager;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.MantleRegistrations;
@@ -73,6 +74,7 @@ public class ClientEvents {
     event.enqueueWork(() -> RegistrationHelper.forEachWoodType(Sheets::addWoodType));
 
     BookLoader.registerBook(Mantle.getResource("test"), new FileRepository(Mantle.getResource("books/test")));
+    MantleClientCommand.init();
   }
 
   @SubscribeEvent
