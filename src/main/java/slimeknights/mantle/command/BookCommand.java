@@ -2,6 +2,7 @@ package slimeknights.mantle.command;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -25,6 +26,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
@@ -87,6 +89,10 @@ public class BookCommand {
     Path screenshotDir = Paths.get(gameDirectory.toString(), Screenshot.SCREENSHOT_DIR, "mantle_book", book.getNamespace(), book.getPath());
 
     if(bookData != null) {
+      if(!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
+        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO));
+      }
+
       int width = BookScreen.PAGE_WIDTH_UNSCALED * 2;
       int height = BookScreen.PAGE_HEIGHT_UNSCALED;
       float zFar = 1000.0F + 10000.0F * 3;
@@ -95,10 +101,6 @@ public class BookCommand {
       BookScreen screen = new BookScreen(Component.literal("Book"), bookData, "", null, null);
       screen.init(Minecraft.getInstance(), width, height);
       screen.drawArrows = false;
-
-      if(!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO));
-      }
 
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
       RenderSystem.setProjectionMatrix(matrix, VertexSorting.ORTHOGRAPHIC_Z);
@@ -111,19 +113,20 @@ public class BookCommand {
       Lighting.setupFor3DItems();
 
       RenderTarget target = new TextureTarget(width, height, true, Minecraft.ON_OSX);
+      target.enableStencil();
 
       try {
         MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(new BufferBuilder(2048));
         target.bindWrite(true);
 
-        RenderSystem.clear(256, Minecraft.ON_OSX);
-
         GuiGraphics gui = new GuiGraphics(Minecraft.getInstance(), buffer);
 
         do {
-          RenderSystem.clear(256, Minecraft.ON_OSX);
+          RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
 
           screen.tick();
+
+          RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
           screen.render(gui, 0, 0, 0);
           gui.flush();
 
@@ -151,6 +154,7 @@ public class BookCommand {
       } finally {
         stack.popPose();
         RenderSystem.applyModelViewMatrix();
+        RenderSystem.defaultBlendFunc();
         target.unbindWrite();
         target.destroyBuffers();
       }
