@@ -9,7 +9,6 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
-import slimeknights.mantle.network.packet.OpenNamedBookPacket;
 
 import javax.annotation.Nullable;
 
@@ -53,7 +52,7 @@ public class ClearBookCacheCommand {
       if (bookData != null) {
         bookData.reset();
       } else {
-        OpenNamedBookPacket.ClientOnly.errorStatus(book);
+        BookCommand.bookNotFound(book);
       }
     } else {
       BookLoader.resetAllBooks();

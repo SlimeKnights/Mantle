@@ -32,13 +32,14 @@ import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.command.MantleCommand;
-import slimeknights.mantle.network.packet.OpenNamedBookPacket;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /** A command for different book */
 public class BookCommand {
+  private static final String BOOK_NOT_FOUND = "command.mantle.book_test.not_found";
+
   private static final String EXPORT_SUCCESS = "command.mantle.book.export.success";
   private static final String EXPORT_FAIL = "command.mantle.book.export.error_generic";
   private static final String EXPORT_FAIL_IO = "command.mantle.book.export.error_io";
@@ -69,7 +70,7 @@ public class BookCommand {
     if(bookData != null) {
       bookData.openGui(Component.literal("Book"), "", null, null);
     } else {
-      OpenNamedBookPacket.ClientOnly.errorStatus(book);
+      bookNotFound(book);
       return 1;
     }
 
@@ -162,7 +163,7 @@ public class BookCommand {
         target.destroyBuffers();
       }
     } else {
-      OpenNamedBookPacket.ClientOnly.errorStatus(book);
+      bookNotFound(book);
       return 1;
     }
 
@@ -186,5 +187,12 @@ public class BookCommand {
     nativeimage.downloadTexture(0, false);
     nativeimage.flipY();
     return nativeimage;
+  }
+
+  public static void bookNotFound(ResourceLocation book) {
+    Player player = Minecraft.getInstance().player;
+    if (player != null) {
+      player.displayClientMessage(Component.translatable(BOOK_NOT_FOUND, book).withStyle(ChatFormatting.RED), false);
+    }
   }
 }
