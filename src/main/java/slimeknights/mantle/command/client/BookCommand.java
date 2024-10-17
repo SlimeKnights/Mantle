@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
@@ -55,6 +56,8 @@ public class BookCommand {
           .executes(BookCommand::openBook)))
       .then(Commands.literal("export_images")
         .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleClientCommand.REGISTERED_BOOKS)
+          .then(Commands.argument("scale", IntegerArgumentType.integer(1, 16))
+            .executes(BookCommand::exportImagesWithScale))
           .executes(BookCommand::exportImages)));
   }
 
@@ -78,6 +81,18 @@ public class BookCommand {
   }
 
   /**
+   * Renders all images in the book to files at specified scale
+   * @param context  Command context
+   * @return  Integer return
+   */
+  private static int exportImagesWithScale(CommandContext<CommandSourceStack> context) {
+    ResourceLocation book = ResourceLocationArgument.getId(context, "id");
+    int scale = context.getArgument("scale", Integer.class);
+
+    return doExportImages(book, scale);
+  }
+
+  /**
    * Renders all images in the book to files
    * @param context  Command context
    * @return  Integer return
@@ -85,6 +100,16 @@ public class BookCommand {
   private static int exportImages(CommandContext<CommandSourceStack> context) {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
 
+    return doExportImages(book, 1);
+  }
+
+  /**
+   * Renders all images in the book to files
+   * @param book  Book to export
+   * @param scale  Scale to export at
+   * @return  Integer return
+   */
+  private static int doExportImages(ResourceLocation book, int scale) {
     BookData bookData = BookLoader.getBook(book);
 
     Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
@@ -95,13 +120,13 @@ public class BookCommand {
         throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO));
       }
 
-      int width = BookScreen.PAGE_WIDTH_UNSCALED * 2;
-      int height = BookScreen.PAGE_HEIGHT_UNSCALED;
+      int width = BookScreen.PAGE_WIDTH_UNSCALED * 2 * scale;
+      int height = BookScreen.PAGE_HEIGHT_UNSCALED * scale;
       float zFar = 1000.0F + 10000.0F * 3;
 
       bookData.load();
       BookScreen screen = new BookScreen(Component.literal("Book"), bookData, "", null, null);
-      screen.init(Minecraft.getInstance(), width, height);
+      screen.init(Minecraft.getInstance(), width / scale, height / scale);
       screen.drawArrows = false;
 
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
@@ -111,6 +136,7 @@ public class BookCommand {
       stack.pushPose();
       stack.setIdentity();
       stack.translate(0, 0, 1000F - zFar);
+      stack.scale(scale, scale, 1);
       RenderSystem.applyModelViewMatrix();
       Lighting.setupFor3DItems();
 
@@ -130,8 +156,11 @@ public class BookCommand {
 
           RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
             GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+
+          gui.pose().pushPose();
           screen.render(gui, 0, 0, 0);
           gui.flush();
+          gui.pose().popPose();
 
           try (NativeImage image = takeScreenshot(target)) {
             int page = screen.getPage_();
@@ -139,9 +168,9 @@ public class BookCommand {
             Path path = Paths.get(screenshotDir.toString(), pageFormat + ".png");
 
             if (page == -1) { // the cover is half the width
-              try (NativeImage scaled = new NativeImage(image.format(), BookScreen.PAGE_WIDTH_UNSCALED, BookScreen.PAGE_HEIGHT_UNSCALED, false)) {
-                image.copyRect(scaled, image.getWidth() / 2 - BookScreen.PAGE_WIDTH_UNSCALED / 2, 0, 0, 0,
-                  BookScreen.PAGE_WIDTH_UNSCALED, BookScreen.PAGE_HEIGHT_UNSCALED, false, false);
+              try (NativeImage scaled = new NativeImage(image.format(), width / 2, height, false)) {
+                image.copyRect(scaled, image.getWidth() / 2 - width / 4, 0, 0, 0,
+                  width / 2, height, false, false);
                 scaled.writeToFile(path);
               } catch (Exception e) {
                 Mantle.logger.error("Failed to save screenshot", e);
