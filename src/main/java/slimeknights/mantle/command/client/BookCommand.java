@@ -1,4 +1,4 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.client;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -31,6 +31,7 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.screen.book.BookScreen;
+import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.network.packet.OpenNamedBookPacket;
 
 import java.nio.file.Path;
@@ -126,7 +127,8 @@ public class BookCommand {
 
           screen.tick();
 
-          RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+          RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
           screen.render(gui, 0, 0, 0);
           gui.flush();
 
@@ -137,7 +139,8 @@ public class BookCommand {
 
             if (page == -1) { // the cover is half the width
               try (NativeImage scaled = new NativeImage(image.format(), BookScreen.PAGE_WIDTH_UNSCALED, BookScreen.PAGE_HEIGHT_UNSCALED, false)) {
-                image.copyRect(scaled, image.getWidth() / 2 - BookScreen.PAGE_WIDTH_UNSCALED / 2, 0, 0, 0, BookScreen.PAGE_WIDTH_UNSCALED, BookScreen.PAGE_HEIGHT_UNSCALED, false, false);
+                image.copyRect(scaled, image.getWidth() / 2 - BookScreen.PAGE_WIDTH_UNSCALED / 2, 0, 0, 0,
+                  BookScreen.PAGE_WIDTH_UNSCALED, BookScreen.PAGE_HEIGHT_UNSCALED, false, false);
                 scaled.writeToFile(path);
               } catch (Exception e) {
                 Mantle.logger.error("Failed to save screenshot", e);

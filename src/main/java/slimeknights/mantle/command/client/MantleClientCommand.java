@@ -1,4 +1,4 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.client;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -37,7 +37,7 @@ public class MantleClientCommand {
     root.then(subCommand);
   }
 
-  /** Event listener to register the Mantle command */
+  /** Event listener to register the Mantle client command */
   private static void registerCommand(RegisterClientCommandsEvent event) {
     LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("mantle");
 

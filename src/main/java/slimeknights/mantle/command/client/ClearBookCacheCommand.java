@@ -1,4 +1,4 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.client;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
