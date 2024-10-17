@@ -1,15 +1,13 @@
 package slimeknights.mantle.network.packet;
 
 import lombok.AllArgsConstructor;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.command.client.BookCommand;
 
 @AllArgsConstructor
 public class OpenNamedBookPacket implements IThreadsafePacket {
@@ -37,10 +35,7 @@ public class OpenNamedBookPacket implements IThreadsafePacket {
 
   static class ClientOnly {
     static void errorStatus(ResourceLocation book) {
-      Player player = Minecraft.getInstance().player;
-      if (player != null) {
-        player.displayClientMessage(Component.translatable(BOOK_ERROR, book).withStyle(ChatFormatting.RED), false);
-      }
+      BookCommand.bookNotFound(book);
     }
   }
 }
