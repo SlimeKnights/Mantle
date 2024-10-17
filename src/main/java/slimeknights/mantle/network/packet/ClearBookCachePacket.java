@@ -9,7 +9,10 @@ import slimeknights.mantle.network.packet.OpenNamedBookPacket.ClientOnly;
 
 import javax.annotation.Nullable;
 
-/** Packet sent by {@link slimeknights.mantle.command.ClearBookCacheCommand} to reset a book cache */
+/**
+ * Packet sent by {@link slimeknights.mantle.command.ClearBookCacheCommand} to reset a book cache
+ * @deprecated Command is now client-side, making this redundant
+ */
 public record ClearBookCachePacket(@Nullable ResourceLocation book) implements IThreadsafePacket {
   public ClearBookCachePacket(FriendlyByteBuf buffer) {
     this(buffer.readBoolean() ? buffer.readResourceLocation() : null);

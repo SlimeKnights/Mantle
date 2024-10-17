@@ -54,6 +54,10 @@ public class BookScreen extends Screen {
 
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
 
+  // Used for the book to image exporter to disable arrows and mouse input
+  public boolean drawArrows = true;
+  public boolean mouseInput = true;
+
   public final BookData book;
   @Nullable
   private final Consumer<String> pageUpdater;
@@ -329,9 +333,9 @@ public class BookScreen extends Screen {
   public void tick() {
     super.tick();
 
-    this.previousArrow.visible = this.page != -1;
-    this.nextArrow.visible = this.page + 1 < this.book.getFullPageCount(this.advancementCache);
-    this.backArrow.visible = this.oldPage >= -1;
+    this.previousArrow.visible = this.page != -1 && drawArrows;
+    this.nextArrow.visible = this.page + 1 < this.book.getFullPageCount(this.advancementCache) && drawArrows;
+    this.backArrow.visible = this.oldPage >= -1 && drawArrows;
 
     if (this.page == -1) {
       this.nextArrow.x = this.width / 2 + 80;
@@ -341,7 +345,7 @@ public class BookScreen extends Screen {
       this.nextArrow.x = this.width / 2 + 165;
 
       SectionData index = this.book.findSection("index", this.advancementCache);
-      this.indexArrow.visible = index != null && (this.page - 1) * 2 + 2 > index.getPageCount();
+      this.indexArrow.visible = index != null && (this.page - 1) * 2 + 2 > index.getPageCount() && drawArrows;
     }
 
     this.previousArrow.y = this.height / 2 + 75;
@@ -349,24 +353,28 @@ public class BookScreen extends Screen {
   }
 
   /** Goes to the previous page */
-  private void previousPage() {
+  public boolean previousPage() {
     this.page--;
     if (this.page < -1) {
       this.page = -1;
+      return false;
     }
     this.oldPage = -2;
     this.buildPages();
+    return true;
   }
 
   /** Goes to the next page */
-  private void nextPage() {
+  public boolean nextPage() {
     this.page++;
     int fullPageCount = this.book.getFullPageCount(this.advancementCache);
     if (this.page >= fullPageCount) {
       this.page = fullPageCount - 1;
+      return false;
     }
     this.oldPage = -2;
     this.buildPages();
+    return true;
   }
 
   @Override
@@ -534,11 +542,19 @@ public class BookScreen extends Screen {
 
   protected int getMouseX(boolean rightSide) {
     assert this.minecraft != null;
+    if(!mouseInput) {
+      return -1;
+    }
+
     return (int) ((Minecraft.getInstance().mouseHandler.xpos() * this.width / this.minecraft.getWindow().getScreenWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
     assert this.minecraft != null;
+    if(!mouseInput) {
+      return -1;
+    }
+
     return (int) ((Minecraft.getInstance().mouseHandler.ypos() * this.height / this.minecraft.getWindow().getScreenHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 

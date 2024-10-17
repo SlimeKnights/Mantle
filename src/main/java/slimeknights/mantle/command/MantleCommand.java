@@ -32,7 +32,10 @@ public class MantleCommand {
   public static SuggestionProvider<CommandSourceStack> VALID_TAGS;
   /** Suggestion provider that lists tags values for this registry */
   public static SuggestionProvider<CommandSourceStack> REGISTRY_VALUES;
-  /** Suggestion provider that lists registered book ids **/
+  /**
+   * Suggestion provider that lists registered book ids
+   * @deprecated Use {@link slimeknights.mantle.client.book.BookLoader#getRegisteredBooks()} instead
+   **/
   public static SuggestionProvider<CommandSourceStack> REGISTERED_BOOKS;
   /** Suggestion provider that lists registered book ids **/
   public static SuggestionProvider<CommandSourceStack> REGISTRY;
@@ -48,10 +51,11 @@ public class MantleCommand {
       Registry<?> result = RegistryArgument.getResult(context, "type");
       return SharedSuggestionProvider.suggestResource(result.keySet(), builder);
     });
-    REGISTERED_BOOKS = SuggestionProviders.register(Mantle.getResource("registered_books"), (context, builder) ->
-      SharedSuggestionProvider.suggestResource(BookTestCommand.getBookSuggestions(), builder));
     REGISTRY = SuggestionProviders.register(Mantle.getResource("registry"), (context, builder) ->
       SharedSuggestionProvider.suggestResource(context.getSource().registryAccess().registries().map(entry -> entry.key().location()), builder));
+
+    REGISTERED_BOOKS = SuggestionProviders.register(Mantle.getResource("registered_books_legacy"), (context, builder) ->
+      SharedSuggestionProvider.suggestResource(BookTestCommand.getBookSuggestions(), builder));
 
     // add command listener
     MinecraftForge.EVENT_BUS.addListener(MantleCommand::registerCommand);
@@ -74,8 +78,6 @@ public class MantleCommand {
     register(builder, "dump_loot_modifiers", DumpLootModifiers::register);
     register(builder, "dump_all_tags", DumpAllTagsCommand::register);
     register(builder, "tags_for", TagsForCommand::register);
-    register(builder, "book_test", BookTestCommand::register);
-    register(builder, "clear_book_cache", ClearBookCacheCommand::register);
     register(builder, "harvest_tiers", HarvestTiersCommand::register);
     register(builder, "tag_preference", TagPreferenceCommand::register);
 
