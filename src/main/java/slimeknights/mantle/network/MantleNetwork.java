@@ -3,7 +3,6 @@ package slimeknights.mantle.network;
 import net.minecraftforge.network.NetworkDirection;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.fluid.transfer.FluidContainerTransferPacket;
-import slimeknights.mantle.network.packet.ClearBookCachePacket;
 import slimeknights.mantle.network.packet.DropLecternBookPacket;
 import slimeknights.mantle.network.packet.OpenLecternBookPacket;
 import slimeknights.mantle.network.packet.OpenNamedBookPacket;
@@ -26,6 +25,5 @@ public class MantleNetwork {
     INSTANCE.registerPacket(SwingArmPacket.class, SwingArmPacket::new, NetworkDirection.PLAY_TO_CLIENT);
     INSTANCE.registerPacket(OpenNamedBookPacket.class, OpenNamedBookPacket::new, NetworkDirection.PLAY_TO_CLIENT);
     INSTANCE.registerPacket(FluidContainerTransferPacket.class, FluidContainerTransferPacket::new, NetworkDirection.PLAY_TO_CLIENT);
-    INSTANCE.registerPacket(ClearBookCachePacket.class, ClearBookCachePacket::new, NetworkDirection.PLAY_TO_CLIENT);
   }
 }

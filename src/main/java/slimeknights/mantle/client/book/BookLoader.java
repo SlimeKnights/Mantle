@@ -173,6 +173,13 @@ public class BookLoader implements ResourceManagerReloadListener {
   }
 
   /**
+   * Gets the resource location of all registered books
+   */
+  public static Iterable<ResourceLocation> getRegisteredBooks() {
+    return books.keySet();
+  }
+
+  /**
    * Updates the saved page of a held book
    * @param player  Player instance
    * @param hand    Hand
