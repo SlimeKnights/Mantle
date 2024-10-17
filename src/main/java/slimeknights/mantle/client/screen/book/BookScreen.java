@@ -53,7 +53,9 @@ public class BookScreen extends Screen {
   public static final int PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   public static final int PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
 
+  // Used for the book to image exporter to disable arrows and mouse input
   public boolean drawArrows = true;
+  public boolean mouseInput = true;
 
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
 
@@ -556,11 +558,19 @@ public class BookScreen extends Screen {
 
   protected int getMouseX(boolean rightSide) {
     assert this.minecraft != null;
+    if(!mouseInput) {
+      return -1;
+    }
+
     return (int) ((Minecraft.getInstance().mouseHandler.xpos() * this.width / this.minecraft.getWindow().getScreenWidth() - this.leftOffset(rightSide)) / PAGE_SCALE);
   }
 
   protected int getMouseY() {
     assert this.minecraft != null;
+    if(!mouseInput) {
+      return -1;
+    }
+
     return (int) ((Minecraft.getInstance().mouseHandler.ypos() * this.height / this.minecraft.getWindow().getScreenHeight() - 1 - this.topOffset()) / PAGE_SCALE);
   }
 
