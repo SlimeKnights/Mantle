@@ -3,14 +3,13 @@ package slimeknights.mantle.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.mantle.command.client.BookCommand;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Command that opens a test book
- * @deprecated Command is now client-side and lives in {@link BookCommand}
+ * @deprecated Command is now client-side and lives in {@link slimeknights.mantle.command.client.BookCommand}
  */
 public class BookTestCommand {
   private static final Set<ResourceLocation> BOOK_SUGGESTIONS = new HashSet<>();
@@ -18,7 +17,7 @@ public class BookTestCommand {
   /**
    * Registers this sub command with the root command
    * @param subCommand  Command builder
-   * @deprecated Command is now client-side and lives in {@link BookCommand}
+   * @deprecated Command is now client-side and lives in {@link slimeknights.mantle.command.client.BookCommand}
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {}
 
