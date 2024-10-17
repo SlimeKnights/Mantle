@@ -34,8 +34,9 @@ public class MantleCommand {
   public static SuggestionProvider<CommandSourceStack> REGISTRY_VALUES;
   /**
    * Suggestion provider that lists registered book ids
-   * @deprecated Use {@link slimeknights.mantle.client.book.BookLoader#getRegisteredBooks()} instead
+   * @deprecated Use {@link slimeknights.mantle.command.client.MantleClientCommand#REGISTERED_BOOKS} instead
    **/
+  @Deprecated(forRemoval = true)
   public static SuggestionProvider<CommandSourceStack> REGISTERED_BOOKS;
   /** Suggestion provider that lists registered book ids **/
   public static SuggestionProvider<CommandSourceStack> REGISTRY;

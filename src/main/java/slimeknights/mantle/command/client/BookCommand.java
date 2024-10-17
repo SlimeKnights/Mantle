@@ -32,7 +32,7 @@ import slimeknights.mantle.command.MantleCommand;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/** A command for different book */
+/** A command for different book operations, currently open and export_images */
 public class BookCommand {
   private static final String BOOK_NOT_FOUND = "command.mantle.book_test.not_found";
 

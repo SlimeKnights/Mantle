@@ -11,6 +11,7 @@ import java.util.Set;
  * Command that opens a test book
  * @deprecated Command is now client-side and lives in {@link slimeknights.mantle.command.client.BookCommand}
  */
+@Deprecated(forRemoval = true)
 public class BookTestCommand {
   private static final Set<ResourceLocation> BOOK_SUGGESTIONS = new HashSet<>();
 
@@ -19,6 +20,7 @@ public class BookTestCommand {
    * @param subCommand  Command builder
    * @deprecated Command is now client-side and lives in {@link slimeknights.mantle.command.client.BookCommand}
    */
+  @Deprecated(forRemoval = true)
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {}
 
   /**
@@ -26,6 +28,7 @@ public class BookTestCommand {
    * @param suggestion The suggestion to be added
    * @deprecated This method is no longer relevant due to the command becoming client-side
    */
+  @Deprecated(forRemoval = true)
   public static void addBookSuggestion(ResourceLocation suggestion) {
     BOOK_SUGGESTIONS.add(suggestion);
   }
@@ -35,6 +38,7 @@ public class BookTestCommand {
    * @return The suggestions as stream
    * @deprecated Use {@link slimeknights.mantle.client.book.BookLoader#getRegisteredBooks()} instead
    */
+  @Deprecated(forRemoval = true)
   public static Iterable<ResourceLocation> getBookSuggestions() {
     return BOOK_SUGGESTIONS;
   }
