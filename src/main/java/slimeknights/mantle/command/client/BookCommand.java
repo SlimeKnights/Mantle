@@ -66,7 +66,10 @@ public class BookCommand {
 
     BookData bookData = BookLoader.getBook(book);
     if(bookData != null) {
-      bookData.openGui(Component.literal("Book"), "", null, null);
+      // Delay execution to ensure chat window is closed
+      Minecraft.getInstance().tell(() ->
+        bookData.openGui(Component.literal("Book"), "", null, null)
+      );
     } else {
       bookNotFound(book);
       return 1;
