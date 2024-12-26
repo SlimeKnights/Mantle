@@ -7,6 +7,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static slimeknights.mantle.registration.RegistrationHelper.getCastedHolder;
@@ -163,6 +165,21 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
       getLog(), getStrippedLog(), getWood(), getStrippedWood(),
       getFenceGate(), getDoor(), getTrapdoor(),
       getPressurePlate(), getButton(), getSign(), getWallSign());
+  }
+
+  @Override
+  public void forEach(Consumer<ItemLike> consumer) {
+    super.forEach(consumer);
+    consumer.accept(getFenceGate());
+    consumer.accept(getLog());
+    consumer.accept(getStrippedLog());
+    consumer.accept(getWood());
+    consumer.accept(getStrippedWood());
+    consumer.accept(getDoor());
+    consumer.accept(getTrapdoor());
+    consumer.accept(getPressurePlate());
+    consumer.accept(getButton());
+    consumer.accept(getSign());
   }
 
   /** Variants of wood for the register function */

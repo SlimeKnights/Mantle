@@ -1,6 +1,7 @@
 package slimeknights.mantle.registration.object;
 
 import net.minecraft.core.Registry;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -9,6 +10,7 @@ import slimeknights.mantle.registration.RegistrationHelper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -69,5 +71,12 @@ public class BuildingBlockObject extends ItemObject<Block> {
    */
   public List<Block> values() {
     return Arrays.asList(get(), getSlab(), getStairs());
+  }
+
+  /** Runs the consumer on each element in the object */
+  public void forEach(Consumer<ItemLike> consumer) {
+    consumer.accept(get());
+    consumer.accept(getSlab());
+    consumer.accept(getStairs());
   }
 }
