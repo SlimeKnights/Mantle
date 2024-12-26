@@ -121,6 +121,11 @@ public class FluidContainerIngredient extends AbstractIngredient {
   }
 
   @Override
+  public boolean isEmpty() {
+    return false;
+  }
+
+  @Override
   public IIngredientSerializer<? extends Ingredient> getSerializer() {
     return SERIALIZER;
   }
