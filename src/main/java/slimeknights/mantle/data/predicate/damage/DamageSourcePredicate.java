@@ -32,6 +32,10 @@ public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   DamageSourcePredicate MAGIC = simple(DamageSource::isMagic);
   DamageSourcePredicate FALL = simple(DamageSource::isFall);
 
+  /** Damage that is caused by an entity using another entity */
+  DamageSourcePredicate IS_INDIRECT = simple(source -> source.getEntity() != source.getDirectEntity());
+  /** Damage that is caused by an entity */
+  DamageSourcePredicate HAS_ENTITY = simple(source -> source.getEntity() != null);
   /** Damage that protection works against */
   DamageSourcePredicate CAN_PROTECT = simple(source -> !source.isBypassMagic() && !source.isBypassEnchantments() && !source.isBypassInvul());
   /** Custom concept: damage dealt by non-projectile entities */
