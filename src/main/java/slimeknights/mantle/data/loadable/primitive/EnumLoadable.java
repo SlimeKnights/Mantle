@@ -2,8 +2,11 @@ package slimeknights.mantle.data.loadable.primitive;
 
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.network.FriendlyByteBuf;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.mapping.EnumMapLoadable;
 
 import java.util.Locale;
+import java.util.Map;
 
 /** Loadable for an enum value */
 public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedValues) implements StringLoadable<E> {
@@ -34,5 +37,10 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
   @Override
   public void encode(FriendlyByteBuf buffer, E object) {
     buffer.writeEnum(object);
+  }
+
+  @Override
+  public <V> Loadable<Map<E,V>> mapWithValues(Loadable<V> valueLoadable, int minSize) {
+    return new EnumMapLoadable<>(this, valueLoadable, minSize);
   }
 }

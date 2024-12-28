@@ -14,12 +14,26 @@ import java.util.Map.Entry;
 
 /**
  * Loadable for a map type.
- * @param keyLoadable    Loadable for the map keys, parsed from strings
- * @param valueLoadable  Loadable for map values, parsed from elements
  * @param <K>  Key type
  * @param <V>  Value type
  */
-public record MapLoadable<K,V>(StringLoadable<K> keyLoadable, Loadable<V> valueLoadable, int minSize) implements Loadable<Map<K,V>> {
+public class MapLoadable<K, V> implements Loadable<Map<K,V>> {
+  protected final StringLoadable<K> keyLoadable;
+  protected final Loadable<V> valueLoadable;
+  protected final int minSize;
+
+  /**
+   * Creates a new map loadable
+   * @param keyLoadable    Loadable for the map keys, parsed from strings
+   * @param valueLoadable  Loadable for map values, parsed from elements
+   * @param minSize        Minimum size for the map to be valid
+   */
+  public MapLoadable(StringLoadable<K> keyLoadable, Loadable<V> valueLoadable, int minSize) {
+    this.keyLoadable = keyLoadable;
+    this.valueLoadable = valueLoadable;
+    this.minSize = minSize;
+  }
+
   @Override
   public Map<K,V> convert(JsonElement element, String key) {
     JsonObject json = GsonHelper.convertToJsonObject(element, key);
@@ -70,5 +84,12 @@ public record MapLoadable<K,V>(StringLoadable<K> keyLoadable, Loadable<V> valueL
       keyLoadable.encode(buffer, entry.getKey());
       valueLoadable.encode(buffer, entry.getValue());
     }
+  }
+
+  @Override
+  public String toString() {
+    return "MapLoadable[keyLoadable=" + keyLoadable + ", " +
+           "valueLoadable=" + valueLoadable + ", " +
+           "minSize=" + minSize + ']';
   }
 }
