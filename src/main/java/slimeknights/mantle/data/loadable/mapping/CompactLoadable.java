@@ -45,7 +45,7 @@ public class CompactLoadable<T> implements Loadable<T> {
 
   @Override
   public T convert(JsonElement element, String key) {
-    if (element.isJsonPrimitive()) {
+    if (!element.isJsonObject()) {
       return compact.convert(element, key);
     }
     return loadable.convert(element, key);
