@@ -148,6 +148,7 @@ public class RetexturedModel implements IUnbakedGeometry<RetexturedModel> {
     private final ModelState transform;
     /** List of texture names that are retextured */
     private final Set<String> retextured;
+    private final ItemOverrides overrides = new RetexturedOverride();
 
     public Baked(BakedModel baked, IGeometryBakingContext owner, SimpleBlockModel model, ModelState transform, Set<String> retextured) {
       super(baked);
@@ -199,7 +200,27 @@ public class RetexturedModel implements IUnbakedGeometry<RetexturedModel> {
 
     @Override
     public ItemOverrides getOverrides() {
-      return RetexturedOverride.INSTANCE;
+      return overrides;
+    }
+
+    /** Override list to swap the texture in from NBT */
+    private class RetexturedOverride extends ItemOverrides {
+      @Nullable
+      @Override
+      public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int pSeed) {
+        if (stack.isEmpty() || !stack.hasTag()) {
+          return originalModel;
+        }
+
+        // get the block first, ensuring its valid
+        Block block = RetexturedBlockItem.getTexture(stack);
+        if (block == Blocks.AIR) {
+          return originalModel;
+        }
+
+        // if valid, use the block
+        return getCachedModel(block);
+      }
     }
   }
 
@@ -238,28 +259,6 @@ public class RetexturedModel implements IUnbakedGeometry<RetexturedModel> {
         return texture;
       }
       return super.getMaterial(name);
-    }
-  }
-
-  /** Override list to swap the texture in from NBT */
-  private static class RetexturedOverride extends ItemOverrides {
-    private static final RetexturedOverride INSTANCE = new RetexturedOverride();
-
-    @Nullable
-    @Override
-    public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int pSeed) {
-      if (stack.isEmpty() || !stack.hasTag()) {
-        return originalModel;
-      }
-
-      // get the block first, ensuring its valid
-      Block block = RetexturedBlockItem.getTexture(stack);
-      if (block == Blocks.AIR) {
-        return originalModel;
-      }
-
-      // if valid, use the block
-      return ((Baked)originalModel).getCachedModel(block);
     }
   }
 }
