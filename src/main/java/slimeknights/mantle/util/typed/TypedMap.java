@@ -1,5 +1,7 @@
 package slimeknights.mantle.util.typed;
 
+import org.jetbrains.annotations.Contract;
+
 import javax.annotation.Nullable;
 import java.util.Set;
 
@@ -18,6 +20,7 @@ public interface TypedMap {
 
   /** Gets the of the type of key from the map, or the default value if missing */
   @Nullable
+  @Contract("_,!null->!null")
   <R, K extends R> R getOrDefault(Key<K> key, @Nullable R defaultValue);
 
   /** Gets the value from the map, or null if missing */
@@ -66,7 +69,8 @@ public interface TypedMap {
     }
   };
 
-  /** Gets an empty map for the given type */
+  /** @deprecated use {@link #EMPTY} */
+  @Deprecated(forRemoval = true)
   static TypedMap empty() {
     return EMPTY;
   }

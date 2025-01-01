@@ -6,11 +6,21 @@ import lombok.NoArgsConstructor;
 import slimeknights.mantle.util.typed.TypedMap.Key;
 
 import java.util.Map;
+import java.util.Objects;
 
 /** Builder for a typed map, ensures key value pairs are consistent */
 @NoArgsConstructor(staticName = "builder")
 public class TypedMapBuilder {
   private final ImmutableMap.Builder<Key<?>,Object> builder = ImmutableMap.builder();
+
+  /** Adds all values from the passed map to this map. */
+  @CanIgnoreReturnValue
+  public TypedMapBuilder putAll(TypedMap map) {
+    for (Key<?> key : map.keySet()) {
+      builder.put(key, Objects.requireNonNull(map.get(key)));
+    }
+    return this;
+  }
 
   /** Adds a value to the map */
   @CanIgnoreReturnValue
