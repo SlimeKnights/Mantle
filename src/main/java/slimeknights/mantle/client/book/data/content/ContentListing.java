@@ -4,6 +4,8 @@ import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -17,9 +19,10 @@ import slimeknights.mantle.client.screen.book.element.ListingLeftElement;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Page content for building an index, instantiate either through {@link ContentIndex} or {@link ContentListingSectionTransformer} */
-public class ContentListing extends PageContent {
+public class ContentListing extends PageContent implements IHTML {
   public static final int LINE_HEIGHT = 10;
 
   /** Title to display in the listing */
@@ -160,5 +163,22 @@ public class ContentListing extends PageContent {
       x += width;
       y = 0;
     }
+  }
+
+  @Override
+  public String toHTML() {
+    return String.format("""
+      %s
+      %s
+      <ul class="link-list">
+          %s
+      </ul>
+      """,
+      HTMLUtils.line(title, true),
+      subText != null ? HTMLUtils.line(subText, "padding-left: 10px") : "",
+      entries.stream().flatMap(l ->
+        l.stream().map(t -> String.format("<li>%s</li>", t.toHTML()))
+      ).collect(Collectors.joining("\n"))
+    );
   }
 }

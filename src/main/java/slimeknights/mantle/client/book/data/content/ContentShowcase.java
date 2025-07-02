@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -44,5 +45,19 @@ public class ContentShowcase extends PageContent {
     if (this.text != null && this.text.length > 0) {
       list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.text));
     }
+  }
+
+  @Override
+  public String toHTML() {
+    return String.format(
+      """
+      <p class="title">%s</p>
+      <div class="column" style="padding-top: 80px;">
+          %s
+      </div>
+      """,
+      title,
+      HTMLUtils.paragraphs(text)
+    );
   }
 }

@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -7,6 +9,7 @@ import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.SelectionElement;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ContentSectionList extends PageContent {
 
@@ -35,5 +38,21 @@ public class ContentSectionList extends PageContent {
 
       list.add(new SelectionElement(x, y, this.sections.get(i)));
     }
+  }
+
+  @Override
+  public String toHTML() {
+    return String.format(
+      """
+      <div class="grid-content mc-font-gray">
+          %s
+      </div>
+      """,
+      sections.stream()
+        // TODO: wrong function
+        .map(SectionData::getTitle)
+        .map(HTMLUtils::line)
+        .collect(Collectors.joining("\n"))
+    );
   }
 }

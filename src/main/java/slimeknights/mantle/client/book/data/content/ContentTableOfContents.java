@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -10,7 +11,7 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
-public class ContentTableOfContents extends PageContent {
+public class ContentTableOfContents extends PageContent implements IHTML {
 
   @Getter
   public String title;

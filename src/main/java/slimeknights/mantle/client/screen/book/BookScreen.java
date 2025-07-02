@@ -18,6 +18,7 @@ import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class BookScreen extends Screen {
+public class BookScreen extends Screen implements IHTML {
 
   public static boolean debug = false;
 
@@ -534,9 +535,9 @@ public class BookScreen extends Screen {
     if (pageUpdater != null) {
       String pageStr = "";
       if (this.page >= 0) {
-        PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
+        PageData page = this.page == 0 ? this.book.findPage(0, this.advancementCache) : getLeftPage();
         if (page == null) {
-          page = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
+          page = getRightPage();
         }
         if (page != null && page.parent != null) {
           pageStr = page.parent.name + "." + page.name;
@@ -671,8 +672,8 @@ public class BookScreen extends Screen {
         page.content.build(this.book, this.rightElements, false);
       }
     } else {
-      PageData leftPage = this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
-      PageData rightPage = this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
+      PageData leftPage = getLeftPage();
+      PageData rightPage = getRightPage();
 
       if (leftPage != null) {
         leftPage.content.build(this.book, this.leftElements, false);
@@ -688,6 +689,40 @@ public class BookScreen extends Screen {
     for (BookElement element : this.rightElements) {
       element.parent = this;
     }
+  }
+
+  private @Nullable PageData getLeftPage() {
+    return this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
+  }
+
+  private @Nullable PageData getRightPage() {
+    return this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
+  }
+
+  private static String joinPage(String left, String right) {
+    return String.format(
+      """
+      <div class="left">
+      %s
+      </div>
+      <div class="right">
+      %s
+      </div>
+      """,
+      left/*.strip().replaceAll("\n", "\n    ")*/,
+      right/*.strip().replaceAll("\n", "\n    ")*/
+    );
+  }
+
+  /** Converts the left and right page to html*/
+  public String toHTML() {
+    PageData leftData = getLeftPage();
+    PageData rightData = getRightPage();
+
+    String left = leftData != null ? leftData.content.toHTML() : "";
+    String right = rightData != null ? rightData.content.toHTML() : "";
+
+    return joinPage(left, right);
   }
 
   public static class AdvancementCache implements ClientAdvancements.Listener {

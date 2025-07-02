@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
 import lombok.Setter;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -14,7 +15,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /** Base for all page content */
-public abstract class PageContent {
+public abstract class PageContent implements IHTML {
 
   public static final transient int TITLE_HEIGHT = 16;
   public static final transient int LARGE_TITLE_HEIGHT = 20;

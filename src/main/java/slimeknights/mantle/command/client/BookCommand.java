@@ -33,6 +33,10 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.command.MantleCommand;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -165,8 +169,9 @@ public class BookCommand {
           gui.flush();
           gui.pose().popPose();
 
+          int page = screen.getPage_();
+
           try (NativeImage image = takeScreenshot(target)) {
-            int page = screen.getPage_();
             String pageFormat = page < 0 ? "cover" : "page_" + page;
             Path path = Paths.get(screenshotDir.toString(), pageFormat + ".png");
 
@@ -185,6 +190,15 @@ public class BookCommand {
           } catch (Exception e) {
             Mantle.logger.error("Failed to save screenshot", e);
             throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+          }
+
+          if (page >= 0) {
+            File file = Paths.get(screenshotDir.toString(), "page_" + page + ".html").toFile();
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+              writer.write(screen.toHTML());
+            } catch (IOException ignored) {
+              // TODO: handle exception
+            }
           }
         } while (screen.nextPage());
       } finally {

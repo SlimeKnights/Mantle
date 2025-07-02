@@ -3,6 +3,8 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -12,8 +14,10 @@ import slimeknights.mantle.client.screen.book.element.ImageElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-public class ContentImageText extends PageContent {
+public class ContentImageText extends PageContent implements IHTML {
   public static final ResourceLocation ID = Mantle.getResource("image_text");
 
   @Getter
@@ -50,5 +54,19 @@ public class ContentImageText extends PageContent {
     if (this.text != null && this.text.length > 0) {
       list.add(new TextElement(0, y, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - y, this.text));
     }
+  }
+
+  public String toHTML() {
+    return String.format(
+      """
+      <p class="title">%s</p>
+      <div style="padding-top: %dpx">
+          %s
+      </div>
+      """,
+      title,
+      image.height * 2,
+      HTMLUtils.paragraphs(text)
+    );
   }
 }

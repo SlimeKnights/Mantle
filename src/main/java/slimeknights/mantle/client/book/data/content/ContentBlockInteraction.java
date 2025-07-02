@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.IngredientData;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_MISC;
 
-public class ContentBlockInteraction extends PageContent {
+public class ContentBlockInteraction extends PageContent implements IHTML {
   public static final ResourceLocation ID = Mantle.getResource("block_interaction");
 
   public static final transient int TEX_SIZE = 512;

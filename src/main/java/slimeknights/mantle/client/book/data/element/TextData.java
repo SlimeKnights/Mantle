@@ -1,8 +1,11 @@
 package slimeknights.mantle.client.book.data.element;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 
-public class TextData {
+public class TextData implements IHTML {
 
   public static final TextData LINEBREAK = new TextData("\n");
 
@@ -27,5 +30,12 @@ public class TextData {
 
   public TextData(String text) {
     this.text = text;
+  }
+
+  // TODO: add other styles
+  @Override
+  public String toHTML() {
+    Integer rgb = ChatFormatting.getByName(color).getColor();
+    return HTMLUtils.line(text, underlined, rgb != null && rgb != 0 ? String.format("color: %s\"", HTMLUtils.hexRGB(rgb)) : null);
   }
 }

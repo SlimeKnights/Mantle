@@ -12,6 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -24,10 +26,12 @@ import slimeknights.mantle.client.screen.book.element.ItemElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_CRAFTING;
 
-public class ContentCrafting extends PageContent {
+public class ContentCrafting extends PageContent implements IHTML {
   public static final ResourceLocation ID = Mantle.getResource("crafting");
 
   public static final transient int TEX_SIZE = 256;
@@ -153,5 +157,17 @@ public class ContentCrafting extends PageContent {
         }
       }
     }
+  }
+
+  public String toHTML() {
+    return String.format(
+      """
+      <p class="title">%s</p>
+      <p class="%s">%s</p>
+      """,
+      title,
+      grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg",
+      HTMLUtils.paragraphs(description) // TODO: wrong
+    );
   }
 }
