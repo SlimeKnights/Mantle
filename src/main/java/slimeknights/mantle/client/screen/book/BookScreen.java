@@ -23,6 +23,8 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
+import slimeknights.mantle.client.screen.book.element.TextComponentElement;
+import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -53,9 +55,10 @@ public class BookScreen extends Screen implements IHTML {
   public static final int PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   public static final int PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
 
-  // Used for the book to image exporter to disable arrows and mouse input
+  // Used for the book to image exporter to disable arrows, mouse input, and text
   public boolean drawArrows = true;
   public boolean mouseInput = true;
+  public boolean drawText = true;
 
   private ArrowButton previousArrow, nextArrow, backArrow, indexArrow;
 
@@ -132,6 +135,8 @@ public class BookScreen extends Screen implements IHTML {
     }
 
     Font fontRenderer = getFontRenderer();
+
+    book.appearance.drawSectionListText = drawText;
 
     if (debug) {
       graphics.fill(0, 0, fontRenderer.width("DEBUG") + 4, fontRenderer.lineHeight + 4, 0x55000000);
@@ -293,7 +298,8 @@ public class BookScreen extends Screen implements IHTML {
 
     Font font = getFontRenderer();
 
-    for(BookElement element : elements) {
+    for (BookElement element : elements) {
+      if ((element instanceof TextElement || element instanceof TextComponentElement) && !drawText) continue;
       RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
       layerFunc.draw(element, graphics, mouseX, mouseY, partialTicks, font);
     }

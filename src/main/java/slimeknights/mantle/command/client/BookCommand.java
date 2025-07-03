@@ -135,6 +135,7 @@ public class BookCommand {
       screen.init(Minecraft.getInstance(), width / scale, height / scale);
       screen.drawArrows = false;
       screen.mouseInput = false;
+      screen.drawText = false;
 
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
       RenderSystem.setProjectionMatrix(matrix, VertexSorting.ORTHOGRAPHIC_Z);
