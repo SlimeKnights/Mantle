@@ -1,7 +1,6 @@
 package slimeknights.mantle.client.book.data.content;
 
 import slimeknights.mantle.client.book.HTMLUtils;
-import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -49,9 +48,20 @@ public class ContentSectionList extends PageContent {
       </div>
       """,
       sections.stream()
-        // TODO: wrong function
-        .map(SectionData::getTitle)
-        .map(HTMLUtils::line)
+        .map(s -> {
+          String title = HTMLUtils.line(s.getTitle());
+          return String.format(
+            """
+            <div>
+                <a href="#%s"><img src="/assets/images/book/icons/blank.png" alt="%s"></a>
+                %s
+            </div>
+            """,
+            s.name,
+            title,
+            title
+          );
+        })
         .collect(Collectors.joining("\n"))
     );
   }

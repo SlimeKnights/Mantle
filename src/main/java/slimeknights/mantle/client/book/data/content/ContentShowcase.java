@@ -51,13 +51,13 @@ public class ContentShowcase extends PageContent {
   public String toHTML() {
     return String.format(
       """
-      <p class="title">%s</p>
-      <div class="column" style="padding-top: 80px;">
+      %s
+      <div class="column" style="padding-top: 80px">
           %s
       </div>
       """,
-      title,
-      HTMLUtils.paragraphs(text)
+      HTMLUtils.line(title, true),
+      TextData.toHTML(text)
     );
   }
 }

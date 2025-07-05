@@ -162,12 +162,14 @@ public class ContentCrafting extends PageContent implements IHTML {
   public String toHTML() {
     return String.format(
       """
-      <p class="title">%s</p>
-      <p class="%s">%s</p>
+      %s
+      <div class="%s">
+          %s
+      </div>
       """,
-      title,
+      HTMLUtils.line(title, true),
       grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg",
-      HTMLUtils.paragraphs(description) // TODO: wrong
+      TextData.toHTML(description)
     );
   }
 }

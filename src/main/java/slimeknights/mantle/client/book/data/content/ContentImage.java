@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -37,13 +38,6 @@ public class ContentImage extends PageContent implements IHTML {
   }
 
   public String toHTML() {
-    return String.format(
-      """
-        <div class="">
-            <p class="title">%s</p>
-        </div>
-        """,
-        title
-      );
+    return HTMLUtils.line(title, true);
   }
 }

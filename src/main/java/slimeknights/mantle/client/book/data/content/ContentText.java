@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -40,7 +41,7 @@ public class ContentText extends PageContent implements IHTML {
   public String toHTML() {
     Stream<String> stream = Arrays.stream(text).map(TextData::toHTML);
     if (this.title != null && !this.title.isEmpty()) {
-        stream = Stream.concat(Stream.of(String.format("<p class=\"title\">%s</p>", title)), stream);
+        stream = Stream.concat(Stream.of(HTMLUtils.line(title, true)), stream);
     }
     return stream.collect(Collectors.joining("\n"));
   }

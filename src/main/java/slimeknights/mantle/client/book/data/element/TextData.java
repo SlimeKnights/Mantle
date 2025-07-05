@@ -25,6 +25,8 @@ public class TextData implements IHTML {
   public String action = "";
   public Component[] tooltip = null;
 
+  // TODO: '§'
+
   public TextData() {
   }
 
@@ -33,9 +35,32 @@ public class TextData implements IHTML {
   }
 
   // TODO: add other styles
-  @Override
   public String toHTML() {
     Integer rgb = ChatFormatting.getByName(color).getColor();
-    return HTMLUtils.line(text, underlined, rgb != null && rgb != 0 ? String.format("color: %s\"", HTMLUtils.hexRGB(rgb)) : null);
+    return String.format(
+      "<span style=\"color: %s%s%s%s%s\"%s>%s</span>",
+      HTMLUtils.hexRGB(rgb != null ? rgb : 0),
+      bold ? "; font-weight: bold" : "",
+      italic ? "; font-style: italic" : "",
+      underlined ? "; text-decoration: underline" : "",
+      strikethrough ? "; text-decoration: line-through" : "",
+      dropshadow ? "class=\"shadow\"" : "",
+      text
+    );
+  }
+
+  // TextData's can merge with others if paragraph == false
+  public static String toHTML(TextData[] array) {
+    StringBuilder builder = new StringBuilder("<p>");
+    for (TextData textData : array) {
+      if (textData.paragraph) {
+        builder.append("</p>\n<p>");
+      } else {
+        builder.append("\n");
+      }
+      builder.append(textData.toHTML());
+    }
+    builder.append("</p>");
+    return builder.toString();
   }
 }

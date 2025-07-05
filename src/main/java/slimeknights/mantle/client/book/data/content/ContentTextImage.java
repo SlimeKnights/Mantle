@@ -49,14 +49,14 @@ public class ContentTextImage extends PageContent implements IHTML {
   public String toHTML() {
     return String.format(
       """
-      <p class="title">%s</p>
+      %s
       <div style="padding-top: %dpx">
           %s
       </div>
       """,
-      title,
+      HTMLUtils.line(title, true),
       image.height * 2,
-      HTMLUtils.paragraphs(text)
+      TextData.toHTML(text)
     );
   }
 }
