@@ -104,6 +104,7 @@ public class TextData implements IHTML {
       next = start + text.substring(start).indexOf(COLOR_CHAR);
     } while (next < last && start < next);
 
+    result.append(text, start, text.length());
     // might not reset
     result.append("</span>".repeat(left - right));
 
