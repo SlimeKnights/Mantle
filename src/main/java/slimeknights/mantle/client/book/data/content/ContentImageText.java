@@ -65,7 +65,7 @@ public class ContentImageText extends PageContent implements IHTML {
       </div>
       """,
       HTMLUtils.line(title, true),
-      image.height * 2,
+      image.height * 2 + 16,
       TextData.toHTML(text)
     );
   }

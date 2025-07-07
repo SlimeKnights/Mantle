@@ -25,8 +25,6 @@ public class TextData implements IHTML {
   public String action = "";
   public Component[] tooltip = null;
 
-  // TODO: '§'
-
   public TextData() {
   }
 
@@ -34,7 +32,6 @@ public class TextData implements IHTML {
     this.text = text;
   }
 
-  // TODO: add other styles
   public String toHTML() {
     Integer rgb = ChatFormatting.getByName(color).getColor();
     return String.format(
@@ -45,7 +42,7 @@ public class TextData implements IHTML {
       underlined ? "; text-decoration: underline" : "",
       strikethrough ? "; text-decoration: line-through" : "",
       dropshadow ? "class=\"shadow\"" : "",
-      text
+      parseChatFormatting()
     );
   }
 
@@ -62,5 +59,54 @@ public class TextData implements IHTML {
     }
     builder.append("</p>");
     return builder.toString();
+  }
+
+  private static final char COLOR_CHAR = '§';
+  private static final String LOOKUP = "0123456789abcdefklmnor";
+
+  // TODO: ignores color for now
+  // cant really do Obfuscated §k without client side js
+  public String parseChatFormatting() {
+    int next = text.indexOf(COLOR_CHAR);
+    int last = text.length() - 1;
+    if (next == -1 || next == last) {
+      // does nothing
+      return text;
+    }
+
+    int start = 0;
+    int left = 0;
+    int right = 0;
+    boolean open = false;
+    StringBuilder result = new StringBuilder();
+
+    do {
+      result.append(text, start, next);
+      char nextChar = text.charAt(next + 1);
+      if (LOOKUP.indexOf(nextChar) != 1 && !open && nextChar != 'r') {
+        result.append("<span style=\"");
+        open = true;
+      };
+      switch (nextChar) {
+        case 'l' -> result.append("font-weight: bold;");
+        case 'm' -> result.append("text-decoration: line-through;");
+        case 'n' -> result.append("text-decoration: underline;");
+        case 'o' -> result.append("font-style: italic;");
+        case 'r' -> { result.append("</span>"); right++; }
+      }
+      if (nextChar != 'r' && text.charAt(next + 2) != COLOR_CHAR) {
+        result.append("\">");
+        left++;
+        open = false;
+      }
+      next += 2;
+      start = next;
+      next = start + text.substring(start).indexOf(COLOR_CHAR);
+    } while (next < last && start < next);
+
+    // might not reset
+    result.append("</span>".repeat(left - right));
+
+    return result.toString();
   }
 }
