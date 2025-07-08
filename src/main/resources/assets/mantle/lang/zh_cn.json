@@ -1,0 +1,61 @@
+{
+  "mantle:tooltip.cooktime": "烧炼时间：%ds",
+  "config.mantle.extraHeartRenderer": "启用额外爱心渲染层",
+
+  "command.mantle.view_tag.success": "%s标签“%s”的值为：",
+
+  "command.mantle.tags_for.success": "“%2$s”的%1$s标签为：",
+  "command.mantle.tags_for.not_found": "未知的%s注册项：“%s”",
+  "command.mantle.tags_for.no_held_block": "手持的物品并不是一个方块",
+  "command.mantle.tags_for.no_held_entity": "手持的物品并不是一个刷怪蛋",
+  "command.mantle.tags_for.no_held_potion": "手持的物品并不是一个药水",
+  "command.mantle.tags_for.no_held_fluid": "无法从手持的物品获取流体信息",
+  "command.mantle.tags_for.no_held_enchantment": "手持的物品未附魔",
+  "command.mantle.tags_for.no_targeted_entity": "范围内无实体",
+  "command.mantle.tags_for.no_targeted_block_entity": "未选择方块实体",
+  "command.mantle.tags_for.no_tags": "无标签",
+  "command.mantle.book_test.not_found": "未知的手册ID：%s",
+  "command.mantle.book.export.success": "导出手册图片到“%s”",
+  "command.mantle.book.export.error_generic": "无法导出手册图片，详细信息见日志",
+  "command.mantle.book.export.error_io": "无法为手册图片“%s”新建目录",
+
+  "command.mantle.dump_tag.success": "已将合并后的%s标签“%s”打印到控制台日志",
+  "command.mantle.dump_tag.read_error": "读取%s标签“%s”失败：",
+  "command.mantle.dump_tag.success_log": "已将合并后的%s标签“%s”导出到“%s”",
+  "command.mantle.dump_all_tags.success": "导出所有标签到“%s”",
+  "command.mantle.dump_all_tags.type_success": "导出所有%s标签到“%s”",
+
+  "command.mantle.dump_loot_modifiers.success_log": "已将合并后的全局战利品表修饰器打印到控制台日志",
+  "command.mantle.dump_loot_modifiers.success_save": "已将合并后的全局战利品表修饰器导出到“%s”",
+  "command.mantle.dump_loot_modifiers.read_error": "读取全局战利品表修饰器失败",
+
+  "command.mantle.harvest_tiers.success_log": "已将排序后的挖掘等级打印到控制台日志",
+  "command.mantle.harvest_tiers.success_save": "已将排序后的挖掘等级导出到“%s”",
+  "command.mantle.harvest_tiers.success_list": "挖掘等级：",
+  "command.mantle.harvest_tiers.tag": "%s：方块标签%s",
+  "command.mantle.harvest_tiers.no_tag": "%s：无标签",
+
+  "command.mantle.tag.empty": "空",
+  "command.mantle.registry.not_found": "未知的注册项“%s”",
+  "command.mantle.tag.not_found": "未知%s标签“%s”",
+
+  "command.mantle.tag_preference.empty_tag": "%s标签%s没有偏好值",
+  "command.mantle.tag_preference.preference": "%s标签%s的偏好值是%s",
+
+  "gui.mantle.fluid.capacity": "容量：%s mb",
+  "gui.mantle.fluid.contents": "存有：%s",
+  "gui.mantle.fluid.format": "%s/%smb%s",
+
+  "gui.mantle.fluid.hold_shift": "按住§e§oShift§r§7以桶为单位显示流体",
+  "gui.mantle.fluid.kilobucket": "%skb",
+  "gui.mantle.fluid.bucket": "%sB",
+  "gui.mantle.fluid.millibucket": "%smb",
+
+  "gui.mantle.fluid.bowl": "%s碗",
+  "gui.mantle.fluid.bottle": "%s瓶",
+  "gui.mantle.fluid.drop": "%s液滴",
+  "gui.mantle.fluid.sip": "%s口",
+
+  "block.mantle.tank.drained": "输出%smB%s",
+  "block.mantle.tank.filled": "输入%smB%s"
+}
