@@ -5,6 +5,8 @@ import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 
+import javax.annotation.Nullable;
+
 public class TextData implements IHTML {
 
   public static final TextData LINEBREAK = new TextData("\n");
@@ -47,7 +49,8 @@ public class TextData implements IHTML {
   }
 
   // TextData's can merge with others if paragraph == false
-  public static String toHTML(TextData[] array) {
+  public static String toHTML(@Nullable TextData[] array) {
+    if (array == null) return "";
     StringBuilder builder = new StringBuilder("<p>");
     for (TextData textData : array) {
       if (textData.paragraph) {
