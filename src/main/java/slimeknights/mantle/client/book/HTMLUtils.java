@@ -11,26 +11,33 @@ import java.util.stream.Collectors;
 
 public class HTMLUtils {
 
-  public static String line(String text) {
-    return line(text, false);
-  }
-
-  public static String line(String text, boolean title) {
-    return line(text, title, null);
-  }
-
-  public static String line(String text, @Nullable String styles) {
+  public static String line(String text, String... styles) {
     return line(text, false, styles);
   }
 
-  public static String line(String text, boolean title, @Nullable String styles) {
-    return String.format(
-      "<p%s%s%s>%s</p>",
-      title ? " id=\"" + slugify(text) + "\"" : "",
-      title ? " class=\"title\"" : "",
-      styles != null ? " style=\"" + styles + "\"" : "",
-      text
-    );
+  public static String line(String text, boolean title, String... styles) {
+    return line(text, null, title, false, styles);
+  }
+
+  public static String line(String text, boolean title, boolean large, String... styles) {
+    return line(text, null, title, large, styles);
+  }
+
+  public static String line(String text, @Nullable String id, boolean title, boolean large, String... styles) {
+    StringBuilder builder = new StringBuilder("<p");
+
+    if (id != null) builder.append(" id=\"").append(id).append("\"");
+
+    if (title || large) builder.append(" class=\"");
+    if (title) builder.append("title ");
+    if (large) builder.append("large");
+    if (title || large) builder.append("\"");
+
+    if (styles.length > 0) builder.append(" style=\"").append(String.join("; ", styles)).append("\"");
+
+    builder.append(">").append(text).append("</p>");
+
+    return builder.toString();
   }
 
   public static String line(Component component) {
