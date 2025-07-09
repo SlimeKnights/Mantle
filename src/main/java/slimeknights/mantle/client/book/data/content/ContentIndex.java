@@ -28,7 +28,7 @@ import java.util.Set;
  * </ul>
  */
 @SuppressWarnings("unused")
-public class ContentIndex extends ContentListing implements IHTML {
+public class ContentIndex extends ContentListing {
   public static final transient ResourceLocation ID = Mantle.getResource("index");
 
   private transient boolean loaded = false;

@@ -167,7 +167,7 @@ public class ContentCrafting extends PageContent implements IHTML {
           %s
       </div>
       """,
-      HTMLUtils.line(title, true),
+      super.toHTML(),
       grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg",
       TextData.toHTML(description)
     );

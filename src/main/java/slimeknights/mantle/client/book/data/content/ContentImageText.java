@@ -14,8 +14,6 @@ import slimeknights.mantle.client.screen.book.element.ImageElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class ContentImageText extends PageContent implements IHTML {
   public static final ResourceLocation ID = Mantle.getResource("image_text");
@@ -56,6 +54,7 @@ public class ContentImageText extends PageContent implements IHTML {
     }
   }
 
+  @Override
   public String toHTML() {
     return String.format(
       """
@@ -64,8 +63,8 @@ public class ContentImageText extends PageContent implements IHTML {
           %s
       </div>
       """,
-      HTMLUtils.line(title, true),
-      image.height * 2 + 16,
+      super.toHTML(),
+      (image.height > 0 ? image.height : 100) * 2 + 16,
       TextData.toHTML(text)
     );
   }

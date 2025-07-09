@@ -56,7 +56,7 @@ public class ContentShowcase extends PageContent {
           %s
       </div>
       """,
-      HTMLUtils.line(title, true),
+      super.toHTML(),
       TextData.toHTML(text)
     );
   }

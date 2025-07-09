@@ -15,23 +15,23 @@ public class HTMLUtils {
     return line(text, false, styles);
   }
 
-  public static String line(String text, boolean title, String... styles) {
-    return line(text, null, title, false, styles);
+  public static String line(String text, boolean underline, String... styles) {
+    return line(text, null, underline, false, styles);
   }
 
-  public static String line(String text, boolean title, boolean large, String... styles) {
-    return line(text, null, title, large, styles);
+  public static String line(String text, boolean underline, boolean large, String... styles) {
+    return line(text, null, underline, large, styles);
   }
 
-  public static String line(String text, @Nullable String id, boolean title, boolean large, String... styles) {
+  public static String line(String text, @Nullable String id, boolean underline, boolean large, String... styles) {
     StringBuilder builder = new StringBuilder("<p");
 
     if (id != null) builder.append(" id=\"").append(id).append("\"");
 
-    if (title || large) builder.append(" class=\"");
-    if (title) builder.append("title ");
+    if (underline || large) builder.append(" class=\"");
+    if (underline) builder.append("underline ");
     if (large) builder.append("large");
-    if (title || large) builder.append("\"");
+    if (underline || large) builder.append("\"");
 
     if (styles.length > 0) builder.append(" style=\"").append(String.join("; ", styles)).append("\"");
 

@@ -36,8 +36,4 @@ public class ContentImage extends PageContent implements IHTML {
       list.add(new ImageElement(ImageData.MISSING));
     }
   }
-
-  public String toHTML() {
-    return HTMLUtils.line(title, true);
-  }
 }

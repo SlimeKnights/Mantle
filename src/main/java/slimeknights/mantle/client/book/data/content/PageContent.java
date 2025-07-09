@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
 import lombok.Setter;
+import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
@@ -47,7 +48,7 @@ public abstract class PageContent implements IHTML {
   public abstract void build(BookData book, ArrayList<BookElement> list, boolean rightSide);
 
   /** Returns true if the title should be large */
-  private boolean isLarge() {
+  protected boolean isLarge() {
     if (largeTitle != null) {
       return largeTitle;
     }
@@ -58,7 +59,7 @@ public abstract class PageContent implements IHTML {
   }
 
   /** Returns true if the title should be centered */
-  private boolean isCentered() {
+  protected boolean isCentered() {
     if (centerTitle != null) {
       return centerTitle;
     }
@@ -164,5 +165,13 @@ public abstract class PageContent implements IHTML {
     int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, BookScreen.PAGE_WIDTH) * 12 / 9;
     list.add(new TextElement(5, y, BookScreen.PAGE_WIDTH, height, subText));
     return height;
+  }
+
+  @Override
+  public String toHTML() {
+    if (isCentered()) {
+      return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge(), "align-self: center");
+    }
+    return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge());
   }
 }

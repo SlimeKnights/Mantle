@@ -44,17 +44,18 @@ public class ContentTextImage extends PageContent implements IHTML {
     }
   }
 
-  public String toHTML() {
-    return String.format(
-      """
-      %s
-      <div style="padding-top: %dpx">
-          %s
-      </div>
-      """,
-      HTMLUtils.line(title, true),
-      image.height * 2 + 16,
-      TextData.toHTML(text)
-    );
-  }
+//  @Override
+//  public String toHTML() {
+//    return String.format(
+//      """
+//      %s
+//      <div style="padding-top: %dpx">
+//          %s
+//      </div>
+//      """,
+//      HTMLUtils.line(title, true),
+//      (image.height > 0 ? image.height : 100) * 2 + 16,
+//      TextData.toHTML(text)
+//    );
+//  }
 }
