@@ -43,10 +43,11 @@ public class ContentSectionList extends PageContent {
   public String toHTML() {
     return String.format(
       """
-      <div class="grid-content mc-font-gray">
+      <div class="grid-content-%d mc-font-gray">
           %s
       </div>
       """,
+      sections.size() >= 9 ? 4 : 3,
       sections.stream()
         .map(s -> {
           String title = HTMLUtils.line(s.getTitle());
