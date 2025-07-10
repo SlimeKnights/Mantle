@@ -6,6 +6,7 @@ import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class TextData implements IHTML {
 
@@ -35,10 +36,10 @@ public class TextData implements IHTML {
   }
 
   public String toHTML() {
-    Integer rgb = ChatFormatting.getByName(color).getColor();
+//    int rgb = Objects.requireNonNullElse(ChatFormatting.getByName(color).getColor(), 0);
     return String.format(
       "<span style=\"color: %s%s%s%s%s\"%s>%s</span>",
-      HTMLUtils.hexRGB(rgb != null ? rgb : 0),
+      HTMLUtils.hexRGB(rgbColor),
       bold ? "; font-weight: bold" : "",
       italic ? "; font-style: italic" : "",
       underlined ? "; text-decoration: underline" : "",
@@ -70,6 +71,7 @@ public class TextData implements IHTML {
   // TODO: ignores color for now
   // cant really do Obfuscated §k without client side js
   public String parseChatFormatting() {
+    int start = 0;
     int next = text.indexOf(COLOR_CHAR);
     int last = text.length() - 1;
     if (next == -1 || next == last) {
@@ -77,7 +79,6 @@ public class TextData implements IHTML {
       return text;
     }
 
-    int start = 0;
     int left = 0;
     int right = 0;
     boolean open = false;
@@ -86,11 +87,12 @@ public class TextData implements IHTML {
     do {
       result.append(text, start, next);
       char nextChar = text.charAt(next + 1);
-      if (LOOKUP.indexOf(nextChar) != 1 && !open && nextChar != 'r') {
+      if (LOOKUP.indexOf(nextChar) != -1 && !open && nextChar != 'r') {
         result.append("<span style=\"");
         open = true;
-      };
+      }
       switch (nextChar) {
+        case '1' -> result.append("color: #0000AA;");
         case 'l' -> result.append("font-weight: bold;");
         case 'm' -> result.append("text-decoration: line-through;");
         case 'n' -> result.append("text-decoration: underline;");
@@ -104,8 +106,8 @@ public class TextData implements IHTML {
       }
       next += 2;
       start = next;
-      next = start + text.substring(start).indexOf(COLOR_CHAR);
-    } while (next < last && start < next);
+      next += text.substring(start).indexOf(COLOR_CHAR);
+    } while (next < last && start <= next);
 
     result.append(text, start, text.length());
     // might not reset

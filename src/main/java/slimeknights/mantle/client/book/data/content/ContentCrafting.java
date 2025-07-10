@@ -25,9 +25,8 @@ import slimeknights.mantle.client.screen.book.element.ImageElement;
 import slimeknights.mantle.client.screen.book.element.ItemElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_CRAFTING;
 
@@ -52,6 +51,7 @@ public class ContentCrafting extends PageContent implements IHTML {
   public String grid_size = "auto";
   public IngredientData[][] grid;
   public IngredientData result;
+  @Nullable
   public TextData[] description;
   public String recipe;
 
