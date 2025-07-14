@@ -35,9 +35,10 @@ public class HTMLUtils {
 
     if (styles.length > 0) builder.append(" style=\"").append(String.join("; ", styles)).append("\"");
 
-    builder.append(">").append(text).append("</p>");
-
-    return builder.toString();
+    return builder.append(">")
+      .append(text)
+      .append("</p>")
+      .toString();
   }
 
   public static String line(Component component) {
@@ -48,23 +49,33 @@ public class HTMLUtils {
    * NOTE: uses a span instead of p to recursively inline
    */
   private static String toHTML(Component component) {
-    StringBuilder styleBuilder = new StringBuilder();
+    StringBuilder builder = new StringBuilder("<span");
+
     Style style = component.getStyle();
-    TextColor color = style.getColor();
-    if (color != null && color.getValue() != 0) {
-      styleBuilder.append("color: ");
-      // toString gives a weird color
-      styleBuilder.append(hexRGB(color.getValue()));
-      styleBuilder.append(";");
+    if (!style.isEmpty()) {
+      builder.append(" style=\"");
+
+      TextColor color = style.getColor();
+      if (color != null && color.getValue() != 0) {
+        builder.append("color: ");
+        // toString gives a weird color
+        builder.append(hexRGB(color.getValue()));
+        builder.append(";");
+      }
+
+      // TODO: I don't think these are ever used in the in game book
+//      if (style.isBold()) {}
+//      if (style.isItalic()) {}
+//      if (style.isStrikethrough()) {}
+//      if (style.isUnderlined()) {}
+      builder.append("\"");
     }
 
-    // TODO: I don't think these are ever used in the in game book
-    if (style.isBold()) {}
-    if (style.isItalic()) {}
-    if (style.isStrikethrough()) {}
-    if (style.isUnderlined()) {}
-
-    return String.format("<span style=\"%s\">%s%s</span>", styleBuilder, MutableComponent.create(component.getContents()).getString(), component.getSiblings().stream().map(HTMLUtils::toHTML).collect(Collectors.joining()));
+    return builder.append(">")
+      .append(MutableComponent.create(component.getContents()).getString())
+      .append(component.getSiblings().stream().map(HTMLUtils::toHTML).collect(Collectors.joining()))
+      .append("</span>")
+      .toString();
   }
 
   public static String slugify(String s) {

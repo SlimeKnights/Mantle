@@ -169,9 +169,6 @@ public abstract class PageContent implements IHTML {
 
   @Override
   public String toHTML() {
-    if (isCentered()) {
-      return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge(), "align-self: center");
-    }
-    return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge());
+    return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge(), isCentered() ? "align-self: center" : "");
   }
 }
