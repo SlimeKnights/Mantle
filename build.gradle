@@ -6,7 +6,6 @@
  * Help from AbrarSyed
 */
 
-
 plugins {
     id 'eclipse'
     id 'idea'
@@ -34,9 +33,9 @@ repositories {
         url "https://maven.tterrag.com/"
     }
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-     flatDir {
-         dir 'libs'
-     }
+    // flatDir {
+    //     dir 'libs'
+    // }
 }
 
 group = 'slimeknights.mantle'
@@ -145,9 +144,6 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-
-    // TODO: testing only
-    runtimeOnly fg.deobf("slimeknights.tconstruct:TConstruct:${minecraft_version}-3.9.2.34")
 }
 
 tasks.named('processResources', ProcessResources).configure {
