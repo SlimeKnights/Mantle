@@ -66,4 +66,9 @@ public class TextComponentElement extends SizedBookElement implements IHTML {
       .collect(Collectors.joining("\n"));
     return paragraphs;
   }
+
+  @Override
+  public boolean isText() {
+    return true;
+  }
 }

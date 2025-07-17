@@ -51,4 +51,9 @@ public class TextElement extends SizedBookElement {
       StringActionProcessor.process(lastAction, this.parent);
     }
   }
+
+  @Override
+  public boolean isText() {
+    return true;
+  }
 }

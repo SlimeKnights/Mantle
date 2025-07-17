@@ -118,4 +118,8 @@ public abstract class BookElement {
     // render the tooltip
     graphics.renderTooltipInternal(font, components, mouseX, mouseY, POSITIONER);
   }
+
+  public boolean isText() {
+    return false;
+  }
 }

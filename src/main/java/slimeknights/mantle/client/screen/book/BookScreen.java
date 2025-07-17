@@ -299,7 +299,7 @@ public class BookScreen extends Screen implements IHTML {
     Font font = getFontRenderer();
 
     for (BookElement element : elements) {
-      if ((element instanceof TextElement || element instanceof TextComponentElement) && !drawText) continue;
+      if (!drawText && !element.isText()) continue;
       RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
       layerFunc.draw(element, graphics, mouseX, mouseY, partialTicks, font);
     }
