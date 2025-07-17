@@ -14,6 +14,7 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 
 /** Base for all page content */
 public abstract class PageContent implements IHTML {
@@ -167,7 +168,15 @@ public abstract class PageContent implements IHTML {
     return height;
   }
 
+  /** Helper to create title in HTML */
   public String getTitleHTML() {
     return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge(), isCentered() ? "align-self: center" : "");
+  }
+
+  /** Helper to create title in HTML */
+  public String getTitleHTML(String id, String... styles) {
+    ArrayList<String> list = new ArrayList<>(List.of(styles));
+    if (isCentered()) list.add("align-self: center");
+    return HTMLUtils.line(getTitle(), id, true, isLarge(), list.toArray(list.toArray(new String[0])));
   }
 }

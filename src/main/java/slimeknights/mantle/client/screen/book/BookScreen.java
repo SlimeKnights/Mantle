@@ -703,34 +703,25 @@ public class BookScreen extends Screen implements IHTML {
   }
 
   @Nullable
-  private  PageData getRightPage() {
+  private PageData getRightPage() {
     return this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
   }
 
-  private static String joinPage(String left, String right) {
-    return String.format(
-      """
-      <div class="left">
-      %s
-      </div>
-      <div class="right">
-      %s
-      </div>
-      """,
-      left,
-      right
-    );
-  }
-
   /** Converts the left and right page to html*/
+  @Override
   public String toHTML() {
     PageData leftData = getLeftPage();
     PageData rightData = getRightPage();
 
-    String left = leftData != null ? leftData.content.toHTML() : "";
-    String right = rightData != null ? rightData.content.toHTML() : "";
+    String left = leftData != null ? leftData.content.toHTML() : null;
+    String right = rightData != null ? rightData.content.toHTML() : null;
 
-    return joinPage(left, right);
+    StringBuilder builder = new StringBuilder();
+
+    if (left != null) builder.append("<div class=\"left\">").append(left).append("</div>");
+    if (right != null) builder.append("<div class=\"right\">").append(right).append("</div>");
+
+    return builder.toString();
   }
 
   public static class AdvancementCache implements ClientAdvancements.Listener {

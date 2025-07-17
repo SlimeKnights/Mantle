@@ -5,6 +5,7 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class ContentBlank extends PageContent {
@@ -12,5 +13,11 @@ public class ContentBlank extends PageContent {
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
+  }
+
+  @Nullable
+  @Override
+  public String toHTML() {
+    return null;
   }
 }
