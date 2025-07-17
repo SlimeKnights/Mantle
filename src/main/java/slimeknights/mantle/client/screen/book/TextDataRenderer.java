@@ -127,7 +127,6 @@ public class TextDataRenderer {
 
       box2H = atY;
 
-      // what
       atX += fr.width(split[split.length - 1]) * item.scale;
       if (atX - x >= boxWidth) {
         atX = x;

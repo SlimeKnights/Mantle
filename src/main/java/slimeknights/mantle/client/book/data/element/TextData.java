@@ -1,12 +1,10 @@
 package slimeknights.mantle.client.book.data.element;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class TextData implements IHTML {
 
@@ -35,18 +33,43 @@ public class TextData implements IHTML {
     this.text = text;
   }
 
+  /** Do not use this directly on TextData[] */
   public String toHTML() {
-//    int rgb = Objects.requireNonNullElse(ChatFormatting.getByName(color).getColor(), 0);
-    return String.format(
-      "<span style=\"color: %s%s%s%s%s\"%s>%s</span>",
-      HTMLUtils.hexRGB(rgbColor),
-      bold ? "; font-weight: bold" : "",
-      italic ? "; font-style: italic" : "",
-      underlined ? "; text-decoration: underline" : "",
-      strikethrough ? "; text-decoration: line-through" : "",
-      dropshadow ? "class=\"shadow\"" : "",
-      parseChatFormatting()
-    );
+    if (text.equals("\n")) return "<br>";
+
+    boolean styled = (rgbColor & 0xFFFFFF) != 0 || bold || italic || strikethrough;
+    boolean any = styled || underlined || dropshadow;
+
+    StringBuilder builder = new StringBuilder();
+    if (any) {
+      builder.append("<span");
+
+      // underlined and dropshadow checked separately because we use a class for it
+      if (underlined || dropshadow) builder.append(" class=\"");
+      if (underlined) builder.append("underline ");
+      if (dropshadow) builder.append("shadow");
+      if (underlined || dropshadow) builder.append("\"");
+
+      if (styled) {
+        builder.append(" style=\"");
+
+        if ((rgbColor & 0xFFFFFF) != 0)
+          builder.append("color: ")
+            .append(HTMLUtils.hexRGB(rgbColor))
+            .append(";");
+        if (bold) builder.append("font-weight: bold;");
+        if (italic) builder.append("font-style: italic;");
+        if (strikethrough) builder.append("text-decoration: line-through;");
+
+        builder.append("\">");
+      }
+    }
+
+    builder.append(parseChatFormatting());
+
+    if (any) builder.append("</span>");
+
+    return builder.toString();
   }
 
   // TextData's can merge with others if paragraph == false
@@ -68,8 +91,11 @@ public class TextData implements IHTML {
   private static final char COLOR_CHAR = '§';
   private static final String LOOKUP = "0123456789abcdefklmnor";
 
-  // TODO: ignores color for now
   // cant really do Obfuscated §k without client side js
+  /**
+   * Parses any chat formatting in this.text, and converts it to HTML
+   * @return this as HTML span tag
+   */
   public String parseChatFormatting() {
     int start = 0;
     int next = text.indexOf(COLOR_CHAR);
@@ -92,7 +118,22 @@ public class TextData implements IHTML {
         open = true;
       }
       switch (nextChar) {
+        case '0' -> result.append("color: #000000;");
         case '1' -> result.append("color: #0000AA;");
+        case '2' -> result.append("color: #00AA00;");
+        case '3' -> result.append("color: #00AAAA;");
+        case '4' -> result.append("color: #AA0000;");
+        case '5' -> result.append("color: #AA00AA;");
+        case '6' -> result.append("color: #FFAA00;");
+        case '7' -> result.append("color: #AAAAAA;");
+        case '8' -> result.append("color: #555555;");
+        case '9' -> result.append("color: #5555FF;");
+        case 'a' -> result.append("color: #55FF55;");
+        case 'b' -> result.append("color: #55FFFF;");
+        case 'c' -> result.append("color: #FF5555;");
+        case 'd' -> result.append("color: #FF55FF;");
+        case 'e' -> result.append("color: #FFFF55;");
+        case 'f' -> result.append("color: #FFFFFF;");
         case 'l' -> result.append("font-weight: bold;");
         case 'm' -> result.append("text-decoration: line-through;");
         case 'n' -> result.append("text-decoration: underline;");

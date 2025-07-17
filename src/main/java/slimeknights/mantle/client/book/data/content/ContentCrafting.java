@@ -12,8 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.HTMLUtils;
-import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.BookLoadException;
 import slimeknights.mantle.client.book.data.element.ImageData;
@@ -30,7 +28,7 @@ import java.util.ArrayList;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_CRAFTING;
 
-public class ContentCrafting extends PageContent implements IHTML {
+public class ContentCrafting extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("crafting");
 
   public static final transient int TEX_SIZE = 256;

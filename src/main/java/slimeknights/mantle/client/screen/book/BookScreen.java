@@ -698,10 +698,13 @@ public class BookScreen extends Screen implements IHTML {
   }
 
   private @Nullable PageData getLeftPage() {
+  @Nullable
+  private PageData getLeftPage() {
     return this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
   }
 
-  private @Nullable PageData getRightPage() {
+  @Nullable
+  private  PageData getRightPage() {
     return this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
   }
 
@@ -715,8 +718,8 @@ public class BookScreen extends Screen implements IHTML {
       %s
       </div>
       """,
-      left/*.strip().replaceAll("\n", "\n    ")*/,
-      right/*.strip().replaceAll("\n", "\n    ")*/
+      left,
+      right
     );
   }
 
