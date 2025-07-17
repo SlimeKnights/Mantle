@@ -65,7 +65,7 @@ public class TextData implements IHTML {
       }
     }
 
-    builder.append(parseChatFormatting());
+    builder.append(HTMLUtils.parseChatFormatting(this));
 
     if (any) builder.append("</span>");
 
@@ -88,72 +88,4 @@ public class TextData implements IHTML {
     return builder.toString();
   }
 
-  private static final char COLOR_CHAR = '§';
-  private static final String LOOKUP = "0123456789abcdefklmnor";
-
-  // cant really do Obfuscated §k without client side js
-  /**
-   * Parses any chat formatting in this.text, and converts it to HTML
-   * @return this as HTML span tag
-   */
-  public String parseChatFormatting() {
-    int start = 0;
-    int next = text.indexOf(COLOR_CHAR);
-    int last = text.length() - 1;
-    if (next == -1 || next == last) {
-      // does nothing
-      return text;
-    }
-
-    int left = 0;
-    int right = 0;
-    boolean open = false;
-    StringBuilder result = new StringBuilder();
-
-    do {
-      result.append(text, start, next);
-      char nextChar = text.charAt(next + 1);
-      if (LOOKUP.indexOf(nextChar) != -1 && !open && nextChar != 'r') {
-        result.append("<span style=\"");
-        open = true;
-      }
-      switch (nextChar) {
-        case '0' -> result.append("color: #000000;");
-        case '1' -> result.append("color: #0000AA;");
-        case '2' -> result.append("color: #00AA00;");
-        case '3' -> result.append("color: #00AAAA;");
-        case '4' -> result.append("color: #AA0000;");
-        case '5' -> result.append("color: #AA00AA;");
-        case '6' -> result.append("color: #FFAA00;");
-        case '7' -> result.append("color: #AAAAAA;");
-        case '8' -> result.append("color: #555555;");
-        case '9' -> result.append("color: #5555FF;");
-        case 'a' -> result.append("color: #55FF55;");
-        case 'b' -> result.append("color: #55FFFF;");
-        case 'c' -> result.append("color: #FF5555;");
-        case 'd' -> result.append("color: #FF55FF;");
-        case 'e' -> result.append("color: #FFFF55;");
-        case 'f' -> result.append("color: #FFFFFF;");
-        case 'l' -> result.append("font-weight: bold;");
-        case 'm' -> result.append("text-decoration: line-through;");
-        case 'n' -> result.append("text-decoration: underline;");
-        case 'o' -> result.append("font-style: italic;");
-        case 'r' -> { result.append("</span>"); right++; }
-      }
-      if (nextChar != 'r' && text.charAt(next + 2) != COLOR_CHAR) {
-        result.append("\">");
-        left++;
-        open = false;
-      }
-      next += 2;
-      start = next;
-      next += text.substring(start).indexOf(COLOR_CHAR);
-    } while (next < last && start <= next);
-
-    result.append(text, start, text.length());
-    // might not reset
-    result.append("</span>".repeat(left - right));
-
-    return result.toString();
-  }
 }

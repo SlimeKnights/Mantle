@@ -165,7 +165,7 @@ public class ContentCrafting extends PageContent {
           %s
       </div>
       """,
-      super.toHTML(),
+      getTitleHTML(),
       grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg",
       TextData.toHTML(description)
     );
