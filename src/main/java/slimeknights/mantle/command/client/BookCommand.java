@@ -45,8 +45,10 @@ public class BookCommand {
   private static final String BOOK_NOT_FOUND = "command.mantle.book_test.not_found";
 
   private static final String EXPORT_SUCCESS = "command.mantle.book.export.success";
+  private static final String EXPORT_SUCCESS_HTML = "command.mantle.book.export.success_html";
   private static final String EXPORT_FAIL = "command.mantle.book.export.error_generic";
   private static final String EXPORT_FAIL_IO = "command.mantle.book.export.error_io";
+  private static final String EXPORT_FAIL_IO_HTML = "command.mantle.book.export.error_io_html";
 
   /**
    * Registers this sub command with the root command
@@ -61,7 +63,10 @@ public class BookCommand {
         .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleClientCommand.REGISTERED_BOOKS)
           .then(Commands.argument("scale", IntegerArgumentType.integer(1, 16))
             .executes(BookCommand::exportImagesWithScale))
-          .executes(BookCommand::exportImages)));
+          .executes(BookCommand::exportImages)))
+      .then(Commands.literal("export_html")
+        .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleClientCommand.REGISTERED_BOOKS)
+          .executes(BookCommand::exportHTML)));
   }
 
   /**
@@ -135,7 +140,6 @@ public class BookCommand {
       screen.init(Minecraft.getInstance(), width / scale, height / scale);
       screen.drawArrows = false;
       screen.mouseInput = false;
-      screen.drawText = false;
 
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
       RenderSystem.setProjectionMatrix(matrix, VertexSorting.ORTHOGRAPHIC_Z);
@@ -170,9 +174,8 @@ public class BookCommand {
           gui.flush();
           gui.pose().popPose();
 
-          int page = screen.getPage_();
-
           try (NativeImage image = takeScreenshot(target)) {
+            int page = screen.getPage_();
             String pageFormat = page < 0 ? "cover" : "page_" + page;
             Path path = Paths.get(screenshotDir.toString(), pageFormat + ".png");
 
@@ -192,15 +195,6 @@ public class BookCommand {
             Mantle.logger.error("Failed to save screenshot", e);
             throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
           }
-
-          if (page >= 0) {
-            File file = Paths.get(screenshotDir.toString(), "page_" + page + ".html").toFile();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-              writer.write(screen.toHTML());
-            } catch (IOException ignored) {
-              // TODO: handle exception
-            }
-          }
         } while (screen.nextPage());
       } finally {
         stack.popPose();
@@ -214,15 +208,64 @@ public class BookCommand {
       return 1;
     }
 
+    sendFileMessage(screenshotDir, EXPORT_SUCCESS);
+    return 0;
+  }
+
+  /**
+   * Exports all pages in the book to HTML
+   * @param context Command context
+   * @return Integer return
+   */
+  private static int exportHTML(CommandContext<CommandSourceStack> context) {
+    ResourceLocation book = ResourceLocationArgument.getId(context, "id");
+    BookData bookData = BookLoader.getBook(book);
+
+    Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
+    Path screenshotDir = Paths.get(gameDirectory.toString(), Screenshot.SCREENSHOT_DIR, "mantle_book", book.getNamespace(), book.getPath());
+
+    if(bookData != null) {
+      if(!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
+        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO));
+      }
+
+      bookData.load();
+      BookScreen screen = new BookScreen(Component.literal("Book"), bookData, "", null, null);
+      screen.init(Minecraft.getInstance(), BookScreen.PAGE_WIDTH_UNSCALED * 2, BookScreen.PAGE_HEIGHT_UNSCALED);
+      screen.drawArrows = false;
+      screen.mouseInput = false;
+      screen.drawText = false;
+
+      do {
+        int page = screen.getPage_();
+        if (page >= 0) {
+          File file = Paths.get(screenshotDir.toString(), "page_" + page + ".html").toFile();
+          try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(screen.toHTML());
+          } catch (Exception e) {
+            Mantle.logger.error("Failed to export HTML", e);
+            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO_HTML));
+          }
+        }
+      } while (screen.nextPage());
+    } else {
+      bookNotFound(book);
+      return 1;
+    }
+
+    sendFileMessage(screenshotDir, EXPORT_SUCCESS_HTML);
+    return 0;
+  }
+
+  /** Send a message to the player linking the directory */
+  private static void sendFileMessage(Path screenshotDir, String key) {
     Player player = Minecraft.getInstance().player;
     if (player != null) {
       Component fileComponent = Component.literal(screenshotDir.toString()).withStyle(ChatFormatting.UNDERLINE)
         .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, screenshotDir.toAbsolutePath().toString())));
-      player.displayClientMessage(Component.translatable(EXPORT_SUCCESS, fileComponent), false);
+      player.displayClientMessage(Component.translatable(key, fileComponent), false);
     }
-    return 0;
   }
-
   /**
    * Duplicate of {@link net.minecraft.client.Screenshot#takeScreenshot}, but with transparency
    */
