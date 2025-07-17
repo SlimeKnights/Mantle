@@ -166,20 +166,40 @@ public class ContentListing extends PageContent {
 
   @Override
   public String toHTML() {
-    return String.format("""
-      %s
-      %s
-      <ul class="link-list">
-          %s
-      </ul>
-      """,
-      getTitleHTML(),
-      subText != null ? HTMLUtils.line(subText, "padding-left: 10px") : "",
+    StringBuilder result = new StringBuilder(getTitleHTML());
+    if (subText != null) result.append(HTMLUtils.line(subText, "padding-left: 10px"));
+
+    if (entries.size() > 1) {
+      result.append("<div style=\"display: grid; grid-template-columns: repeat(")
+        .append(entries.size())
+        .append(", 1fr)\">\n");
+    }
+
+    // TODO: split entry into 2 columns if it goes over 11 lines
+    result.append(
       entries.stream()
-        .flatMap(l ->
-          l.stream()
-            .map(d -> String.format("<li><a href=\"#%s\">%s</a></li>", HTMLUtils.slugify(d.text), d.toHTML()))
-        ).collect(Collectors.joining("\n"))
-    );
+        .map(entry -> {
+          StringBuilder builder = new StringBuilder();
+          int i = 0;
+          boolean bold = entry.get(0).bold;
+          if (bold) builder.append("<div>\n") .append(entry.get(i++).toHTML());
+
+          builder.append("<ul class=\"link-list\">\n");
+          for (; i < entry.size(); i++) {
+            TextData data = entry.get(i);
+            builder.append(String.format("<li><a href=\"#%s\">%s</a></li>\n", HTMLUtils.slugify(data.text), data.toHTML()));
+          }
+          builder.append("</ul>");
+
+          if (bold) builder.append("\n</div>");
+
+          return builder.toString();
+        })
+        .collect(Collectors.joining("\n"))
+      );
+
+    if (entries.size() > 1) result.append("\n</div>");
+
+    return result.toString();
   }
 }
