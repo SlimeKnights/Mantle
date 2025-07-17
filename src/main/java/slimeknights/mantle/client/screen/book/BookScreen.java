@@ -697,7 +697,6 @@ public class BookScreen extends Screen implements IHTML {
     }
   }
 
-  private @Nullable PageData getLeftPage() {
   @Nullable
   private PageData getLeftPage() {
     return this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);

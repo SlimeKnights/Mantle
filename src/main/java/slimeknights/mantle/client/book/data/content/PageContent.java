@@ -2,8 +2,8 @@ package slimeknights.mantle.client.book.data.content;
 
 import lombok.Getter;
 import lombok.Setter;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /** Base for all page content */
-public abstract class PageContent {
+public abstract class PageContent implements IHTML {
 
   public static final transient int TITLE_HEIGHT = 16;
   public static final transient int LARGE_TITLE_HEIGHT = 20;
@@ -165,12 +165,6 @@ public abstract class PageContent {
     int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, BookScreen.PAGE_WIDTH) * 12 / 9;
     list.add(new TextElement(5, y, BookScreen.PAGE_WIDTH, height, subText));
     return height;
-  }
-
-  /** Convert content to HTML */
-  public String toHTML() {
-    Mantle.logger.warn("{} does not @Override #toHTML. If it does not contain text, ignore this warning.", this.getClass());
-    return "<p>" + this.getClass() + "</p>";
   }
 
   public String getTitleHTML() {
