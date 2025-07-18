@@ -49,20 +49,16 @@ public class ContentSectionList extends PageContent {
       """,
       sections.size() >= 9 ? 4 : 3,
       sections.stream()
-        .map(s -> {
-          String title = HTMLUtils.line(s.getTitle());
-          return String.format(
-            """
-            <div>
-                <a href="#%s"><img src="/assets/images/book/icons/blank.png" alt="%s"></a>
-                %s
-            </div>
-            """,
-            s.name,
-            title,
-            title
-          );
-        })
+        .map(s -> String.format(
+          """
+          <div>
+              <a href="#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+              %s
+          </div>
+          """,
+          HTMLUtils.slugify(s.name),
+          HTMLUtils.line(s.getTitle())
+        ))
         .collect(Collectors.joining("\n"))
     );
   }

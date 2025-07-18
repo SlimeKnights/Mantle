@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import slimeknights.mantle.client.book.data.element.TextData;
 
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
@@ -121,7 +120,9 @@ public class HTMLUtils {
   }
 
   public static String slugify(String s) {
-    return s.toLowerCase().replace(' ', '_');
+    return s.toLowerCase()
+      .replace(' ', '-')
+      .replace('_', '-');
   }
 
   public static String hexRGB(int rgb) {
@@ -131,14 +132,15 @@ public class HTMLUtils {
   private static final char COLOR_CHAR = '§';
   private static final String LOOKUP = "0123456789abcdefklmnor";
 
-  // cant really do Obfuscated §k without client side js
+  // we can't really do Obfuscated §k without client side js
   /**
-   * Parses any chat formatting in this.text, and converts it to HTML
+   * Parses any chat formatting in text, and converts it to HTML
+   *
+   * @param text Minecraft chat formated string
    * @return this as HTML span tag
    */
-  public static String parseChatFormatting(TextData textData) {
+  public static String parse(String text) {
     int start = 0;
-    String text = textData.text;
     int next = text.indexOf(COLOR_CHAR);
     int last = text.length() - 1;
     if (next == -1 || next == last) {
@@ -179,7 +181,10 @@ public class HTMLUtils {
         case 'm' -> result.append("text-decoration: line-through;");
         case 'n' -> result.append("text-decoration: underline;");
         case 'o' -> result.append("font-style: italic;");
-        case 'r' -> { result.append("</span>"); right++; }
+        case 'r' -> {
+          result.append("</span>");
+          right++;
+        }
       }
       if (nextChar != 'r' && text.charAt(next + 2) != COLOR_CHAR) {
         result.append("\">");
@@ -195,6 +200,6 @@ public class HTMLUtils {
     // might not reset
     result.append("</span>".repeat(left - right));
 
-    return result.toString();
+    return result.toString()/*.replace("\n", "</span><span>")*/;
   }
 }

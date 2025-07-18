@@ -65,7 +65,7 @@ public class TextData implements IHTML {
       }
     }
 
-    builder.append(HTMLUtils.parseChatFormatting(this));
+    builder.append(HTMLUtils.parse(this.text));
 
     if (any) builder.append("</span>");
 
