@@ -697,11 +697,13 @@ public class BookScreen extends Screen implements IHTML {
     }
   }
 
+  /** {@return PageData from the left page } */
   @Nullable
   private PageData getLeftPage() {
     return this.book.findPage((this.page - 1) * 2 + 1, this.advancementCache);
   }
 
+  /** {@return PageData from the right page } */
   @Nullable
   private PageData getRightPage() {
     return this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
@@ -718,8 +720,8 @@ public class BookScreen extends Screen implements IHTML {
 
     StringBuilder builder = new StringBuilder();
 
-    if (left != null) builder.append("<div class=\"left\">").append(left).append("</div>");
-    if (right != null) builder.append("<div class=\"right\">").append(right).append("</div>");
+    if (left != null) builder.append("<div class=\"left\">\n").append(left).append("\n</div>");
+    if (right != null) builder.append("<div class=\"right\">\n").append(right).append("\n</div>");
 
     return builder.toString();
   }

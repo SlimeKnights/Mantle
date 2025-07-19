@@ -9,10 +9,9 @@ import javax.annotation.Nullable;
 public class TextData implements IHTML {
 
   public static final TextData LINEBREAK = new TextData("\n");
-
+  private static final String LIST_PREFIX = "• ";
   public String text;
   public String color = "black";
-
   public int rgbColor = 0;
   public boolean useOldColor = true;
   public boolean bold = false;
@@ -33,10 +32,72 @@ public class TextData implements IHTML {
     this.text = text;
   }
 
-  /** Do not use this directly on TextData[] */
-  public String toHTML() {
-    if (text.equals("\n")) return "<br>";
+  /**
+   * Merges TextData[] into a single tag when possible
+   * Formats any lists with ul tags
+   *
+   * @param array TextData
+   * @return HTML p and ul tags
+   */
+  public static String toHTML(@Nullable TextData[] array) {
+    if (array == null) return "";
 
+    boolean ulOpen = false;
+    boolean pOpen = false;
+    StringBuilder builder = new StringBuilder();
+
+    for (TextData textData : array) {
+      if (textData.text.strip().startsWith(LIST_PREFIX)) {
+        if (pOpen) {
+          pOpen = false;
+          builder.append("</p>\n");
+        }
+        if (!ulOpen) {
+          ulOpen = true;
+          builder.append("<ul class=\"prop-list\">\n");
+        }
+
+        // terrible
+        String cleaned = textData.text.strip().replaceFirst(LIST_PREFIX, "");
+        TextData temp = new TextData(cleaned);
+        temp.rgbColor = textData.rgbColor;
+        temp.useOldColor = textData.useOldColor;
+        temp.bold = textData.bold;
+        temp.italic = textData.italic;
+        temp.underlined = textData.underlined;
+        temp.strikethrough = textData.strikethrough;
+        temp.dropshadow = textData.dropshadow;
+        builder.append("<li>").append(temp.toHTML()).append("</li>\n");
+      } else {
+        if (ulOpen) {
+          // merges <li> separated by \n
+          if (textData.text.equals("\n")) continue;
+          ulOpen = false;
+          builder.append("</ul>\n");
+        }
+        if (pOpen) {
+          if (textData.paragraph || textData.text.charAt(0) == '\n') builder.append("</p>\n<p>");
+        } else {
+          pOpen = true;
+          builder.append("<p>");
+        }
+
+        builder.append(textData.toHTML());
+      }
+    }
+
+    if (ulOpen) builder.append("</ul>");
+    if (pOpen) builder.append("</p>");
+
+    return builder.toString();
+  }
+
+  /**
+   * Do not use this when working with TextData[]
+   * Use {@link #toHTML(TextData[])} instead
+   */
+  @Override
+  public String toHTML() {
     boolean styled = (rgbColor & 0xFFFFFF) != 0 || bold || italic || strikethrough;
     boolean any = styled || underlined || dropshadow;
 
@@ -69,22 +130,6 @@ public class TextData implements IHTML {
 
     if (any) builder.append("</span>");
 
-    return builder.toString();
-  }
-
-  // TextData's can merge with others if paragraph == false
-  public static String toHTML(@Nullable TextData[] array) {
-    if (array == null) return "";
-    StringBuilder builder = new StringBuilder("<p>");
-    for (TextData textData : array) {
-      if (textData.paragraph) {
-        builder.append("</p>\n<p>");
-      } else {
-        builder.append("\n");
-      }
-      builder.append(textData.toHTML());
-    }
-    builder.append("</p>");
     return builder.toString();
   }
 
