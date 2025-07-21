@@ -99,10 +99,17 @@ public class TextData implements IHTML {
   @Override
   public String toHTML() {
     boolean styled = (rgbColor & 0xFFFFFF) != 0 || bold || italic || strikethrough;
-    boolean any = styled || underlined || dropshadow;
+    boolean anyStyle = styled || underlined || dropshadow;
+    boolean link = !action.isEmpty();
 
     StringBuilder builder = new StringBuilder();
-    if (any) {
+
+    if (link)
+      builder.append("<a href=\"#")
+        .append(action.replaceFirst("mantle:go-to-page-rtn ", ""))
+        .append("\">");
+
+    if (anyStyle) {
       builder.append("<span");
 
       // underlined and dropshadow checked separately because we use a class for it
@@ -128,7 +135,8 @@ public class TextData implements IHTML {
 
     builder.append(HTMLUtils.parse(this.text));
 
-    if (any) builder.append("</span>");
+    if (anyStyle) builder.append("</span>");
+    if (link) builder.append("</a>");
 
     return builder.toString();
   }

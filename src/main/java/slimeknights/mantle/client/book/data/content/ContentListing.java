@@ -187,8 +187,7 @@ public class ContentListing extends PageContent {
           builder.append("<ul class=\"link-list\">\n");
           for (; i < entry.size(); i++) {
             TextData data = entry.get(i);
-            // TODO: href is wrong in tinkers gadgetry for ancient tools
-            builder.append(String.format("<li><a href=\"#%s\">%s</a></li>\n", HTMLUtils.slugify(data.text), data.toHTML()));
+            builder.append("<li>").append(data.toHTML()).append("</li>\n");
           }
           builder.append("</ul>");
 

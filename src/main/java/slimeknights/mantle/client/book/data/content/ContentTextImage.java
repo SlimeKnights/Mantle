@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.HTMLUtils;
-import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -15,7 +14,7 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import java.util.ArrayList;
 
-public class ContentTextImage extends PageContent implements IHTML {
+public class ContentTextImage extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("text_image");
 
   @Getter
@@ -44,18 +43,18 @@ public class ContentTextImage extends PageContent implements IHTML {
     }
   }
 
-//  @Override
-//  public String toHTML() {
-//    return String.format(
-//      """
-//      %s
-//      <div style="padding-top: %dpx">
-//          %s
-//      </div>
-//      """,
-//      HTMLUtils.line(title, true),
-//      (image.height > 0 ? image.height : 100) * 2 + 16,
-//      TextData.toHTML(text)
-//    );
-//  }
+  @Override
+  public String toHTML() {
+    return String.format(
+      """
+      %s
+      <div style="padding-top: %dpx">
+      %s
+      </div>
+      """,
+      HTMLUtils.line(title, true),
+      (image.height > 0 ? image.height : 100) * 2 + 16,
+      TextData.toHTML(text)
+    );
+  }
 }

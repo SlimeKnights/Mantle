@@ -169,14 +169,10 @@ public abstract class PageContent implements IHTML {
   }
 
   /** Helper to create title in HTML */
-  public String getTitleHTML() {
-    return HTMLUtils.line(getTitle(), HTMLUtils.slugify(getTitle()), true, isLarge(), isCentered() ? "align-self: center" : "");
-  }
-
-  /** Helper to create title in HTML */
-  public String getTitleHTML(String id, String... styles) {
+  public String getTitleHTML(String... styles) {
     ArrayList<String> list = new ArrayList<>(List.of(styles));
     if (isCentered()) list.add("align-self: center");
-    return HTMLUtils.line(getTitle(), id, true, isLarge(), list.toArray(list.toArray(new String[0])));
+    return HTMLUtils.line(getTitle(), parent.parent.name +  "." + parent.name, true, isLarge(), list.toArray(new String[0]));
   }
+
 }
