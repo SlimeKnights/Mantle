@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.GameRenderer;
@@ -55,6 +56,12 @@ public class BookScreen extends Screen implements IHTML {
   public static final int PAGE_WIDTH = (int) ((PAGE_WIDTH_UNSCALED - (PAGE_PADDING_LEFT + PAGE_PADDING_RIGHT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
   public static final int PAGE_HEIGHT = (int) ((PAGE_HEIGHT_UNSCALED - (PAGE_PADDING_TOP + PAGE_PADDING_BOT + PAGE_MARGIN + PAGE_MARGIN)) / PAGE_SCALE);
 
+  // Cached instance of Minecraft fonts
+  @Nullable
+  private static Font uniformFont;
+  @Nullable
+  private static Font altFont;
+
   // Used for the book to image exporter to disable arrows, mouse input, and text
   public boolean drawArrows = true;
   public boolean mouseInput = true;
@@ -100,6 +107,24 @@ public class BookScreen extends Screen implements IHTML {
       this.minecraft.player.connection.getAdvancements().setListener(this.advancementCache);
     }
     this.openPage(book.findPageNumber(page, this.advancementCache));
+  }
+
+  /** Gets the alt Minecraft font */
+  public static Font getAltFont() {
+    if (altFont == null) {
+      FontManager resourceManager = Minecraft.getInstance().fontManager;
+      altFont = new Font(rl -> resourceManager.fontSets.get(Minecraft.ALT_FONT), false);
+    }
+    return altFont;
+  }
+
+  /** Gets the uniform version of the Minecraft font */
+  public static Font getUniformFont() {
+    if (uniformFont == null) {
+      FontManager resourceManager = Minecraft.getInstance().fontManager;
+      uniformFont = new Font(rl -> resourceManager.fontSets.get(Minecraft.UNIFORM_FONT), false);
+    }
+    return uniformFont;
   }
 
   public Font getFontRenderer() {
@@ -255,23 +280,23 @@ public class BookScreen extends Screen implements IHTML {
 
       matrixStack.pushPose();
 
-      int width = fontRenderer.width(this.book.appearance.title);
+      int width = this.font.width(this.book.appearance.title);
       float scale = Mth.clamp((float)PAGE_WIDTH / width, 0F, 2.5F);
 
       matrixStack.scale(scale, scale, 1F);
 
-      graphics.drawString(this.font, this.book.appearance.title, (int)((this.width / 2F) / scale + 3 - width / 2F), (int)((this.height / 2F - fontRenderer.lineHeight / 2F) / scale - 4), this.book.appearance.getCoverTextColor(), false);
+      graphics.drawString(this.font, this.book.appearance.title, (int)((this.width / 2F) / scale + 3 - width / 2F), (int)((this.height / 2F - fontRenderer.lineHeight / 2F) / scale - 4), this.book.appearance.getCoverTextColor(), true);
       matrixStack.popPose();
     }
 
     if (!this.book.appearance.subtitle.isEmpty()) {
       matrixStack.pushPose();
 
-      int width = fontRenderer.width(this.book.appearance.subtitle);
+      int width = this.font.width(this.book.appearance.subtitle);
       float scale = Mth.clamp((float)PAGE_WIDTH / width, 0F, 1.5F);
 
       matrixStack.scale(scale, scale, 1F);
-      graphics.drawString(this.font, this.book.appearance.subtitle, (int)((this.width / 2F) / scale + 7 - width / 2F), (int)((this.height / 2F + 100 - fontRenderer.lineHeight * 2) / scale), this.book.appearance.getCoverTextColor(), false);
+      graphics.drawString(this.font, this.book.appearance.subtitle, (int)((this.width / 2F) / scale + 7 - width / 2F), (int)((this.height / 2F + 100 - fontRenderer.lineHeight * 2) / scale), this.book.appearance.getCoverTextColor(), true);
       matrixStack.popPose();
     }
   }

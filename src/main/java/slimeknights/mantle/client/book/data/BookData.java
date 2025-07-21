@@ -122,6 +122,14 @@ public class BookData implements IDataItem, BookScreenOpener {
         }
       }
 
+      // set unicode font if requested
+      if (this.appearance.uniformFont) {
+        this.fontRenderer = BookScreen.getUniformFont();
+      // font is cached in the book data so we need to clear it; but don't clear it if set to another font instance
+      } else if (this.fontRenderer == BookScreen.getUniformFont()) {
+        this.fontRenderer = null;
+      }
+
       for (int i = 0; i < this.sections.size(); i++) {
         SectionData section = this.sections.get(i);
 

@@ -7,6 +7,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.loadable.record.SingletonLoader;
 import slimeknights.mantle.data.predicate.IJsonPredicate;
 import slimeknights.mantle.data.predicate.RegistryPredicateRegistry;
+import slimeknights.mantle.fluid.transfer.FluidContainerTransferManager;
 import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.List;
@@ -39,6 +40,9 @@ public interface ItemPredicate extends IJsonPredicate<Item> {
       }
     });
   }
+
+  /** Predicate matching any items with fluid transfer registered with {@link FluidContainerTransferManager} */
+  ItemPredicate MAY_HAVE_TRANSFER = simple(FluidContainerTransferManager.INSTANCE::mayHaveTransfer);
 
 
   /* Helper methods */

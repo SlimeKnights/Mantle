@@ -2,7 +2,6 @@ package slimeknights.mantle.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
@@ -28,8 +27,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.datagen.MantleTags;
-import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.mantle.util.TranslationHelper;
 
 import javax.annotation.Nullable;
@@ -84,11 +81,7 @@ public class GaugeBlock extends Block {
             // show simple empty message if gauge amount is hidden
             player.displayClientMessage(formatCapacity(handler.getTankCapacity(0)), true);
           } else {
-            // show just fluid name if the gauge amount is hidden
-            Component contents = fluid.getDisplayName();
-            if (!RegistryHelper.contains(BuiltInRegistries.BLOCK_ENTITY_TYPE, MantleTags.BlockEntities.HIDES_GAUGE_AMOUNT, te.getType())) {
-              contents = Component.translatable(CONTENTS_FORMAT, COMMA_FORMAT.format(fluid.getAmount()), COMMA_FORMAT.format(handler.getTankCapacity(0)), contents);
-            }
+            Component contents = Component.translatable(CONTENTS_FORMAT, COMMA_FORMAT.format(fluid.getAmount()), COMMA_FORMAT.format(handler.getTankCapacity(0)), fluid.getDisplayName());
             player.displayClientMessage(Component.translatable(CONTENTS_KEY, contents), true);
           }
         }
