@@ -19,13 +19,11 @@ import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
-import slimeknights.mantle.client.book.IHTML;
+import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.TextComponentElement;
-import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class BookScreen extends Screen implements IHTML {
+public class BookScreen extends Screen {
 
   public static boolean debug = false;
 
@@ -734,9 +732,10 @@ public class BookScreen extends Screen implements IHTML {
     return this.book.findPage((this.page - 1) * 2 + 2, this.advancementCache);
   }
 
-  /** Converts the left and right page to html*/
-  @Override
-  public String toHTML() {
+  /**
+   * Converts the left and right page to HTML including Jekyll front matter
+   */
+  public String toHTML(ResourceLocation book) {
     PageData leftData = getLeftPage();
     PageData rightData = getRightPage();
 
@@ -744,6 +743,19 @@ public class BookScreen extends Screen implements IHTML {
     String right = rightData != null ? rightData.content.toHTML() : null;
 
     StringBuilder builder = new StringBuilder();
+
+    if (left != null || right != null) {
+      builder.append("""
+        ---
+        layout: book-html
+        book:\s""").append(book.getPath()).append("_20\n")
+        .append("page_num: ").append(this.page)
+        .append("""
+        
+        ---
+        
+        """);
+    }
 
     if (left != null) builder.append("<div class=\"left\">\n").append(left).append("\n</div>");
     if (right != null) builder.append("<div class=\"right\">\n").append(right).append("\n</div>");
