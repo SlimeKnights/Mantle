@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -14,11 +15,11 @@ import slimeknights.mantle.client.screen.book.element.ItemElement;
 import slimeknights.mantle.client.screen.book.element.PageIconLinkElement;
 import slimeknights.mantle.client.screen.book.element.SizedBookElement;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -234,15 +235,19 @@ public class ContentPageIconList extends PageContent {
       (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale()),
       yOff * 2,
       elements.stream()
-        .map(element -> String.format(
-          """
-          <div>
-          <a href="#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
-          </div>
-          """,
-          element.action.replaceFirst("mantle:go-to-page-rtn ", "")
-        )
-        )
+        .map(element -> {
+          String action = element.action;
+          String location = action.substring(action.indexOf(StringActionProcessor.PROTOCOL_SEPARATOR) + StringActionProcessor.PROTOCOL_SEPARATOR.length());
+          return String.format(
+            """
+              <div>
+              <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+              </div>
+              """,
+            element.parent.book.findPageNumber(location) / 2,
+            location
+          );
+        })
         .collect(Collectors.joining("\n"))
     );
   }

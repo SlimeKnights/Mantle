@@ -3,7 +3,6 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -53,11 +52,11 @@ public class ContentShowcase extends PageContent {
       """
       %s
       <div class="column" style="padding-top: 80px">
-          %s
+        %s
       </div>
       """,
       getTitleHTML(),
-      TextData.toHTML(text)
+      TextData.toHTML(text, parent.parent.parent)
     );
   }
 }

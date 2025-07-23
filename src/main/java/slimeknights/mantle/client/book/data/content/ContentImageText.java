@@ -54,16 +54,17 @@ public class ContentImageText extends PageContent {
 
   @Override
   public String toHTML() {
+    int h = image.height > 0 ? image.height : 100;
     return String.format(
       """
       %s
       <div style="padding-top: %dpx">
-          %s
+      %s
       </div>
       """,
       getTitleHTML(),
-      (image.height > 0 ? image.height : 100) * 2 + 16,
-      TextData.toHTML(text)
+      h * 2 + 16,
+      TextData.toHTML(text, parent.parent.parent)
     );
   }
 }

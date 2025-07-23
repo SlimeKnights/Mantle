@@ -200,6 +200,6 @@ public class HTMLUtils {
     // might not reset
     result.append("</span>".repeat(left - right));
 
-    return result.toString()/*.replace("\n", "</span><span>")*/;
+    return result.toString();
   }
 }

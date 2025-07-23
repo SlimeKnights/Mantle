@@ -182,12 +182,12 @@ public class ContentListing extends PageContent {
           StringBuilder builder = new StringBuilder();
           int i = 0;
           boolean bold = entry.get(0).bold;
-          if (bold) builder.append("<div>\n").append(entry.get(i++).toHTML());
+          if (bold) builder.append("<div>\n").append(entry.get(i++).toHTML(parent.parent.parent));
 
           builder.append("<ul class=\"link-list\">\n");
           for (; i < entry.size(); i++) {
             TextData data = entry.get(i);
-            builder.append("<li>").append(data.toHTML()).append("</li>\n");
+            builder.append("<li>").append(data.toHTML(parent.parent.parent)).append("</li>\n");
           }
           builder.append("</ul>");
 

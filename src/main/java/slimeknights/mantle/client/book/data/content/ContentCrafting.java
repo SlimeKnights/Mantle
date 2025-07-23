@@ -157,6 +157,7 @@ public class ContentCrafting extends PageContent {
     }
   }
 
+  @Override
   public String toHTML() {
     return String.format(
       """
@@ -167,7 +168,7 @@ public class ContentCrafting extends PageContent {
       """,
       getTitleHTML(),
       grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg",
-      TextData.toHTML(description)
+      TextData.toHTML(description, parent.parent.parent)
     );
   }
 }

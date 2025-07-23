@@ -45,6 +45,7 @@ public class ContentTextImage extends PageContent {
 
   @Override
   public String toHTML() {
+    int h = image.height > 0 ? image.height : 100;
     return String.format(
       """
       %s
@@ -53,8 +54,8 @@ public class ContentTextImage extends PageContent {
       </div>
       """,
       HTMLUtils.line(title, true),
-      (image.height > 0 ? image.height : 100) * 2 + 16,
-      TextData.toHTML(text)
+      h * 2 + 16,
+      TextData.toHTML(text, parent.parent.parent)
     );
   }
 }

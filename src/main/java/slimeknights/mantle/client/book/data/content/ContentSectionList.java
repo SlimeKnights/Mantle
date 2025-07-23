@@ -44,21 +44,27 @@ public class ContentSectionList extends PageContent {
     return String.format(
       """
       <div class="grid-content-%d mc-font-gray">
-          %s
+      %s
       </div>
       """,
       sections.size() >= 9 ? 4 : 3,
       sections.stream()
-        .map(s -> String.format(
-          """
-          <div>
-              <a href="#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
-              %s
-          </div>
-          """,
-          HTMLUtils.slugify(s.name),
-          HTMLUtils.line(s.getTitle())
-        ))
+        .map(section -> {
+          int page_number = section.parent.getFirstPageNumber(section, null);
+          return String.format(
+            """
+            <div>
+            <a href="../page-%d#%s.%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+            %s
+            </div>
+            """,
+            page_number / 2,
+            section.name,
+            // why -1
+            section.parent.findPage(page_number - 1, null).name,
+            HTMLUtils.line(section.getTitle())
+          );
+        })
         .collect(Collectors.joining("\n"))
     );
   }

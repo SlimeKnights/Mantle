@@ -19,7 +19,6 @@ import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
-import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
@@ -735,7 +734,7 @@ public class BookScreen extends Screen {
   /**
    * Converts the left and right page to HTML including Jekyll front matter
    */
-  public String toHTML(ResourceLocation book) {
+  public String toHTML(ResourceLocation bookId) {
     PageData leftData = getLeftPage();
     PageData rightData = getRightPage();
 
@@ -748,7 +747,7 @@ public class BookScreen extends Screen {
       builder.append("""
         ---
         layout: book-html
-        book:\s""").append(book.getPath()).append("_20\n")
+        book:\s""").append(bookId.getPath()).append("_20\n") // is version dependent
         .append("page_num: ").append(this.page)
         .append("""
         
