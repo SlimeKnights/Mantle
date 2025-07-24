@@ -54,7 +54,7 @@ public class ContentSectionList extends PageContent {
           return String.format(
             """
             <div>
-            <a href="../page-%d#%s.%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+            <a href="../page-%d/#%s.%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
             %s
             </div>
             """,
