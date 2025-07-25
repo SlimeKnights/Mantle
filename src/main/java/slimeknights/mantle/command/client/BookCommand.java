@@ -64,7 +64,8 @@ public class BookCommand {
           .executes(BookCommand::exportImages)))
       .then(Commands.literal("export_html")
         .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleClientCommand.REGISTERED_BOOKS)
-          .executes(BookCommand::exportHTML)));
+          .executes(BookCommand::exportHTML))
+        .executes(BookCommand::exportAllHTML));
   }
 
   /**
@@ -113,7 +114,7 @@ public class BookCommand {
   }
 
   /**
-   * Exports all pages in the book to HTML
+   * Exports all pages in the book to HTML and png
    * @param context Command context
    * @return Integer return
    */
@@ -121,6 +122,19 @@ public class BookCommand {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
 
     return doExport(book, 2, true);
+  }
+
+  /**
+   * Exports all pages in all books to HTML and png
+   * @param context Command context
+   * @return Integer return
+   */
+  private static int exportAllHTML(CommandContext<CommandSourceStack> context) {
+    for (ResourceLocation book : BookLoader.getRegisteredBooks()) {
+      int code = doExport(book, 2, true);
+      if (code != 0) return code;
+    }
+    return 0;
   }
 
   /**
@@ -188,7 +202,7 @@ public class BookCommand {
           int page = screen.getPage_();
 
           try (NativeImage image = takeScreenshot(target)) {
-            String pageFormat = page < 0 ? "cover" : "page_" + page;
+            String pageFormat = page < 0 ? "cover" :  (html ? "clean_" : "page_") + page;
             Path path = Paths.get(screenshotDir.toString(), pageFormat + ".png");
 
             if (page == -1) { // the cover is half the width
