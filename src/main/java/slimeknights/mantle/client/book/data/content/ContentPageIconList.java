@@ -238,13 +238,15 @@ public class ContentPageIconList extends PageContent {
         .map(element -> {
           String action = element.action;
           String location = action.substring(action.indexOf(StringActionProcessor.PROTOCOL_SEPARATOR) + StringActionProcessor.PROTOCOL_SEPARATOR.length());
+          int bookPage = element.parent.book.findPageNumber(location);
           return String.format(
             """
-              <div>
-              <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
-              </div>
-              """,
-            element.parent.book.findPageNumber(location) / 2,
+            <div data-minetip-title="%s">
+            <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+            </div>
+            """,
+            element.parent.book.findPage(bookPage - 1, null).getTitle(),
+            bookPage / 2,
             location
           );
         })
