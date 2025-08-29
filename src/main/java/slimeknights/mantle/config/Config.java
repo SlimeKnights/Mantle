@@ -21,7 +21,7 @@ public class Config {
   public static final EnumValue<HeartRenderer> HEART_RENDERER;
 
 	/** List of preferences for tag outputs */
-	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "create", "immersiveengineering", "mekanism", "thermal");
+	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
 	public static final ConfigValue<List<? extends String>> TAG_PREFERENCES;
 
 	public static final ForgeConfigSpec CLIENT_SPEC, SERVER_SPEC;

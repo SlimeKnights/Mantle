@@ -47,6 +47,9 @@ public class AppearanceData implements IDataItem {
   /** If true, page titles will be rendered slightly larger */
   public boolean largePageTitles = false;
 
+  /** If true, use {@link net.minecraft.client.Minecraft#UNIFORM_FONT} for the book font. Notably a bit smaller and often more readable. */
+  public boolean uniformFont = false;
+
   // specific sections
   /** Color of slots in various recipes */
   public int slotColor = 0xFF844C;

@@ -1,6 +1,7 @@
 package slimeknights.mantle.registration.deferred;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.HangingSignItem;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.PressurePlateBlock.Sensitivity;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -43,6 +45,7 @@ import slimeknights.mantle.item.BurnableTallBlockItem;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
 import slimeknights.mantle.registration.object.EnumObject;
+import slimeknights.mantle.registration.object.EnumObject.Builder;
 import slimeknights.mantle.registration.object.FenceBuildingBlockObject;
 import slimeknights.mantle.registration.object.ItemObject;
 import slimeknights.mantle.registration.object.MetalItemObject;
@@ -50,6 +53,8 @@ import slimeknights.mantle.registration.object.WallBuildingBlockObject;
 import slimeknights.mantle.registration.object.WoodBlockObject;
 import slimeknights.mantle.registration.object.WoodBlockObject.WoodVariant;
 
+import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -59,6 +64,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
+  private static final BlockBehaviour.Properties POTTED_PROPS = BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY);
 
   protected final SynchronizedDeferredRegister<Item> itemRegister;
   public BlockDeferredRegister(String modID) {
@@ -283,6 +289,31 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
   }
 
 
+  /* Flower pots */
+
+  /**
+   * Registers a potted form of the given block using the vanilla pot
+   * @param name  Name of the flower
+   * @param block Block to put in the block
+   * @return  Potted block instance
+   */
+  public RegistryObject<FlowerPotBlock> registerPotted(String name, Supplier<? extends Block> block) {
+    RegistryObject<FlowerPotBlock> potted = registerNoItem("potted_" + name, () -> new FlowerPotBlock(() -> (FlowerPotBlock)Blocks.FLOWER_POT, block, POTTED_PROPS));
+    ((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(resource(name), potted);
+    return potted;
+  }
+
+  /** Registers a potted form of the given block using the vanilla pot */
+  public RegistryObject<FlowerPotBlock> registerPotted(RegistryObject<? extends Block> block) {
+    return registerPotted(block.getId().getPath(), block);
+  }
+
+  /** Registers a potted form of the given block using the vanilla pot */
+  public RegistryObject<FlowerPotBlock> registerPotted(ItemObject<? extends Block> block) {
+    return registerPotted(block.getId().getPath(), block);
+  }
+
+
   /* Enum */
 
   /**
@@ -322,6 +353,29 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    */
   public <T extends Enum<T>, B extends Block> EnumObject<T, B> registerEnumNoItem(T[] values, String name, Function<T, ? extends B> mapper) {
     return registerEnum(values, name, (fullName, value) -> registerNoItem(fullName, () -> mapper.apply(value)));
+  }
+
+  /** Registers a potted form of the given block using the vanilla pot */
+  public <T extends Enum<T> & StringRepresentable, B extends Block> EnumObject<T, FlowerPotBlock> registerPottedEnum(T[] values, String name, EnumObject<T, B> block) {
+    EnumObject.Builder<T, FlowerPotBlock> builder = new Builder<>(values[0].getDeclaringClass());
+    for (T value : values) {
+      Supplier<? extends B> supplier = block.getSupplier(value);
+      if (supplier != null) {
+        builder.put(value, registerPotted(value.getSerializedName() + "_" + name, supplier));
+      }
+    }
+    return builder.build();
+  }
+
+  /** Registers a potted form of the given blocks using the vanilla pot, automatically choosing the values based on the passed object */
+  public <T extends Enum<T> & StringRepresentable, B extends Block> EnumObject<T, FlowerPotBlock> registerPottedEnum(String name, EnumObject<T, B> block) {
+    Collection<Entry<T,Supplier<? extends B>>> entries = block.entries();
+    EnumObject.Builder<T, FlowerPotBlock> builder = new Builder<>(entries.iterator().next().getKey().getDeclaringClass());
+    for (Entry<T,Supplier<? extends B>> entry : entries) {
+      T value = entry.getKey();
+      builder.put(value, registerPotted(value.getSerializedName() + "_" + name, entry.getValue()));
+    }
+    return builder.build();
   }
 
 

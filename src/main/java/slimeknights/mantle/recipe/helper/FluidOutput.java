@@ -54,6 +54,12 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     return getAmount() <= 0;
   }
 
+  /** Gets the tag for this output. Will be {@code null} if this is not a tag output. */
+  @Nullable
+  public TagKey<Fluid> getTag() {
+    return null;
+  }
+
   /**
    * Writes this output to JSON
    * @return  Json element
@@ -177,6 +183,7 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
   /** Class for an output from a tag preference */
   @RequiredArgsConstructor
   private static class OfTagPreference extends FluidOutput {
+    @Getter
     private final TagKey<Fluid> tag;
     @Getter
     private final int amount;
@@ -213,7 +220,7 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     }
   }
 
-  /** Loadable logic for an ItemOutput */
+  /** Loadable logic for an FluidOutput */
   public enum Loadable implements RecordLoadable<FluidOutput> {
     /** Loadable for an output that may be empty with any size */
     OPTIONAL(false),
@@ -247,7 +254,7 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     @Override
     public void serialize(FluidOutput output, JsonObject json) {
       if (nonEmpty && output.isEmpty()) {
-        throw new IllegalArgumentException("ItemOutput cannot be empty for this recipe");
+        throw new IllegalArgumentException("FluidOutput cannot be empty for this recipe");
       }
       output.serialize(json);
     }

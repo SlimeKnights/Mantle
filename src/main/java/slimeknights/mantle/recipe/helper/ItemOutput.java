@@ -62,6 +62,12 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     return getCount() <= 0;
   }
 
+  /** Gets the tag for this output. Will be {@code null} if this is not a tag output. */
+  @Nullable
+  public TagKey<Item> getTag() {
+    return null;
+  }
+
   /**
    * Writes this output to JSON
    * @param  writeCount  If true, serializes the count
@@ -204,6 +210,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
   /** Class for an output from a tag preference */
   @RequiredArgsConstructor
   private static class OfTagPreference extends ItemOutput {
+    @Getter
     private final TagKey<Item> tag;
     @Getter
     private final int count;

@@ -1,4 +1,4 @@
-// 1.20.1	2025-06-05T19:34:06.3484485	Mantle fluid transfer provider
+// 1.20.1	2025-08-21T18:09:51.3110168	Mantle fluid transfer provider
 f717ac79926e455577ec4a9fb7ab83a4592114c6 data/mantle/mantle/fluid_transfer/beetroot_soup_empty.json
 b088e8fbc370cea7797b2a33961e51576691bfdc data/mantle/mantle/fluid_transfer/beetroot_soup_fill.json
 44b01dc65b56afeb8f3e9b055130ec121d5b18c5 data/mantle/mantle/fluid_transfer/honey_bottle_empty.json
@@ -18,3 +18,4 @@ f776cdb49b67f01419d323f99388ac97ccd05d7d data/mantle/mantle/fluid_transfer/potio
 70b20a3a53ed778c138bb048b4e0dab6fcf43a90 data/mantle/mantle/fluid_transfer/potion/splash/fill_water.json
 b428314362a88bd884c16778212f03b3332a4e7f data/mantle/mantle/fluid_transfer/rabbit_stew_empty.json
 08c061f11d3eea08a16a53795f15f6ef4d8efee1 data/mantle/mantle/fluid_transfer/rabbit_stew_fill.json
+6263e0da5b66adc9dd9ecd52737c1b87f428f908 data/mantle/mantle/fluid_transfer/wet_sponge.json

@@ -6,8 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -32,6 +30,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -44,14 +44,20 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
+import slimeknights.mantle.command.argument.RegistryTagSource;
+import slimeknights.mantle.command.argument.TagSource;
+import slimeknights.mantle.command.argument.TagSourceArgument;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Command to list all tags for an entry
+ * Command to list all tags for an entry.
+ * TODO 1.21: move to {@link slimeknights.mantle.command.tags}.
  */
+@SuppressWarnings("deprecation")
 public class TagsForCommand {
   /** Tag type cannot be found */
   protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> Component.translatable("command.mantle.tags_for.not_found", type, name));
@@ -62,6 +68,8 @@ public class TagsForCommand {
   private static final Component NO_HELD_POTION = Component.translatable("command.mantle.tags_for.no_held_potion");
   private static final Component NO_HELD_FLUID = Component.translatable("command.mantle.tags_for.no_held_fluid");
   private static final Component NO_HELD_ENCHANTMENT = Component.translatable("command.mantle.tags_for.no_held_enchantment");
+  private static final Component NO_TARGETED_BLOCK = Component.translatable("command.mantle.tags_for.no_targeted_block");
+  private static final Component NO_TARGETED_FLUID = Component.translatable("command.mantle.tags_for.no_targeted_fluid");
   private static final Component NO_TARGETED_ENTITY = Component.translatable("command.mantle.tags_for.no_targeted_entity");
   private static final Component NO_TARGETED_BLOCK_ENTITY = Component.translatable("command.mantle.tags_for.no_targeted_block_entity");
   /** Value has no tags */
@@ -73,23 +81,22 @@ public class TagsForCommand {
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(source -> MantleCommand.requiresDebugInfoOrOp(source, MantleCommand.PERMISSION_GAME_COMMANDS))
-              // by registry ID
-              .then(Commands.literal("id")
-                            .then(Commands.argument("type", RegistryArgument.registry()).suggests(MantleCommand.REGISTRY)
-                                          .then(Commands.argument("name", ResourceLocationArgument.id()).suggests(MantleCommand.REGISTRY_VALUES)
-                                                        .executes(TagsForCommand::runForId))))
-              // held item
-              .then(Commands.literal("held")
-                            .then(Commands.literal("item").executes(TagsForCommand::heldItem))
-                            .then(Commands.literal("block").executes(TagsForCommand::heldBlock))
-                            .then(Commands.literal("enchantment").executes(TagsForCommand::heldEnchantments))
-                            .then(Commands.literal("fluid").executes(TagsForCommand::heldFluid))
-                            .then(Commands.literal("entity").executes(TagsForCommand::heldEntity))
-                            .then(Commands.literal("potion").executes(TagsForCommand::heldPotion)))
-              // targeted
-              .then(Commands.literal("targeted")
-                            .then(Commands.literal("block_entity").executes(TagsForCommand::targetedTileEntity))
-                            .then(Commands.literal("entity").executes(TagsForCommand::targetedEntity)));
+      // by registry ID
+      .then(Commands.literal("id").then(TagSourceArgument.argument().then(TagSourceArgument.valueArgument("name").executes(TagsForCommand::runForId))))
+      // held item
+      .then(Commands.literal("held")
+        .then(Commands.literal("item").executes(TagsForCommand::heldItem))
+        .then(Commands.literal("block").executes(TagsForCommand::heldBlock))
+        .then(Commands.literal("enchantment").executes(TagsForCommand::heldEnchantments))
+        .then(Commands.literal("fluid").executes(TagsForCommand::heldFluid))
+        .then(Commands.literal("entity").executes(TagsForCommand::heldEntity))
+        .then(Commands.literal("potion").executes(TagsForCommand::heldPotion)))
+      // targeted
+      .then(Commands.literal("targeted")
+        .then(Commands.literal("block").executes(TagsForCommand::targetedBlock))
+        .then(Commands.literal("block_entity").executes(TagsForCommand::targetedTileEntity))
+        .then(Commands.literal("fluid").executes(TagsForCommand::targetedFluid))
+        .then(Commands.literal("entity").executes(TagsForCommand::targetedEntity)));
   }
 
   /**
@@ -101,8 +108,21 @@ public class TagsForCommand {
    * @return  Number of tags printed
    */
   private static <T> int printOwningTags(CommandContext<CommandSourceStack> context, Registry<T> registry, T value) {
-    MutableComponent output = Component.translatable("command.mantle.tags_for.success", registry.key().location(), registry.getKey(value));
-    List<ResourceLocation> tags = registry.getHolder(registry.getId(value)).stream().flatMap(Holder::getTagKeys).map(TagKey::location).toList();
+    return printOwningTags(context, new RegistryTagSource<>(registry), value, registry.getKey(value));
+  }
+
+  /**
+   * Prints the final list of owning tags
+   * @param context     Command context
+   * @param registry    Tag source
+   * @param value       Value to print
+   * @param key         Value key for debug
+   * @param <T>         Collection type
+   * @return  Number of tags printed
+   */
+  private static <T> int printOwningTags(CommandContext<CommandSourceStack> context, TagSource<T> registry, T value, @Nullable ResourceLocation key) {
+    MutableComponent output = Component.translatable("command.mantle.tags_for.success", registry.key().location(), key);
+    List<ResourceLocation> tags = registry.tagsFor(value).map(TagKey::location).toList();
     if (tags.isEmpty()) {
       output.append("\n* ").append(NO_TAGS);
     } else {
@@ -117,21 +137,20 @@ public class TagsForCommand {
 
   /* Standard way: by ID */
 
+  /** Run the registry ID subcommand */
+  private static int runForId(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    return runForIdGeneric(context, TagSourceArgument.get(context));
+  }
+
   /** Runs the registry ID subcommand making generics happy */
-  private static <T> int runForResult(CommandContext<CommandSourceStack> context, Registry<T> registry) throws CommandSyntaxException {
+  private static <T> int runForIdGeneric(CommandContext<CommandSourceStack> context, TagSource<T> registry) throws CommandSyntaxException {
     ResourceLocation name = context.getArgument("name", ResourceLocation.class);
     // first, fetch value
-    T value = registry.get(name);
+    T value = registry.getValue(name);
     if (value == null) {
       throw VALUE_NOT_FOUND.create(registry.key().location(), name);
     }
-    return printOwningTags(context, registry, value);
-  }
-
-  /** Run the registry ID subcommand */
-  private static int runForId(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-    Registry<?> result = RegistryArgument.getResult(context, "type");
-    return runForResult(context, result);
+    return printOwningTags(context, registry, value, name);
   }
 
 
@@ -216,7 +235,48 @@ public class TagsForCommand {
   }
 
 
-  /* Targeted, based on look vector. Leaves out anything on the debug screen */
+  /* Targeted, based on look vector */
+
+  /**
+   * Gets the tags for the block being looked at
+   * @param context  Context
+   * @return  Tags for the looked at block or entity
+   * @throws CommandSyntaxException  For command errors
+   */
+  private static int targetedBlock(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    CommandSourceStack source = context.getSource();
+    Player player = source.getPlayerOrException();
+    Level level = source.getLevel();
+    BlockHitResult blockTrace = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+    if (blockTrace.getType() == HitResult.Type.BLOCK) {
+      return printOwningTags(context, BuiltInRegistries.BLOCK, level.getBlockState(blockTrace.getBlockPos()).getBlock());
+    }
+    // failed
+    source.sendSuccess(() -> NO_TARGETED_BLOCK, true);
+    return 0;
+  }
+
+  /**
+   * Gets the tags for the block being looked at
+   * @param context  Context
+   * @return  Tags for the looked at block or entity
+   * @throws CommandSyntaxException  For command errors
+   */
+  private static int targetedFluid(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    CommandSourceStack source = context.getSource();
+    Player player = source.getPlayerOrException();
+    Level level = source.getLevel();
+    BlockHitResult blockTrace = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
+    if (blockTrace.getType() == HitResult.Type.BLOCK) {
+      FluidState fluid = level.getFluidState(blockTrace.getBlockPos());
+      if (fluid.getType() != Fluids.EMPTY) {
+        return printOwningTags(context, BuiltInRegistries.FLUID, fluid.getType());
+      }
+    }
+    // failed
+    source.sendSuccess(() -> NO_TARGETED_FLUID, true);
+    return 0;
+  }
 
   /**
    * Gets the tags for the fluid being looked at

@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
+import slimeknights.mantle.client.book.BookScreenOpener;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.book.transformer.BookTransformer;
@@ -27,9 +28,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-public class BookData implements IDataItem {
+@SuppressWarnings("unused")  // API
+public class BookData implements IDataItem, BookScreenOpener {
 
   public transient int unnamedSectionCounter = 0;
   public transient ArrayList<SectionData> sections = new ArrayList<>();
@@ -81,8 +82,7 @@ public class BookData implements IDataItem {
           page.content = new ContentError("Failed to load repository " + repo.toString() + ".", e);
           error.pages.add(page);
           this.sections.add(error);
-
-          e.printStackTrace();
+          Mantle.logger.error("Failed to load repository {}.", repo, e);
         }
 
         ResourceLocation appearanceLocation = repo.getResourceLocation("appearance.json");
@@ -91,7 +91,7 @@ public class BookData implements IDataItem {
           try {
             this.appearance = BookLoader.getGson().fromJson(repo.resourceToString(repo.getResource(appearanceLocation)), AppearanceData.class);
           } catch (Exception e) {
-            e.printStackTrace();
+            Mantle.logger.error("Failed to load book appearance from {}.", appearanceLocation, e);
           }
         }
 
@@ -122,6 +122,14 @@ public class BookData implements IDataItem {
         }
       }
 
+      // set unicode font if requested
+      if (this.appearance.uniformFont) {
+        this.fontRenderer = BookScreen.getUniformFont();
+      // font is cached in the book data so we need to clear it; but don't clear it if set to another font instance
+      } else if (this.fontRenderer == BookScreen.getUniformFont()) {
+        this.fontRenderer = null;
+      }
+
       for (int i = 0; i < this.sections.size(); i++) {
         SectionData section = this.sections.get(i);
 
@@ -129,7 +137,7 @@ public class BookData implements IDataItem {
           continue;
         }
 
-        List<SectionData> matchingSections = this.sections.stream().filter(sect -> section.name.equalsIgnoreCase(sect.name)).collect(Collectors.toList());
+        List<SectionData> matchingSections = this.sections.stream().filter(sect -> section.name.equalsIgnoreCase(sect.name)).toList();
 
         if (matchingSections.size() < 2) {
           continue;
@@ -182,7 +190,7 @@ public class BookData implements IDataItem {
       section.pages.add(page);
       this.sections.add(section);
 
-      e.printStackTrace();
+      Mantle.logger.error("Failed to book due to an unexpected error.", e);
     }
 
     Mantle.logger.info("Finished loading book");
@@ -366,6 +374,7 @@ public class BookData implements IDataItem {
    * @param hand   Hand containing the book
    * @param stack  Book stack
    */
+  @Override
   public void openGui(InteractionHand hand, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
     openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, hand, newPage));
@@ -376,6 +385,7 @@ public class BookData implements IDataItem {
    * @param slot   Slot containing the book
    * @param stack  Book stack
    */
+  @Override
   public void openGui(int slot, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
     openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(Minecraft.getInstance().player, slot, newPage));
@@ -386,6 +396,7 @@ public class BookData implements IDataItem {
    * @param pos    Position of the lectern
    * @param stack  Item in the lectern
    */
+  @Override
   @SuppressWarnings("unused") // API
   public void openGui(BlockPos pos, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);

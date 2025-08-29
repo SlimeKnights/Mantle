@@ -33,6 +33,10 @@ public interface BlockPredicate extends IJsonPredicate<BlockState> {
 
   /** Predicate that matches blocks with no harvest tool */
   BlockPredicate REQUIRES_TOOL = simple(BlockStateBase::requiresCorrectToolForDrops);
+  /** Predicate matching blocks that block motion */
+  BlockPredicate BLOCKS_MOTION = simple(BlockStateBase::blocksMotion);
+  /** Predicate matching blocks that can be replaced when placing blocks */
+  BlockPredicate CAN_BE_REPLACED = simple(BlockStateBase::canBeReplaced);
 
   /** Creates a new simple predicate */
   static BlockPredicate simple(Predicate<BlockState> predicate) {

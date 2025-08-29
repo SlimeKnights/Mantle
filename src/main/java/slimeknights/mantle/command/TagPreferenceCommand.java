@@ -4,12 +4,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import slimeknights.mantle.command.argument.TagSourceArgument;
 import slimeknights.mantle.recipe.helper.TagPreference;
 
 /** Command to test tag preference behavior */
@@ -23,9 +22,7 @@ public class TagPreferenceCommand {
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(sender -> sender.hasPermission(MantleCommand.PERMISSION_EDIT_SPAWN))
-              .then(Commands.argument("type", RegistryArgument.registry()).suggests(MantleCommand.REGISTRY)
-                            .then(Commands.argument("name", ResourceLocationArgument.id()).suggests(MantleCommand.VALID_TAGS)
-                                          .executes(TagPreferenceCommand::run)));
+      .then(RegistryArgument.argument().then(TagSourceArgument.tagArgument("name").executes(TagPreferenceCommand::run)));
   }
 
   /**
@@ -36,7 +33,7 @@ public class TagPreferenceCommand {
    * @throws CommandSyntaxException  If invalid values are passed
    */
   private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-    return runGeneric(context, RegistryArgument.getResult(context, "type"));
+    return runGeneric(context, RegistryArgument.get(context));
   }
 
   /**

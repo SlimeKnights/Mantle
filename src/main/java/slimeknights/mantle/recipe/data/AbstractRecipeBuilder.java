@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
@@ -88,9 +89,11 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   private ResourceLocation buildAdvancementInternal(ResourceLocation id, String folder) {
     this.advancementBuilder
         .parent(new ResourceLocation("recipes/root"))
-        .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
         .rewards(AdvancementRewards.Builder.recipe(id))
         .requirements(RequirementsStrategy.OR);
+    // we directly add the critera through the map as we want to replace it if already added instead of erroring
+    // the rest of these setters all replace our previous recipe data
+    this.advancementBuilder.criteria.put("has_the_recipe", new Criterion(RecipeUnlockedTrigger.unlocked(id)));
     return new ResourceLocation(id.getNamespace(), "recipes/" + folder + "/" + id.getPath());
   }
 
@@ -113,6 +116,7 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @param folder    Group folder for saving recipes. Vanilla typically uses item groups, but for mods might as well base on the recipe
    * @return Advancement ID, or null if the advancement was not defined
    */
+  @SuppressWarnings("SameParameterValue")  // API
   @Nullable
   protected ResourceLocation buildOptionalAdvancement(ResourceLocation id, String folder) {
     if (this.advancementBuilder.getCriteria().isEmpty()) {
@@ -122,11 +126,11 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   }
 
   /** Class to implement basic finished recipe methods */
+  @Getter
   @RequiredArgsConstructor
   protected abstract class AbstractFinishedRecipe implements FinishedRecipe {
-    @Getter
     private final ResourceLocation id;
-    @Getter @Nullable
+    @Nullable
     private final ResourceLocation advancementId;
 
     @Nullable

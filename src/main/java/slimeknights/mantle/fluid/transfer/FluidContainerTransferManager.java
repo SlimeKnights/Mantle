@@ -14,6 +14,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition.IContext;
@@ -109,6 +110,15 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
                                .toList();
     this.containerItems = null;
     log.info("Loaded {} dynamic modifiers in {} ms", transfers.size(), (System.nanoTime() - time) / 1000000f);
+  }
+
+  /**
+   * Checks if the given stack could possibly match, used client side to determine if the fluid transfer falls back to opening the UI
+   * @param item  Item to check
+   * @return  True if a match is possible, basically just checks item ID
+   */
+  public boolean mayHaveTransfer(ItemLike item) {
+    return getContainerItems().contains(item.asItem());
   }
 
   /**

@@ -2,7 +2,13 @@ package slimeknights.mantle.datagen;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
@@ -106,6 +112,12 @@ public class MantleTags {
     private static TagKey<BlockEntityType<?>> tag(String name) {
       return TagKey.create(Registries.BLOCK_ENTITY_TYPE, Mantle.getResource(name));
     }
+  }
 
+  public static class MenuTypes {
+    private static void init() {}
+
+    /** Any menus in this tag allow closing during {@link Item#overrideOtherStackedOnMe(ItemStack, ItemStack, Slot, ClickAction, Player, SlotAccess)} to open another menu or screen. */
+    public static final TagKey<MenuType<?>> REPLACEABLE = TagKey.create(Registries.MENU, Mantle.getResource("replaceable"));
   }
 }

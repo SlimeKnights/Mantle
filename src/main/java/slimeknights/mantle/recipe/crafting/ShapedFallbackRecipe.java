@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
+import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
+    return MantleRecipes.CRAFTING_SHAPED_FALLBACK.get();
   }
 
   public static class Serializer extends ShapedRecipe.Serializer {

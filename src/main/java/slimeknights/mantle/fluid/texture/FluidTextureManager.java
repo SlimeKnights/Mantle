@@ -28,7 +28,7 @@ public class FluidTextureManager implements IEarlySafeManagerReloadListener {
   /** Map of fluid type to texture */
   private Map<FluidType,FluidTexture> textures = Collections.emptyMap();
   /** Fallback texture instance */
-  private static final FluidTexture FALLBACK = new FluidTexture(new ResourceLocation("block/water_still"), new ResourceLocation("block/water_flow"), null, null, -1);
+  private static final FluidTexture FALLBACK = new FluidTexture(new ResourceLocation("block/water_still"), new ResourceLocation("block/water_flow"), null, null, 0, -1, -1, false, null, 0, 0);
 
   private FluidTextureManager() {}
 
@@ -77,18 +77,18 @@ public class FluidTextureManager implements IEarlySafeManagerReloadListener {
     return getData(fluid).still();
   }
 
-  /** Gets the still texture for the given fluid */
+  /** Gets the flowing texture for the given fluid */
   public static ResourceLocation getFlowingTexture(FluidType fluid) {
     return getData(fluid).flowing();
   }
 
-  /** Gets the still texture for the given fluid */
+  /** Gets the overlay texture for the given fluid */
   @Nullable
   public static ResourceLocation getOverlayTexture(FluidType fluid) {
     return getData(fluid).overlay();
   }
 
-  /** Gets the still texture for the given fluid */
+  /** Gets the camera texture for the given fluid */
   @Nullable
   public static ResourceLocation getCameraTexture(FluidType fluid) {
     return getData(fluid).camera();
