@@ -58,9 +58,26 @@ public class HTMLUtils {
    * @return HTML p tag
    */
   public static String line(String text, @Nullable String id, boolean underline, boolean large, String... styles) {
+    return line(text, id, null, underline, large, styles);
+  }
+
+  /**
+   * Converts a String into HTML
+   *
+   * @param text      text
+   * @param id        tag id
+   * @param tooltip   text tooltip
+   * @param underline underlines text
+   * @param large     20px font size instead of 13px
+   * @param styles    HTML style attributes
+   * @return HTML p tag
+   */
+  public static String line(String text, @Nullable String id, @Nullable String tooltip, boolean underline, boolean large, String... styles) {
     StringBuilder builder = new StringBuilder("<p");
 
     if (id != null) builder.append(" id=\"").append(id).append("\"");
+
+    if (tooltip != null) builder.append(" data-minetip-title='").append(tooltip).append("'");
 
     if (underline || large) builder.append(" class=\"");
     if (underline) builder.append("underline ");
@@ -119,12 +136,6 @@ public class HTMLUtils {
     return builder.toString();
   }
 
-  public static String slugify(String s) {
-    return s.toLowerCase()
-      .replace(' ', '-')
-      .replace('_', '-');
-  }
-
   public static String hexRGB(int rgb) {
     return String.format("#%02X%02X%02X", (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb & 0xFF));
   }
@@ -132,9 +143,9 @@ public class HTMLUtils {
   private static final char COLOR_CHAR = '§';
   private static final String LOOKUP = "0123456789abcdefklmnor";
 
-  // we can't really do Obfuscated §k without client side js
   /**
-   * Parses any chat formatting in text, and converts it to HTML
+   * Parses any chat formatting in text, and converts it to HTML.
+   * Does not support Obfuscated §k
    *
    * @param text Minecraft chat formated string
    * @return this as HTML span tag
