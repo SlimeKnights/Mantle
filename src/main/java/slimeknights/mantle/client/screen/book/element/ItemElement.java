@@ -76,6 +76,11 @@ public class ItemElement extends SizedBookElement {
   }
 
   @Override
+  public void scale(float scale) {
+    this.scale = scale;
+  }
+
+  @Override
   public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
     long nano = Util.getNanos();
 

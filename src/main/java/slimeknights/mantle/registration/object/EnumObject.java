@@ -4,10 +4,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -80,6 +82,16 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
    */
   public boolean contains(Object value) {
     return this.map.values().stream().map(Supplier::get).anyMatch(value::equals);
+  }
+
+  /** Gets all present keys for this object */
+  public Collection<T> keys() {
+    return this.map.keySet();
+  }
+
+  /** Gets the set of entries for this object */
+  public Collection<Entry<T,Supplier<? extends I>>> entries() {
+    return this.map.entrySet();
   }
 
   /**

@@ -2,10 +2,13 @@ package slimeknights.mantle.command.client;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import slimeknights.mantle.Mantle;
@@ -21,10 +24,20 @@ public class MantleClientCommand {
   public static SuggestionProvider<CommandSourceStack> REGISTERED_BOOKS;
 
   /** Registers all Mantle client command related content */
+  @SuppressWarnings("deprecation")
   public static void init() {
     // register arguments
     REGISTERED_BOOKS = SuggestionProviders.register(Mantle.getResource("registered_books"), (context, builder) ->
       SharedSuggestionProvider.suggestResource(BookLoader.getRegisteredBooks(), builder));
+
+    // source command suggestions
+    FileToIdConverter atlases = new FileToIdConverter("textures/atlas", ".png");
+    ClientSourcesCommand.registerMinecraft("atlases", (context, builder)
+      -> SharedSuggestionProvider.suggestResource(Minecraft.getInstance().getModelManager().atlases.atlases.keySet().stream().map(atlases::fileToId), builder));
+    ClientSourcesCommand.registerMinecraft("blockstates", (context, builder)
+      -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.BLOCK.keySet(), builder));
+    ClientSourcesCommand.register("item_models", "models/item", ".json", (context, builder)
+      -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.ITEM.keySet(), builder));
 
     // add command listener
     MinecraftForge.EVENT_BUS.addListener(MantleClientCommand::registerCommand);
@@ -44,6 +57,10 @@ public class MantleClientCommand {
     // sub commands
     register(builder, "book", BookCommand::register);
     register(builder, "clear_book_cache", ClearBookCacheCommand::register);
+    // sources assets is registered as a client command
+    register(builder, "sources", b -> {
+      register(b, "assets", ClientSourcesCommand::register);
+    });
 
     // register final command
     event.getDispatcher().register(builder);

@@ -14,4 +14,13 @@ public abstract class SizedBookElement extends BookElement {
   public boolean isHovered(double mouseX, double mouseY) {
     return mouseX > this.x && mouseY > this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
   }
+
+  /**
+   * Changes the scale of this element.
+   * Used notably by {@link slimeknights.mantle.client.book.data.content.ContentPageIconList}
+   */
+  public void scale(float scale) {
+    this.width = (int) (this.width * scale);
+    this.height = (int) (this.height * scale);
+  }
 }

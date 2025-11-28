@@ -105,7 +105,7 @@ public class HarvestTiersCommand {
       } catch (IOException ex) {
         Mantle.logger.error("Couldn't save harvests tiers to {}", path, ex);
       }
-      context.getSource().sendSuccess(() -> Component.translatable("command.mantle.harvest_tiers.success_save", DumpAllTagsCommand.getOutputComponent(output)), true);
+      context.getSource().sendSuccess(() -> Component.translatable("command.mantle.harvest_tiers.success_save", GeneratePackHelper.getOutputComponent(output)), true);
     } else {
       // print to console
       context.getSource().sendSuccess(() -> SUCCESS_LOG, true);

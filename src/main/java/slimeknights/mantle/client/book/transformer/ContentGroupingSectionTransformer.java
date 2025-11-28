@@ -14,6 +14,7 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +53,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       // add padding page to keep indexes stretching over two pages together
       int i = 0;
       List<ContentListing> finishedListings = builder.getFinishedListings();
+      List<PageData> newPages = new ArrayList<>(finishedListings.size() + 1);
       if (finishedListings.size() % 2 == 0) {
         PageData padding = new PageData(true);
         padding.source = data.source;
@@ -63,8 +65,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
         if (sectionIndex > 0) {
           data.parent.sections.get(sectionIndex - 1).pages.add(padding);
         } else {
-          data.pages.add(padding);
-          i++;
+          newPages.add(padding);
         }
       }
 
@@ -76,9 +77,10 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
         listingPage.parent = data;
         listingPage.content = listing;
         listingPage.load();
-        data.pages.add(i, listingPage);
-        i++;
+        newPages.add(listingPage);
       }
+      // add new pages at the start of the section
+      data.pages.addAll(0, newPages);
     }
   }
 

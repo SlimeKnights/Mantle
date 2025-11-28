@@ -25,15 +25,19 @@ public class MantleRenderTypes extends RenderType {
     super(name, format, mode, bufferSize, useDelegate, needsSorting, setupTaskIn, clearTaskIn);
   }
 
+  /** Extension of {@link RenderType#POSITION_COLOR_TEX_LIGHTMAP_SHADER} with fog information based on {@link RenderType#ENTITY_TRANSLUCENT_CULL} */
+  public static final RenderStateShard.ShaderStateShard FLUID_SHADER = new RenderStateShard.ShaderStateShard(MantleShaders::getFluidShader);
+
   /**
-   * Render type used for the fluid renderer
+   * Render type used for the fluid renderer.
+   * TODO 1.21: can we replace this with {@link RenderType#ENTITY_TRANSLUCENT_CULL}? Would require including normals in our vertex format.
    */
   public static final RenderType FLUID = create(
     Mantle.modId + ":block_render_type",
     DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true,
     RenderType.CompositeState.builder()
       .setLightmapState(LIGHTMAP)
-      .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+      .setShaderState(FLUID_SHADER)
       .setTextureState(BLOCK_SHEET_MIPPED)
       .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
       .createCompositeState(false));

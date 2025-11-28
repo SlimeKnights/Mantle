@@ -1,13 +1,23 @@
 package slimeknights.mantle.client.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
@@ -334,5 +344,38 @@ public class FluidRenderer {
 
     // draw cuboid
     renderCuboid(matrices, buffer.getBuffer(MantleRenderTypes.FLUID), cube, still, flowing, from, to, color, light, isGas);
+  }
+
+  /** Same as {@link net.minecraft.client.renderer.ScreenEffectRenderer#renderFluid(Minecraft, PoseStack, ResourceLocation)} but with opacity and color control */
+  public static void renderCamera(Minecraft minecraft, PoseStack poseStack, ResourceLocation texture, float opacity, int color) {
+    assert minecraft.player != null;
+    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    RenderSystem.setShaderTexture(0, texture);
+    BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+    BlockPos pos = BlockPos.containing(minecraft.player.getX(), minecraft.player.getEyeY(), minecraft.player.getZ());
+    Level level = minecraft.player.level();
+    float brightness = LightTexture.getBrightness(level.dimensionType(), level.getMaxLocalRawBrightness(pos));
+    RenderSystem.enableBlend();
+    // apply fluid tint if one is set
+    if (color != -1) {
+      RenderSystem.setShaderColor(
+        brightness * (color >> 16 & 255) / 255f,
+        brightness * (color >> 8 & 255) / 255f,
+        brightness * (color & 255) / 255f,
+        opacity * (color >>> 24) / 255f);
+    } else {
+      RenderSystem.setShaderColor(brightness, brightness, brightness, opacity);
+    }
+    float yRot = -minecraft.player.getYRot() / 64;
+    float xRot = minecraft.player.getXRot() / 64;
+    Matrix4f matrix = poseStack.last().pose();
+    buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+    buffer.vertex(matrix, -1, -1, -0.5f).uv(4 + yRot, 4 + xRot).endVertex();
+    buffer.vertex(matrix,  1, -1, -0.5f).uv(0 + yRot, 4 + xRot).endVertex();
+    buffer.vertex(matrix,  1,  1, -0.5f).uv(0 + yRot, 0 + xRot).endVertex();
+    buffer.vertex(matrix, -1,  1, -0.5f).uv(4 + yRot, 0 + xRot).endVertex();
+    BufferUploader.drawWithShader(buffer.end());
+    RenderSystem.setShaderColor(1, 1, 1, 1);
+    RenderSystem.disableBlend();
   }
 }

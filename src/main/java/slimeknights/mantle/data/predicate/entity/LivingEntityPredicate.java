@@ -45,6 +45,9 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   LivingEntityPredicate ON_GROUND = simple(Entity::onGround);
   /** Entities that are in the air */
   LivingEntityPredicate CROUCHING = simple(Entity::isCrouching);
+  /** Entities that are currently sprinting */
+  LivingEntityPredicate SPRINTING = simple(Entity::isSprinting);
+
 
   // water
   /** Entities with eyes in water */

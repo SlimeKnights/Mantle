@@ -9,7 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
+import slimeknights.mantle.recipe.MantleRecipes;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -93,7 +93,7 @@ public class ShapedRetexturedRecipeBuilder {
 
     @Override
     public RecipeSerializer<?> getType() {
-      return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
+      return MantleRecipes.CRAFTING_SHAPED_RETEXTURED.get();
     }
 
     @Override

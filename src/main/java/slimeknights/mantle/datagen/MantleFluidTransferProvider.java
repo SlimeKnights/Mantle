@@ -38,6 +38,8 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
 
   @Override
   protected void addTransfers() {
+    addTransfer("wet_sponge", new FillFluidContainerTransfer(Ingredient.of(Items.SPONGE), ItemOutput.fromItem(Items.WET_SPONGE), FluidIngredient.of(MantleTags.Fluids.WATER, MantleValues.BOTTLE)));
+
     // potions
     addPotion("potion/",           Items.POTION,  null);
     addPotion("potion/splash/",    Items.SPLASH_POTION,    MantleTags.Items.SPLASH_BOTTLE);
