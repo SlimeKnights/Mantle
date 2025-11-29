@@ -167,7 +167,7 @@ public class ContentListing extends PageContent {
   @Override
   public String toHTML() {
     StringBuilder result = new StringBuilder(getTitleHTML());
-    if (subText != null) result.append(HTMLUtils.line(subText, "padding-left: 10px"));
+    if (subText != null) result.append(HTMLUtils.p(subText, "padding-left: 10px"));
 
     if (entries.size() > 1) {
       result.append("<div style=\"display: grid; grid-template-columns: repeat(")

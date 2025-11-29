@@ -57,10 +57,10 @@ public class ContentSectionList extends PageContent {
             section.name,
             // why -1
             section.parent.findPage(page_number - 1, null).name,
-            HTMLUtils.line(section.getTitle())
+            HTMLUtils.p(section.getTitle())
           );
         })
-        .collect(Collectors.joining("\n")) +
+        .collect(Collectors.joining()) +
       "</div>";
   }
 }

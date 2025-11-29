@@ -63,7 +63,7 @@ public class ContentImageText extends PageContent {
       </div>
       """,
       getTitleHTML(),
-      h * 2 + 16,
+      h * 2 + 14,
       TextData.toHTML(text, parent.parent.parent)
     );
   }

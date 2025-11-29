@@ -14,7 +14,6 @@ import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.PageIconLinkElement;
 import slimeknights.mantle.client.screen.book.element.SizedBookElement;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -246,7 +245,7 @@ public class ContentPageIconList extends PageContent {
       </div>
       """,
       getTitleHTML(),
-      HTMLUtils.line(subText, "padding-left: 10px", "margin: 0"),
+      HTMLUtils.p(subText, "padding-left: 10px"),
       (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale()),
       yOff * 2,
       elements.stream()
