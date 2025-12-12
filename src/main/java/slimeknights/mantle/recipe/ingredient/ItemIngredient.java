@@ -7,6 +7,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
@@ -18,18 +20,13 @@ import slimeknights.mantle.util.typed.TypedMap;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Abstract ingredient that matches a list of items or a tag, mirroring the vanilla syntax.
- * 
- * In NeoForge 1.21+, AbstractIngredient was removed. This class no longer extends Ingredient
- * but provides similar functionality as a data holder for custom ingredient matching.
- * 
- * @deprecated The ingredient system has changed in 1.21+. Consider using ICustomIngredient
- *             with IngredientType for custom ingredient implementations.
  */
-@Deprecated(forRemoval = true)
-public abstract class ItemIngredient {
+public abstract class ItemIngredient implements ICustomIngredient {
   /** Field for the item tag */
   protected static final LoadableField<TagKey<Item>,ItemIngredient> TAG_FIELD = new UnsyncedField<>(Loadables.ITEM_TAG.nullableField("tag", i -> i.tag));
 
@@ -49,16 +46,38 @@ public abstract class ItemIngredient {
   }
 
   /** Tests if the stack matches this ingredient */
-  public boolean test(@Nullable ItemStack stack) {
-    return stack != null && (items.contains(stack.getItem()) || tag != null && stack.is(tag));
+  @Override
+  public boolean test(ItemStack stack) {
+    return !stack.isEmpty() && (items.contains(stack.getItem()) || tag != null && stack.is(tag));
   }
 
-  /** Gets display items for recipe viewers */
-  public ItemStack[] getItems() {
+  /** Gets the base stacks (ignoring extra components) for display and matching. */
+  protected ItemStack[] getBaseStacks() {
     if (tag != null) {
       return Ingredient.of(tag).getItems();
     }
     return items.stream().map(ItemStack::new).toArray(ItemStack[]::new);
+  }
+
+  @Override
+  public Stream<ItemStack> getItems() {
+    return Arrays.stream(getBaseStacks());
+  }
+
+  @Override
+  public boolean isSimple() {
+    return true;
+  }
+
+  @Override
+  public abstract IngredientType<?> getType();
+
+  protected boolean baseEquals(ItemIngredient other) {
+    return items.equals(other.items) && Objects.equals(tag, other.tag);
+  }
+
+  protected int baseHashCode() {
+    return Objects.hash(items, tag);
   }
 
   /** Custom field that syncs the item tag as items to the client */
@@ -87,7 +106,7 @@ public abstract class ItemIngredient {
     @Override
     public void encode(FriendlyByteBuf buffer, ItemIngredient parent) {
       // sync both tag and item values to client
-      ITEM_LIST.encode(buffer, Arrays.stream(parent.getItems()).map(ItemStack::getItem).toList());
+      ITEM_LIST.encode(buffer, parent.getItems().map(ItemStack::getItem).toList());
     }
   }
 }

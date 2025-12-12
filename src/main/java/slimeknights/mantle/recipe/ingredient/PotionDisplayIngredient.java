@@ -1,5 +1,6 @@
 package slimeknights.mantle.recipe.ingredient;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
@@ -9,31 +10,27 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import slimeknights.mantle.data.loadable.LoadableCodecs;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.LoadableIngredientSerializer;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Ingredient that shows all potion variants on the displayed item list.
- * 
- * In NeoForge 1.21+, PotionUtils was removed. Potions are now stored via DataComponents.POTION_CONTENTS.
- * 
- * @deprecated The ingredient system has changed in 1.21+. Consider using ICustomIngredient
- *             with DataComponentIngredient for potion matching.
  */
-@Deprecated(forRemoval = true)
 public class PotionDisplayIngredient extends ItemIngredient {
-  /** Ingredient serializer instance - deprecated, no longer functional */
-  @Deprecated(forRemoval = true)
-  public static final LoadableIngredientSerializer<PotionDisplayIngredient> SERIALIZER = new LoadableIngredientSerializer<>(RecordLoadable.create(ItemsField.INSTANCE, TAG_FIELD, PotionDisplayIngredient::new));
+  public static final RecordLoadable<PotionDisplayIngredient> LOADABLE = RecordLoadable.create(ItemsField.INSTANCE, TAG_FIELD, PotionDisplayIngredient::new);
+  public static final MapCodec<PotionDisplayIngredient> CODEC = LoadableCodecs.mapCodec(LOADABLE);
+  public static final IngredientType<PotionDisplayIngredient> TYPE = new IngredientType<>(CODEC);
 
-  /** last return of {@link #getItems()} */
-  private ItemStack[] lastParentStacks = null;
-  /** cache for {@link #getItems()} */
-  private ItemStack[] displayStacks = null;
+  /** @deprecated Ingredient serializer was replaced by {@link #TYPE} in NeoForge 1.21+. */
+  @Deprecated(forRemoval = true)
+  public static final LoadableIngredientSerializer<PotionDisplayIngredient> SERIALIZER = new LoadableIngredientSerializer<>(LOADABLE);
 
   protected PotionDisplayIngredient(List<Item> items, @Nullable TagKey<Item> tag) {
     super(items, tag);
@@ -62,16 +59,32 @@ public class PotionDisplayIngredient extends ItemIngredient {
   }
 
   @Override
-  public ItemStack[] getItems() {
+  public IngredientType<?> getType() {
+    return TYPE;
+  }
+
+  @Override
+  public Stream<ItemStack> getItems() {
     // if empty, means we want wildcard, show all potions on the stack
-    ItemStack[] parentStacks = super.getItems();
-    if (lastParentStacks != parentStacks) {
-      lastParentStacks = parentStacks;
-      displayStacks = BuiltInRegistries.POTION.stream()
-        .filter(pot -> pot != Potions.WATER) // EMPTY became WATER in 1.21
-        .flatMap(pot -> Arrays.stream(parentStacks).map(item -> setPotion(item, pot)))
-        .toArray(ItemStack[]::new);
+    ItemStack[] parentStacks = getBaseStacks();
+    if (parentStacks.length == 0) {
+      return Stream.empty();
     }
-    return displayStacks;
+    return BuiltInRegistries.POTION.stream()
+      .filter(pot -> pot != Potions.WATER) // EMPTY became WATER in 1.21
+      .flatMap(pot -> Arrays.stream(parentStacks).map(item -> setPotion(item, pot)));
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    return obj instanceof PotionDisplayIngredient other && baseEquals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return baseHashCode();
   }
 }

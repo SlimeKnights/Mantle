@@ -62,6 +62,8 @@ import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.LootTableInjector;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.network.MantleNetwork;
+import slimeknights.mantle.recipe.MantleConditionCodecs;
+import slimeknights.mantle.recipe.MantleIngredientTypes;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.registration.RegistrationHelper;
@@ -102,6 +104,8 @@ public class Mantle {
     bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     bus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
     MantleRecipes.init(bus);
+    MantleIngredientTypes.init(bus);
+    MantleConditionCodecs.init(bus);
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
 
     if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -121,13 +125,6 @@ public class Mantle {
   private void register(RegisterEvent event) {
     ResourceKey<?> key = event.getRegistryKey();
     if (key == Registries.RECIPE_SERIALIZER) {
-      CraftingHelper.register(TagEmptyCondition.SERIALIZER);
-      CraftingHelper.register(TagFilledCondition.SERIALIZER);
-      CraftingHelper.register(TagCombinationCondition.SERIALIZER);
-      CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
-      CraftingHelper.register(getResource("potion"), PotionIngredient.SERIALIZER);
-      CraftingHelper.register(getResource("potion_display"), PotionDisplayIngredient.SERIALIZER);
-
       // fluid container transfer
       FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidContainerTransfer.ID, EmptyFluidContainerTransfer.DESERIALIZER);
       FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidContainerTransfer.ID, FillFluidContainerTransfer.DESERIALIZER);

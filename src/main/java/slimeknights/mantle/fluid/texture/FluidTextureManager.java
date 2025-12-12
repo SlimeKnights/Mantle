@@ -28,7 +28,7 @@ public class FluidTextureManager implements IEarlySafeManagerReloadListener {
   /** Map of fluid type to texture */
   private Map<FluidType,FluidTexture> textures = Collections.emptyMap();
   /** Fallback texture instance */
-  private static final FluidTexture FALLBACK = new FluidTexture(new ResourceLocation("block/water_still"), new ResourceLocation("block/water_flow"), null, null, 0, -1, -1, false, null, 0, 0);
+  private static final FluidTexture FALLBACK = new FluidTexture(ResourceLocation.withDefaultNamespace("block/water_still"), ResourceLocation.withDefaultNamespace("block/water_flow"), null, null, 0, -1, -1, false, null, 0, 0);
 
   private FluidTextureManager() {}
 

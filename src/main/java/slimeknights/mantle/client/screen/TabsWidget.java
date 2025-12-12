@@ -10,7 +10,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class TabsWidget extends Widget {
 
-  private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+  private static final ResourceLocation creativeInventoryTabs = ResourceLocation.withDefaultNamespace("textures/gui/container/creative_inventory/tabs.png");
 
   private final ElementScreen[] tabActive = new ElementScreen[3];
   private final ElementScreen[] tab = new ElementScreen[3];

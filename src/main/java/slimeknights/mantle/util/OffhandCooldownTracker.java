@@ -31,7 +31,7 @@ public class OffhandCooldownTracker {
   /**
    * Capability instance for offhand cooldown
    */
-  public static final EntityCapability<OffhandCooldownTracker, @Nullable Void> CAPABILITY = EntityCapability.createVoid(KEY, OffhandCooldownTracker.class);
+  public static final EntityCapability<OffhandCooldownTracker, Void> CAPABILITY = EntityCapability.createVoid(KEY, OffhandCooldownTracker.class);
 
   private static final Map<Player, OffhandCooldownTracker> TRACKERS = new WeakHashMap<>();
 

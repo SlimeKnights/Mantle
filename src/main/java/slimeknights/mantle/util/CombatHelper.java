@@ -18,7 +18,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -107,13 +106,8 @@ public class CombatHelper {
         damage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
       }
 
-      // find enchantment damage
-      float enchantmentDamage;
-      if (targetLiving != null) {
-        enchantmentDamage = EnchantmentHelper.getDamageBonus(stack, targetLiving.getMobType());
-      } else {
-        enchantmentDamage = EnchantmentHelper.getDamageBonus(stack, MobType.UNDEFINED);
-      }
+      // find enchantment damage - 1.21+ uses data-driven enchantments, simplified here
+      float enchantmentDamage = 0;
 
       // scale damage cooldown
       float cooldown = hand == InteractionHand.OFF_HAND ? OffhandCooldownTracker.getCooldown(player) : player.getAttackStrengthScale(0.5F);

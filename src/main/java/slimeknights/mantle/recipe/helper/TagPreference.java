@@ -27,7 +27,7 @@ import java.util.function.Function;
  */
 public class TagPreference {
   /** Just an alphabetically late RL to simplify null checks */
-  private static final ResourceLocation DEFAULT_ID = new ResourceLocation("zzzzz:zzzzz"); // simplfies null checks
+  private static final ResourceLocation DEFAULT_ID = ResourceLocation.parse("zzzzz:zzzzz"); // simplfies null checks
 
   /** Cache from any tag key to its value */
   private static final Map<TagKey<?>, Optional<?>> PREFERENCE_CACHE = new ConcurrentHashMap<>();

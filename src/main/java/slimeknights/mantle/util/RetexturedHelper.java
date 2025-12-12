@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +13,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -61,7 +63,11 @@ public final class RetexturedHelper {
    * @return  Texture, or empty string if none
    */
   public static String getTextureName(ItemStack stack) {
-    return getTextureName(stack.getTag());
+    CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+    if (customData != null) {
+      return getTextureName(customData.copyTag());
+    }
+    return "";
   }
 
   /**
@@ -128,9 +134,12 @@ public final class RetexturedHelper {
    */
   public static ItemStack setTexture(ItemStack stack, String name) {
     if (!name.isEmpty()) {
-      setTexture(stack.getOrCreateTag(), name);
-    } else if (stack.hasTag()) {
-      setTexture(stack.getTag(), name);
+      stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, data -> data.update(tag -> setTexture(tag, name)));
+    } else {
+      CustomData existing = stack.get(DataComponents.CUSTOM_DATA);
+      if (existing != null) {
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, data -> data.update(tag -> setTexture(tag, name)));
+      }
     }
     return stack;
   }

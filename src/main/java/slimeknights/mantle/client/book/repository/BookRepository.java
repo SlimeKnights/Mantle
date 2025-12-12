@@ -39,7 +39,7 @@ public abstract class BookRepository {
       return false;
     }
 
-    return this.resourceExists(new ResourceLocation(location));
+    return this.resourceExists(ResourceLocation.parse(location));
   }
 
   /** Checks if the given resource exists */

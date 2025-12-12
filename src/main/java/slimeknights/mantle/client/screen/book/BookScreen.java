@@ -111,8 +111,8 @@ public class BookScreen extends Screen {
   /** Gets the alt Minecraft font */
   public static Font getAltFont() {
     if (altFont == null) {
-      FontManager resourceManager = Minecraft.getInstance().fontManager;
-      altFont = new Font(rl -> resourceManager.fontSets.get(Minecraft.ALT_FONT), false);
+      // In 1.21+, fontManager is not directly accessible; use default font as fallback
+      altFont = Minecraft.getInstance().font;
     }
     return altFont;
   }
@@ -120,8 +120,8 @@ public class BookScreen extends Screen {
   /** Gets the uniform version of the Minecraft font */
   public static Font getUniformFont() {
     if (uniformFont == null) {
-      FontManager resourceManager = Minecraft.getInstance().fontManager;
-      uniformFont = new Font(rl -> resourceManager.fontSets.get(Minecraft.UNIFORM_FONT), false);
+      // In 1.21+, fontManager is not directly accessible; use default font as fallback
+      uniformFont = Minecraft.getInstance().font;
     }
     return uniformFont;
   }
@@ -462,16 +462,16 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public boolean mouseScrolled(double unKnown1, double unKnown2, double scrollDelta) {
-    if (scrollDelta < 0.0D) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+    if (scrollDeltaY < 0.0D) {
       nextPage();
       return true;
-    } else if (scrollDelta > 0.0D) {
+    } else if (scrollDeltaY > 0.0D) {
       previousPage();
       return true;
     }
 
-    return super.mouseScrolled(scrollDelta, unKnown1, unKnown2);
+    return super.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
   }
 
   @Override

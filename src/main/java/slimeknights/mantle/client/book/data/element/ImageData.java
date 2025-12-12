@@ -49,7 +49,7 @@ public class ImageData extends DataLocation {
   }
 
   static {
-    MISSING.location = new ResourceLocation("mantle:textures/gui/missingno.png");
+    MISSING.location = ResourceLocation.parse("mantle:textures/gui/missingno.png");
     MISSING.texWidth = 32;
     MISSING.texHeight = 32;
     MISSING.uw = 32;
