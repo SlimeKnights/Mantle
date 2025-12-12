@@ -1,11 +1,11 @@
 package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.mapping.EnumMapLoadable;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
@@ -17,21 +17,20 @@ import java.util.Map;
 public enum DisplayContextLoadable implements ResourceLocationLoadable<ItemDisplayContext> {
   INSTANCE;
 
+  private Registry<ItemDisplayContext> getRegistry() {
+    return NeoForgeRegistries.ITEM_DISPLAY_CONTEXTS;
+  }
+
   @Override
   public ItemDisplayContext fromKey(ResourceLocation name, String key, TypedMap context) {
-    IForgeRegistry<ItemDisplayContext> registry = ForgeRegistries.DISPLAY_CONTEXTS.get();
-    if (registry.containsKey(name)) {
-      ItemDisplayContext value = registry.getValue(name);
-      if (value != null) {
-        return value;
-      }
-    }
-    throw new JsonSyntaxException("Unable to parse " + key + " as the ItemDisplayContext registry does not contain ID " + name);
+    Registry<ItemDisplayContext> registry = getRegistry();
+    return registry.getOptional(name).orElseThrow(() -> 
+      new JsonSyntaxException("Unable to parse " + key + " as the ItemDisplayContext registry does not contain ID " + name));
   }
 
   @Override
   public ResourceLocation getKey(ItemDisplayContext object) {
-    IForgeRegistry<ItemDisplayContext> registry = ForgeRegistries.DISPLAY_CONTEXTS.get();
+    Registry<ItemDisplayContext> registry = getRegistry();
     ResourceLocation location = registry.getKey(object);
     if (location == null) {
       throw new RuntimeException("ItemDisplayContext registry does not contain object " + object);
@@ -41,12 +40,12 @@ public enum DisplayContextLoadable implements ResourceLocationLoadable<ItemDispl
 
   @Override
   public ItemDisplayContext decode(FriendlyByteBuf buffer, TypedMap context) {
-    return buffer.readRegistryIdUnsafe(ForgeRegistries.DISPLAY_CONTEXTS.get());
+    return buffer.readById(getRegistry());
   }
 
   @Override
   public void encode(FriendlyByteBuf buffer, ItemDisplayContext value) {
-    buffer.writeRegistryIdUnsafe(ForgeRegistries.DISPLAY_CONTEXTS.get(), value);
+    buffer.writeId(getRegistry(), value);
   }
 
   @Override

@@ -1,8 +1,8 @@
 package slimeknights.mantle.registration.adapter;
 
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.IForgeRegistry;
 
 /**
  * Registry adapter for registering entity types
@@ -10,12 +10,14 @@ import net.minecraftforge.registries.IForgeRegistry;
 @SuppressWarnings("unused")
 public class EntityTypeRegistryAdapter extends RegistryAdapter<EntityType<?>> {
   /** @inheritDoc */
-  public EntityTypeRegistryAdapter(IForgeRegistry<EntityType<?>> registry, String modId) {
+  @SuppressWarnings("unchecked")
+  public EntityTypeRegistryAdapter(Registry<EntityType<?>> registry, String modId) {
     super(registry, modId);
   }
 
   /** @inheritDoc */
-  public EntityTypeRegistryAdapter(IForgeRegistry<EntityType<?>> registry) {
+  @SuppressWarnings("unchecked")
+  public EntityTypeRegistryAdapter(Registry<EntityType<?>> registry) {
     super(registry);
   }
 

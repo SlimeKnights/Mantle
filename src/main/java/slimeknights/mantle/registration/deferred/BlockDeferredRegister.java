@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.PressurePlateBlock.Sensitivity;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -29,8 +28,8 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.block.MantleCeilingHangingSignBlock;
 import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallHangingSignBlock;
@@ -88,7 +87,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param <B>    Block class
    * @return  Block registry object
    */
-  public <B extends Block> RegistryObject<B> registerNoItem(String name, Supplier<? extends B> block) {
+  public <B extends Block> DeferredHolder<Block, B> registerNoItem(String name, Supplier<? extends B> block) {
     return register.register(name, block);
   }
 
@@ -98,7 +97,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param props  Block properties
    * @return  Block registry object
    */
-  public RegistryObject<Block> registerNoItem(String name, BlockBehaviour.Properties props) {
+  public DeferredHolder<Block, Block> registerNoItem(String name, BlockBehaviour.Properties props) {
     return registerNoItem(name, () -> new Block(props));
   }
 
@@ -114,7 +113,7 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @return  Block item registry object pair
    */
   public <B extends Block> ItemObject<B> register(String name, Supplier<? extends B> block, final Function<? super B, ? extends BlockItem> item) {
-    RegistryObject<B> blockObj = registerNoItem(name, block);
+    DeferredHolder<Block, B> blockObj = registerNoItem(name, block);
     itemRegister.register(name, () -> item.apply(blockObj.get()));
     return new ItemObject<>(blockObj);
   }
@@ -266,13 +265,13 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
     ItemObject<FenceGateBlock> fenceGate = register(name + "_fence_gate", () -> new FenceGateBlock(BlockBehaviour.Properties.copy(fence.get()), woodType), burnable300);
     // redstone
     BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().pushReaction(PushReaction.DESTROY).strength(0.5F);
-    ItemObject<PressurePlateBlock> pressurePlate = register(name + "_pressure_plate", () -> new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps, setType), burnable300);
+    ItemObject<PressurePlateBlock> pressurePlate = register(name + "_pressure_plate", () -> new PressurePlateBlock(setType, redstoneProps), burnable300);
     ItemObject<ButtonBlock> button = register(name + "_button", () -> new ButtonBlock(redstoneProps, setType, 30, true), burnableItem.apply(100));
     // signs
-    RegistryObject<StandingSignBlock> standingSign = registerNoItem(name + "_sign", () -> new MantleStandingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), woodType));
-    RegistryObject<WallSignBlock> wallSign = registerNoItem(name + "_wall_sign", () -> new MantleWallSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F).lootFrom(standingSign), woodType));
-    RegistryObject<MantleCeilingHangingSignBlock> hangingSign = registerNoItem(name + "_hanging_sign", () -> new MantleCeilingHangingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), woodType));
-    RegistryObject<MantleWallHangingSignBlock> wallHangingSign = registerNoItem(name + "_wall_hanging_sign", () -> new MantleWallHangingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F).lootFrom(hangingSign), woodType));
+    DeferredHolder<Block, StandingSignBlock> standingSign = registerNoItem(name + "_sign", () -> new MantleStandingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), woodType));
+    DeferredHolder<Block, WallSignBlock> wallSign = registerNoItem(name + "_wall_sign", () -> new MantleWallSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F).lootFrom(standingSign), woodType));
+    DeferredHolder<Block, MantleCeilingHangingSignBlock> hangingSign = registerNoItem(name + "_hanging_sign", () -> new MantleCeilingHangingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), woodType));
+    DeferredHolder<Block, MantleWallHangingSignBlock> wallHangingSign = registerNoItem(name + "_wall_hanging_sign", () -> new MantleWallHangingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F).lootFrom(hangingSign), woodType));
     // tell mantle to inject these into the TE
     MantleSignBlockEntity.registerSignBlock(standingSign);
     MantleSignBlockEntity.registerSignBlock(wallSign);
@@ -297,19 +296,19 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
    * @param block Block to put in the block
    * @return  Potted block instance
    */
-  public RegistryObject<FlowerPotBlock> registerPotted(String name, Supplier<? extends Block> block) {
-    RegistryObject<FlowerPotBlock> potted = registerNoItem("potted_" + name, () -> new FlowerPotBlock(() -> (FlowerPotBlock)Blocks.FLOWER_POT, block, POTTED_PROPS));
+  public DeferredHolder<Block, FlowerPotBlock> registerPotted(String name, Supplier<? extends Block> block) {
+    DeferredHolder<Block, FlowerPotBlock> potted = registerNoItem("potted_" + name, () -> new FlowerPotBlock(() -> (FlowerPotBlock)Blocks.FLOWER_POT, block, POTTED_PROPS));
     ((FlowerPotBlock)Blocks.FLOWER_POT).addPlant(resource(name), potted);
     return potted;
   }
 
   /** Registers a potted form of the given block using the vanilla pot */
-  public RegistryObject<FlowerPotBlock> registerPotted(RegistryObject<? extends Block> block) {
+  public DeferredHolder<Block, FlowerPotBlock> registerPotted(DeferredHolder<Block, ? extends Block> block) {
     return registerPotted(block.getId().getPath(), block);
   }
 
   /** Registers a potted form of the given block using the vanilla pot */
-  public RegistryObject<FlowerPotBlock> registerPotted(ItemObject<? extends Block> block) {
+  public DeferredHolder<Block, FlowerPotBlock> registerPotted(ItemObject<? extends Block> block) {
     return registerPotted(block.getId().getPath(), block);
   }
 
@@ -393,8 +392,8 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
   public MetalItemObject registerMetal(String name, String tagName, Supplier<Block> blockSupplier, Function<Block,? extends BlockItem> blockItem, Item.Properties itemProps) {
     ItemObject<Block> block = register(name + "_block", blockSupplier, blockItem);
     Supplier<Item> itemSupplier = () -> new Item(itemProps);
-    RegistryObject<Item> ingot = itemRegister.register(name + "_ingot", itemSupplier);
-    RegistryObject<Item> nugget = itemRegister.register(name + "_nugget", itemSupplier);
+    DeferredHolder<Item, Item> ingot = itemRegister.register(name + "_ingot", itemSupplier);
+    DeferredHolder<Item, Item> nugget = itemRegister.register(name + "_nugget", itemSupplier);
     return new MetalItemObject(tagName, block, ingot, nugget);
   }
 

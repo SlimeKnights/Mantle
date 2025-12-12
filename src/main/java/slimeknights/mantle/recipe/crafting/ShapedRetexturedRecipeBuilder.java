@@ -1,18 +1,22 @@
 package slimeknights.mantle.recipe.crafting;
 
-import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.recipe.MantleRecipes;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 @RequiredArgsConstructor(staticName = "fromShaped")
@@ -53,21 +57,21 @@ public class ShapedRetexturedRecipeBuilder {
 
   /**
    * Builds the recipe with the default name using the given consumer
-   * @param consumer Recipe consumer
+   * @param output Recipe output
    */
-  public void build(Consumer<FinishedRecipe> consumer) {
+  public void build(RecipeOutput output) {
     this.validate();
-    parent.save(base -> consumer.accept(new Result(base, texture, matchAll)));
+    parent.save(new Wrapper(output, texture, matchAll));
   }
 
   /**
    * Builds the recipe using the given consumer
-   * @param consumer Recipe consumer
+   * @param output   Recipe output
    * @param location Recipe location
    */
-  public void build(Consumer<FinishedRecipe> consumer, ResourceLocation location) {
+  public void build(RecipeOutput output, ResourceLocation location) {
     this.validate();
-    parent.save(base -> consumer.accept(new Result(base, texture, matchAll)), location);
+    parent.save(new Wrapper(output, texture, matchAll), ResourceKey.create(Registries.RECIPE, location));
   }
 
   /**
@@ -80,44 +84,22 @@ public class ShapedRetexturedRecipeBuilder {
     }
   }
 
-  private static class Result implements FinishedRecipe {
-    private final FinishedRecipe base;
-    private final Ingredient texture;
-    private final boolean matchAll;
-
-    private Result(FinishedRecipe base, Ingredient texture, boolean matchAll) {
-      this.base = base;
-      this.texture = texture;
-      this.matchAll = matchAll;
+  private record Wrapper(RecipeOutput parent, Ingredient texture, boolean matchAll) implements RecipeOutput {
+    private Wrapper {
+      Objects.requireNonNull(texture, "texture");
     }
 
     @Override
-    public RecipeSerializer<?> getType() {
-      return MantleRecipes.CRAFTING_SHAPED_RETEXTURED.get();
+    public Advancement.Builder advancement() {
+      return parent.advancement();
     }
 
     @Override
-    public ResourceLocation getId() {
-      return base.getId();
-    }
-
-    @Override
-    public void serializeRecipeData(JsonObject json) {
-      base.serializeRecipeData(json);
-      json.add("texture", texture.toJson());
-      json.addProperty("match_all", matchAll);
-    }
-
-    @Nullable
-    @Override
-    public JsonObject serializeAdvancement() {
-      return base.serializeAdvancement();
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementId() {
-      return base.getAdvancementId();
+    public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+      if (!(recipe instanceof ShapedRecipe shaped)) {
+        throw new IllegalStateException("Expected shaped recipe from ShapedRecipeBuilder, got " + recipe);
+      }
+      parent.accept(id, new ShapedRetexturedRecipe(shaped, texture, matchAll), advancement, conditions);
     }
   }
 }

@@ -1,36 +1,16 @@
 package slimeknights.mantle.recipe.helper;
 
-import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
-import java.util.Objects;
-
-/** Ingredient serializer made using loadables */
-public record LoadableIngredientSerializer<T extends Ingredient>(RecordLoadable<T> loadable) implements IIngredientSerializer<T> {
-  @Override
-  public T parse(FriendlyByteBuf buffer) {
-    return loadable.decode(buffer);
-  }
-
-  @Override
-  public T parse(JsonObject json) {
-    return loadable.deserialize(json);
-  }
-
-  @Override
-  public void write(FriendlyByteBuf buffer, T ingredient) {
-    loadable.encode(buffer, ingredient);
-  }
-
-  /** Serializes the ingredient to JSON */
-  public JsonObject serialize(T ingredient) {
-    JsonObject json = new JsonObject();
-    json.addProperty("type", Objects.requireNonNull(CraftingHelper.getID(this)).toString());
-    loadable.serialize(ingredient, json);
-    return json;
-  }
+/**
+ * In NeoForge 1.21+, custom ingredient serialization has changed to use Codec/MapCodec-based
+ * IngredientType instead of IIngredientSerializer. This class is deprecated and will be removed.
+ * 
+ * @deprecated Use IngredientType with MapCodec instead. See NeoForge DataComponentIngredient
+ *             for the new pattern.
+ */
+@Deprecated(forRemoval = true)
+public record LoadableIngredientSerializer<T>(RecordLoadable<T> loadable) {
+  // This class no longer implements IIngredientSerializer as that interface was removed.
+  // Kept as a placeholder to allow dependent code to compile during migration.
 }

@@ -22,10 +22,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.TranslationHelper;
 
@@ -72,18 +72,19 @@ public class GaugeBlock extends Block {
     // display adjacent tank contents
     if (!world.isClientSide()) {
       Direction side = state.getValue(FACING);
-      BlockEntity te = world.getBlockEntity(pos.relative(side.getOpposite()));
-      if (te != null) {
-        IFluidHandler handler = te.getCapability(ForgeCapabilities.FLUID_HANDLER, side).orElse(EmptyFluidHandler.INSTANCE);
-        if (handler.getTanks() > 0) {
-          FluidStack fluid = handler.getFluidInTank(0);
-          if (fluid.isEmpty()) {
-            // show simple empty message if gauge amount is hidden
-            player.displayClientMessage(formatCapacity(handler.getTankCapacity(0)), true);
-          } else {
-            Component contents = Component.translatable(CONTENTS_FORMAT, COMMA_FORMAT.format(fluid.getAmount()), COMMA_FORMAT.format(handler.getTankCapacity(0)), fluid.getDisplayName());
-            player.displayClientMessage(Component.translatable(CONTENTS_KEY, contents), true);
-          }
+      BlockPos tankPos = pos.relative(side.getOpposite());
+      IFluidHandler handler = world.getCapability(Capabilities.FluidHandler.BLOCK, tankPos, side);
+      if (handler == null) {
+        handler = EmptyFluidHandler.INSTANCE;
+      }
+      if (handler.getTanks() > 0) {
+        FluidStack fluid = handler.getFluidInTank(0);
+        if (fluid.isEmpty()) {
+          // show simple empty message if gauge amount is hidden
+          player.displayClientMessage(formatCapacity(handler.getTankCapacity(0)), true);
+        } else {
+          Component contents = Component.translatable(CONTENTS_FORMAT, COMMA_FORMAT.format(fluid.getAmount()), COMMA_FORMAT.format(handler.getTankCapacity(0)), fluid.getDisplayName());
+          player.displayClientMessage(Component.translatable(CONTENTS_KEY, contents), true);
         }
       }
     }
@@ -106,8 +107,12 @@ public class GaugeBlock extends Block {
   @Override
   public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
     Direction direction = state.getValue(FACING);
-    BlockEntity te = world.getBlockEntity(pos.relative(direction.getOpposite()));
-    return te != null && te.getCapability(ForgeCapabilities.FLUID_HANDLER, direction).isPresent();
+    BlockPos tankPos = pos.relative(direction.getOpposite());
+    if (world instanceof Level level) {
+      return level.getCapability(Capabilities.FluidHandler.BLOCK, tankPos, direction) != null;
+    }
+    BlockEntity te = world.getBlockEntity(tankPos);
+    return te != null;
   }
 
   @Override

@@ -1,21 +1,17 @@
 package slimeknights.mantle.loot;
 
 import com.google.gson.JsonDeserializer;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.loot.condition.BlockTagLootCondition;
 import slimeknights.mantle.loot.condition.ContainsItemModifierLootCondition;
@@ -27,64 +23,57 @@ import slimeknights.mantle.loot.function.RetexturedLootFunction;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.recipe.condition.TagEmptyCondition;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
-import slimeknights.mantle.registration.adapter.RegistryAdapter;
-
-import java.util.Objects;
 
 import static slimeknights.mantle.loot.condition.ILootModifierCondition.MODIFIER_CONDITIONS;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MantleLoot {
-  /** Matches if the passed tag is empty */
-  public static LootItemConditionType TAG_EMPTY;
-  /** Matches if the passed tag is filled */
-  public static LootItemConditionType TAG_FILLED;
+  // Deferred registers for NeoForge 1.21+
+  public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS =
+      DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Mantle.modId);
+  public static final DeferredRegister<LootItemConditionType> LOOT_CONDITION_TYPES =
+      DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, Mantle.modId);
+  public static final DeferredRegister<LootItemFunctionType<?>> LOOT_FUNCTION_TYPES =
+      DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, Mantle.modId);
+  public static final DeferredRegister<LootPoolEntryType> LOOT_POOL_ENTRY_TYPES =
+      DeferredRegister.create(Registries.LOOT_POOL_ENTRY_TYPE, Mantle.modId);
+
+  // Global loot modifiers
+  public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<AddEntryLootModifier>> ADD_ENTRY =
+      GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("add_entry", () -> AddEntryLootModifier.CODEC);
+  public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<ReplaceItemLootModifier>> REPLACE_ITEM =
+      GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("replace_item", () -> ReplaceItemLootModifier.CODEC);
+
+  // Loot conditions
   /** Condition to match a block tag and property predicate */
-  public static LootItemConditionType BLOCK_TAG_CONDITION;
+  public static final DeferredHolder<LootItemConditionType, LootItemConditionType> BLOCK_TAG_CONDITION =
+      LOOT_CONDITION_TYPES.register("block_tag", () -> new LootItemConditionType(BlockTagLootCondition.CODEC));
+  /** Matches if the passed tag is empty */
+  public static final DeferredHolder<LootItemConditionType, LootItemConditionType> TAG_EMPTY =
+      LOOT_CONDITION_TYPES.register("tag_empty", () -> new LootItemConditionType(TagEmptyCondition.CODEC));
+  /** Matches if the passed tag is filled */
+  public static final DeferredHolder<LootItemConditionType, LootItemConditionType> TAG_FILLED =
+      LOOT_CONDITION_TYPES.register("tag_filled", () -> new LootItemConditionType(TagFilledCondition.CODEC));
+
+  // Loot functions
   /** Function to add block entity texture to a dropped item */
-  public static LootItemFunctionType RETEXTURED_FUNCTION;
+  public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<RetexturedLootFunction>> RETEXTURED_FUNCTION =
+      LOOT_FUNCTION_TYPES.register("fill_retextured_block", () -> new LootItemFunctionType<>(RetexturedLootFunction.CODEC));
   /** Function to add a fluid to an item fluid capability */
-  public static LootItemFunctionType SET_FLUID_FUNCTION;
+  public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<SetFluidLootFunction>> SET_FLUID_FUNCTION =
+      LOOT_FUNCTION_TYPES.register("set_fluid", () -> new LootItemFunctionType<>(SetFluidLootFunction.CODEC));
+
+  // Loot entries
   /** Entry to pull a value from a tag preference */
-  public static LootPoolEntryType TAG_PREFERENCE;
-
-
-  /**
-   * Called during serializer registration to register any relevant loot logic
-   */
-  public static void registerGlobalLootModifiers(final RegisterEvent event) {
-    ResourceKey<?> key = event.getRegistryKey();
-
-    if (key == ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS) {
-      RegistryAdapter<Codec<? extends IGlobalLootModifier>> adapter = new RegistryAdapter<>(Objects.requireNonNull(event.getForgeRegistry()));
-      adapter.register(AddEntryLootModifier.CODEC, "add_entry");
-      adapter.register(ReplaceItemLootModifier.CODEC, "replace_item");
-
-      // loot modifier conditions
-      MODIFIER_CONDITIONS.registerDeserializer(InvertedModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)InvertedModifierLootCondition::deserialize);
-      MODIFIER_CONDITIONS.registerDeserializer(EmptyModifierLootCondition.ID, EmptyModifierLootCondition.INSTANCE);
-      MODIFIER_CONDITIONS.registerDeserializer(ContainsItemModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)ContainsItemModifierLootCondition::deserialize);
-    } else if (key == Registries.LOOT_FUNCTION_TYPE) {
-      RETEXTURED_FUNCTION = registerFunction("fill_retextured_block", RetexturedLootFunction.SERIALIZER);
-      SET_FLUID_FUNCTION = registerFunction("set_fluid", SetFluidLootFunction.SERIALIZER);
-
-    } else if (key == Registries.LOOT_CONDITION_TYPE) {
-      BLOCK_TAG_CONDITION = Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, Mantle.getResource("block_tag"), new LootItemConditionType(BlockTagLootCondition.SERIALIZER));
-      TAG_EMPTY = Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, TagEmptyCondition.SERIALIZER.getID(), new LootItemConditionType(TagEmptyCondition.SERIALIZER));
-      TAG_FILLED = Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, TagFilledCondition.SERIALIZER.getID(), new LootItemConditionType(TagFilledCondition.SERIALIZER));
-
-    } else if (key == Registries.LOOT_POOL_ENTRY_TYPE) {
-      TAG_PREFERENCE = Registry.register(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE, Mantle.getResource("tag_preference"), new LootPoolEntryType(new TagPreferenceLootEntry.Serializer()));
-    }
-  }
+  public static final DeferredHolder<LootPoolEntryType, LootPoolEntryType> TAG_PREFERENCE =
+      LOOT_POOL_ENTRY_TYPES.register("tag_preference", () -> new LootPoolEntryType(TagPreferenceLootEntry.CODEC));
 
   /**
-   * Registers a loot function
-   * @param name        Loot function name
-   * @param serializer  Loot function serializer
-   * @return  Registered loot function
+   * Called during mod initialization to register custom modifier conditions
    */
-  private static LootItemFunctionType registerFunction(String name, Serializer<? extends LootItemFunction> serializer) {
-    return Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, Mantle.getResource(name), new LootItemFunctionType(serializer));
+  public static void registerModifierConditions() {
+    MODIFIER_CONDITIONS.registerDeserializer(InvertedModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)InvertedModifierLootCondition::deserialize);
+    MODIFIER_CONDITIONS.registerDeserializer(EmptyModifierLootCondition.ID, EmptyModifierLootCondition.INSTANCE);
+    MODIFIER_CONDITIONS.registerDeserializer(ContainsItemModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)ContainsItemModifierLootCondition::deserialize);
   }
 }

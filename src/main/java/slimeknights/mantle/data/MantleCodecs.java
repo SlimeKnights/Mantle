@@ -6,7 +6,7 @@ import com.mojang.serialization.DynamicOps;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraftforge.common.loot.LootModifierManager;
+import net.neoforged.neoforge.common.loot.LootModifierManager;
 import slimeknights.mantle.data.JsonCodec.GsonCodec;
 
 /** This class contains codecs for various vanilla things that we need to use in codecs. Typically the reason is forge pre-emptively moved a thing to codecs before vanilla did. */

@@ -1,6 +1,6 @@
 /*
  * Mantle
- * Master build file
+ * Master build file for NeoForge 1.21
  * Based on TConstruct's master build file
  * Authors: Sunstrike, ProgWML6
  * Help from AbrarSyed
@@ -10,8 +10,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.0.37]'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.neoforged.moddev' version '2.0.42-beta'
     id 'io.freefair.lombok' version '8.6'
 }
 
@@ -28,21 +27,17 @@ repositories {
         url = "https://maven.blamejared.com/"
     }
     maven {
-        // for Yarn2MCP
-        name "yarn2mcp"
-        url "https://maven.tterrag.com/"
+        // Parchment mappings
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
     }
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
 }
 
 group = 'slimeknights.mantle'
 base {
     archivesName = 'Mantle'
 }
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 // sets version to the slimeKnights version format
 task buildInfo {
@@ -70,7 +65,7 @@ if (System.getenv().ARTIFACT_VERSION == null) {
     artifact_version = "${mod_version}.${project.buildInfo.buildNum}"
 }
 if (System.getenv().ARTIFACT_VERSION != null) {
-    artifact_version = "${system.getenv().ARTIFACT_VERSION}"
+    artifact_version = "${System.getenv().ARTIFACT_VERSION}"
 }
 
 version = "${minecraft_version}-${artifact_version}"
@@ -86,48 +81,42 @@ sourceSets {
     }
 }
 
-minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-
-    enableIdeaPrepareRuns = true
-    copyIdeResources = true
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+neoForge {
+    version = neoforge_version
+    
+    parchment {
+        mappingsVersion = parchment_version
+        minecraftVersion = parchment_minecraft_version
+    }
+    
+    accessTransformers {
+        file 'src/main/resources/META-INF/accesstransformer.cfg'
+    }
 
     runs {
-
         // applies to all the run configs below
         configureEach {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE'
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                mantle {
-                    source sourceSets.main
-                }
-            }
+            logLevel = org.slf4j.event.Level.DEBUG
         }
 
         client {
+            client()
         }
 
         server {
-            args '--nogui'
+            server()
+            programArguments.add('--nogui')
         }
 
         data {
-            args '--mod', 'mantle', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            data()
+            programArguments.addAll '--mod', 'mantle', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+    }
+    
+    mods {
+        mantle {
+            sourceSet sourceSets.main
         }
     }
 }
@@ -137,13 +126,11 @@ configurations {
 }
                
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
     // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -151,11 +138,11 @@ tasks.named('processResources', ProcessResources).configure {
         'version': artifact_version,
         'loader_range': loader_range,
         'minecraft_range': minecraft_range,
-        'forge_range': forge_range
+        'neoforge_range': neoforge_range
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
 }
@@ -174,8 +161,6 @@ tasks.named('jar', Jar).configure {
     }
 }
 
-jar.finalizedBy('reobfJar')
-
 java {
     withSourcesJar()
 }
@@ -185,7 +170,7 @@ sourcesJar {
     exclude 'data/**'
     exclude 'pack.png'
     exclude 'pack.mcmeta'
-    exclude 'META-INF/mods.toml'
+    exclude 'META-INF/neoforge.mods.toml'
 }
 
 artifacts {

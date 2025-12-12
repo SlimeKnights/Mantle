@@ -17,7 +17,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 
@@ -142,7 +142,7 @@ public class IngredientData implements IDataElement {
         JsonPrimitive primitive = json.getAsJsonPrimitive();
 
         if(primitive.isString()) {
-          Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(primitive.getAsString()));
+          Item item = NeoForgeRegistries.ITEMS.getValue(new ResourceLocation(primitive.getAsString()));
           return SizedIngredient.fromItems(item);
         }
       }

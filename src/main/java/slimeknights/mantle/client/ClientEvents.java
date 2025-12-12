@@ -24,24 +24,22 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.block.GaugeBlock;
 import slimeknights.mantle.client.book.BookLoader;
@@ -69,7 +67,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = Bus.MOD)
+@EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClientEvents {
   /** Called on construct to initiatlize things that need early entry */
   public static void onConstruct() {}
@@ -122,13 +120,13 @@ public class ClientEvents {
 
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
-    MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiOverlayEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiOverlayEvent.Post.class, ClientEvents::renderGaugeTooltip);
+    NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
+    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiLayerEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
+    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiLayerEvent.Post.class, ClientEvents::renderGaugeTooltip);
   }
 
   // registered with FORGE bus
-  private static void renderOffhandAttackIndicator(RenderGuiOverlayEvent.Post event) {
+  private static void renderOffhandAttackIndicator(RenderGuiLayerEvent.Post event) {
     // must have a player, not be in spectator, and have the indicator enabled
     Minecraft minecraft = Minecraft.getInstance();
     Options settings = minecraft.options;
@@ -138,10 +136,10 @@ public class ClientEvents {
     }
 
     // only care about hotbar and crosshair
-    NamedGuiOverlay overlay = event.getOverlay();
+    net.minecraft.resources.ResourceLocation overlay = event.getName();
     // will be true for hotbar, false for crosshair
-    boolean isHotbar = VanillaGuiOverlay.HOTBAR.type() == overlay;
-    if (!isHotbar && VanillaGuiOverlay.CROSSHAIR.type() != overlay) {
+    boolean isHotbar = VanillaGuiLayers.HOTBAR.equals(overlay);
+    if (!isHotbar && !VanillaGuiLayers.CROSSHAIR.equals(overlay)) {
       return;
     }
 
@@ -197,8 +195,8 @@ public class ClientEvents {
 
 
   /** Renders the tooltip when targeting the gauge block */
-  private static void renderGaugeTooltip(RenderGuiOverlayEvent.Post event) {
-    if (event.getOverlay() != VanillaGuiOverlay.CROSSHAIR.type()) {
+  private static void renderGaugeTooltip(RenderGuiLayerEvent.Post event) {
+    if (!event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
       return;
     }
     // must not be in a screen, though chat is fine
@@ -219,20 +217,26 @@ public class ClientEvents {
       return;
     }
     BlockEntity gaugeContainer;
+    BlockPos gaugeContainerPos;
     Direction side;
     if (targeted.is(MantleTags.Blocks.ATTACHED_GAUGES)) {
       side = targeted.getValue(BlockStateProperties.FACING);
-      gaugeContainer = minecraft.level.getBlockEntity(pos.relative(side.getOpposite()));
+      gaugeContainerPos = pos.relative(side.getOpposite());
+      gaugeContainer = minecraft.level.getBlockEntity(gaugeContainerPos);
     } else {
       side = blockHit.getDirection();
-      gaugeContainer = minecraft.level.getBlockEntity(pos);
+      gaugeContainerPos = pos;
+      gaugeContainer = minecraft.level.getBlockEntity(gaugeContainerPos);
     }
     // must have a block entity behind the gauge that is not blacklisted
     if (gaugeContainer == null || RegistryHelper.contains(BuiltInRegistries.BLOCK_ENTITY_TYPE, MantleTags.BlockEntities.GAUGE_BLACKLIST, gaugeContainer.getType())) {
       return;
     }
     // block entity must have a fluid handler
-    IFluidHandler handler = gaugeContainer.getCapability(ForgeCapabilities.FLUID_HANDLER, side).orElse(EmptyFluidHandler.INSTANCE);
+    IFluidHandler handler = minecraft.level.getCapability(Capabilities.FluidHandler.BLOCK, gaugeContainerPos, side);
+    if (handler == null) {
+      handler = EmptyFluidHandler.INSTANCE;
+    }
     if (handler.getTanks() <= 0) {
       return;
     }

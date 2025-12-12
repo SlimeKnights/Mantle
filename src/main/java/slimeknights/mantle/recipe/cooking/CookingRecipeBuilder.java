@@ -2,7 +2,8 @@ package slimeknights.mantle.recipe.cooking;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.datafixers.util.Function7;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -11,11 +12,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.mantle.recipe.helper.ItemOutput;
-
-import java.util.function.Consumer;
 
 /** Builder for {@link SmeltingResultRecipe}, {@link BlastingResultRecipe}, {@link SmokingResultRecipe}, and {@link CampfireResultRecipe} */
 @SuppressWarnings({"unchecked", "unused"})
@@ -59,9 +57,9 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
 
 
   /**
-   * Sets the type of {@link #save(Consumer, ResourceLocation)} for the sake of {@link net.minecraftforge.common.crafting.ConditionalRecipe}.
-   * Note you can also just directly use {@link #saveSmelting(Consumer, ResourceLocation)}, {@link #saveBlasting(Consumer, ResourceLocation)},
-   * {@link #saveSmoking(Consumer, ResourceLocation)}, and {@link #saveCampfire(Consumer, ResourceLocation)} directly.
+   * Sets the type of {@link #save(RecipeOutput, ResourceLocation)} for the sake of conditional recipes.
+   * Note you can also just directly use {@link #saveSmelting(RecipeOutput, ResourceLocation)}, {@link #saveBlasting(RecipeOutput, ResourceLocation)},
+   * {@link #saveSmoking(RecipeOutput, ResourceLocation)}, and {@link #saveCampfire(RecipeOutput, ResourceLocation)} directly.
    */
   public T type(CookingType type) {
     this.type = type;
@@ -99,50 +97,71 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
 
   /** Helper to save a recipe */
   @SuppressWarnings("unchecked")
-  private <R extends Recipe<?>> T save(Consumer<FinishedRecipe> consumer, ResourceLocation id, RecordLoadable<R> loadable, Function7<ResourceLocation,String,CookingBookCategory,Ingredient,ItemOutput,Float,Integer,R> constructor, int cookingTime) {
+  private <R extends Recipe<?>> T save(RecipeOutput recipeOutput, ResourceLocation id, Function7<String,CookingBookCategory,Ingredient,ItemOutput,Float,Integer,Void,R> constructor, int cookingTime) {
     if (ingredient == Ingredient.EMPTY) {
       throw new IllegalStateException("Ingredient must be set");
     }
-    ResourceLocation advancementID = buildOptionalAdvancement(id, "cooking");
-    consumer.accept(new LoadableFinishedRecipe<>(constructor.apply(id, group, category, ingredient, result, experience, cookingTime), loadable, advancementID));
+    AdvancementHolder advancement = buildOptionalAdvancement(id, "cooking");
+    R recipe = constructor.apply(group, category, ingredient, result, experience, cookingTime, null);
+    recipeOutput.accept(id, recipe, advancement);
     return (T) this;
   }
 
   /** Saves the smelting recipe */
-  public T saveSmelting(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    return save(consumer, id, SmeltingResultRecipe.LOADABLE, SmeltingResultRecipe::new, cookingTime);
+  public T saveSmelting(RecipeOutput recipeOutput, ResourceLocation id) {
+    if (ingredient == Ingredient.EMPTY) {
+      throw new IllegalStateException("Ingredient must be set");
+    }
+    AdvancementHolder advancement = buildOptionalAdvancement(id, "cooking");
+    recipeOutput.accept(id, new SmeltingResultRecipe(group, category, ingredient, result, experience, cookingTime), advancement);
+    return (T) this;
   }
 
   /** Saves the blasting recipe */
-  public T saveBlasting(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    return save(consumer, id, BlastingResultRecipe.LOADABLE, BlastingResultRecipe::new, cookingTime / 2);
+  public T saveBlasting(RecipeOutput recipeOutput, ResourceLocation id) {
+    if (ingredient == Ingredient.EMPTY) {
+      throw new IllegalStateException("Ingredient must be set");
+    }
+    AdvancementHolder advancement = buildOptionalAdvancement(id, "cooking");
+    recipeOutput.accept(id, new BlastingResultRecipe(group, category, ingredient, result, experience, cookingTime / 2), advancement);
+    return (T) this;
   }
 
   /** Saves the smoking recipe */
-  public T saveSmoking(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    return save(consumer, id, SmokingResultRecipe.LOADABLE, SmokingResultRecipe::new, cookingTime / 2);
+  public T saveSmoking(RecipeOutput recipeOutput, ResourceLocation id) {
+    if (ingredient == Ingredient.EMPTY) {
+      throw new IllegalStateException("Ingredient must be set");
+    }
+    AdvancementHolder advancement = buildOptionalAdvancement(id, "cooking");
+    recipeOutput.accept(id, new SmokingResultRecipe(group, category, ingredient, result, experience, cookingTime / 2), advancement);
+    return (T) this;
   }
 
   /** Saves the campfire recipe */
-  public T saveCampfire(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    return save(consumer, id, CampfireResultRecipe.LOADABLE, CampfireResultRecipe::new, cookingTime * 3);
+  public T saveCampfire(RecipeOutput recipeOutput, ResourceLocation id) {
+    if (ingredient == Ingredient.EMPTY) {
+      throw new IllegalStateException("Ingredient must be set");
+    }
+    AdvancementHolder advancement = buildOptionalAdvancement(id, "cooking");
+    recipeOutput.accept(id, new CampfireResultRecipe(group, category, ingredient, result, experience, cookingTime * 3), advancement);
+    return (T) this;
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer) {
-    save(consumer, Loadables.ITEM.getKey(result.get().getItem()));
+  public void save(RecipeOutput recipeOutput) {
+    save(recipeOutput, Loadables.ITEM.getKey(result.get().getItem()));
   }
 
   @Override
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+  public void save(RecipeOutput recipeOutput, ResourceLocation id) {
     switch (type) {
-      case SMELTING -> saveSmelting(consumer, id);
-      case BLASTING -> saveBlasting(consumer, id);
-      case SMOKING -> saveSmoking(consumer, id);
-      case CAMPFIRE -> saveCampfire(consumer, id);
+      case SMELTING -> saveSmelting(recipeOutput, id);
+      case BLASTING -> saveBlasting(recipeOutput, id);
+      case SMOKING -> saveSmoking(recipeOutput, id);
+      case CAMPFIRE -> saveCampfire(recipeOutput, id);
     }
   }
 
-  /** Helper to change the cooking type in {@link #save(Consumer, ResourceLocation)} for the sake of {@link net.minecraftforge.common.crafting.ConditionalRecipe} */
+  /** Helper to change the cooking type in {@link #save(RecipeOutput, ResourceLocation)} for the sake of conditional recipes */
   public enum CookingType { SMELTING, BLASTING, SMOKING, CAMPFIRE }
 }

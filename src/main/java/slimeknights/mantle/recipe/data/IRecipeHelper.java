@@ -3,21 +3,20 @@ package slimeknights.mantle.recipe.data;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.registration.object.IdAwareObject;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Interface for common resource location and condition methods
@@ -95,7 +94,7 @@ public interface IRecipeHelper {
    * @param suffix    Path suffix
    * @return  Location with the given prefix and suffix
    */
-  default ResourceLocation wrap(RegistryObject<?> location, String prefix, String suffix) {
+  default ResourceLocation wrap(DeferredHolder<?, ?> location, String prefix, String suffix) {
     return wrap(location.getId(), prefix, suffix);
   }
 
@@ -105,7 +104,7 @@ public interface IRecipeHelper {
    * @param prefix    Path prefix
    * @return  Location with the given prefix
    */
-  default ResourceLocation prefix(RegistryObject<?> location, String prefix) {
+  default ResourceLocation prefix(DeferredHolder<?, ?> location, String prefix) {
     return prefix(location.getId(), prefix);
   }
 
@@ -115,7 +114,7 @@ public interface IRecipeHelper {
    * @param suffix    Path suffix
    * @return  Location with the given suffix
    */
-  default ResourceLocation suffix(RegistryObject<?> location, String suffix) {
+  default ResourceLocation suffix(DeferredHolder<?, ?> location, String suffix) {
     return suffix(location.getId(), suffix);
   }
 
@@ -186,16 +185,14 @@ public interface IRecipeHelper {
   }
 
   /**
-   * Creates a consumer instance with the added conditions
-   * @param consumer    Base consumer
+   * Creates a recipe output instance with the added conditions.
+   * <p>
+   * Note: In NeoForge 1.21+, you can also use {@link RecipeOutput#withConditions(ICondition...)} directly.
+   * @param output      Base output
    * @param conditions  Extra conditions
-   * @return  Wrapped consumer
+   * @return  Wrapped recipe output
    */
-  default Consumer<FinishedRecipe> withCondition(Consumer<FinishedRecipe> consumer, ICondition... conditions) {
-    ConsumerWrapperBuilder builder = ConsumerWrapperBuilder.wrap();
-    for (ICondition condition : conditions) {
-      builder.addCondition(condition);
-    }
-    return builder.build(consumer);
+  default RecipeOutput withCondition(RecipeOutput output, ICondition... conditions) {
+    return output.withConditions(conditions);
   }
 }

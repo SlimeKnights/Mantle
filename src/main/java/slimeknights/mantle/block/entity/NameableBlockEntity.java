@@ -3,9 +3,10 @@ package slimeknights.mantle.block.entity;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -28,18 +29,18 @@ public abstract class NameableBlockEntity extends MantleBlockEntity implements I
 	}
 
 	@Override
-	public void load(CompoundTag tags) {
-		super.load(tags);
-		if (tags.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)) {
-			this.customName = Component.Serializer.fromJson(tags.getString(TAG_CUSTOM_NAME));
+	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.loadAdditional(tag, registries);
+		if (tag.contains(TAG_CUSTOM_NAME)) {
+			this.customName = BlockEntity.parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), registries);
 		}
 	}
 
 	@Override
-	public void saveSynced(CompoundTag tags) {
-		super.saveSynced(tags);
+	protected void saveSynced(CompoundTag tag, HolderLookup.Provider registries) {
+		super.saveSynced(tag, registries);
 		if (this.hasCustomName()) {
-			tags.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(this.customName));
+			tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(this.customName, registries));
 		}
 	}
 }

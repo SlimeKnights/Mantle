@@ -11,13 +11,14 @@ import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -43,6 +44,9 @@ public class BookCommand {
   private static final String EXPORT_SUCCESS = "command.mantle.book.export.success";
   private static final String EXPORT_FAIL = "command.mantle.book.export.error_generic";
   private static final String EXPORT_FAIL_IO = "command.mantle.book.export.error_io";
+
+  private static final SimpleCommandExceptionType EXPORT_FAIL_EXCEPTION = new SimpleCommandExceptionType(Component.translatable(EXPORT_FAIL));
+  private static final SimpleCommandExceptionType EXPORT_FAIL_IO_EXCEPTION = new SimpleCommandExceptionType(Component.translatable(EXPORT_FAIL_IO));
 
   /**
    * Registers this sub command with the root command
@@ -87,7 +91,7 @@ public class BookCommand {
    * @param context  Command context
    * @return  Integer return
    */
-  private static int exportImagesWithScale(CommandContext<CommandSourceStack> context) {
+  private static int exportImagesWithScale(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
     int scale = context.getArgument("scale", Integer.class);
 
@@ -99,7 +103,7 @@ public class BookCommand {
    * @param context  Command context
    * @return  Integer return
    */
-  private static int exportImages(CommandContext<CommandSourceStack> context) {
+  private static int exportImages(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
 
     return doExportImages(book, 2);
@@ -111,7 +115,7 @@ public class BookCommand {
    * @param scale  Scale to export at
    * @return  Integer return
    */
-  private static int doExportImages(ResourceLocation book, int scale) {
+  private static int doExportImages(ResourceLocation book, int scale) throws CommandSyntaxException {
     BookData bookData = BookLoader.getBook(book);
 
     Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
@@ -119,7 +123,7 @@ public class BookCommand {
 
     if(bookData != null) {
       if(!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO));
+        throw EXPORT_FAIL_IO_EXCEPTION.create();
       }
 
       int width = BookScreen.PAGE_WIDTH_UNSCALED * 2 * scale;
@@ -178,14 +182,14 @@ public class BookCommand {
                 scaled.writeToFile(path);
               } catch (Exception e) {
                 Mantle.logger.error("Failed to save screenshot", e);
-                throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+                throw EXPORT_FAIL_EXCEPTION.create();
               }
             } else {
               image.writeToFile(path);
             }
           } catch (Exception e) {
             Mantle.logger.error("Failed to save screenshot", e);
-            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+            throw EXPORT_FAIL_EXCEPTION.create();
           }
         } while (screen.nextPage());
       } finally {

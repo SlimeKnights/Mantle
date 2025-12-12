@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import slimeknights.mantle.block.entity.MantleHangingSignBlockEntity;
 
 public class MantleCeilingHangingSignBlock extends CeilingHangingSignBlock {
-  public MantleCeilingHangingSignBlock(Properties props, WoodType type) {
-    super(props, type);
+  public MantleCeilingHangingSignBlock(WoodType type, Properties props) {
+    super(type, props);
   }
 
   @Override

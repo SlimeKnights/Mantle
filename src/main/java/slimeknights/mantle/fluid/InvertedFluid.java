@@ -18,13 +18,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 import java.util.Map;
 
 /** Fluid where up is down and down is up */
-public abstract class InvertedFluid extends ForgeFlowingFluid {
+public abstract class InvertedFluid extends BaseFlowingFluid {
   protected InvertedFluid(Properties properties) {
     super(properties);
   }
@@ -113,7 +113,7 @@ public abstract class InvertedFluid extends ForgeFlowingFluid {
       BlockState sideBlock = level.getBlockState(side);
       FluidState sideFluid = sideBlock.getFluidState();
       if (sideFluid.getType().isSame(this) && this.canPassThroughWall(direction, level, pos, block, side, sideBlock)) {
-        if (sideFluid.isSource() && ForgeEventFactory.canCreateFluidSource(level, side, sideBlock, sideFluid.canConvertToSource(level, side))) {
+        if (sideFluid.isSource() && EventHooks.canCreateFluidSource(level, side, sideBlock, sideFluid.canConvertToSource(level, side))) {
           sourceSides++;
         }
         maxSide = Math.max(maxSide, sideFluid.getAmount());

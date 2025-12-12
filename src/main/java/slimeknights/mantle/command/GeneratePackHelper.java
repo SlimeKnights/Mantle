@@ -10,7 +10,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 

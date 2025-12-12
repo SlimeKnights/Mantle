@@ -1,5 +1,6 @@
 package slimeknights.mantle.registration.adapter;
 
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -9,7 +10,6 @@ import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.PressurePlateBlock.Sensitivity;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -24,8 +24,7 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import slimeknights.mantle.block.MantleCeilingHangingSignBlock;
 import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallHangingSignBlock;
@@ -53,12 +52,12 @@ import static slimeknights.mantle.util.RegistryHelper.getHolder;
 public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
 
   /** @inheritDoc */
-  public BlockRegistryAdapter(IForgeRegistry<Block> registry) {
+  public BlockRegistryAdapter(Registry<Block> registry) {
     super(registry);
   }
 
   /** @inheritDoc */
-  public BlockRegistryAdapter(IForgeRegistry<Block> registry, String modid) {
+  public BlockRegistryAdapter(Registry<Block> registry, String modid) {
     super(registry, modid);
   }
 
@@ -151,7 +150,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
     FenceGateBlock fenceGate = register(new FenceGateBlock(Properties.copy(fence), woodType), name + "_fence_gate");
     // redstone
     BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().pushReaction(PushReaction.DESTROY).strength(0.5F);
-    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps, setType), name + "_pressure_plate");
+    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(setType, redstoneProps), name + "_pressure_plate");
     ButtonBlock button = register(new ButtonBlock(redstoneProps, setType, 30, true), name + "_button");
     // signs
     StandingSignBlock standingSign = register(new MantleStandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F), woodType), name + "_sign");
@@ -177,7 +176,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @param name        Fluid name, unfortunately no way to fetch from the fluid as it does not exist yet
    * @return  Fluid block instance
    */
-  public LiquidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, MapColor color, int lightLevel, String name) {
+  public LiquidBlock registerFluidBlock(Supplier<? extends BaseFlowingFluid> fluid, MapColor color, int lightLevel, String name) {
     return register(new LiquidBlock(fluid, FluidDeferredRegister.createProperties(color, lightLevel)), name + "_fluid");
   }
 }

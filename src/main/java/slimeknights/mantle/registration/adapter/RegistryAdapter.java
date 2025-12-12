@@ -1,21 +1,21 @@
 package slimeknights.mantle.registration.adapter;
 
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.fml.ModLoadingContext;
 
 import java.util.Objects;
 
 /**
- * A convenience wrapper for forge registries, to be used in combination with the {@link net.minecraftforge.registries.RegisterEvent} event.
+ * A convenience wrapper for registries, to be used in combination with the {@link net.neoforged.neoforge.registries.RegisterEvent} event.
  * Simply put it allows you to register things by passing (thing, name) instead of having to set the name inline.
  * There also is a convenience variant for items and itemblocks, see {@link ItemRegistryAdapter}.
  */
 @SuppressWarnings("WeakerAccess")
 @RequiredArgsConstructor
 public class RegistryAdapter<T> {
-  private final IForgeRegistry<T> registry;
+  private final Registry<T> registry;
   private final String modId;
 
   /**
@@ -23,7 +23,7 @@ public class RegistryAdapter<T> {
    * If this results in the wrong namespace, use the other constructor where you can provide the modid.
    * The modid is used as the namespace for resource locations, so if your mods id is "foo" it will register an item "bar" as "foo:bar".
    */
-  public RegistryAdapter(IForgeRegistry<T> registry) {
+  public RegistryAdapter(Registry<T> registry) {
     this(registry, ModLoadingContext.get().getActiveContainer().getModId());
   }
 
@@ -68,13 +68,14 @@ public class RegistryAdapter<T> {
    * General purpose backup registration method. In case you want to set a very specific resource location.
    * You should probably use the special purpose methods instead of this.
    * <p>
-   * Note: changes the things registry name. Do not call this with already registered objects!
+   * Note: In NeoForge 1.21+, this method must be called during a RegisterEvent.
    * @param entry     Entry to register
    * @param location  Registry name
    * @return Registry entry
    */
+  @SuppressWarnings("unchecked")
   public <I extends T> I register(I entry, ResourceLocation location) {
-    registry.register(location, entry);
+    Registry.register((Registry<T>) registry, location, entry);
     return entry;
   }
 }

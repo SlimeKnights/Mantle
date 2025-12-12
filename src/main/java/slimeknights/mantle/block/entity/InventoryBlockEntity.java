@@ -2,13 +2,14 @@ package slimeknights.mantle.block.entity;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
@@ -16,11 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
 
 import javax.annotation.Nonnull;
@@ -36,9 +34,12 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   /** If true, the inventory size is saved to NBT, false means you are responsible for serializing it if it changes */
   private final boolean saveSizeToNBT;
   protected int stackSizeLimit;
+  /**
+   * Item handler for capability access. In NeoForge 1.21+, capabilities are registered externally
+   * via RegisterCapabilitiesEvent.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (be, dir) -> be.getItemHandler())
+   */
   @Getter
   protected IItemHandlerModifiable itemHandler;
-  protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
@@ -56,22 +57,6 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.itemHandler = new InvWrapper(this);
-    this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
-  }
-
-  @Nonnull
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-    if (capability == ForgeCapabilities.ITEM_HANDLER) {
-      return this.itemHandlerCap.cast();
-    }
-    return super.getCapability(capability, facing);
-  }
-
-  @Override
-  public void invalidateCaps() {
-    super.invalidateCaps();
-    this.itemHandlerCap.invalidate();
   }
 
   /* Inventory management */
@@ -210,67 +195,41 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   /* NBT */
 
   @Override
-  public void load(CompoundTag tags) {
-    super.load(tags);
+  protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    super.loadAdditional(tag, registries);
     if (saveSizeToNBT) {
-      this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
+      this.resizeInternal(tag.getInt(TAG_INVENTORY_SIZE));
     }
-    this.readInventoryFromNBT(tags);
+    this.readInventoryFromNBT(tag, registries);
   }
 
   @Override
-  public void saveSynced(CompoundTag tags) {
-    super.saveSynced(tags);
+  protected void saveSynced(CompoundTag tag, HolderLookup.Provider registries) {
+    super.saveSynced(tag, registries);
     // only sync the size to the client by default
     if (saveSizeToNBT) {
-      tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
+      tag.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
     }
   }
   
   @Override
-  public void saveAdditional(CompoundTag tags) {
-    super.saveAdditional(tags);
-    this.writeInventoryToNBT(tags);
+  protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    super.saveAdditional(tag, registries);
+    this.writeInventoryToNBT(tag, registries);
   }
 
   /**
    * Writes the contents of the inventory to the tag
    */
-  public void writeInventoryToNBT(CompoundTag tag) {
-    Container inventory = this;
-    ListTag nbttaglist = new ListTag();
-
-    for (int i = 0; i < inventory.getContainerSize(); i++) {
-      if (!inventory.getItem(i).isEmpty()) {
-        CompoundTag itemTag = new CompoundTag();
-        itemTag.putByte(TAG_SLOT, (byte) i);
-        inventory.getItem(i).save(itemTag);
-        nbttaglist.add(itemTag);
-      }
-    }
-
-    tag.put(TAG_ITEMS, nbttaglist);
+  public void writeInventoryToNBT(CompoundTag tag, HolderLookup.Provider registries) {
+    ContainerHelper.saveAllItems(tag, this.inventory, registries);
   }
 
   /**
    * Reads an inventory from the tag. Overwrites current content
    */
-  public void readInventoryFromNBT(CompoundTag tag) {
-    ListTag list = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
-
-    int limit = this.getMaxStackSize();
-    ItemStack stack;
-    for (int i = 0; i < list.size(); ++i) {
-      CompoundTag itemTag = list.getCompound(i);
-      int slot = itemTag.getByte(TAG_SLOT) & 255;
-      if (slot < this.inventory.size()) {
-        stack = ItemStack.of(itemTag);
-        if (!stack.isEmpty() && stack.getCount() > limit) {
-          stack.setCount(limit);
-        }
-        this.inventory.set(slot, stack);
-      }
-    }
+  public void readInventoryFromNBT(CompoundTag tag, HolderLookup.Provider registries) {
+    ContainerHelper.loadAllItems(tag, this.inventory, registries);
   }
 
   @Override

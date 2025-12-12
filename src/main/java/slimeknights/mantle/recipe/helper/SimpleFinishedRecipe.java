@@ -1,26 +1,23 @@
 package slimeknights.mantle.recipe.helper;
 
-import com.google.gson.JsonObject;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Recipe;
 
-import javax.annotation.Nullable;
+/**
+ * Helper for datagen with {@link SimpleRecipeSerializer}.
+ *
+ * <p>In 1.21+ datagen, recipes are emitted through {@link RecipeOutput} rather than {@code FinishedRecipe}.
+ */
+@SuppressWarnings("unused")
+public final class SimpleFinishedRecipe {
+  private SimpleFinishedRecipe() {}
 
-/** Finished recipe implementation for {@link SimpleRecipeSerializer}, use like {@code consumer.accept(new SimpleFinishedRecipe(...))} */
-public record SimpleFinishedRecipe(ResourceLocation getId, RecipeSerializer<?> getType) implements FinishedRecipe {
-  @Override
-  public void serializeRecipeData(JsonObject pJson) {}
-
-  @Nullable
-  @Override
-  public JsonObject serializeAdvancement() {
-    return null;
+  /** Emits a recipe using the given serializer's constructor. */
+  public static <T extends Recipe<?>> void accept(RecipeOutput output, ResourceLocation id, SimpleRecipeSerializer<T> serializer) {
+    output.accept(ResourceKey.create(Registries.RECIPE, id), serializer.constructor().apply(id), null);
   }
 
-  @Nullable
-  @Override
-  public ResourceLocation getAdvancementId() {
-    return null;
-  }
 }

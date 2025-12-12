@@ -1,28 +1,26 @@
 package slimeknights.mantle.recipe.data;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
- * Ingredient for a non-NBT sensitive item from another mod, should never be used outside datagen
+ * Helper for datagen to create an ingredient referencing items from other mods by name.
+ * In 1.21+, the ingredient system has changed significantly - Ingredient.Value and custom
+ * serializers are no longer supported in the same way.
+ * 
+ * This class is now a simple data holder for item names, used in datagen contexts.
+ * Should never be used outside datagen.
+ * 
+ * @deprecated This class is being phased out. In 1.21+, consider using standard Ingredient
+ *             construction with registered items or crafting JSON directly.
  */
-public class ItemNameIngredient extends AbstractIngredient {
+@Deprecated(forRemoval = true)
+public class ItemNameIngredient {
   private final List<ResourceLocation> names;
+  
   protected ItemNameIngredient(List<ResourceLocation> names) {
-    super(names.stream().map(NamedValue::new));
     this.names = names;
   }
 
@@ -36,54 +34,8 @@ public class ItemNameIngredient extends AbstractIngredient {
     return from(Arrays.asList(names));
   }
 
-  @Override
-  public boolean test(@Nullable ItemStack stack) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** Creates a JSON object for a name */
-  private static JsonObject forName(ResourceLocation name) {
-    JsonObject json = new JsonObject();
-    json.addProperty("item", name.toString());
-    return json;
-  }
-
-  @Override
-  public JsonElement toJson() {
-    if (names.size() == 1) {
-      return forName(names.get(0));
-    }
-    JsonArray array = new JsonArray();
-    for (ResourceLocation name : names) {
-      array.add(forName(name));
-    }
-    return array;
-  }
-
-  @Override
-  public boolean isSimple() {
-    return false;
-  }
-
-  @Override
-  public IIngredientSerializer<? extends Ingredient> getSerializer() {
-    return VanillaIngredientSerializer.INSTANCE;
-  }
-
-  @RequiredArgsConstructor
-  public static class NamedValue implements Ingredient.Value {
-    private final ResourceLocation name;
-
-    @Override
-    public Collection<ItemStack> getItems() {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonObject serialize() {
-      JsonObject json = new JsonObject();
-      json.addProperty("item", name.toString());
-      return json;
-    }
+  /** Gets the list of item names */
+  public List<ResourceLocation> getNames() {
+    return names;
   }
 }

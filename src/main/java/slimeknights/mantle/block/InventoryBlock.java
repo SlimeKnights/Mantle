@@ -16,9 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import slimeknights.mantle.block.entity.INameableMenuProvider;
 import slimeknights.mantle.inventory.BaseContainerMenu;
 
@@ -45,7 +44,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
     if (!world.isClientSide()) {
       MenuProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
       if (container != null && player instanceof ServerPlayer serverPlayer) {
-        NetworkHooks.openScreen(serverPlayer, container, pos);
+        serverPlayer.openMenu(container, pos);
         if (player.containerMenu instanceof BaseContainerMenu<?> menu) {
           menu.syncOnOpen(serverPlayer);
         }
@@ -101,11 +100,11 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
   @Override
   public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      BlockEntity te = worldIn.getBlockEntity(pos);
-      if (te != null) {
-        te.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
-        worldIn.updateNeighbourForOutputSignal(pos, this);
+      IItemHandler inventory = worldIn.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+      if (inventory != null) {
+        dropInventoryItems(state, worldIn, pos, inventory);
       }
+      worldIn.updateNeighbourForOutputSignal(pos, this);
     }
 
     super.onRemove(state, worldIn, pos, newState, isMoving);

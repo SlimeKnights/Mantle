@@ -19,8 +19,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
@@ -37,13 +38,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import slimeknights.mantle.command.argument.RegistryTagSource;
 import slimeknights.mantle.command.argument.TagSource;
 import slimeknights.mantle.command.argument.TagSourceArgument;
@@ -178,15 +178,15 @@ public class TagsForCommand {
   private static int heldFluid(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     CommandSourceStack source = context.getSource();
     ItemStack stack = source.getPlayerOrException().getMainHandItem();
-    LazyOptional<IFluidHandlerItem> capability = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
-    if (capability.isPresent()) {
-      IFluidHandler handler = capability.map(h -> (IFluidHandler) h).orElse(EmptyFluidHandler.INSTANCE);
-      if (handler.getTanks() > 0) {
-        FluidStack fluidStack = handler.getFluidInTank(0);
-        if (!fluidStack.isEmpty()) {
-          Fluid fluid = fluidStack.getFluid();
-          return printOwningTags(context, BuiltInRegistries.FLUID, fluid);
-        }
+    IFluidHandler handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+    if (handler == null) {
+      handler = EmptyFluidHandler.INSTANCE;
+    }
+    if (handler.getTanks() > 0) {
+      FluidStack fluidStack = handler.getFluidInTank(0);
+      if (!fluidStack.isEmpty()) {
+        Fluid fluid = fluidStack.getFluid();
+        return printOwningTags(context, BuiltInRegistries.FLUID, fluid);
       }
     }
     source.sendSuccess(() -> NO_HELD_FLUID, true);
@@ -197,8 +197,9 @@ public class TagsForCommand {
   private static int heldPotion(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     CommandSourceStack source = context.getSource();
     ItemStack stack = source.getPlayerOrException().getMainHandItem();
-    Potion potion = PotionUtils.getPotion(stack);
-    if (potion != Potions.EMPTY) {
+    PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+    if (contents != null && contents.potion().isPresent()) {
+      Potion potion = contents.potion().get().value();
       return printOwningTags(context, BuiltInRegistries.POTION, potion);
     }
     source.sendSuccess(() -> NO_HELD_POTION, true);
