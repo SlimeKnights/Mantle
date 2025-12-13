@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEvent.Context;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Scoreboard;
@@ -45,9 +47,9 @@ import java.util.function.Predicate;
  */
 public class TemplateLevel extends Level {
 
-  private final Map<String, MapItemSavedData> maps = new HashMap<>();
+  private final Map<MapId, MapItemSavedData> maps = new HashMap<>();
   private final Scoreboard scoreboard = new Scoreboard();
-  private final RecipeManager recipeManager = new RecipeManager();
+  private final RecipeManager recipeManager;
   private final TemplateChunkSource chunkSource;
 
   public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
@@ -57,6 +59,7 @@ public class TemplateLevel extends Level {
       () -> InactiveProfiler.INSTANCE, true, false, 0, 0
     );
 
+    this.recipeManager = new RecipeManager(this.registryAccess());
     this.chunkSource = new TemplateChunkSource(blocks, this, shouldShow);
   }
 
@@ -82,18 +85,28 @@ public class TemplateLevel extends Level {
 
   @Nullable
   @Override
-  public MapItemSavedData getMapData(@Nonnull String mapName) {
-    return this.maps.get(mapName);
+  public MapItemSavedData getMapData(@Nonnull MapId mapId) {
+    return this.maps.get(mapId);
   }
 
   @Override
-  public void setMapData(String mapId, MapItemSavedData mapDataIn) {
+  public void setMapData(MapId mapId, MapItemSavedData mapDataIn) {
     this.maps.put(mapId, mapDataIn);
   }
 
   @Override
-  public int getFreeMapId() {
-    return this.maps.size();
+  public MapId getFreeMapId() {
+    return new MapId(this.maps.size());
+  }
+
+  @Override
+  public void setDayTimePerTick(float timePerTick) {
+    // No-op for fake world
+  }
+
+  @Override
+  public float getDayTimePerTick() {
+    return 1.0f;
   }
 
   @Override

@@ -23,7 +23,7 @@ public class ColoredModelBuilder<T extends ModelBuilder<T>> extends CustomLoader
   }
 
   protected ColoredModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(loaderId, parent, existingFileHelper);
+    super(loaderId, parent, existingFileHelper, false);
   }
 
   /** Adds a full color data for the next element */

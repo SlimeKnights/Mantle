@@ -7,22 +7,24 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.recipe.ingredient.SizedIngredient;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class IngredientData implements IDataElement {
   public SizedIngredient[] ingredients = new SizedIngredient[0];
@@ -81,15 +83,14 @@ public class IngredientData implements IDataElement {
 
   private ItemStack getMissingItem(String error) {
     ItemStack missingItem = new ItemStack(Items.BARRIER);
-
-    CompoundTag display = missingItem.getOrCreateTagElement("display");
-    display.putString("Name", "\u00A7rError Loading Item");
-    ListTag lore = new ListTag();
-    if(!StringUtil.isNullOrEmpty(error)) {
-      lore.add(StringTag.valueOf("\u00A7r\u00A7eError:"));
-      lore.add(StringTag.valueOf("\u00A7r\u00A7e" + error));
+    missingItem.set(DataComponents.CUSTOM_NAME, Component.literal("Error Loading Item").withStyle(ChatFormatting.RED));
+    if (!StringUtil.isNullOrEmpty(error)) {
+      List<Component> lore = List.of(
+        Component.literal("Error:").withStyle(ChatFormatting.YELLOW),
+        Component.literal(error).withStyle(ChatFormatting.YELLOW)
+      );
+      missingItem.set(DataComponents.LORE, new ItemLore(lore));
     }
-    display.put("Lore", lore);
 
     return missingItem;
   }
@@ -142,7 +143,8 @@ public class IngredientData implements IDataElement {
         JsonPrimitive primitive = json.getAsJsonPrimitive();
 
         if(primitive.isString()) {
-          Item item = NeoForgeRegistries.ITEMS.getValue(new ResourceLocation(primitive.getAsString()));
+          ResourceLocation itemId = ResourceLocation.parse(primitive.getAsString());
+          Item item = BuiltInRegistries.ITEM.getOptional(itemId).orElseThrow(() -> new JsonParseException("Unknown item: " + itemId));
           return SizedIngredient.fromItems(item);
         }
       }

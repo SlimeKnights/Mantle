@@ -102,7 +102,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation) {
     if (textures.isEmpty()) {
       throw new IllegalStateException("Empty textures list");
     }
@@ -127,7 +127,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
     }
 
     // build final model
-    CompositeModel.Baked.Builder modelBuilder = CompositeModel.Baked.builder(owner, particle, overrides, owner.getTransforms());
+    CompositeModel.Baked.Builder modelBuilder = CompositeModel.Baked.builder(owner, particle, ItemOverrides.EMPTY, owner.getTransforms());
     quadBuilder.build(quadGroup -> modelBuilder.addQuads(quadGroup.renderType, quadGroup.quads));
     return modelBuilder.build();
   }
@@ -211,7 +211,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
     }
 
     // setup quad builder
-    QuadBakingVertexConsumer quadBuilder = new QuadBakingVertexConsumer(builder::add);
+    QuadBakingVertexConsumer quadBuilder = new QuadBakingVertexConsumer();
     // common settings
     quadBuilder.setSprite(sprite);
     quadBuilder.setTintIndex(tint);
@@ -223,6 +223,8 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
     if (!transform.isIdentity()) {
       quadConsumer = new TransformingVertexPipeline(quadBuilder, transform);
     }
+    // Helper to add quads after each bake
+    Runnable addQuad = () -> builder.add(quadBuilder.bakeQuad());
 
     // horizontal quads
     for (Direction facing : HORIZONTALS) {

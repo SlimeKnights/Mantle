@@ -204,7 +204,7 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
       }
       // bake the face
       TextureAtlasSprite sprite = spriteGetter.apply(owner.getMaterial(texture));
-      BakedQuad bakedQuad = BlockModel.bakeFace(part, face, sprite, direction, transform, location);
+      BakedQuad bakedQuad = BlockModel.bakeFace(part, face, sprite, direction, transform);
       quadTransformer.processInPlace(bakedQuad);
       // apply cull face
       //noinspection ConstantConditions  Its nullable, just annotated wrongly
@@ -255,8 +255,8 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
-    return bakeModel(owner, this.getElements(), spriteGetter, transform, overrides, location);
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ResourceLocation location) {
+    return bakeModel(owner, this.getElements(), spriteGetter, transform, ItemOverrides.EMPTY, location);
   }
 
   /**
@@ -291,7 +291,7 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
   public static SimpleBlockModel deserialize(JsonObject json, JsonDeserializationContext context) {
     // parent, null if missing
     String parentName = GsonHelper.getAsString(json, "parent", "");
-    ResourceLocation parent = parentName.isEmpty() ? null : new ResourceLocation(parentName);
+    ResourceLocation parent = parentName.isEmpty() ? null : ResourceLocation.parse(parentName);
 
     // textures, empty map if missing
     Map<String, Either<Material, String>> textureMap;

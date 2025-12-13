@@ -191,7 +191,7 @@ public class BookLoader implements ResourceManagerReloadListener {
       ItemStack item = player.getItemInHand(hand);
       if (!item.isEmpty()) {
         BookHelper.writeSavedPageToBook(item, page);
-        MantleNetwork.INSTANCE.network.sendToServer(new UpdateHeldPagePacket(hand, page));
+        MantleNetwork.INSTANCE.sendToServer(new UpdateHeldPagePacket(hand, page));
       }
     }
   }
@@ -207,7 +207,7 @@ public class BookLoader implements ResourceManagerReloadListener {
       ItemStack item = player.getInventory().getItem(slot);
       if (!item.isEmpty()) {
         BookHelper.writeSavedPageToBook(item, page);
-        MantleNetwork.INSTANCE.network.sendToServer(new UpdateInventoryPagePacket(slot, page));
+        MantleNetwork.INSTANCE.sendToServer(new UpdateInventoryPagePacket(slot, page));
       }
     }
   }
@@ -218,7 +218,7 @@ public class BookLoader implements ResourceManagerReloadListener {
    * @param page    New page
    */
   public static void updateSavedPage(BlockPos pos, String page) {
-    MantleNetwork.INSTANCE.network.sendToServer(new UpdateLecternPagePacket(pos, page));
+    MantleNetwork.INSTANCE.sendToServer(new UpdateLecternPagePacket(pos, page));
   }
 
   public static Gson getGson() {

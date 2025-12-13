@@ -24,8 +24,8 @@ import slimeknights.mantle.config.Config.HeartRenderer;
 import java.util.Random;
 
 public class ExtraHeartRenderHandler {
-  private static final ResourceLocation ICON_HEARTS = new ResourceLocation(Mantle.modId, "textures/gui/extra_hearts.png");
-  private static final ResourceLocation ICON_VANILLA = Gui.GUI_ICONS_LOCATION;
+  private static final ResourceLocation ICON_HEARTS = Mantle.getResource("textures/gui/extra_hearts.png");
+  private static final ResourceLocation ICON_VANILLA = ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
   /** Number of heart color variants */
   private static final int HEART_VARIANTS = 12;
   /** Number of heart color variants */
@@ -229,8 +229,7 @@ public class ExtraHeartRenderHandler {
     event.setCanceled(true);
     RenderSystem.disableBlend();
     this.mc.getProfiler().pop();
-    //noinspection UnstableApiUsage  I do what I want (more accurately, we override the renderer but want to let others still respond in post)
-    NeoForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Post(event.getWindow(), graphics, event.getPartialTick(), VanillaGuiOverlay.PLAYER_HEALTH.type()));
+    // In 1.21+, the overlay event system changed - we just rely on the cancel to prevent vanilla rendering
   }
 
   /** Computes the color U offset for a given heart index */

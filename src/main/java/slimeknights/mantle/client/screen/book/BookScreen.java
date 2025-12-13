@@ -2,7 +2,8 @@ package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -720,8 +721,8 @@ public class BookScreen extends Screen {
 
   public static class AdvancementCache implements ClientAdvancements.Listener {
 
-    private final HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
-    private final HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
+    private final HashMap<ResourceLocation, AdvancementProgress> progress = new HashMap<>();
+    private final HashMap<ResourceLocation, AdvancementNode> nameCache = new HashMap<>();
 
     @Nullable
     public AdvancementProgress getProgress(String id) {
@@ -729,44 +730,46 @@ public class BookScreen extends Screen {
     }
 
     @Nullable
-    public AdvancementProgress getProgress(Advancement advancement) {
-      return this.progress.get(advancement);
+    public AdvancementProgress getProgress(@Nullable AdvancementNode advancement) {
+      if (advancement == null) return null;
+      return this.progress.get(advancement.holder().id());
     }
 
-    public Advancement getAdvancement(String id) {
-      return this.nameCache.get(new ResourceLocation(id));
-    }
-
-    @Override
-    public void onUpdateAdvancementProgress(Advancement advancement, AdvancementProgress advancementProgress) {
-      this.progress.put(advancement, advancementProgress);
+    @Nullable
+    public AdvancementNode getAdvancement(String id) {
+      return this.nameCache.get(ResourceLocation.parse(id));
     }
 
     @Override
-    public void onSelectedTabChanged(@Nullable Advancement advancement) {
+    public void onUpdateAdvancementProgress(AdvancementNode advancement, AdvancementProgress advancementProgress) {
+      this.progress.put(advancement.holder().id(), advancementProgress);
+    }
+
+    @Override
+    public void onSelectedTabChanged(@Nullable AdvancementHolder advancement) {
       // noop
     }
 
     @Override
-    public void onAddAdvancementRoot(Advancement advancement) {
-      this.nameCache.put(advancement.getId(), advancement);
+    public void onAddAdvancementRoot(AdvancementNode advancement) {
+      this.nameCache.put(advancement.holder().id(), advancement);
     }
 
     @Override
-    public void onRemoveAdvancementRoot(Advancement advancement) {
-      this.progress.remove(advancement);
-      this.nameCache.remove(advancement.getId());
+    public void onRemoveAdvancementRoot(AdvancementNode advancement) {
+      this.progress.remove(advancement.holder().id());
+      this.nameCache.remove(advancement.holder().id());
     }
 
     @Override
-    public void onAddAdvancementTask(Advancement advancement) {
-      this.nameCache.put(advancement.getId(), advancement);
+    public void onAddAdvancementTask(AdvancementNode advancement) {
+      this.nameCache.put(advancement.holder().id(), advancement);
     }
 
     @Override
-    public void onRemoveAdvancementTask(Advancement advancement) {
-      this.progress.remove(advancement);
-      this.nameCache.remove(advancement.getId());
+    public void onRemoveAdvancementTask(AdvancementNode advancement) {
+      this.progress.remove(advancement.holder().id());
+      this.nameCache.remove(advancement.holder().id());
     }
 
     @Override

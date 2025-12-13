@@ -16,7 +16,7 @@ import java.util.List;
 public class FallbackModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<DomainModel<T>> models = new ArrayList<>();
   public FallbackModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(Mantle.getResource("fallback"), parent, existingFileHelper);
+    super(Mantle.getResource("fallback"), parent, existingFileHelper, false);
   }
 
   /** Adds a fallback model with a domain restriction */

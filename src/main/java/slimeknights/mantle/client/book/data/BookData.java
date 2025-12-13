@@ -401,7 +401,7 @@ public class BookData implements IDataItem, BookScreenOpener {
   public void openGui(BlockPos pos, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
 
-    Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
+    Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.sendToServer(new DropLecternBookPacket(pos));
 
     openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
   }

@@ -107,12 +107,13 @@ public class ContentCrafting extends PageContent {
   public void load() {
     super.load();
 
-    if (!StringUtils.isEmpty(recipe) && ResourceLocation.isValidResourceLocation(recipe)) {
+    if (!StringUtils.isEmpty(recipe) && ResourceLocation.tryParse(recipe) != null) {
       int w = 0, h = 0;
 
       Level level = Minecraft.getInstance().level;
       assert level != null;
-      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
+      ResourceLocation recipeId = ResourceLocation.parse(this.recipe);
+      Recipe<?> recipe = level.getRecipeManager().byKey(recipeId).map(holder -> holder.value()).orElse(null);
       if (recipe instanceof CraftingRecipe) {
         if(grid_size.equalsIgnoreCase("auto")) {
           if(recipe.canCraftInDimensions(2, 2)) {

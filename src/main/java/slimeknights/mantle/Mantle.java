@@ -104,6 +104,7 @@ public class Mantle {
     bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     bus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
     MantleRecipes.init(bus);
+    MantleLoot.init(bus);
     MantleIngredientTypes.init(bus);
     MantleConditionCodecs.init(bus);
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
@@ -114,7 +115,6 @@ public class Mantle {
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
-    MantleNetwork.registerPackets();
     MantleCommand.init();
     OffhandCooldownTracker.init();
     TagPreference.init();
@@ -195,9 +195,7 @@ public class Mantle {
       NeoForgeRegistries.COMMAND_ARGUMENT_TYPES.register(getResource("resource_or_tag_key"), info);
       ArgumentTypeInfos.registerByClass(RegistrationHelper.genericArgumentType(ResourceOrTagKeyArgument.class), info);
     }
-    else {
-      MantleLoot.registerGlobalLootModifiers(event);
-    }
+    
   }
 
   private void gatherData(final GatherDataEvent event) {

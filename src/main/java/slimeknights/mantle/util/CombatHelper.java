@@ -106,14 +106,16 @@ public class CombatHelper {
         damage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
       }
 
-      // find enchantment damage - 1.21+ uses data-driven enchantments, simplified here
-      float enchantmentDamage = 0;
+      // In 1.21+, enchantment damage bonuses (Sharpness, Smite, Bane of Arthropods) are applied
+      // automatically through the data-driven enchantment effects system when target.hurt() is called.
+      // We check for any damage enchantments to determine if magic crit particles should be shown.
+      boolean hasDamageEnchantment = stack.getAllEnchantments(player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT))
+          .keySet().stream().anyMatch(holder -> holder.is(net.neoforged.neoforge.common.Tags.Enchantments.WEAPON_DAMAGE_ENHANCEMENTS));
 
       // scale damage cooldown
       float cooldown = hand == InteractionHand.OFF_HAND ? OffhandCooldownTracker.getCooldown(player) : player.getAttackStrengthScale(0.5F);
       damage *= 0.2F + cooldown * cooldown * 0.8F;
-      enchantmentDamage *= cooldown;
-      if (damage > 0.0F || enchantmentDamage > 0.0F) {
+      if (damage > 0.0F) {
         boolean fullyCharged = cooldown > 0.9F;
 
         // find knockback
@@ -140,8 +142,7 @@ public class CombatHelper {
           damage *= hitResult.getDamageModifier();
         }
 
-        // finish damage enchantments
-        damage += enchantmentDamage;
+        // Note: enchantment damage bonuses are now applied automatically through the damage system in 1.21+
 
         // check if we can do a sweep attack
         boolean canSweep = fullyCharged && !critical && !sprinting && player.onGround() && (player.walkDist - player.walkDistO) < player.getSpeed() && stack.canPerformAction(ItemAbilities.SWORD_SWEEP);
@@ -222,7 +223,8 @@ public class CombatHelper {
           } else {
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_WEAK, player.getSoundSource(), 1.0F, 1.0F);
           }
-          if (enchantmentDamage > 0.0F) {
+          // Show magic crit particles if weapon has any damage enhancement enchantments
+          if (hasDamageEnchantment) {
             player.magicCrit(target);
           }
 
