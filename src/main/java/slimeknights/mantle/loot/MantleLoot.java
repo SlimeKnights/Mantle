@@ -28,7 +28,10 @@ import static slimeknights.mantle.loot.condition.ILootModifierCondition.MODIFIER
 public final class MantleLoot {
   private MantleLoot() {}
 
+  private static boolean modifierConditionsRegistered = false;
+
   public static void init(IEventBus bus) {
+    registerModifierConditions();
     GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(bus);
     LOOT_CONDITION_TYPES.register(bus);
     LOOT_FUNCTION_TYPES.register(bus);
@@ -79,6 +82,10 @@ public final class MantleLoot {
    * Called during mod initialization to register custom modifier conditions
    */
   public static void registerModifierConditions() {
+    if (modifierConditionsRegistered) {
+      return;
+    }
+    modifierConditionsRegistered = true;
     MODIFIER_CONDITIONS.registerDeserializer(InvertedModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)InvertedModifierLootCondition::deserialize);
     MODIFIER_CONDITIONS.registerDeserializer(EmptyModifierLootCondition.ID, EmptyModifierLootCondition.INSTANCE);
     MODIFIER_CONDITIONS.registerDeserializer(ContainsItemModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)ContainsItemModifierLootCondition::deserialize);

@@ -47,8 +47,9 @@ public class RegistrationHelper {
     return () -> (R) holder.get();
   }
 
-  // Note: MissingMappingsEvent was removed in NeoForge 1.21
-  // Registry remapping is now handled through data fixers or registry replacement system
+  // Note: MissingMappingsEvent (Forge-style registry remaps during load) was removed in NeoForge 1.21.
+  // If you were using it for world-upgrade renames, you now need to use Mojang DataFixers or keep the old IDs registered.
+  // If you were using it only to refresh caches after numeric ID changes, subscribe to net.neoforged.neoforge.registries.IdMappingEvent instead.
 
   /** Registers a wood type to be injected into the atlas, should be called before client setup */
   public static void registerWoodType(WoodType type) {

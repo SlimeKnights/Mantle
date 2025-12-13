@@ -8,8 +8,11 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -76,13 +79,12 @@ public class FluidContainerIngredient implements ICustomIngredient {
   /** Internal ingredient to display the ingredient recipe viewers */
   @Nullable
   private final Ingredient display;
-  private ItemStack[] displayStacks;
   private final int hashCode;
   
   protected FluidContainerIngredient(FluidIngredient fluidIngredient, @Nullable Ingredient display) {
     this.fluidIngredient = fluidIngredient;
     this.display = display;
-    this.hashCode = Objects.hash(fluidIngredient.serialize(), display != null ? display.toJson() : null);
+    this.hashCode = Objects.hash(fluidIngredient.serialize(), display);
   }
 
   /** Creates an instance from a fluid ingredient with a display container */
@@ -110,7 +112,10 @@ public class FluidContainerIngredient implements ICustomIngredient {
     }
     Ingredient display = null;
     if (json.has("display")) {
-      display = Ingredient.fromJson(JsonHelper.getElement(json, "display"), false);
+      JsonElement element = JsonHelper.getElement(json, "display");
+      display = Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE, element)
+                                         .resultOrPartial(error -> { throw new IllegalArgumentException(error); })
+                                         .orElseThrow(() -> new IllegalArgumentException("Invalid display ingredient"));
     }
     return new FluidContainerIngredient(fluidIngredient, display);
   }
@@ -126,9 +131,16 @@ public class FluidContainerIngredient implements ICustomIngredient {
       json.add("fluid", element);
     }
     if (display != null) {
-      json.add("display", display.toJson());
+      json.add("display", serializeIngredient(display));
     }
     return json;
+  }
+
+  /** Serializes an ingredient to JSON using the 1.21 codec system. */
+  private static JsonElement serializeIngredient(Ingredient ingredient) {
+    return Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE, ingredient)
+                                    .resultOrPartial(error -> Mantle.logger.error("Failed to serialize ingredient for {}: {}", ID, error))
+                                    .orElseThrow(() -> new IllegalStateException("Failed to serialize ingredient"));
   }
 
   @Override
@@ -163,21 +175,28 @@ public class FluidContainerIngredient implements ICustomIngredient {
     return drained.getFluid() == fluid && drained.getAmount() == amount && ItemStack.matches(stack.getCraftingRemainder(), copyHandler.getContainer());
   }
 
-  private ItemStack[] getDisplayStacks() {
-    if (displayStacks == null) {
-      // no container? unfortunately hard to display this recipe so show nothing
-      if (display == null) {
-        displayStacks = new ItemStack[0];
-      } else {
-        displayStacks = display.getItems();
-      }
-    }
-    return displayStacks;
-  }
-
   @Override
   public Stream<ItemStack> getItems() {
-    return Arrays.stream(getDisplayStacks());
+    if (display != null) {
+      ItemStack[] displayItems = display.getItems();
+      if (displayItems.length > 0) {
+        return Arrays.stream(displayItems);
+      }
+    }
+
+    // Best-effort fallback: show buckets for the matched fluids.
+    // This avoids the ingredient being treated as "accidentally empty" in viewers/recipe loading.
+    var buckets = fluidIngredient.getFluids().stream()
+                                 .map(stack -> new ItemStack(stack.getFluid().getBucket()))
+                                 .filter(stack -> !stack.isEmpty())
+                                 .toList();
+    if (!buckets.isEmpty()) {
+      return buckets.stream();
+    }
+
+    ItemStack fallback = new ItemStack(Items.BARRIER);
+    fallback.set(DataComponents.CUSTOM_NAME, Component.literal("Fluid Container"));
+    return Stream.of(fallback);
   }
 
   @Override
@@ -188,10 +207,6 @@ public class FluidContainerIngredient implements ICustomIngredient {
   @Override
   public IngredientType<?> getType() {
     return TYPE;
-  }
-
-  public boolean isEmpty() {
-    return false;
   }
 
   /** Gets the fluid ingredient */
@@ -216,9 +231,7 @@ public class FluidContainerIngredient implements ICustomIngredient {
     if (!fluidIngredient.serialize().equals(other.fluidIngredient.serialize())) {
       return false;
     }
-    JsonElement thisDisplay = display != null ? display.toJson() : null;
-    JsonElement otherDisplay = other.display != null ? other.display.toJson() : null;
-    return Objects.equals(thisDisplay, otherDisplay);
+    return Objects.equals(display, other.display);
   }
 
   @Override

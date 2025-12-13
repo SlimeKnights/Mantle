@@ -3,6 +3,7 @@ package slimeknights.mantle.recipe.condition;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -28,9 +29,13 @@ import java.util.function.Function;
 public record TagCombinationCondition<T>(ResourceKey<? extends Registry<T>> registry, List<ResourceLocation> matchNames, @Nullable ResourceLocation ignoreName) implements ICondition {
   public static final ResourceLocation ID = Mantle.getResource("tag_combination_filled");
   
+  private static final Codec<List<ResourceLocation>> MATCH_CODEC = Codec.either(ResourceLocation.CODEC, ResourceLocation.CODEC.listOf())
+                                                                   .xmap(either -> either.map(List::of, Function.identity()),
+                                                                         list -> list.size() == 1 ? Either.left(list.get(0)) : Either.right(list));
+
   public static final MapCodec<TagCombinationCondition<?>> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
     ResourceKey.codec(Registries.ROOT_REGISTRY_NAME).optionalFieldOf("registry", Registries.ITEM).forGetter(c -> c.registry),
-    ResourceLocation.CODEC.listOf().fieldOf("match").forGetter(TagCombinationCondition::matchNames),
+    MATCH_CODEC.fieldOf("match").forGetter(TagCombinationCondition::matchNames),
     ResourceLocation.CODEC.optionalFieldOf("ignore").forGetter(c -> Optional.ofNullable(c.ignoreName))
   ).apply(inst, (reg, match, ignore) -> new TagCombinationCondition<>(reg, match, ignore.orElse(null))));
 

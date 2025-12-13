@@ -71,7 +71,7 @@ public class PotionDisplayIngredient extends ItemIngredient {
       return Stream.empty();
     }
     return BuiltInRegistries.POTION.stream()
-      .filter(pot -> pot != Potions.WATER) // EMPTY became WATER in 1.21
+      .filter(pot -> pot != Potions.WATER.value()) // EMPTY became WATER in 1.21
       .flatMap(pot -> Arrays.stream(parentStacks).map(item -> setPotion(item, pot)));
   }
 

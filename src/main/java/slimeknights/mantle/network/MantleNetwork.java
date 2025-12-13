@@ -17,14 +17,14 @@ import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
 @EventBusSubscriber(modid = Mantle.modId, bus = EventBusSubscriber.Bus.MOD)
 public class MantleNetwork {
   /** Network instance */
-  public static final NetworkWrapper INSTANCE = new NetworkWrapper(Mantle.getResource("network"), "1");
+  public static final NetworkWrapper INSTANCE = new NetworkWrapper(Mantle.modId, "1");
 
   /**
    * Registers packets via the event handler
    */
   @SubscribeEvent
   public static void registerPackets(RegisterPayloadHandlersEvent event) {
-    PayloadRegistrar registrar = event.registrar(Mantle.modId).versioned(INSTANCE.version);
+    PayloadRegistrar registrar = event.registrar(INSTANCE.version);
     
     // Client-bound packets
     INSTANCE.registerToClient(OpenLecternBookPacket.TYPE, OpenLecternBookPacket.STREAM_CODEC, OpenLecternBookPacket::handle).accept(registrar);

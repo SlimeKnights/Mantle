@@ -245,21 +245,23 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
           }
           // make quad [uStart, u]
           else if (building) {
-            // finish current quad if translucent (minimize overdraw) or we are forbidden from touching this pixel (previous layer drew here)
-            if (!canDraw || translucent) {
-              int off = facing == Direction.DOWN ? 1 : 0;
-              buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, uStart, v + off, uEnd - uStart, emissivity);
-              building = false;
-            }
-          }
-        }
-        if (building) { // build remaining quad
-          // make quad [uStart, uEnd]
-          int off = facing == Direction.DOWN ? 1 : 0;
-          buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, uStart, v+off, uEnd-uStart, emissivity);
-        }
-      }
-    }
+               // finish current quad if translucent (minimize overdraw) or we are forbidden from touching this pixel (previous layer drew here)
+             if (!canDraw || translucent) {
+               int off = facing == Direction.DOWN ? 1 : 0;
+               buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, uStart, v + off, uEnd - uStart, emissivity);
+               addQuad.run();
+               building = false;
+             }
+           }
+         }
+         if (building) { // build remaining quad
+           // make quad [uStart, uEnd]
+           int off = facing == Direction.DOWN ? 1 : 0;
+           buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, uStart, v+off, uEnd-uStart, emissivity);
+           addQuad.run();
+         }
+       }
+     }
 
     // vertical quads
     for (Direction facing : VERTICALS) {
@@ -280,21 +282,23 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
           }
           // make quad [vStart, v]
           else if (building) {
-            // finish current quad if translucent (minimize overdraw) or we are forbidden from touching this pixel (future layer drew here)
-            if (!canDraw || translucent) {
-              int off = facing == Direction.EAST ? 1 : 0;
-              buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, u + off, vStart, vEnd - vStart, emissivity);
-              building = false;
-            }
-          }
-        }
-        if (building) { // build remaining quad
-          // make quad [vStart, vEnd]
-          int off = facing == Direction.EAST ? 1 : 0;
-          buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, u+off, vStart, vEnd-vStart, emissivity);
-        }
-      }
-    }
+             // finish current quad if translucent (minimize overdraw) or we are forbidden from touching this pixel (future layer drew here)
+             if (!canDraw || translucent) {
+               int off = facing == Direction.EAST ? 1 : 0;
+               buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, u + off, vStart, vEnd - vStart, emissivity);
+               addQuad.run();
+               building = false;
+             }
+           }
+         }
+         if (building) { // build remaining quad
+           // make quad [vStart, vEnd]
+           int off = facing == Direction.EAST ? 1 : 0;
+           buildSideQuad(quadBuilder, quadConsumer, facing, color, sprite, u+off, vStart, vEnd-vStart, emissivity);
+           addQuad.run();
+         }
+       }
+     }
 
     // back
     buildQuad(quadBuilder, quadConsumer, Direction.NORTH, color, emissivity,
@@ -302,12 +306,14 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
               0, 1, 7.5f / 16f, sprite.getU0(), sprite.getV0(),
               1, 1, 7.5f / 16f, sprite.getU1(), sprite.getV0(),
               1, 0, 7.5f / 16f, sprite.getU1(), sprite.getV1());
+    addQuad.run();
     // front
     buildQuad(quadBuilder, quadConsumer, Direction.SOUTH, color, emissivity,
               0, 0, 8.5f / 16f, sprite.getU0(), sprite.getV1(),
               1, 0, 8.5f / 16f, sprite.getU1(), sprite.getV1(),
               1, 1, 8.5f / 16f, sprite.getU1(), sprite.getV0(),
               0, 1, 8.5f / 16f, sprite.getU0(), sprite.getV0());
+    addQuad.run();
 
     // fill in the pixel map with new pixels from the sprite
     if (pixels != null) {

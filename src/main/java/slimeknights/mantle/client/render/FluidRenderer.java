@@ -70,8 +70,8 @@ public class FluidRenderer {
 
   /**
    * Adds a quad to the renderer
-   * @param renderer    Renderer instnace
-   * @param matrix      Render matrix
+   * @param renderer    Renderer instance
+   * @param pose        Current render pose
    * @param sprite      Sprite to render
    * @param from        Quad start
    * @param to          Quad end
@@ -80,7 +80,7 @@ public class FluidRenderer {
    * @param brightness  Face brightness
    * @param flowing     If true, half texture coordinates
    */
-  public static void putTexturedQuad(VertexConsumer renderer, Matrix4f matrix, TextureAtlasSprite sprite, Vector3f from, Vector3f to, Direction face, int color, int brightness, int rotation, boolean flowing) {
+  public static void putTexturedQuad(VertexConsumer renderer, PoseStack.Pose pose, TextureAtlasSprite sprite, Vector3f from, Vector3f to, Direction face, int color, int brightness, int rotation, boolean flowing) {
     // start with texture coordinates
     float x1 = from.x(), y1 = from.y(), z1 = from.z();
     float x2 = to.x(), y2 = to.y(), z2 = to.z();
@@ -184,42 +184,45 @@ public class FluidRenderer {
     int r = color >> 16 & 0xFF;
     int g = color >> 8 & 0xFF;
     int b = color & 0xFF;
+    int normalX = face.getStepX();
+    int normalY = face.getStepY();
+    int normalZ = face.getStepZ();
     switch (face) {
       case DOWN -> {
-        renderer.addVertex(matrix, x1, y1, z2).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y1, z1).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y1, z1).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y1, z2).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2);
+        renderer.addVertex(pose, x1, y1, z2).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y1, z1).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y1, z2).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
       }
       case UP -> {
-        renderer.addVertex(matrix, x1, y2, z1).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y2, z2).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y2, z2).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y2, z1).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2);
+        renderer.addVertex(pose, x1, y2, z1).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y2, z2).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y2, z2).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y2, z1).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
       }
       case NORTH -> {
-        renderer.addVertex(matrix, x1, y1, z1).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y2, z1).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y2, z1).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y1, z1).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2);
+        renderer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y2, z1).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y2, z1).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y1, z1).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
       }
       case SOUTH -> {
-        renderer.addVertex(matrix, x2, y1, z2).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y2, z2).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y2, z2).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y1, z2).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2);
+        renderer.addVertex(pose, x2, y1, z2).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y2, z2).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y2, z2).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y1, z2).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
       }
       case WEST -> {
-        renderer.addVertex(matrix, x1, y1, z2).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y2, z2).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y2, z1).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2);
-        renderer.addVertex(matrix, x1, y1, z1).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2);
+        renderer.addVertex(pose, x1, y1, z2).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y2, z2).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y2, z1).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
       }
       case EAST -> {
-        renderer.addVertex(matrix, x2, y1, z1).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y2, z1).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y2, z2).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2);
-        renderer.addVertex(matrix, x2, y1, z2).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2);
+        renderer.addVertex(pose, x2, y1, z1).setColor(r, g, b, a).setUv(u1, v1).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y2, z1).setColor(r, g, b, a).setUv(u2, v2).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y2, z2).setColor(r, g, b, a).setUv(u3, v3).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
+        renderer.addVertex(pose, x2, y1, z2).setColor(r, g, b, a).setUv(u4, v4).setUv2(light1, light2).setNormal(pose, normalX, normalY, normalZ);
       }
     }
   }
@@ -238,14 +241,14 @@ public class FluidRenderer {
    * @param isGas     If true, fluid is a gas
    */
   public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, TextureAtlasSprite still, TextureAtlasSprite flowing, Vector3f from, Vector3f to, int color, int light, boolean isGas) {
-    Matrix4f matrix = matrices.last().pose();
+    PoseStack.Pose pose = matrices.last();
     int rotation = isGas ? 180 : 0;
     for (Direction dir : Direction.values()) {
       FluidFace face = cube.getFace(dir);
       if (face != null) {
         boolean isFlowing = face.isFlowing();
         int faceRot = (rotation + face.rotation()) % 360;
-        putTexturedQuad(buffer, matrix, isFlowing ? flowing : still, from, to, dir, color, light, faceRot, isFlowing);
+        putTexturedQuad(buffer, pose, isFlowing ? flowing : still, from, to, dir, color, light, faceRot, isFlowing);
       }
     }
   }

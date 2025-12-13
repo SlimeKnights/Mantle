@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class PotionIngredient extends ItemIngredient {
   public static final RecordLoadable<PotionIngredient> LOADABLE = RecordLoadable.create(
     ItemsField.INSTANCE, TAG_FIELD,
-    Loadables.POTION.defaultField("potion", Potions.WATER, false, i -> i.potion),
+    Loadables.POTION.defaultField("potion", Potions.WATER.value(), false, i -> i.potion),
     PotionIngredient::new
   );
   public static final MapCodec<PotionIngredient> CODEC = LoadableCodecs.mapCodec(LOADABLE);

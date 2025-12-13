@@ -108,7 +108,6 @@ public class Mantle {
     bus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
     MantleRecipes.init(bus);
     MantleLoot.init(bus);
-    MantleLoot.registerModifierConditions();
     MantleIngredientTypes.init(bus);
     MantleConditionCodecs.init(bus);
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);

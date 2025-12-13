@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.ClickEvent.Action;
@@ -14,8 +15,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.CommonHooks;
 import slimeknights.mantle.Mantle;
@@ -25,9 +29,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 /** Command to dump global loot modifiers */
 public class HarvestTiersCommand {
@@ -57,9 +64,55 @@ public class HarvestTiersCommand {
     return Component.literal(id.toString()).withStyle(style -> style.withUnderlined(true).withClickEvent(new ClickEvent(Action.SUGGEST_COMMAND, "/mantle dump_tag " + Registries.BLOCK.location() + " " + id + " save")));
   }
 
+  /** Best-effort tier ID for command output and JSON export */
+  private static ResourceLocation getTierId(Tier tier) {
+    if (tier instanceof Tiers vanilla) {
+      return ResourceLocation.withDefaultNamespace(vanilla.name().toLowerCase(Locale.ROOT));
+    }
+
+    ResourceLocation incorrectTag = tier.getIncorrectBlocksForDrops().location();
+    String path = incorrectTag.getPath();
+    if (path.startsWith("incorrect_for_") && path.endsWith("_tool")) {
+      path = path.substring("incorrect_for_".length(), path.length() - "_tool".length());
+      if (path.equals("wooden")) {
+        path = "wood";
+      }
+    }
+    return ResourceLocation.fromNamespaceAndPath(incorrectTag.getNamespace(), path);
+  }
+
+  /** Gets the block tag to display for the given tier */
+  private static TagKey<Block> getTierTag(Tier tier) {
+    if (tier instanceof Tiers vanilla) {
+      return CommonHooks.getTagFromVanillaTier(vanilla);
+    }
+    return tier.getIncorrectBlocksForDrops();
+  }
+
+  /** Gets the count of blocks in the incorrect-for-drops tag for sorting */
+  private static int getIncorrectBlocksCount(Tier tier) {
+    return BuiltInRegistries.BLOCK.getTag(tier.getIncorrectBlocksForDrops()).map(HolderSet::size).orElse(0);
+  }
+
+  /** Gets tiers in best-effort sorted order, including modded tiers found on {@link TieredItem}s */
+  private static List<Tier> getSortedTiers() {
+    Set<Tier> tiers = new LinkedHashSet<>();
+    tiers.addAll(List.of(Tiers.values()));
+    for (Item item : BuiltInRegistries.ITEM) {
+      if (item instanceof TieredItem tiered) {
+        tiers.add(tiered.getTier());
+      }
+    }
+
+    List<Tier> sorted = new ArrayList<>(tiers);
+    sorted.sort(Comparator.<Tier>comparingInt(HarvestTiersCommand::getIncorrectBlocksCount).reversed()
+                          .thenComparing(tier -> getTierId(tier).toString()));
+    return List.copyOf(sorted);
+  }
+
   /** Runs the command, dumping the tag */
   private static int list(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-    List<Tiers> sortedTiers = List.of(Tiers.values());
+    List<Tier> sortedTiers = getSortedTiers();
 
     // start building output message
     MutableComponent output = Component.translatable("command.mantle.harvest_tiers.success_list");
@@ -67,10 +120,10 @@ public class HarvestTiersCommand {
     if (sortedTiers.isEmpty()) {
       output.append("\n* ").append(EMPTY);
     } else {
-      for (Tiers tier : sortedTiers) {
+      for (Tier tier : sortedTiers) {
         output.append("\n* ");
-        TagKey<Block> tag = CommonHooks.getTagFromVanillaTier(tier);
-        ResourceLocation id = ResourceLocation.withDefaultNamespace(tier.name().toLowerCase(Locale.ROOT));
+        TagKey<Block> tag = getTierTag(tier);
+        ResourceLocation id = getTierId(tier);
         output.append(Component.translatable("command.mantle.harvest_tiers.tag", id, getTagComponent(tag)));
       }
     }
@@ -80,12 +133,12 @@ public class HarvestTiersCommand {
 
   /** Runs the command, dumping the tag */
   private static int run(CommandContext<CommandSourceStack> context, boolean saveFile) throws CommandSyntaxException {
-    List<Tiers> sortedTiers = List.of(Tiers.values());
+    List<Tier> sortedTiers = getSortedTiers();
 
     // save the list as JSON
     JsonArray entries = new JsonArray();
-    for (Tiers tier : sortedTiers) {
-      entries.add(ResourceLocation.withDefaultNamespace(tier.name().toLowerCase(Locale.ROOT)).toString());
+    for (Tier tier : sortedTiers) {
+      entries.add(getTierId(tier).toString());
     }
     JsonObject json = new JsonObject();
     json.add("order", entries);
