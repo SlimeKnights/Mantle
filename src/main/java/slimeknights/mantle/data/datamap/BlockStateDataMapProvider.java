@@ -70,7 +70,7 @@ public abstract class BlockStateDataMapProvider<D> extends GenericDataProvider {
 
   /** Adds an entry that a block may redirect to */
   protected void entry(String key, D data) {
-    entry(new ResourceLocation(modId, key), data);
+    entry(ResourceLocation.fromNamespaceAndPath(modId, key), data);
   }
 
   /** Record holding a single entry in the variants list */
@@ -98,7 +98,7 @@ public abstract class BlockStateDataMapProvider<D> extends GenericDataProvider {
 
     /** Adds a parent variant, stored as a string */
     public VariantBuilder variant(String parent) {
-      return variant(new ResourceLocation(modId, parent));
+      return variant(ResourceLocation.fromNamespaceAndPath(modId, parent));
     }
 
     /** Serializes this to JSON */

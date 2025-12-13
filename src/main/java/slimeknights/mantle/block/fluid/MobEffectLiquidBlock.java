@@ -27,7 +27,9 @@ public class MobEffectLiquidBlock extends LiquidBlock {
   @Override
   public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
     if (entity.getFluidTypeHeight(fluidSupplier.get().getFluidType()) > 0 && entity instanceof LivingEntity living) {
-      MobEffectInstance effect = this.effect.get();
+      MobEffectInstance effect = new MobEffectInstance(this.effect.get());
+      // NeoForge 1.21+ replaces curative item lists with EffectCure sets
+      effect.getCures().clear();
       living.addEffect(effect);
     }
   }

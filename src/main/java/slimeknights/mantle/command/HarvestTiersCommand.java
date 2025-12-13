@@ -32,7 +32,7 @@ import java.util.Objects;
 /** Command to dump global loot modifiers */
 public class HarvestTiersCommand {
   /** Resource location of the global loot manager "tag" */
-  protected static final ResourceLocation HARVEST_TIERS = new ResourceLocation(Mantle.modId, "item_tiers.json");
+  protected static final ResourceLocation HARVEST_TIERS = ResourceLocation.fromNamespaceAndPath(Mantle.modId, "item_tiers.json");
   /** Path for saving the loot modifiers */
   private static final String HARVEST_TIER_PATH = HARVEST_TIERS.getNamespace() + "/" + HARVEST_TIERS.getPath();
 

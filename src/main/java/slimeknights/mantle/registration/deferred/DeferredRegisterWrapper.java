@@ -47,7 +47,7 @@ public abstract class DeferredRegisterWrapper<T> {
    * @return  Resource location string
    */
   protected ResourceLocation resource(String name) {
-    return new ResourceLocation(modID, name);
+    return ResourceLocation.fromNamespaceAndPath(modID, name);
   }
 
   /**

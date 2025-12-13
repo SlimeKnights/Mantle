@@ -2,6 +2,7 @@ package slimeknights.mantle.block.entity;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
@@ -35,11 +38,25 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   private final boolean saveSizeToNBT;
   protected int stackSizeLimit;
   /**
-   * Item handler for capability access. In NeoForge 1.21+, capabilities are registered externally
-   * via RegisterCapabilitiesEvent.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (be, dir) -> be.getItemHandler())
+   * Item handler for capability access.
+   * In NeoForge 1.21+, block entity capabilities are registered externally (see {@link #registerCapabilities(RegisterCapabilitiesEvent, BlockEntityType)}).
    */
   @Getter
   protected IItemHandlerModifiable itemHandler;
+
+  /** Registers the {@link Capabilities#ItemHandler} block capability for the given block entity type. */
+  public static <T extends InventoryBlockEntity> void registerCapabilities(RegisterCapabilitiesEvent event, BlockEntityType<T> type) {
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (be, side) -> be.getItemHandler(side));
+  }
+
+  /**
+   * Gets the item handler for the given side. Override to implement side-sensitive access.
+   * @return  Item handler, or null if the capability should not be exposed on that side.
+   */
+  @Nullable
+  public IItemHandlerModifiable getItemHandler(@Nullable Direction side) {
+    return this.itemHandler;
+  }
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName

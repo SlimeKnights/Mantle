@@ -86,7 +86,7 @@ public abstract class AbstractNamedComponentRegistry<T> implements ResourceLocat
     if (key.isEmpty()) {
       return null;
     }
-    return decodeInternal(new ResourceLocation(key));
+    return decodeInternal(ResourceLocation.parse(key));
   }
 
 

@@ -283,7 +283,7 @@ public class JsonHelper {
       .getNamespaces().stream()
       .filter(ResourceLocation::isValidNamespace)
       .flatMap(namespace -> {
-        ResourceLocation location = new ResourceLocation(namespace, path);
+        ResourceLocation location = ResourceLocation.fromNamespaceAndPath(namespace, path);
         return manager.getResourceStack(location).stream()
           .map(preferredPath != null ? resource -> {
             Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", location, resource.sourcePackId(), location.getNamespace(), preferredPath);

@@ -46,7 +46,7 @@ public class Loadables {
   /** Loadable for a resource location */
   public static final StringLoadable<ResourceLocation> RESOURCE_LOCATION = StringLoadable.DEFAULT.xmap((s, e) -> {
     try {
-      return new ResourceLocation(s);
+      return ResourceLocation.parse(s);
     } catch (ResourceLocationException ex) {
       throw e.create(ex);
     }

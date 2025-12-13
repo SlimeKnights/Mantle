@@ -19,12 +19,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import slimeknights.mantle.block.entity.MantleHangingSignBlockEntity;
@@ -58,6 +58,7 @@ import slimeknights.mantle.fluid.transfer.EmptyPotionTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidWithNBTTransfer;
 import slimeknights.mantle.fluid.transfer.FluidContainerTransferManager;
+import slimeknights.mantle.item.ContainerFoodItem;
 import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.LootTableInjector;
 import slimeknights.mantle.loot.MantleLoot;
@@ -100,11 +101,14 @@ public class Mantle {
     MantleTags.init();
 
     instance = this;
+    OffhandCooldownTracker.register(bus);
     bus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, this::commonSetup);
+    bus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
     bus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     bus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
     MantleRecipes.init(bus);
     MantleLoot.init(bus);
+    MantleLoot.registerModifierConditions();
     MantleIngredientTypes.init(bus);
     MantleConditionCodecs.init(bus);
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
@@ -116,9 +120,12 @@ public class Mantle {
 
   private void commonSetup(final FMLCommonSetupEvent event) {
     MantleCommand.init();
-    OffhandCooldownTracker.init();
     TagPreference.init();
     LootTableInjector.init();
+  }
+
+  private void registerCapabilities(RegisterCapabilitiesEvent event) {
+    ContainerFoodItem.FluidContainerFoodItem.registerCapabilities(event);
   }
 
   @SuppressWarnings("deprecation")
@@ -180,7 +187,7 @@ public class Mantle {
       }
     }
     else if (key == Registries.BLOCK_ENTITY_TYPE) {
-      BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(Objects.requireNonNull(event.getForgeRegistry()));
+      BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(Objects.requireNonNull(event.getRegistry(Registries.BLOCK_ENTITY_TYPE)));
       Set<Block> signs = MantleSignBlockEntity.buildSignBlocks();
       if (!signs.isEmpty()) {
         MantleRegistrations.SIGN = adapter.register(MantleSignBlockEntity::new, signs, "sign");
@@ -192,7 +199,7 @@ public class Mantle {
     }
     else if (key == Registries.COMMAND_ARGUMENT_TYPE) {
       ResourceOrTagKeyArgument.Info<?> info = new ResourceOrTagKeyArgument.Info<>();
-      NeoForgeRegistries.COMMAND_ARGUMENT_TYPES.register(getResource("resource_or_tag_key"), info);
+      event.register(Registries.COMMAND_ARGUMENT_TYPE, getResource("resource_or_tag_key"), () -> info);
       ArgumentTypeInfos.registerByClass(RegistrationHelper.genericArgumentType(ResourceOrTagKeyArgument.class), info);
     }
     
@@ -218,7 +225,7 @@ public class Mantle {
    * @return  Resource location instance
    */
   public static ResourceLocation getResource(String name) {
-    return new ResourceLocation(modId, name);
+    return ResourceLocation.fromNamespaceAndPath(modId, name);
   }
 
   /**
@@ -227,7 +234,7 @@ public class Mantle {
    * @return  Resource location instance
    */
   public static ResourceLocation commonResource(String name) {
-    return new ResourceLocation(COMMON, name);
+    return ResourceLocation.fromNamespaceAndPath(COMMON, name);
   }
 
   /**

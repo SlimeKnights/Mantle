@@ -16,7 +16,7 @@ public class NBTKeyModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderB
   private String key = null;
   private ResourceLocation extraTexturesKey = null;
   public NBTKeyModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(Mantle.getResource("nbt_key"), parent, existingFileHelper);
+    super(Mantle.getResource("nbt_key"), parent, existingFileHelper, false);
   }
 
   @Override

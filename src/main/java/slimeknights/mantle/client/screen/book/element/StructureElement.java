@@ -65,7 +65,7 @@ public class StructureElement extends SizedBookElement {
 
   @Override
   public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
-    MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+    MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
     PoseStack transform = graphics.pose();
     PoseStack.Pose lastEntryBeforeTry = transform.last();
 

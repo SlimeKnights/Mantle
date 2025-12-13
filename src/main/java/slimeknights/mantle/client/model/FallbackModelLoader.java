@@ -46,7 +46,7 @@ public enum FallbackModelLoader implements IGeometryLoader<FallbackModelLoader.B
       if (entry.has("fallback_mod_id")) {
         modId = GsonHelper.getAsString(entry, "fallback_mod_id");
       } else if (entry.has("loader")) {
-        ResourceLocation loader = new ResourceLocation(GsonHelper.getAsString(entry, "loader"));
+        ResourceLocation loader = ResourceLocation.parse(GsonHelper.getAsString(entry, "loader"));
         modId = loader.getNamespace();
       }
 
@@ -73,8 +73,8 @@ public enum FallbackModelLoader implements IGeometryLoader<FallbackModelLoader.B
    */
   record BlockModelWrapper(BlockModel model) implements IUnbakedGeometry<BlockModelWrapper> {
     @Override
-    public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-      return model.bake(baker, model, spriteGetter, modelTransform, modelLocation, true);
+    public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides) {
+      return model.bake(baker, model, spriteGetter, modelTransform, owner.isGui3d());
     }
 
     @Override

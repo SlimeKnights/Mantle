@@ -141,7 +141,6 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 
   @Override
   public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground(graphics);
     int oldX = this.leftPos;
     int oldY = this.topPos;
     int oldW = this.imageWidth;
@@ -261,16 +260,16 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   }
 
   @Override
-  public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
     ModuleScreen<?,?> module = this.getModuleForPoint(mouseX, mouseY);
 
     if (module != null) {
-      if (module.handleMouseScrolled(mouseX, mouseY, delta)) {
+      if (module.handleMouseScrolled(mouseX, mouseY, scrollDeltaY)) {
         return false;
       }
     }
 
-    return super.mouseScrolled(mouseX, mouseY, delta);
+    return super.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
   }
 
   @Override

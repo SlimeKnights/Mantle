@@ -2,12 +2,11 @@ package slimeknights.mantle.loot;
 
 import com.google.gson.JsonDeserializer;
 import com.mojang.serialization.MapCodec;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -26,8 +25,16 @@ import slimeknights.mantle.recipe.condition.TagFilledCondition;
 
 import static slimeknights.mantle.loot.condition.ILootModifierCondition.MODIFIER_CONDITIONS;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MantleLoot {
+public final class MantleLoot {
+  private MantleLoot() {}
+
+  public static void init(IEventBus bus) {
+    GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(bus);
+    LOOT_CONDITION_TYPES.register(bus);
+    LOOT_FUNCTION_TYPES.register(bus);
+    LOOT_POOL_ENTRY_TYPES.register(bus);
+  }
+
   // Deferred registers for NeoForge 1.21+
   public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS =
       DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Mantle.modId);

@@ -73,7 +73,7 @@ public class ContainerFoodItem extends Item {
 
   @Override
   public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity living) {
-    ItemStack container = stack.getCraftingRemainingItem();
+    ItemStack container = stack.getCraftingRemainder();
     ItemStack result = super.finishUsingItem(stack, level, living);
     Player player = living instanceof Player p ? p : null;
     if (!container.isEmpty() && (player == null || !player.getAbilities().instabuild)) {

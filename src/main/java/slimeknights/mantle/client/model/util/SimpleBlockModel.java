@@ -255,8 +255,8 @@ public class SimpleBlockModel implements IUnbakedGeometry<SimpleBlockModel> {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ResourceLocation location) {
-    return bakeModel(owner, this.getElements(), spriteGetter, transform, ItemOverrides.EMPTY, location);
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides) {
+    return bakeModel(owner, this.getElements(), spriteGetter, transform, overrides, BAKE_LOCATION);
   }
 
   /**

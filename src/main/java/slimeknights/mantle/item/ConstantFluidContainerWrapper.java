@@ -27,7 +27,7 @@ public class ConstantFluidContainerWrapper implements IFluidHandlerItem {
   }
 
   public ConstantFluidContainerWrapper(FluidStack fluid, ItemStack container) {
-    this(fluid, container, container.getCraftingRemainingItem());
+    this(fluid, container, container.getCraftingRemainder());
   }
 
   @Override

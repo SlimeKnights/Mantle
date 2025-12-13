@@ -35,7 +35,7 @@ public abstract class AbstractLootTableInjectionProvider extends GenericDataProv
       if (builder.conditions.length > 0) {
         json.add("conditions", CraftingHelper.serialize(builder.conditions));
       }
-      return saveJson(output, new ResourceLocation(domain, builder.path), json);
+      return saveJson(output, ResourceLocation.fromNamespaceAndPath(domain, builder.path), json);
     }));
   }
 
@@ -48,17 +48,17 @@ public abstract class AbstractLootTableInjectionProvider extends GenericDataProv
 
   /** Creates a new injection for the Minecraft domain */
   protected LootTableInjection.Builder inject(String path, String name, ICondition... conditions) {
-    return inject(path, new ResourceLocation(name), conditions);
+    return inject(path, ResourceLocation.parse(name), conditions);
   }
 
   /** Creates a new injection for the Minecraft domain */
   protected LootTableInjection.Builder injectChest(String name, ICondition... conditions) {
-    return inject(name, new ResourceLocation("chests/" + name), conditions);
+    return inject(name, ResourceLocation.withDefaultNamespace("chests/" + name), conditions);
   }
 
   /** Creates a new injection for the Minecraft domain */
   protected LootTableInjection.Builder injectGameplay(String name, ICondition... conditions) {
-    return inject(name, new ResourceLocation("gameplay/" + name), conditions);
+    return inject(name, ResourceLocation.withDefaultNamespace("gameplay/" + name), conditions);
   }
 
   /** Internal builder tuple */

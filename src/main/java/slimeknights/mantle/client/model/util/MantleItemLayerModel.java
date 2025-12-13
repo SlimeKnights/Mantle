@@ -102,7 +102,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation) {
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides) {
     if (textures.isEmpty()) {
       throw new IllegalStateException("Empty textures list");
     }
@@ -127,7 +127,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
     }
 
     // build final model
-    CompositeModel.Baked.Builder modelBuilder = CompositeModel.Baked.builder(owner, particle, ItemOverrides.EMPTY, owner.getTransforms());
+    CompositeModel.Baked.Builder modelBuilder = CompositeModel.Baked.builder(owner, particle, overrides, owner.getTransforms());
     quadBuilder.build(quadGroup -> modelBuilder.addQuads(quadGroup.renderType, quadGroup.quads));
     return modelBuilder.build();
   }
@@ -346,7 +346,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
   @SuppressWarnings("unused")  // API
   public static BakedQuad getQuadForGui(int color, int tint, TextureAtlasSprite sprite, Transformation transform, int emissivity) {
     // setup quad builder
-    QuadBakingVertexConsumer.Buffered quadBuilder = new QuadBakingVertexConsumer.Buffered();
+    QuadBakingVertexConsumer quadBuilder = new QuadBakingVertexConsumer();
     // common settings
     quadBuilder.setSprite(sprite);
     quadBuilder.setTintIndex(tint);
@@ -364,7 +364,7 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
               1, 0, 8.5f / 16f, sprite.getU1(), sprite.getV1(),
               1, 1, 8.5f / 16f, sprite.getU1(), sprite.getV0(),
               0, 1, 8.5f / 16f, sprite.getU0(), sprite.getV0());
-    return quadBuilder.getQuad();
+    return quadBuilder.bakeQuad();
   }
 
   /**
@@ -455,14 +455,13 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
    * @param luminosity Extra light to add to the quad between 0 and 15
    */
   private static void putVertex(VertexConsumer consumer, Direction side, float x, float y, float z, float u, float v, int color, int luminosity) {
-    // format is always DefaultVertexFormat#BLOCK, though order does not matter too much
-    consumer.vertex(x, y, z);
-    consumer.color(color);
-    consumer.normal(side.getStepX(), side.getStepY(), side.getStepZ());
-    consumer.uv(u, v);
-    int light = (luminosity << 4);
-    consumer.uv2(light, light);
-    consumer.endVertex();
+    // format is always DefaultVertexFormat#BLOCK - in 1.21+ use single addVertex call
+    int light = (luminosity << 4) | (luminosity << 20);
+    consumer.addVertex(x, y, z)
+            .setColor(color)
+            .setNormal(side.getStepX(), side.getStepY(), side.getStepZ())
+            .setUv(u, v)
+            .setLight(light);
   }
 
   /** Cloned from {@link ItemLayerModel}'s FaceData subclass */

@@ -16,7 +16,7 @@ import java.util.List;
 public class MantleItemLayerBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<LayerData> layers = new ArrayList<>();
   protected MantleItemLayerBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(loaderId, parent, existingFileHelper);
+    super(loaderId, parent, existingFileHelper, false);
   }
 
   public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper) {

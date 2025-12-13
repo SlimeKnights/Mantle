@@ -14,7 +14,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import slimeknights.mantle.Mantle;
@@ -25,7 +24,6 @@ import java.util.Random;
 
 public class ExtraHeartRenderHandler {
   private static final ResourceLocation ICON_HEARTS = Mantle.getResource("textures/gui/extra_hearts.png");
-  private static final ResourceLocation ICON_VANILLA = ResourceLocation.withDefaultNamespace("textures/gui/icons.png");
   /** Number of heart color variants */
   private static final int HEART_VARIANTS = 12;
   /** Number of heart color variants */
@@ -220,7 +218,6 @@ public class ExtraHeartRenderHandler {
     }
 
     // prepare the GUI for the event
-    RenderSystem.setShaderTexture(0, ICON_VANILLA);
     gui.leftHeight += ROW_HEIGHT;
     if (!compactAbsorption && absorb > 0) {
       gui.leftHeight += absorptionOffset;

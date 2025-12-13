@@ -32,7 +32,7 @@ public class RegistryAdapter<T> {
    * @param name  Name for location
    */
   public ResourceLocation getResource(String name) {
-    return new ResourceLocation(modId, name);
+    return ResourceLocation.fromNamespaceAndPath(modId, name);
   }
 
   /**

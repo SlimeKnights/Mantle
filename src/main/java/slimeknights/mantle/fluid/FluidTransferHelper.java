@@ -171,7 +171,7 @@ public class FluidTransferHelper {
             world.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
             player.displayClientMessage(Component.translatable(KEY_FILLED, COMMA_FORMAT.format(FluidType.BUCKET_VOLUME), fluidStack.getDisplayName()), true);
             if (!player.isCreative()) {
-              player.setItemInHand(hand, held.getCraftingRemainingItem());
+              player.setItemInHand(hand, held.getCraftingRemainder());
             }
             return FluidInteractionResult.DRAINED_STACK;
           }

@@ -6,14 +6,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.TickRateManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.gameevent.GameEvent.Context;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.saveddata.maps.MapId;
@@ -51,6 +51,7 @@ public class TemplateLevel extends Level {
   private final Scoreboard scoreboard = new Scoreboard();
   private final RecipeManager recipeManager;
   private final TemplateChunkSource chunkSource;
+  private final TickRateManager tickRateManager = new TickRateManager();
 
   public TemplateLevel(List<StructureBlockInfo> blocks, Predicate<BlockPos> shouldShow) {
     super(
@@ -106,7 +107,17 @@ public class TemplateLevel extends Level {
 
   @Override
   public float getDayTimePerTick() {
-    return 1.0f;
+    return 0;
+  }
+
+  @Override
+  public float getDayTimeFraction() {
+    return 0.0f;
+  }
+
+  @Override
+  public void setDayTimeFraction(float fraction) {
+    // No-op for fake world
   }
 
   @Override
@@ -122,6 +133,16 @@ public class TemplateLevel extends Level {
   @Override
   public RecipeManager getRecipeManager() {
     return this.recipeManager;
+  }
+
+  @Override
+  public PotionBrewing potionBrewing() {
+    return PotionBrewing.EMPTY;
+  }
+
+  @Override
+  public TickRateManager tickRateManager() {
+    return tickRateManager;
   }
 
   @Override
@@ -151,7 +172,7 @@ public class TemplateLevel extends Level {
   public void levelEvent(@Nullable Player player, int type, @Nonnull BlockPos pos, int data) {}
 
   @Override
-  public void gameEvent(GameEvent pEvent, Vec3 pPosition, Context pContext) {}
+  public void gameEvent(Holder<GameEvent> pEvent, Vec3 pPosition, GameEvent.Context pContext) {}
 
   @Override
   public FeatureFlagSet enabledFeatures() {
