@@ -18,8 +18,10 @@ import java.util.function.Predicate;
 public interface ItemPredicate extends IJsonPredicate<Item> {
   /** Predicate that matches all items */
   ItemPredicate ANY = simple(item -> true);
+  /** Predicate that matches no items */
+  ItemPredicate NONE = simple(item -> false);
   /** Loader for item predicates */
-  RegistryPredicateRegistry<Item,Item> LOADER = new RegistryPredicateRegistry<>("Item Predicate", ANY, Loadables.ITEM, Function.identity(), "items", Loadables.ITEM_TAG, RegistryHelper::contains);
+  RegistryPredicateRegistry<Item,Item> LOADER = new RegistryPredicateRegistry<>("Item Predicate", ANY, NONE, Loadables.ITEM, Function.identity(), "items", Loadables.ITEM_TAG, RegistryHelper::contains);
 
   @Override
   default IJsonPredicate<Item> inverted() {
@@ -41,6 +43,9 @@ public interface ItemPredicate extends IJsonPredicate<Item> {
     });
   }
 
+  /** Predicate matching any items with a remainder after crafting. */
+  @SuppressWarnings("deprecation")
+  ItemPredicate HAS_CONTAINER = simple(Item::hasCraftingRemainingItem);
   /** Predicate matching any items with fluid transfer registered with {@link FluidContainerTransferManager} */
   ItemPredicate MAY_HAVE_TRANSFER = simple(FluidContainerTransferManager.INSTANCE::mayHaveTransfer);
 

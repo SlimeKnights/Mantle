@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
+import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.helper.LoggingRecipeSerializer;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.RetexturedHelper;
@@ -93,7 +93,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
 
   @Override
   public RecipeSerializer<?> getSerializer() {
-    return MantleRecipeSerializers.CRAFTING_SHAPED_RETEXTURED;
+    return MantleRecipes.CRAFTING_SHAPED_RETEXTURED.get();
   }
 
   public static class Serializer implements LoggingRecipeSerializer<ShapedRetexturedRecipe> {

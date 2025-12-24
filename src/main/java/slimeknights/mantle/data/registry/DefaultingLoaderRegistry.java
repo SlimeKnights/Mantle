@@ -11,6 +11,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.typed.TypedMap;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.function.Function;
 
@@ -21,9 +22,28 @@ import java.util.function.Function;
 public class DefaultingLoaderRegistry<T extends IHaveLoader> extends GenericLoaderRegistry<T> {
   /** Default instance, used for null values instead of null */
   private final T defaultInstance;
-  public DefaultingLoaderRegistry(String name, T defaultInstance, boolean compact) {
-    super(name, compact);
+
+  /**
+   * Creates a new registry with distinct default and false instances.
+   * @param name             Registry name for errors
+   * @param compact          If true, objects with no fields beyond type will serialize as just a string.
+   * @param defaultInstance  Instance to use if a field is unset or null.
+   * @param falseInstance    Default value for {@code if_false} on conditional loaders. If null, then {@code if_false} becomes a required field.
+   */
+  public DefaultingLoaderRegistry(String name, T defaultInstance, @Nullable T falseInstance, boolean compact) {
+    super(name, falseInstance, compact);
     this.defaultInstance = defaultInstance;
+  }
+
+  /**
+   * Creates a new registry with distinct default and false instances.
+   * @param name             Registry name for errors
+   * @param compact          If true, objects with no fields beyond type will serialize as just a string.
+   * @param defaultInstance  Instance to use if a field is unset or null. Used on the {@code if_false} field on conditional loaders.
+   */
+  @SuppressWarnings("unused")  // API
+  public DefaultingLoaderRegistry(String name, T defaultInstance, boolean compact) {
+    this(name, defaultInstance, defaultInstance, compact);
   }
 
   /** Gets the default value in this registry */

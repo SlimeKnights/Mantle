@@ -7,7 +7,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.recipe.MantleRecipeSerializers;
+import slimeknights.mantle.recipe.MantleRecipes;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class ShapedFallbackRecipeBuilder {
 
     @Override
     public RecipeSerializer<?> getType() {
-      return MantleRecipeSerializers.CRAFTING_SHAPED_FALLBACK;
+      return MantleRecipes.CRAFTING_SHAPED_FALLBACK.get();
     }
 
     @Override

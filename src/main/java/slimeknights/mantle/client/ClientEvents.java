@@ -49,6 +49,7 @@ import slimeknights.mantle.client.book.repository.FileRepository;
 import slimeknights.mantle.client.model.FallbackModelLoader;
 import slimeknights.mantle.client.model.NBTKeyModel;
 import slimeknights.mantle.client.model.RetexturedModel;
+import slimeknights.mantle.client.model.TextureColorHelper;
 import slimeknights.mantle.client.model.connected.ConnectedModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
@@ -95,6 +96,7 @@ public class ClientEvents {
     event.registerReloadListener(FluidCuboid.REGISTRY);
     event.registerReloadListener(RenderItem.REGISTRY);
     event.registerReloadListener(RenderItem.STATE_REGISTRY);
+    event.registerReloadListener(TextureColorHelper.RELOAD_LISTENER);
   }
 
   @SubscribeEvent

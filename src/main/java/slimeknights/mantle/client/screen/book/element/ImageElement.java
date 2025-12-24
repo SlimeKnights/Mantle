@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.client.book.data.element.ImageData;
+import slimeknights.mantle.client.screen.book.BookScreen;
 
 import static java.util.Objects.requireNonNullElse;
 
@@ -57,6 +58,14 @@ public class ImageElement extends SizedBookElement {
 
     if(image.item != null) {
       this.itemElement = new ItemElement(0, 0, 1F, image.item.getItems());
+    }
+  }
+
+  @Override
+  public void setParent(BookScreen parent) {
+    super.setParent(parent);
+    if (itemElement != null) {
+      itemElement.setParent(parent);
     }
   }
 

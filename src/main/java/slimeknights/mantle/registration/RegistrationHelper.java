@@ -1,5 +1,6 @@
 package slimeknights.mantle.registration;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.core.DefaultedRegistry;
@@ -84,4 +85,9 @@ public class RegistrationHelper {
     WOOD_TYPES.forEach(consumer);
   }
 
+  /** Casts the class type to make it a valid argument type */
+  @SuppressWarnings("unchecked")
+  public static <T extends ArgumentType<?>> Class<T> genericArgumentType(Class<? super T> type) {
+    return (Class<T>) type;
+  }
 }

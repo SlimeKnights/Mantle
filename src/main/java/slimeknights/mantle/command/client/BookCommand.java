@@ -110,7 +110,7 @@ public class BookCommand {
   private static int exportImages(CommandContext<CommandSourceStack> context) {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
 
-    return doExport(book, 1, false);
+    return doExport(book, 2, false);
   }
 
   /**
@@ -165,6 +165,7 @@ public class BookCommand {
       screen.drawArrows = false;
       screen.mouseInput = false;
       screen.drawText = !html;
+      screen.enableAnimations = false;
 
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
       RenderSystem.setProjectionMatrix(matrix, VertexSorting.ORTHOGRAPHIC_Z);
@@ -257,6 +258,7 @@ public class BookCommand {
       player.displayClientMessage(Component.translatable(key, fileComponent), false);
     }
   }
+
   /**
    * Duplicate of {@link net.minecraft.client.Screenshot#takeScreenshot}, but with transparency
    */

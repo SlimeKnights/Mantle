@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.TextDataRenderer;
 
 import java.util.ArrayList;
@@ -32,6 +33,12 @@ public class SelectionElement extends SizedBookElement {
     this.iconX = this.x + WIDTH / 2 - IMG_SIZE / 2;
     this.iconY = this.y + HEIGHT / 2 - IMG_SIZE / 2;
     this.iconRenderer = new ImageElement(this.iconX, this.iconY, IMG_SIZE, IMG_SIZE, section.icon);
+  }
+
+  @Override
+  public void setParent(BookScreen parent) {
+    super.setParent(parent);
+    iconRenderer.setParent(parent);
   }
 
   @Override

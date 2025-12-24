@@ -7,6 +7,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -350,6 +353,25 @@ public class JsonHelper {
   /** Wraps the given resource location in the given prefix and suffix */
   public static ResourceLocation wrap(ResourceLocation location, String prefix, String suffix) {
     return location.withPath(prefix + location.getPath() + suffix);
+  }
+
+
+  /* Codecs */
+
+  /** Parses the given JSON element using the passed codec */
+  public static <T> T parse(Codec<T> codec, Reader reader) throws JsonParseException {
+    return parse(codec, GsonHelper.parse(reader));
+  }
+
+  /** Parses the given JSON element using the passed codec */
+  public static <T> T parse(Codec<T> codec, JsonElement json) throws JsonParseException {
+    return codec.parse(new Dynamic<>(JsonOps.INSTANCE, json))
+      .getOrThrow(false, Mantle.logger::error);
+  }
+
+  /** Serializes the given object using the passed codec */
+  public static <T> JsonElement serialize(Codec<T> codec, T object) {
+    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error);
   }
 
 

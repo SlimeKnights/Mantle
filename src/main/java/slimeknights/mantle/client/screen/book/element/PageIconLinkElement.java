@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.TextData;
+import slimeknights.mantle.client.screen.book.BookScreen;
 
 /** Link elements for {@link slimeknights.mantle.client.book.data.content.ContentPageIconList} */
 public class PageIconLinkElement extends SizedBookElement {
@@ -30,6 +31,12 @@ public class PageIconLinkElement extends SizedBookElement {
     this.action = "mantle:go-to-page-rtn " + pageData.parent.name + "." + pageData.name;
 
     this.name = name;
+  }
+
+  @Override
+  public void setParent(BookScreen parent) {
+    super.setParent(parent);
+    displayElement.setParent(parent);
   }
 
   @Override

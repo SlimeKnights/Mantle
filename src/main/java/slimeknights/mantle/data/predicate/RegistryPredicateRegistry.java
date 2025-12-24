@@ -7,6 +7,7 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -17,19 +18,27 @@ public class RegistryPredicateRegistry<R,T> extends TagPredicateRegistry<R,T> {
   private final RecordLoadable<SetPredicate> setLoader;
 
   /**
-   * Creates a new instance
-   * @param defaultInstance Default instance, typically expected to be an any predicate.
+   * Creates a new registry for predicates that mirrors an object registry.
+   * @param name            Name to display in error messages
+   * @param anyInstance     Any instance that always returns true. Will be used for nulls and missing fields.
+   * @param noneInstance    None instance that always returns false. Used as the default for the conditional loader. If null, no none is registered.
    * @param registry        Loading logic for the backing registry
    * @param getter          Method mapping from the predicate type to the registry type
    * @param setKey          Key to use for the set predicate
    * @param tagKey          Loader for tag keys
    * @param tagMatcher      Logic to match a tag for the passed type
    */
-  public RegistryPredicateRegistry(String name, IJsonPredicate<T> defaultInstance, Loadable<R> registry, Function<T,R> getter, String setKey, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
-    super(name, defaultInstance, tagKey, tagMatcher);
+  public RegistryPredicateRegistry(String name, IJsonPredicate<T> anyInstance, @Nullable IJsonPredicate<T> noneInstance, Loadable<R> registry, Function<T,R> getter, String setKey, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
+    super(name, anyInstance, noneInstance, tagKey, tagMatcher);
     this.getter = getter;
     this.setLoader = RecordLoadable.create(registry.set().requiredField(setKey, p -> p.set), SetPredicate::new);
     this.register(Mantle.getResource("set"), setLoader);
+  }
+
+  /** @deprecated use {@link #RegistryPredicateRegistry(String, IJsonPredicate, IJsonPredicate, Loadable, Function, String, Loadable, BiPredicate)} */
+  @Deprecated(forRemoval = true)
+  public RegistryPredicateRegistry(String name, IJsonPredicate<T> anyInstance, Loadable<R> registry, Function<T,R> getter, String setKey, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
+    this(name, anyInstance, null, registry, getter, setKey, tagKey, tagMatcher);
   }
 
   /** Creates a new set predicate given the passed values */

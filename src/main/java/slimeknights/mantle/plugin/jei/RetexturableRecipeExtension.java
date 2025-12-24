@@ -97,36 +97,7 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
       Mantle.logger.error("Failed to create focus link for {} as the layout {} is not 3x3", recipe.getId(), builder.getClass().getName());
     } else {
       // link the output to all inputs that match the texture
-      builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(textureSlots).mapToObj(i -> inputs.get(getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));
+      builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(textureSlots).mapToObj(i -> inputs.get(MantleJEIConstants.getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));
     }
-  }
-
-  /** Borrowed from {@link ICraftingGridHelper} implementation. Ideally I'd call it from the API, but the API lacks all the information I need for that. */
-  private static int getCraftingIndex(int i, int width, int height) {
-    int index;
-    if (width == 1) {
-      if (height == 3) {
-        index = (i * 3) + 1;
-      } else if (height == 2) {
-        index = (i * 3) + 1;
-      } else {
-        index = 4;
-      }
-    } else if (height == 1) {
-      index = i + 3;
-    } else if (width == 2) {
-      index = i;
-      if (i > 1) {
-        index++;
-        if (i > 3) {
-          index++;
-        }
-      }
-    } else if (height == 2) {
-      index = i + 3;
-    } else {
-      index = i;
-    }
-    return index;
   }
 }

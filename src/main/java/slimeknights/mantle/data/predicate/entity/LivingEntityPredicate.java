@@ -13,12 +13,17 @@ import slimeknights.mantle.data.predicate.RegistryPredicateRegistry;
 import java.util.List;
 import java.util.function.Predicate;
 
-/** Predicate matching an entity */
+/**
+ * Predicate matching an entity
+ * TODO 1.21: separate out into {@code LivingEntityPredicate} and {@code EntityPredicate}
+ */
 public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   /** Predicate that matches all entities */
   LivingEntityPredicate ANY = simple(entity -> true);
+  /** Predicate that matches all entities */
+  LivingEntityPredicate NONE = simple(entity -> false);
   /** Loader for block state predicates */
-  RegistryPredicateRegistry<EntityType<?>,LivingEntity> LOADER = new RegistryPredicateRegistry<>("Entity Predicate", ANY, Loadables.ENTITY_TYPE, Entity::getType, "entities", Loadables.ENTITY_TYPE_TAG, (tag, entity) -> entity.getType().is(tag));
+  RegistryPredicateRegistry<EntityType<?>,LivingEntity> LOADER = new RegistryPredicateRegistry<>("Entity Predicate", ANY, NONE, Loadables.ENTITY_TYPE, Entity::getType, "entities", Loadables.ENTITY_TYPE_TAG, (tag, entity) -> entity.getType().is(tag));
 
   /** Gets an inverted condition */
   @Override
@@ -45,6 +50,11 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
   LivingEntityPredicate ON_GROUND = simple(Entity::onGround);
   /** Entities that are in the air */
   LivingEntityPredicate CROUCHING = simple(Entity::isCrouching);
+  /** Entities that are currently sprinting */
+  LivingEntityPredicate SPRINTING = simple(Entity::isSprinting);
+  /** Entities blocking with a valid shield */
+  LivingEntityPredicate BLOCKING = simple(LivingEntity::isBlocking);
+
 
   // water
   /** Entities with eyes in water */

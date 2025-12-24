@@ -2,16 +2,16 @@ package slimeknights.mantle.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.synchronization.SuggestionProviders;
-import net.minecraft.core.Registry;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import slimeknights.mantle.Mantle;
+import slimeknights.mantle.command.argument.TagSourceArgument;
+import slimeknights.mantle.command.tags.ModifyTagCommand;
 
 import java.util.function.Consumer;
 
@@ -28,26 +28,29 @@ public class MantleCommand {
   /** Permission level for the server owner, server console, or the player in single player */
   public static final int PERMISSION_OWNER = 4;
 
-  /** Suggestion provider that lists tags for this type */
+  /** @deprecated use {@link RegistryArgument#TAG} or {@link TagSourceArgument#TAG} */
+  @Deprecated(forRemoval = true)
   public static SuggestionProvider<CommandSourceStack> VALID_TAGS;
-  /** Suggestion provider that lists tags values for this registry */
+  /** @deprecated use {@link RegistryArgument#VALUE} or {@link TagSourceArgument#VALUE} */
+  @Deprecated(forRemoval = true)
   public static SuggestionProvider<CommandSourceStack> REGISTRY_VALUES;
-  /** Suggestion provider that lists registered book ids **/
+  /** @deprecated use {@link RegistryArgument#REGISTRY} or {@link TagSourceArgument#SOURCE} */
+  @Deprecated(forRemoval = true)
   public static SuggestionProvider<CommandSourceStack> REGISTRY;
 
   /** Registers all Mantle command related content */
   public static void init() {
-    // register arguments
-    VALID_TAGS = SuggestionProviders.register(Mantle.getResource("valid_tags"), (context, builder) -> {
-      Registry<?> result = RegistryArgument.getResult(context, "type");
-      return SharedSuggestionProvider.suggestResource(result.getTagNames().map(TagKey::location), builder);
-    });
-    REGISTRY_VALUES = SuggestionProviders.register(Mantle.getResource("registry_values"), (context, builder) -> {
-      Registry<?> result = RegistryArgument.getResult(context, "type");
-      return SharedSuggestionProvider.suggestResource(result.keySet(), builder);
-    });
-    REGISTRY = SuggestionProviders.register(Mantle.getResource("registry"), (context, builder) ->
-      SharedSuggestionProvider.suggestResource(context.getSource().registryAccess().registries().map(entry -> entry.key().location()), builder));
+    RegistryArgument.registerSuggestions();
+    VALID_TAGS = RegistryArgument.TAG;
+    REGISTRY_VALUES = RegistryArgument.VALUE;
+    REGISTRY = RegistryArgument.REGISTRY;
+    TagSourceArgument.registerSuggestions();
+
+    // register interesting sources
+    SourcesCommand.register(LootDataType.TABLE.directory(), (context, builder)
+      -> SharedSuggestionProvider.suggestResource(context.getSource().getServer().getLootData().getKeys(LootDataType.TABLE), builder));
+    SourcesCommand.register("recipes", (context, builder)
+      -> SharedSuggestionProvider.suggestResource(context.getSource().getRecipeNames(), builder));
 
     // add command listener
     MinecraftForge.EVENT_BUS.addListener(MantleCommand::registerCommand);
@@ -63,15 +66,28 @@ public class MantleCommand {
   /** Event listener to register the Mantle command */
   private static void registerCommand(RegisterCommandsEvent event) {
     LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("mantle");
+    CommandBuildContext context = event.getBuildContext();
 
     // sub commands
-    register(builder, "view_tag", ViewTagCommand::register);
-    register(builder, "dump_tag", DumpTagCommand::register);
+    register(builder, "tags", b -> {
+      register(b, "view", ViewTagCommand::register);
+      register(b, "entries", DumpTagCommand::register);
+      register(b, "dump", DumpAllTagsCommand::register);
+      register(b, "for", TagsForCommand::register);
+      register(b, "preference", TagPreferenceCommand::register);
+      ModifyTagCommand.register(b);
+    });
     register(builder, "dump_loot_modifiers", DumpLootModifiers::register);
-    register(builder, "dump_all_tags", DumpAllTagsCommand::register);
-    register(builder, "tags_for", TagsForCommand::register);
     register(builder, "harvest_tiers", HarvestTiersCommand::register);
-    register(builder, "tag_preference", TagPreferenceCommand::register);
+    register(builder, "remove", b -> {
+      b = b.requires(sender -> sender.hasPermission(MantleCommand.PERMISSION_GAME_COMMANDS));
+      register(b, "recipes", b2 -> RemoveRecipesCommand.register(b2, context));
+      RemoveDataCommand.register(b);
+    });
+    // sources assets is registered as a client command
+    register(builder, "sources", b -> {
+      register(b, "data", SourcesCommand::register);
+    });
 
     // register final command
     event.getDispatcher().register(builder);

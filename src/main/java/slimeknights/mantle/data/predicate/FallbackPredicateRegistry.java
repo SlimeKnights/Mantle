@@ -10,6 +10,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /** Predicate registry that upon failure to find a predicate type will fallback to the fallback type */
@@ -19,15 +20,26 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
   private final RecordLoadable<FallbackPredicate> fallbackLoader;
 
   /**
-   * Creates a new instance
-   * @param defaultInstance Default instance, typically expected to be an any predicate.
+   * Creates a new registry for predicates that delegates to another predicate registry if the loader type is absent.
+   * @param name          Name to display in error messages
+   * @param anyInstance   Any instance that always returns true. Will be used for nulls and missing fields.
+   * @param noneInstance  None instance that always returns false. Used as the default for the conditional loader. If null, no none is registered.
+   * @param fallback      Fallback predicate registry.
+   * @param getter        Logic to fetch the fallback from the predicate type.
+   * @param fallbackName  Name of the fallback type for JSON.
    */
-  public FallbackPredicateRegistry(String name, IJsonPredicate<T> defaultInstance, PredicateRegistry<F> fallback, Function<T,F> getter, String fallbackName) {
-    super(name, defaultInstance);
+  public FallbackPredicateRegistry(String name, IJsonPredicate<T> anyInstance, @Nullable IJsonPredicate<T> noneInstance, PredicateRegistry<F> fallback, Function<T,F> getter, String fallbackName) {
+    super(name, anyInstance, noneInstance);
     this.fallback = fallback;
     this.getter = getter;
     this.fallbackLoader = RecordLoadable.create(fallback.directField(fallbackName + "_type", p -> p.predicate), FallbackPredicate::new);
     this.register(Mantle.getResource(fallbackName), fallbackLoader);
+  }
+
+  /** @deprecated use {@link #FallbackPredicateRegistry(String, IJsonPredicate, IJsonPredicate, PredicateRegistry, Function, String)} */
+  @Deprecated(forRemoval = true)
+  public FallbackPredicateRegistry(String name, IJsonPredicate<T> anyInstance, PredicateRegistry<F> fallback, Function<T,F> getter, String fallbackName) {
+    this(name, anyInstance, null, fallback, getter, fallbackName);
   }
 
   /** Creates a fallback predicate instance */

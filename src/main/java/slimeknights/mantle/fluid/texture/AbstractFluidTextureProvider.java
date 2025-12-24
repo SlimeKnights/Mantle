@@ -37,7 +37,7 @@ public abstract class AbstractFluidTextureProvider extends GenericDataProvider {
 
   @Override
   public final CompletableFuture<?> run(CachedOutput cache) {
-    addTextures();
+    ensureTexturesAdded();
     IForgeRegistry<FluidType> fluidTypeRegistry = ForgeRegistries.FLUID_TYPES.get();
 
     // ensure we added textures for all our fluid types
@@ -49,6 +49,19 @@ public abstract class AbstractFluidTextureProvider extends GenericDataProvider {
     }
     // save files
     return allOf(allTextures.entrySet().stream().map(entry -> saveJson(cache, Objects.requireNonNull(fluidTypeRegistry.getKey(entry.getKey())), entry.getValue().build().serialize())));
+  }
+
+  /** Adds the textures if not already added */
+  private void ensureTexturesAdded() {
+    if (allTextures.isEmpty()) {
+      addTextures();
+    }
+  }
+
+  /** Gets the map of all textures. Shouod not be called in {@link #addTextures()}, meant for other data generators to use. */
+  public Map<FluidType,FluidTexture.Builder> getAllTextures() {
+    ensureTexturesAdded();
+    return allTextures;
   }
 
   /** Override to add your textures at the proper time */

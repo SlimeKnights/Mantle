@@ -7,8 +7,10 @@ import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
 import slimeknights.mantle.data.loadable.field.RecordField;
+import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -22,7 +24,6 @@ import java.util.function.Function;
  * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
  * @see DefaultingLoaderRegistry
  */
-@SuppressWarnings("unused")  // API
 public class GenericLoaderRegistry<T extends IHaveLoader> implements RecordLoadable<T> {
   /** Empty object instance for compact deserialization */
   protected static final JsonObject EMPTY_OBJECT = new JsonObject();
@@ -34,11 +35,32 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements RecordLoada
   protected final NamedComponentRegistry<RecordLoadable<? extends T>> loaders;
   /** If true, single key serializations will not use a JSON object to serialize, ideal for loaders with many singletons */
   protected final boolean compact;
+  /** Loader that chooses between two options based on a load condition. Exposed for datagen. */
+  @Getter
+  private final RecordLoadable<T> conditionalLoader;
 
-  public GenericLoaderRegistry(String name, boolean compact) {
+  /**
+   * Creates a new registry instance
+   * @param name           Registry name for errors
+   * @param compact        If true, objects with no fields beyond type will serialize as just a string.
+   * @param falseInstance  Default value for {@code if_false} on conditional loaders. If null, then {@code if_false} becomes a required field.
+   */
+  public GenericLoaderRegistry(String name, @Nullable T falseInstance, boolean compact) {
     this.name = name;
     this.compact = compact;
     this.loaders = new NamedComponentRegistry<>("Unknown " + name + " loader");
+    this.conditionalLoader = new ConditionalLoadable<>(this, falseInstance);
+    register(Mantle.getResource("load_condition"), conditionalLoader);
+  }
+
+  /**
+   * Creates a new registry instance with no false instance.
+   * @param name           Registry name for errors
+   * @param compact        If true, objects with no fields beyond type will serialize as just a string.
+   */
+  @SuppressWarnings("unused")  // API
+  public GenericLoaderRegistry(String name, boolean compact) {
+    this(name, null, compact);
   }
 
   /** Registers a deserializer by name */

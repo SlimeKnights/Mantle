@@ -20,8 +20,10 @@ import static slimeknights.mantle.data.loadable.record.SingletonLoader.singleton
 public interface DamageSourcePredicate extends IJsonPredicate<DamageSource> {
   /** Predicate that matches all sources */
   DamageSourcePredicate ANY = simple(source -> true);
+  /** Predicate that matches no sources */
+  DamageSourcePredicate NONE = simple(source -> false);
   /** Loader for item predicates */
-  TagPredicateRegistry<DamageType, DamageSource> LOADER = new TagPredicateRegistry<>("Damage Source Predicate", ANY, Loadables.DAMAGE_TYPE_TAG, (tag, source) -> source.is(tag));
+  TagPredicateRegistry<DamageType, DamageSource> LOADER = new TagPredicateRegistry<>("Damage Source Predicate", ANY, NONE, Loadables.DAMAGE_TYPE_TAG, (tag, source) -> source.is(tag));
 
   /** Damage that is caused by an entity using another entity */
   DamageSourcePredicate IS_INDIRECT = simple(DamageSource::isIndirect);

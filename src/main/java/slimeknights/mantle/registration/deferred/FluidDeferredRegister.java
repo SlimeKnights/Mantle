@@ -3,6 +3,7 @@ package slimeknights.mantle.registration.deferred;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +20,10 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import slimeknights.mantle.block.fluid.BurningLiquidBlock;
+import slimeknights.mantle.block.fluid.MobEffectLiquidBlock;
+import slimeknights.mantle.fluid.InvertedFluid;
+import slimeknights.mantle.fluid.InvertedFluidType;
 import slimeknights.mantle.fluid.TextureFluidType;
 import slimeknights.mantle.fluid.UnplaceableFluid;
 import slimeknights.mantle.registration.DelayedSupplier;
@@ -116,9 +121,19 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
       return type(() -> new TextureFluidType(properties));
     }
 
+    /** Registers a fluid with the given properties, using the inverted fluid type */
+    public Builder invertedType(FluidType.Properties properties) {
+      return type(() -> new InvertedFluidType(properties));
+    }
+
     /** Registers a fluid with the given properties, using the texture fluid type */
     public Builder type() {
       return type(FluidType.Properties.create());
+    }
+
+    /** Registers a fluid with the given properties, using the inverted fluid type */
+    public Builder invertedType() {
+      return invertedType(FluidType.Properties.create());
     }
 
 
@@ -154,6 +169,16 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
       return block(sup -> new LiquidBlock(sup, createProperties(color, lightLevel)));
     }
 
+    /** Creates a block that lights entities on fire and damages them over time */
+    public Builder burningBlock(MapColor color, int lightLevel, int burnTime, float damage) {
+      return block(BurningLiquidBlock.createBurning(color, lightLevel, burnTime, damage));
+    }
+
+    /** Creates a block that applies an effect to the target entity */
+    public Builder mobEffectBlock(MapColor color, int lightLevel, Supplier<MobEffectInstance> effect) {
+      return block(MobEffectLiquidBlock.createEffect(color, lightLevel, effect));
+    }
+
 
     /* Final fluid */
 
@@ -183,6 +208,11 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
     /** Builds a flowing fluid with the default constructors */
     public FlowingFluidObject<ForgeFlowingFluid> flowing() {
       return flowing(ForgeFlowingFluid.Source::new, ForgeFlowingFluid.Flowing::new);
+    }
+
+    /** Builds a flowing fluid with the default constructors */
+    public FlowingFluidObject<InvertedFluid> invertedFlowing() {
+      return flowing(InvertedFluid.Source::new, InvertedFluid.Flowing::new);
     }
 
     /**

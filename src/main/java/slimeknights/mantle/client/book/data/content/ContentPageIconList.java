@@ -11,7 +11,6 @@ import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.ContentPadding.ContentRightPadding;
 import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
-import slimeknights.mantle.client.screen.book.element.ItemElement;
 import slimeknights.mantle.client.screen.book.element.PageIconLinkElement;
 import slimeknights.mantle.client.screen.book.element.SizedBookElement;
 
@@ -110,9 +109,7 @@ public class ContentPageIconList extends PageContent {
 
       element.width = scaledWidth;
       element.height = scaledHeight;
-      if (element.displayElement instanceof ItemElement) {
-        ((ItemElement) element.displayElement).scale = scale;
-      }
+      element.displayElement.scale(scale);
 
       list.add(element);
 
@@ -166,15 +163,15 @@ public class ContentPageIconList extends PageContent {
       padding.load();
       // hack: add padding to the previous section so section links start at the index
       int sectionIndex = data.parent.sections.indexOf(data);
-      if (data.pages.isEmpty() && sectionIndex > 0) {
+      if (sectionIndex > 0) {
         data.parent.sections.get(sectionIndex - 1).pages.add(padding);
       } else {
-        data.pages.add(padding);
+        newPages.add(0, padding);
       }
     }
 
-    // padding done, can add new pages
-    data.pages.addAll(newPages);
+    // padding done, can add new pages at the start of the section
+    data.pages.addAll(0, newPages);
 
     return listPages;
   }
@@ -187,16 +184,34 @@ public class ContentPageIconList extends PageContent {
    * @param data       Section to receive pages
    * @param indexList  List of indexes from {@link #getPagesNeededForItemCount(int, SectionData, String, String)}
    * @param pages      List of pages to add to the indexes.
+   * @param index      Start index to insert new pages. Should generally be the size of {@link #getPagesNeededForItemCount(int, SectionData, String, String)},
+   *                   though you may need to compare {@link SectionData#pages} count if not using {@link slimeknights.mantle.client.book.transformer.IndexTransformer}.
    */
-  public static void addPages(SectionData data, List<ContentPageIconList> indexList, Collection<PageWithIcon> pages) {
+  public static void addPages(SectionData data, List<ContentPageIconList> indexList, Collection<PageWithIcon> pages, int index) {
     Iterator<ContentPageIconList> indexes = indexList.iterator();
     ContentPageIconList overview = indexes.next();
+    List<PageData> newPages = new ArrayList<>(pages.size());
     for (PageWithIcon page : pages) {
-      data.pages.add(page.page);
+      newPages.add(page.page);
       while (!overview.addLink(page.icon, Component.literal(page.page.getTitle()), page.page)) {
         overview = indexes.next();
       }
     }
+    if (index == -1) {
+      data.pages.addAll(newPages);
+    } else {
+      data.pages.addAll(index, newPages);
+    }
+  }
+
+  /**
+   * Adds the list of pages with icons to the indexes and the book
+   * @param data       Section to receive pages
+   * @param indexList  List of indexes from {@link #getPagesNeededForItemCount(int, SectionData, String, String)}
+   * @param pages      List of pages to add to the indexes.
+   */
+  public static void addPages(SectionData data, List<ContentPageIconList> indexList, Collection<PageWithIcon> pages) {
+    addPages(data, indexList, pages, indexList.size());
   }
 
   /** Calculates the largest possible icon scale that will fit all the contents on the page */
