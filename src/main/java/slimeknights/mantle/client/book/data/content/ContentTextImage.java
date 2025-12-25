@@ -3,7 +3,6 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.data.element.TextData;
@@ -45,17 +44,6 @@ public class ContentTextImage extends PageContent {
 
   @Override
   public String toHTML() {
-    int h = image.height > 0 ? image.height : 100;
-    return String.format(
-      """
-      %s
-      <div style="padding-top: %dpx">
-      %s
-      </div>
-      """,
-      HTMLUtils.line(title, true),
-      h * 2 + 16,
-      TextData.toHTML(text, parent.parent.parent)
-    );
+    return getTitleHTML() + TextData.toHTML(text, parent.parent.parent);
   }
 }

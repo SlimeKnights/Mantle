@@ -41,31 +41,26 @@ public class ContentSectionList extends PageContent {
 
   @Override
   public String toHTML() {
-    return String.format(
-      """
-      <div class="grid-content-%d mc-font-gray">
-      %s
-      </div>
-      """,
-      sections.size() >= 9 ? 4 : 3,
+    return "<div class=\"grid-content-" + (sections.size() >= 9 ? 4 : 3) + " mc-font-gray\">\n" +
       sections.stream()
         .map(section -> {
           int page_number = section.parent.getFirstPageNumber(section, null);
           return String.format(
             """
-            <div>
+            <div data-minetip-title="%s">
             <a href="../page-%d/#%s.%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
             %s
             </div>
             """,
+            section.getTitle(),
             page_number / 2,
             section.name,
             // why -1
             section.parent.findPage(page_number - 1, null).name,
-            HTMLUtils.line(section.getTitle())
+            HTMLUtils.p(section.getTitle())
           );
         })
-        .collect(Collectors.joining("\n"))
-    );
+        .collect(Collectors.joining()) +
+      "</div>";
   }
 }

@@ -11,67 +11,101 @@ import java.util.stream.Collectors;
 
 public class HTMLUtils {
 
+  private static final char COLOR_CHAR = '§';
+  private static final String LOOKUP = "0123456789abcdefklmnor";
+
+  /**
+   * Converts a String into HTML
+   *
+   * @param text text
+   * @return HTML p tag
+   */
+  public static String p(String text) {
+    return p(text, null,null, null, null);
+  }
+
   /**
    * Converts a String into HTML
    *
    * @param text   text
-   * @param styles HTML style attributes
+   * @param styles element style attributes
    * @return HTML p tag
    */
-  public static String line(String text, String... styles) {
-    return line(text, false, styles);
+  public static String p(String text, String styles) {
+    return p(text, null,null, null, styles);
   }
 
   /**
    * Converts a String into HTML
    *
-   * @param text      text
-   * @param underline underlines text
-   * @param styles    HTML style attributes
+   * @param text    text
+   * @param classes element classes
+   * @param tooltip text tooltip
+   * @param styles  element style attributes
    * @return HTML p tag
    */
-  public static String line(String text, boolean underline, String... styles) {
-    return line(text, null, underline, false, styles);
+  public static String p(String text, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
+    return html("p", null, text, classes, tooltip, styles);
   }
 
   /**
    * Converts a String into HTML
    *
-   * @param text      text
-   * @param underline underlines text
-   * @param large     20px font size instead of 13px
-   * @param styles    HTML style attributes
+   * @param text    text
+   * @param id      element id
+   * @param classes element classes
+   * @param tooltip text tooltip
+   * @param styles  element style attributes
    * @return HTML p tag
    */
-  public static String line(String text, boolean underline, boolean large, String... styles) {
-    return line(text, null, underline, large, styles);
+  public static String p(String text, @Nullable String id, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
+    return html("p", id, text, classes, tooltip, styles);
   }
 
   /**
    * Converts a String into HTML
    *
-   * @param text      text
-   * @param id        tag id
-   * @param underline underlines text
-   * @param large     20px font size instead of 13px
-   * @param styles    HTML style attributes
-   * @return HTML p tag
+   * @param text text
+   * @return HTML li tag
    */
-  public static String line(String text, @Nullable String id, boolean underline, boolean large, String... styles) {
-    StringBuilder builder = new StringBuilder("<p");
+  public static String li(String text) {
+    return li(text, null, null, null);
+  }
+
+  /**
+   * Converts a String into HTML
+   *
+   * @param text    text
+   * @param classes element classes
+   * @param tooltip text tooltip
+   * @param styles  element style attributes
+   * @return HTML li tag
+   */
+  public static String li(String text, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
+    return html("li", null, text, classes, tooltip, styles);
+  }
+
+  /**
+   * Converts a String into HTML
+   *
+   * @param text    text
+   * @param id      element id
+   * @param classes element classes
+   * @param tooltip text tooltip
+   * @param styles  element style attributes
+   * @return arbitrary HTML tag
+   */
+  private static String html(String tag, @Nullable String id, String text, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
+    StringBuilder builder = new StringBuilder("<").append(tag);
 
     if (id != null) builder.append(" id=\"").append(id).append("\"");
-
-    if (underline || large) builder.append(" class=\"");
-    if (underline) builder.append("underline ");
-    if (large) builder.append("large");
-    if (underline || large) builder.append("\"");
-
-    if (styles.length > 0) builder.append(" style=\"").append(String.join("; ", styles)).append("\"");
+    if (classes != null) builder.append(" class=\"").append(classes).append("\"");
+    if (tooltip != null) builder.append(" data-minetip-title='").append(tooltip).append("'");
+    if (styles != null) builder.append(" style=\"").append(styles).append("\"");
 
     return builder.append(">")
       .append(text)
-      .append("</p>")
+      .append("</").append(tag).append(">")
       .toString();
   }
 
@@ -81,14 +115,35 @@ public class HTMLUtils {
    * @param component component
    * @return HTML p tag
    */
-  public static String line(Component component) {
-    return line(toHTML(component));
+  public static String p(Component component) {
+    return p(span(component));
+  }
+
+  /**
+   * Converts a Component into HTML, all of its styles are included
+   *
+   * @param component component
+   * @param styles    element style attributes
+   * @return HTML p tag
+   */
+  public static String p(Component component, String styles) {
+    return p(span(component), styles);
+  }
+
+  /**
+   * Converts a Component into HTML, all of its styles are included
+   *
+   * @param component component
+   * @return HTML li tag
+   */
+  public static String li(Component component) {
+    return li(span(component));
   }
 
   /**
    * NOTE: uses a span instead of p to recursively inline
    */
-  private static String toHTML(Component component) {
+  private static String span(Component component) {
     StringBuilder builder = new StringBuilder();
 
     Style style = component.getStyle();
@@ -112,29 +167,20 @@ public class HTMLUtils {
     }
 
     builder.append(MutableComponent.create(component.getContents()).getString())
-      .append(component.getSiblings().stream().map(HTMLUtils::toHTML).collect(Collectors.joining()));
+      .append(component.getSiblings().stream().map(HTMLUtils::span).collect(Collectors.joining()));
 
     if (!style.isEmpty()) builder.append("</span>");
 
     return builder.toString();
   }
 
-  public static String slugify(String s) {
-    return s.toLowerCase()
-      .replace(' ', '-')
-      .replace('_', '-');
-  }
-
   public static String hexRGB(int rgb) {
     return String.format("#%02X%02X%02X", (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb & 0xFF));
   }
 
-  private static final char COLOR_CHAR = '§';
-  private static final String LOOKUP = "0123456789abcdefklmnor";
-
-  // we can't really do Obfuscated §k without client side js
   /**
-   * Parses any chat formatting in text, and converts it to HTML
+   * Parses any chat formatting in text, and converts it to HTML.
+   * Does not support Obfuscated §k
    *
    * @param text Minecraft chat formated string
    * @return this as HTML span tag

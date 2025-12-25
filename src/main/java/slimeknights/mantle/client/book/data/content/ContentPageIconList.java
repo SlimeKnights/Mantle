@@ -14,7 +14,6 @@ import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.PageIconLinkElement;
 import slimeknights.mantle.client.screen.book.element.SizedBookElement;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -246,20 +245,22 @@ public class ContentPageIconList extends PageContent {
       </div>
       """,
       getTitleHTML(),
-      HTMLUtils.line(subText, "padding-left: 10px", "margin: 0"),
+      HTMLUtils.p(subText, "padding-left: 10px"),
       (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale()),
       yOff * 2,
       elements.stream()
         .map(element -> {
           String action = element.action;
           String location = action.substring(action.indexOf(StringActionProcessor.PROTOCOL_SEPARATOR) + StringActionProcessor.PROTOCOL_SEPARATOR.length());
+          int bookPage = element.parent.book.findPageNumber(location);
           return String.format(
             """
-              <div>
-              <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
-              </div>
-              """,
-            element.parent.book.findPageNumber(location) / 2,
+            <div data-minetip-title="%s">
+            <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+            </div>
+            """,
+            element.parent.book.findPage(bookPage - 1, null).getTitle(),
+            bookPage / 2,
             location
           );
         })
