@@ -117,7 +117,7 @@ public class TextData implements IHTML {
           builder.append("<ul class=\"prop-list\">\n");
         }
 
-        // terrible
+        // removes the bullet point character
         String cleaned = textData.text.strip().replaceFirst(LIST_PREFIX, "");
         TextData temp = new TextData(cleaned);
         temp.rgbColor = textData.rgbColor;
@@ -136,7 +136,8 @@ public class TextData implements IHTML {
           builder.append("</ul>\n");
         }
         if (pOpen) {
-          if (textData.paragraph || textData.text.charAt(0) == '\n') builder.append("</p>\n<p>");
+          if (textData.paragraph) builder.append("</p>\n<p>");
+          else if (textData.text.charAt(0) == '\n') builder.append("<br>");
         } else {
           pOpen = true;
           builder.append("<p>");
