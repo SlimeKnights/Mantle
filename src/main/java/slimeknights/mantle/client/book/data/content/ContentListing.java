@@ -170,35 +170,42 @@ public class ContentListing extends PageContent {
     if (subText != null) result.append(HTMLUtils.p(subText, "padding-left: 10px"));
 
     if (entries.size() > 1) {
-      result.append("<div style=\"display: grid; grid-template-columns: repeat(")
-        .append(entries.size())
-        .append(", 1fr)\">\n");
+      result.append("<div class=\"content-list-links\">\n");
+
+      int yOff = 0;
+      if (this.title != null) yOff = 16;
+      if (this.subText != null) yOff += this.parent.parent.parent.fontRenderer.wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
+      int rows = getColumnHeight(yOff) / LINE_HEIGHT;
+
+      result.append(
+        entries.stream()
+          .map(entry -> {
+            StringBuilder builder = new StringBuilder();
+            int i = 0;
+
+            builder.append("<div>\n");
+
+            if (entry.get(0).bold) builder.append(entry.get(i++).toHTML(parent.parent.parent));
+
+            builder.append("<ul class=\"link-list\">\n");
+            for (; i < entry.size(); i++) {
+              // split list into new divs
+              if (i % rows == 0 && i != entry.size() - 1) {
+                builder.append("</ul></div><div><ul class=\"link-list\">\n");
+              }
+
+              TextData data = entry.get(i);
+              builder.append("<li>").append(data.toHTML(parent.parent.parent)).append("</li>\n");
+            }
+            builder.append("</ul></div>");
+
+            return builder.toString();
+          })
+          .collect(Collectors.joining("\n"))
+        );
+
+      result.append("\n</div>");
     }
-
-    // TODO: split entry into 2 columns if it goes over 11 lines
-    result.append(
-      entries.stream()
-        .map(entry -> {
-          StringBuilder builder = new StringBuilder();
-          int i = 0;
-          boolean bold = entry.get(0).bold;
-          if (bold) builder.append("<div>\n").append(entry.get(i++).toHTML(parent.parent.parent));
-
-          builder.append("<ul class=\"link-list\">\n");
-          for (; i < entry.size(); i++) {
-            TextData data = entry.get(i);
-            builder.append("<li>").append(data.toHTML(parent.parent.parent)).append("</li>\n");
-          }
-          builder.append("</ul>");
-
-          if (bold) builder.append("\n</div>");
-
-          return builder.toString();
-        })
-        .collect(Collectors.joining("\n"))
-      );
-
-    if (entries.size() > 1) result.append("\n</div>");
 
     return result.toString();
   }
