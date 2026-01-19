@@ -64,9 +64,9 @@
   "command.mantle.tag_preference.empty_tag": "Нет предпочтений %s для тега %s",
   "command.mantle.tag_preference.preference": "Предпочтительным значением %s для тега %s является %s",
 
-  "gui.mantle.fluid.capacity": "Вместимость: %s мБ",
+  "gui.mantle.fluid.capacity": "Ёмкость: %s мВ",
   "gui.mantle.fluid.contents": "Содержит: %s",
-  "gui.mantle.fluid.format": "%s / %s мБ %s",
+  "gui.mantle.fluid.format": "%s / %s мВ %s",
 
   "gui.mantle.fluid.hold_shift": "§7Удерживайте [§6Shift§7] для подробной информации и перемещения жидкости.",
   "gui.mantle.fluid.kilobucket": "%s кВ",
