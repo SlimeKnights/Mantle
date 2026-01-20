@@ -1,5 +1,5 @@
 {
-  "mantle:tooltip.cooktime": "Время приготовления: %ds",
+  "mantle:tooltip.cooktime": "Время приготовления: %d сек.",
   "config.mantle.extraHeartRenderer": "Доп. рендеринг сердца",
   "config.mantle.enableFluidFogFix": "Включить исправление тумана жидкости",
 
