@@ -1,0 +1,11 @@
+{
+  "title": "Кузнечное дело (заполняется вручную)",
+  "input": "minecraft:redstone",
+  "result": "minecraft:dispenser",
+  "modifier": "minecraft:cobblestone",
+  "description": [
+    {
+      "text": "Этот рецепт кузнечного дела заполняется вручную."
+    }
+  ]
+}
