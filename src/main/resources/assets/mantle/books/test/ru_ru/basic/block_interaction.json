@@ -1,0 +1,10 @@
+{
+  "title": "Взаимодействие с блоком",
+  "input": "minecraft:redstone",
+  "block": "minecraft:cobblestone",
+  "description": [
+    {
+      "text": "Это рецепт взаимодействия с блоком."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Выплавка (заполняется вручную)",
+  "input": "minecraft:redstone",
+  "result": "minecraft:dispenser",
+  "fuel": "minecraft:cobblestone",
+  "description": [
+    {
+      "text": "Этот рецепт выплавки заполняется вручную."
+    }
+  ]
+}
