@@ -1,6 +1,5 @@
 package slimeknights.mantle.client.book.data.content;
 
-import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -40,26 +39,10 @@ public class ContentSectionList extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     return "<div class=\"grid-content-" + (sections.size() >= 9 ? 4 : 3) + " mc-font-gray\">\n" +
       sections.stream()
-        .map(section -> {
-          int page_number = section.parent.getFirstPageNumber(section, null);
-          return String.format(
-            """
-            <div data-minetip-title="%s">
-            <a href="../page-%d/#%s.%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
-            %s
-            </div>
-            """,
-            section.getTitle(),
-            page_number / 2,
-            section.name,
-            // why -1
-            section.parent.findPage(page_number - 1, null).name,
-            HTMLUtils.p(section.getTitle())
-          );
-        })
+        .map(s -> s.toHTML(book))
         .collect(Collectors.joining()) +
       "</div>";
   }

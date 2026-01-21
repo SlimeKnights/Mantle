@@ -65,10 +65,4 @@ public abstract class ContentPadding extends ContentBlank {
       }
     }
   }
-
-  @Nullable
-  @Override
-  public String toHTML() {
-    return null;
-  }
 }

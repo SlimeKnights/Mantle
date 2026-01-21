@@ -230,10 +230,10 @@ public class ContentPageIconList extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     int yOff = 0;
     if (this.title != null) yOff = getTitleHeight();
-    if (this.subText != null) yOff = this.parent.parent.parent.fontRenderer.wordWrapHeight(this.subText, 182) * 12 / 9 + 16;
+    if (this.subText != null) yOff = book.fontRenderer.wordWrapHeight(this.subText, 182) * 12 / 9 + 16;
 
     return String.format(
       """
@@ -247,23 +247,7 @@ public class ContentPageIconList extends PageContent {
       HTMLUtils.p(subText, "padding-left: 10px"),
       (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale(yOff)),
       yOff * 2,
-      elements.stream()
-        .map(element -> {
-          String action = element.action;
-          String location = action.substring(action.indexOf(StringActionProcessor.PROTOCOL_SEPARATOR) + StringActionProcessor.PROTOCOL_SEPARATOR.length());
-          int bookPage = element.parent.book.findPageNumber(location);
-          return String.format(
-            """
-            <div data-minetip-title="%s">
-            <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
-            </div>
-            """,
-            element.parent.book.findPage(bookPage - 1, null).getTitle(),
-            bookPage / 2,
-            location
-          );
-        })
-        .collect(Collectors.joining("\n"))
+      elements.stream().map(e -> e.toHTML(book)).collect(Collectors.joining("\n"))
     );
   }
 }

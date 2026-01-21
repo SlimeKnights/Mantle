@@ -158,17 +158,17 @@ public class ContentCrafting extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     return String.format(
       """
       %s
       <div class="%s">
-          %s
+      %s
       </div>
       """,
       getTitleHTML(),
       grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg",
-      TextData.toHTML(description, parent.parent.parent)
+      TextData.toHTML(description, book)
     );
   }
 }

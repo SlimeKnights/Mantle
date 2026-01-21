@@ -1,6 +1,7 @@
 package slimeknights.mantle.client.book;
 
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.book.data.BookData;
 
 import javax.annotation.Nullable;
 
@@ -14,9 +15,10 @@ public interface IHTML {
   /**
    * Converts content to HTML
    * returns null for content that contains no text
+   * @param book reference to the parent BookData
    */
   @Nullable
-  default String toHTML() {
+  default String toHTML(BookData book) {
     Mantle.logger.warn("{} does not implement IHTML.", this.getClass());
     return "<p>" + this.getClass() + "</p>";
   }

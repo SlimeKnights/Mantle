@@ -742,8 +742,8 @@ public class BookScreen extends Screen {
     PageData leftData = getLeftPage();
     PageData rightData = getRightPage();
 
-    String left = leftData != null ? leftData.content.toHTML() : null;
-    String right = rightData != null ? rightData.content.toHTML() : null;
+    String left = leftData != null ? leftData.content.toHTML(book) : null;
+    String right = rightData != null ? rightData.content.toHTML(book) : null;
 
     StringBuilder builder = new StringBuilder();
 
@@ -751,13 +751,9 @@ public class BookScreen extends Screen {
       builder.append("""
         ---
         layout: book-html
-        book:\s""").append(bookId.getPath()).append("_20\n") // is version dependent
-        .append("page_num: ").append(this.page)
-        .append("""
-        
-        ---
-        
-        """);
+        book:\s""").append(bookId.getPath()).append("_20\n") // TODO: move version into command param
+        .append("page_num: ").append(this.page).append("\n")
+        .append("---\n\n");
     }
 
     if (left != null) builder.append("<div class=\"left\">\n").append(left).append("\n</div>");

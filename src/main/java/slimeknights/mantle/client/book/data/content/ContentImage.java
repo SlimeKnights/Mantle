@@ -36,7 +36,7 @@ public class ContentImage extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     return getTitleHTML();
   }
 }

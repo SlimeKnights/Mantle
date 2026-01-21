@@ -8,6 +8,8 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.TrueCondition;
 import slimeknights.mantle.client.book.BookLoader;
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.data.element.ImageData;
 import slimeknights.mantle.client.book.repository.BookRepository;
@@ -23,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SectionData implements IDataItem, IConditional {
+public class SectionData implements IDataItem, IConditional, IHTML {
 
   public String name = null;
   public ImageData icon = new ImageData();
@@ -143,5 +145,22 @@ public class SectionData implements IDataItem, IConditional {
   @Override
   public boolean isConditionMet() {
     return condition.test(DataLoadedConditionContext.INSTANCE);
+  }
+
+  @Override
+  public String toHTML(BookData book) {
+    int page_number = book.getFirstPageNumber(this, null);
+    return String.format("""
+      <div data-minetip-title="%s">
+      <a href="../page-%d/#%s.%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+      %s
+      </div>""",
+      getTitle(),
+      page_number / 2,
+      name,
+      // why -1
+      book.findPage(page_number - 1, null).name,
+      HTMLUtils.p(getTitle())
+    );
   }
 }

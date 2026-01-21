@@ -53,7 +53,7 @@ public class ContentImageText extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     int h = image.height > 0 ? image.height : 100;
     return String.format(
       """
@@ -64,7 +64,7 @@ public class ContentImageText extends PageContent {
       """,
       getTitleHTML(),
       h * 2 + 14,
-      TextData.toHTML(text, parent.parent.parent)
+      TextData.toHTML(text, book)
     );
   }
 }

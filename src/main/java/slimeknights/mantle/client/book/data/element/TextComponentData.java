@@ -1,8 +1,11 @@
 package slimeknights.mantle.client.book.data.element;
 
 import net.minecraft.network.chat.Component;
+import slimeknights.mantle.client.book.HTMLUtils;
+import slimeknights.mantle.client.book.IHTML;
+import slimeknights.mantle.client.book.data.BookData;
 
-public class TextComponentData {
+public class TextComponentData implements IHTML {
 
   public static final TextComponentData LINEBREAK = new TextComponentData("\n");
 
@@ -22,5 +25,8 @@ public class TextComponentData {
     this.text = text;
   }
 
-
+  @Override
+  public String toHTML(BookData book) {
+    return HTMLUtils.p(text);
+  }
 }

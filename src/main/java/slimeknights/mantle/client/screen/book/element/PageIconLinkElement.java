@@ -5,13 +5,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
+import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.element.TextData;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
 /** Link elements for {@link slimeknights.mantle.client.book.data.content.ContentPageIconList} */
-public class PageIconLinkElement extends SizedBookElement {
+public class PageIconLinkElement extends SizedBookElement implements IHTML {
 
   public PageData pageData;
   public SizedBookElement displayElement;
@@ -63,5 +65,21 @@ public class PageIconLinkElement extends SizedBookElement {
     if (this.isHovered(mouseX, mouseY)) {
       StringActionProcessor.process(this.action, this.parent);
     }
+  }
+
+  @Override
+  public String toHTML(BookData book) {
+    // basically just ignores 'mantle:go-to-page-rtn '
+    String location = action.substring(action.indexOf(StringActionProcessor.PROTOCOL_SEPARATOR) + StringActionProcessor.PROTOCOL_SEPARATOR.length());
+    int bookPage = book.findPageNumber(location);
+
+    return String.format("""
+      <div data-minetip-title="%s">
+      <a href="../page-%d/#%s"><img src="/assets/images/book/icons/blank.png" alt=""></a>
+      </div>""",
+      book.findPage(bookPage - 1, null).getTitle(),
+      bookPage / 2,
+      location
+    );
   }
 }

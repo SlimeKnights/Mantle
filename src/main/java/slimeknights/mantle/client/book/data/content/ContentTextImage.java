@@ -43,7 +43,7 @@ public class ContentTextImage extends PageContent {
   }
 
   @Override
-  public String toHTML() {
-    return getTitleHTML() + TextData.toHTML(text, parent.parent.parent);
+  public String toHTML(BookData book) {
+    return getTitleHTML() + TextData.toHTML(text, book);
   }
 }

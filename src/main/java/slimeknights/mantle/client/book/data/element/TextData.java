@@ -35,18 +35,14 @@ public class TextData implements IHTML {
   }
 
   /**
-   * Do not use this when working with TextData[]
+   * Do not use this when working with TextData[] that represents a bulleted list
    * Use {@link #toHTML(TextData[], BookData)} instead
    */
   @Override
-  public String toHTML() {
-    return toHTML(null);
-  }
-
-  public String toHTML(@Nullable BookData book) {
+  public String toHTML(BookData book) {
     boolean styled = (rgbColor & 0xFFFFFF) != 0 || bold || italic || strikethrough;
     boolean anyStyle = styled || underlined || dropshadow;
-    boolean link = !action.isEmpty() && book != null;
+    boolean link = !action.isEmpty();
 
     StringBuilder builder = new StringBuilder();
 
@@ -99,7 +95,7 @@ public class TextData implements IHTML {
    * @param book parent BookData
    * @return HTML p and ul tags
    */
-  public static String toHTML(@Nullable TextData[] array, @Nullable BookData book) {
+  public static String toHTML(@Nullable TextData[] array, BookData book) {
     if (array == null) return "";
 
     boolean ulOpen = false;
@@ -143,7 +139,7 @@ public class TextData implements IHTML {
           builder.append("<p>");
         }
 
-        builder.append(textData.toHTML());
+        builder.append(textData.toHTML(book));
       }
     }
 

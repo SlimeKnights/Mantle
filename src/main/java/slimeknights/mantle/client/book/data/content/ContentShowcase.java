@@ -47,7 +47,7 @@ public class ContentShowcase extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     return String.format(
       """
       %s
@@ -56,7 +56,7 @@ public class ContentShowcase extends PageContent {
       </div>
       """,
       getTitleHTML(),
-      TextData.toHTML(text, parent.parent.parent)
+      TextData.toHTML(text, book)
     );
   }
 }

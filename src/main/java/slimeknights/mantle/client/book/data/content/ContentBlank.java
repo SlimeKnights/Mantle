@@ -17,7 +17,7 @@ public class ContentBlank extends PageContent {
 
   @Nullable
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     return null;
   }
 }

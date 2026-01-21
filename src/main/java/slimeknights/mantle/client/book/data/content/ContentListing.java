@@ -165,7 +165,7 @@ public class ContentListing extends PageContent {
   }
 
   @Override
-  public String toHTML() {
+  public String toHTML(BookData book) {
     StringBuilder result = new StringBuilder(getTitleHTML());
     if (subText != null) result.append(HTMLUtils.p(subText, "padding-left: 10px"));
 

@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
+import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.element.TextComponentData;
 import slimeknights.mantle.client.screen.book.TextComponentDataRenderer;
 
@@ -60,11 +61,10 @@ public class TextComponentElement extends SizedBookElement implements IHTML {
   }
 
   @Override
-  public String toHTML() {
-    String paragraphs = Arrays.stream(text)
-      .map(s -> String.format("<p>%s</p>", s.text))
+  public String toHTML(BookData book) {
+    return Arrays.stream(text)
+      .map(s -> s.toHTML(book))
       .collect(Collectors.joining("\n"));
-    return paragraphs;
   }
 
   @Override
