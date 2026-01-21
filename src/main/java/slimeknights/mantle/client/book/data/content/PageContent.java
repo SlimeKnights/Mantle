@@ -14,7 +14,6 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.List;
 
 /** Base for all page content */
 public abstract class PageContent implements IHTML {

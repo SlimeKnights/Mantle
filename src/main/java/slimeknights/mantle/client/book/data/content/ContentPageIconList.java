@@ -96,7 +96,7 @@ public class ContentPageIconList extends PageContent {
     int x = xOff;
     int y = yOff;
 
-    float scale = getScale();
+    float scale = getScale(yOff);
     int scaledWidth = (int) (this.width * scale);
     int scaledHeight = (int) (this.height * scale);
 
@@ -214,11 +214,7 @@ public class ContentPageIconList extends PageContent {
   }
 
   /** Calculates the largest possible icon scale that will fit all the contents on the page */
-  protected float getScale() {
-    int yOff = 0;
-    if (this.title != null) yOff = getTitleHeight();
-    if(this.subText != null) yOff = this.parent.parent.parent.fontRenderer.wordWrapHeight(this.subText, 182) * 12 / 9 + 16;
-
+  protected float getScale(int yOff) {
     int pageW = BookScreen.PAGE_WIDTH - 2 * xOff;
     int pageH = BookScreen.PAGE_HEIGHT - yOff;
 
@@ -235,7 +231,10 @@ public class ContentPageIconList extends PageContent {
 
   @Override
   public String toHTML() {
-    int yOff = (this.parent.parent.parent.fontRenderer.wordWrapHeight(this.subText, 182) * 12 / 9) + 16;
+    int yOff = 0;
+    if (this.title != null) yOff = getTitleHeight();
+    if (this.subText != null) yOff = this.parent.parent.parent.fontRenderer.wordWrapHeight(this.subText, 182) * 12 / 9 + 16;
+
     return String.format(
       """
       %s
@@ -246,7 +245,7 @@ public class ContentPageIconList extends PageContent {
       """,
       getTitleHTML(),
       HTMLUtils.p(subText, "padding-left: 10px"),
-      (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale()),
+      (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale(yOff)),
       yOff * 2,
       elements.stream()
         .map(element -> {

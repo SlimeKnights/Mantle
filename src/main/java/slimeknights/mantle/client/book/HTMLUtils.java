@@ -15,7 +15,7 @@ public class HTMLUtils {
   private static final String LOOKUP = "0123456789abcdefklmnor";
 
   /**
-   * Converts a String into HTML
+   * Converts a String into a HTML paragraph
    *
    * @param text text
    * @return HTML p tag
@@ -25,7 +25,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a String into HTML
+   * Converts a String into a HTML paragraph
    *
    * @param text   text
    * @param styles element style attributes
@@ -36,7 +36,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a String into HTML
+   * Converts a String into a HTML paragraph
    *
    * @param text    text
    * @param classes element classes
@@ -49,7 +49,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a String into HTML
+   * Converts a String into a HTML paragraph
    *
    * @param text    text
    * @param id      element id
@@ -63,7 +63,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a String into HTML
+   * Converts a String into a HTML list item
    *
    * @param text text
    * @return HTML li tag
@@ -73,7 +73,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a String into HTML
+   * Converts a String into HTML list item
    *
    * @param text    text
    * @param classes element classes
