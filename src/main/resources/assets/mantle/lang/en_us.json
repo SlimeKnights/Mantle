@@ -1,6 +1,7 @@
 {
   "mantle:tooltip.cooktime": "Cook Time: %ds",
-  "config.mantle.extraHeartRenderer": "Enable Extra Heart Renderer",
+  "config.mantle.extraHeartRenderer": "Extra Heart Renderer",
+  "config.mantle.enableFluidFogFix": "Enable Fluid Fog Fix",
 
   "command.mantle.view_tag.success": "Values for %s tag '%s':",
 
@@ -31,7 +32,7 @@
   "command.mantle.modify_tag.success.remove": "Successfully removed '%s' from %s tag '%s'. Run /reload to activate pack at %s.",
   "command.mantle.modify_tag.success.clear": "Successfully cleared %s tag '%s'. Run /reload to activate pack at %s.",
   "command.mantle.modify_tag.read_error": "Error reading %s tag '%s'",
-  "command.mantle.modify_tag.write_error": "Error reading %s tag '%s'",
+  "command.mantle.modify_tag.write_error": "Error writing %s tag '%s'",
 
   "command.mantle.dump_loot_modifiers.success_log": "Printed combined global loot modifiers to console log",
   "command.mantle.dump_loot_modifiers.success_save": "Dumped combined global loot modifiers to '%s'",

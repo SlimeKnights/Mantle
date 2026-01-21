@@ -1,6 +1,7 @@
 package slimeknights.mantle.datagen;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -48,6 +49,8 @@ public class MantleTags {
     public static final TagKey<Item> SPLASH_BOTTLE = common("bottles/splash");
     /** Tag of empty glass bottles that would contain a lingering potion */
     public static final TagKey<Item> LINGERING_BOTTLE = common("bottles/lingering");
+    /** Items in this tag remain on the player after death */
+    public static final TagKey<Item> SOULBOUND = ItemTags.create(Mantle.getResource("soulbound"));
 
     /** Adds a common domain tag */
     private static TagKey<Item> common(String name) {

@@ -9,6 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.MantleRecipes;
 
 import javax.annotation.Nullable;
@@ -18,8 +19,9 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(staticName = "fromShaped")
 public class ShapedRetexturedRecipeBuilder {
   private final ShapedRecipeBuilder parent;
-  private Ingredient texture;
-  private boolean matchAll;
+  private Ingredient texture = null;
+  private char textureKey = '\0';
+  private boolean matchAll = false;
 
   /**
    * Sets the texture source to the given ingredient
@@ -28,6 +30,7 @@ public class ShapedRetexturedRecipeBuilder {
    */
   public ShapedRetexturedRecipeBuilder setSource(Ingredient texture) {
     this.texture = texture;
+    this.textureKey = '\0';
     return this;
   }
 
@@ -37,7 +40,13 @@ public class ShapedRetexturedRecipeBuilder {
    * @return Builder instance
    */
   public ShapedRetexturedRecipeBuilder setSource(TagKey<Item> tag) {
-    this.texture = Ingredient.of(tag);
+    return setSource(Ingredient.of(tag));
+  }
+
+  /** Sets the texture source to a key from the texture map. Is not validated as that is too much work. */
+  public ShapedRetexturedRecipeBuilder setSource(char textureKey) {
+    this.textureKey = textureKey;
+    this.texture = null;
     return this;
   }
 
@@ -57,7 +66,7 @@ public class ShapedRetexturedRecipeBuilder {
    */
   public void build(Consumer<FinishedRecipe> consumer) {
     this.validate();
-    parent.save(base -> consumer.accept(new Result(base, texture, matchAll)));
+    parent.save(base -> consumer.accept(new Result(base)));
   }
 
   /**
@@ -67,7 +76,7 @@ public class ShapedRetexturedRecipeBuilder {
    */
   public void build(Consumer<FinishedRecipe> consumer, ResourceLocation location) {
     this.validate();
-    parent.save(base -> consumer.accept(new Result(base, texture, matchAll)), location);
+    parent.save(base -> consumer.accept(new Result(base)), location);
   }
 
   /**
@@ -75,20 +84,16 @@ public class ShapedRetexturedRecipeBuilder {
    * @throws IllegalStateException If the recipe cannot be built
    */
   private void validate() {
-    if (texture == null) {
+    if (texture == null && textureKey == '\0') {
       throw new IllegalStateException("No texture defined for texture recipe");
     }
   }
 
-  private static class Result implements FinishedRecipe {
+  private class Result implements FinishedRecipe {
     private final FinishedRecipe base;
-    private final Ingredient texture;
-    private final boolean matchAll;
 
-    private Result(FinishedRecipe base, Ingredient texture, boolean matchAll) {
+    private Result(FinishedRecipe base) {
       this.base = base;
-      this.texture = texture;
-      this.matchAll = matchAll;
     }
 
     @Override
@@ -104,7 +109,12 @@ public class ShapedRetexturedRecipeBuilder {
     @Override
     public void serializeRecipeData(JsonObject json) {
       base.serializeRecipeData(json);
-      json.add("texture", texture.toJson());
+      if (textureKey != '\0') {
+        json.addProperty("texture", textureKey);
+      } else if (texture != null) {
+        json.add("texture", texture.toJson());
+        Mantle.logger.warn("Using deprecated ingredient format on texture for shaped retextured recipe {}. Use key instead.", getId());
+      }
       json.addProperty("match_all", matchAll);
     }
 

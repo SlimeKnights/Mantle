@@ -1,0 +1,20 @@
+{
+  "title": "Создание (заполняется вручную)",
+  "grid_size": "small",
+  "grid": [
+    [
+      "minecraft:cobblestone",
+      "minecraft:andesite"
+    ],
+    [
+      "minecraft:andesite",
+      "minecraft:cobblestone"
+    ]
+  ],
+  "result": "minecraft:redstone",
+  "description": [
+    {
+      "text": "Этот маленький рецепт заполняется вручную."
+    }
+  ]
+}

@@ -26,7 +26,7 @@ public class MantleRenderTypes extends RenderType {
   }
 
   /** Extension of {@link RenderType#POSITION_COLOR_TEX_LIGHTMAP_SHADER} with fog information based on {@link RenderType#ENTITY_TRANSLUCENT_CULL} */
-  public static final RenderStateShard.ShaderStateShard FLUID_SHADER = new RenderStateShard.ShaderStateShard(MantleShaders::getFluidShader);
+  public static final RenderStateShard.ShaderStateShard FLUID_SHADER = new RenderStateShard.ShaderStateShard(MantleShaders::getConfiguredFluidShader);
 
   /**
    * Render type used for the fluid renderer.

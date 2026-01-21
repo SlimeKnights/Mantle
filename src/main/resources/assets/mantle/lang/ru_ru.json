@@ -1,0 +1,86 @@
+{
+  "mantle:tooltip.cooktime": "Время приготовления: %d сек.",
+  "config.mantle.extraHeartRenderer": "Доп. рендеринг сердца",
+  "config.mantle.enableFluidFogFix": "Включить исправление тумана жидкости",
+
+  "command.mantle.view_tag.success": "Значения для %s тега '%s':",
+
+  "command.mantle.tags_for.success": "%s теги для '%s':",
+  "command.mantle.tags_for.not_found": "Неизвестное значение %s реестра '%s'",
+  "command.mantle.tags_for.no_held_block": "Удерживаемый предмет не является блоком",
+  "command.mantle.tags_for.no_held_entity": "Удерживаемый предмет не является яйцом призыва",
+  "command.mantle.tags_for.no_held_potion": "Удерживаемый предмет не является зельем",
+  "command.mantle.tags_for.no_held_fluid": "Не удалось получить жидкость из удерживаемого предмета",
+  "command.mantle.tags_for.no_held_enchantment": "Удерживаемый предмет не зачарован",
+  "command.mantle.tags_for.no_targeted_entity": "В пределах досягаемости нет сущности",
+  "command.mantle.tags_for.no_targeted_block": "Нет целевого блока",
+  "command.mantle.tags_for.no_targeted_fluid": "Нет целевой жидкости",
+  "command.mantle.tags_for.no_targeted_block_entity": "Нет целевой блочной сущности",
+  "command.mantle.tags_for.no_tags": "Нет тегов",
+
+  "command.mantle.book_test.not_found": "Неизвестная книга с ID %s",
+  "command.mantle.book.export.success": "Изображения книги экспортированы в '%s'",
+  "command.mantle.book.export.error_generic": "Не удалось экспортировать изображения книги, подробности см. в журнале",
+  "command.mantle.book.export.error_io": "Не удалось создать каталог для изображений книги '%s'",
+
+  "command.mantle.dump_tag.success": "Сброшен комбинированный %s тег '%s' в журнал консоли",
+  "command.mantle.dump_tag.success_log": "Сброшен комбинированный %s тег '%s' в '%s'",
+  "command.mantle.dump_all_tags.success": "Все теги сброшены в '%s'",
+  "command.mantle.dump_all_tags.type_success": "Сброшены все %s теги в '%s'",
+
+  "command.mantle.modify_tag.success.add": "Успешное добавление '%s' к %s тегу '%s'. Запустите /reload, чтобы активировать пакет в %s.",
+  "command.mantle.modify_tag.success.remove": "Успешное удаление '%s' из %s тега '%s'. Запустите /reload, чтобы активировать пакет в %s.",
+  "command.mantle.modify_tag.success.clear": "Успешное очищение %s тега '%s'. Запустите /reload, чтобы активировать пакет в %s.",
+  "command.mantle.modify_tag.read_error": "Ошибка чтения %s тега '%s'",
+  "command.mantle.modify_tag.write_error": "Ошибка записи %s тега '%s'",
+
+  "command.mantle.dump_loot_modifiers.success_log": "В журнал консоли выведены объединённые глобальные модификаторы добычи",
+  "command.mantle.dump_loot_modifiers.success_save": "Объединённые глобальные модификаторы добычи сброшены в '%s'",
+  "command.mantle.dump_loot_modifiers.read_error": "Ошибка чтения глобальных модификаторов добычи",
+
+  "command.mantle.harvest_tiers.success_log": "Выведены отсортированные уровни в журнал консоли",
+  "command.mantle.harvest_tiers.success_save": "Сброшены отсортированные уровни в '%s'",
+  "command.mantle.harvest_tiers.success_list": "Уровни сбора:",
+  "command.mantle.harvest_tiers.tag": "%s: Тег блока %s",
+  "command.mantle.harvest_tiers.no_tag": "%s: Нет тега",
+
+  "command.mantle.remove_recipes": "Рецепты %s успешно удалены за %s секунд. Запустите /reload, чтобы активировать пакет в %s.",
+  "command.mantle.remove_recipes.preset_not_found": "Предустановка удаления рецепта '%s' отсутствует или недействительна. Проверьте журнал для получения дополнительной информации.",
+  "command.mantle.remove.failed_save": "Не удалось сохранить JSON в '%s'.",
+
+  "command.mantle.key.wrong_registry": "Ожидаемый ключ ресурса '%s' принадлежит реестру '%s'.",
+  "command.mantle.remove_data.structure.success": "Набор структур '%s' успешно очищен за %s секунд. Запустите /reload, чтобы активировать пакет в %s.",
+  "command.mantle.remove_data.biome_modifier.success": "Модификатор биома '%s' успешно удалён за %s секунд. Запустите /reload, чтобы активировать пакет в %s.",
+
+  "command.mantle.sources.success": "Источники для %s:",
+  "command.mantle.sources.not_found": "'%s' не найдено:",
+
+  "command.mantle.tag.empty": "Пусто",
+  "command.mantle.item.not_found": "Неизвестный предмет '%s'",
+  "command.mantle.registry.not_found": "Неизвестный реестр '%s'",
+  "command.mantle.tag_source.not_found": "Неизвестный источник тега '%s'",
+  "command.mantle.tag.not_found": "Неизвестный %s тега '%s'",
+
+  "command.mantle.tag_preference.empty_tag": "Нет предпочтений %s для тега %s",
+  "command.mantle.tag_preference.preference": "Предпочтительным значением %s для тега %s является %s",
+
+  "gui.mantle.fluid.capacity": "Ёмкость: %s мВ",
+  "gui.mantle.fluid.contents": "Содержит: %s",
+  "gui.mantle.fluid.format": "%s / %s мВ %s",
+
+  "gui.mantle.fluid.hold_shift": "§7Удерживайте [§6Shift§7] для подробной информации и перемещения жидкости.",
+  "gui.mantle.fluid.kilobucket": "%s кВ",
+  "gui.mantle.fluid.bucket": "Вёдер: %s",
+  "gui.mantle.fluid.millibucket": "%s мВ",
+
+  "gui.mantle.fluid.bowl": "Мисок: %s",
+  "gui.mantle.fluid.bottle": "Бутылочек: %s",
+  "gui.mantle.fluid.drop": "Капель: %s",
+  "gui.mantle.fluid.sip": "Глотков: %s",
+
+  "block.mantle.tank.drained": "Осушено %s мВ %s",
+  "block.mantle.tank.filled": "Заполнено %s мВ %s",
+  "block.mantle.retextured.id": "ID текстуры: %s",
+
+  "item.mantle.book.click_to_open": "§7Щёлкните [§6ПКМ§7], чтобы открыть."
+}

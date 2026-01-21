@@ -25,13 +25,14 @@ public class TextDataRenderer {
     List<Component> tooltip = new ArrayList<>();
     String action = drawText(graphics, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
-    if (tooltip.size() > 0) {
+    if (!tooltip.isEmpty()) {
       graphics.renderTooltip(fr, tooltip, Optional.empty(), mouseX, mouseY);
     }
 
     return action;
   }
 
+  // TODO: can we merge this with TextComponentDataRenderer, put the differences in TextData vs TextComponentData?
   public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
     String action = "";
 
@@ -45,9 +46,19 @@ public class TextDataRenderer {
       int box2X, box2Y = 9999, box2W, box2H;
       int box3X = 9999, box3Y = 9999, box3W, box3H;
 
-      if (item == null || item.text == null || item.text.isEmpty()) {
+      // shouldn't happen, but better safe
+      if (item == null) {
         continue;
       }
+      // allow specifying linebreak on its own to force a linebreak
+      if (item.text == null || item.text.isEmpty()) {
+        if (item.linebreak) {
+          atX = x;
+          atY += fr.lineHeight;
+        }
+        continue;
+      }
+      // TODO: ditch this, the linebreak field handles it better
       if (item.text.equals("\n")) {
         atX = x;
         atY += fr.lineHeight;
@@ -128,7 +139,9 @@ public class TextDataRenderer {
       box2H = atY;
 
       atX += fr.width(split[split.length - 1]) * item.scale;
-      if (atX - x >= boxWidth) {
+
+      // if specified, include a trailing linebreak, works better than a separate linebreak element on handling whitespace
+      if (item.linebreak || atX - x >= boxWidth) {
         atX = x;
         atY += fr.lineHeight * item.scale;
       }

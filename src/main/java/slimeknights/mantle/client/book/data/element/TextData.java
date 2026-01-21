@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.element;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
@@ -8,12 +10,18 @@ import slimeknights.mantle.client.book.data.BookData;
 
 import javax.annotation.Nullable;
 
+@Accessors(fluent = true)
+@Setter
 public class TextData implements IHTML {
-
-  public static final TextData LINEBREAK = new TextData("\n");
+  /** @deprecated use {@link #linebreak} */
+  @Deprecated(forRemoval = true)
+  public static final TextData LINEBREAK = new TextData().linebreak(true);
   private static final String LIST_PREFIX = "• ";
-  public String text;
+
+  @Nullable
+  public String text = "";
   public String color = "black";
+
   public int rgbColor = 0;
   public boolean useOldColor = true;
   public boolean bold = false;
@@ -21,17 +29,22 @@ public class TextData implements IHTML {
   public boolean underlined = false;
   public boolean strikethrough = false;
   public boolean obfuscated = false;
+  /** Adds 2 linebreaks before the text */
   public boolean paragraph = false;
+  /** If true, adds a line break after the text */
+  public boolean linebreak = false;
   public boolean dropshadow = false;
-  public float scale = 1.F;
+  public float scale = 1;
   public String action = "";
+  @Nullable
   public Component[] tooltip = null;
-
-  public TextData() {
-  }
 
   public TextData(String text) {
     this.text = text;
+  }
+
+  public TextData() {
+    this("");
   }
 
   /**

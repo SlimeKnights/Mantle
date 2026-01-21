@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class TextComponentElement extends SizedBookElement implements IHTML {
 
   public TextComponentData[] text;
-  private final List<Component> tooltip = new ArrayList<Component>();
+  private final List<Component> tooltip = new ArrayList<>();
 
   private transient String lastAction = "";
 
@@ -47,7 +47,7 @@ public class TextComponentElement extends SizedBookElement implements IHTML {
 
   @Override
   public void drawOverlay(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
-    if (this.tooltip.size() > 0) {
+    if (!this.tooltip.isEmpty()) {
       drawTooltip(graphics, this.tooltip, mouseX, mouseY, fontRenderer);
       this.tooltip.clear();
     }
