@@ -239,7 +239,7 @@ public class ContentPageIconList extends PageContent {
       """
       %s
       %s
-      <div class="grid-materials-%d" style="top: %dpx">
+      <div class="grid-icon-list grid-icon-list-%d" style="top: %dpx">
       %s
       </div>
       """,

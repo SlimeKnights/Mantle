@@ -8,7 +8,6 @@ import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 
 /**
