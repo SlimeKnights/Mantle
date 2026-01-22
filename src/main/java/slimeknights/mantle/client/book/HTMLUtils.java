@@ -73,7 +73,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a String into HTML list item
+   * Converts a String into a HTML list item
    *
    * @param text    text
    * @param classes element classes
@@ -110,9 +110,10 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a Component into HTML, all of its styles are included
+   * Converts a Component into a HTML paragraph
+   * all of its styles are included
    *
-   * @param component component
+   * @param component Component
    * @return HTML p tag
    */
   public static String p(Component component) {
@@ -120,9 +121,10 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a Component into HTML, all of its styles are included
+   * Converts a Component into a HTML paragraph
+   * all of its styles are included
    *
-   * @param component component
+   * @param component Component
    * @param styles    element style attributes
    * @return HTML p tag
    */
@@ -131,9 +133,10 @@ public class HTMLUtils {
   }
 
   /**
-   * Converts a Component into HTML, all of its styles are included
+   * Converts a Component into a HTML list item
+   * all of its styles are included
    *
-   * @param component component
+   * @param component Component
    * @return HTML li tag
    */
   public static String li(Component component) {
@@ -141,7 +144,10 @@ public class HTMLUtils {
   }
 
   /**
-   * NOTE: uses a span instead of p to recursively inline
+   * Decomposes a Component into styled inlined spans
+   *
+   * @param component Component
+   * @return HTML span tag
    */
   private static String span(Component component) {
     StringBuilder builder = new StringBuilder();
@@ -179,7 +185,7 @@ public class HTMLUtils {
   }
 
   /**
-   * Parses any chat formatting in text, and converts it to HTML.
+   * Parses any chat formatting in to HTML.
    * Does not support Obfuscated §k
    *
    * @param text Minecraft chat formated string
@@ -243,7 +249,7 @@ public class HTMLUtils {
     } while (next < last && start <= next);
 
     result.append(text, start, text.length());
-    // might not reset
+    // might not reset style
     result.append("</span>".repeat(left - right));
 
     return result.toString();
