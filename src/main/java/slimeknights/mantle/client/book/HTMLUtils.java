@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import slimeknights.mantle.data.loadable.common.ColorLoadable;
 
 import javax.annotation.Nullable;
 import java.util.stream.Collectors;
@@ -159,8 +160,7 @@ public class HTMLUtils {
       TextColor color = style.getColor();
       if (color != null && (color.getValue() & 0xFFFFFF) != 0) {
         builder.append("color: ");
-        // toString gives a weird color
-        builder.append(hexRGB(color.getValue()));
+        builder.append(ColorLoadable.NO_ALPHA.getString(color.getValue()));
         builder.append(";");
       }
 
@@ -178,10 +178,6 @@ public class HTMLUtils {
     if (!style.isEmpty()) builder.append("</span>");
 
     return builder.toString();
-  }
-
-  public static String hexRGB(int rgb) {
-    return String.format("#%02X%02X%02X", (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb & 0xFF));
   }
 
   /**

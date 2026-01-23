@@ -7,6 +7,7 @@ import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.data.BookData;
+import slimeknights.mantle.data.loadable.common.ColorLoadable;
 
 import javax.annotation.Nullable;
 
@@ -82,7 +83,7 @@ public class TextData implements IHTML {
 
         if ((rgbColor & 0xFFFFFF) != 0)
           builder.append("color: ")
-            .append(HTMLUtils.hexRGB(rgbColor))
+            .append(ColorLoadable.NO_ALPHA.getString(rgbColor))
             .append(";");
         if (bold) builder.append("font-weight: bold;");
         if (italic) builder.append("font-style: italic;");
