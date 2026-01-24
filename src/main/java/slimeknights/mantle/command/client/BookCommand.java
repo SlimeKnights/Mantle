@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
@@ -48,6 +49,8 @@ public class BookCommand {
   private static final String EXPORT_FAIL = "command.mantle.book.export.error_generic";
   private static final String EXPORT_FAIL_IO = "command.mantle.book.export.error_io";
 
+  private static final String DEFAULT_BOOK_VERSION = "20";
+
   /**
    * Registers this sub command with the root command
    * @param subCommand  Command builder
@@ -64,7 +67,12 @@ public class BookCommand {
           .executes(BookCommand::exportImages)))
       .then(Commands.literal("export_html")
         .then(Commands.argument("id", ResourceLocationArgument.id()).suggests(MantleClientCommand.REGISTERED_BOOKS)
-          .executes(BookCommand::exportHTML))
+          .then(Commands.argument("version", StringArgumentType.word())
+            .executes(BookCommand::exportHTMLWithVersion))
+          .executes(BookCommand::exportHTML)))
+      .then(Commands.literal("export_all_html")
+        .then(Commands.argument("version", StringArgumentType.word())
+          .executes(BookCommand::exportAllHTMLWithVersion))
         .executes(BookCommand::exportAllHTML));
   }
 
@@ -125,6 +133,17 @@ public class BookCommand {
   }
 
   /**
+   * Exports all pages in the book to HTML and png
+   * @param context Command context
+   * @return Integer return
+   */
+  private static int exportHTMLWithVersion(CommandContext<CommandSourceStack> context) {
+    ResourceLocation book = ResourceLocationArgument.getId(context, "id");
+
+    return doExport(book, 2, true, StringArgumentType.getString(context, "version"));
+  }
+
+  /**
    * Exports all pages in all books to HTML and png
    * @param context Command context
    * @return Integer return
@@ -138,6 +157,19 @@ public class BookCommand {
   }
 
   /**
+   * Exports all pages in all books to HTML and png
+   * @param context Command context
+   * @return Integer return
+   */
+  private static int exportAllHTMLWithVersion(CommandContext<CommandSourceStack> context) {
+    for (ResourceLocation book : BookLoader.getRegisteredBooks()) {
+      int code = doExport(book, 2, true, StringArgumentType.getString(context, "version"));
+      if (code != 0) return code;
+    }
+    return 0;
+  }
+
+  /**
    * Renders all images in the book to files
    * @param book  Book to export
    * @param scale  Scale to export at
@@ -145,6 +177,18 @@ public class BookCommand {
    * @return  Integer return
    */
   private static int doExport(ResourceLocation book, int scale, boolean html) {
+    return doExport(book, scale, html, DEFAULT_BOOK_VERSION);
+  }
+
+  /**
+   * Renders all images in the book to files
+   * @param book  Book to export
+   * @param scale  Scale to export at
+   * @param html  Include HTML
+   * @param version  version in each files header
+   * @return  Integer return
+   */
+  private static int doExport(ResourceLocation book, int scale, boolean html, String version) {
     BookData bookData = BookLoader.getBook(book);
 
     Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
@@ -226,7 +270,7 @@ public class BookCommand {
           if (html && page >= 0) {
             File file = Paths.get(screenshotDir.toString(), "page-" + page + ".html").toFile();
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-              writer.write(screen.toHTML(book));
+              writer.write(screen.toHTML(book.getPath(), version));
             } catch (IOException e) {
               Mantle.logger.error("Failed to export HTML", e);
               throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));

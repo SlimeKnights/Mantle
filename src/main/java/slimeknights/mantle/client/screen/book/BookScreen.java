@@ -736,9 +736,9 @@ public class BookScreen extends Screen {
   }
 
   /**
-   * Converts the left and right page to HTML including Jekyll front matter
+   * Converts the left and right page to HTML including the Jekyll front matter
    */
-  public String toHTML(ResourceLocation bookId) {
+  public String toHTML(String bookName, String version) {
     PageData leftData = getLeftPage();
     PageData rightData = getRightPage();
 
@@ -748,10 +748,9 @@ public class BookScreen extends Screen {
     StringBuilder builder = new StringBuilder();
 
     if (left != null || right != null) {
-      builder.append("""
-        ---
-        layout: book-html
-        book:\s""").append(bookId.getPath()).append("_20\n") // TODO: move version into command param
+      builder.append("---\n")
+        .append("layout: book-html\n")
+        .append("book: ").append(bookName).append("_").append(version).append("\n")
         .append("page_num: ").append(this.page).append("\n")
         .append("---\n\n");
     }
