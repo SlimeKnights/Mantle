@@ -181,7 +181,7 @@ public class HTMLUtils {
   }
 
   public static String hexRGB(int rgb) {
-    return String.format("#%02X%02X%02X", (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb & 0xFF));
+    return String.format("#%06X", rgb & 0xFFFFFF);
   }
 
   /**
