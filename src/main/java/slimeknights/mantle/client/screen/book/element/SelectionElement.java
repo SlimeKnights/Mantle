@@ -60,7 +60,7 @@ public class SelectionElement extends SizedBookElement {
 
     this.iconRenderer.draw(graphics, mouseX, mouseY, partialTicks, fontRenderer);
 
-    if (this.section.parent.appearance.drawSectionListText) {
+    if (this.parent.drawText && this.section.parent.appearance.drawSectionListText) {
       String title = this.section.getTitle().replace("\\n", "\n");
       String[] splitTitle = TextDataRenderer.cropStringBySize(title, "", WIDTH + 2,
         fontRenderer.lineHeight * 2 + 1, fontRenderer, 1F);

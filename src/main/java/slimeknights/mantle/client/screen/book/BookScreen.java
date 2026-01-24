@@ -162,8 +162,6 @@ public class BookScreen extends Screen {
 
     Font fontRenderer = getFontRenderer();
 
-    book.appearance.drawSectionListText = drawText;
-
     if (debug) {
       graphics.fill(0, 0, fontRenderer.width("DEBUG") + 4, fontRenderer.lineHeight + 4, 0x55000000);
       graphics.drawString(this.font, "DEBUG", 2, 2, 0xFFFFFFFF, false);
