@@ -124,13 +124,12 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       return entriesInColumn > 0; // should be sufficient, only 0 when nothing is added
     }
 
-    /** Increases the number of entries in the column */
-    private void incrementColumns(String text, boolean bold) {
-      // entriesInColumn += section.parent.fontRenderer.wordWrapHeight(text, COLUMN_WIDTH) / 9;
+    /** Gets the number of entries needed to represent the given text. */
+    private int entryCount(String text, boolean bold) {
       if (bold) {
-        entriesInColumn += TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), COLUMN_WIDTH, "", section.parent.fontRenderer);
+        return TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), COLUMN_WIDTH, "", section.parent.fontRenderer);
       } else {
-        entriesInColumn += TextDataRenderer.getLinesForString(text, "", COLUMN_WIDTH, "- ", section.parent.fontRenderer);
+        return TextDataRenderer.getLinesForString(text, "", COLUMN_WIDTH, "- ", section.parent.fontRenderer);
       }
     }
 
@@ -164,16 +163,19 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       }
 
       // add the title entry to the column
-      incrementColumns(name, true);
+      entriesInColumn += entryCount(name, true);
       currentListing.addEntry(name, data, true);
     }
 
     /** Adds a page to the current group in the listing */
     public void addPage(String name, PageData data) {
-      if (entriesInColumn == maxInColumn) {
+      int needed = entryCount(name, false);
+      // if no space for the number of entries we want to add, start the next column
+      // ensure it's not 0 though, handles a potential edge case where this needs more rows than we support
+      if (entriesInColumn > 0 && entriesInColumn + needed > maxInColumn) {
         startNewColumn(false);
       }
-      incrementColumns(name, false);
+      entriesInColumn += needed;
       currentListing.addEntry(name, data, false);
     }
   }

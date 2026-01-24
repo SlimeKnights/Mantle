@@ -18,6 +18,7 @@ public class TextData implements IHTML {
   public static final TextData LINEBREAK = new TextData().linebreak(true);
   private static final String LIST_PREFIX = "• ";
 
+  // TODO 1.21: make no longer nullable
   @Nullable
   public String text = "";
   public String color = "black";
@@ -45,6 +46,11 @@ public class TextData implements IHTML {
 
   public TextData() {
     this("");
+  }
+
+  /** Null safe method to get text, as its possible its null due to book parsing. */
+  public String getText() {
+    return text == null ? "" : text;
   }
 
   /**
@@ -92,7 +98,7 @@ public class TextData implements IHTML {
       }
     }
 
-    builder.append(HTMLUtils.parse(this.text));
+    builder.append(HTMLUtils.parse(getText()));
 
     if (anyStyle) builder.append("</span>");
     if (link) builder.append("</a>");
@@ -116,7 +122,7 @@ public class TextData implements IHTML {
     StringBuilder builder = new StringBuilder();
 
     for (TextData textData : array) {
-      if (textData.text.strip().startsWith(LIST_PREFIX)) {
+      if (textData.getText().strip().startsWith(LIST_PREFIX)) {
         if (pOpen) {
           pOpen = false;
           builder.append("</p>\n");
@@ -127,7 +133,7 @@ public class TextData implements IHTML {
         }
 
         // removes the bullet point character
-        String cleaned = textData.text.strip().replaceFirst(LIST_PREFIX, "");
+        String cleaned = textData.getText().strip().replaceFirst(LIST_PREFIX, "");
         TextData temp = new TextData(cleaned);
         temp.rgbColor = textData.rgbColor;
         temp.useOldColor = textData.useOldColor;
@@ -140,13 +146,13 @@ public class TextData implements IHTML {
       } else {
         if (ulOpen) {
           // merges <li> separated by \n
-          if (textData.text.equals("\n")) continue;
+          if (textData.getText().equals("\n")) continue;
           ulOpen = false;
           builder.append("</ul>\n");
         }
         if (pOpen) {
           if (textData.paragraph) builder.append("</p>\n<p>");
-          else if (textData.text.charAt(0) == '\n') builder.append("<br>");
+          else if (textData.getText().charAt(0) == '\n') builder.append("<br>");
         } else {
           pOpen = true;
           builder.append("<p>");

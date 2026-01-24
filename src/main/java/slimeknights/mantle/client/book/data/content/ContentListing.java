@@ -73,7 +73,7 @@ public class ContentListing extends PageContent {
 
   /** If true, there are entries in this listing */
   public boolean hasEntries() {
-    return this.entries.get(0).size() > 0;
+    return !this.entries.get(0).isEmpty();
   }
 
   /** Gets the height for a column in pixels */
@@ -142,17 +142,20 @@ public class ContentListing extends PageContent {
           x += width;
           y = 0;
         }
-        String text = data.text;
+        String text = data.getText();
         if (text.isEmpty()) {
           y += LINE_HEIGHT;
         } else {
-          // if (!data.bold) text = "- " + text;
-          // int height = this.parent.parent.parent.fontRenderer.wordWrapHeight(text, width) * LINE_HEIGHT / 9;
           int height;
           if (data.bold) {
             height = TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), width, "", parent.parent.parent.fontRenderer) * LINE_HEIGHT;
           } else {
             height = TextDataRenderer.getLinesForString(text, "", width, "- ", parent.parent.parent.fontRenderer) * LINE_HEIGHT;
+          }
+          // if the last entry is too tall, move it to the next column. But only if not at the start to prevent double relocation.
+          if (y > 0 && y + height > columnHeight) {
+            x += width;
+            y = 0;
           }
           list.add(new ListingLeftElement(x, y + yOff, width, height, data.bold, data));
           y += height;
