@@ -159,7 +159,6 @@ public class HTMLUtils {
       TextColor color = style.getColor();
       if (color != null && (color.getValue() & 0xFFFFFF) != 0) {
         builder.append("color: ");
-        // toString gives a weird color
         builder.append(hexRGB(color.getValue()));
         builder.append(";");
       }
@@ -168,8 +167,9 @@ public class HTMLUtils {
       if (style.isItalic()) builder.append("font-style: italic;");
       if (style.isStrikethrough()) builder.append("text-decoration: line-through;");
 
-      if (style.isUnderlined()) builder.append(" class=\"underline\"");
-      builder.append("\">");
+      builder.append("\"");
+
+      if (style.isUnderlined()) builder.append(" class=\"underline\">");
     }
 
     builder.append(MutableComponent.create(component.getContents()).getString())
