@@ -270,7 +270,7 @@ public class BookCommand {
           if (html && page >= 0) {
             File file = Paths.get(screenshotDir.toString(), "page-" + page + ".html").toFile();
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-              writer.write(screen.toHTML(book.getPath(), version));
+              writer.write(screen.toHTML(book.getPath() + "_" + version));
             } catch (IOException e) {
               Mantle.logger.error("Failed to export HTML", e);
               throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));

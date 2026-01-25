@@ -736,10 +736,12 @@ public class BookScreen extends Screen {
   /**
    * Converts the left and right page to HTML including the Jekyll front matter
    */
-  public String toHTML(String bookName, String version) {
+  public String toHTML(String bookName) {
     PageData leftData = getLeftPage();
     PageData rightData = getRightPage();
 
+//    String left = leftData != null ? HTMLUtils.p(leftData.content.getClass().toString()) : null;
+//    String right = rightData != null ? HTMLUtils.p(rightData.content.getClass().toString()) : null;
     String left = leftData != null ? leftData.content.toHTML(book) : null;
     String right = rightData != null ? rightData.content.toHTML(book) : null;
 
@@ -748,7 +750,7 @@ public class BookScreen extends Screen {
     if (left != null || right != null) {
       builder.append("---\n")
         .append("layout: book-html\n")
-        .append("book: ").append(bookName).append("_").append(version).append("\n")
+        .append("book: ").append(bookName).append("\n")
         .append("page_num: ").append(this.page).append("\n")
         .append("---\n\n");
     }
