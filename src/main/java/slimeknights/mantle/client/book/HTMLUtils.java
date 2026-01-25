@@ -169,7 +169,9 @@ public class HTMLUtils {
 
       builder.append("\"");
 
-      if (style.isUnderlined()) builder.append(" class=\"underline\">");
+      if (style.isUnderlined()) builder.append(" class=\"underline\"");
+
+      builder.append(">");
     }
 
     builder.append(MutableComponent.create(component.getContents()).getString())
