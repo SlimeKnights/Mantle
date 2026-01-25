@@ -169,47 +169,41 @@ public class ContentListing extends PageContent {
 
   @Override
   public String toHTML(BookData book) {
-    StringBuilder result = new StringBuilder(getTitleHTML());
-    if (subText != null) result.append(HTMLUtils.p(subText, "padding-left: 10px"));
+    StringBuilder builder = new StringBuilder(getTitleHTML());
+    if (subText != null) builder.append(HTMLUtils.p(subText, "padding-left: 10px"));
 
-    if (entries.size() > 1) {
-      result.append("<div class=\"content-list-links\">\n");
+    if (!entries.isEmpty()) {
+      builder.append("<div class=\"content-list-links\">\n");
 
       int yOff = 0;
       if (this.title != null) yOff = 16;
-      if (this.subText != null) yOff += this.parent.parent.parent.fontRenderer.wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
+      if (this.subText != null) yOff += book.fontRenderer.wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
       int rows = getColumnHeight(yOff) / LINE_HEIGHT;
 
-      result.append(
-        entries.stream()
-          .map(entry -> {
-            StringBuilder builder = new StringBuilder();
-            int i = 0;
+      for (List<TextData> entry : entries) {
+        int i = 0;
 
-            builder.append("<div>\n");
+        builder.append("<div>\n");
 
-            if (entry.get(0).bold) builder.append(entry.get(i++).toHTML(parent.parent.parent));
+        if (entry.get(0).bold) builder.append(entry.get(i++).toHTML(book));
 
-            builder.append("<ul class=\"link-list\">\n");
-            for (; i < entry.size(); i++) {
-              // split list into new divs
-              if (i % rows == 0 && i != entry.size() - 1) {
-                builder.append("</ul></div><div><ul class=\"link-list\">\n");
-              }
+        builder.append("<ul class=\"link-list\">\n");
+        for (; i < entry.size(); i++) {
+          // split list into new divs
+          if (i != 0 && i % rows == 0 && i != entry.size() - 1) {
+            builder.append("</ul></div>\n<div><ul class=\"link-list\">\n");
+          }
 
-              TextData data = entry.get(i);
-              builder.append("<li>").append(data.toHTML(parent.parent.parent)).append("</li>\n");
-            }
-            builder.append("</ul></div>");
+          TextData data = entry.get(i);
+          builder.append("<li>").append(data.toHTML(book)).append("</li>\n");
+        }
 
-            return builder.toString();
-          })
-          .collect(Collectors.joining("\n"))
-        );
+        builder.append("</ul></div>");
+      };
 
-      result.append("\n</div>");
+      builder.append("\n</div>");
     }
 
-    return result.toString();
+    return builder.toString();
   }
 }
