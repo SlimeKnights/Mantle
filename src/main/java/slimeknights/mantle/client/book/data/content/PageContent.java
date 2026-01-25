@@ -174,7 +174,7 @@ public abstract class PageContent implements IHTML {
     if (classes != null) classesBuilder.append(" ").append(classes);
 
     StringBuilder stylesBuilder = new StringBuilder();
-    if (Boolean.TRUE.equals(getCenterTitle())) stylesBuilder.append("align-self: center;");
+    if (isCentered()) stylesBuilder.append("align-self: center;");
     if (styles != null) stylesBuilder.append(styles);
 
     return HTMLUtils.p(getTitle(), parent.parent.name +  "." + parent.name, classesBuilder.toString(), null, stylesBuilder.isEmpty() ? null : stylesBuilder.toString());
