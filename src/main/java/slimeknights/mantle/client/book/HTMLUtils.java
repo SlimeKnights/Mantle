@@ -45,7 +45,7 @@ public class HTMLUtils {
    * @return HTML p tag
    */
   public static String p(String text, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
-    return html("p", null, text, classes, tooltip, styles);
+    return html("p", text, null, classes, tooltip, styles);
   }
 
   /**
@@ -59,7 +59,7 @@ public class HTMLUtils {
    * @return HTML p tag
    */
   public static String p(String text, @Nullable String id, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
-    return html("p", id, text, classes, tooltip, styles);
+    return html("p", text, id, classes, tooltip, styles);
   }
 
   /**
@@ -82,12 +82,14 @@ public class HTMLUtils {
    * @return HTML li tag
    */
   public static String li(String text, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
-    return html("li", null, text, classes, tooltip, styles);
+    // nesting li in a p seems to fix inconsistent spacing between lines
+    return html("li", p(text, null, classes, tooltip, styles), null, null, null, null);
   }
 
   /**
    * Converts a String into HTML
    *
+   * @param tag     HTML tag
    * @param text    text
    * @param id      element id
    * @param classes element classes
@@ -95,7 +97,7 @@ public class HTMLUtils {
    * @param styles  element style attributes
    * @return arbitrary HTML tag
    */
-  private static String html(String tag, @Nullable String id, String text, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
+  private static String html(String tag, String text, @Nullable String id, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
     StringBuilder builder = new StringBuilder("<").append(tag);
 
     if (id != null) builder.append(" id=\"").append(id).append("\"");
