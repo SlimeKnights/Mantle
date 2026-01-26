@@ -16,7 +16,7 @@ public class TextData implements IHTML {
   /** @deprecated use {@link #linebreak} */
   @Deprecated(forRemoval = true)
   public static final TextData LINEBREAK = new TextData().linebreak(true);
-  private static final String LIST_PREFIX = "• ";
+  public static final String LIST_PREFIX = "• ";
 
   // TODO 1.21: make no longer nullable
   @Nullable
@@ -94,8 +94,10 @@ public class TextData implements IHTML {
         if (italic) builder.append("font-style: italic;");
         if (strikethrough) builder.append("text-decoration: line-through;");
 
-        builder.append("\">");
+        builder.append("\"");
       }
+
+      builder.append(">");
     }
 
     builder.append(HTMLUtils.parse(getText()));
@@ -119,6 +121,7 @@ public class TextData implements IHTML {
 
     boolean ulOpen = false;
     boolean pOpen = false;
+    boolean prevBreak = false;
     StringBuilder builder = new StringBuilder();
 
     for (TextData textData : array) {
@@ -151,8 +154,17 @@ public class TextData implements IHTML {
           builder.append("</ul>\n");
         }
         if (pOpen) {
-          if (textData.paragraph) builder.append("</p>\n<p>");
-          else if (textData.getText().charAt(0) == '\n') builder.append("<br>");
+          if (textData.paragraph) {
+            // add an extra p as an extra line
+            if (prevBreak) builder.append("</p>\n<p>");
+            builder.append("</p>\n<p>");
+          }
+          if (textData.getText().charAt(textData.getText().length() - 1) == '\n') {
+            builder.append("<br>");
+            prevBreak = true;
+          } else {
+            prevBreak = false;
+          }
         } else {
           pOpen = true;
           builder.append("<p>");
