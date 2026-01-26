@@ -142,7 +142,7 @@ public class TextData implements IHTML {
         temp.underlined = textData.underlined;
         temp.strikethrough = textData.strikethrough;
         temp.dropshadow = textData.dropshadow;
-        builder.append("<li>").append(temp.toHTML(book)).append("</li>\n");
+        builder.append(HTMLUtils.li(temp.toHTML(book)));
       } else {
         if (ulOpen) {
           // merges <li> separated by \n

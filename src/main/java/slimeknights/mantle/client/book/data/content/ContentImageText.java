@@ -58,7 +58,7 @@ public class ContentImageText extends PageContent {
     return String.format(
       """
       %s
-      <div style="padding-top: %dpx">
+      <div class="column" style="padding-top: %dpx">
       %s
       </div>
       """,

@@ -52,7 +52,7 @@ public class ContentShowcase extends PageContent {
       """
       %s
       <div class="column" style="padding-top: 80px">
-        %s
+      %s
       </div>
       """,
       getTitleHTML(),
