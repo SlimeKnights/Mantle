@@ -43,6 +43,13 @@
   "command.mantle.harvest_tiers.success_list": "Уровни сбора:",
   "command.mantle.harvest_tiers.tag": "%s: Тег блока %s",
   "command.mantle.harvest_tiers.no_tag": "%s: Нет тега",
+  
+  "command.mantle.hunger.set.single":   "Игроку %s установлено %d голод(а).",
+  "command.mantle.hunger.set.multiple": "%d игрокам установлено %d голод(а).",
+  "command.mantle.hunger.add.single":   "Игроку %s добавлено +%d голод(а).",
+  "command.mantle.hunger.add.multiple": "%d игрокам добавлено +%d голод(а).",
+  "command.mantle.hunger.subtract.single":   "Игроку %s добавлено -%d голод(а).",
+  "command.mantle.hunger.subtract.multiple": "%d игрокам добавлено -%d голод(а).",
 
   "command.mantle.remove_recipes": "Рецепты %s успешно удалены за %s секунд. Запустите /reload, чтобы активировать пакет в %s.",
   "command.mantle.remove_recipes.preset_not_found": "Предустановка удаления рецепта '%s' отсутствует или недействительна. Проверьте журнал для получения дополнительной информации.",
