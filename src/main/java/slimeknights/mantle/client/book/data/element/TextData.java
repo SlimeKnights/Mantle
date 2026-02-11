@@ -17,6 +17,7 @@ public class TextData implements IHTML {
   @Deprecated(forRemoval = true)
   public static final TextData LINEBREAK = new TextData().linebreak(true);
   public static final String LIST_PREFIX = "• ";
+  public static final String LIST_PREFIX_2 = "•\u00a0";
 
   // TODO 1.21: make no longer nullable
   @Nullable
@@ -75,7 +76,7 @@ public class TextData implements IHTML {
     }
 
     if (anyStyle) {
-      builder.append("<span");
+      builder.append("<p");
 
       // underlined and dropshadow checked separately because we use a class for it
       if (underlined || dropshadow) builder.append(" class=\"");
@@ -102,7 +103,7 @@ public class TextData implements IHTML {
 
     builder.append(HTMLUtils.parse(getText()));
 
-    if (anyStyle) builder.append("</span>");
+    if (anyStyle) builder.append("</p>");
     if (link) builder.append("</a>");
 
     return builder.toString();
@@ -124,8 +125,8 @@ public class TextData implements IHTML {
     boolean prevBreak = false;
     StringBuilder builder = new StringBuilder();
 
-    for (TextData textData : array) {
-      if (textData.getText().strip().startsWith(LIST_PREFIX)) {
+    for (TextData data : array) {
+      if (data.getText().startsWith(LIST_PREFIX) || data.getText().startsWith(LIST_PREFIX_2)) {
         if (pOpen) {
           pOpen = false;
           builder.append("</p>\n");
@@ -136,30 +137,22 @@ public class TextData implements IHTML {
         }
 
         // removes the bullet point character
-        String cleaned = textData.getText().strip().replaceFirst(LIST_PREFIX, "");
-        TextData temp = new TextData(cleaned);
-        temp.rgbColor = textData.rgbColor;
-        temp.useOldColor = textData.useOldColor;
-        temp.bold = textData.bold;
-        temp.italic = textData.italic;
-        temp.underlined = textData.underlined;
-        temp.strikethrough = textData.strikethrough;
-        temp.dropshadow = textData.dropshadow;
-        builder.append(HTMLUtils.li(temp.toHTML(book)));
+        data.text = data.getText().replaceFirst(LIST_PREFIX, "").replaceFirst(LIST_PREFIX_2, "");
+        builder.append(HTMLUtils.li(data.toHTML(book).replaceAll("<(/?)p>", "<$1span>")));
       } else {
         if (ulOpen) {
           // merges <li> separated by \n
-          if (textData.getText().equals("\n")) continue;
+          if (data.getText().equals("\n")) continue;
           ulOpen = false;
           builder.append("</ul>\n");
         }
         if (pOpen) {
-          if (textData.paragraph) {
+          if (data.paragraph) {
             // add an extra p as an extra line
             if (prevBreak) builder.append("</p>\n<p>");
             builder.append("</p>\n<p>");
           }
-          if (textData.getText().charAt(textData.getText().length() - 1) == '\n') {
+          if (data.linebreak || data.getText().charAt(data.getText().length() - 1) == '\n') {
             builder.append("<br>");
             prevBreak = true;
           } else {
@@ -170,7 +163,7 @@ public class TextData implements IHTML {
           builder.append("<p>");
         }
 
-        builder.append(textData.toHTML(book));
+        builder.append(data.toHTML(book).replaceAll("<(/?)p>", "<$1span>"));
       }
     }
 
