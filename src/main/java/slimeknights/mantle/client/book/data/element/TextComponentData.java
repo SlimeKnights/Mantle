@@ -8,6 +8,7 @@ import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 @Accessors(fluent = true)
 @Setter
@@ -37,9 +38,42 @@ public class TextComponentData implements IHTML {
     this(Component.literal(text));
   }
 
-  // TODO: completely ignores styles in this class, but not in the component
   @Override
   public String toHTML(BookData book) {
+    if (text == null) return "";
+    if (dropShadow) return HTMLUtils.p(text, "shadow", null, null);
     return HTMLUtils.p(text);
+  }
+
+  /**
+   * Merges TextComponentData[] into a single tag when possible
+   *
+   * @param list TextComponentData[] to convert
+   * @param book parent BookData
+   * @return HTML p tag
+   */
+  public static String toHTML(@Nullable List<TextComponentData> list, BookData book) {
+      if (list == null) return "";
+
+      boolean prevBreak = false;
+      StringBuilder builder = new StringBuilder();
+      builder.append("<p>");
+
+      for (TextComponentData data : list) {
+        if (data.isParagraph) {
+          if (prevBreak) builder.append("</p>\n<p>");
+          builder.append("</p><p>");
+        }
+
+        //                               replace p with span
+        //                               cant just remove it since it might have a shadow class
+        builder.append(data.toHTML(book).replaceAll("<(/?)p>", "<$1span>"));
+
+        prevBreak = data.linebreak;
+        if (data.linebreak) builder.append("<br>");
+      }
+
+      builder.append("</p>");
+      return builder.toString();
   }
 }

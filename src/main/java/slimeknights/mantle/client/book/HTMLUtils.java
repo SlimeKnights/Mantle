@@ -135,6 +135,19 @@ public class HTMLUtils {
   }
 
   /**
+   * Converts a Component into a HTML paragraph
+   *
+   * @param component Component
+   * @param classes   element classes
+   * @param tooltip   text tooltip
+   * @param styles    element style attributes
+   * @return HTML p tag
+   */
+  public static String p(Component component, @Nullable String classes, @Nullable String tooltip, @Nullable String styles) {
+    return html("p", span(component), null, classes, tooltip, styles);
+  }
+
+  /**
    * Converts a Component into a HTML list item
    * all of its styles are included
    *
