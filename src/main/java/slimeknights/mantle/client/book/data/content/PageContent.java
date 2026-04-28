@@ -175,8 +175,11 @@ public abstract class PageContent implements IHTML {
     }
     HtmlElement element = HtmlElement.p()
       .add(title)
-      .classes("underline")
-      .id(parent.parent.name +  "." + parent.name);
+      .classes("underline");
+
+    if (parent != null)
+      element = element.id(parent.parent.name +  "." + parent.name);
+
     if (isLarge()) {
       element.classes("large");
     }
