@@ -23,6 +23,9 @@ import slimeknights.mantle.client.screen.book.element.ImageElement;
 import slimeknights.mantle.client.screen.book.element.ItemElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
 import slimeknights.mantle.client.screen.book.element.TooltipElement;
+import slimeknights.mantle.util.html.HtmlElement;
+import slimeknights.mantle.util.html.HtmlGroup;
+import slimeknights.mantle.util.html.HtmlSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +112,14 @@ public class ContentSmelting extends PageContent {
         this.result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
       }
     }
+  }
+
+  @Override
+  public HtmlSerializable toHTML(BookData book) {
+    return HtmlGroup.indent().add(
+      makeTitleHTML(),
+      HtmlElement.div().style("padding-top", 2 * (IMG_SMELTING.height + 5)).add(TextData.toHtml(description, book))
+    );
   }
 
   static {

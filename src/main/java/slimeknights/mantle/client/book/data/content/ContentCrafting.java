@@ -165,7 +165,7 @@ public class ContentCrafting extends PageContent {
     return HtmlGroup.indent().add(
       makeTitleHTML(),
       HtmlElement.div()
-        .classes(grid_size.equalsIgnoreCase("small") ? "spacing" : "spacing-lg")
+        .style("padding-top", (2 * (grid_size.equalsIgnoreCase("small") ? IMG_CRAFTING_SMALL.height : IMG_CRAFTING_LARGE.height) + 5))
         .add(TextData.toHtml(description, book))
     );
   }

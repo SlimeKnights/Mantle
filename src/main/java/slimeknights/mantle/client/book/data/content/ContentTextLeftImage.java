@@ -10,6 +10,9 @@ import slimeknights.mantle.client.screen.book.BookScreen;
 import slimeknights.mantle.client.screen.book.element.BookElement;
 import slimeknights.mantle.client.screen.book.element.ImageElement;
 import slimeknights.mantle.client.screen.book.element.TextElement;
+import slimeknights.mantle.util.html.HtmlElement;
+import slimeknights.mantle.util.html.HtmlGroup;
+import slimeknights.mantle.util.html.HtmlSerializable;
 
 import java.util.ArrayList;
 
@@ -21,6 +24,8 @@ public class ContentTextLeftImage extends PageContent {
   public ImageData image;
   public TextData[] text1;
   public TextData[] text2;
+
+  private final int OFFSET = 55;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
@@ -39,11 +44,32 @@ public class ContentTextLeftImage extends PageContent {
     }
 
     if (this.text1 != null && this.text1.length > 0) {
-      list.add(new TextElement(55, y, BookScreen.PAGE_WIDTH - 55, 50, this.text1));
+      list.add(new TextElement(OFFSET, y, BookScreen.PAGE_WIDTH - OFFSET, 50, this.text1));
     }
 
     if (this.text2 != null && this.text2.length > 0) {
-      list.add(new TextElement(0, y + 55, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - 55 - y, this.text2));
+      list.add(new TextElement(0, y + OFFSET, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - OFFSET - y, this.text2));
     }
+  }
+
+  @Override
+  public HtmlSerializable toHTML(BookData book) {
+    HtmlGroup group = HtmlGroup.indent().add(makeTitleHTML());
+
+    if (image != null) {
+      HtmlElement box = HtmlElement.div().classes("column")
+        .style("margin-left", OFFSET * 2)
+        .style("height", OFFSET * 2);
+
+      group.add(box);
+
+      if (text1 != null) box.add(TextData.toHtml(text1, book));
+      if (text2 != null) group.add(HtmlElement.div().classes("column").add(TextData.toHtml(text2, book)));
+    } else {
+      if (text1 != null) group.add(TextData.toHtml(text1, book));
+      if (text2 != null) group.add(TextData.toHtml(text2, book));
+    }
+
+    return group;
   }
 }

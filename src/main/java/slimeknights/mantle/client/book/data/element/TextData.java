@@ -22,7 +22,7 @@ public class TextData implements IHTML {
   /** @deprecated use {@link #linebreak} */
   @Deprecated(forRemoval = true)
   public static final TextData LINEBREAK = new TextData().linebreak(true);
-  private static final Pattern LIST_REGEX = Pattern.compile("^\n?•[ \u00a0]");
+  private static final Pattern LIST_REGEX = Pattern.compile("^\n?(•|\\d+\\.)[ \u00a0]");
   /** Constant to use in mods wishing to implement bulleted lists that are compatible with the book lists. Will also need to use {@link #linebreak(boolean)} */
   public static final String LIST_PREFIX = "•\u00a0";
 
@@ -118,13 +118,13 @@ public class TextData implements IHTML {
    * @param book parent BookData
    * @return HTML p and ul tags
    */
-  public static HtmlGroup toHtml(@Nullable TextData[] array, BookData book) {
+  public static HtmlSerializable toHtml(@Nullable TextData[] array, BookData book) {
     HtmlGroup group = HtmlGroup.indent();
     if (array == null) return group;
 
     boolean prevBreak = false;
     @Nullable
-    HtmlElement ul = null;
+    HtmlElement list = null;
     @Nullable
     HtmlElement p = null;
 
@@ -132,42 +132,37 @@ public class TextData implements IHTML {
       String text = data.getText();
       Matcher match = LIST_REGEX.matcher(text);
       if (match.find()) {
+        if (list == null) {
+          list = match.group(1).equals("•") ? HtmlElement.ul().classes("prop-list") : HtmlElement.ol().classes("prop-list");
+          group.add(list);
+        }
         if (p != null) {
           p = null;
         }
-        if (ul == null) {
-          ul = HtmlElement.ul().classes("prop-list");
-          group.add(ul);
-        }
-
         // removes the bullet point character
-        ul.add(HtmlElement.li().add(HtmlElement.p().add(
+        list.add(HtmlElement.li().add(HtmlElement.p().add(
           data.toHTML(book, match.replaceFirst("")))
         ));
       } else {
-        if (ul != null) {
+        if (list != null) {
           // merges <li> separated by \n
-          if (data.getText().equals("\n")) continue;
-          ul = null;
+          if (text.equals("\n")) continue;
+          list = null;
         }
         if (p != null) {
           if (data.paragraph) {
             // add an extra p as an extra line
-            if (prevBreak)  group.add(HtmlElement.p());
+            if (prevBreak) group.add(HtmlElement.p());
             p = HtmlElement.p();
             group.add(p);
           }
-          if (data.linebreak || data.getText().charAt(data.getText().length() - 1) == '\n') {
-            p.add(HtmlElement.br());
-            prevBreak = true;
-          } else {
-            prevBreak = false;
-          }
+          prevBreak = data.linebreak || text.charAt(text.length() - 1) == '\n';
+          if (prevBreak) p.add(HtmlElement.br());
         } else {
           p = HtmlElement.p();
           group.add(p);
         }
-        p.add(data.toHTML(book, data.getText()));
+        p.add(data.toHTML(book, text));
       }
     }
     return group;

@@ -256,6 +256,11 @@ public class HtmlElement extends HtmlGroup {
     return indent("div");
   }
 
+  /** Creates an ordered list element */
+  public static HtmlElement ol() {
+    return indent("ol");
+  }
+
   /** Creates an unordered list element */
   public static HtmlElement ul() {
     return indent("ul");
