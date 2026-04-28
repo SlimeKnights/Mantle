@@ -2,6 +2,7 @@ package slimeknights.mantle.client.book.data.element;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import slimeknights.mantle.client.book.HTMLUtils;
 import slimeknights.mantle.client.book.IHTML;
@@ -75,7 +76,7 @@ public class TextData implements IHTML {
     }
 
     // apply styles
-    boolean hasColor = (rgbColor & 0xFFFFFF) != 0;
+    boolean hasColor = (rgbColor & 0xFFFFFF) != 0 || !color.isEmpty();
     if (hasColor || bold || italic || strikethrough || underlined || dropshadow) {
       if (element == null) {
         // create new element for the style if no link or list item
@@ -87,7 +88,10 @@ public class TextData implements IHTML {
       // apply styles to the found element
       if (underlined) element.classes("underline");
       if (dropshadow) element.classes("shadow");
-      if (hasColor) element.color(rgbColor);
+      if (hasColor) {
+        ChatFormatting formatting = ChatFormatting.getByName(color);
+        element.color(formatting != null ? formatting.getColor() : rgbColor);
+      }
       if (bold) element.style("font-weight", "bold");
       if (italic) element.style("font-style", "italic");
       if (strikethrough) element.style("text-decoration", "line-through");
