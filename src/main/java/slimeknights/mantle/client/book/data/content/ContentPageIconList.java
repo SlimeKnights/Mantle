@@ -241,7 +241,7 @@ public class ContentPageIconList extends PageContent {
       HtmlElement.div()
         .classes("grid-icon-list", "grid-icon-list-" + (BookScreen.PAGE_WIDTH - 2 * xOff) / (int) (this.width * getScale(yOff)))
         .style("top", yOff * 2)
-        .add(elements.stream().map(e -> e.toHTML(book)).toArray(HtmlSerializable[]::new))
+        .add(elements.stream().map(e -> e.toHTML(book)))
     );
   }
 }

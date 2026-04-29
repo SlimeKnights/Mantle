@@ -157,10 +157,8 @@ public class SectionData implements IDataItem, IConditional, IHTML {
       return HtmlSerializable.EMPTY;
     }
     String title = getTitle();
-    return HtmlElement.div()
-      .minetip(title)
-      .add(HtmlElement.a().href("../page-" + (pageNumber / 2) + "/#" + name + '.' + firstPage.name)
-        .add(HtmlElement.img().src("/assets/images/book/icons/blank.png"))) // TODO: make this not an image
-      .add(HtmlElement.p().add(title));
+    return HtmlElement.a().href("../page-" + (pageNumber / 2) + "/#" + name + '.' + firstPage.name).add(
+      HtmlElement.div().minetip(title).add(HtmlElement.p().add(title))
+    );
   }
 }
