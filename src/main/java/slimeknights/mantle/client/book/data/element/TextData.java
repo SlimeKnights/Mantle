@@ -111,8 +111,8 @@ public class TextData implements IHTML {
   }
 
   /**
-   * Merges TextData[] into a single tag when possible
-   * Formats any lists with ul tags
+   * Merges TextData[] into a single tag when possible.
+   * Formats any lists prefixed with numbers or bullet points.
    *
    * @param array TextData[] to convert
    * @param book parent BookData

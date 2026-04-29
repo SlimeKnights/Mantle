@@ -11,6 +11,8 @@ import slimeknights.mantle.util.html.HtmlSerializable;
 import slimeknights.mantle.util.html.HtmlString;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Helpers for converting to HTML.
@@ -135,5 +137,35 @@ public class HTMLUtils {
     group.add(component.getSiblings().stream().map(HTMLUtils::toHtml));
 
     return group;
+  }
+
+  /**
+   * Merges Strings into an unordered list
+   *
+   * @param lines Strings, can use Minecraft chat formatting
+   * @return li tags
+   */
+  public static Stream<HtmlSerializable> toListItems(String[] lines) {
+    return toListItems(Arrays.stream(lines).map(HTMLUtils::parse));
+  }
+
+  /**
+   * Merges Components into an unordered list
+   *
+   * @param lines Components
+   * @return li tags
+   */
+  public static Stream<HtmlSerializable> toListItems(List<Component> lines) {
+    return toListItems(lines.stream().map(HTMLUtils::toHtml));
+  }
+
+  /**
+   * Merges a Stream of HtmlSerializable into an unordered list
+   *
+   * @param lines HtmlSerializables
+   * @return li tags
+   */
+  public static Stream<HtmlSerializable> toListItems(Stream<HtmlSerializable> lines) {
+    return lines.map(line -> HtmlElement.li().add(HtmlElement.p().add(line)));
   }
 }
