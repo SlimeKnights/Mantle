@@ -60,8 +60,8 @@ public class ContentTextLeftImage extends PageContent {
 
     if (image != null) {
       HtmlElement box = HtmlElement.div().classes("column")
-        .style("margin-left", OFFSET * 2)
-        .style("height", OFFSET * 2);
+        .style("margin-left", 2 * OFFSET)
+        .style("height", 2 * 50);
 
       group.add(box);
 

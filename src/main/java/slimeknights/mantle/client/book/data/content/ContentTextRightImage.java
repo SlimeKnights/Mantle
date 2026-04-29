@@ -60,8 +60,8 @@ public class ContentTextRightImage extends PageContent {
 
     if (image != null) {
       HtmlElement box = HtmlElement.div().classes("column")
-        .style("margin-right", OFFSET * 2)
-        .style("height", OFFSET * 2);
+        .style("margin-right", 2 * OFFSET)
+        .style("height", 2 * 50);
 
       group.add(box);
 
