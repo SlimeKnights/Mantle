@@ -157,7 +157,7 @@ public class SectionData implements IDataItem, IConditional, IHTML {
       return HtmlSerializable.EMPTY;
     }
     String title = getTitle();
-    return HtmlElement.a().href("../page-" + (pageNumber / 2) + "/#" + name + '.' + firstPage.name).add(
+    return HtmlElement.indent("a").href("../page-" + (pageNumber / 2) + "/#" + name + '.' + firstPage.name).add(
       HtmlElement.div().classes("grid-icon").minetip(title).add(HtmlElement.p().add(title))
     );
   }

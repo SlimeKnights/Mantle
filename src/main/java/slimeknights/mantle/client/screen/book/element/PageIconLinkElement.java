@@ -78,6 +78,6 @@ public class PageIconLinkElement extends SizedBookElement implements IHTML {
     if (target == null) {
       return HtmlSerializable.EMPTY;
     }
-    return HtmlElement.a().href("../page-" + (bookPage / 2) + "/#" + location).add(HtmlElement.div().classes("grid-icon").minetip(target.getTitle()));
+    return HtmlElement.indent("a").href("../page-" + (bookPage / 2) + "/#" + location).add(HtmlElement.div().classes("grid-icon").minetip(target.getTitle()));
   }
 }
