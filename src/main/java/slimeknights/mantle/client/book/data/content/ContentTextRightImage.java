@@ -21,9 +21,11 @@ public class ContentTextRightImage extends PageContent {
 
   @Getter
   public String title;
+  public ImageData image;
+
+  // TODO: rename these fields in 1.21 to left_text, and bottom_text
   public TextData[] text1;
   public TextData[] text2;
-  public ImageData image;
 
   private final int OFFSET = 55;
 

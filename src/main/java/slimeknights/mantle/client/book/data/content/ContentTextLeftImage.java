@@ -22,6 +22,8 @@ public class ContentTextLeftImage extends PageContent {
   @Getter
   public String title = null;
   public ImageData image;
+
+  // TODO: rename these fields in 1.21 to right_text, and bottom_text
   public TextData[] text1;
   public TextData[] text2;
 
