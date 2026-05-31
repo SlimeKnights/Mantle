@@ -10,6 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.recipe.data.ItemNameIngredient;
 import slimeknights.mantle.util.typed.TypedMap;
 
 /** Loadable for ingredients, handling Forge ingredients */
@@ -69,6 +70,10 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   public JsonElement serialize(Ingredient object) {
     if (object.isEmpty() && this == DISALLOW_EMPTY) {
       throw new IllegalArgumentException("Ingredient cannot be empty");
+    }
+    JsonElement namedItem = ItemNameIngredient.serialize(object);
+    if (namedItem != null) {
+      return namedItem;
     }
     return (this == ALLOW_EMPTY ? Ingredient.CODEC : Ingredient.CODEC_NONEMPTY).encodeStart(JsonOps.INSTANCE, object).getOrThrow(JsonParseException::new);
   }

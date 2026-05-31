@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.common.IngredientLoadable;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.data.VanillaFinishedRecipe;
 
@@ -113,7 +114,7 @@ public class ShapedRetexturedRecipeBuilder {
       if (textureKey != '\0') {
         json.addProperty("texture", textureKey);
       } else if (texture != null) {
-        json.add("texture", Ingredient.CODEC_NONEMPTY.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, texture).getOrThrow(com.google.gson.JsonSyntaxException::new));
+        json.add("texture", IngredientLoadable.DISALLOW_EMPTY.serialize(texture));
         Mantle.logger.warn("Using deprecated ingredient format on texture for shaped retextured recipe {}. Use key instead.", getId());
       }
       json.addProperty("match_all", matchAll);

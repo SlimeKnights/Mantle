@@ -83,6 +83,7 @@ public class Loadables {
 
   /* Resource keys */
   public static final StringLoadable<ResourceKey<DamageType>> DAMAGE_TYPE_KEY = resourceKey(Registries.DAMAGE_TYPE);
+  public static final StringLoadable<ResourceKey<Enchantment>> ENCHANTMENT_KEY = resourceKey(Registries.ENCHANTMENT);
 
   /* Loot tables */
   /** Loadable for a loot entry instance */

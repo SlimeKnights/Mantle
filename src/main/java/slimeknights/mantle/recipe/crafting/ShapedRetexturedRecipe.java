@@ -25,6 +25,7 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.common.IngredientLoadable;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.RetexturedHelper;
@@ -175,7 +176,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
         }
       } else {
         // if it's an object or array, treat as an ingredient object
-        texture = Ingredient.CODEC_NONEMPTY.parse(JsonOps.INSTANCE, textureElement).getOrThrow(JsonSyntaxException::new);
+        texture = IngredientLoadable.DISALLOW_EMPTY.convert(textureElement, "texture");
         Mantle.logger.warn("Using deprecated ingredient format on 'texture' for `mantle:crafting_shaped_retextured`. Use key instead.");
       }
       boolean matchAll = GsonHelper.getAsBoolean(json, "match_all", false);
@@ -184,7 +185,7 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
 
     private static JsonObject toJson(ShapedRetexturedRecipe recipe) {
       JsonObject json = ShapedRecipe.Serializer.CODEC.codec().encodeStart(JsonOps.INSTANCE, recipe).getOrThrow(JsonSyntaxException::new).getAsJsonObject();
-      json.add("texture", Ingredient.CODEC_NONEMPTY.encodeStart(JsonOps.INSTANCE, recipe.texture).getOrThrow(JsonSyntaxException::new));
+      json.add("texture", IngredientLoadable.DISALLOW_EMPTY.serialize(recipe.texture));
       if (recipe.matchAll) {
         json.addProperty("match_all", true);
       }

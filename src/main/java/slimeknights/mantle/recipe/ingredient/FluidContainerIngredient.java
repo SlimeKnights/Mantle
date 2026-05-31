@@ -23,6 +23,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.common.IngredientLoadable;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
@@ -119,7 +120,7 @@ public class FluidContainerIngredient implements ICustomIngredient {
       json.add("fluid", element);
     }
     if (display != null) {
-      json.add("display", Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, display).getOrThrow(JsonSyntaxException::new));
+      json.add("display", IngredientLoadable.ALLOW_EMPTY.serialize(display));
     }
     return json;
   }
@@ -156,7 +157,7 @@ public class FluidContainerIngredient implements ICustomIngredient {
       }
       Ingredient display = null;
       if (json.has("display")) {
-        display = Ingredient.CODEC.parse(JsonOps.INSTANCE, JsonHelper.getElement(json, "display")).getOrThrow(JsonSyntaxException::new);
+        display = IngredientLoadable.ALLOW_EMPTY.convert(JsonHelper.getElement(json, "display"), "display");
       }
       return new FluidContainerIngredient(fluidIngredient, display);
     }
