@@ -1,7 +1,7 @@
 package slimeknights.mantle.registration.adapter;
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.core.Registry;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.function.Function;
@@ -14,12 +14,12 @@ import java.util.function.Function;
 public class EnumRegistryAdapter<T> extends RegistryAdapter<T> {
 
   /** @inheritDoc */
-  public EnumRegistryAdapter(IForgeRegistry<T> registry) {
+  public EnumRegistryAdapter(Registry<T> registry) {
     super(registry);
   }
 
   /** @inheritDoc */
-  public EnumRegistryAdapter(IForgeRegistry<T> registry, String modId) {
+  public EnumRegistryAdapter(Registry<T> registry, String modId) {
     super(registry, modId);
   }
 

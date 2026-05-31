@@ -2,15 +2,11 @@ package slimeknights.mantle.recipe.helper;
 
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
-import java.util.Objects;
-
 /** Ingredient serializer made using loadables */
-public record LoadableIngredientSerializer<T extends Ingredient>(RecordLoadable<T> loadable) implements IIngredientSerializer<T> {
+public record LoadableIngredientSerializer<T>(RecordLoadable<T> loadable) implements IIngredientSerializer<T> {
   @Override
   public T parse(FriendlyByteBuf buffer) {
     return loadable.decode(buffer);
@@ -29,7 +25,7 @@ public record LoadableIngredientSerializer<T extends Ingredient>(RecordLoadable<
   /** Serializes the ingredient to JSON */
   public JsonObject serialize(T ingredient) {
     JsonObject json = new JsonObject();
-    json.addProperty("type", Objects.requireNonNull(CraftingHelper.getID(this)).toString());
+    json.addProperty("type", "mantle:legacy");
     loadable.serialize(ingredient, json);
     return json;
   }

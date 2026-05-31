@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.StringUtils;
@@ -54,9 +55,14 @@ public class ContentSmelting extends PageContent {
   public int cookTime = 200;
   public TextData[] description;
   public String recipe;
+  private transient boolean recipeLoaded = false;
+  private transient boolean recipeMissingLogged = false;
+  private transient boolean recipeWrongTypeLogged = false;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
+    this.loadRecipeFromManager();
+
     int x = BookScreen.PAGE_WIDTH / 2 - IMG_SMELTING.width / 2;
 
     int y;
@@ -98,17 +104,44 @@ public class ContentSmelting extends PageContent {
   public void load() {
     super.load();
 
-    if (!StringUtils.isEmpty(this.recipe) && ResourceLocation.isValidResourceLocation(this.recipe)) {
-      Level level = Minecraft.getInstance().level;
-      assert level != null;
-      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
+    this.loadRecipeFromManager();
+  }
 
-      if (recipe instanceof AbstractCookingRecipe) {
-        this.input = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, recipe.getIngredients().get(0).getItems()));
-        this.cookTime = ((AbstractCookingRecipe) recipe).getCookingTime();
-        this.result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
-      }
+  /** Loads auto-populated recipe data. Retries during build as books can be initialized before the client recipe manager is ready. */
+  private void loadRecipeFromManager() {
+    if (recipeLoaded || StringUtils.isEmpty(this.recipe)) {
+      return;
     }
+    ResourceLocation recipeId = ResourceLocation.tryParse(this.recipe);
+    if (recipeId == null) {
+      return;
+    }
+
+    Level level = Minecraft.getInstance().level;
+    if (level == null) {
+      return;
+    }
+
+    Recipe<?> foundRecipe = level.getRecipeManager().byKey(recipeId).map(RecipeHolder::value).orElse(null);
+    if (foundRecipe == null) {
+      if (!recipeMissingLogged) {
+        Mantle.logger.warn("Book smelting recipe {} was not found in the client recipe manager; will retry when the page is opened.", recipeId);
+        recipeMissingLogged = true;
+      }
+      return;
+    }
+    if (!(foundRecipe instanceof AbstractCookingRecipe cookingRecipe)) {
+      if (!recipeWrongTypeLogged) {
+        Mantle.logger.warn("Book smelting recipe {} resolved to {}, not a cooking recipe.", recipeId, foundRecipe.getClass().getName());
+        recipeWrongTypeLogged = true;
+      }
+      return;
+    }
+
+    this.input = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, cookingRecipe.getIngredients().get(0).getItems()));
+    this.cookTime = cookingRecipe.getCookingTime();
+    this.result = IngredientData.getItemStackData(cookingRecipe.getResultItem(level.registryAccess()));
+    recipeLoaded = true;
   }
 
   static {

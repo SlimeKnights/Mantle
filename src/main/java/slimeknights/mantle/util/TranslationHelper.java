@@ -3,9 +3,9 @@ package slimeknights.mantle.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeI18n;
 
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -28,7 +28,7 @@ public class TranslationHelper {
    * @return  True if its translatable
    */
   public static boolean canTranslate(String key) {
-    return !key.equals(ForgeI18n.getPattern(key));
+    return !key.equals(Language.getInstance().getOrDefault(key));
   }
 
   /**
@@ -56,7 +56,7 @@ public class TranslationHelper {
    * @param tooltip  List of tooltips
    */
   public static void addOptionalTooltip(String key, List<Component> tooltip) {
-    String translated = ForgeI18n.getPattern(key);
+    String translated = Language.getInstance().getOrDefault(key);
     if (canTranslate(key, translated)) {
       addEachLine(translated, tooltip);
     }

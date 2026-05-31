@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.tags.TagManager;
+import net.minecraft.core.registries.Registries;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -21,7 +21,7 @@ public record RegistryTagSource<T>(Registry<T> registry) implements TagSource<T>
 
   @Override
   public String folder() {
-    return TagManager.getTagDir(key());
+    return Registries.tagsDirPath(key());
   }
 
   /* Tags */
@@ -75,7 +75,7 @@ public record RegistryTagSource<T>(Registry<T> registry) implements TagSource<T>
 
   @Override
   public Stream<TagKey<T>> tagsFor(T value) {
-    return registry.getHolder(registry.getId(value)).stream().flatMap(Holder::getTagKeys);
+    return registry.getHolder(registry.getId(value)).stream().flatMap(Holder::tags);
   }
 
   @Override

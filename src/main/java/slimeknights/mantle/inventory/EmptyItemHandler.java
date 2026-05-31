@@ -3,12 +3,12 @@ package slimeknights.mantle.inventory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
 /**
- * Item handler that contains no items. Use similarly to {@link net.minecraftforge.fluids.capability.templates.EmptyFluidHandler}
+ * Item handler that contains no items. Use similarly to {@link net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler}
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmptyItemHandler implements IItemHandler {

@@ -2,36 +2,41 @@ package slimeknights.mantle.network;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkDirection;
+import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * A small network implementation/wrapper using AbstractPackets instead of IMessages.
- * Instantiate in your mod class and register your packets accordingly.
+ * A small network implementation/wrapper using Mantle packets.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class NetworkWrapper {
-  /** Network instance */
-  public final SimpleChannel network;
+  private final ResourceLocation channelName;
+  private final String version;
+  private final Map<Class<?>,Registration<?>> registrations = new HashMap<>();
   private int id = 0;
 
   /**
@@ -45,12 +50,14 @@ public class NetworkWrapper {
   }
 
   public NetworkWrapper(ResourceLocation channelName, String version) {
-    this.network = NetworkRegistry.ChannelBuilder
-      .named(channelName)
-      .clientAcceptedVersions(version::equals)
-      .serverAcceptedVersions(version::equals)
-      .networkProtocolVersion(() -> version)
-      .simpleChannel();
+    this.channelName = channelName;
+    this.version = version;
+  }
+
+  /** Registers stored packets with NeoForge. */
+  public void registerPayloads(RegisterPayloadHandlersEvent event) {
+    PayloadRegistrar registrar = event.registrar(version).optional();
+    registrations.values().forEach(registration -> registration.register(registrar));
   }
 
   /**
@@ -69,7 +76,7 @@ public class NetworkWrapper {
    * @param encoder    Encodes a packet to the buffer
    * @param decoder    Packet decoder, typically the constructor
    * @param consumer   Logic to handle a packet
-   * @param direction  Network direction for validation. Pass null for no direction
+   * @param direction  Network direction for validation. Pass null for bidirectional.
    * @param <MSG>  Packet class type
    */
   public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer, @Nullable NetworkDirection direction) {
@@ -78,15 +85,11 @@ public class NetworkWrapper {
 
   /**
    * Registers a new packet without the automatic logging if the decoder fails
-   * @param clazz      Packet class
-   * @param encoder    Encodes a packet to the buffer
-   * @param decoder    Packet decoder, typically the constructor
-   * @param consumer   Logic to handle a packet
-   * @param direction  Network direction for validation. Pass null for no direction
-   * @param <MSG>  Packet class type
    */
   public <MSG> void registerPacketNoLogger(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer, @Nullable NetworkDirection direction) {
-    this.network.registerMessage(this.id++, clazz, encoder, decoder, consumer, Optional.ofNullable(direction));
+    ResourceLocation typeName = ResourceLocation.fromNamespaceAndPath(channelName.getNamespace(), channelName.getPath() + "/" + id++);
+    CustomPacketPayload.Type<Payload<MSG>> type = new CustomPacketPayload.Type<>(typeName);
+    registrations.put(clazz, new Registration<>(type, encoder, decoder, consumer, direction));
   }
 
   /** Wraps the given decoder function */
@@ -109,16 +112,7 @@ public class NetworkWrapper {
    * @param msg  Packet to send
    */
   public void sendToServer(Object msg) {
-    this.network.sendToServer(msg);
-  }
-
-  /**
-   * Sends a packet to the given packet distributor
-   * @param target   Packet target
-   * @param message  Packet to send
-   */
-  public void send(PacketDistributor.PacketTarget target, Object message) {
-    network.send(target, message);
+    PacketDistributor.sendToServer(payload(msg));
   }
 
   /**
@@ -138,8 +132,8 @@ public class NetworkWrapper {
    * @param player  Player to send
    */
   public void sendTo(Object msg, Player player) {
-    if (player instanceof ServerPlayer) {
-      sendTo(msg, (ServerPlayer) player);
+    if (player instanceof ServerPlayer serverPlayer) {
+      sendTo(msg, serverPlayer);
     }
   }
 
@@ -150,7 +144,7 @@ public class NetworkWrapper {
    */
   public void sendTo(Object msg, ServerPlayer player) {
     if (!(player instanceof FakePlayer)) {
-      network.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+      PacketDistributor.sendToPlayer(player, payload(msg));
     }
   }
 
@@ -162,7 +156,7 @@ public class NetworkWrapper {
    */
   public void sendToClientsAround(Object msg, ServerLevel serverWorld, BlockPos position) {
     LevelChunk chunk = serverWorld.getChunkAt(position);
-    network.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), msg);
+    PacketDistributor.sendToPlayersTrackingChunk(serverWorld, chunk.getPos(), payload(msg));
   }
 
   /**
@@ -171,7 +165,7 @@ public class NetworkWrapper {
    * @param entity  Entity to check
    */
   public void sendToTrackingAndSelf(Object msg, Entity entity) {
-    this.network.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), msg);
+    PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload(msg));
   }
 
   /**
@@ -180,6 +174,70 @@ public class NetworkWrapper {
    * @param entity  Entity to check
    */
   public void sendToTracking(Object msg, Entity entity) {
-    this.network.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg);
+    PacketDistributor.sendToPlayersTrackingEntity(entity, payload(msg));
+  }
+
+  private CustomPacketPayload payload(Object message) {
+    Registration<?> registration = registrations.get(message.getClass());
+    if (registration == null) {
+      throw new IllegalArgumentException("Unregistered packet " + message.getClass().getName());
+    }
+    return registration.payload(message);
+  }
+
+  private static class Payload<MSG> implements CustomPacketPayload {
+    private final CustomPacketPayload.Type<Payload<MSG>> type;
+    private final MSG message;
+
+    private Payload(CustomPacketPayload.Type<Payload<MSG>> type, MSG message) {
+      this.type = type;
+      this.message = message;
+    }
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+      return type;
+    }
+  }
+
+  private record Registration<MSG>(
+    CustomPacketPayload.Type<Payload<MSG>> type,
+    BiConsumer<MSG,FriendlyByteBuf> encoder,
+    Function<FriendlyByteBuf,MSG> decoder,
+    BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer,
+    @Nullable NetworkDirection direction
+  ) {
+    private StreamCodec<RegistryFriendlyByteBuf,Payload<MSG>> codec() {
+      return new StreamCodec<>() {
+        @Override
+        public Payload<MSG> decode(RegistryFriendlyByteBuf buffer) {
+          return new Payload<>(type, decoder.apply(buffer));
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buffer, Payload<MSG> payload) {
+          encoder.accept(payload.message, buffer);
+        }
+      };
+    }
+
+    private void register(PayloadRegistrar registrar) {
+      if (direction == NetworkDirection.PLAY_TO_CLIENT) {
+        registrar.playToClient(type, codec(), this::handle);
+      } else if (direction == NetworkDirection.PLAY_TO_SERVER) {
+        registrar.playToServer(type, codec(), this::handle);
+      } else {
+        registrar.playBidirectional(type, codec(), this::handle);
+      }
+    }
+
+    private void handle(Payload<MSG> payload, IPayloadContext context) {
+      consumer.accept(payload.message, () -> new NetworkEvent.Context(context));
+    }
+
+    @SuppressWarnings("unchecked")
+    private CustomPacketPayload payload(Object message) {
+      return new Payload<>(type, (MSG)message);
+    }
   }
 }

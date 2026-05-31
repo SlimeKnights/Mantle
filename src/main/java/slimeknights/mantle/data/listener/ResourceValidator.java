@@ -36,7 +36,7 @@ public class ResourceValidator implements IEarlySafeManagerReloadListener, Predi
       return loc.getPath().endsWith(extension);
     }).keySet().stream().map((location) -> {
       String path = location.getPath();
-      return new ResourceLocation(location.getNamespace(), path.substring(trim, path.length() - extensionLength));
+      return ResourceLocation.fromNamespaceAndPath(location.getNamespace(), path.substring(trim, path.length() - extensionLength));
     }).collect(Collectors.toUnmodifiableSet());
   }
 

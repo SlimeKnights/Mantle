@@ -5,13 +5,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.StrictNBTIngredient;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
-
-import net.minecraftforge.common.crafting.StrictNBTIngredient.Serializer;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.StrictNBTIngredient.Serializer;
 
 /**
  * Ingredient for a NBT sensitive item from another mod, should never be used outside datagen
@@ -54,7 +51,7 @@ public class NBTNameIngredient extends StrictNBTIngredient {
   @Override
   public JsonElement toJson() {
     JsonObject json = new JsonObject();
-    json.addProperty("type", Objects.requireNonNull(CraftingHelper.getID(Serializer.INSTANCE)).toString());
+    json.addProperty("type", "neoforge:strict_nbt");
     json.addProperty("item", name.toString());
     if (nbt != null) {
       json.addProperty("nbt", nbt.toString());

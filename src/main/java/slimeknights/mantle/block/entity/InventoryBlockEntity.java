@@ -2,7 +2,7 @@ package slimeknights.mantle.block.entity;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,15 +16,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import slimeknights.mantle.compat.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 // Updated version of InventoryLogic in Mantle. Also contains a few bugfixes DOES NOT OVERRIDE createMenu
 public abstract class InventoryBlockEntity extends NameableBlockEntity implements Container, MenuProvider, Nameable {
@@ -38,6 +35,8 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   protected int stackSizeLimit;
   @Getter
   protected IItemHandlerModifiable itemHandler;
+  /** Compatibility field for legacy Forge capability code. */
+  @Deprecated(forRemoval = true)
   protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
 
   /**
@@ -59,19 +58,9 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
     this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
   }
 
-  @Nonnull
-  @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-    if (capability == ForgeCapabilities.ITEM_HANDLER) {
-      return this.itemHandlerCap.cast();
-    }
-    return super.getCapability(capability, facing);
-  }
-
-  @Override
-  public void invalidateCaps() {
-    super.invalidateCaps();
-    this.itemHandlerCap.invalidate();
+  /** Registers this base inventory handler for a concrete block entity type. */
+  public static <T extends InventoryBlockEntity> void registerItemHandler(RegisterCapabilitiesEvent event, BlockEntityType<T> type) {
+    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (be, side) -> be.getItemHandler());
   }
 
   /* Inventory management */
@@ -210,17 +199,17 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   /* NBT */
 
   @Override
-  public void load(CompoundTag tags) {
-    super.load(tags);
+  public void loadAdditional(CompoundTag tags, HolderLookup.Provider registries) {
+    super.loadAdditional(tags, registries);
     if (saveSizeToNBT) {
       this.resizeInternal(tags.getInt(TAG_INVENTORY_SIZE));
     }
-    this.readInventoryFromNBT(tags);
+    this.readInventoryFromNBT(tags, registries);
   }
 
   @Override
-  public void saveSynced(CompoundTag tags) {
-    super.saveSynced(tags);
+  public void saveSynced(CompoundTag tags, HolderLookup.Provider registries) {
+    super.saveSynced(tags, registries);
     // only sync the size to the client by default
     if (saveSizeToNBT) {
       tags.putInt(TAG_INVENTORY_SIZE, this.inventory.size());
@@ -228,23 +217,22 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   }
   
   @Override
-  public void saveAdditional(CompoundTag tags) {
-    super.saveAdditional(tags);
-    this.writeInventoryToNBT(tags);
+  public void saveAdditional(CompoundTag tags, HolderLookup.Provider registries) {
+    super.saveAdditional(tags, registries);
+    this.writeInventoryToNBT(tags, registries);
   }
 
   /**
    * Writes the contents of the inventory to the tag
    */
-  public void writeInventoryToNBT(CompoundTag tag) {
+  public void writeInventoryToNBT(CompoundTag tag, HolderLookup.Provider registries) {
     Container inventory = this;
     ListTag nbttaglist = new ListTag();
 
     for (int i = 0; i < inventory.getContainerSize(); i++) {
       if (!inventory.getItem(i).isEmpty()) {
-        CompoundTag itemTag = new CompoundTag();
+        CompoundTag itemTag = (CompoundTag) inventory.getItem(i).save(registries, new CompoundTag());
         itemTag.putByte(TAG_SLOT, (byte) i);
-        inventory.getItem(i).save(itemTag);
         nbttaglist.add(itemTag);
       }
     }
@@ -252,11 +240,21 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
     tag.put(TAG_ITEMS, nbttaglist);
   }
 
+  /** Compatibility overload for code still using the old no-registry inventory save hook. */
+  @Deprecated(forRemoval = true)
+  public void writeInventoryToNBT(CompoundTag tag) {
+    writeInventoryToNBT(tag, BUILTIN_LOOKUP);
+  }
+
   /**
    * Reads an inventory from the tag. Overwrites current content
    */
-  public void readInventoryFromNBT(CompoundTag tag) {
+  public void readInventoryFromNBT(CompoundTag tag, HolderLookup.Provider registries) {
     ListTag list = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
+
+    for (int slot = 0; slot < this.inventory.size(); slot++) {
+      this.inventory.set(slot, ItemStack.EMPTY);
+    }
 
     int limit = this.getMaxStackSize();
     ItemStack stack;
@@ -264,13 +262,19 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
       CompoundTag itemTag = list.getCompound(i);
       int slot = itemTag.getByte(TAG_SLOT) & 255;
       if (slot < this.inventory.size()) {
-        stack = ItemStack.of(itemTag);
+        stack = ItemStack.parseOptional(registries, itemTag);
         if (!stack.isEmpty() && stack.getCount() > limit) {
           stack.setCount(limit);
         }
         this.inventory.set(slot, stack);
       }
     }
+  }
+
+  /** Compatibility overload for code still using the old no-registry inventory load hook. */
+  @Deprecated(forRemoval = true)
+  public void readInventoryFromNBT(CompoundTag tag) {
+    readInventoryFromNBT(tag, BUILTIN_LOOKUP);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package slimeknights.mantle.data.predicate.entity;
 
 import net.minecraft.tags.TagKey;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +61,7 @@ public interface LivingEntityPredicate extends IJsonPredicate<LivingEntity> {
 
   // water
   /** Entities with eyes in water */
-  LivingEntityPredicate EYES_IN_WATER = simple(entity -> entity.wasEyeInWater);
+  LivingEntityPredicate EYES_IN_WATER = simple(entity -> entity.isEyeInFluid(FluidTags.WATER));
   /** Entities with feet in water */
   LivingEntityPredicate FEET_IN_WATER = simple(Entity::isInWater);
   /** Entities with head and feet are in water */

@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 
 /** Loader for {@link slimeknights.mantle.client.model.NBTKeyModel} */
@@ -16,7 +16,7 @@ public class NBTKeyModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderB
   private String key = null;
   private ResourceLocation extraTexturesKey = null;
   public NBTKeyModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(Mantle.getResource("nbt_key"), parent, existingFileHelper);
+    super(Mantle.getResource("nbt_key"), parent, existingFileHelper, true);
   }
 
   @Override

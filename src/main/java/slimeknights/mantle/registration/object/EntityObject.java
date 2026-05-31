@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.RegistryObject;
+import slimeknights.mantle.compat.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 

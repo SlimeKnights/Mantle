@@ -11,16 +11,17 @@ import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Field;
 
 /**
  * Record holding a list of entries to inject into the given loot table
  */
 public record LootTableInjection(ResourceLocation name, List<LootPoolInjection> pools) {
+  private static final Field LOOT_POOL_ENTRIES = getLootPoolEntriesField();
   public static final RecordLoadable<LootTableInjection> LOADABLE = RecordLoadable.create(
     Loadables.RESOURCE_LOCATION.requiredField("name", LootTableInjection::name),
     LootPoolInjection.LOADABLE.list(1).requiredField("pools", LootTableInjection::pools),
@@ -44,12 +45,27 @@ public record LootTableInjection(ResourceLocation name, List<LootPoolInjection> 
       LootPool pool = table.getPool(name);
       //noinspection ConstantConditions method is annotated wrongly
       if (pool != null) {
-        int oldLength = pool.entries.length;
-        pool.entries = Arrays.copyOf(pool.entries, oldLength + entries.length);
-        System.arraycopy(entries, 0, pool.entries, oldLength, entries.length);
+        try {
+          List<LootPoolEntryContainer> currentEntries = (List<LootPoolEntryContainer>) LOOT_POOL_ENTRIES.get(pool);
+          List<LootPoolEntryContainer> newEntries = new ArrayList<>(currentEntries);
+          Collections.addAll(newEntries, entries);
+          LOOT_POOL_ENTRIES.set(pool, newEntries);
+        } catch (ReflectiveOperationException e) {
+          throw new RuntimeException("Failed to inject loot into pool " + name, e);
+        }
       } else {
         Mantle.logger.warn("Failed to inject loot into {} pool {}", table.getLootTableId(), name);
       }
+    }
+  }
+
+  private static Field getLootPoolEntriesField() {
+    try {
+      Field field = LootPool.class.getDeclaredField("entries");
+      field.setAccessible(true);
+      return field;
+    } catch (NoSuchFieldException e) {
+      throw new RuntimeException("Failed to locate LootPool entries field", e);
     }
   }
 

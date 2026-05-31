@@ -2,19 +2,24 @@ package slimeknights.mantle.recipe.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.AbstractIngredient;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -26,7 +31,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("unused")  // API
 public class FluidContainerIngredient extends AbstractIngredient {
   public static final ResourceLocation ID = Mantle.getResource("fluid_container");
-  public static final Serializer SERIALIZER = new Serializer();
+  public static final IIngredientSerializer<FluidContainerIngredient> SERIALIZER = new Serializer();
 
   /** Ingredient to use for matching */
   private final FluidIngredient fluidIngredient;
@@ -41,41 +46,48 @@ public class FluidContainerIngredient extends AbstractIngredient {
   }
 
   /** Creates an instance from a fluid ingredient with a display container */
-  public static FluidContainerIngredient fromIngredient(FluidIngredient ingredient, Ingredient display) {
-    return new FluidContainerIngredient(ingredient, display);
+  public static Ingredient fromIngredient(FluidIngredient ingredient, Ingredient display) {
+    return new LegacyIngredient<>(new FluidContainerIngredient(ingredient, display), MantleRecipes.FLUID_CONTAINER_INGREDIENT::get).toVanilla();
   }
 
   /** Creates an instance from a fluid ingredient with no display, not recommended */
-  public static FluidContainerIngredient fromIngredient(FluidIngredient ingredient) {
-    return new FluidContainerIngredient(ingredient, null);
+  public static Ingredient fromIngredient(FluidIngredient ingredient) {
+    return new LegacyIngredient<>(new FluidContainerIngredient(ingredient, null), MantleRecipes.FLUID_CONTAINER_INGREDIENT::get).toVanilla();
   }
 
   /** Creates an instance from a fluid ingredient with a display container */
-  public static FluidContainerIngredient fromFluid(FluidObject<?> fluid) {
+  public static Ingredient fromFluid(FluidObject<?> fluid) {
     return fromIngredient(fluid.ingredient(FluidType.BUCKET_VOLUME), Ingredient.of(fluid));
   }
 
   @Override
   public boolean test(@Nullable ItemStack stack) {
     // first, must have a fluid capability
-    return stack != null && !stack.isEmpty() && stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().flatMap(cap -> {
+    if (stack == null || stack.isEmpty()) {
+      return false;
+    }
+    IFluidHandlerItem cap = stack.getCapability(Capabilities.FluidHandler.ITEM);
+    if (cap == null) {
+      return false;
+    }
+    return Optional.of(cap).flatMap(handler -> {
       // second, must contain enough fluid
-      if (cap.getTanks() == 1) {
-        FluidStack contained = cap.getFluidInTank(0);
+      if (handler.getTanks() == 1) {
+        FluidStack contained = handler.getFluidInTank(0);
         if (!contained.isEmpty() && fluidIngredient.getAmount(contained.getFluid()) == contained.getAmount() && fluidIngredient.test(contained.getFluid())) {
           // so far so good, from this point on we are forced to make copies as we need to try draining, so copy and fetch the copy's cap
-          ItemStack copy = ItemHandlerHelper.copyStackWithSize(stack, 1);
-          return copy.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
+          ItemStack copy = stack.copyWithCount(1);
+          return Optional.ofNullable(copy.getCapability(Capabilities.FluidHandler.ITEM));
         }
       }
       return Optional.empty();
-    }).filter(cap -> {
+    }).filter(fluidHandler -> {
       // alright, we know it has the fluid, the question is just whether draining the fluid will give us the desired result
-      Fluid fluid = cap.getFluidInTank(0).getFluid();
+      Fluid fluid = fluidHandler.getFluidInTank(0).getFluid();
       int amount = fluidIngredient.getAmount(fluid);
-      FluidStack drained = cap.drain(amount, FluidAction.EXECUTE);
+      FluidStack drained = fluidHandler.drain(amount, FluidAction.EXECUTE);
       // we need an exact match, and we need the resulting container item to be the same as the item stack's container item
-      return drained.getFluid() == fluid && drained.getAmount() == amount && ItemStack.matches(stack.getCraftingRemainingItem(), cap.getContainer());
+      return drained.getFluid() == fluid && drained.getAmount() == amount && ItemStack.matches(stack.getCraftingRemainingItem(), fluidHandler.getContainer());
     }).isPresent();
   }
 
@@ -104,7 +116,7 @@ public class FluidContainerIngredient extends AbstractIngredient {
     }
     json.addProperty("type", ID.toString());
     if (display != null) {
-      json.add("display", display.toJson());
+      json.add("display", Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, display).getOrThrow(JsonSyntaxException::new));
     }
     return json;
   }
@@ -126,7 +138,7 @@ public class FluidContainerIngredient extends AbstractIngredient {
   }
 
   @Override
-  public IIngredientSerializer<? extends Ingredient> getSerializer() {
+  public IIngredientSerializer<?> getSerializer() {
     return SERIALIZER;
   }
 
@@ -143,7 +155,7 @@ public class FluidContainerIngredient extends AbstractIngredient {
       }
       Ingredient display = null;
       if (json.has("display")) {
-        display = Ingredient.fromJson(JsonHelper.getElement(json, "display"));
+        display = Ingredient.CODEC.parse(JsonOps.INSTANCE, JsonHelper.getElement(json, "display")).getOrThrow(JsonSyntaxException::new);
       }
       return new FluidContainerIngredient(fluidIngredient, display);
     }
@@ -153,7 +165,7 @@ public class FluidContainerIngredient extends AbstractIngredient {
       FluidIngredient fluidIngredient = FluidIngredient.LOADABLE.decode(buffer);
       Ingredient display = null;
       if (buffer.readBoolean()) {
-        display = Ingredient.fromNetwork(buffer);
+        display = Ingredient.CONTENTS_STREAM_CODEC.decode((RegistryFriendlyByteBuf) buffer);
       }
       return new FluidContainerIngredient(fluidIngredient, display);
     }
@@ -163,7 +175,7 @@ public class FluidContainerIngredient extends AbstractIngredient {
       FluidIngredient.LOADABLE.encode(buffer, ingredient.fluidIngredient);
       if (ingredient.display != null) {
         buffer.writeBoolean(true);
-        ingredient.display.toNetwork(buffer);
+        Ingredient.CONTENTS_STREAM_CODEC.encode((RegistryFriendlyByteBuf) buffer, ingredient.display);
       } else {
         buffer.writeBoolean(false);
       }

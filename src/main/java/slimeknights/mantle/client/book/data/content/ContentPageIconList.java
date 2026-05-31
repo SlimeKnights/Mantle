@@ -71,7 +71,7 @@ public class ContentPageIconList extends PageContent {
       totalHeight -= getTitleHeight();
     }
     if (subText != null) {
-      totalHeight -= 16 + this.parent.parent.parent.fontRenderer.wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
+      totalHeight -= 16 + this.parent.parent.parent.getFontRenderer().wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
     }
     return totalHeight / this.height;
   }
@@ -233,7 +233,7 @@ public class ContentPageIconList extends PageContent {
   public HtmlSerializable toHTML(BookData book) {
     int yOff = 0;
     if (this.title != null) yOff = getTitleHeight();
-    if (this.subText != null) yOff = book.fontRenderer.wordWrapHeight(this.subText, 182) * 12 / 9 + 16;
+    if (this.subText != null) yOff = book.getFontRenderer().wordWrapHeight(this.subText, 182) * 12 / 9 + 16;
 
     return HtmlGroup.indent().add(
       makeTitleHTML(),

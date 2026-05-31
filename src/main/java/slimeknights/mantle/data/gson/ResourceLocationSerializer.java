@@ -22,7 +22,7 @@ public class ResourceLocationSerializer<T extends ResourceLocation> implements J
 
   /** Creates an instance for resource locations */
   public static ResourceLocationSerializer<ResourceLocation> resourceLocation(String modId) {
-    return new ResourceLocationSerializer<>(ResourceLocation::new, modId);
+    return new ResourceLocationSerializer<>(ResourceLocation::parse, modId);
   }
 
   @Override

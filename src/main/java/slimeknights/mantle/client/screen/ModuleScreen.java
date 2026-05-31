@@ -41,6 +41,17 @@ public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Abs
     return new Rect2i(this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
   }
 
+  public void adjustBounds(int leftOffset, int topOffset, int widthOffset, int heightOffset) {
+    this.leftPos += leftOffset;
+    this.topPos += topOffset;
+    this.imageWidth += widthOffset;
+    this.imageHeight += heightOffset;
+  }
+
+  public void setImageHeight(int imageHeight) {
+    this.imageHeight = imageHeight;
+  }
+
   @Override
   public void init() {
     this.leftPos = (this.width - this.imageWidth) / 2;
@@ -74,7 +85,7 @@ public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Abs
 
   public boolean isMouseOverFullSlot(double mouseX, double mouseY) {
     for (Slot slot : this.menu.slots) {
-      if (this.parent.isHovering(slot, mouseX, mouseY) && slot.hasItem()) {
+      if (this.parent.isSlotHovered(slot, mouseX, mouseY) && slot.hasItem()) {
         return true;
       }
     }

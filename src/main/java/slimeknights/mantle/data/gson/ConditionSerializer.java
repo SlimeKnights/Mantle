@@ -7,8 +7,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import slimeknights.mantle.recipe.condition.ConditionHelper;
 
 import java.lang.reflect.Type;
 
@@ -20,11 +20,11 @@ public class ConditionSerializer implements JsonDeserializer<ICondition>, JsonSe
 
   @Override
   public ICondition deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
-    return CraftingHelper.getCondition(GsonHelper.convertToJsonObject(json, "condition"));
+    return ConditionHelper.deserialize(GsonHelper.convertToJsonObject(json, "condition"));
   }
 
   @Override
   public JsonElement serialize(ICondition condition, Type type, JsonSerializationContext context) {
-    return CraftingHelper.serialize(condition);
+    return ConditionHelper.serialize(condition);
   }
 }

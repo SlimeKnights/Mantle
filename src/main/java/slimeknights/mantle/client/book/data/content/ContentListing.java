@@ -93,7 +93,7 @@ public class ContentListing extends PageContent {
       yOff = 16;
     }
     if (this.subText != null) {
-      yOff += sectionData.parent.fontRenderer.wordWrapHeight(this.subText, BookScreen.PAGE_WIDTH) * 12 / 9;
+      yOff += sectionData.parent.getFontRenderer().wordWrapHeight(this.subText, BookScreen.PAGE_WIDTH) * 12 / 9;
     }
     return getColumnHeight(yOff) / LINE_HEIGHT;
   }
@@ -149,9 +149,9 @@ public class ContentListing extends PageContent {
         } else {
           int height;
           if (data.bold) {
-            height = TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), width, "", parent.parent.parent.fontRenderer) * LINE_HEIGHT;
+            height = TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), width, "", parent.parent.parent.getFontRenderer()) * LINE_HEIGHT;
           } else {
-            height = TextDataRenderer.getLinesForString(text, "", width, "- ", parent.parent.parent.fontRenderer) * LINE_HEIGHT;
+            height = TextDataRenderer.getLinesForString(text, "", width, "- ", parent.parent.parent.getFontRenderer()) * LINE_HEIGHT;
           }
           // if the last entry is too tall, move it to the next column. But only if not at the start to prevent double relocation.
           if (y > 0 && y + height > columnHeight) {
@@ -181,7 +181,7 @@ public class ContentListing extends PageContent {
 
       int yOff = 0;
       if (this.title != null) yOff = 16;
-      if (this.subText != null) yOff += book.fontRenderer.wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
+      if (this.subText != null) yOff += book.getFontRenderer().wordWrapHeight(subText, BookScreen.PAGE_WIDTH) * 12 / 9;
       int rows = getColumnHeight(yOff) / LINE_HEIGHT;
 
       for (List<TextData> entry : entries) {

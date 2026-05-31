@@ -52,7 +52,7 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
 
   /** Creates a ResourceLocation for the local mod */
   protected ResourceLocation id(String name) {
-    return new ResourceLocation(modId, name);
+    return ResourceLocation.fromNamespaceAndPath(modId, name);
   }
 
   /** Adds a fluid to the builder */
@@ -120,7 +120,7 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
 
     /** Adds a unit local to the given mod */
     public FluidUnitListBuilder addUnit(String key, String domain, int amount) {
-      return addUnitRaw(Util.makeDescriptionId("gui", new ResourceLocation(domain, "fluid." + key)), amount);
+      return addUnitRaw(Util.makeDescriptionId("gui", ResourceLocation.fromNamespaceAndPath(domain, "fluid." + key)), amount);
     }
 
     /** Builds the final instance */

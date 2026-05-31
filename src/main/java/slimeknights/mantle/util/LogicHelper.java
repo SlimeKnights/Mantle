@@ -1,9 +1,8 @@
 package slimeknights.mantle.util;
 
-import net.minecraftforge.common.util.LazyOptional;
-
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
+import slimeknights.mantle.compat.neoforged.neoforge.common.util.LazyOptional;
 
 public class LogicHelper {
   private LogicHelper() {}
@@ -37,6 +36,21 @@ public class LogicHelper {
     return list.get(index);
   }
 
+  /** Gets the value from an optional, or null if it is empty. */
+  public static <T> T orElseNull(Optional<T> optional) {
+    return optional.orElse(null);
+  }
+
+  /** Gets the value from a lazy optional, or null if it is empty. */
+  public static <T> T orElseNull(LazyOptional<T> optional) {
+    return optional.orElse(null);
+  }
+
+  /** Returns the given nullable value. */
+  public static <T> T orElseNull(T value) {
+    return value;
+  }
+
   /** Quick helper to search an array for a given value by reference equality, uses {@link Object#equals(Object)} for comparisons. */
   public static <T> boolean isInList(T[] slots, T predicate) {
     for (T slot : slots) {
@@ -45,12 +59,5 @@ public class LogicHelper {
       }
     }
     return false;
-  }
-
-  /** Resolves a lazy optional, returning null if absent. Exists as the base method isn't properly annotated. */
-  @SuppressWarnings("DataFlowIssue")
-  @Nullable
-  public static <T> T orElseNull(LazyOptional<T> optional) {
-    return optional.orElse(null);
   }
 }

@@ -3,10 +3,10 @@ package slimeknights.mantle.registration.deferred;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import slimeknights.mantle.compat.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -20,15 +20,12 @@ public class SynchronizedDeferredRegister<T> {
     return create(DeferredRegister.create(key, modid));
   }
 
-  /** Creates a new instance for the given forge registry */
-  public static <B> SynchronizedDeferredRegister<B> create(IForgeRegistry<B> registry, String modid) {
-    return create(DeferredRegister.create(registry, modid));
-  }
-
   /** Registers the given object, synchronized over the internal register */
   public <I extends T> RegistryObject<I> register(final String name, final Supplier<? extends I> sup) {
     synchronized (internal) {
-      return internal.register(name, sup);
+      internal.register(name, sup);
+      ResourceLocation id = ResourceLocation.fromNamespaceAndPath(internal.getNamespace(), name);
+      return RegistryObject.legacyCreate((ResourceKey<? extends Registry<I>>)internal.getRegistryKey(), id);
     }
   }
 

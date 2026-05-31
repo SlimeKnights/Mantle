@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 /**
@@ -13,11 +14,34 @@ import java.util.Optional;
  */
 public class WrapperSlot extends Slot {
 
+  private static final Field SLOT_X = slotField("x");
+  private static final Field SLOT_Y = slotField("y");
+
   public final Slot parent;
 
   public WrapperSlot(Slot slot) {
     super(slot.container, slot.getSlotIndex(), slot.x, slot.y);
     this.parent = slot;
+  }
+
+  /** Syncs coordinates after a module screen moves the wrapped slot. */
+  public void syncPosition() {
+    try {
+      SLOT_X.setInt(this, this.parent.x);
+      SLOT_Y.setInt(this, this.parent.y);
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException("Failed to sync wrapped slot position", e);
+    }
+  }
+
+  private static Field slotField(String name) {
+    try {
+      Field field = Slot.class.getField(name);
+      field.setAccessible(true);
+      return field;
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException("Failed to access slot field " + name, e);
+    }
   }
 
   @Override

@@ -36,7 +36,7 @@ public class TemplateChunk extends EmptyLevelChunk {
       this.blocksInChunk.put(info.pos(), info);
 
       if (info.nbt() != null) {
-        BlockEntity tile = BlockEntity.loadStatic(info.pos(), info.state(), info.nbt());
+        BlockEntity tile = BlockEntity.loadStatic(info.pos(), info.state(), info.nbt(), level.registryAccess());
 
         if (tile != null) {
           tile.setLevel(level);

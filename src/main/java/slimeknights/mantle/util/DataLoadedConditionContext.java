@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,7 +24,7 @@ public enum DataLoadedConditionContext implements ICondition.IContext {
     if (registry != null) {
       Optional<HolderSet.Named<T>> tag = registry.getTag(key);
       if (tag.isPresent()) {
-        return tag.get().contents;
+        return tag.get().stream().toList();
       }
     }
     return Set.of();
@@ -34,7 +34,7 @@ public enum DataLoadedConditionContext implements ICondition.IContext {
   public <T> Map<ResourceLocation,Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> key) {
     Registry<T> registry = RegistryHelper.getRegistry(key);
     if (registry != null) {
-      return registry.getTags().collect(Collectors.toMap(entry -> entry.getFirst().location(), entry -> entry.getSecond().contents));
+      return registry.getTags().collect(Collectors.toMap(entry -> entry.getFirst().location(), entry -> entry.getSecond().stream().toList()));
     }
     return Map.of();
   }

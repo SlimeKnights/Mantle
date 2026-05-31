@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.PressurePlateBlock.Sensitivity;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -24,8 +23,8 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.minecraft.core.Registry;
 import slimeknights.mantle.block.MantleCeilingHangingSignBlock;
 import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallHangingSignBlock;
@@ -53,12 +52,12 @@ import static slimeknights.mantle.util.RegistryHelper.getHolder;
 public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
 
   /** @inheritDoc */
-  public BlockRegistryAdapter(IForgeRegistry<Block> registry) {
+  public BlockRegistryAdapter(Registry<Block> registry) {
     super(registry);
   }
 
   /** @inheritDoc */
-  public BlockRegistryAdapter(IForgeRegistry<Block> registry, String modid) {
+  public BlockRegistryAdapter(Registry<Block> registry, String modid) {
     super(registry, modid);
   }
 
@@ -70,7 +69,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @return  Registered block
    */
   public <T extends Block> T registerOverride(Function<Properties, T> constructor, Block base) {
-    return register(constructor.apply(BlockBehaviour.Properties.copy(base)), base);
+    return register(constructor.apply(BlockBehaviour.Properties.ofFullCopy(base)), base);
   }
 
   /* Building */
@@ -87,8 +86,8 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public BuildingBlockObject registerBuilding(Block block, String name) {
     return new BuildingBlockObject(
       this.register(block, name),
-      this.register(new SlabBlock(BlockBehaviour.Properties.copy(block)), name + "_slab"),
-      this.register(new StairBlock(block::defaultBlockState, BlockBehaviour.Properties.copy(block)), name + "_stairs")
+      this.register(new SlabBlock(BlockBehaviour.Properties.ofFullCopy(block)), name + "_slab"),
+      this.register(new StairBlock(block.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(block)), name + "_stairs")
     );
   }
 
@@ -102,7 +101,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public WallBuildingBlockObject registerWallBuilding(Block block, String name) {
     return new WallBuildingBlockObject(
       registerBuilding(block, name),
-      this.register(new WallBlock(BlockBehaviour.Properties.copy(block)), name + "_wall")
+      this.register(new WallBlock(BlockBehaviour.Properties.ofFullCopy(block)), name + "_wall")
     );
   }
 
@@ -116,7 +115,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
   public FenceBuildingBlockObject registerFenceBuilding(Block block, String name) {
     return new FenceBuildingBlockObject(
       registerBuilding(block, name),
-      this.register(new FenceBlock(BlockBehaviour.Properties.copy(block)), name + "_fence")
+      this.register(new FenceBlock(BlockBehaviour.Properties.ofFullCopy(block)), name + "_fence")
     );
   }
 
@@ -137,7 +136,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
     // planks
     BlockBehaviour.Properties planksProps = behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(2.0f, 3.0f);
     BuildingBlockObject planks = registerBuilding(new Block(planksProps), name + "_planks");
-    FenceBlock fence = register(new FenceBlock(Properties.copy(planks.get()).forceSolidOn()), name + "_fence");
+    FenceBlock fence = register(new FenceBlock(Properties.ofFullCopy(planks.get()).forceSolidOn()), name + "_fence");
     // logs and wood
     Supplier<? extends RotatedPillarBlock> stripped = () -> new RotatedPillarBlock(behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(2.0f));
     RotatedPillarBlock strippedLog = register(stripped.get(), "stripped_" + name + "_log");
@@ -146,13 +145,13 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
     RotatedPillarBlock wood = register(new StrippableLogBlock(getHolder(BuiltInRegistries.BLOCK, strippedWood), behaviorCreator.apply(WoodVariant.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.0f)), name + "_wood");
 
     // doors
-    DoorBlock door = register(new DoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY), setType), name + "_door");
-    TrapDoorBlock trapdoor = register(new TrapDoorBlock(behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never), setType), name + "_trapdoor");
-    FenceGateBlock fenceGate = register(new FenceGateBlock(Properties.copy(fence), woodType), name + "_fence_gate");
+    DoorBlock door = register(new DoorBlock(setType, behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY)), name + "_door");
+    TrapDoorBlock trapdoor = register(new TrapDoorBlock(setType, behaviorCreator.apply(WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).strength(3.0F).noOcclusion().isValidSpawn(Blocks::never)), name + "_trapdoor");
+    FenceGateBlock fenceGate = register(new FenceGateBlock(woodType, Properties.ofFullCopy(fence)), name + "_fence_gate");
     // redstone
     BlockBehaviour.Properties redstoneProps = behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().pushReaction(PushReaction.DESTROY).strength(0.5F);
-    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(Sensitivity.EVERYTHING, redstoneProps, setType), name + "_pressure_plate");
-    ButtonBlock button = register(new ButtonBlock(redstoneProps, setType, 30, true), name + "_button");
+    PressurePlateBlock pressurePlate = register(new PressurePlateBlock(setType, redstoneProps), name + "_pressure_plate");
+    ButtonBlock button = register(new ButtonBlock(setType, 30, redstoneProps), name + "_button");
     // signs
     StandingSignBlock standingSign = register(new MantleStandingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F), woodType), name + "_sign");
     WallSignBlock wallSign = register(new MantleWallSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).dropsLike(standingSign), woodType), name + "_wall_sign");
@@ -177,7 +176,7 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
    * @param name        Fluid name, unfortunately no way to fetch from the fluid as it does not exist yet
    * @return  Fluid block instance
    */
-  public LiquidBlock registerFluidBlock(Supplier<? extends ForgeFlowingFluid> fluid, MapColor color, int lightLevel, String name) {
-    return register(new LiquidBlock(fluid, FluidDeferredRegister.createProperties(color, lightLevel)), name + "_fluid");
+  public LiquidBlock registerFluidBlock(Supplier<? extends BaseFlowingFluid> fluid, MapColor color, int lightLevel, String name) {
+    return register(new LiquidBlock(fluid.get(), FluidDeferredRegister.createProperties(color, lightLevel)), name + "_fluid");
   }
 }

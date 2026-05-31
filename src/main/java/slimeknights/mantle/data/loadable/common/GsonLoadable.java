@@ -6,6 +6,7 @@ import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,7 +27,8 @@ public record GsonLoadable<T>(Gson gson, Class<T> classType) implements Loadable
 
   @Override
   public T decode(FriendlyByteBuf buffer, TypedMap context) {
-    CompoundTag tag = buffer.readAnySizeNbt();
+    Tag rawTag = buffer.readNbt(NbtAccounter.unlimitedHeap());
+    CompoundTag tag = rawTag instanceof CompoundTag compound ? compound : null;
     if (tag != null) {
       return gson.fromJson(NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, tag), classType);
     }

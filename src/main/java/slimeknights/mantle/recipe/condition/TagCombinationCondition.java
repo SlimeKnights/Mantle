@@ -2,14 +2,18 @@ package slimeknights.mantle.recipe.condition;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import slimeknights.mantle.compat.neoforged.neoforge.common.conditions.IConditionSerializer;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -19,6 +23,7 @@ import slimeknights.mantle.util.JsonHelper;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Condition checking for a combination of tags having any entries
@@ -29,6 +34,21 @@ import java.util.List;
 @SuppressWarnings("unused")
 public record TagCombinationCondition<T>(List<TagKey<T>> match, @Nullable TagKey<T> ignore) implements ICondition {
   public static final ResourceLocation ID = Mantle.getResource("tag_combination_filled");
+  private static final Codec<List<ResourceLocation>> MATCH_CODEC = Codec.either(ResourceLocation.CODEC, ResourceLocation.CODEC.listOf()).xmap(
+    either -> either.map(List::of, locations -> locations),
+    locations -> locations.size() == 1 ? Either.left(locations.get(0)) : Either.right(locations));
+  public static final MapCodec<TagCombinationCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    ResourceLocation.CODEC.optionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.match.get(0).registry().location()),
+    MATCH_CODEC.fieldOf("match").forGetter(condition -> condition.match.stream().map(TagKey::location).toList()),
+    ResourceLocation.CODEC.optionalFieldOf("ignore").forGetter(condition -> Optional.ofNullable(condition.ignore).map(TagKey::location))
+  ).apply(instance, TagCombinationCondition::newCondition));
+
+  private static TagCombinationCondition<?> newCondition(ResourceLocation registryName, List<ResourceLocation> match, Optional<ResourceLocation> ignore) {
+    ResourceKey<Registry<Object>> registry = ResourceKey.createRegistryKey(registryName);
+    return new TagCombinationCondition<>(
+      match.stream().map(id -> TagKey.create(registry, id)).toList(),
+      ignore.map(id -> TagKey.create(registry, id)).orElse(null));
+  }
 
   public TagCombinationCondition {
     if (match.isEmpty()) {
@@ -54,9 +74,13 @@ public record TagCombinationCondition<T>(List<TagKey<T>> match, @Nullable TagKey
   }
 
 
-  @Override
   public ResourceLocation getID() {
     return ID;
+  }
+
+  @Override
+  public MapCodec<? extends ICondition> codec() {
+    return CODEC;
   }
 
   @Override

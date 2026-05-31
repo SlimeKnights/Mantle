@@ -5,9 +5,9 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.recipe.condition.ConditionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +33,9 @@ public abstract class AbstractLootTableInjectionProvider extends GenericDataProv
     return allOf(builders.stream().map(builder -> {
       JsonObject json = LootTableInjection.LOADABLE.serialize(builder.build()).getAsJsonObject();
       if (builder.conditions.length > 0) {
-        json.add("conditions", CraftingHelper.serialize(builder.conditions));
+        json.add("conditions", ConditionHelper.serialize(builder.conditions));
       }
-      return saveJson(output, new ResourceLocation(domain, builder.path), json);
+      return saveJson(output, ResourceLocation.fromNamespaceAndPath(domain, builder.path), json);
     }));
   }
 
@@ -48,17 +48,17 @@ public abstract class AbstractLootTableInjectionProvider extends GenericDataProv
 
   /** Creates a new injection for the Minecraft domain */
   protected LootTableInjection.Builder inject(String path, String name, ICondition... conditions) {
-    return inject(path, new ResourceLocation(name), conditions);
+    return inject(path, ResourceLocation.parse(name), conditions);
   }
 
   /** Creates a new injection for the Minecraft domain */
   protected LootTableInjection.Builder injectChest(String name, ICondition... conditions) {
-    return inject(name, new ResourceLocation("chests/" + name), conditions);
+    return inject(name, ResourceLocation.withDefaultNamespace("chests/" + name), conditions);
   }
 
   /** Creates a new injection for the Minecraft domain */
   protected LootTableInjection.Builder injectGameplay(String name, ICondition... conditions) {
-    return inject(name, new ResourceLocation("gameplay/" + name), conditions);
+    return inject(name, ResourceLocation.withDefaultNamespace("gameplay/" + name), conditions);
   }
 
   /** Internal builder tuple */

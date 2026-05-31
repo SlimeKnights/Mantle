@@ -14,8 +14,8 @@ import net.minecraft.world.item.SignItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.registries.IForgeRegistry;
+import slimeknights.mantle.compat.neoforged.neoforge.common.ForgeSpawnEggItem;
+import net.minecraft.core.Registry;
 import slimeknights.mantle.item.BlockTooltipItem;
 import slimeknights.mantle.item.BurnableBlockItem;
 import slimeknights.mantle.item.BurnableHangingSignItem;
@@ -46,7 +46,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * Registers a new item registry adapter with default mod ID and item properties
    * @param registry  Item registry instance
    */
-  public ItemRegistryAdapter(IForgeRegistry<Item> registry) {
+  public ItemRegistryAdapter(Registry<Item> registry) {
     this(registry, null);
   }
 
@@ -55,7 +55,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param registry      Item registry instance
    * @param defaultProps  Default item properties
    */
-  public ItemRegistryAdapter(IForgeRegistry<Item> registry, @Nullable Item.Properties defaultProps) {
+  public ItemRegistryAdapter(Registry<Item> registry, @Nullable Item.Properties defaultProps) {
     super(registry);
     this.defaultProps = Objects.requireNonNullElseGet(defaultProps, Properties::new);
   }
@@ -66,7 +66,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @param modid         Mod ID override
    * @param defaultProps  Default item properties
    */
-  public ItemRegistryAdapter(IForgeRegistry<Item> registry, String modid, @Nullable Item.Properties defaultProps) {
+  public ItemRegistryAdapter(Registry<Item> registry, String modid, @Nullable Item.Properties defaultProps) {
     super(registry, modid);
     this.defaultProps = Objects.requireNonNullElseGet(defaultProps, Properties::new);
   }
@@ -264,7 +264,7 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return  Bucket instance
    */
   public BucketItem registerBucket(Supplier<? extends Fluid> fluid, String baseName) {
-    return register(new BucketItem(fluid, RegistrationHelper.BUCKET_PROPS), baseName + "_bucket");
+    return register(new BucketItem(fluid.get(), RegistrationHelper.BUCKET_PROPS), baseName + "_bucket");
   }
 
   /**

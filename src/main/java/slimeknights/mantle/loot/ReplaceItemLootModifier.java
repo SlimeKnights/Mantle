@@ -1,6 +1,6 @@
 package slimeknights.mantle.loot;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
@@ -11,9 +11,9 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import slimeknights.mantle.data.MantleCodecs;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 
@@ -25,7 +25,7 @@ import java.util.function.BiFunction;
 
 /** Loot modifier to replace an item with another */
 public class ReplaceItemLootModifier extends LootModifier {
-  public static final Codec<ReplaceItemLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).and(
+  public static final MapCodec<ReplaceItemLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).and(
     inst.group(
       MantleCodecs.INGREDIENT.fieldOf("original").forGetter(m -> m.original),
       ItemOutput.REQUIRED_STACK_CODEC.fieldOf("replacement").forGetter(m -> m.replacement),
@@ -46,7 +46,7 @@ public class ReplaceItemLootModifier extends LootModifier {
     this.original = original;
     this.replacement = replacement;
     this.functions = functions;
-    this.combinedFunctions = LootItemFunctions.compose(functions);
+    this.combinedFunctions = LootItemFunctions.compose(List.of(functions));
   }
 
   /** Creates a builder to create a loot modifier */
@@ -62,14 +62,14 @@ public class ReplaceItemLootModifier extends LootModifier {
       ItemStack stack = iterator.next();
       if (original.test(stack)) {
         ItemStack replacement = this.replacement.get();
-        iterator.set(combinedFunctions.apply(ItemHandlerHelper.copyStackWithSize(replacement, replacement.getCount() * stack.getCount()), context));
+        iterator.set(combinedFunctions.apply(replacement.copyWithCount(replacement.getCount() * stack.getCount()), context));
       }
     }
     return generatedLoot;
   }
 
   @Override
-  public Codec<? extends IGlobalLootModifier> codec() {
+  public MapCodec<? extends IGlobalLootModifier> codec() {
     return CODEC;
   }
 

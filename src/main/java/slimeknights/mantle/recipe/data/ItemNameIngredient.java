@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.AbstractIngredient;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.IIngredientSerializer;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.VanillaIngredientSerializer;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -66,12 +66,12 @@ public class ItemNameIngredient extends AbstractIngredient {
   }
 
   @Override
-  public IIngredientSerializer<? extends Ingredient> getSerializer() {
+  public IIngredientSerializer<?> getSerializer() {
     return VanillaIngredientSerializer.INSTANCE;
   }
 
   @RequiredArgsConstructor
-  public static class NamedValue implements Ingredient.Value {
+  public static class NamedValue implements AbstractIngredient.Value {
     private final ResourceLocation name;
 
     @Override

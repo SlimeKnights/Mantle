@@ -3,11 +3,12 @@ package slimeknights.mantle.recipe.crafting;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.data.recipes.FinishedRecipe;
+import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import slimeknights.mantle.recipe.MantleRecipes;
+import slimeknights.mantle.recipe.data.VanillaFinishedRecipe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class ShapedFallbackRecipeBuilder {
    * @param consumer  Recipe consumer
    */
   public void build(Consumer<FinishedRecipe> consumer) {
-    base.save(base -> consumer.accept(new Result(base, alternatives)));
+    base.save(VanillaFinishedRecipe.output(base -> consumer.accept(new Result(base, alternatives))));
   }
 
   /**
@@ -56,7 +57,7 @@ public class ShapedFallbackRecipeBuilder {
    * @param id        Recipe ID
    */
   public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    base.save(base -> consumer.accept(new Result(base, alternatives)), id);
+    base.save(VanillaFinishedRecipe.output(base -> consumer.accept(new Result(base, alternatives))), id);
   }
 
   private record Result(FinishedRecipe base, List<ResourceLocation> alternatives) implements FinishedRecipe {

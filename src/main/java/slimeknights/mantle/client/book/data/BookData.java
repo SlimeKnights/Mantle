@@ -47,6 +47,15 @@ public class BookData implements IDataItem, BookScreenOpener {
     this.repositories = new ArrayList<>(Arrays.asList(repositories));
   }
 
+  /** Gets the font used for book layout and rendering. */
+  public Font getFontRenderer() {
+    Font preferredFont = this.appearance.uniformFont ? BookScreen.getUniformFont() : BookScreen.getAltFont();
+    if (this.fontRenderer == null || this.fontRenderer == BookScreen.getUniformFont() || this.fontRenderer == BookScreen.getAltFont()) {
+      this.fontRenderer = preferredFont;
+    }
+    return this.fontRenderer;
+  }
+
   /** Reinitializes the given book */
   public void reset() {
     this.initialized = false;
@@ -122,13 +131,8 @@ public class BookData implements IDataItem, BookScreenOpener {
         }
       }
 
-      // set unicode font if requested
-      if (this.appearance.uniformFont) {
-        this.fontRenderer = BookScreen.getUniformFont();
-      // font is cached in the book data so we need to clear it; but don't clear it if set to another font instance
-      } else if (this.fontRenderer == BookScreen.getUniformFont()) {
-        this.fontRenderer = null;
-      }
+      // Set a concrete font before transformers run; several layout steps measure text before a screen exists.
+      this.getFontRenderer();
 
       for (int i = 0; i < this.sections.size(); i++) {
         SectionData section = this.sections.get(i);
@@ -401,7 +405,7 @@ public class BookData implements IDataItem, BookScreenOpener {
   public void openGui(BlockPos pos, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
 
-    Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
+    Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.sendToServer(new DropLecternBookPacket(pos));
 
     openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
   }

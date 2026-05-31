@@ -3,15 +3,15 @@ package slimeknights.mantle.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
 import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
 import slimeknights.mantle.util.BlockEntityHelper;
 import slimeknights.mantle.util.RetexturedHelper;
@@ -35,12 +35,12 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
   }
 
   @Override
-  public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
-    return getPickBlock(world, pos, state);
+  public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    return level instanceof BlockGetter blockGetter ? getPickBlock(blockGetter, pos, state) : new ItemStack(state.getBlock());
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable BlockGetter pLevel, List<Component> tooltip, TooltipFlag flag) {
+  public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     RetexturedHelper.addTooltip(stack, tooltip, flag);
   }
 
@@ -54,8 +54,9 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
    * @param stack Item stack
    */
   public static void updateTextureBlock(Level world, BlockPos pos, ItemStack stack) {
-    if (stack.hasTag()) {
-      BlockEntityHelper.get(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> te.updateTexture(RetexturedHelper.getTextureName(stack)));
+    String texture = RetexturedHelper.getTextureName(stack);
+    if (!texture.isEmpty()) {
+      BlockEntityHelper.get(IRetexturedBlockEntity.class, world, pos).ifPresent(te -> te.updateTexture(texture));
     }
   }
 

@@ -127,9 +127,9 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
     /** Gets the number of entries needed to represent the given text. */
     private int entryCount(String text, boolean bold) {
       if (bold) {
-        return TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), COLUMN_WIDTH, "", section.parent.fontRenderer);
+        return TextDataRenderer.getLinesForString(text, ChatFormatting.BOLD.toString(), COLUMN_WIDTH, "", section.parent.getFontRenderer());
       } else {
-        return TextDataRenderer.getLinesForString(text, "", COLUMN_WIDTH, "- ", section.parent.fontRenderer);
+        return TextDataRenderer.getLinesForString(text, "", COLUMN_WIDTH, "- ", section.parent.getFontRenderer());
       }
     }
 
@@ -148,9 +148,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       } else {
         // 1 or 2 columns? force break
         columns++;
-        if (forceBreak) {
-          currentListing.addColumnBreak();
-        }
+        currentListing.addColumnBreak();
       }
       entriesInColumn = 0;
     }

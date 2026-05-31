@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.core.Registry;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import javax.annotation.Nullable;
@@ -22,12 +22,12 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public class BlockEntityTypeRegistryAdapter extends RegistryAdapter<BlockEntityType<?>> {
   /** @inheritDoc */
-  public BlockEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry, String modId) {
+  public BlockEntityTypeRegistryAdapter(Registry<BlockEntityType<?>> registry, String modId) {
     super(registry, modId);
   }
 
   /** @inheritDoc */
-  public BlockEntityTypeRegistryAdapter(IForgeRegistry<BlockEntityType<?>> registry) {
+  public BlockEntityTypeRegistryAdapter(Registry<BlockEntityType<?>> registry) {
     super(registry);
   }
 

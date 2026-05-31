@@ -37,8 +37,8 @@ public class HungerCommand {
     SET(20) {
       @Override
       public void apply(FoodData food, int hunger, float saturation) {
-        food.foodLevel = hunger;
-        food.saturationLevel = Math.min(hunger, saturation);
+        food.setFoodLevel(hunger);
+        food.setSaturation(Math.min(hunger, saturation));
       }
     },
     ADD(1) {
@@ -50,8 +50,9 @@ public class HungerCommand {
     SUBTRACT(0) {
       @Override
       public void apply(FoodData food, int hunger, float saturation) {
-        food.foodLevel = Math.max(0, food.foodLevel - hunger);
-        food.saturationLevel = Mth.clamp(food.saturationLevel - hunger * saturation * 2, 0, food.foodLevel);
+        int newFood = Math.max(0, food.getFoodLevel() - hunger);
+        food.setFoodLevel(newFood);
+        food.setSaturation(Mth.clamp(food.getSaturationLevel() - hunger * saturation * 2, 0, newFood));
       }
     };
 

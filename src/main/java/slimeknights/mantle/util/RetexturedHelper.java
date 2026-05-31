@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -13,14 +14,15 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
@@ -61,7 +63,8 @@ public final class RetexturedHelper {
    * @return  Texture, or empty string if none
    */
   public static String getTextureName(ItemStack stack) {
-    return getTextureName(stack.getTag());
+    CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+    return getTextureName(data == null ? null : data.copyTag());
   }
 
   /**
@@ -88,7 +91,7 @@ public final class RetexturedHelper {
     if (!name.isEmpty()) {
       ResourceLocation location = ResourceLocation.tryParse(name);
       if (location != null) {
-        return BuiltInRegistries.BLOCK.get(new ResourceLocation(name));
+        return BuiltInRegistries.BLOCK.get(location);
       }
     }
     return Blocks.AIR;
@@ -127,10 +130,17 @@ public final class RetexturedHelper {
    * @return The item stack with the proper NBT
    */
   public static ItemStack setTexture(ItemStack stack, String name) {
+    CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
     if (!name.isEmpty()) {
-      setTexture(stack.getOrCreateTag(), name);
-    } else if (stack.hasTag()) {
-      setTexture(stack.getTag(), name);
+      setTexture(tag, name);
+      stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    } else if (stack.has(DataComponents.CUSTOM_DATA)) {
+      setTexture(tag, name);
+      if (tag.isEmpty()) {
+        stack.remove(DataComponents.CUSTOM_DATA);
+      } else {
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+      }
     }
     return stack;
   }

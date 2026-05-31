@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import slimeknights.mantle.data.loadable.ErrorFactory;
@@ -19,17 +20,17 @@ public record CodecLoadable<T>(DynamicOps<Tag> ops, Codec<T> codec) implements L
 
   @Override
   public T convert(JsonElement element, String key, TypedMap context) {
-    return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, ErrorFactory.JSON_SYNTAX_ERROR);
+    return codec.parse(JsonOps.INSTANCE, element).getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR::create);
   }
 
   @Override
   public JsonElement serialize(T object) {
-    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, ErrorFactory.RUNTIME);
+    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(ErrorFactory.RUNTIME::create);
   }
 
   @Override
   public T decode(FriendlyByteBuf buffer, TypedMap context) {
-    return buffer.readWithCodec(ops, codec);
+    return buffer.readWithCodec(ops, codec, NbtAccounter.unlimitedHeap());
   }
 
   @Override

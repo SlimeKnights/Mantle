@@ -5,11 +5,9 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import slimeknights.mantle.util.TranslationHelper;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockTooltipItem extends BlockItem {
@@ -18,8 +16,8 @@ public class BlockTooltipItem extends BlockItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    super.appendHoverText(stack, worldIn, tooltip, flagIn);
+  public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+    super.appendHoverText(stack, context, tooltip, flagIn);
     TranslationHelper.addOptionalTooltip(stack, tooltip);
   }
 }

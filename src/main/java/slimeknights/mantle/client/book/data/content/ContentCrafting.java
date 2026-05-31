@@ -8,8 +8,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -55,9 +56,22 @@ public class ContentCrafting extends PageContent {
   @Nullable
   public TextData[] description;
   public String recipe;
+  private transient boolean recipeLoaded = false;
+  private transient boolean recipeMissingLogged = false;
+  private transient boolean recipeWrongTypeLogged = false;
+  private transient boolean recipeErrorLogged = false;
 
   @Override
   public void build(BookData book, ArrayList<BookElement> list, boolean rightSide) {
+    try {
+      this.loadRecipeFromManager();
+    } catch (BookLoadException e) {
+      if (!recipeErrorLogged) {
+        Mantle.logger.error("Failed to load book crafting recipe {} while building page {}.{}.", this.recipe, this.parent.parent.name, this.parent.name, e);
+        recipeErrorLogged = true;
+      }
+    }
+
     int x = 0;
     int y;
     int height = 100;
@@ -112,52 +126,80 @@ public class ContentCrafting extends PageContent {
   public void load() {
     super.load();
 
-    if (!StringUtils.isEmpty(recipe) && ResourceLocation.isValidResourceLocation(recipe)) {
-      int w = 0, h = 0;
+    this.loadRecipeFromManager();
+  }
 
-      Level level = Minecraft.getInstance().level;
-      assert level != null;
-      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
-      if (recipe instanceof CraftingRecipe) {
-        if(grid_size.equalsIgnoreCase("auto")) {
-          if(recipe.canCraftInDimensions(2, 2)) {
-            grid_size = "small";
-          } else {
-            grid_size = "large";
-          }
-        }
+  /** Loads auto-populated recipe data. Retries during build as books can be initialized before the client recipe manager is ready. */
+  private void loadRecipeFromManager() {
+    if (recipeLoaded || StringUtils.isEmpty(recipe)) {
+      return;
+    }
+    ResourceLocation recipeId = ResourceLocation.tryParse(recipe);
+    if (recipeId == null) {
+      return;
+    }
 
-        switch (grid_size.toLowerCase()) {
-          case "large" -> w = h = 3;
-          case "small" -> w = h = 2;
-        }
+    Level level = Minecraft.getInstance().level;
+    if (level == null) {
+      return;
+    }
 
-        if (!recipe.canCraftInDimensions(w, h)) {
-          throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
-        }
+    Recipe<?> foundRecipe = level.getRecipeManager().byKey(recipeId).map(RecipeHolder::value).orElse(null);
+    if (foundRecipe == null) {
+      if (!recipeMissingLogged) {
+        Mantle.logger.warn("Book crafting recipe {} was not found in the client recipe manager; will retry when the page is opened.", recipeId);
+        recipeMissingLogged = true;
+      }
+      return;
+    }
+    if (!(foundRecipe instanceof CraftingRecipe craftingRecipe)) {
+      if (!recipeWrongTypeLogged) {
+        Mantle.logger.warn("Book crafting recipe {} resolved to {}, not a crafting recipe.", recipeId, foundRecipe.getClass().getName());
+        recipeWrongTypeLogged = true;
+      }
+      return;
+    }
 
-        result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
-
-        NonNullList<Ingredient> ingredients = recipe.getIngredients();
-
-        if (recipe instanceof IShapedRecipe<?> shaped) {
-          grid = new IngredientData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
-
-          for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[y].length; x++) {
-              grid[y][x] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getItems()));
-            }
-          }
-
-          return;
-        }
-
-        grid = new IngredientData[h][w];
-        for (int i = 0; i < ingredients.size(); i++) {
-          grid[i / h][i % w] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(i).getItems()));
-        }
+    int w = 0, h = 0;
+    if(grid_size.equalsIgnoreCase("auto")) {
+      if(craftingRecipe.canCraftInDimensions(2, 2)) {
+        grid_size = "small";
+      } else {
+        grid_size = "large";
       }
     }
+
+    switch (grid_size.toLowerCase()) {
+      case "large" -> w = h = 3;
+      case "small" -> w = h = 2;
+    }
+
+    if (!craftingRecipe.canCraftInDimensions(w, h)) {
+      throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
+    }
+
+    result = IngredientData.getItemStackData(craftingRecipe.getResultItem(level.registryAccess()));
+
+    NonNullList<Ingredient> ingredients = craftingRecipe.getIngredients();
+
+    if (craftingRecipe instanceof ShapedRecipe shaped) {
+      grid = new IngredientData[shaped.getHeight()][shaped.getWidth()];
+
+      for (int y = 0; y < grid.length; y++) {
+        for (int x = 0; x < grid[y].length; x++) {
+          grid[y][x] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getItems()));
+        }
+      }
+
+      recipeLoaded = true;
+      return;
+    }
+
+    grid = new IngredientData[h][w];
+    for (int i = 0; i < ingredients.size(); i++) {
+      grid[i / w][i % w] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(i).getItems()));
+    }
+    recipeLoaded = true;
   }
 
   @Override

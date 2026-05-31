@@ -3,9 +3,9 @@ package slimeknights.mantle.registration.deferred;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.registries.RegistryObject;
+import slimeknights.mantle.compat.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.network.IContainerFactory;
+import slimeknights.mantle.compat.neoforged.neoforge.registries.RegistryObject;
 
 /**
  * Deferred register for menu types, automatically mapping a factory argument in {@link IForgeMenuType}

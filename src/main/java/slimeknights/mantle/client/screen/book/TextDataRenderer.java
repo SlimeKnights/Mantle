@@ -2,6 +2,7 @@ package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
@@ -16,12 +17,20 @@ import java.util.List;
 import java.util.Optional;
 
 public class TextDataRenderer {
+  private static final float DEFAULT_TEXT_SCALE = 0.82f;
+  private static final float MIN_AUTO_SCALE = 0.75f;
+
+  /** Gets a font renderer, falling back to the active client font for book pre-layout. */
+  private static Font getFont(Font fr) {
+    return fr != null ? fr : Minecraft.getInstance().font;
+  }
 
   /**
    * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
    */
   @Deprecated
   public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, BookScreen parent) {
+    fr = getFont(fr);
     List<Component> tooltip = new ArrayList<>();
     String action = drawText(graphics, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
 
@@ -34,10 +43,12 @@ public class TextDataRenderer {
 
   // TODO: can we merge this with TextComponentDataRenderer, put the differences in TextData vs TextComponentData?
   public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
+    fr = getFont(fr);
     String action = "";
 
     int atX = x;
     int atY = y;
+    int startY = y;
 
     float prevScale = 1.F;
 
@@ -50,18 +61,19 @@ public class TextDataRenderer {
       if (item == null) {
         continue;
       }
+      float itemScale = defaultScale(item.scale);
       // allow specifying linebreak on its own to force a linebreak
       if (item.text == null || item.text.isEmpty()) {
         if (item.linebreak) {
           atX = x;
-          atY += fr.lineHeight;
+          atY += scaledLineHeight(fr, itemScale);
         }
         continue;
       }
       // TODO: ditch this, the linebreak field handles it better
       if (item.text.equals("\n")) {
         atX = x;
-        atY += fr.lineHeight;
+        atY += scaledLineHeight(fr, itemScale);
         continue;
       }
 
@@ -70,7 +82,7 @@ public class TextDataRenderer {
         atY += fr.lineHeight * 2 * prevScale;
       }
 
-      prevScale = item.scale;
+      prevScale = itemScale;
 
       String modifiers = "";
 
@@ -104,24 +116,42 @@ public class TextDataRenderer {
 
       String text = translateString(item.text);
 
-      String[] split = cropStringBySize(text, modifiers, boxWidth, boxHeight - (atY - y), boxWidth - (atX - x), fr, item.scale);
+      int remainingHeight = Math.max(1, boxHeight - (atY - startY));
+
+      String[] split = cropStringBySize(text, modifiers, boxWidth, Short.MAX_VALUE, boxWidth - (atX - x), fr, itemScale);
+      if (split.length == 0) {
+        break;
+      }
+      float blockScale = fitScaleToHeight(split.length, remainingHeight, fr, itemScale);
+      if (blockScale < itemScale) {
+        split = cropStringBySize(text, modifiers, boxWidth, Short.MAX_VALUE, boxWidth - (atX - x), fr, blockScale);
+      }
 
       box1X = atX;
       box1Y = atY;
       box2X = x;
       box2W = x + boxWidth;
 
+      int drawnLines = 0;
+      String lastDrawnLine = "";
+      float lastDrawnScale = blockScale;
       for (int i = 0; i < split.length; i++) {
+        int lineWidth = i == 0 ? boxWidth - (atX - x) : boxWidth;
+        float lineScale = fitScaleToWidth(split[i], modifiers, lineWidth, fr, blockScale);
+        int lineHeight = scaledLineHeight(fr, lineScale);
         if (i == split.length - 1) {
           box3X = atX;
           box3Y = atY;
         }
 
         String s = split[i];
-        drawScaledString(graphics, fr, modifiers + s, atX, atY, item.rgbColor, item.dropshadow, item.scale);
+        drawScaledString(graphics, fr, modifiers + s, atX, atY, item.rgbColor, item.dropshadow, lineScale);
+        drawnLines++;
+        lastDrawnLine = s;
+        lastDrawnScale = lineScale;
 
         if (i < split.length - 1) {
-          atY += fr.lineHeight;
+          atY += lineHeight;
           atX = x;
         }
 
@@ -135,19 +165,22 @@ public class TextDataRenderer {
           }
         }
       }
+      if (drawnLines == 0) {
+        break;
+      }
 
       box2H = atY;
 
-      atX += fr.width(split[split.length - 1]) * item.scale;
+      atX += fr.width(lastDrawnLine) * lastDrawnScale;
 
       // if specified, include a trailing linebreak, works better than a separate linebreak element on handling whitespace
       if (item.linebreak || atX - x >= boxWidth) {
         atX = x;
-        atY += fr.lineHeight * item.scale;
+        atY += scaledLineHeight(fr, lastDrawnScale);
       }
 
       box3W = atX;
-      box3H = (int) (atY + fr.lineHeight * item.scale);
+      box3H = atY + scaledLineHeight(fr, lastDrawnScale);
 
       boolean mouseInside = (mouseX >= box1X && mouseX <= box1W && mouseY >= box1Y && mouseY <= box1H && box1X != box1W && box1Y != box1H)
                             || (mouseX >= box2X && mouseX <= box2W && mouseY >= box2Y && mouseY <= box2H && box2X != box2W && box2Y != box2H)
@@ -171,11 +204,6 @@ public class TextDataRenderer {
         }
       }
 
-      if (atY >= y + boxHeight) {
-        graphics.drawString(fr, "...", atX, atY, 0, item.dropshadow);
-        break;
-      }
-      y = atY;
     }
 
     if (BookScreen.debug && !action.isEmpty()) {
@@ -206,6 +234,11 @@ public class TextDataRenderer {
   }
 
   public static String[] cropStringBySize(String s, String modifiers, int width, int height, int firstWidth, Font fr, float scale) {
+    fr = getFont(fr);
+    if (s.isEmpty() || width <= 0 || height <= 0 || firstWidth <= 0 || scale <= 0) {
+      return new String[0];
+    }
+
     int curWidth = 0;
     int curHeight = (int) (fr.lineHeight * scale);
 
@@ -240,14 +273,46 @@ public class TextDataRenderer {
     return s.split("\r");
   }
 
+  private static int scaledLineHeight(Font fr, float scale) {
+    return Math.max(1, (int)(fr.lineHeight * scale));
+  }
+
+  private static float defaultScale(float scale) {
+    return scale >= 1 ? scale * DEFAULT_TEXT_SCALE : scale;
+  }
+
+  private static float fitScaleToHeight(int lines, int height, Font fr, float scale) {
+    if (lines <= 0 || height <= 0 || scale <= 0) {
+      return scale;
+    }
+    float neededHeight = fr.lineHeight * scale * lines;
+    if (neededHeight <= height) {
+      return scale;
+    }
+    return Math.max(MIN_AUTO_SCALE, height / (float)(fr.lineHeight * lines));
+  }
+
+  private static float fitScaleToWidth(String text, String modifiers, int width, Font fr, float scale) {
+    if (text == null || text.isEmpty() || width <= 0 || scale <= 0) {
+      return scale;
+    }
+    int textWidth = fr.width(modifiers + text);
+    if (textWidth <= 0 || textWidth * scale <= width) {
+      return scale;
+    }
+    return Math.max(MIN_AUTO_SCALE, width / (float)textWidth);
+  }
+
   /** Gets the number of lines needed to render the given text */
   public static int getLinesForString(String s, String modifiers, int width, String prefix, Font fr) {
+    fr = getFont(fr);
     return cropStringBySize(s, modifiers, width, Short.MAX_VALUE, width - fr.width(prefix), fr, 1.0f).length;
   }
 
   //BEGIN METHODS FROM GUI
   //TODO: does this exist elsewhere now?
   public static void drawScaledString(GuiGraphics graphics, Font font, String text, float x, float y, int color, boolean dropShadow, float scale) {
+    font = getFont(font);
     PoseStack poseStack = graphics.pose();
     poseStack.pushPose();
     poseStack.translate(x, y, 0);

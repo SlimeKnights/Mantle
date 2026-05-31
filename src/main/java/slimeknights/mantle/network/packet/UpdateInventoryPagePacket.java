@@ -3,7 +3,7 @@ package slimeknights.mantle.network.packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent.Context;
+import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent.Context;
 import slimeknights.mantle.client.book.BookHelper;
 
 /** Packet to update the page in a book in the players inventory */

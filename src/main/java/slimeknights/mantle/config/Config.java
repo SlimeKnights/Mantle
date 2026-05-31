@@ -1,9 +1,9 @@
 package slimeknights.mantle.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.ModConfigSpec.EnumValue;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.Arrays;
@@ -28,11 +28,11 @@ public class Config {
 	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
 	public static final ConfigValue<List<? extends String>> TAG_PREFERENCES;
 
-	public static final ForgeConfigSpec CLIENT_SPEC, SERVER_SPEC;
+	public static final ModConfigSpec CLIENT_SPEC, SERVER_SPEC;
 
 	static {
-    ForgeConfigSpec.Builder client = new ForgeConfigSpec.Builder();
-    ForgeConfigSpec.Builder server = new ForgeConfigSpec.Builder();
+    ModConfigSpec.Builder client = new ModConfigSpec.Builder();
+    ModConfigSpec.Builder server = new ModConfigSpec.Builder();
 
 		// client options
     HEART_RENDERER = client

@@ -84,7 +84,7 @@ public abstract class GenericDataProvider implements DataProvider {
    * @param object     Object to save, will be converted using the passed codec
    */
   protected <T> CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Codec<T> codec, T object) {
-    return saveJson(output, location, codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error));
+    return saveJson(output, location, codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(IllegalStateException::new));
   }
 
   /** Combines a stream of completable futures into a single completable future */

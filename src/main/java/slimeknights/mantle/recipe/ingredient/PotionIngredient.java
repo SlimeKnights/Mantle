@@ -1,18 +1,21 @@
 package slimeknights.mantle.recipe.ingredient;
 
 import com.google.gson.JsonElement;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.helper.LoadableIngredientSerializer;
 
 import java.util.Arrays;
@@ -25,7 +28,7 @@ public class PotionIngredient extends ItemIngredient {
   /** Ingredient serializer instance */
   public static final LoadableIngredientSerializer<PotionIngredient> SERIALIZER = new LoadableIngredientSerializer<>(RecordLoadable.create(
     ItemsField.INSTANCE, TAG_FIELD,
-    Loadables.POTION.defaultField("potion", Potions.EMPTY, false, i -> i.potion),
+    Loadables.POTION.defaultField("potion", Potions.WATER.value(), false, i -> i.potion),
     PotionIngredient::new
   ));
 
@@ -33,31 +36,36 @@ public class PotionIngredient extends ItemIngredient {
   protected PotionIngredient(List<Item> items, @Nullable TagKey<Item> itemTag, Potion potion) {
     // potion is added in directly to the parent value stream
     super(items, itemTag, Stream.concat(
-      items.stream().map(item -> new ItemValue(PotionUtils.setPotion(new ItemStack(item), potion))),
+      items.stream().map(item -> new ItemValue(setPotion(new ItemStack(item), potion))),
       Stream.ofNullable(itemTag).map(tag -> new PotionTagValue(tag, potion)))
     );
     this.potion = potion;
   }
 
   /** Creates a potion ingredient matching a list of items */
-  public static PotionIngredient of(Potion potion, List<ItemLike> items) {
-    return new PotionIngredient(toItem(items), null, potion);
+  public static Ingredient of(Potion potion, List<ItemLike> items) {
+    return new LegacyIngredient<>(new PotionIngredient(toItem(items), null, potion), MantleRecipes.POTION_INGREDIENT::get).toVanilla();
   }
 
   /** Creates a potion ingredient matching a list of items */
-  public static PotionIngredient of(Potion potion, ItemLike... items) {
+  public static Ingredient of(Potion potion, ItemLike... items) {
     return of(potion, Arrays.asList(items));
   }
 
   /** Creates a potion ingredient matching a tag */
-  public static PotionIngredient of(Potion potion, TagKey<Item> tag) {
-    return new PotionIngredient(List.of(), tag, potion);
+  public static Ingredient of(Potion potion, TagKey<Item> tag) {
+    return new LegacyIngredient<>(new PotionIngredient(List.of(), tag, potion), MantleRecipes.POTION_INGREDIENT::get).toVanilla();
   }
 
   @Override
   public boolean test(@Nullable ItemStack stack) {
     // stack must match, any item must match, and potion must match
-    return stack != null && super.test(stack) && PotionUtils.getPotion(stack) == potion;
+    return stack != null && super.test(stack) && stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().map(holder -> holder.value() == potion).orElse(false);
+  }
+
+  private static ItemStack setPotion(ItemStack stack, Potion potion) {
+    stack.set(DataComponents.POTION_CONTENTS, new PotionContents(BuiltInRegistries.POTION.wrapAsHolder(potion)));
+    return stack;
   }
 
   @Override
@@ -66,7 +74,7 @@ public class PotionIngredient extends ItemIngredient {
   }
 
   @Override
-  public IIngredientSerializer<? extends Ingredient> getSerializer() {
+  public IIngredientSerializer<?> getSerializer() {
     return SERIALIZER;
   }
 
@@ -86,7 +94,7 @@ public class PotionIngredient extends ItemIngredient {
     @Override
     public Collection<ItemStack> getItems() {
       return super.getItems().stream()
-        .map(item -> PotionUtils.setPotion(item, potion))
+        .map(item -> setPotion(item, potion))
         .toList();
     }
   }

@@ -99,7 +99,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
     for (ModuleScreen<?,?> module : this.modules) {
       // set correct state for the module
       poses.pushPose();
-      poses.translate(module.leftPos - this.leftPos, module.topPos - this.topPos, 0.0F);
+      poses.translate(module.getGuiLeft() - this.leftPos, module.getGuiTop() - this.topPos, 0.0F);
       module.handleDrawGuiContainerForegroundLayer(graphics, mouseX, mouseY);
       poses.popPose();
     }
@@ -141,7 +141,6 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 
   @Override
   public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-    this.renderBackground(graphics);
     int oldX = this.leftPos;
     int oldY = this.topPos;
     int oldW = this.imageWidth;
@@ -170,14 +169,14 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   protected void updateSubmodule(ModuleScreen<?,?> module) {
     module.updatePosition(this.cornerX, this.cornerY, this.realWidth, this.realHeight);
 
-    if (module.leftPos < this.leftPos) {
-      this.imageWidth += this.leftPos - module.leftPos;
-      this.leftPos = module.leftPos;
+    if (module.getGuiLeft() < this.leftPos) {
+      this.imageWidth += this.leftPos - module.getGuiLeft();
+      this.leftPos = module.getGuiLeft();
     }
 
-    if (module.topPos < this.topPos) {
-      this.imageHeight += this.topPos - module.topPos;
-      this.topPos = module.topPos;
+    if (module.getGuiTop() < this.topPos) {
+      this.imageHeight += this.topPos - module.getGuiTop();
+      this.topPos = module.getGuiTop();
     }
 
     if (module.guiRight() > this.leftPos + this.imageWidth) {
@@ -193,6 +192,10 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   public void renderSlot(GuiGraphics graphics, Slot slotIn) {
     ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.index);
 
+    if (slotIn instanceof WrapperSlot wrapper) {
+      wrapper.syncPosition();
+    }
+
     if (module != null) {
       Slot slot = slotIn;
       // unwrap for the call to the module
@@ -205,18 +208,15 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
       }
     }
 
-    // update slot positions
-    if (slotIn instanceof WrapperSlot) {
-      slotIn.x = ((WrapperSlot) slotIn).parent.x;
-      slotIn.y = ((WrapperSlot) slotIn).parent.y;
-    }
-
     super.renderSlot(graphics, slotIn);
   }
 
-  @Override
-  public boolean isHovering(Slot slotIn, double mouseX, double mouseY) {
+  public boolean isSlotHovered(Slot slotIn, double mouseX, double mouseY) {
     ModuleScreen<?,?> module = this.getModuleForSlot(slotIn.index);
+
+    if (slotIn instanceof WrapperSlot wrapper) {
+      wrapper.syncPosition();
+    }
 
     // mouse inside the module of the slot?
     if (module != null) {
@@ -231,7 +231,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
       }
     }
 
-    return super.isHovering(slotIn, mouseX, mouseY);
+    return this.isHovering(slotIn.x, slotIn.y, 16, 16, mouseX, mouseY);
   }
 
   @Override
@@ -261,16 +261,24 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   }
 
   @Override
-  public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
     ModuleScreen<?,?> module = this.getModuleForPoint(mouseX, mouseY);
 
     if (module != null) {
-      if (module.handleMouseScrolled(mouseX, mouseY, delta)) {
+      if (module.handleMouseScrolled(mouseX, mouseY, scrollY)) {
         return false;
       }
     }
 
-    return super.mouseScrolled(mouseX, mouseY, delta);
+    return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+  }
+
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollY) {
+    return this.mouseScrolled(mouseX, mouseY, 0, scrollY);
+  }
+
+  public boolean isHovering(Slot slotIn, double mouseX, double mouseY) {
+    return this.isHovering(slotIn.x, slotIn.y, 16, 16, mouseX, mouseY);
   }
 
   @Override
@@ -289,7 +297,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   @Nullable
   protected ModuleScreen<?,?> getModuleForPoint(double x, double y) {
     for (ModuleScreen<?,?> module : this.modules) {
-      if (this.isHovering(module.leftPos, module.topPos, module.guiRight(), module.guiBottom(), x + this.cornerX, y + this.cornerY)) {
+      if (this.isHovering(module.getGuiLeft(), module.getGuiTop(), module.guiRight(), module.guiBottom(), x + this.cornerX, y + this.cornerY)) {
         return module;
       }
     }

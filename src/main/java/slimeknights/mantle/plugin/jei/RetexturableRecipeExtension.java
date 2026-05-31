@@ -59,7 +59,7 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
       return false;
     }
     for (int i = 0; i < leftStacks.length; i++) {
-      if (!ItemStack.isSameItemSameTags(leftStacks[i], rightStacks[i])) {
+      if (!ItemStack.isSameItemSameComponents(leftStacks[i], rightStacks[i])) {
         return false;
       }
     }
@@ -68,17 +68,17 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
 
   @Override
   public ResourceLocation getRegistryName() {
-    return this.recipe.getId();
+    return this.recipe.getRecipeId();
   }
 
   @Override
   public int getWidth() {
-    return recipe.getRecipeWidth();
+    return recipe.getWidth();
   }
 
   @Override
   public int getHeight() {
-    return recipe.getRecipeHeight();
+    return recipe.getHeight();
   }
 
   @Override
@@ -94,7 +94,7 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension {
     List<IRecipeSlotBuilder> inputs = craftingGridHelper.createAndSetInputs(builder, VanillaTypes.ITEM_STACK, inputStacks, recipe.getWidth(), recipe.getHeight());
     IRecipeSlotBuilder output = craftingGridHelper.createAndSetOutputs(builder, displayOutputs);
     if (inputs.size() != 9) {
-      Mantle.logger.error("Failed to create focus link for {} as the layout {} is not 3x3", recipe.getId(), builder.getClass().getName());
+      Mantle.logger.error("Failed to create focus link for {} as the layout {} is not 3x3", recipe.getRecipeId(), builder.getClass().getName());
     } else {
       // link the output to all inputs that match the texture
       builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(textureSlots).mapToObj(i -> inputs.get(MantleJEIConstants.getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));

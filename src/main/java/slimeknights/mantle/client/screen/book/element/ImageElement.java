@@ -78,6 +78,9 @@ public class ImageElement extends SizedBookElement {
 
     if (this.image.item == null) {
       ResourceLocation texture = requireNonNullElse(this.image.location, TextureManager.INTENTIONAL_MISSING_TEXTURE);
+      if ("minecraft".equals(texture.getNamespace()) && "empty".equals(texture.getPath())) {
+        return;
+      }
       graphics.blit(texture, this.x, this.y, this.width, this.height, this.image.u, this.image.v, this.image.uw, this.image.vh, this.image.texWidth, this.image.texHeight);
     }
     else {

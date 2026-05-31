@@ -32,7 +32,7 @@ public class FileRepository extends BookRepository {
   @Override
   public ResourceLocation getResourceLocation(@Nullable String path, boolean safe) {
     if (path == null) {
-      return safe ? new ResourceLocation("") : null;
+      return safe ? ResourceLocation.withDefaultNamespace("empty") : null;
     }
 
     if (!path.contains(":")) {
@@ -50,27 +50,27 @@ public class FileRepository extends BookRepository {
       // TODO: this can be optimized if we return the resource instead of the location, how feasible is that in practice?
       //noinspection ConstantConditions - see above
       if (langPath != null) {
-        res = new ResourceLocation(this.location + "/" + langPath + "/" + path);
+        res = ResourceLocation.parse(this.location + "/" + langPath + "/" + path);
         if (this.resourceExists(res)) {
           return res;
         }
       }
-      res = new ResourceLocation(this.location + "/" + defaultLangPath + "/" + path);
+      res = ResourceLocation.parse(this.location + "/" + defaultLangPath + "/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
-      res = new ResourceLocation(this.location + "/" + path);
+      res = ResourceLocation.parse(this.location + "/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
     } else {
-      ResourceLocation res = new ResourceLocation(path);
-      if (this.resourceExists(res)) {
+      ResourceLocation res = ResourceLocation.tryParse(path);
+      if (res != null && this.resourceExists(res)) {
         return res;
       }
     }
 
-    return safe ? new ResourceLocation("") : null;
+    return safe ? ResourceLocation.withDefaultNamespace("empty") : null;
   }
 
   @Override

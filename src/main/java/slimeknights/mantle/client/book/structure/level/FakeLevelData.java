@@ -3,6 +3,7 @@
 package slimeknights.mantle.client.book.structure.level;
 
 import net.minecraft.world.Difficulty;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.WritableLevelData;
 
@@ -10,44 +11,18 @@ public class FakeLevelData implements WritableLevelData {
 
   private static final GameRules RULES = new GameRules();
 
-  private int spawnX;
-  private int spawnY;
-  private int spawnZ;
+  private BlockPos spawn = BlockPos.ZERO;
   private float spawnAngle;
 
   @Override
-  public void setXSpawn(int x) {
-    this.spawnX = x;
+  public void setSpawn(BlockPos spawnPoint, float spawnAngle) {
+    this.spawn = spawnPoint;
+    this.spawnAngle = spawnAngle;
   }
 
   @Override
-  public void setYSpawn(int y) {
-    this.spawnY = y;
-  }
-
-  @Override
-  public void setZSpawn(int z) {
-    this.spawnZ = z;
-  }
-
-  @Override
-  public void setSpawnAngle(float angle) {
-    this.spawnAngle = angle;
-  }
-
-  @Override
-  public int getXSpawn() {
-    return this.spawnX;
-  }
-
-  @Override
-  public int getYSpawn() {
-    return this.spawnY;
-  }
-
-  @Override
-  public int getZSpawn() {
-    return this.spawnZ;
+  public BlockPos getSpawnPos() {
+    return this.spawn;
   }
 
   @Override

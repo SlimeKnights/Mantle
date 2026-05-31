@@ -2,13 +2,13 @@ package slimeknights.mantle.client.screen.book;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.renderer.GameRenderer;
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class BookScreen extends Screen {
@@ -115,8 +114,7 @@ public class BookScreen extends Screen {
   /** Gets the alt Minecraft font */
   public static Font getAltFont() {
     if (altFont == null) {
-      FontManager resourceManager = Minecraft.getInstance().fontManager;
-      altFont = new Font(rl -> resourceManager.fontSets.get(Minecraft.ALT_FONT), false);
+      altFont = Minecraft.getInstance().font;
     }
     return altFont;
   }
@@ -124,19 +122,13 @@ public class BookScreen extends Screen {
   /** Gets the uniform version of the Minecraft font */
   public static Font getUniformFont() {
     if (uniformFont == null) {
-      FontManager resourceManager = Minecraft.getInstance().fontManager;
-      uniformFont = new Font(rl -> resourceManager.fontSets.get(Minecraft.UNIFORM_FONT), false);
+      uniformFont = Minecraft.getInstance().font;
     }
     return uniformFont;
   }
 
   public Font getFontRenderer() {
-    Font fontRenderer = this.book.fontRenderer;
-    if (fontRenderer == null) {
-      fontRenderer = Objects.requireNonNull(this.minecraft).font;
-    }
-
-    return fontRenderer;
+    return this.book.getFontRenderer();
   }
 
   private Vector3f splitRGB(int color) {
@@ -251,7 +243,9 @@ public class BookScreen extends Screen {
       }
     }
 
-    super.render(graphics, mouseX, mouseY, partialTicks);
+    for (var renderable : this.renderables) {
+      renderable.render(graphics, mouseX, mouseY, partialTicks);
+    }
   }
 
   private boolean shouldRenderPage(int pageNum, boolean rightSide) {
@@ -467,16 +461,16 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public boolean mouseScrolled(double unKnown1, double unKnown2, double scrollDelta) {
-    if (scrollDelta < 0.0D) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    if (scrollY < 0.0D) {
       nextPage();
       return true;
-    } else if (scrollDelta > 0.0D) {
+    } else if (scrollY > 0.0D) {
       previousPage();
       return true;
     }
 
-    return super.mouseScrolled(scrollDelta, unKnown1, unKnown2);
+    return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
   }
 
   @Override
@@ -792,8 +786,8 @@ public class BookScreen extends Screen {
 
   public static class AdvancementCache implements ClientAdvancements.Listener {
 
-    private final HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
-    private final HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
+    private final HashMap<AdvancementHolder, AdvancementProgress> progress = new HashMap<>();
+    private final HashMap<ResourceLocation, AdvancementHolder> nameCache = new HashMap<>();
 
     @Nullable
     public AdvancementProgress getProgress(String id) {
@@ -801,44 +795,44 @@ public class BookScreen extends Screen {
     }
 
     @Nullable
-    public AdvancementProgress getProgress(Advancement advancement) {
+    public AdvancementProgress getProgress(@Nullable AdvancementHolder advancement) {
       return this.progress.get(advancement);
     }
 
-    public Advancement getAdvancement(String id) {
-      return this.nameCache.get(new ResourceLocation(id));
+    public AdvancementHolder getAdvancement(String id) {
+      return this.nameCache.get(ResourceLocation.parse(id));
     }
 
     @Override
-    public void onUpdateAdvancementProgress(Advancement advancement, AdvancementProgress advancementProgress) {
-      this.progress.put(advancement, advancementProgress);
+    public void onUpdateAdvancementProgress(AdvancementNode advancement, AdvancementProgress advancementProgress) {
+      this.progress.put(advancement.holder(), advancementProgress);
     }
 
     @Override
-    public void onSelectedTabChanged(@Nullable Advancement advancement) {
+    public void onSelectedTabChanged(@Nullable AdvancementHolder advancement) {
       // noop
     }
 
     @Override
-    public void onAddAdvancementRoot(Advancement advancement) {
-      this.nameCache.put(advancement.getId(), advancement);
+    public void onAddAdvancementRoot(AdvancementNode advancement) {
+      this.nameCache.put(advancement.holder().id(), advancement.holder());
     }
 
     @Override
-    public void onRemoveAdvancementRoot(Advancement advancement) {
-      this.progress.remove(advancement);
-      this.nameCache.remove(advancement.getId());
+    public void onRemoveAdvancementRoot(AdvancementNode advancement) {
+      this.progress.remove(advancement.holder());
+      this.nameCache.remove(advancement.holder().id());
     }
 
     @Override
-    public void onAddAdvancementTask(Advancement advancement) {
-      this.nameCache.put(advancement.getId(), advancement);
+    public void onAddAdvancementTask(AdvancementNode advancement) {
+      this.nameCache.put(advancement.holder().id(), advancement.holder());
     }
 
     @Override
-    public void onRemoveAdvancementTask(Advancement advancement) {
-      this.progress.remove(advancement);
-      this.nameCache.remove(advancement.getId());
+    public void onRemoveAdvancementTask(AdvancementNode advancement) {
+      this.progress.remove(advancement.holder());
+      this.nameCache.remove(advancement.holder().id());
     }
 
     @Override

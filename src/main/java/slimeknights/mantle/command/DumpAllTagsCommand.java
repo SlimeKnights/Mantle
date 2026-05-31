@@ -41,7 +41,7 @@ public class DumpAllTagsCommand {
 
   /** Gets the path for the output */
   protected static File getOutputFile(CommandContext<CommandSourceStack> context) {
-    return context.getSource().getServer().getFile(TAG_DUMP_PATH);
+    return context.getSource().getServer().getFile(TAG_DUMP_PATH).toFile();
   }
 
   /** @deprecated use {@link GeneratePackHelper#getOutputComponent(File)} */
