@@ -1,0 +1,16 @@
+{
+  "values": [
+    {
+      "id": "#forge:beetroot_soup",
+      "required": false
+    },
+    {
+      "id": "#forge:mushroom_stew",
+      "required": false
+    },
+    {
+      "id": "#forge:rabbit_stew",
+      "required": false
+    }
+  ]
+}

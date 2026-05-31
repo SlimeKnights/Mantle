@@ -1,0 +1,64 @@
+package slimeknights.mantle.recipe.data;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.neoforged.neoforge.common.conditions.ICondition;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.function.Consumer;
+
+/** Bridges vanilla 1.21 recipe output back to Mantle's legacy finished recipe helpers. */
+public record VanillaFinishedRecipe(ResourceLocation getId, Recipe<?> recipe, @Nullable AdvancementHolder advancement) implements FinishedRecipe {
+  /** Creates a recipe output that forwards recipes to a legacy consumer. */
+  public static RecipeOutput output(Consumer<FinishedRecipe> consumer) {
+    return new RecipeOutput() {
+      @Override
+      public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+        consumer.accept(new VanillaFinishedRecipe(id, recipe, advancement));
+      }
+
+      @Override
+      public Advancement.Builder advancement() {
+        return Advancement.Builder.recipeAdvancement();
+      }
+    };
+  }
+
+  @Override
+  public void serializeRecipeData(JsonObject json) {
+    JsonObject encoded = Recipe.CODEC.encodeStart(JsonOps.INSTANCE, recipe).getOrThrow(JsonSyntaxException::new).getAsJsonObject();
+    encoded.remove("type");
+    for (Map.Entry<String,com.google.gson.JsonElement> entry : encoded.entrySet()) {
+      json.add(entry.getKey(), entry.getValue());
+    }
+  }
+
+  @Override
+  public RecipeSerializer<?> getType() {
+    return recipe.getSerializer();
+  }
+
+  @Nullable
+  @Override
+  public JsonObject serializeAdvancement() {
+    if (advancement == null) {
+      return null;
+    }
+    return Advancement.CODEC.encodeStart(JsonOps.INSTANCE, advancement.value()).getOrThrow(JsonSyntaxException::new).getAsJsonObject();
+  }
+
+  @Nullable
+  @Override
+  public ResourceLocation getAdvancementId() {
+    return advancement == null ? null : advancement.id();
+  }
+}
