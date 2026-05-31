@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.network.packet.IThreadsafePacket;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class FluidContainerTransferPacket implements IThreadsafePacket {
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
+  public void handleThreadsafe(IPayloadContext context) {
     FluidContainerTransferManager.INSTANCE.setContainerItems(items);
   }
 }

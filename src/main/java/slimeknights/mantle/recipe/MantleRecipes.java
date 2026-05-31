@@ -16,7 +16,6 @@ import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.ingredient.FluidContainerIngredient;
-import slimeknights.mantle.recipe.ingredient.LegacyIngredient;
 import slimeknights.mantle.recipe.ingredient.PotionDisplayIngredient;
 import slimeknights.mantle.recipe.ingredient.PotionIngredient;
 
@@ -43,7 +42,7 @@ public class MantleRecipes {
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<CampfireResultRecipe>> CAMPFIRE = RECIPES.register("campfire", () -> LoadableRecipeSerializer.of(CampfireResultRecipe.LOADABLE));
 
   // ingredients
-  public static final DeferredHolder<IngredientType<?>,IngredientType<LegacyIngredient<PotionIngredient>>> POTION_INGREDIENT = INGREDIENT_TYPES.register("potion", () -> LegacyIngredient.type(PotionIngredient.SERIALIZER, () -> NeoForgeRegistries.INGREDIENT_TYPES.get(Mantle.getResource("potion"))));
-  public static final DeferredHolder<IngredientType<?>,IngredientType<LegacyIngredient<PotionDisplayIngredient>>> POTION_DISPLAY_INGREDIENT = INGREDIENT_TYPES.register("potion_display", () -> LegacyIngredient.type(PotionDisplayIngredient.SERIALIZER, () -> NeoForgeRegistries.INGREDIENT_TYPES.get(Mantle.getResource("potion_display"))));
-  public static final DeferredHolder<IngredientType<?>,IngredientType<LegacyIngredient<FluidContainerIngredient>>> FLUID_CONTAINER_INGREDIENT = INGREDIENT_TYPES.register("fluid_container", () -> LegacyIngredient.type(FluidContainerIngredient.SERIALIZER, () -> NeoForgeRegistries.INGREDIENT_TYPES.get(Mantle.getResource("fluid_container"))));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<PotionIngredient>> POTION_INGREDIENT = INGREDIENT_TYPES.register("potion", () -> new IngredientType<>(PotionIngredient.SERIALIZER.codec(), PotionIngredient.SERIALIZER.streamCodec()));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<PotionDisplayIngredient>> POTION_DISPLAY_INGREDIENT = INGREDIENT_TYPES.register("potion_display", () -> new IngredientType<>(PotionDisplayIngredient.SERIALIZER.codec(), PotionDisplayIngredient.SERIALIZER.streamCodec()));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<FluidContainerIngredient>> FLUID_CONTAINER_INGREDIENT = INGREDIENT_TYPES.register("fluid_container", () -> new IngredientType<>(FluidContainerIngredient.SERIALIZER.codec(), FluidContainerIngredient.SERIALIZER.streamCodec()));
 }

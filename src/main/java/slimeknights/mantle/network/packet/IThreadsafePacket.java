@@ -1,18 +1,14 @@
 package slimeknights.mantle.network.packet;
 
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
- * Packet instance that automatically wraps the logic in {@link NetworkEvent.Context#enqueueWork(Runnable)} for thread safety
+ * Packet instance that automatically wraps the logic in {@link IPayloadContext#enqueueWork(Runnable)} for thread safety
  */
 public interface IThreadsafePacket extends ISimplePacket {
   @Override
-  default void handle(Supplier<NetworkEvent.Context> supplier) {
-    NetworkEvent.Context context = supplier.get();
+  default void handle(IPayloadContext context) {
     context.enqueueWork(() -> handleThreadsafe(context));
-    context.setPacketHandled(true);
   }
 
   /**
@@ -20,5 +16,5 @@ public interface IThreadsafePacket extends ISimplePacket {
    * Packet is automatically set to handled as well by the base logic
    * @param context  Packet context
    */
-  void handleThreadsafe(NetworkEvent.Context context);
+  void handleThreadsafe(IPayloadContext context);
 }

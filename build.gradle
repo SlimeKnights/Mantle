@@ -143,8 +143,6 @@ tasks.named('processResources', ProcessResources).configure {
 }
 
 tasks.named('jar', Jar).configure {
-    exclude 'net/**'
-
     manifest {
         attributes([
                 "Specification-Title"     : "Mantle",

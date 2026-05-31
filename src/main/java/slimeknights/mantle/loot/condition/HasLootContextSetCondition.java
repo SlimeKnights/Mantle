@@ -50,13 +50,11 @@ public record HasLootContextSetCondition(LootContextParamSet set) implements Loo
   }
 
   /** Serializer logic */
-  public static class Serializer implements slimeknights.mantle.compat.minecraft.world.level.storage.loot.Serializer<HasLootContextSetCondition> {
-    @Override
+  public static class Serializer {
     public void serialize(JsonObject json, HasLootContextSetCondition value, JsonSerializationContext context) {
       json.add("set", LootContextParamSets.CODEC.encodeStart(JsonOps.INSTANCE, value.set).getOrThrow(JsonSyntaxException::new));
     }
 
-    @Override
     public HasLootContextSetCondition deserialize(JsonObject json, JsonDeserializationContext context) {
       return new HasLootContextSetCondition(LootContextParamSets.CODEC.parse(JsonOps.INSTANCE, json.get("set")).getOrThrow(JsonSyntaxException::new));
     }

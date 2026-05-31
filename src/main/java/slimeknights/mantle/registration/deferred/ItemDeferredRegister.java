@@ -25,7 +25,7 @@ public class ItemDeferredRegister extends DeferredRegisterWrapper<Item> {
    * @return  Item registry object
    */
   public <I extends Item> ItemObject<I> register(String name, Supplier<? extends I> sup) {
-    return new ItemObject<>(register.register(name, sup));
+    return new ItemObject<I>(register.register(name, sup));
   }
 
   /**

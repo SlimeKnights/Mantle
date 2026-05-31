@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.util.BlockEntityHelper;
 
@@ -30,8 +30,8 @@ public class UpdateLecternPagePacket implements IThreadsafePacket {
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
-    Player player = context.getSender();
+  public void handleThreadsafe(IPayloadContext context) {
+    Player player = context.player();
     if (player != null && this.page != null) {
       Level world = player.getCommandSenderWorld();
       BlockEntityHelper.get(LecternBlockEntity.class, world, this.pos).ifPresent(te -> {

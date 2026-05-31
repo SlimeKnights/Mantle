@@ -3,7 +3,7 @@ package slimeknights.mantle.network.packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.client.book.BookHelper;
 
 /** Packet to update the page in a book in the players inventory */
@@ -19,8 +19,8 @@ public record UpdateInventoryPagePacket(int slot, String page) implements IThrea
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
-    Player player = context.getSender();
+  public void handleThreadsafe(IPayloadContext context) {
+    Player player = context.player();
     if (player != null && this.page != null && slot >= 0) {
       ItemStack stack = player.getInventory().getItem(slot);
       if (!stack.isEmpty()) {

@@ -2,7 +2,7 @@ package slimeknights.mantle.recipe.crafting;
 
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
-import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
+import slimeknights.mantle.recipe.data.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;

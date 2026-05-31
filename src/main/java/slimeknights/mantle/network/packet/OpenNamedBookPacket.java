@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.command.client.BookCommand;
@@ -23,7 +23,7 @@ public class OpenNamedBookPacket implements IThreadsafePacket {
   }
 
   @Override
-  public void handleThreadsafe(NetworkEvent.Context context) {
+  public void handleThreadsafe(IPayloadContext context) {
     BookData bookData = BookLoader.getBook(book);
     if(bookData != null) {
       bookData.openGui(Component.literal("Book"), "", null, null);

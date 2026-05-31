@@ -10,7 +10,6 @@ import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -149,9 +148,6 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   protected class LoadableFinishedRecipe<R extends Recipe<?>> extends AbstractFinishedRecipe {
     private final R recipe;
     private final RecordLoadable<R> loadable;
-    public LoadableFinishedRecipe(R recipe, RecordLoadable<R> loadable, @Nullable ResourceLocation advancementId) {
-      this(getRecipeId(recipe), recipe, loadable, advancementId);
-    }
 
     public LoadableFinishedRecipe(ResourceLocation id, R recipe, RecordLoadable<R> loadable, @Nullable ResourceLocation advancementId) {
       super(id, advancementId);
@@ -168,15 +164,6 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
     @Override
     public RecipeSerializer<?> getType() {
       return recipe.getSerializer();
-    }
-  }
-
-  /** Gets the recipe ID from legacy recipe classes. */
-  private static ResourceLocation getRecipeId(Recipe<?> recipe) {
-    try {
-      return (ResourceLocation)recipe.getClass().getMethod("getId").invoke(recipe);
-    } catch (ReflectiveOperationException e) {
-      throw new IllegalStateException("Recipe " + recipe.getClass().getName() + " does not expose getId()", e);
     }
   }
 }

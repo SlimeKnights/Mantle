@@ -1,6 +1,5 @@
 package slimeknights.mantle.recipe.ingredient;
 
-import com.google.gson.JsonElement;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
@@ -11,7 +10,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.helper.LoadableIngredientSerializer;
@@ -19,14 +18,13 @@ import slimeknights.mantle.recipe.helper.LoadableIngredientSerializer;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /** Ingredient that shows all potion variants on the displayed item list */
 public class PotionDisplayIngredient extends ItemIngredient {
   /** Ingredient serializer instance */
   public static final LoadableIngredientSerializer<PotionDisplayIngredient> SERIALIZER = new LoadableIngredientSerializer<>(RecordLoadable.create(ItemsField.INSTANCE, TAG_FIELD, PotionDisplayIngredient::new));
 
-  /** last return of {@link Ingredient#getItems()} */
-  private ItemStack[] lastParentStacks = null;
   /** cache for {@link #getItems()} */
   private ItemStack[] displayStacks = null;
 
@@ -36,7 +34,7 @@ public class PotionDisplayIngredient extends ItemIngredient {
 
   /** Creates a ingredient matching a list of items */
   public static Ingredient of(List<ItemLike> items) {
-    return new LegacyIngredient<>(new PotionDisplayIngredient(toItem(items), null), MantleRecipes.POTION_DISPLAY_INGREDIENT::get).toVanilla();
+    return new PotionDisplayIngredient(toItem(items), null).toVanilla();
   }
 
   /** Creates a ingredient matching a list of items */
@@ -46,7 +44,7 @@ public class PotionDisplayIngredient extends ItemIngredient {
 
   /** Creates a ingredient matching a tag */
   public static Ingredient of(TagKey<Item> tag) {
-    return new LegacyIngredient<>(new PotionDisplayIngredient(List.of(), tag), MantleRecipes.POTION_DISPLAY_INGREDIENT::get).toVanilla();
+    return new PotionDisplayIngredient(List.of(), tag).toVanilla();
   }
 
   @Override
@@ -55,17 +53,16 @@ public class PotionDisplayIngredient extends ItemIngredient {
   }
 
   @Override
-  public ItemStack[] getItems() {
+  public Stream<ItemStack> getItems() {
     // if empty, means we want wildcard, show all potions on the stack
-    ItemStack[] parentStacks = super.getItems();
-    if (lastParentStacks != parentStacks) {
-      lastParentStacks = parentStacks;
+    if (displayStacks == null) {
+      ItemStack[] parentStacks = super.getItems().toArray(ItemStack[]::new);
       displayStacks = BuiltInRegistries.POTION.stream()
         .filter(pot -> pot != Potions.WATER.value())
         .flatMap(pot -> Arrays.stream(parentStacks).map(item -> setPotion(item.copy(), pot)))
         .toArray(ItemStack[]::new);
     }
-    return displayStacks;
+    return Arrays.stream(displayStacks);
   }
 
   private static ItemStack setPotion(ItemStack stack, Potion potion) {
@@ -74,12 +71,7 @@ public class PotionDisplayIngredient extends ItemIngredient {
   }
 
   @Override
-  public IIngredientSerializer<?> getSerializer() {
-    return SERIALIZER;
-  }
-
-  @Override
-  public JsonElement toJson() {
-    return SERIALIZER.serialize(this);
+  public IngredientType<?> getType() {
+    return MantleRecipes.POTION_DISPLAY_INGREDIENT.get();
   }
 }

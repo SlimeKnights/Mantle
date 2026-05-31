@@ -11,13 +11,14 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import slimeknights.mantle.compat.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -120,7 +121,7 @@ public class BookCommand {
    * @param context  Command context
    * @return  Integer return
    */
-  private static int exportImages(CommandContext<CommandSourceStack> context, int scale) {
+  private static int exportImages(CommandContext<CommandSourceStack> context, int scale) throws CommandSyntaxException {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
     return doExport(book, scale, false, DEFAULT_BOOK_VERSION);
   }
@@ -130,7 +131,7 @@ public class BookCommand {
    * @param context  Command context
    * @return  Integer return
    */
-  private static int exportDomainImages(CommandContext<CommandSourceStack> context, int scale) {
+  private static int exportDomainImages(CommandContext<CommandSourceStack> context, int scale) throws CommandSyntaxException {
     String domain = StringArgumentType.getString(context, "domain");
     for (ResourceLocation book : BookLoader.getAllBooks()) {
       if (domain.equals(book.getNamespace())) {
@@ -146,7 +147,7 @@ public class BookCommand {
    * @param context Command context
    * @return Integer return
    */
-  private static int exportHTML(CommandContext<CommandSourceStack> context, String version) {
+  private static int exportHTML(CommandContext<CommandSourceStack> context, String version) throws CommandSyntaxException {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
     return doExport(book, 2, true, version);
   }
@@ -156,7 +157,7 @@ public class BookCommand {
    * @param context Command context
    * @return Integer return
    */
-  private static int exportDomainHtml(CommandContext<CommandSourceStack> context, String version) {
+  private static int exportDomainHtml(CommandContext<CommandSourceStack> context, String version) throws CommandSyntaxException {
     String domain = StringArgumentType.getString(context, "domain");
     for (ResourceLocation book : BookLoader.getAllBooks()) {
       if (domain.equals(book.getNamespace())) {
@@ -175,7 +176,7 @@ public class BookCommand {
    * @param version  version in each files header
    * @return  Integer return
    */
-  private static int doExport(ResourceLocation book, int scale, boolean html, String version) {
+  private static int doExport(ResourceLocation book, int scale, boolean html, String version) throws CommandSyntaxException {
     BookData bookData = BookLoader.getBook(book);
 
     Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
@@ -186,10 +187,10 @@ public class BookCommand {
     if (bookData != null) {
       // ensure outputs exist
       if (!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO, screenshotDir));
+        throw commandException(Component.translatable(EXPORT_FAIL_IO, screenshotDir));
       }
       if (htmlDir != null && !htmlDir.toFile().mkdirs() && !htmlDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO, htmlDir));
+        throw commandException(Component.translatable(EXPORT_FAIL_IO, htmlDir));
       }
 
       int width = BookScreen.PAGE_WIDTH_UNSCALED * 2 * scale;
@@ -268,14 +269,14 @@ public class BookCommand {
                 scaled.writeToFile(path);
               } catch (Exception e) {
                 Mantle.logger.error("Failed to save screenshot", e);
-                throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+                throw commandException(Component.translatable(EXPORT_FAIL));
               }
             } else {
               image.writeToFile(path);
             }
           } catch (Exception e) {
             Mantle.logger.error("Failed to save screenshot", e);
-            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+            throw commandException(Component.translatable(EXPORT_FAIL));
           }
 
           if (html) {
@@ -284,7 +285,7 @@ public class BookCommand {
               writer.write(page < 0 ? screen.coverToHtml(bookKey, exportTitle, VERSION_FULL, modName) : screen.pageToHtml(bookKey, exportTitle, VERSION_FULL, modName));
             } catch (IOException e) {
               Mantle.logger.error("Failed to export HTML", e);
-              throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+              throw commandException(Component.translatable(EXPORT_FAIL));
             }
           }
         } while (screen.nextPage());
@@ -296,7 +297,7 @@ public class BookCommand {
             writer.write(galleryHtml(bookKey, exportTitle, modName));
           } catch (IOException e) {
             Mantle.logger.error("Failed to export HTML", e);
-            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+            throw commandException(Component.translatable(EXPORT_FAIL));
           }
         }
       } finally {
@@ -313,6 +314,11 @@ public class BookCommand {
 
     sendFileMessage(screenshotDir, htmlDir);
     return 0;
+  }
+
+  /** Creates a command failure from a localized component. */
+  private static CommandSyntaxException commandException(Component message) {
+    return new SimpleCommandExceptionType(message).create();
   }
 
 

@@ -2,7 +2,6 @@ package slimeknights.mantle.util;
 
 import java.util.List;
 import java.util.Optional;
-import slimeknights.mantle.compat.neoforged.neoforge.common.util.LazyOptional;
 
 public class LogicHelper {
   private LogicHelper() {}
@@ -38,11 +37,6 @@ public class LogicHelper {
 
   /** Gets the value from an optional, or null if it is empty. */
   public static <T> T orElseNull(Optional<T> optional) {
-    return optional.orElse(null);
-  }
-
-  /** Gets the value from a lazy optional, or null if it is empty. */
-  public static <T> T orElseNull(LazyOptional<T> optional) {
     return optional.orElse(null);
   }
 

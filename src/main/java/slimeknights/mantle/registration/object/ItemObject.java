@@ -6,7 +6,7 @@ import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.compat.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.util.RegistryHelper;
 
 import javax.annotation.Nullable;
@@ -36,10 +36,10 @@ public class ItemObject<I extends ItemLike> implements Supplier<I>, ItemLike, Id
   }
 
   /**
-   * Creates a new item object using the given registry object. This variant can resolve its name before the registry object entry resolves
+   * Creates a new item object using the given registry holder. This variant can resolve its name before the registry holder entry resolves
    * @param object  Object base
    */
-  public ItemObject(RegistryObject<? extends I> object) {
+  public ItemObject(DeferredHolder<? super I, ? extends I> object) {
     this.entry = object;
     this.id = object.getId();
   }
@@ -72,7 +72,7 @@ public class ItemObject<I extends ItemLike> implements Supplier<I>, ItemLike, Id
     try {
       return entry.get();
     } catch (NullPointerException e) {
-      // thrown by RegistryObject if missing value
+      // thrown by DeferredHolder if missing value
       return null;
     }
   }

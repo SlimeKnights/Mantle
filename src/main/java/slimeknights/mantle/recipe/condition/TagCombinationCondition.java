@@ -13,7 +13,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import slimeknights.mantle.compat.neoforged.neoforge.common.conditions.IConditionSerializer;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -118,15 +117,15 @@ public record TagCombinationCondition<T>(List<TagKey<T>> match, @Nullable TagKey
     return false;
   }
 
-  public static final IConditionSerializer<TagCombinationCondition<?>> SERIALIZER = new IConditionSerializer<>() {
+  public static final Serializer SERIALIZER = new Serializer();
+
+  public static class Serializer {
     private static final Loadable<List<ResourceLocation>> MATCH = Loadables.RESOURCE_LOCATION.list(ArrayLoadable.COMPACT);
 
-    @Override
     public ResourceLocation getID() {
       return ID;
     }
 
-    @Override
     public void write(JsonObject json, TagCombinationCondition<?> value) {
       // save some space in JSON by not setting registry if item (most common)
       ResourceKey<?> registry = value.match.get(0).registry();
@@ -148,7 +147,6 @@ public record TagCombinationCondition<T>(List<TagKey<T>> match, @Nullable TagKey
       }
     }
 
-    @Override
     public TagCombinationCondition<?> read(JsonObject json) {
       // default to item registry if registry is unset
       ResourceKey<Registry<Object>> registry = ResourceKey.createRegistryKey(JsonHelper.getResourceLocation(json, "registry", Registries.ITEM.location()));
@@ -156,5 +154,5 @@ public record TagCombinationCondition<T>(List<TagKey<T>> match, @Nullable TagKey
         MATCH.getIfPresent(json, "match").stream().map(id -> TagKey.create(registry, id)).toList(),
         json.has("ignore") ? TagKey.create(registry, JsonHelper.getResourceLocation(json, "ignore")) : null);
     }
-  };
+  }
 }

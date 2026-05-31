@@ -14,7 +14,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
-import slimeknights.mantle.compat.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -62,8 +61,7 @@ public class BlockTagLootCondition implements LootItemCondition {
     return MantleLoot.BLOCK_TAG_CONDITION;
   }
 
-  private static class SerializerImpl implements Serializer<BlockTagLootCondition> {
-    @Override
+  private static class SerializerImpl {
     public void serialize(JsonObject json, BlockTagLootCondition loot, JsonSerializationContext context) {
       json.addProperty("tag", loot.tag.location().toString());
       if (!loot.properties.properties().isEmpty()) {
@@ -71,7 +69,6 @@ public class BlockTagLootCondition implements LootItemCondition {
       }
     }
 
-    @Override
     public BlockTagLootCondition deserialize(JsonObject json, JsonDeserializationContext context) {
       TagKey<Block> tag = TagKey.create(Registries.BLOCK, JsonHelper.getResourceLocation(json, "tag"));
       StatePropertiesPredicate predicate = ANY;

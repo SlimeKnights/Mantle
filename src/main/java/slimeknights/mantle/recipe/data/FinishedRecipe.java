@@ -1,15 +1,14 @@
-package slimeknights.mantle.compat.minecraft.data.recipes;
+package slimeknights.mantle.recipe.data;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
-/** Compatibility bridge for Mantle's legacy datagen helpers. */
+/** Finished recipe view used by Mantle datagen helpers. */
 public interface FinishedRecipe {
   default JsonObject serializeRecipe() {
     JsonObject json = new JsonObject();

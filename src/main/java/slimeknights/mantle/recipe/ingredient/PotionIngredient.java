@@ -1,6 +1,5 @@
 package slimeknights.mantle.recipe.ingredient;
 
-import com.google.gson.JsonElement;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
@@ -11,7 +10,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.compat.neoforged.neoforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -19,8 +18,8 @@ import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.helper.LoadableIngredientSerializer;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /** Simple ingredient checking for an item with a specific potion */
@@ -34,17 +33,13 @@ public class PotionIngredient extends ItemIngredient {
 
   private final Potion potion;
   protected PotionIngredient(List<Item> items, @Nullable TagKey<Item> itemTag, Potion potion) {
-    // potion is added in directly to the parent value stream
-    super(items, itemTag, Stream.concat(
-      items.stream().map(item -> new ItemValue(setPotion(new ItemStack(item), potion))),
-      Stream.ofNullable(itemTag).map(tag -> new PotionTagValue(tag, potion)))
-    );
+    super(items, itemTag);
     this.potion = potion;
   }
 
   /** Creates a potion ingredient matching a list of items */
   public static Ingredient of(Potion potion, List<ItemLike> items) {
-    return new LegacyIngredient<>(new PotionIngredient(toItem(items), null, potion), MantleRecipes.POTION_INGREDIENT::get).toVanilla();
+    return new PotionIngredient(toItem(items), null, potion).toVanilla();
   }
 
   /** Creates a potion ingredient matching a list of items */
@@ -54,13 +49,13 @@ public class PotionIngredient extends ItemIngredient {
 
   /** Creates a potion ingredient matching a tag */
   public static Ingredient of(Potion potion, TagKey<Item> tag) {
-    return new LegacyIngredient<>(new PotionIngredient(List.of(), tag, potion), MantleRecipes.POTION_INGREDIENT::get).toVanilla();
+    return new PotionIngredient(List.of(), tag, potion).toVanilla();
   }
 
   @Override
-  public boolean test(@Nullable ItemStack stack) {
+  public boolean test(ItemStack stack) {
     // stack must match, any item must match, and potion must match
-    return stack != null && super.test(stack) && stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().map(holder -> holder.value() == potion).orElse(false);
+    return super.test(stack) && stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion().map(holder -> holder.value() == potion).orElse(false);
   }
 
   private static ItemStack setPotion(ItemStack stack, Potion potion) {
@@ -74,28 +69,22 @@ public class PotionIngredient extends ItemIngredient {
   }
 
   @Override
-  public IIngredientSerializer<?> getSerializer() {
-    return SERIALIZER;
+  public Stream<ItemStack> getItems() {
+    return super.getItems().map(stack -> setPotion(stack.copy(), potion));
   }
 
   @Override
-  public JsonElement toJson() {
-    return SERIALIZER.serialize(this);
+  public IngredientType<?> getType() {
+    return MantleRecipes.POTION_INGREDIENT.get();
   }
 
-  /** Tag value that sets the potion on each returned item */
-  private static class PotionTagValue extends TagValue {
-    private final Potion potion;
-    public PotionTagValue(TagKey<Item> tag, Potion potion) {
-      super(tag);
-      this.potion = potion;
-    }
+  @Override
+  public boolean equals(Object object) {
+    return this == object || object instanceof PotionIngredient that && super.equals(object) && potion == that.potion;
+  }
 
-    @Override
-    public Collection<ItemStack> getItems() {
-      return super.getItems().stream()
-        .map(item -> setPotion(item, potion))
-        .toList();
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), potion);
   }
 }

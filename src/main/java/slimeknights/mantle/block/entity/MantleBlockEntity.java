@@ -1,7 +1,6 @@
 package slimeknights.mantle.block.entity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -11,8 +10,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import slimeknights.mantle.compat.neoforged.neoforge.capabilities.Capability;
-import slimeknights.mantle.compat.neoforged.neoforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
@@ -40,20 +37,6 @@ public class MantleBlockEntity extends BlockEntity {
     }
   }
 
-  /** Compatibility hook for code still using the old Forge capability shape. */
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-    return LazyOptional.empty();
-  }
-
-  /** Compatibility hook for code still using the old Forge capability shape. */
-  public <T> LazyOptional<T> getCapability(Capability<T> capability) {
-    return getCapability(capability, null);
-  }
-
-  /** Compatibility hook for code still using the old Forge capability shape. */
-  public void invalidateCaps() {}
-  
-  
   /* Syncing */
 
   /**

@@ -2,7 +2,7 @@ package slimeknights.mantle.recipe.cooking;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.datafixers.util.Function6;
-import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
+import slimeknights.mantle.recipe.data.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;

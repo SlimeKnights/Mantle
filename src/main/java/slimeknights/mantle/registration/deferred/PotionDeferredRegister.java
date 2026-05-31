@@ -5,7 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
-import slimeknights.mantle.compat.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Locale;
@@ -19,7 +19,7 @@ public class PotionDeferredRegister extends DeferredRegisterWrapper<Potion> {
   }
 
   /** Registers a standalone potion */
-  public RegistryObject<Potion> register(String name, Supplier<Potion> potion) {
+  public DeferredHolder<Potion,Potion> register(String name, Supplier<Potion> potion) {
     return register.register(name, potion);
   }
 
@@ -29,12 +29,12 @@ public class PotionDeferredRegister extends DeferredRegisterWrapper<Potion> {
   }
 
   /** Registers a group of potions with the same effect */
-  public Builder registerTypes(RegistryObject<? extends MobEffect> effect, int duration, int amplifier) {
+  public Builder registerTypes(DeferredHolder<MobEffect,? extends MobEffect> effect, int duration, int amplifier) {
     return new Builder(effect.getId().getPath(), effect, duration, amplifier);
   }
 
   /** Registers a group of potions with the same effect starting at level 1 and a duration of 3 minutes */
-  public Builder registerTypes(RegistryObject<? extends MobEffect> effect) {
+  public Builder registerTypes(DeferredHolder<MobEffect,? extends MobEffect> effect) {
     return registerTypes(effect, 3 * 60 * 20, 0);
   }
 

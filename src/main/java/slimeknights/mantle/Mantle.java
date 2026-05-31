@@ -69,6 +69,7 @@ import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.registration.RegistrationHelper;
+import slimeknights.mantle.registration.MantleRegistrations;
 import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
@@ -195,11 +196,11 @@ public class Mantle {
       BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(Objects.requireNonNull(event.getRegistry(Registries.BLOCK_ENTITY_TYPE)), modId);
       Set<Block> signs = MantleSignBlockEntity.buildSignBlocks();
       if (!signs.isEmpty()) {
-        adapter.register(MantleSignBlockEntity::new, signs, "sign");
+        MantleRegistrations.SIGN = adapter.register(MantleSignBlockEntity::new, signs, "sign");
       }
       signs = MantleHangingSignBlockEntity.buildSignBlocks();
       if (!signs.isEmpty()) {
-        adapter.register(MantleHangingSignBlockEntity::new, signs, "hanging_sign");
+        MantleRegistrations.HANGING_SIGN = adapter.register(MantleHangingSignBlockEntity::new, signs, "hanging_sign");
       }
     }
     else if (key == Registries.COMMAND_ARGUMENT_TYPE) {

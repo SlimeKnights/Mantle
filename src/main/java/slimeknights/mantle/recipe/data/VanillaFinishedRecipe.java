@@ -5,7 +5,6 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -16,9 +15,9 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/** Bridges vanilla 1.21 recipe output back to Mantle's legacy finished recipe helpers. */
+/** Bridges vanilla 1.21 recipe output back to Mantle's recipe helper API. */
 public record VanillaFinishedRecipe(ResourceLocation getId, Recipe<?> recipe, @Nullable AdvancementHolder advancement) implements FinishedRecipe {
-  /** Creates a recipe output that forwards recipes to a legacy consumer. */
+  /** Creates a recipe output that forwards recipes to Mantle recipe consumers. */
   public static RecipeOutput output(Consumer<FinishedRecipe> consumer) {
     return new RecipeOutput() {
       @Override

@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import slimeknights.mantle.compat.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import slimeknights.mantle.util.ItemStackList;
@@ -35,9 +34,6 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
   protected int stackSizeLimit;
   @Getter
   protected IItemHandlerModifiable itemHandler;
-  /** Compatibility field for legacy Forge capability code. */
-  @Deprecated(forRemoval = true)
-  protected LazyOptional<IItemHandlerModifiable> itemHandlerCap;
 
   /**
    * @param name Localization String for the inventory title. Can be overridden through setCustomName
@@ -55,7 +51,6 @@ public abstract class InventoryBlockEntity extends NameableBlockEntity implement
     this.inventory = NonNullList.withSize(inventorySize, ItemStack.EMPTY);
     this.stackSizeLimit = maxStackSize;
     this.itemHandler = new InvWrapper(this);
-    this.itemHandlerCap = LazyOptional.of(() -> this.itemHandler);
   }
 
   /** Registers this base inventory handler for a concrete block entity type. */

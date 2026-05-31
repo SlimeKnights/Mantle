@@ -13,8 +13,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkDirection;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -27,13 +25,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * A small network implementation/wrapper using Mantle packets.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class NetworkWrapper {
+  /** Direction for payload registration. */
+  public enum PacketDirection {
+    PLAY_TO_CLIENT,
+    PLAY_TO_SERVER
+  }
+
   private final ResourceLocation channelName;
   private final String version;
   private final Map<Class<?>,Registration<?>> registrations = new HashMap<>();
@@ -66,7 +69,7 @@ public class NetworkWrapper {
    * @param decoder  Packet decoder, typically the constructor
    * @param <MSG>  Packet class type
    */
-  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<FriendlyByteBuf, MSG> decoder, @Nullable NetworkDirection direction) {
+  public <MSG extends ISimplePacket> void registerPacket(Class<MSG> clazz, Function<FriendlyByteBuf, MSG> decoder, @Nullable PacketDirection direction) {
     registerPacket(clazz, ISimplePacket::encode, decoder, ISimplePacket::handle, direction);
   }
 
@@ -79,14 +82,14 @@ public class NetworkWrapper {
    * @param direction  Network direction for validation. Pass null for bidirectional.
    * @param <MSG>  Packet class type
    */
-  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer, @Nullable NetworkDirection direction) {
+  public <MSG> void registerPacket(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,IPayloadContext> consumer, @Nullable PacketDirection direction) {
     registerPacketNoLogger(clazz, encoder, wrapLogger(clazz, decoder), consumer, direction);
   }
 
   /**
    * Registers a new packet without the automatic logging if the decoder fails
    */
-  public <MSG> void registerPacketNoLogger(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer, @Nullable NetworkDirection direction) {
+  public <MSG> void registerPacketNoLogger(Class<MSG> clazz, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG,IPayloadContext> consumer, @Nullable PacketDirection direction) {
     ResourceLocation typeName = ResourceLocation.fromNamespaceAndPath(channelName.getNamespace(), channelName.getPath() + "/" + id++);
     CustomPacketPayload.Type<Payload<MSG>> type = new CustomPacketPayload.Type<>(typeName);
     registrations.put(clazz, new Registration<>(type, encoder, decoder, consumer, direction));
@@ -204,8 +207,8 @@ public class NetworkWrapper {
     CustomPacketPayload.Type<Payload<MSG>> type,
     BiConsumer<MSG,FriendlyByteBuf> encoder,
     Function<FriendlyByteBuf,MSG> decoder,
-    BiConsumer<MSG,Supplier<NetworkEvent.Context>> consumer,
-    @Nullable NetworkDirection direction
+    BiConsumer<MSG,IPayloadContext> consumer,
+    @Nullable PacketDirection direction
   ) {
     private StreamCodec<RegistryFriendlyByteBuf,Payload<MSG>> codec() {
       return new StreamCodec<>() {
@@ -222,9 +225,9 @@ public class NetworkWrapper {
     }
 
     private void register(PayloadRegistrar registrar) {
-      if (direction == NetworkDirection.PLAY_TO_CLIENT) {
+      if (direction == PacketDirection.PLAY_TO_CLIENT) {
         registrar.playToClient(type, codec(), this::handle);
-      } else if (direction == NetworkDirection.PLAY_TO_SERVER) {
+      } else if (direction == PacketDirection.PLAY_TO_SERVER) {
         registrar.playToServer(type, codec(), this::handle);
       } else {
         registrar.playBidirectional(type, codec(), this::handle);
@@ -232,7 +235,7 @@ public class NetworkWrapper {
     }
 
     private void handle(Payload<MSG> payload, IPayloadContext context) {
-      consumer.accept(payload.message, () -> new NetworkEvent.Context(context));
+      consumer.accept(payload.message, context);
     }
 
     @SuppressWarnings("unchecked")

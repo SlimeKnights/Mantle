@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.mantle.compat.neoforged.neoforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.item.ILecternBookItem;
 
 /**
@@ -28,7 +28,7 @@ public class OpenLecternBookPacket implements IThreadsafePacket {
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
+  public void handleThreadsafe(IPayloadContext context) {
     if (book.getItem() instanceof ILecternBookItem) {
       ((ILecternBookItem)book.getItem()).openLecternScreenClient(pos, book);
     }

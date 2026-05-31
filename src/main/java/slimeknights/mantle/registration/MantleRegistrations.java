@@ -1,12 +1,8 @@
 package slimeknights.mantle.registration;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import slimeknights.mantle.compat.neoforged.neoforge.registries.ObjectHolder;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.block.entity.MantleHangingSignBlockEntity;
 import slimeknights.mantle.block.entity.MantleSignBlockEntity;
-
-import static slimeknights.mantle.registration.RegistrationHelper.injected;
 
 /**
  * Various objects registered under Mantle
@@ -14,9 +10,7 @@ import static slimeknights.mantle.registration.RegistrationHelper.injected;
 public class MantleRegistrations {
   private MantleRegistrations() {}
 
-  @ObjectHolder(registryName = "minecraft:block_entity_type", value = Mantle.modId+":sign")
-  public static final BlockEntityType<MantleSignBlockEntity> SIGN = injected();
+  public static BlockEntityType<MantleSignBlockEntity> SIGN;
 
-  @ObjectHolder(registryName = "minecraft:block_entity_type", value = Mantle.modId+":hanging_sign")
-  public static final BlockEntityType<MantleHangingSignBlockEntity> HANGING_SIGN = injected();
+  public static BlockEntityType<MantleHangingSignBlockEntity> HANGING_SIGN;
 }

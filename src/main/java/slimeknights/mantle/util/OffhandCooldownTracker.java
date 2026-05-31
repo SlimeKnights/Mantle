@@ -7,12 +7,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import slimeknights.mantle.compat.neoforged.neoforge.common.util.NonNullFunction;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.SwingArmPacket;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -25,7 +25,7 @@ public class OffhandCooldownTracker {
   private static final Map<Player,OffhandCooldownTracker> TRACKERS = new WeakHashMap<>();
   /** @deprecated use {@link #get(Player)} */
   @Deprecated(forRemoval = true)
-  public static final NonNullFunction<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
+  public static final Function<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
 
   /** Registers the capability and subscribes to event listeners */
   public static void init() {}

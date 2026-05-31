@@ -1,7 +1,7 @@
 package slimeknights.mantle.recipe.helper;
 
 import com.google.gson.JsonObject;
-import slimeknights.mantle.compat.minecraft.data.recipes.FinishedRecipe;
+import slimeknights.mantle.recipe.data.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 

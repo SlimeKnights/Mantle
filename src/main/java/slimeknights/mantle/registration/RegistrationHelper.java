@@ -5,20 +5,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import slimeknights.mantle.compat.neoforged.neoforge.registries.MissingMappingsEvent;
-import slimeknights.mantle.compat.neoforged.neoforge.registries.MissingMappingsEvent.Mapping;
 import slimeknights.mantle.util.RegistryHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -51,25 +45,6 @@ public class RegistrationHelper {
   public static <T, R extends T> Supplier<R> getCastedHolder(DefaultedRegistry<T> registry, T entry) {
     Supplier<T> holder = RegistryHelper.getHolder(registry, entry);
     return () -> (R) holder.get();
-  }
-
-  /**
-   * Handles missing mappings for the given registry
-   * @param event    Mappings event
-   * @param handler  Mapping handler
-   * @param <T>      Event type
-   */
-  public static <T> void handleMissingMappings(MissingMappingsEvent event, String modID, ResourceKey<? extends Registry<T>> registry, Function<String, T> handler) {
-    // event is kinda nice, automatically filters mappings to the registry type via the key
-    for (Mapping<T> mapping : event.getAllMappings(registry)) {
-      ResourceLocation id = mapping.getKey();
-      if (modID.equals(id.getNamespace())) {
-        @Nullable T value = handler.apply(id.getPath());
-        if (value != null) {
-          mapping.remap(value);
-        }
-      }
-    }
   }
 
   /** Registers a wood type to be injected into the atlas, should be called before client setup */

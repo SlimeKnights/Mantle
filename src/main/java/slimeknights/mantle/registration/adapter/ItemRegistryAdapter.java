@@ -14,7 +14,7 @@ import net.minecraft.world.item.SignItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import slimeknights.mantle.compat.neoforged.neoforge.common.ForgeSpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.minecraft.core.Registry;
 import slimeknights.mantle.item.BlockTooltipItem;
 import slimeknights.mantle.item.BurnableBlockItem;
@@ -276,6 +276,6 @@ public class ItemRegistryAdapter extends EnumRegistryAdapter<Item> {
    * @return  Spawn egg item instance
    */
   public SpawnEggItem registerSpawnEgg(Supplier<? extends EntityType<? extends Mob>> type, int primary, int secondary, String baseName) {
-    return register(new ForgeSpawnEggItem(type, primary, secondary, new Properties()), baseName + "_spawn_egg");
+    return register(new DeferredSpawnEggItem(type, primary, secondary, new Properties()), baseName + "_spawn_egg");
   }
 }
