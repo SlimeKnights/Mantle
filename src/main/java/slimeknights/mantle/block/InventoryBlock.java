@@ -59,7 +59,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
   @Deprecated
   @Override
   public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
-    if (player.isSuppressingBounce()) {
+    if (player.isShiftKeyDown()) {
       return InteractionResult.PASS;
     }
     if (!world.isClientSide) {
