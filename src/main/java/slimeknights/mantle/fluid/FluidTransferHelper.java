@@ -256,7 +256,9 @@ public class FluidTransferHelper {
             } else {
               playEmptySound(world, pos, player, result.fluid());
             }
-            player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, result.stack()));
+            // creative does not consume the held stack, so vanilla will discard the result if the inventory already has a match
+            // that is only safe when emptying the container, discarding a filled container destroys the fluid we just drained
+            player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, result.stack(), !result.didFill()));
             return result.didFill() ? FluidInteractionResult.FILLED_STACK : FluidInteractionResult.DRAINED_STACK;
           }
         }
@@ -286,7 +288,9 @@ public class FluidTransferHelper {
         }
         // if either worked, update the player's inventory
         if (!transferred.isEmpty()) {
-          player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, itemHandler.getContainer()));
+          // creative does not consume the held stack, so vanilla will discard the result if the inventory already has a match
+          // that is only safe when emptying the container, discarding a filled container destroys the fluid we just drained
+          player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, itemHandler.getContainer(), result == FluidInteractionResult.DRAINED_STACK));
         }
       }
       return result;
