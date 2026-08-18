@@ -161,10 +161,10 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 
   // needed to get the correct slot on clicking
   @Override
-  protected boolean isHovering(int left, int top, int right, int bottom, double pointX, double pointY) {
+  protected boolean isHovering(int left, int top, int width, int height, double pointX, double pointY) {
     pointX -= this.cornerX;
     pointY -= this.cornerY;
-    return pointX >= left - 1 && pointX < left + right + 1 && pointY >= top - 1 && pointY < top + bottom + 1;
+    return pointX >= left - 1 && pointX < left + width + 1 && pointY >= top - 1 && pointY < top + height + 1;
   }
 
   protected void updateSubmodule(ModuleScreen<?,?> module) {
@@ -275,12 +275,16 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
 
   @Override
   public boolean mouseReleased(double mouseX, double mouseY, int state) {
-    ModuleScreen<?,?> module = this.getModuleForPoint(mouseX, mouseY);
-
-    if (module != null) {
+    // every module gets the release, even ones the cursor has left; a module tracking a drag needs the button up to stop tracking
+    boolean handled = false;
+    for (ModuleScreen<?,?> module : this.modules) {
       if (module.handleMouseReleased(mouseX, mouseY, state)) {
-        return false;
+        handled = true;
       }
+    }
+
+    if (handled) {
+      return false;
     }
 
     return super.mouseReleased(mouseX, mouseY, state);
@@ -289,7 +293,7 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   @Nullable
   protected ModuleScreen<?,?> getModuleForPoint(double x, double y) {
     for (ModuleScreen<?,?> module : this.modules) {
-      if (this.isHovering(module.leftPos, module.topPos, module.guiRight(), module.guiBottom(), x + this.cornerX, y + this.cornerY)) {
+      if (this.isHovering(module.leftPos, module.topPos, module.imageWidth, module.imageHeight, x + this.cornerX, y + this.cornerY)) {
         return module;
       }
     }
