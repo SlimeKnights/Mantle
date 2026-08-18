@@ -29,6 +29,7 @@ public class ContentListingSectionTransformer extends SectionTransformer {
     listing.setCenterTitle(centerTitle);
     listing.title = book.translate(sectionName);
     String subtextKey = sectionName + ".subtext";
+    // checks the selected language only; leaving the key out is how a language hides the subtext, so English must not fill it back in
     if (book.strings.containsKey(subtextKey)) {
       listing.subText = book.translate(subtextKey);
     }

@@ -159,6 +159,8 @@ public class PageData implements IDataItem, IConditional {
 
   /** Gets the title for the page data, which can be overridden by translation */
   public String getTitle() {
+    // deliberately skips the English fallback: this key is an optional override for languages where the content's own title is a poor fit,
+    // so a language that leaves it out wants its own content title rather than the English override
     String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
     if (title != null) {
       return title;
