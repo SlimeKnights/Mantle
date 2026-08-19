@@ -276,9 +276,10 @@ public class MultiModuleScreen<CONTAINER extends MultiModuleContainerMenu<?>> ex
   @Override
   public boolean mouseReleased(double mouseX, double mouseY, int state) {
     // every module gets the release, even ones the cursor has left; a module tracking a drag needs the button up to stop tracking
+    // the default implementation still bounds checks before running the module's own handler, so only modules that opt in see releases outside their area
     boolean handled = false;
     for (ModuleScreen<?,?> module : this.modules) {
-      if (module.handleMouseReleased(mouseX, mouseY, state)) {
+      if (module.handleMouseReleasedAnywhere(mouseX, mouseY, state)) {
         handled = true;
       }
     }

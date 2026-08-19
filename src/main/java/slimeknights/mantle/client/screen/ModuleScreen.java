@@ -130,6 +130,21 @@ public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Abs
   }
 
   /**
+   * Variant of {@link #handleMouseReleased(double, double, int)} that is called for every release, including ones the cursor has carried outside this module.
+   * A module tracking a drag needs the button up wherever it lands or it keeps tracking with the button released, but delivering that to every module unconditionally would change behavior for modules that only expect releases they can see, so the default here delegates only when the cursor is still inside.
+   * Override this instead of {@link #handleMouseReleased(double, double, int)} if you track drag state.
+   * TODO 1.21: fold this into {@link #handleMouseReleased(double, double, int)} and remove.
+   *
+   * @return True to prevent the main container handling the mouse release
+   */
+  public boolean handleMouseReleasedAnywhere(double mouseX, double mouseY, int state) {
+    if (this.isMouseInModule((int) mouseX, (int) mouseY)) {
+      return this.handleMouseReleased(mouseX, mouseY, state);
+    }
+    return false;
+  }
+
+  /**
    * Custom mouse scrolled handling.
    *
    * @return True to prevent the main container handling the mouseclick
