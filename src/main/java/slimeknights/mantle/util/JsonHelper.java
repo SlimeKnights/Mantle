@@ -16,15 +16,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
-import net.minecraftforge.registries.IForgeRegistry;
 import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
-import slimeknights.mantle.data.loadable.common.BlockStateLoadable;
 import slimeknights.mantle.network.NetworkWrapper;
 import slimeknights.mantle.network.packet.ISimplePacket;
 
@@ -210,43 +207,6 @@ public class JsonHelper {
     return parseResourceLocation(GsonHelper.convertToString(json, key), key);
   }
 
-  /**
-   * Parses a registry entry from JSON
-   * @param registry  Registry
-   * @param element   Element to deserialize
-   * @param key       Json key
-   * @param <T>  Object type
-   * @return  Registry value
-   * @throws JsonSyntaxException  If something failed to parse
-   * @deprecated use {@link slimeknights.mantle.data.loadable.Loadables}
-   */
-  @Deprecated(forRemoval = true)
-  public static <T> T convertToEntry(IForgeRegistry<T> registry, JsonElement element, String key) {
-    ResourceLocation name = JsonHelper.convertToResourceLocation(element, key);
-    if (registry.containsKey(name)) {
-      T value = registry.getValue(name);
-      if (value != null) {
-        return value;
-      }
-    }
-    throw new JsonSyntaxException("Unknown " + registry.getRegistryName() + " " + name);
-  }
-
-  /**
-   * Parses a registry entry from JSON
-   * @param registry  Registry
-   * @param parent    Parent JSON object
-   * @param key       Json key
-   * @param <T>  Object type
-   * @return  Registry value
-   * @throws JsonSyntaxException  If something failed to parse
-   * @deprecated use {@link slimeknights.mantle.data.loadable.Loadables}
-   */
-  @Deprecated(forRemoval = true)
-  public static <T> T getAsEntry(IForgeRegistry<T> registry, JsonObject parent, String key) {
-    return convertToEntry(registry, JsonHelper.getElement(parent, key), key);
-  }
-
   /** Parses an enum from its name */
   private static <T extends Enum<T>> T enumByName(String name, Class<T> enumClass) {
     for (T value : enumClass.getEnumConstants()) {
@@ -255,20 +215,6 @@ public class JsonHelper {
       }
     }
     throw new JsonSyntaxException("Invalid " + enumClass.getSimpleName() + " " + name);
-  }
-
-  /** @deprecated use {@link slimeknights.mantle.data.loadable.primitive.EnumLoadable} */
-  @Deprecated(forRemoval = true)
-  public static <T extends Enum<T>> T convertToEnum(JsonElement element, String key, Class<T> enumClass) {
-    String name = GsonHelper.convertToString(element, key);
-    return enumByName(name, enumClass);
-  }
-
-  /** @deprecated use {@link slimeknights.mantle.data.loadable.primitive.EnumLoadable} */
-  @Deprecated(forRemoval = true)
-  public static <T extends Enum<T>> T getAsEnum(JsonObject json, String key, Class<T> enumClass) {
-    String name = GsonHelper.getAsString(json, key);
-    return enumByName(name, enumClass);
   }
 
 
@@ -378,39 +324,5 @@ public class JsonHelper {
   /** Serializes the given object using the passed codec */
   public static <T> JsonElement serialize(Codec<T> codec, T object) {
     return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error);
-  }
-
-
-  /* Block States */
-
-  /** @deprecated use {@link BlockStateLoadable} with {@link slimeknights.mantle.data.loadable.Loadable#convert(JsonElement, String)} */
-  @Deprecated(forRemoval = true)
-  public static BlockState convertToBlockState(JsonElement element, String key) {
-    return BlockStateLoadable.DIFFERENCE.convert(element, key);
-  }
-
-  /** @deprecated use {@link BlockStateLoadable#DIFFERENCE} with {@link slimeknights.mantle.data.loadable.Loadable#getIfPresent(JsonObject, String)} */
-  @Deprecated(forRemoval = true)
-  public static BlockState getAsBlockState(JsonObject parent, String key) {
-    return BlockStateLoadable.DIFFERENCE.getIfPresent(parent, key);
-  }
-
-  /** @deprecated use {@link BlockStateLoadable#DIFFERENCE} with {@link slimeknights.mantle.data.loadable.record.RecordLoadable#deserialize(JsonObject)} */
-  @Deprecated(forRemoval = true)
-  public static BlockState convertToBlockState(JsonObject json) {
-    return BlockStateLoadable.DIFFERENCE.deserialize(json);
-  }
-
-  /** @deprecated use {@link BlockStateLoadable#DIFFERENCE} with {@link slimeknights.mantle.data.loadable.Loadable#serialize(Object)}*/
-  @Deprecated(forRemoval = true)
-  public static JsonElement serializeBlockState(BlockState state) {
-    return BlockStateLoadable.DIFFERENCE.serialize(state);
-  }
-
-  /** @deprecated use {@link BlockStateLoadable#DIFFERENCE} with {@link slimeknights.mantle.data.loadable.record.RecordLoadable#serialize(Object, JsonObject)} */
-  @Deprecated(forRemoval = true)
-  public static JsonObject serializeBlockState(BlockState state, JsonObject json) {
-    BlockStateLoadable.DIFFERENCE.serialize(state, json);
-    return json;
   }
 }

@@ -15,7 +15,6 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullFunction;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.MantleNetwork;
@@ -32,9 +31,6 @@ import static slimeknights.mantle.util.LogicHelper.orElseNull;
 @RequiredArgsConstructor
 public class OffhandCooldownTracker implements ICapabilityProvider {
   public static final ResourceLocation KEY = Mantle.getResource("offhand_cooldown");
-  /** @deprecated use {@link #get(Player)} */
-  @Deprecated(forRemoval = true)
-  public static final NonNullFunction<OffhandCooldownTracker,Float> COOLDOWN_TRACKER = OffhandCooldownTracker::getCooldown;
 
   /**
    * Capability instance for offhand cooldown
@@ -87,26 +83,6 @@ public class OffhandCooldownTracker implements ICapabilityProvider {
       return 0;
     }
     return player.tickCount;
-  }
-
-  /** If true, the tracker is enabled despite a cooldown item not being held */
-  @Deprecated(forRemoval = true)
-  public boolean isEnabled() {
-    return enabled > 0;
-  }
-
-  /**
-   * Call this method when your item causing offhand cooldown to be needed is enabled and disabled. If multiple placces call this, the tracker will automatically keep enabled until all places disable
-   * @param enable  If true, enable. If false, disable
-   * @deprecated No longer used, so you can just remove calls.
-   */
-  @Deprecated(forRemoval = true)
-  public void setEnabled(boolean enable) {
-    if (enable) {
-      enabled++;
-    } else {
-      enabled--;
-    }
   }
 
   /**

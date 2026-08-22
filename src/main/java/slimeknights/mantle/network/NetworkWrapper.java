@@ -34,16 +34,6 @@ public class NetworkWrapper {
   public final SimpleChannel network;
   private int id = 0;
 
-  /**
-   * Creates a new network wrapper
-   * @param channelName  Unique packet channel name
-   * @deprecated Give your channel a version number.
-   */
-  @Deprecated
-  public NetworkWrapper(ResourceLocation channelName) {
-    this(channelName, "1");
-  }
-
   public NetworkWrapper(ResourceLocation channelName, String version) {
     this.network = NetworkRegistry.ChannelBuilder
       .named(channelName)

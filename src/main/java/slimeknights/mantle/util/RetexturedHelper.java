@@ -196,12 +196,6 @@ public final class RetexturedHelper {
     }
   }
 
-  /** @deprecated use {@link #addTooltip(ItemStack, List, TooltipFlag)} */
-  @Deprecated(forRemoval = true)
-  public static void addTooltip(ItemStack stack, List<Component> tooltip) {
-    addTooltip(stack, tooltip, TooltipFlag.NORMAL);
-  }
-
   /**
    * Adds all blocks from the block tag to the specified block for creative tabs
    * @param block              Dynamic texture item instance

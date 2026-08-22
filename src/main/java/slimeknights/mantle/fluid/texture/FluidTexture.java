@@ -3,6 +3,7 @@ package slimeknights.mantle.fluid.texture;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.shaders.FogShape;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ import java.util.Objects;
 /** Record representing a fluid texture */
 @Accessors(fluent = true)
 @Data
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public final class FluidTexture {
   private static final EnumLoadable<FogShape> FOG_SHAPE_LOADABLE = new EnumLoadable<>(FogShape.class);
 
@@ -42,12 +43,6 @@ public final class FluidTexture {
   private final FogShape fogShape;
   private final float fogStart;
   private final float fogEnd;
-
-  /** @deprecated use {@link #FluidTexture(ResourceLocation, ResourceLocation, ResourceLocation, ResourceLocation, float, int, int, boolean, FogShape, float, float)} */
-  @Deprecated(forRemoval = true)
-  public FluidTexture(ResourceLocation still, ResourceLocation flowing, @Nullable ResourceLocation overlay, @Nullable ResourceLocation camera, int color) {
-    this(still, flowing, overlay, camera, 0.1f, color, -1, false, null, 0.25f, 1);
-  }
 
   /** Gets the fog color for this fluid */
   public int fogColor() {
@@ -159,16 +154,13 @@ public final class FluidTexture {
     private float fogEnd = 1;
 
     /**
-     * Adds textures using the fluid registry ID
-     *
+     * Sets {@link #root} using the fluid registry ID.
      * @param prefix  Prefix for where to place textures
-     * @param suffix  Suffix for placing textures, included before "still" or "flowing". Typically will want "/" or "_".
-     * @param overlay If true, include an overlay texture
-     * @param camera  If true, include a camera texture
+     * @param suffix  Suffix for placing textures, included before "still" or "flowing". Typically, will want "/" or "_".
      * @return Builder instance
      */
-    public Builder wrapId(String prefix, String suffix, boolean overlay, boolean camera) {
-      return textures(JsonHelper.wrap(Objects.requireNonNull(ForgeRegistries.FLUID_TYPES.get().getKey(fluid)), prefix, suffix), overlay, camera);
+    public Builder wrapId(String prefix, String suffix) {
+      return root(JsonHelper.wrap(Objects.requireNonNull(ForgeRegistries.FLUID_TYPES.get().getKey(fluid)), prefix, suffix));
     }
 
     /**
@@ -209,27 +201,6 @@ public final class FluidTexture {
         throw new IllegalStateException("Automatic camera texture requires root to be set");
       }
       return camera(root.withSuffix("camera"));
-    }
-
-    /**
-     * Sets all textures by suffixing the given path
-     *
-     * @param path    Base path, make sure to include the trailing "_" or "/"
-     * @param overlay If true, include an overlay texture
-     * @param camera  If true, include a camera texture
-     * @return Builder instance
-     * @deprecated use {@link #root(ResourceLocation)}, {@link #still()}, {@link #flowing()}, {@link #camera()}, and {@link #overlay()}
-     */
-    @Deprecated
-    public Builder textures(ResourceLocation path, boolean overlay, boolean camera) {
-      root(path).still().flowing();
-      if (overlay) {
-        overlay();
-      }
-      if (camera) {
-        camera();
-      }
-      return this;
     }
 
     /** Sets all 3 fog properties */
