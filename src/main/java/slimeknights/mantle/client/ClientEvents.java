@@ -95,7 +95,6 @@ public class ClientEvents {
     FluidTextureManager.init(event);
     event.registerReloadListener(FluidCuboid.REGISTRY);
     event.registerReloadListener(RenderItem.REGISTRY);
-    event.registerReloadListener(RenderItem.STATE_REGISTRY);
     event.registerReloadListener(TextureColorHelper.RELOAD_LISTENER);
   }
 

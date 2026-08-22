@@ -19,7 +19,7 @@ public class InventoryBlockEntityRenderer<T extends BlockEntity & Container> imp
 
     // first, find the model for item display locations
     BlockState state = inventory.getBlockState();
-    List<RenderItem> renderItems = RenderItem.STATE_REGISTRY.get(state, List.of());
+    List<RenderItem> renderItems = RenderItem.REGISTRY.get(state, List.of());
     if (!renderItems.isEmpty()) {
       // if the block is rotatable, rotate item display
       boolean isRotated = RenderingHelper.applyRotation(matrices, state);

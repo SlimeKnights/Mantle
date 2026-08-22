@@ -166,20 +166,6 @@ public class ColoredBlockModel extends SimpleBlockModel {
       }
       return uvlock;
     }
-
-    /** @deprecated use {@link #LOADABLE} */
-    @Deprecated(forRemoval = true)
-    public static ColorData fromJson(JsonObject json) {
-      return LOADABLE.deserialize(json);
-    }
-
-    /** @deprecated use {@link #LOADABLE} */
-    @Deprecated(forRemoval = true)
-    public JsonObject toJson() {
-      JsonObject json = new JsonObject();
-      LOADABLE.serialize(this, json);
-      return json;
-    }
   }
 
 

@@ -511,20 +511,6 @@ public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerMod
       }
       return context.getRenderType(renderType);
     }
-
-    /** @deprecated use {@link #LOADABLE} */
-    @Deprecated(forRemoval = true)
-    public static LayerData fromJson(JsonObject json) {
-      return LOADABLE.deserialize(json);
-    }
-
-    /** @deprecated use {@link #LOADABLE} */
-    @Deprecated(forRemoval = true)
-    public JsonObject toJson() {
-      JsonObject json = new JsonObject();
-      LOADABLE.serialize(this, json);
-      return json;
-    }
   }
 
   /** Deserializes this model from JSON */

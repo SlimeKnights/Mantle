@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.level.block.Block;
 import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.datamap.BlockStateDataMapLoader;
-import slimeknights.mantle.data.datamap.RegistryDataMapLoader;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.common.DisplayContextLoadable;
@@ -21,7 +18,6 @@ import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 import java.util.List;
-import java.util.function.Function;
 
 /** Utility for placing items in block entity renderers */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,13 +38,8 @@ public class RenderItem {
       return value;
     });
   private static final Loadable<List<RenderItem>> LIST_LOADABLE = LOADABLE.list(CollectionLoadable.COMPACT);
-  /** @deprecated use {@link #STATE_REGISTRY} */
-  @Deprecated(forRemoval = true)
-  public static final RegistryDataMapLoader<Block,List<RenderItem>> REGISTRY = new RegistryDataMapLoader<>(
-    "Block entity items", "mantle/model/render_items", BuiltInRegistries.BLOCK,
-    RecordLoadable.create(LIST_LOADABLE.requiredField("items", Function.identity()), Function.identity()));
   /** Data loader to fetch a list of fluid cuboids from JSON */
-  public static final BlockStateDataMapLoader<List<RenderItem>> STATE_REGISTRY = new BlockStateDataMapLoader<>("Block entity items", "mantle/model/item_lists", LIST_LOADABLE);
+  public static final BlockStateDataMapLoader<List<RenderItem>> REGISTRY = new BlockStateDataMapLoader<>("Block entity items", "mantle/model/item_lists", LIST_LOADABLE);
 
   /** Item center location in pixels */
   @Getter
