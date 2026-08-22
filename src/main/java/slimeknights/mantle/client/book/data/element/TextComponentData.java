@@ -16,10 +16,6 @@ import java.util.List;
 @Accessors(fluent = true)
 @Setter
 public class TextComponentData implements IHTML {
-  /** @deprecated use {@link #linebreak} */
-  @Deprecated
-  public static final TextComponentData LINEBREAK = new TextComponentData((Component) null).linebreak(true);
-
   @Nullable
   public Component text;
 

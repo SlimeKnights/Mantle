@@ -3,12 +3,12 @@
   "image": {
     "file": "images/ores.png"
   },
-  "text1": [
+  "right_text": [
     {
       "text": "There is an image in the upper-left corner"
     }
   ],
-  "text2": [
+  "bottom_text": [
     {
       "text": "I am below said image"
     }

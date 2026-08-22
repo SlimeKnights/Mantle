@@ -57,13 +57,6 @@ public class TextComponentDataRenderer {
         continue;
       }
 
-      // TODO: ditch this, the linebreak field handles it so much better
-      if (item.text.getString().equals("\n")) {
-        atX = x;
-        atY += fr.lineHeight;
-        continue;
-      }
-
       if (item.isParagraph) {
         atX = x;
         atY += fr.lineHeight * 2 * prevScale;

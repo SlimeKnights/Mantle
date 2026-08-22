@@ -174,12 +174,6 @@ public class BookLoader implements ResourceManagerReloadListener {
     return books.getOrDefault(id, null);
   }
 
-  /** @deprecated use {@link #getAllBooks()} */
-  @Deprecated(forRemoval = true)
-  public static Iterable<ResourceLocation> getRegisteredBooks() {
-    return books.keySet();
-  }
-
   /** Gets the resource locations of all registered books */
   public static Collection<ResourceLocation> getAllBooks() {
     return books.keySet();

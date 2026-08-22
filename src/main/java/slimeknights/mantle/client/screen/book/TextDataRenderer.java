@@ -58,12 +58,6 @@ public class TextDataRenderer {
         }
         continue;
       }
-      // TODO: ditch this, the linebreak field handles it better
-      if (item.text.equals("\n")) {
-        atX = x;
-        atY += fr.lineHeight;
-        continue;
-      }
 
       if (item.paragraph) {
         atX = x;

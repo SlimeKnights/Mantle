@@ -10,8 +10,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 @AllArgsConstructor
 public class ElementScreen {
-  // TODO: can this be final?
-  public ResourceLocation texture;
+  public final ResourceLocation texture;
   public final int x;
   public final int y;
   public final int w;

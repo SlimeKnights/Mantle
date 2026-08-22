@@ -19,15 +19,11 @@ import java.util.regex.Pattern;
 @Accessors(fluent = true)
 @Setter
 public class TextData implements IHTML {
-  /** @deprecated use {@link #linebreak} */
-  @Deprecated(forRemoval = true)
-  public static final TextData LINEBREAK = new TextData().linebreak(true);
   private static final Pattern LIST_REGEX = Pattern.compile("^\n?(•|\\d+\\.)[ \u00a0]");
   /** Constant to use in mods wishing to implement bulleted lists that are compatible with the book lists. Will also need to use {@link #linebreak(boolean)} */
+  @SuppressWarnings("unused") // API
   public static final String LIST_PREFIX = "•\u00a0";
 
-  // TODO 1.21: make no longer nullable
-  @Nullable
   public String text = "";
   public String color = "black";
 

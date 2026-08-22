@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -20,10 +21,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class BookElement {
-
-  /** TODO 1.21: make this field protected instead of public to ensure setter is used. */
+  // TODO: consider renaming to screen, we have too many chains of parent.parent.parent
+  @Getter
   @Setter
-  public BookScreen parent;
+  protected BookScreen parent;
 
   protected Minecraft mc = Minecraft.getInstance();
   protected TextureManager renderEngine = this.mc.textureManager;

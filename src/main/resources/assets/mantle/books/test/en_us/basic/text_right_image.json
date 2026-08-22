@@ -5,12 +5,12 @@
       "tag": "forge:ingots/iron"
     }
   },
-  "text1": [
+  "left_text": [
     {
       "text": "There is an image in the upper-right corner"
     }
   ],
-  "text2": [
+  "bottom_text": [
     {
       "text": "I am below said image"
     }

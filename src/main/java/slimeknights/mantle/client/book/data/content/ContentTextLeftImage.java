@@ -23,11 +23,10 @@ public class ContentTextLeftImage extends PageContent {
   public String title = null;
   public ImageData image;
 
-  // TODO: rename these fields in 1.21 to right_text, and bottom_text
   /** Text placed on the right of the image */
-  public TextData[] text1;
+  public TextData[] right_text;
   /** Text placed below the image */
-  public TextData[] text2;
+  public TextData[] bottom_text;
 
   private final int OFFSET = 55;
 
@@ -47,12 +46,12 @@ public class ContentTextLeftImage extends PageContent {
       list.add(new ImageElement(0, y, 50, 50, ImageData.MISSING));
     }
 
-    if (this.text1 != null && this.text1.length > 0) {
-      list.add(new TextElement(OFFSET, y, BookScreen.PAGE_WIDTH - OFFSET, 50, this.text1));
+    if (this.right_text != null && this.right_text.length > 0) {
+      list.add(new TextElement(OFFSET, y, BookScreen.PAGE_WIDTH - OFFSET, 50, this.right_text));
     }
 
-    if (this.text2 != null && this.text2.length > 0) {
-      list.add(new TextElement(0, y + OFFSET, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - OFFSET - y, this.text2));
+    if (this.bottom_text != null && this.bottom_text.length > 0) {
+      list.add(new TextElement(0, y + OFFSET, BookScreen.PAGE_WIDTH, BookScreen.PAGE_HEIGHT - OFFSET - y, this.bottom_text));
     }
   }
 
@@ -67,11 +66,11 @@ public class ContentTextLeftImage extends PageContent {
 
       group.add(box);
 
-      if (text1 != null) box.add(TextData.toHtml(text1, book));
-      if (text2 != null) group.add(HtmlElement.div().classes("column").add(TextData.toHtml(text2, book)));
+      if (right_text != null) box.add(TextData.toHtml(right_text, book));
+      if (bottom_text != null) group.add(HtmlElement.div().classes("column").add(TextData.toHtml(bottom_text, book)));
     } else {
-      if (text1 != null) group.add(TextData.toHtml(text1, book));
-      if (text2 != null) group.add(TextData.toHtml(text2, book));
+      if (right_text != null) group.add(TextData.toHtml(right_text, book));
+      if (bottom_text != null) group.add(TextData.toHtml(bottom_text, book));
     }
 
     return group;
