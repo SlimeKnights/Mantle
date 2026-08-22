@@ -1,12 +1,10 @@
 package slimeknights.mantle.recipe.ingredient;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -162,31 +160,6 @@ public abstract class FluidIngredient implements IAmLoadable {
   public JsonElement serialize() {
     return LOADABLE.serialize(this);
   }
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#getIfPresent(JsonObject, String)} */
-  @Deprecated(forRemoval = true)
-  public static FluidIngredient deserialize(JsonObject parent, String key) {
-    return LOADABLE.getIfPresent(parent, key);
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#convert(JsonElement, String)} */
-  @Deprecated(forRemoval = true)
-  public static FluidIngredient deserialize(JsonElement element, String key) {
-    return LOADABLE.convert(element, key);
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#encode(FriendlyByteBuf, Object)} */
-  @Deprecated(forRemoval = true)
-  public void write(FriendlyByteBuf buffer) {
-    NETWORK.encode(buffer, this);
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#decode(FriendlyByteBuf)}*/
-  @Deprecated(forRemoval = true)
-  public static FluidIngredient read(FriendlyByteBuf buffer) {
-    return NETWORK.decode(buffer);
-  }
-
 
   /**
    * Fluid ingredient that matches a single fluid

@@ -1,9 +1,7 @@
 package slimeknights.mantle.recipe.ingredient;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -122,31 +120,5 @@ public class SizedIngredient implements Predicate<ItemStack> {
       lastIngredientMatch = new WeakReference<>(ingredientMatch);
     }
     return matchingStacks;
-  }
-
-  /** use {@link #LOADABLE} with {@link slimeknights.mantle.data.loadable.Loadable#encode(FriendlyByteBuf, Object)} */
-  @Deprecated(forRemoval = true)
-  public void write(FriendlyByteBuf buffer) {
-    LOADABLE.encode(buffer, this);
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link slimeknights.mantle.data.loadable.Loadable#serialize(Object)} or {@link RecordLoadable#serialize(Object, JsonObject)} */
-  @Deprecated(forRemoval = true)
-  public JsonObject serialize() {
-    JsonObject json = new JsonObject();
-    LOADABLE.serialize(this, json);
-    return json;
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link slimeknights.mantle.data.loadable.Loadable#decode(FriendlyByteBuf)}  */
-  @Deprecated(forRemoval = true)
-  public static SizedIngredient read(FriendlyByteBuf buffer) {
-    return LOADABLE.decode(buffer);
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link RecordLoadable#deserialize(JsonObject)} */
-  @Deprecated(forRemoval = true)
-  public static SizedIngredient deserialize(JsonObject json) {
-    return LOADABLE.deserialize(json);
   }
 }

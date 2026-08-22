@@ -60,17 +60,6 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     return null;
   }
 
-  /**
-   * Writes this output to JSON
-   * @return  Json element
-   */
-  @Deprecated(forRemoval = true)
-  public JsonObject serialize() {
-    JsonObject json = new JsonObject();
-    serialize(json);
-    return json;
-  }
-
   /** Writes this output to JSON */
   public abstract void serialize(JsonObject json);
 

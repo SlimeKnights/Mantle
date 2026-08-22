@@ -1,10 +1,8 @@
 package slimeknights.mantle.recipe.ingredient;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonElement;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -103,25 +101,6 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
    * @return  Set of types
    */
   public abstract Set<EntityType<?>> getTypes();
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#serialize(Object)} */
-  @Deprecated(forRemoval = true)
-  public JsonElement serialize() {
-    return LOADABLE.serialize(this);
-  }
-
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#encode(FriendlyByteBuf, Object)} */
-  @Deprecated(forRemoval = true)
-  public void write(FriendlyByteBuf buffer) {
-    SET_MATCH.encode(buffer, this);
-  }
-
-  /** @deprecated use {@link #LOADABLE} with {@link Loadable#decode(FriendlyByteBuf)} */
-  @Deprecated(forRemoval = true)
-  public static EntityIngredient read(FriendlyByteBuf buffer) {
-    return SET_MATCH.decode(buffer);
-  }
 
 
   /* JEI */
