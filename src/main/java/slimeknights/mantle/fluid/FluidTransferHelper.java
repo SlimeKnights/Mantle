@@ -137,21 +137,6 @@ public class FluidTransferHelper {
     }
   }
 
-  /** @deprecated use {@link #interactWithFilledBucket(Level, BlockPos, IFluidHandler, Player, InteractionHand, Direction)} or {@link #interactWithTank(Level, BlockPos, Player, InteractionHand, Direction, Direction)} */
-  @Deprecated(forRemoval = true)
-  public static boolean interactWithBucket(Level world, BlockPos pos, Player player, InteractionHand hand, Direction hit, Direction offset) {
-    if (player.getItemInHand(hand).getItem() instanceof BucketItem) {
-      BlockEntity te = world.getBlockEntity(pos);
-      if (te != null) {
-        LazyOptional<IFluidHandler> teCapability = te.getCapability(ForgeCapabilities.FLUID_HANDLER, hit);
-        if (teCapability.isPresent()) {
-          return interactWithFilledBucket(world, pos, teCapability.orElse(EmptyFluidHandler.INSTANCE), player, hand, offset).hasContainer();
-        }
-      }
-    }
-    return false;
-  }
-
   /**
    * Attempts to interact with a flilled bucket on a fluid tank. This is unique as it handles fish buckets, which don't expose fluid capabilities
    * @param world     World instance
@@ -198,12 +183,6 @@ public class FluidTransferHelper {
   public static void playFillSound(Level world, BlockPos pos, Player player, FluidStack transferred) {
     world.playSound(null, pos, getFillSound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
     player.displayClientMessage(Component.translatable(KEY_DRAINED, COMMA_FORMAT.format(transferred.getAmount()), transferred.getDisplayName()), true);
-  }
-
-  /** @deprecated use {@link #interactWithContainer(Level, BlockPos, Player, InteractionHand, BlockHitResult)} */
-  @Deprecated(forRemoval = true)
-  public static boolean interactWithFluidItem(Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-    return interactWithContainer(world, pos, player, hand, hit).hasContainer();
   }
 
   /**

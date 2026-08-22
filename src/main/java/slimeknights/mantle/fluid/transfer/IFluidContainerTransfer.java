@@ -27,17 +27,6 @@ public interface IFluidContainerTransfer extends IJsonSerializable {
 
   /**
    * Performs the actual transfer into or out of the handler
-   * @param stack    Stack to transfer
-   * @param fluid    Current fluid the handler allows draining. Does not mean the handler may not accept other fluids
-   * @param handler  Handler either receiving or giving fluid
-   * @return  container after the transfer and the fluid transferred, null if the transfer failed
-   */
-  @Deprecated(forRemoval = true)
-  @Nullable
-  TransferResult transfer(ItemStack stack, FluidStack fluid, IFluidHandler handler);
-
-  /**
-   * Performs the actual transfer into or out of the handler
    * @param stack      Stack to transfer
    * @param fluid      Current fluid the handler allows draining. Does not mean the handler may not accept other fluids
    * @param handler    Handler either receiving or giving fluid
@@ -45,9 +34,7 @@ public interface IFluidContainerTransfer extends IJsonSerializable {
    * @return  container after the transfer and the fluid transferred, null if the transfer failed
    */
   @Nullable
-  default TransferResult transfer(ItemStack stack, FluidStack fluid, IFluidHandler handler, TransferDirection direction) {
-    return transfer(stack, fluid, handler);
-  }
+  TransferResult transfer(ItemStack stack, FluidStack fluid, IFluidHandler handler, TransferDirection direction);
 
   /**
    * Result after transferring a fluid
@@ -81,21 +68,6 @@ public interface IFluidContainerTransfer extends IJsonSerializable {
     /** If true, may empty the item */
     public boolean canFill() {
       return this != EMPTY_ITEM;
-    }
-  }
-
-  /** Temporary interface to make it easier to work with the method deprecation */
-  interface WithDirection extends IFluidContainerTransfer {
-    @Nullable
-    @Override
-    TransferResult transfer(ItemStack stack, FluidStack fluid, IFluidHandler handler, TransferDirection direction);
-
-    @SuppressWarnings("removal")
-    @Nullable
-    @Override
-    @Deprecated(forRemoval = true)
-    default TransferResult transfer(ItemStack stack, FluidStack fluid, IFluidHandler handler) {
-      return transfer(stack, fluid, handler, TransferDirection.AUTO);
     }
   }
 }

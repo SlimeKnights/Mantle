@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 /** Fluid transfer info that fills a fluid into an item */
 @RequiredArgsConstructor
-public class FillFluidContainerTransfer implements IFluidContainerTransfer.WithDirection {
+public class FillFluidContainerTransfer implements IFluidContainerTransfer {
   public static final ResourceLocation ID = Mantle.getResource("fill_item");
 
   private final Ingredient input;

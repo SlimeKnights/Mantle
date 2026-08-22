@@ -75,18 +75,6 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericData
     addFillEmpty(prefix, item, container, fluid.result(amount), fluid.ingredient(amount), nbt, conditions);
   }
 
-  /** @deprecated use {@link #addFillEmpty(String, ItemLike, ItemLike, Fluid, TagKey, int, boolean, ICondition...)} */
-  @Deprecated(forRemoval = true)
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, fluid, tag, amount, false, conditions);
-  }
-
-  /** @deprecated use {@link #addFillEmpty(String, ItemLike, ItemLike, Fluid, TagKey, int, boolean, ICondition...)} */
-  @Deprecated(forRemoval = true)
-  protected void addFillEmptyNBT(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, fluid, tag, amount, true, conditions);
-  }
-
   @Override
   public CompletableFuture<?> run(CachedOutput cache) {
     addTransfers();

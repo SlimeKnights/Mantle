@@ -18,12 +18,6 @@ public class EmptyFluidWithNBTTransfer extends EmptyFluidContainerTransfer {
     super(input, filled, fluid);
   }
 
-  /** @deprecated use {@link #EmptyFluidWithNBTTransfer(Ingredient, ItemOutput, FluidOutput)} */
-  @Deprecated(forRemoval = true)
-  public EmptyFluidWithNBTTransfer(Ingredient input, ItemOutput filled, FluidStack fluid) {
-    this(input, filled, FluidOutput.fromStack(fluid));
-  }
-
   @Override
   protected FluidStack getFluid(ItemStack stack) {
     // TODO: merge NBT?

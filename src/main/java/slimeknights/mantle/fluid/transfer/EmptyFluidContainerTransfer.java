@@ -27,18 +27,12 @@ import java.util.function.Consumer;
 
 /** Fluid transfer info that empties a fluid from an item */
 @RequiredArgsConstructor
-public class EmptyFluidContainerTransfer implements IFluidContainerTransfer.WithDirection {
+public class EmptyFluidContainerTransfer implements IFluidContainerTransfer {
   public static final ResourceLocation ID = Mantle.getResource("empty_item");
 
   protected final Ingredient input;
   protected final ItemOutput result;
   protected final FluidOutput fluid;
-
-  /** @deprecated use {@link #EmptyFluidContainerTransfer(Ingredient, ItemOutput, FluidOutput)} */
-  @Deprecated(forRemoval = true)
-  public EmptyFluidContainerTransfer(Ingredient input, ItemOutput result, FluidStack fluid) {
-    this(input, result, FluidOutput.fromStack(fluid));
-  }
 
   @Override
   public void addRepresentativeItems(Consumer<Item> consumer) {
