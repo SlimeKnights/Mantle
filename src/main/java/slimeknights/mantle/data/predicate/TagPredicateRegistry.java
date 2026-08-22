@@ -29,12 +29,6 @@ public class TagPredicateRegistry<R,T> extends PredicateRegistry<T> {
     this.register(Mantle.getResource("tag"), tagLoader);
   }
 
-  /** @deprecated use {@link #TagPredicateRegistry(String, IJsonPredicate, IJsonPredicate, Loadable, BiPredicate)} */
-  @Deprecated(forRemoval = true)
-  public TagPredicateRegistry(String name, IJsonPredicate<T> anyInstance, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
-    this(name, anyInstance, null, tagKey, tagMatcher);
-  }
-
   /** Creates a new tag predicate */
   public IJsonPredicate<T> tag(TagKey<R> tag) {
     return new TagPredicate(tag);

@@ -36,12 +36,6 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
     this.register(Mantle.getResource(fallbackName), fallbackLoader);
   }
 
-  /** @deprecated use {@link #FallbackPredicateRegistry(String, IJsonPredicate, IJsonPredicate, PredicateRegistry, Function, String)} */
-  @Deprecated(forRemoval = true)
-  public FallbackPredicateRegistry(String name, IJsonPredicate<T> anyInstance, PredicateRegistry<F> fallback, Function<T,F> getter, String fallbackName) {
-    this(name, anyInstance, null, fallback, getter, fallbackName);
-  }
-
   /** Creates a fallback predicate instance */
   public IJsonPredicate<T> fallback(IJsonPredicate<F> predicate) {
     return new FallbackPredicate(predicate);

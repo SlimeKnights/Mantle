@@ -35,12 +35,6 @@ public class RegistryPredicateRegistry<R,T> extends TagPredicateRegistry<R,T> {
     this.register(Mantle.getResource("set"), setLoader);
   }
 
-  /** @deprecated use {@link #RegistryPredicateRegistry(String, IJsonPredicate, IJsonPredicate, Loadable, Function, String, Loadable, BiPredicate)} */
-  @Deprecated(forRemoval = true)
-  public RegistryPredicateRegistry(String name, IJsonPredicate<T> anyInstance, Loadable<R> registry, Function<T,R> getter, String setKey, Loadable<TagKey<R>> tagKey, BiPredicate<TagKey<R>,T> tagMatcher) {
-    this(name, anyInstance, null, registry, getter, setKey, tagKey, tagMatcher);
-  }
-
   /** Creates a new set predicate given the passed values */
   public IJsonPredicate<T> setOf(Set<R> values) {
     return new SetPredicate(values);

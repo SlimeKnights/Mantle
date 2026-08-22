@@ -50,12 +50,6 @@ public class PredicateRegistry<T> extends DefaultingLoaderRegistry<IJsonPredicat
     this.register(Mantle.getResource("or"), orLoader);
   }
 
-  /** @deprecated use {@link #PredicateRegistry(String, IJsonPredicate, IJsonPredicate)} */
-  @Deprecated(forRemoval = true)
-  public PredicateRegistry(String name, IJsonPredicate<T> anyInstance) {
-    this(name, anyInstance, null);
-  }
-
   /**
    * Inverts the given predicate
    * @param predicate  Predicate to invert
