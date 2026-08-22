@@ -1,4 +1,4 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.argument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -22,7 +22,6 @@ import static slimeknights.mantle.Mantle.getResource;
 
 /**
  * Argument type that supports any vanilla registry. Due to the lack of context, not a true argument type but rather helpers.
- * TODO 1.21: move to {@link slimeknights.mantle.command.argument}.
  * @see slimeknights.mantle.command.argument.TagSourceArgument
  */
 public class RegistryArgument {
@@ -39,11 +38,10 @@ public class RegistryArgument {
 
   /** Creates and registers all suggestion providers */
   @Internal
-  static void registerSuggestions() {
+  public static void registerSuggestions() {
     REGISTRY = register(getResource("registry"), (context, builder) ->
       SharedSuggestionProvider.suggestResource(context.getSource().registryAccess().registries().map(entry -> entry.key().location()), builder));
-    // TODO 1.21: rename to "registry_tags"
-    TAG = register(getResource("valid_tags"), (context, builder) -> {
+    TAG = register(getResource("registry_tags"), (context, builder) -> {
       Registry<?> result = get(context);
       return SharedSuggestionProvider.suggestResource(result.getTagNames().map(TagKey::location), builder);
     });
@@ -63,11 +61,8 @@ public class RegistryArgument {
     return Commands.argument("type", registry()).suggests(REGISTRY);
   }
 
-  /**
-   * Gets the result of this argument.
-   * TODO 1.21: rename to {@code get}
-   */
-  public static Registry<?> getResult(CommandContext<? extends SharedSuggestionProvider> context, String name) throws CommandSyntaxException {
+  /** Gets the result of this argument. */
+  public static Registry<?> get(CommandContext<? extends SharedSuggestionProvider> context, String name) throws CommandSyntaxException {
     ResourceLocation id = context.getArgument(name, ResourceLocation.class);
     return context.getSource().registryAccess()
                    .registry(ResourceKey.createRegistryKey(id))
@@ -76,6 +71,6 @@ public class RegistryArgument {
 
   /** Gets the result of this argument */
   public static Registry<?> get(CommandContext<? extends SharedSuggestionProvider> context) throws CommandSyntaxException {
-    return getResult(context, "type");
+    return get(context, "type");
   }
 }

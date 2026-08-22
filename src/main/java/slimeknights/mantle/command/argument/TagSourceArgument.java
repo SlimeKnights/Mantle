@@ -27,7 +27,7 @@ import static slimeknights.mantle.Mantle.getResource;
 
 /**
  * Argument type that supports any vanilla registry plus custom tag sources. Due to the lack of context, not a true argument type but rather helpers.
- * @see slimeknights.mantle.command.RegistryArgument
+ * @see RegistryArgument
  */
 public class TagSourceArgument {
   /* Name is invalid */

@@ -95,12 +95,12 @@ public class HarvestTiersCommand {
     // if requested, save
     if (saveFile) {
       // save file
-      File output = new File(DumpAllTagsCommand.getOutputFile(context), HARVEST_TIER_PATH);
+      File output = new File(GeneratePackHelper.getDataDumpFile(context), HARVEST_TIER_PATH);
       Path path = output.toPath();
       try {
         Files.createDirectories(path.getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-          writer.write(DumpTagCommand.GSON.toJson(json));
+          writer.write(GeneratePackHelper.GSON.toJson(json));
         }
       } catch (IOException ex) {
         Mantle.logger.error("Couldn't save harvests tiers to {}", path, ex);
@@ -109,7 +109,7 @@ public class HarvestTiersCommand {
     } else {
       // print to console
       context.getSource().sendSuccess(() -> SUCCESS_LOG, true);
-      Mantle.logger.info("Dump of harvests tiers:\n{}", DumpTagCommand.GSON.toJson(json));
+      Mantle.logger.info("Dump of harvests tiers:\n{}", GeneratePackHelper.GSON.toJson(json));
     }
     // return a number to finish
     return sortedTiers.size();

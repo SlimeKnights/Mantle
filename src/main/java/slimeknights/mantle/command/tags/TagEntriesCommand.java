@@ -1,7 +1,5 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.tags;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -16,6 +14,8 @@ import net.minecraft.tags.TagFile;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.tags.TagLoader.EntryWithSource;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.command.GeneratePackHelper;
+import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.command.argument.TagSource;
 import slimeknights.mantle.command.argument.TagSourceArgument;
 import slimeknights.mantle.util.JsonHelper;
@@ -28,13 +28,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Command that dumps a tag into a JSON object.
- * TODO 1.21: rename to {@code TagEntriesCommand}.
- * TODO 1.21: move to {@link slimeknights.mantle.command.tags}.
- */
-public class DumpTagCommand {
-  protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+/** Command that dumps a tag into a JSON object. */
+public class TagEntriesCommand {
 
   /**
    * Registers this sub command with the root command
@@ -89,7 +84,7 @@ public class DumpTagCommand {
 
   /** Converts the given entry list to a string tag file */
   public static String tagToJson(List<TagLoader.EntryWithSource> entries) {
-    return GSON.toJson(JsonHelper.serialize(TagFile.CODEC, new TagFile(
+    return GeneratePackHelper.GSON.toJson(JsonHelper.serialize(TagFile.CODEC, new TagFile(
       // TODO: cancel out matching entries?
       entries.stream().filter(e -> !e.remove()).map(EntryWithSource::entry).toList(),
       true,
@@ -128,7 +123,7 @@ public class DumpTagCommand {
     List<Resource> resources = manager.getResourceStack(path);
     // if the tag does not exist in the collection, probably an invalid tag name
     if (resources.isEmpty() && !registry.hasTag(name)) {
-      throw ViewTagCommand.TAG_NOT_FOUND.create(regName, name);
+      throw TagValuesCommand.TAG_NOT_FOUND.create(regName, name);
     }
 
     // simply create a tag builder
@@ -140,7 +135,7 @@ public class DumpTagCommand {
     switch (action) {
       case SAVE -> {
         // save creates a file in the data dump location of the tag at the proper path
-        Path output = DumpAllTagsCommand.getOutputFile(context).toPath().resolve(path.getNamespace() + "/" + path.getPath());
+        Path output = GeneratePackHelper.getDataDumpFile(context).toPath().resolve(path.getNamespace() + "/" + path.getPath());
         saveTag(list, output);
         context.getSource().sendSuccess(() -> Component.translatable("command.mantle.dump_tag.success_log", regName, name, GeneratePackHelper.getOutputComponent(output)), true);
       }

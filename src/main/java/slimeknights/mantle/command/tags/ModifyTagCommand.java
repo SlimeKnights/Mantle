@@ -91,7 +91,7 @@ public class ModifyTagCommand {
     ResourceLocation tag = context.getArgument("tag", ResourceLocation.class);
     ResourceOrTagKeyArgument.Result entry = ResourceOrTagKeyArgument.get(context, "entry");
 
-    // setup the pack
+    // set up the pack
     CommandSourceStack source = context.getSource();
     Path pack = GeneratePackHelper.getDatapackPath(source.getServer());
     GeneratePackHelper.saveMcmeta(pack);
@@ -154,7 +154,7 @@ public class ModifyTagCommand {
     ResourceLocation regName = registry.key().location();
     ResourceLocation tag = context.getArgument("tag", ResourceLocation.class);
 
-    // setup the pack
+    // set up the pack
     CommandSourceStack source = context.getSource();
     Path pack = GeneratePackHelper.getDatapackPath(source.getServer());
     GeneratePackHelper.saveMcmeta(pack);
@@ -191,7 +191,7 @@ public class ModifyTagCommand {
     return false;
   }
 
-  /** Adds the entry to the list, skipping if already presnet */
+  /** Adds the entry to the list, skipping if already present */
   private static boolean add(List<TagEntry> entries, TagEntry toAdd) {
     for (TagEntry entry : entries) {
       if (equals(entry, toAdd)) {

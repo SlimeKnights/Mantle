@@ -54,7 +54,7 @@ public class DumpLootModifiers {
     // logic based on forge logic for reading loot managers
     for (Resource resource : manager.getResourceStack(GLOBAL_LOOT_MODIFIERS)) {
       try (Reader reader = resource.openAsReader()) {
-        JsonObject json = GsonHelper.fromJson(DumpTagCommand.GSON, reader, JsonObject.class);
+        JsonObject json = GsonHelper.fromJson(GeneratePackHelper.GSON, reader, JsonObject.class);
         if (json == null) {
           // no json
           Mantle.logger.error("Couldn't load global loot modifiers from {} in data pack {} as it is empty or null", GLOBAL_LOOT_MODIFIERS, resource.sourcePackId());
@@ -90,12 +90,12 @@ public class DumpLootModifiers {
     // if requested, save
     if (saveFile) {
       // save file
-      File output = new File(DumpAllTagsCommand.getOutputFile(context), LOOT_MODIFIER_PATH);
+      File output = new File(GeneratePackHelper.getDataDumpFile(context), LOOT_MODIFIER_PATH);
       Path path = output.toPath();
       try {
         Files.createDirectories(path.getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-          writer.write(DumpTagCommand.GSON.toJson(json));
+          writer.write(GeneratePackHelper.GSON.toJson(json));
         }
       } catch (IOException ex) {
         Mantle.logger.error("Couldn't save global loot manager to {}", path, ex);
@@ -104,7 +104,7 @@ public class DumpLootModifiers {
     } else {
       // print to console
       context.getSource().sendSuccess(() -> LOOT_MODIFIER_SUCCESS_LOG, true);
-      Mantle.logger.info("Dump of global loot modifiers:\n{}", DumpTagCommand.GSON.toJson(json));
+      Mantle.logger.info("Dump of global loot modifiers:\n{}", GeneratePackHelper.GSON.toJson(json));
     }
     // return a number to finish
     return finalLocations.size();

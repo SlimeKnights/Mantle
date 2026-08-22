@@ -8,6 +8,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import slimeknights.mantle.command.argument.RegistryArgument;
 import slimeknights.mantle.command.argument.TagSourceArgument;
 import slimeknights.mantle.recipe.helper.TagPreference;
 

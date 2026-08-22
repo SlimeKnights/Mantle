@@ -1,4 +1,4 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.tags;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -8,18 +8,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.command.argument.TagSource;
 import slimeknights.mantle.command.argument.TagSourceArgument;
 
 import java.util.Collection;
 import java.util.Objects;
 
-/**
- * Command that lists all values in a tag.
- * TODO 1.21: rename to {@code TagValuesCommand}.
- * TODO 1.21: move to {@link slimeknights.mantle.command.tags}.
- */
-public class ViewTagCommand {
+/** Command that lists all values in a tag. */
+public class TagValuesCommand {
   /** Tag has no values */
   private static final Component EMPTY = Component.translatable("command.mantle.tag.empty");
   /** Tag type cannot be found */
@@ -31,7 +28,7 @@ public class ViewTagCommand {
    */
   public static void register(LiteralArgumentBuilder<CommandSourceStack> subCommand) {
     subCommand.requires(source -> MantleCommand.requiresDebugInfoOrOp(source, MantleCommand.PERMISSION_GAME_COMMANDS))
-      .then(TagSourceArgument.argument().then(TagSourceArgument.tagArgument("name").executes(ViewTagCommand::run)));
+      .then(TagSourceArgument.argument().then(TagSourceArgument.tagArgument("name").executes(TagValuesCommand::run)));
   }
 
   /**

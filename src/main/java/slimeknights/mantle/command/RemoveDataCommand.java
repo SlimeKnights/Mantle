@@ -52,7 +52,7 @@ public class RemoveDataCommand {
   }
 
   /** Fetches a resource key for the given registry */
-  @SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "unchecked"})
+  @SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "unchecked", "SameParameterValue"})
   private static <T> ResourceKey<T> getResourceKey(CommandContext<CommandSourceStack> context, String name, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
     ResourceKey<?> key = context.getArgument(name, ResourceKey.class);
     if (key.isFor(registry)) {

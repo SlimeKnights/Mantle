@@ -1,4 +1,4 @@
-package slimeknights.mantle.command;
+package slimeknights.mantle.command.tags;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -44,6 +44,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
+import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.command.argument.RegistryTagSource;
 import slimeknights.mantle.command.argument.TagSource;
 import slimeknights.mantle.command.argument.TagSourceArgument;
@@ -53,10 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Command to list all tags for an entry.
- * TODO 1.21: move to {@link slimeknights.mantle.command.tags}.
- */
+/** Command to list all tags for an entry. */
 @SuppressWarnings("deprecation")
 public class TagsForCommand {
   /** Tag type cannot be found */
