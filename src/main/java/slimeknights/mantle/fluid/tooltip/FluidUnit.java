@@ -1,20 +1,21 @@
 package slimeknights.mantle.fluid.tooltip;
 
-import lombok.RequiredArgsConstructor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import slimeknights.mantle.data.loadable.primitive.IntLoadable;
+import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 import java.util.List;
 
 /**
  * Single entry for text options
  */
-@SuppressWarnings("ClassCanBeRecord") // needed in GSON
-@RequiredArgsConstructor
-public class FluidUnit {
-
-  private final String key;
-  private final int needed;
+public record FluidUnit(String key, int needed) {
+  public static final RecordLoadable<FluidUnit> LOADABLE = RecordLoadable.create(
+    StringLoadable.DEFAULT.requiredField("key", FluidUnit::key),
+    IntLoadable.FROM_ONE.requiredField("needed", FluidUnit::needed),
+    FluidUnit::new);
 
   /**
    * Gets the display text for this fluid entry

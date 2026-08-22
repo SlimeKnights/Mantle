@@ -3,6 +3,8 @@ package slimeknights.mantle.fluid.tooltip;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
@@ -11,8 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.data.predicate.IJsonPredicate;
+import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +31,7 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
   private final String modId;
 
   public AbstractFluidTooltipProvider(PackOutput output, String modId) {
-    super(output, Target.RESOURCE_PACK, FluidTooltipHandler.FOLDER, FluidTooltipHandler.GSON);
+    super(output, Target.RESOURCE_PACK, FluidTooltipHandler.FOLDER);
     this.modId = modId;
   }
 
@@ -55,12 +58,16 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
     return new ResourceLocation(modId, name);
   }
 
-  /** Adds a fluid to the builder */
-  protected FluidUnitListBuilder add(ResourceLocation id, @Nullable TagKey<Fluid> tag) {
+  /**
+   * Adds a fluid to the builder. By default, has no fluid.
+   * @see FluidUnitListBuilder#fluid(IJsonPredicate)
+   * @see FluidUnitListBuilder#tag(TagKey)
+   */
+  protected FluidUnitListBuilder add(ResourceLocation id) {
     if (redirects.containsKey(id)) {
       throw new IllegalArgumentException(id + " is already registered as a redirect");
     }
-    FluidUnitListBuilder newBuilder = new FluidUnitListBuilder(tag);
+    FluidUnitListBuilder newBuilder = new FluidUnitListBuilder();
     FluidUnitListBuilder original = builders.put(id, newBuilder);
     if (original != null) {
       throw new IllegalArgumentException(id + " is already registered");
@@ -68,24 +75,23 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
     return newBuilder;
   }
 
-  /** Adds a fluid to the builder */
-  protected FluidUnitListBuilder add(String id, TagKey<Fluid> tag) {
-    return add(id(id), tag);
-  }
-
-  /** Adds a fluid to the builder using the tag name as the ID */
-  protected FluidUnitListBuilder add(TagKey<Fluid> tag) {
-    return add(id(tag.location().getPath()), tag);
-  }
-
-  /** Adds a fluid to the builder with no tag */
-  protected FluidUnitListBuilder add(ResourceLocation id) {
-    return add(id, null);
-  }
-
-  /** Adds a fluid to the builder with no tag */
+  /**
+   * Adds a fluid to the builder.
+   * @see FluidUnitListBuilder#fluid(IJsonPredicate)
+   * @see FluidUnitListBuilder#tag(TagKey)
+   */
   protected FluidUnitListBuilder add(String id) {
-    return add(id(id), null);
+    return add(id(id));
+  }
+
+  /** Adds a fluid to the builder using the given tag. Alias for most common operation. */
+  protected FluidUnitListBuilder add(String id, TagKey<Fluid> tag) {
+    return add(id).tag(tag);
+  }
+
+  /** Adds a fluid to the builder using the tag name as the ID. */
+  protected FluidUnitListBuilder add(TagKey<Fluid> tag) {
+    return add(tag.location().getPath(), tag);
   }
 
   /** Adds a redirect from a named builder to a target */
@@ -103,9 +109,15 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
   @SuppressWarnings("unused")
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   protected class FluidUnitListBuilder {
-    @Nullable
-    private final TagKey<Fluid> tag;
+    @Accessors(fluent = true)
+    @Setter
+    private IJsonPredicate<Fluid> fluid = FluidPredicate.NONE;
     private final List<FluidUnit> units = new ArrayList<>();
+
+    /** Sets the fluid predicate to a tag predicate */
+    public FluidUnitListBuilder tag(TagKey<Fluid> tag) {
+      return fluid(FluidPredicate.tag(tag));
+    }
 
     /** Adds a unit with a full translation key */
     public FluidUnitListBuilder addUnitRaw(String key, int amount) {
@@ -125,7 +137,7 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
 
     /** Builds the final instance */
     private FluidUnitList build() {
-      return new FluidUnitList(tag, List.copyOf(units));
+      return new FluidUnitList(fluid, List.copyOf(units));
     }
   }
 }

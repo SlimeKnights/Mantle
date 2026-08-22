@@ -1,19 +1,15 @@
 package slimeknights.mantle.fluid.tooltip;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
@@ -26,8 +22,7 @@ import net.minecraftforge.fml.ModList;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.TooltipKey;
-import slimeknights.mantle.data.gson.TagKeySerializer;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
+import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
@@ -48,15 +43,6 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
   public static final Component HOLD_SHIFT = Mantle.makeComponent("gui", "fluid.hold_shift").withStyle(ChatFormatting.GRAY);
   /** Folder for saving the logic */
   public static final String FOLDER = "mantle/fluid_tooltips";
-  /** GSON instance */
-  // TODO: do we even need GSON here? I feel a classical serializer is sufficient as this class is pretty simple
-  public static final Gson GSON = (new GsonBuilder())
-    .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-    .registerTypeAdapter(FluidIngredient.class, FluidIngredient.LOADABLE)
-    .registerTypeAdapter(TagKey.class, new TagKeySerializer<>(Registries.FLUID))
-    .setPrettyPrinting()
-    .disableHtmlEscaping()
-    .create();
 
   /** ID of the default fallback */
   public static final ResourceLocation DEFAULT_ID = Mantle.getResource("fallback");
@@ -65,7 +51,7 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
   private static final FluidUnit BUCKET = new FluidUnit(Mantle.makeDescriptionId("gui", "fluid.bucket"), 1000);
   private static final FluidUnit MILLIBUCKET = new FluidUnit(Mantle.makeDescriptionId("gui", "fluid.millibucket"), 1);
   /** Default fallback in case resource pack has none */
-  private static final FluidUnitList DEFAULT_LIST = new FluidUnitList(null, Collections.singletonList(BUCKET));
+  private static final FluidUnitList DEFAULT_LIST = new FluidUnitList(FluidPredicate.NONE, Collections.singletonList(BUCKET));
 
   /** Formatter as a biconsumer, shows up in a few places */
   public static final BiConsumer<Integer,List<Component>> BUCKET_FORMATTER = FluidTooltipHandler::appendBuckets;
@@ -91,14 +77,14 @@ public class FluidTooltipHandler extends SimpleJsonResourceReloadListener {
   }
 
   private FluidTooltipHandler() {
-    super(GSON, FOLDER);
+    super(JsonHelper.DEFAULT_GSON, FOLDER);
   }
 
   /** Loads from JSON */
   @Nullable
   private static FluidUnitList loadList(ResourceLocation key, JsonElement json) {
     try {
-      return GSON.fromJson(json, FluidUnitList.class);
+      return FluidUnitList.LOADABLE.convert(json, key.toString());
     } catch (JsonSyntaxException e) {
       log.error("Failed to load fluid container transfer info from {}", key, e);
       return null;
