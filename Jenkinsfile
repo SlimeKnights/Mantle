@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '10'))
+    }
 
     stages {
         stage('Checkout') {
@@ -11,7 +15,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./gradlew build -PBUILD_NUMBER=${env.BUILD_NUMBER} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_8} ./gradlew build -PBUILD_NUMBER=${env.BUILD_NUMBER} --no-daemon"
             }
         }
 
@@ -24,7 +28,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh "./gradlew publishMavenJavaPublicationToMavenRepository -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_8} ./gradlew publishMavenJavaPublicationToMavenRepository -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
     }
