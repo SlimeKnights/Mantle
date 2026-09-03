@@ -2,6 +2,7 @@ package slimeknights.mantle.util;
 
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -101,5 +103,26 @@ public class RegistryHelper {
    */
   public static <T> Supplier<T> getHolder(DefaultedRegistry<T> registry, T entry) {
     return registry.getHolder(registry.getId(entry)).orElseThrow();
+  }
+
+  /**
+   * Checks if the given list of values is the same as the given tag.
+   * @param tag     Tag to check
+   * @param values  List of values
+   * @return  True if the same
+   */
+  public static boolean isTagEquivalent(HolderSet.Named<EntityType<?>> tag, List<EntityType<?>> values) {
+    int count = tag.size();
+    if (count != values.size()) {
+      return false;
+    }
+    for (int i = 0; i < count; i++) {
+      EntityType<?> tagValue = tag.get(i).value();
+      EntityType<?> value = values.get(i);
+      if (!value.equals(tagValue)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
