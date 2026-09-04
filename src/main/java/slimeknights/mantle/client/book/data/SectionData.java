@@ -110,8 +110,7 @@ public class SectionData implements IDataItem, IConditional, IHTML {
   }
 
   public String getTitle() {
-    String title = this.parent.strings.get(this.name);
-    return title == null ? this.name : title;
+    return this.translate(this.name);
   }
 
   public int getPageCount() {
