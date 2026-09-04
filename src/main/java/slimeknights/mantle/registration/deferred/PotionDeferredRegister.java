@@ -63,6 +63,7 @@ public class PotionDeferredRegister extends DeferredRegisterWrapper<Potion> {
 
     /** Adds the given potion type */
     private Builder with(PotionType type, int duration, int amplifier) {
+      // TODO 1.21: normal should have no prefix, not just an underscore. Move the underscore addition to line below
       String prefix = type == PotionType.NORMAL ? "" : type.toString().toLowerCase(Locale.ROOT);
       builder.put(type, register(prefix + '_' + name, () -> new Potion(modID + "." + name, new MobEffectInstance(effect.get(), duration, amplifier))));
       return this;
