@@ -6,10 +6,13 @@ import io.netty.handler.codec.EncoderException;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.mapping.SetLoadable;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /** Common logic for {@link RegistryLoadable} and {@link LazyRegistryLoadable} */
 public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
@@ -64,6 +67,11 @@ public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
       throw new EncoderException("Registry " + registryId() + " cannot be located");
     }
     buffer.writeId(registry, object);
+  }
+
+  @Override
+  default Loadable<Set<T>> set(int minSize) {
+    return new SetLoadable.Ordered<>(this, minSize);
   }
 }
 

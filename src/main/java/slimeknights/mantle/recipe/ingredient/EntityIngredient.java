@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Ingredient accepting an entity or an entity tag as an input
@@ -191,7 +190,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
     @Override
     public Set<EntityType<?>> getTypes() {
       if (types == null) {
-        types = RegistryHelper.getTagValueStream(BuiltInRegistries.ENTITY_TYPE, tag).collect(Collectors.toUnmodifiableSet());
+        types = RegistryHelper.getTagValueStream(BuiltInRegistries.ENTITY_TYPE, tag).collect(ImmutableSet.toImmutableSet());
       }
       return types;
     }
@@ -223,7 +222,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
       if (allTypes == null) {
         allTypes = ingredients.stream()
                               .flatMap(ingredient -> ingredient.getTypes().stream())
-                              .collect(Collectors.toUnmodifiableSet());
+                              .collect(ImmutableSet.toImmutableSet());
       }
       return allTypes;
     }
