@@ -53,6 +53,11 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityInput> {
   }
 
   @Override
+  public Object getUid(EntityInput ingredient, UidContext context) {
+    return ingredient.type();
+  }
+
+  @Override
   public ResourceLocation getResourceLocation(EntityInput type) {
     return Loadables.ENTITY_TYPE.getKey(type.type());
   }
