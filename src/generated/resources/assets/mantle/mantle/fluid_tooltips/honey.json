@@ -1,5 +1,8 @@
 {
-  "tag": "forge:honey",
+  "fluid": {
+    "type": "mantle:tag",
+    "tag": "forge:honey"
+  },
   "units": [
     {
       "key": "gui.mantle.fluid.bucket",

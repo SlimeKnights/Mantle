@@ -1,5 +1,8 @@
 {
-  "tag": "mantle:soup",
+  "fluid": {
+    "type": "mantle:tag",
+    "tag": "mantle:soup"
+  },
   "units": [
     {
       "key": "gui.mantle.fluid.bowl",

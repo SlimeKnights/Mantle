@@ -1,5 +1,8 @@
 {
-  "tag": "mantle:water",
+  "fluid": {
+    "type": "mantle:tag",
+    "tag": "mantle:water"
+  },
   "units": [
     {
       "key": "gui.mantle.fluid.bucket",

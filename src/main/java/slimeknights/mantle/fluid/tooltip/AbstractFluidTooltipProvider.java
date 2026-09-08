@@ -42,7 +42,7 @@ public abstract class AbstractFluidTooltipProvider extends GenericDataProvider {
   public final CompletableFuture<?> run(CachedOutput cache) {
     addFluids();
     return allOf(Stream.concat(
-      builders.entrySet().stream().map(entry -> saveJson(cache, entry.getKey(), entry.getValue().build())),
+      builders.entrySet().stream().map(entry -> saveJson(cache, entry.getKey(), FluidUnitList.LOADABLE.serialize(entry.getValue().build()))),
       redirects.entrySet().stream().map(entry -> {
       JsonObject json = new JsonObject();
       json.addProperty("redirect", entry.getValue().toString());
