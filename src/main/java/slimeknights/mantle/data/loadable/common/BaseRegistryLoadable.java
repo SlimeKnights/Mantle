@@ -6,7 +6,7 @@ import io.netty.handler.codec.EncoderException;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.mapping.SetLoadable;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -70,7 +70,7 @@ public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
   }
 
   @Override
-  default Loadable<Set<T>> set(int minSize) {
+  default ArrayLoadable<Set<T>> set(int minSize) {
     return new SetLoadable.Ordered<>(this, minSize);
   }
 }
