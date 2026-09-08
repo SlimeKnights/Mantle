@@ -27,3 +27,11 @@ Shared code for Slime Knights mods and others.
     versionRange="${minecraft_range}"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.mantle]]
+    modId="jei"
+    mandatory=false
+    versionRange="${jei_range}"
+    ordering="NONE"
+    side="BOTH"
+

@@ -16,8 +16,9 @@ public class MantleNetwork {
    * Network instance
    * 1: 1.11.101 and before
    * 2: 1.11.102 - New predicate types, enum loadable nullable field optimization
+   * 3: 1.11.108 - New export book command
    */
-  public static final NetworkWrapper INSTANCE = new NetworkWrapper(Mantle.getResource("network"), "2");
+  public static final NetworkWrapper INSTANCE = new NetworkWrapper(Mantle.getResource("network"), "3");
 
   /**
    * Registers packets into this network

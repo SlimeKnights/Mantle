@@ -86,6 +86,13 @@ sourceSets {
     }
 }
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
 minecraft {
     mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
 
@@ -151,7 +158,8 @@ tasks.named('processResources', ProcessResources).configure {
         'version': artifact_version,
         'loader_range': loader_range,
         'minecraft_range': minecraft_range,
-        'forge_range': forge_range
+        'forge_range': forge_range,
+        'jei_range': jei_range
     ]
     inputs.properties replaceProperties
 
