@@ -59,8 +59,12 @@ public class FluidTextureManager implements IEarlySafeManagerReloadListener {
       if (type == null || !id.equals(fluidTypeRegistry.getKey(type))) {
         Mantle.logger.debug("Ignoring fluid texture {} as no fluid type exists with that name", id);
       } else {
-        // parse it if valid
-        map.put(type, FluidTexture.deserialize(GsonHelper.convertToJsonObject(entry.getValue(), "fluid_texture")));
+        try {
+          // parse it if valid
+          map.put(type, FluidTexture.deserialize(GsonHelper.convertToJsonObject(entry.getValue(), "fluid_texture")));
+        } catch (RuntimeException e) {
+          Mantle.logger.error("Failed to deserialize fluid texture {}", id, e);
+        }
       }
     }
     this.textures = map;
