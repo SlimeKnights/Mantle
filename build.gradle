@@ -109,7 +109,7 @@ neoForge {
 
     accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
     // Validate AT files and raise errors when they have invalid targets
-    validateAccessTransformers = false
+    validateAccessTransformers = true
 
     runs {
         client {
