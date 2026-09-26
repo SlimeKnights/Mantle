@@ -2,16 +2,15 @@
  * Mantle
  * Master build file
  * Based on TConstruct's master build file
- * Authors: Sunstrike, ProgWML6
+ * Authors: Sunstrike, ProgWML6, KnightMiner
  * Help from AbrarSyed
 */
 
 plugins {
-    id 'eclipse'
-    id 'idea'
+    id 'java-library'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.0.37]'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id 'idea'
     id 'io.freefair.lombok' version '8.6'
 }
 
@@ -19,8 +18,8 @@ repositories {
     mavenCentral()
     maven {
         // Our maven
-        name "Prog's Maven"
-        url 'https://dvs1.progwml6.com/files/maven'
+        name = "Prog's Maven"
+        url = 'https://dvs1.progwml6.com/files/maven'
     }
     maven {
         // JEI
@@ -29,8 +28,8 @@ repositories {
     }
     maven {
         // for Yarn2MCP
-        name "yarn2mcp"
-        url "https://maven.tterrag.com/"
+        name = "yarn2mcp"
+        url = "https://maven.tterrag.com/"
     }
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
     // flatDir {
@@ -38,11 +37,21 @@ repositories {
     // }
 }
 
+tasks.named('wrapper', Wrapper).configure {
+    // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
+    // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
+    // documentation attached on cursor hover of gradle classes and methods. However, this comes with increased
+    // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
+    // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
+    distributionType = Wrapper.DistributionType.BIN
+}
+
 group = 'slimeknights.mantle'
 base {
     archivesName = 'Mantle'
 }
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+// Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 // sets version to the slimeKnights version format
 task buildInfo {
@@ -76,16 +85,13 @@ if (System.getenv().ARTIFACT_VERSION != null) {
 version = "${minecraft_version}-${artifact_version}"
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}, Version: ${version}"
 
-sourceSets {
-    main {
-        resources {
-            srcDirs "src/generated/resources"
-            //But exclude the cache of the generated data from what gets built
-            exclude '.cache'
-        }
-    }
+sourceSets.main.resources {
+    srcDirs("src/generated/resources")
+    // But exclude the cache of the generated data from what gets built
+    exclude("src/generated/**/.cache") // datagen cache files
 }
 
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
     module {
         downloadJavadoc = true
@@ -93,80 +99,108 @@ idea {
     }
 }
 
-minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
+neoForge {
+    version = project.neo_version
 
-    enableIdeaPrepareRuns = true
-    copyIdeResources = true
+    parchment {
+        mappingsVersion = project.parchment_version
+        minecraftVersion = project.parchment_minecraft
+    }
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+    // Validate AT files and raise errors when they have invalid targets
+    validateAccessTransformers = false
 
     runs {
+        client {
+            client()
 
-        // applies to all the run configs below
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            data()
+
+            // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
+            // gameDirectory = project.file('run-data')
+
+            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        // applies to all the run configs above
         configureEach {
-            workingDirectory project.file('run')
-
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP,CORE'
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
 
             // Recommended logging level for the console
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                mantle {
-                    source sourceSets.main
-                }
-            }
+            logLevel = org.slf4j.event.Level.DEBUG
         }
+    }
 
-        client {
-        }
-
-        server {
-            args '--nogui'
-        }
-
-        data {
-            args '--mod', 'mantle', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
         }
     }
 }
 
 configurations {
+    runtimeClasspath.extendsFrom localRuntime
     deployerJars
 }
                
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
     // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 }
 
-tasks.named('processResources', ProcessResources).configure {
+
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
-        'version': artifact_version,
-        'loader_range': loader_range,
+        'version':         artifact_version,
         'minecraft_range': minecraft_range,
-        'forge_range': forge_range,
-        'jei_range': jei_range
+        'loader_range':    loader_range,
+        'neo_range':       neo_range,
+        'jei_range':       jei_range
     ]
     inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
 }
+
+// Include the output of "generateModMetadata" as an input directory for the build
+// this works with both building through Gradle and the IDE.
+sourceSets.main.resources.srcDir generateModMetadata
+// To avoid having to run "generateModMetadata" manually, make it run on every project reload
+neoForge.ideSyncTask generateModMetadata
 
 tasks.named('jar', Jar).configure {
     manifest {
