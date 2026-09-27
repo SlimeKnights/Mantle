@@ -3,7 +3,7 @@ package slimeknights.mantle.registration.deferred;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.function.Function;
@@ -16,7 +16,7 @@ public class EnumDeferredRegister<T> extends DeferredRegisterWrapper<T> {
   }
 
   /** Registers a standard object */
-  public <I extends T> RegistryObject<I> register(String name, Supplier<? extends I> value) {
+  public <I extends T> DeferredHolder<T,I> register(String name, Supplier<? extends I> value) {
     return register.register(name, value);
   }
 

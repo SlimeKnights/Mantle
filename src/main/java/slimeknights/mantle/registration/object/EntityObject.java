@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;
 
@@ -20,7 +20,7 @@ public class EntityObject<T extends Entity> implements Supplier<EntityType<T>>, 
   private final Supplier<? extends EntityType<T>> type;
   private final Supplier<? extends SpawnEggItem> spawnEgg;
 
-  public EntityObject(RegistryObject<? extends EntityType<T>> type, Supplier<? extends SpawnEggItem> spawnEgg) {
+  public EntityObject(DeferredHolder<EntityType<?>, ? extends EntityType<T>> type, Supplier<? extends SpawnEggItem> spawnEgg) {
     this.id = type.getId();
     this.type = type;
     this.spawnEgg = spawnEgg;

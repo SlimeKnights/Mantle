@@ -75,12 +75,11 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
     this.wallSign = wallSign;
     this.hangingSign = hangingSign;
     this.wallHangingSign = wallHangingSign;
-    ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
+    ResourceLocation tagName = name.withSuffix("_logs");
     this.logBlockTag = BlockTags.create(tagName);
     this.logItemTag = ItemTags.create(tagName);
   }
 
-  @SuppressWarnings("deprecation")
   public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
                          Block log, Block strippedLog, Block wood, Block strippedWood,
                          Block fence, Block fenceGate, Block door, Block trapdoor,
@@ -101,7 +100,7 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
     this.wallSign = getCastedHolder(BuiltInRegistries.BLOCK, wallSign);
     this.hangingSign = getCastedHolder(BuiltInRegistries.BLOCK, hangingSign);
     this.wallHangingSign = getCastedHolder(BuiltInRegistries.BLOCK, wallHangingSign);
-    ResourceLocation tagName = new ResourceLocation(name.getNamespace(), name.getPath() + "_logs");
+    ResourceLocation tagName = name.withSuffix("_logs");
     this.logBlockTag = BlockTags.create(tagName);
     this.logItemTag = ItemTags.create(tagName);
   }

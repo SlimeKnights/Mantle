@@ -95,7 +95,7 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
   }
 
   /**
-   * Gets a list of values in this enum object. Will error if a {@link net.minecraftforge.registries.RegistryObject} cannot be resolved, unlike {@link #forEach(Consumer)}
+   * Gets a list of values in this enum object. Will error if a {@link net.neoforged.neoforge.registries.DeferredHolder} cannot be resolved, unlike {@link #forEach(Consumer)}
    * @return  List of values in the object
    */
   @Override

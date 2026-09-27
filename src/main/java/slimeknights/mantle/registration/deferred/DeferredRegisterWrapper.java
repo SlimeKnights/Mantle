@@ -4,8 +4,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Locale;
@@ -13,7 +13,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
- * Base logic for a deferred register wrapper
+ * Base logic for a deferred register wrapper.
+ * TODO: reevaluate since {@link DeferredRegister} is now extendable.
  * @param <T>  Registry type
  */
 @SuppressWarnings("WeakerAccess")
@@ -47,7 +48,7 @@ public abstract class DeferredRegisterWrapper<T> {
    * @return  Resource location string
    */
   protected ResourceLocation resource(String name) {
-    return new ResourceLocation(modID, name);
+    return ResourceLocation.fromNamespaceAndPath(modID, name);
   }
 
   /**

@@ -9,7 +9,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Deferred register that registers items with wrappers
+ * Deferred register that registers items with wrappers.
+ * TODO: reevaluate in light of {@link net.neoforged.neoforge.registries.DeferredRegister.Items}
  */
 @SuppressWarnings("unused")
 public class ItemDeferredRegister extends DeferredRegisterWrapper<Item> {
