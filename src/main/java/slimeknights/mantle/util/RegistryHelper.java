@@ -2,6 +2,7 @@ package slimeknights.mantle.util;
 
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,12 +15,17 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class RegistryHelper {
   private RegistryHelper() {}
+
+  /** Casts the given registry key to a type. Exists for fix generic issues with generic tag registries. */
+  @SuppressWarnings("unchecked")
+  public static <T> ResourceKey<? extends Registry<T>> castKey(ResourceKey<? extends Registry<?>> registry) {
+    return (ResourceKey<? extends Registry<T>>) registry;
+  }
 
   /** Gets the registry for the given key, dealing with tags */
   @Nullable
@@ -58,7 +64,7 @@ public class RegistryHelper {
     if (index == Registry.DEFAULT) {
       return false;
     }
-    return registry.getHolder(index).filter(holder -> holder.containsTag(tag)).isPresent();
+    return registry.getHolder(index).filter(holder -> holder.is(tag)).isPresent();
   }
 
   /** Checks if the given tag contains the given registry object */
@@ -101,7 +107,7 @@ public class RegistryHelper {
    * @param <T>       Registry type
    * @return  Supplier for the given registry
    */
-  public static <T> Supplier<T> getHolder(DefaultedRegistry<T> registry, T entry) {
+  public static <T> Reference<T> getHolder(DefaultedRegistry<T> registry, T entry) {
     return registry.getHolder(registry.getId(entry)).orElseThrow();
   }
 

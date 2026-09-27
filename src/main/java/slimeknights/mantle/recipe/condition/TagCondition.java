@@ -11,8 +11,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.conditions.IConditionSerializer;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -35,7 +35,8 @@ public abstract class TagCondition<T> implements ICondition {
     if (registry == null) {
       registry = context.getLevel().registryAccess().registry(tag.registry());
       if (registry.isEmpty()) {
-        Mantle.logger.error("Failed to find registry for tag " + tag + " in " + getClass().getSimpleName() + ", this indicates a broken resource or datapack.");
+        Mantle.logger.error("Failed to find registry for tag {} in {}, this indicates a broken resource or datapack.", tag, getClass().getSimpleName());
+        return null;
       }
     }
     return registry.orElse(null);
