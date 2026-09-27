@@ -25,6 +25,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,6 +104,7 @@ public class Mantle {
     modEventBus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
     modEventBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
+    modEventBus.addListener(EventPriority.NORMAL, false, RegisterPayloadHandlersEvent.class, MantleNetwork::registerPackets);
     MantleRecipes.init(modEventBus);
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
 
@@ -116,7 +118,6 @@ public class Mantle {
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
-    MantleNetwork.registerPackets();
     MantleCommand.init();
     OffhandCooldownTracker.init();
     TagPreference.init();

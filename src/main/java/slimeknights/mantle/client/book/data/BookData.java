@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookHelper;
 import slimeknights.mantle.client.book.BookLoader;
@@ -16,7 +17,6 @@ import slimeknights.mantle.client.book.data.content.ContentError;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.screen.book.BookScreen;
-import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.DropLecternBookPacket;
 
 import javax.annotation.Nullable;
@@ -400,9 +400,7 @@ public class BookData implements IDataItem, BookScreenOpener {
   @SuppressWarnings("unused") // API
   public void openGui(BlockPos pos, ItemStack stack) {
     String page = BookHelper.getCurrentSavedPage(stack);
-
-    Consumer<?> bookPickup = (v) -> MantleNetwork.INSTANCE.network.sendToServer(new DropLecternBookPacket(pos));
-
+    Consumer<?> bookPickup = (v) -> PacketDistributor.sendToServer(new DropLecternBookPacket(pos));
     openGui(stack.getHoverName(), page, newPage -> BookLoader.updateSavedPage(pos, newPage), bookPickup);
   }
 

@@ -12,18 +12,13 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
-import slimeknights.mantle.network.NetworkWrapper;
-import slimeknights.mantle.network.packet.ISimplePacket;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -163,9 +158,9 @@ public class JsonHelper {
    * @return  Resource location parsed
    */
   public static ResourceLocation parseResourceLocation(String text, String key) {
-    // basically the inside of ResourceLocation#tryParse, but with a JSON exception instead of being nullable
+    // basically ResourceLocation#tryBySeparator, but with a JSON exception instead of being nullable for the sake of the wrapped exception
     try {
-      return new ResourceLocation(text);
+      return ResourceLocation.bySeparator(text, ':');
     } catch (ResourceLocationException ex) {
       throw new JsonSyntaxException("Expected " + key + " to be a resource location, was '" + text + "'", ex);
     }
@@ -241,43 +236,13 @@ public class JsonHelper {
       .getNamespaces().stream()
       .filter(ResourceLocation::isValidNamespace)
       .flatMap(namespace -> {
-        ResourceLocation location = new ResourceLocation(namespace, path);
+        ResourceLocation location = ResourceLocation.fromNamespaceAndPath(namespace, path);
         return manager.getResourceStack(location).stream()
           .map(preferredPath != null ? resource -> {
             Mantle.logger.warn("Using deprecated path {} in pack {} - use {}:{} instead", location, resource.sourcePackId(), location.getNamespace(), preferredPath);
             return getJson(resource, location);
           } : resource -> JsonHelper.getJson(resource, location));
       }).filter(Objects::nonNull).toList();
-  }
-
-  /** Sends the packet to the given player */
-  private static void sendPackets(NetworkWrapper network, ServerPlayer player, ISimplePacket[] packets) {
-    // on an integrated server, the modifier registries have a single instance on both the client and the server thread
-    // this means syncing is unneeded, and has the side-effect of recreating all the modifier instances (which can lead to unexpected behavior)
-    // as a result, integrated servers just mark fullyLoaded as true without syncing anything, side-effect is listeners may run twice on single player
-
-    // on a dedicated server, the client is running a separate game instance, this is where we send packets, plus fully loaded should already be true
-    // this event is not fired when connecting to a server
-    if (!player.connection.connection.isMemoryConnection()) {
-      PacketTarget target = PacketDistributor.PLAYER.with(() -> player);
-      for (ISimplePacket packet : packets) {
-        network.send(target, packet);
-      }
-    }
-  }
-
-  /** Called when the player logs in to send packets */
-  public static void syncPackets(OnDatapackSyncEvent event, NetworkWrapper network, ISimplePacket... packets) {
-    // send to single player
-    ServerPlayer targetedPlayer = event.getPlayer();
-    if (targetedPlayer != null) {
-      sendPackets(network, targetedPlayer, packets);
-    } else {
-      // send to all players
-      for (ServerPlayer player : event.getPlayerList().getPlayers()) {
-        sendPackets(network, player, packets);
-      }
-    }
   }
 
   /**
@@ -318,11 +283,11 @@ public class JsonHelper {
   /** Parses the given JSON element using the passed codec */
   public static <T> T parse(Codec<T> codec, JsonElement json) throws JsonParseException {
     return codec.parse(new Dynamic<>(JsonOps.INSTANCE, json))
-      .getOrThrow(false, Mantle.logger::error);
+      .getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
   }
 
   /** Serializes the given object using the passed codec */
   public static <T> JsonElement serialize(Codec<T> codec, T object) {
-    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(false, Mantle.logger::error);
+    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
   }
 }

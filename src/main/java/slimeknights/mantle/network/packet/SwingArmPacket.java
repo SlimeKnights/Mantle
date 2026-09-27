@@ -1,49 +1,41 @@
 package slimeknights.mantle.network.packet;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.Mantle;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.mantle.network.MantleStreamCodecs;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
 /** Packet to tell a client to swing an entity arm, as the vanilla one resets cooldown */
-public class SwingArmPacket implements IThreadsafePacket {
-  private final int entityId;
-  private final InteractionHand hand;
+public record SwingArmPacket(int entityId, InteractionHand hand) implements ISimplePacket {
+  public static final Type<SwingArmPacket> TYPE = new Type<>(Mantle.getResource("swing_arm"));
+  public static final StreamCodec<ByteBuf, SwingArmPacket> CODEC = StreamCodec.composite(
+    ByteBufCodecs.VAR_INT, SwingArmPacket::entityId,
+    MantleStreamCodecs.INTERACTION_HAND, SwingArmPacket::hand,
+    SwingArmPacket::new);
 
   public SwingArmPacket(Entity entity, InteractionHand hand) {
-    this.entityId = entity.getId();
-    this.hand = hand;
-  }
-
-  public SwingArmPacket(FriendlyByteBuf buffer) {
-    this.entityId = buffer.readVarInt();
-    this.hand = buffer.readEnum(InteractionHand.class);
+    this(entity.getId(), hand);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer) {
-    buffer.writeVarInt(entityId);
-    buffer.writeEnum(hand);
+  public Type<SwingArmPacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void handleThreadsafe(Context context) {
-    HandleClient.handle(this);
-  }
-
-  private static class HandleClient {
-    private static void handle(SwingArmPacket packet) {
-      Level world = Minecraft.getInstance().level;
-      if (world != null) {
-        Entity entity = world.getEntity(packet.entityId);
-        if (entity instanceof LivingEntity) {
-          OffhandCooldownTracker.swingHand((LivingEntity) entity, packet.hand, false);
-        }
-      }
+  public void handle(IPayloadContext context) {
+    Level level = context.player().level();
+    Entity entity = level.getEntity(entityId);
+    if (entity instanceof LivingEntity living) {
+      OffhandCooldownTracker.swingHand(living, hand, false);
     }
   }
 }

@@ -1,36 +1,35 @@
 package slimeknights.mantle.network.packet;
 
-import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookHelper;
+import slimeknights.mantle.network.ISimplePacket;
+import slimeknights.mantle.network.MantleStreamCodecs;
 
 /**
  * Packet to update the page in a book in the players hand
  */
-@RequiredArgsConstructor
-public class UpdateHeldPagePacket implements IThreadsafePacket {
-  private final InteractionHand hand;
-  private final String page;
-  public UpdateHeldPagePacket(FriendlyByteBuf buffer) {
-    this.hand = buffer.readEnum(InteractionHand.class);
-    this.page = buffer.readUtf(100);
+public record UpdateHeldPagePacket(InteractionHand hand, String page) implements ISimplePacket {
+  public static final Type<UpdateHeldPagePacket> TYPE = new Type<>(Mantle.getResource("update_held_page"));
+  public static final StreamCodec<ByteBuf, UpdateHeldPagePacket> CODEC = StreamCodec.composite(
+    MantleStreamCodecs.INTERACTION_HAND, UpdateHeldPagePacket::hand,
+    ByteBufCodecs.stringUtf8(100), UpdateHeldPagePacket::page,
+    UpdateHeldPagePacket::new);
+
+  @Override
+  public Type<UpdateHeldPagePacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buf) {
-    buf.writeEnum(hand);
-    buf.writeUtf(this.page);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    Player player = context.getSender();
-    if (player != null && this.page != null) {
-      ItemStack stack = player.getItemInHand(hand);
+  public void handle(IPayloadContext context) {
+    if (this.page != null) {
+      ItemStack stack = context.player().getItemInHand(hand);
       if (!stack.isEmpty()) {
         BookHelper.writeSavedPageToBook(stack, this.page);
       }

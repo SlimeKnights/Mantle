@@ -1,28 +1,31 @@
 package slimeknights.mantle.network.packet;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookHelper;
+import slimeknights.mantle.network.ISimplePacket;
 
 /** Packet to update the page in a book in the players inventory */
-public record UpdateInventoryPagePacket(int slot, String page) implements IThreadsafePacket {
-  public UpdateInventoryPagePacket(FriendlyByteBuf buffer) {
-    this(buffer.readVarInt(), buffer.readUtf(100));
+public record UpdateInventoryPagePacket(int slot, String page) implements ISimplePacket {
+  public static final Type<UpdateInventoryPagePacket> TYPE = new Type<>(Mantle.getResource("update_inventory_page"));
+  public static final StreamCodec<ByteBuf, UpdateInventoryPagePacket> CODEC = StreamCodec.composite(
+    ByteBufCodecs.VAR_INT, UpdateInventoryPagePacket::slot,
+    ByteBufCodecs.stringUtf8(100), UpdateInventoryPagePacket::page,
+    UpdateInventoryPagePacket::new);
+
+  @Override
+  public Type<UpdateInventoryPagePacket> type() {
+    return TYPE;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buf) {
-    buf.writeVarInt(slot);
-    buf.writeUtf(page);
-  }
-
-  @Override
-  public void handleThreadsafe(Context context) {
-    Player player = context.getSender();
-    if (player != null && this.page != null && slot >= 0) {
-      ItemStack stack = player.getInventory().getItem(slot);
+  public void handle(IPayloadContext context) {
+    if (this.page != null && slot >= 0) {
+      ItemStack stack = context.player().getInventory().getItem(slot);
       if (!stack.isEmpty()) {
         BookHelper.writeSavedPageToBook(stack, this.page);
       }

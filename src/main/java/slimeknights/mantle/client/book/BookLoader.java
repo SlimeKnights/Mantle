@@ -9,7 +9,8 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.network.PacketDistributor;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.action.StringActionProcessor;
 import slimeknights.mantle.client.book.action.protocol.ProtocolGoToPage;
@@ -37,7 +38,6 @@ import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.transformer.IndexTransformer;
 import slimeknights.mantle.data.gson.ResourceLocationSerializer;
-import slimeknights.mantle.network.MantleNetwork;
 import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
 import slimeknights.mantle.network.packet.UpdateInventoryPagePacket;
 import slimeknights.mantle.network.packet.UpdateLecternPagePacket;
@@ -190,7 +190,7 @@ public class BookLoader implements ResourceManagerReloadListener {
       ItemStack item = player.getItemInHand(hand);
       if (!item.isEmpty()) {
         BookHelper.writeSavedPageToBook(item, page);
-        MantleNetwork.INSTANCE.network.sendToServer(new UpdateHeldPagePacket(hand, page));
+        PacketDistributor.sendToServer(new UpdateHeldPagePacket(hand, page));
       }
     }
   }
@@ -206,7 +206,7 @@ public class BookLoader implements ResourceManagerReloadListener {
       ItemStack item = player.getInventory().getItem(slot);
       if (!item.isEmpty()) {
         BookHelper.writeSavedPageToBook(item, page);
-        MantleNetwork.INSTANCE.network.sendToServer(new UpdateInventoryPagePacket(slot, page));
+        PacketDistributor.sendToServer(new UpdateInventoryPagePacket(slot, page));
       }
     }
   }
@@ -217,7 +217,7 @@ public class BookLoader implements ResourceManagerReloadListener {
    * @param page    New page
    */
   public static void updateSavedPage(BlockPos pos, String page) {
-    MantleNetwork.INSTANCE.network.sendToServer(new UpdateLecternPagePacket(pos, page));
+    PacketDistributor.sendToServer(new UpdateLecternPagePacket(pos, page));
   }
 
   public static Gson getGson() {
