@@ -1,30 +1,31 @@
 package slimeknights.mantle.recipe.helper;
 
-import com.google.gson.JsonObject;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.MapCodec;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.LoadableCodec;
+import slimeknights.mantle.data.loadable.StreamableCodec;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
  * Recipe serializer instance using loadables. Use {@link ContextKey#ID} to get the recipe ID.
  * @param <T>  Recipe type
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRecipeSerializer<T> {
+@Accessors(fluent = true)
+@Getter
+public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T>, Supplier<TypedMap> {
   /** Context key to use if you want the recipe serializer passed into your recipe */
   public static final ContextKey<RecipeSerializer<?>> SERIALIZER = new ContextKey<>("serializer");
   /** Context key to use if you want a type aware serializer in the recipe, requires {@link #of(RecordLoadable, Supplier)} for your serializer. */
@@ -35,7 +36,28 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
   public static final LoadableField<String,Recipe<?>> RECIPE_GROUP = StringLoadable.DEFAULT.defaultField("group", "", Recipe::getGroup);
 
 
-  protected final RecordLoadable<T> loadable;
+  private final MapCodec<T> codec;
+  private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
+
+  protected LoadableRecipeSerializer(RecordLoadable<T> loadable) {
+    // TODO: can we use a more direct mapping from RecordLoadable to a MapCodec? they are conceptually similar
+    this.codec = MapCodec.assumeMapUnsafe(new LoadableCodec<>(loadable, this));
+    this.streamCodec = new StreamableCodec<>(loadable, this);
+  }
+
+  /** Creates the map context for the codecs */
+  @Override
+  public TypedMap get() {
+    return buildContext().build();
+  }
+
+  /** Builds a context */
+  protected TypedMapBuilder buildContext() {
+    return TypedMapBuilder.builder().put(SERIALIZER, this);
+  }
+
+
+  /* Static constructors */
 
   /** Creates a standard serializer from a loadable */
   public static <T extends Recipe<?>> RecipeSerializer<T> of(RecordLoadable<T> loadable) {
@@ -47,43 +69,8 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
     return new TypeAware<>(loadable, type);
   }
 
-  /** Creates a serializer that is deprecated, logging a warning when used */
-  public static <T extends Recipe<?>> RecipeSerializer<T> deprecated(RecordLoadable<T> loadable, String replacement) {
-    return new Deprecated<>(loadable, replacement);
-  }
-
-  /** Builds a context for the given ID */
-  protected TypedMapBuilder buildContext(ResourceLocation id) {
-    return TypedMapBuilder.builder().put(ContextKey.ID, id).put(ContextKey.DEBUG, "Recipe " + id).put(SERIALIZER, this);
-  }
-
-  @Override
-  public T fromJson(ResourceLocation id, JsonObject json) {
-    return loadable.deserialize(json, buildContext(id).build());
-  }
-
-  @Override
-  public T fromNetworkSafe(ResourceLocation id, FriendlyByteBuf buffer) {
-    return loadable.decode(buffer, buildContext(id).build());
-  }
-
-  @Nullable
-  @Override
-  public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
-    try {
-      return fromNetworkSafe(id, buffer);
-    } catch (RuntimeException e) {
-      Mantle.logger.error("{}: Error reading recipe {} from packet using loadable {}", this.getClass().getSimpleName(), id, loadable, e);
-      throw e;
-    }
-  }
-
-  @Override
-  public void toNetworkSafe(FriendlyByteBuf buffer, T recipe) {
-    loadable.encode(buffer, recipe);
-  }
-
-  public static class TypeAware<T extends Recipe<?>> extends LoadableRecipeSerializer<T> implements TypeAwareRecipeSerializer<T> {
+  /** Recipe serializer that passes the recipe type to the recipe class */
+  private static class TypeAware<T extends Recipe<?>> extends LoadableRecipeSerializer<T> implements TypeAwareRecipeSerializer<T> {
     private final Supplier<? extends RecipeType<?>> type;
     protected TypeAware(RecordLoadable<T> loadable, Supplier<? extends RecipeType<?>> type) {
       super(loadable);
@@ -91,40 +78,13 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements LoggingRec
     }
 
     @Override
-    protected TypedMapBuilder buildContext(ResourceLocation id) {
-      return super.buildContext(id).put(TYPE, getType()).put(TYPED_SERIALIZER, this);
+    protected TypedMapBuilder buildContext() {
+      return super.buildContext().put(TYPE, getType()).put(TYPED_SERIALIZER, this);
     }
 
     @Override
     public RecipeType<?> getType() {
       return type.get();
-    }
-
-    @Nullable
-    @Override
-    public T fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
-      try {
-        return fromNetworkSafe(id, buffer);
-      } catch (RuntimeException e) {
-        Mantle.logger.error("{}: Error reading recipe {} of type {} from packet using loadable {}", this.getClass().getSimpleName(), id, getType(), loadable, e);
-        throw e;
-      }
-    }
-  }
-
-  /** Helper class that logs a warning on recipe parse about planned removal */
-  private static class Deprecated<T extends Recipe<?>> extends LoadableRecipeSerializer<T> {
-    private final String replacement;
-    protected Deprecated(RecordLoadable<T> loadable, String replacement) {
-      super(loadable);
-      this.replacement = replacement;
-    }
-
-    @Override
-    public T fromJson(ResourceLocation id, JsonObject json) {
-      T recipe = super.fromJson(id, json);
-      Mantle.logger.warn("Using deprecated recipe serializer {} for recipe {}, {}", BuiltInRegistries.RECIPE_SERIALIZER.getKey(this), recipe.getId(), replacement);
-      return recipe;
     }
   }
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nullable;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Interface for a map where keys are typed so the resulting value is typed. This interface is for a read only map, see {@link MutableTypedMap} for a modifiable variant.
@@ -68,6 +69,9 @@ public interface TypedMap {
       return Set.of();
     }
   };
+
+  /** Gets a supplier to the empty map */
+  Supplier<TypedMap> EMPTY_SUPPLIER = () -> EMPTY;
 
   /** Gets an empty map for the given type */
   static TypedMap empty() {
