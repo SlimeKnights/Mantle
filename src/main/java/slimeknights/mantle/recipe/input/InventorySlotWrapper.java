@@ -1,12 +1,11 @@
-package slimeknights.mantle.recipe.container;
+package slimeknights.mantle.recipe.input;
 
 import lombok.AllArgsConstructor;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.mantle.recipe.SingleItemInput;
 
 /**
- * Implementation of {@link SingleItemInput} to wrap another {@link Container}
+ * Implementation of {@link SingleItemInput} to wrap a {@link Container}
  */
 @AllArgsConstructor
 public class InventorySlotWrapper implements SingleItemInput {

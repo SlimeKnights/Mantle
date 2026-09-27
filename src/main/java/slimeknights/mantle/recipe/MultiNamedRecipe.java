@@ -25,6 +25,7 @@ public interface MultiNamedRecipe<T> {
 
   /**
    * Gets a list of recipes for display in JEI.
+   * Calling multiple times should return the same instances, though the initial list is expected to be lazily loaded and simply cached on the recipe.
    * @param id        ID of the base recipe. IDs of returned recipes should be derived from this ID while remaining unique for the sake of bookmarks.
    * @param provider  Registry access.
    * @return  List of recipes to display.

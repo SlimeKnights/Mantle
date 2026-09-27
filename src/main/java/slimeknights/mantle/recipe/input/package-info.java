@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package slimeknights.mantle.recipe.container;
+package slimeknights.mantle.recipe.input;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
