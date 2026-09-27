@@ -7,9 +7,10 @@ import slimeknights.mantle.data.loadable.field.ConstantField;
 import slimeknights.mantle.data.loadable.field.RecordField;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /** Simple helpers to create exceptions */
-public interface ErrorFactory extends Consumer<String> {
+public interface ErrorFactory extends Consumer<String>, Function<String,RuntimeException> {
   /** Error factory for a json syntax error during parsing */
   ErrorFactory JSON_SYNTAX_ERROR = JsonSyntaxException::new;
   /** Error factory for a decoder exception */
@@ -39,6 +40,12 @@ public interface ErrorFactory extends Consumer<String> {
 
   /** Creates an exception with a string error */
   RuntimeException create(String error);
+
+  /** Alias for {@link #create(String)} to adhere to {@link Function} */
+  @Override
+  default RuntimeException apply(String error) {
+    return create(error);
+  }
 
   /** Creates an exception wrapping the given exception message */
   default RuntimeException create(RuntimeException base) {

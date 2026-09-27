@@ -31,12 +31,12 @@ import slimeknights.mantle.client.book.data.content.ContentTextImage;
 import slimeknights.mantle.client.book.data.content.ContentTextLeftImage;
 import slimeknights.mantle.client.book.data.content.ContentTextRightImage;
 import slimeknights.mantle.client.book.data.content.PageContent;
-import slimeknights.mantle.client.book.data.deserializer.ConditionDeserializer;
 import slimeknights.mantle.client.book.data.deserializer.HexStringDeserializer;
 import slimeknights.mantle.client.book.data.element.IngredientData;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.transformer.IndexTransformer;
+import slimeknights.mantle.data.gson.CodecSerializer;
 import slimeknights.mantle.data.gson.ResourceLocationSerializer;
 import slimeknights.mantle.network.packet.UpdateHeldPagePacket;
 import slimeknights.mantle.network.packet.UpdateInventoryPagePacket;
@@ -92,7 +92,7 @@ public class BookLoader implements ResourceManagerReloadListener {
     // Register GSON type adapters
     registerGsonTypeAdapter(ResourceLocation.class, ResourceLocationSerializer.resourceLocation("mantle"));
     registerGsonTypeAdapter(int.class, new HexStringDeserializer());
-    registerGsonTypeAdapter(ICondition.class, new ConditionDeserializer());
+    registerGsonTypeAdapter(ICondition.class, CodecSerializer.CONDITION);
     registerGsonTypeAdapter(IngredientData.class, new IngredientData.Deserializer());
 
     // Register page types that are implicitly hidden from indexes

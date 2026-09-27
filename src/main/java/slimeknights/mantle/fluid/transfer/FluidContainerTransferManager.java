@@ -10,7 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,12 +17,12 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
 import slimeknights.mantle.network.PacketHelper;
+import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
   @Nullable
   private IFluidContainerTransfer loadFluidTransfer(ResourceLocation key, JsonObject json) {
     try {
-      if (!json.has("conditions") || CraftingHelper.processConditions(GsonHelper.getAsJsonArray(json, "conditions"), context)) {
+      if (JsonHelper.processConditions(json, "conditions", context)) {
         return GSON.fromJson(json, IFluidContainerTransfer.class);
       }
     } catch (JsonSyntaxException e) {

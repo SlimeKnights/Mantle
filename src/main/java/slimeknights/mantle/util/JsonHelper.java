@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.ErrorFactory;
@@ -24,6 +25,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -273,6 +275,24 @@ public class JsonHelper {
   }
 
 
+  /* Conditions */
+
+  /** Evaluates the conditions array at the given key, checking that all conditions pass */
+  public static boolean processConditions(JsonObject json, String memberName, ICondition.IContext context) {
+    return !json.has(memberName) || processConditions(GsonHelper.getAsJsonArray(json, memberName), context);
+  }
+
+  /** Evaluates the conditions array, checking that all conditions pass */
+  public static boolean processConditions(JsonArray conditions, ICondition.IContext context) {
+    for (int i = 0; i < conditions.size(); i++) {
+      if (!parse(ICondition.CODEC, conditions.get(i)).test(context)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   /* Codecs */
 
   /** Parses the given JSON element using the passed codec */
@@ -282,12 +302,30 @@ public class JsonHelper {
 
   /** Parses the given JSON element using the passed codec */
   public static <T> T parse(Codec<T> codec, JsonElement json) throws JsonParseException {
-    return codec.parse(new Dynamic<>(JsonOps.INSTANCE, json))
-      .getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
+    return codec.parse(new Dynamic<>(JsonOps.INSTANCE, json)).getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
   }
 
   /** Serializes the given object using the passed codec */
   public static <T> JsonElement serialize(Codec<T> codec, T object) {
-    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
+    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(ErrorFactory.RUNTIME);
+  }
+
+  /** Serializes the given list of objects using the passed codec */
+  @SafeVarargs
+  public static <T> JsonElement serializeArray(Codec<T> codec, T... objects) {
+    JsonArray array = new JsonArray();
+    for (T object : objects) {
+      array.add(serialize(codec, object));
+    }
+    return array;
+  }
+
+  /** Serializes the given list of objects using the passed codec */
+  public static <T> JsonElement serializeList(Codec<T> codec, Collection<T> objects) {
+    JsonArray array = new JsonArray();
+    for (T object : objects) {
+      array.add(serialize(codec, object));
+    }
+    return array;
   }
 }

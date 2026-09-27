@@ -25,15 +25,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.FalseCondition;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.FalseCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -120,21 +119,21 @@ public class RemoveRecipesCommand {
   private static int runByResult(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     long startTime = System.nanoTime();
     Holder<RecipeType<?>> recipeType = ResourceArgument.getResource(context, "recipe_type", Registries.RECIPE_TYPE);
-    return run(context, List.of(recipeType.get()), getPredicate(context, "result"), null, startTime);
+    return run(context, List.of(recipeType.value()), getPredicate(context, "result"), null, startTime);
   }
 
   /** Runs the command for provided arguments */
   private static int runByInput(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     long startTime = System.nanoTime();
     Holder<RecipeType<?>> recipeType = ResourceArgument.getResource(context, "recipe_type", Registries.RECIPE_TYPE);
-    return run(context, List.of(recipeType.get()), null, getPredicate(context, "input"), startTime);
+    return run(context, List.of(recipeType.value()), null, getPredicate(context, "input"), startTime);
   }
 
   /** Runs the command for provided arguments */
   private static int runResultInput(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
     long startTime = System.nanoTime();
     Holder<RecipeType<?>> recipeType = ResourceArgument.getResource(context, "recipe_type", Registries.RECIPE_TYPE);
-    return run(context, List.of(recipeType.get()), getPredicate(context, "result"), getPredicate(context, "input"), startTime);
+    return run(context, List.of(recipeType.value()), getPredicate(context, "result"), getPredicate(context, "input"), startTime);
   }
 
   /** Runs the command using a JSON preset */
@@ -172,26 +171,26 @@ public class RemoveRecipesCommand {
   }
 
   /** Runs the command */
-  @SuppressWarnings("unchecked")  // not like we are using the generics at all
-  private static <C extends Container, T extends Recipe<C>> int run(CommandContext<CommandSourceStack> context, List<RecipeType<?>> recipeTypes, @Nullable Predicate<Item> removeResult, @Nullable Predicate<Item> removeInput, long startTime) {
+  private static int run(CommandContext<CommandSourceStack> context, List<RecipeType<?>> recipeTypes, @Nullable Predicate<Item> removeResult, @Nullable Predicate<Item> removeInput, long startTime) {
     // iterate all recipes for the type storing recipes that craft the tag
     ServerLevel level = context.getSource().getLevel();
     RegistryAccess access = level.registryAccess();
     List<ResourceLocation> recipes = new ArrayList<>();
     for (RecipeType<?> recipeType : recipeTypes) {
-      for (Recipe<?> recipe : context.getSource().getLevel().getRecipeManager().getAllRecipesFor((RecipeType<T>) recipeType)) {
+      for (RecipeHolder<?> holder : context.getSource().getLevel().getRecipeManager().getAllRecipesFor(recipeType)) {
+        Recipe<?> recipe = holder.value();
         // result must match or not be requested
         if (removeResult == null || removeResult.test(recipe.getResultItem(access).getItem())) {
           // no input predicate? we are done
           if (removeInput == null) {
-            recipes.add(recipe.getId());
+            recipes.add(holder.id());
           } else {
             // at least one ingredient must match the ingredient predicate
             ingredientLoop:
             for (Ingredient ingredient : recipe.getIngredients()) {
               for (ItemStack stack : ingredient.getItems()) {
                 if (removeInput.test(stack.getItem())) {
-                  recipes.add(recipe.getId());
+                  recipes.add(holder.id());
                   break ingredientLoop;
                 }
               }
@@ -207,7 +206,7 @@ public class RemoveRecipesCommand {
 
     // create the object for removing recipes
     JsonObject json = new JsonObject();
-    json.add("conditions", CraftingHelper.serialize(new ICondition[]{FalseCondition.INSTANCE}));
+    json.add("conditions", JsonHelper.serializeArray(ICondition.CODEC, FalseCondition.INSTANCE));
     String jsonString = DEFAULT_GSON.toJson(json);
 
     int successes = 0;
