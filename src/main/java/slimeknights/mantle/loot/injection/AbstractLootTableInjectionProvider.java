@@ -1,4 +1,4 @@
-package slimeknights.mantle.loot;
+package slimeknights.mantle.loot.injection;
 
 import com.google.gson.JsonObject;
 import net.minecraft.data.CachedOutput;

@@ -1,4 +1,4 @@
-package slimeknights.mantle.loot.condition;
+package slimeknights.mantle.loot.modifier.condition;
 
 import com.google.gson.GsonBuilder;
 import com.mojang.serialization.Codec;

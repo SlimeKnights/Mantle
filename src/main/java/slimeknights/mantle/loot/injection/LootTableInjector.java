@@ -1,4 +1,4 @@
-package slimeknights.mantle.loot;
+package slimeknights.mantle.loot.injection;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.listener.IEarlyReloadListener;
-import slimeknights.mantle.loot.LootTableInjection.LootPoolInjection;
+import slimeknights.mantle.loot.injection.LootTableInjection.LootPoolInjection;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.io.IOException;

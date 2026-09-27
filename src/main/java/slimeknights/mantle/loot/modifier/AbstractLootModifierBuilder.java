@@ -1,9 +1,9 @@
-package slimeknights.mantle.loot;
+package slimeknights.mantle.loot.modifier;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.data.GlobalLootModifierProvider;
-import net.minecraftforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
+import net.neoforged.neoforge.common.loot.LootModifier;
 
 import java.util.ArrayList;
 import java.util.List;
