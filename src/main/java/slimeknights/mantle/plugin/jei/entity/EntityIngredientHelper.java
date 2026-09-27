@@ -12,7 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraft.world.item.SpawnEggItem;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient.EntityInput;
@@ -48,6 +48,12 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityInput> {
   /* IDs */
 
   @Override
+  public ResourceLocation getResourceLocation(EntityInput type) {
+    return Loadables.ENTITY_TYPE.getKey(type.type());
+  }
+
+  @SuppressWarnings("removal")
+  @Override
   public String getUniqueId(EntityInput type, UidContext context) {
     return getResourceLocation(type).toString();
   }
@@ -57,10 +63,6 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityInput> {
     return ingredient.type();
   }
 
-  @Override
-  public ResourceLocation getResourceLocation(EntityInput type) {
-    return Loadables.ENTITY_TYPE.getKey(type.type());
-  }
 
   @Override
   public String getErrorInfo(@Nullable EntityInput type) {
@@ -75,7 +77,7 @@ public class EntityIngredientHelper implements IIngredientHelper<EntityInput> {
 
   @Override
   public ItemStack getCheatItemStack(EntityInput ingredient) {
-    Item egg = ForgeSpawnEggItem.fromEntityType(ingredient.type());
+    Item egg = SpawnEggItem.byId(ingredient.type());
     if (egg != null) {
       return new ItemStack(egg);
     }

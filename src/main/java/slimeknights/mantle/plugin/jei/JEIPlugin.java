@@ -32,6 +32,7 @@ import slimeknights.mantle.plugin.jei.entity.EntityIngredientHelper;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientRenderer;
 import slimeknights.mantle.recipe.IMultiRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.ingredient.EntityIngredient.EntityInput;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +46,7 @@ public class JEIPlugin implements IModPlugin {
 
   @Override
   public void registerIngredients(IModIngredientRegistration registration) {
-    registration.register(MantleJEIConstants.ENTITY_TYPE, Collections.emptyList(), new EntityIngredientHelper(), new EntityIngredientRenderer(16));
+    registration.register(MantleJEIConstants.ENTITY_TYPE, Collections.emptyList(), new EntityIngredientHelper(), new EntityIngredientRenderer(16), EntityInput.CODEC);
   }
 
   /** Expands multirecipes for the given vanilla type into the given JEI category. */

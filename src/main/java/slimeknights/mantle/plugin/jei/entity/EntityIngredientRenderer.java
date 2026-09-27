@@ -22,7 +22,6 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient.EntityInput;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,51 +55,55 @@ public class EntityIngredientRenderer implements IIngredientRenderer<EntityIngre
   }
 
   @Override
-  public void render(GuiGraphics graphics, @Nullable EntityIngredient.EntityInput input) {
-    if (input != null) {
-      Level world = Minecraft.getInstance().level;
-      EntityType<?> type = input.type();
-      if (world != null && !IGNORED_ENTITIES.contains(type)) {
-        Entity entity;
-        // players cannot be created using the type, but we can use the client player
-        // side effect is it renders armor/items
-        if (type == EntityType.PLAYER) {
-          entity = Minecraft.getInstance().player;
-        } else {
-          // entity is created with the client world, but the entity map is thrown away when JEI restarts so they should be okay I think
-          entity = ENTITY_MAP.computeIfAbsent(type, t -> t.create(world));
+  public void render(GuiGraphics graphics, EntityInput ingredient) {
+    render(graphics, ingredient, 0, 0);
+  }
+
+  @Override
+  public void render(GuiGraphics graphics, EntityInput input, int posX, int posY) {
+    Level world = Minecraft.getInstance().level;
+    EntityType<?> type = input.type();
+    if (world != null && !IGNORED_ENTITIES.contains(type)) {
+      Entity entity;
+      // players cannot be created using the type, but we can use the client player
+      // side effect is it renders armor/items
+      if (type == EntityType.PLAYER) {
+        entity = Minecraft.getInstance().player;
+      } else {
+        // entity is created with the client world, but the entity map is thrown away when JEI restarts so they should be okay I think
+        entity = ENTITY_MAP.computeIfAbsent(type, t -> t.create(world));
+      }
+      // only can draw living entities, plus non-living ones don't get recipes anyways
+      if (entity instanceof LivingEntity livingEntity) {
+        // scale down large mobs, but don't scale up small ones
+        int scale = size / 2;
+        float height = entity.getBbHeight();
+        float width = entity.getBbWidth();
+        if (height > 2 || width > 2) {
+          scale = (int)(size / Math.max(height, width));
         }
-        // only can draw living entities, plus non-living ones don't get recipes anyways
-        if (entity instanceof LivingEntity livingEntity) {
-          // scale down large mobs, but don't scale up small ones
-          int scale = size / 2;
-          float height = entity.getBbHeight();
-          float width = entity.getBbWidth();
-          if (height > 2 || width > 2) {
-            scale = (int)(size / Math.max(height, width));
-          }
-          // catch exceptions drawing the entity to be safe, any caught exceptions blacklist the entity
-          try {
-            InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, size / 2, size, scale, 0, 10, livingEntity);
-            return;
-          } catch (Exception e) {
-            Mantle.logger.error("Error drawing entity " + BuiltInRegistries.ENTITY_TYPE.getKey(type), e);
-            IGNORED_ENTITIES.add(type);
-            ENTITY_MAP.remove(type);
-          }
-        } else {
-          // not living, so might as well skip next time
+        // catch exceptions drawing the entity to be safe, any caught exceptions blacklist the entity
+        try {
+          // TODO: validate parameters using the ingredient list view
+          InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, posX, posY, posX + size, posY + size, scale, 0.0625F, 0, 10, livingEntity);
+          return;
+        } catch (Exception e) {
+          Mantle.logger.error("Error drawing entity " + BuiltInRegistries.ENTITY_TYPE.getKey(type), e);
           IGNORED_ENTITIES.add(type);
           ENTITY_MAP.remove(type);
         }
+      } else {
+        // not living, so might as well skip next time
+        IGNORED_ENTITIES.add(type);
+        ENTITY_MAP.remove(type);
       }
-
-      // fallback, draw a pink and black "spawn egg"
-      RenderSystem.setShader(GameRenderer::getPositionTexShader);
-      RenderSystem.setShaderColor(1, 1, 1, 1);
-      int offset = (size - 16) / 2;
-      graphics.blit(MISSING, offset, offset, 0, 0, 16, 16, 16, 16);
     }
+
+    // fallback, draw a pink and black "spawn egg"
+    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    RenderSystem.setShaderColor(1, 1, 1, 1);
+    int offset = (size - 16) / 2;
+    graphics.blit(MISSING, offset, offset, 0, 0, 16, 16, 16, 16);
   }
 
   @SuppressWarnings("removal")
