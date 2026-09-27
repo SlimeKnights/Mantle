@@ -5,11 +5,9 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -24,7 +22,9 @@ import net.minecraft.world.level.block.Blocks;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.util.RetexturedHelper;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /** Recipe which sets the texture for a {@link slimeknights.mantle.block.RetexturedBlock} based on an ingredient input. */
 @SuppressWarnings("WeakerAccess")
@@ -61,15 +61,6 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
   /** Gets the texture ingredient for the recipe */
   public Ingredient getTexture() {
     return pattern.texture;
-  }
-
-  /**
-   * Gets the output using the given texture
-   * @param texture  Texture to use
-   * @return  Output with texture. Will be blank if the input is not a block
-   */
-  public ItemStack getResultItem(Item texture, RegistryAccess access) {
-    return RetexturedHelper.setTexture(getResultItem(access).copy(), Block.byItem(texture));
   }
 
   @Override
@@ -118,6 +109,44 @@ public class ShapedRetexturedRecipe extends ShapedRecipe {
   public RecipeSerializer<?> getSerializer() {
     return MantleRecipes.CRAFTING_SHAPED_RETEXTURED.get();
   }
+
+
+  /* JEI */
+
+  private List<ItemStack> displayOutputs;
+  private int[] textureSlots;
+
+  /** Gets the result item without any texture. */
+  public ItemStack getPlainOutput() {
+    return result;
+  }
+
+  /** Gets all variants of the output stack to display in JEI */
+  public List<ItemStack> getDisplayOutputs() {
+    if (displayOutputs == null) {
+      displayOutputs = Arrays.stream(getTexture().getItems())
+        .map(stack -> RetexturedHelper.setTexture(result.copy(), Block.byItem(stack.getItem())))
+        .toList();
+      if (displayOutputs.isEmpty()) {
+        displayOutputs = List.of(result);
+      }
+    }
+
+    return displayOutputs;
+  }
+
+  /** Gets a list of indices that contain the texture ingredient */
+  public int[] getTextureSlots() {
+    if (textureSlots == null) {
+      List<Ingredient> inputs = getIngredients();
+      Ingredient texture = getTexture();
+      textureSlots = IntStream.range(0, inputs.size()).filter(i -> inputs.get(i) == texture).toArray();
+    }
+    return textureSlots;
+  }
+
+
+  /* Helpers */
 
   /** Data object holding information on the shaped pattern plus the texture ingredient */
   public record Pattern(ShapedRecipePattern pattern, Ingredient texture, char textureSymbol) {
