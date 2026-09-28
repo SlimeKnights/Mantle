@@ -2,9 +2,9 @@ package slimeknights.mantle.client.book;
 
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import org.apache.commons.lang3.mutable.MutableObject;
 import slimeknights.mantle.util.html.HtmlElement;
 import slimeknights.mantle.util.html.HtmlGroup;
 import slimeknights.mantle.util.html.HtmlSerializable;
@@ -12,6 +12,7 @@ import slimeknights.mantle.util.html.HtmlString;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -97,15 +98,8 @@ public class HTMLUtils {
     return root;
   }
 
-  /**
-   * Decomposes a Component into styled inlined spans
-   *
-   * @param component Component
-   * @return HTML span tag
-   */
-  public static HtmlSerializable toHtml(Component component) {
-    Style style = component.getStyle();
-    // going to have a group of elements, just not sure what type yet
+  /** Creates an element with the given style. */
+  private static HtmlGroup applyStyle(Style style) {
     HtmlGroup group;
     if (!style.isEmpty()) {
       // span if we have styles
@@ -124,17 +118,37 @@ public class HTMLUtils {
     } else {
       group = HtmlGroup.inline();
     }
+    return group;
+  }
+
+  /**
+   * Decomposes a Component into styled inlined spans
+   *
+   * @param component Component
+   * @return HTML span tag
+   */
+  public static HtmlSerializable toHtml(Component component) {
+    HtmlGroup group = HtmlGroup.inline();
+    // keep track of the last used style so we only add a new span if something changes - works around a lot of arguments sharing styles
+    MutableObject<Style> lastStyle = new MutableObject<>(Style.EMPTY);
+    MutableObject<HtmlGroup> lastElement = new MutableObject<>(group);
 
     // add contents
-    String contents = MutableComponent.create(component.getContents()).getString();
-    // if we have newlines, put each element in its own span
-    if (contents.indexOf('\n') != -1) {
-      group.add(HtmlGroup.indent().add(Arrays.stream(contents.split("\n")).map(str -> HtmlElement.span().add(str))));
-    } else {
-      group.add(contents);
-    }
-    // add children
-    group.add(component.getSiblings().stream().map(HTMLUtils::toHtml));
+    component.visit((style, string) -> {
+      HtmlGroup nested = lastElement.getValue();
+      if (!style.equals(lastStyle.getValue())) {
+        nested = applyStyle(style);
+        group.add(nested);
+        lastStyle.setValue(style);
+        lastElement.setValue(nested);
+      }
+      if (string.indexOf('\n') != -1) {
+        nested.add(HtmlGroup.indent().add(Arrays.stream(string.split("\n")).map(str -> HtmlElement.span().add(str))));
+      } else {
+        nested.add(string);
+      }
+      return Optional.empty();
+    }, Style.EMPTY);
 
     return group;
   }
