@@ -1,9 +1,12 @@
 package slimeknights.mantle.client.book;
 
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import org.apache.commons.lang3.mutable.MutableObject;
 import slimeknights.mantle.util.html.HtmlElement;
 import slimeknights.mantle.util.html.HtmlGroup;
@@ -181,5 +184,19 @@ public class HTMLUtils {
    */
   public static Stream<HtmlSerializable> toListItems(Stream<HtmlSerializable> lines) {
     return lines.map(line -> HtmlElement.li().add(HtmlElement.p().add(line)));
+  }
+
+  /** Serializes the given list of components as a tooltip, simply separating them with newlines. For use in {@link HtmlElement#minetip(HtmlSerializable)}. */
+  public static HtmlSerializable toTooltip(List<Component> components) {
+    HtmlGroup group = HtmlGroup.indent();
+    for (Component component : components) {
+      group.add(toHtml(component));
+    }
+    return group;
+  }
+
+  /** Creates an item tooltip as a serializable component, for use in {@link HtmlElement#minetip(HtmlSerializable)}. */
+  public static HtmlSerializable itemTooltip(ItemStack stack) {
+    return toTooltip(stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.NORMAL));
   }
 }
