@@ -7,12 +7,16 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.mutable.MutableObject;
+import slimeknights.mantle.data.loadable.Loadables;
+import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.util.html.HtmlElement;
 import slimeknights.mantle.util.html.HtmlGroup;
 import slimeknights.mantle.util.html.HtmlSerializable;
 import slimeknights.mantle.util.html.HtmlString;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -198,5 +202,24 @@ public class HTMLUtils {
   /** Creates an item tooltip as a serializable component, for use in {@link HtmlElement#minetip(HtmlSerializable)}. */
   public static HtmlSerializable itemTooltip(ItemStack stack) {
     return toTooltip(stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.NORMAL));
+  }
+
+  /**
+   * Creates an item tooltip as a serializable component, for use in {@link HtmlElement#minetip(HtmlSerializable)}.
+   * @see FluidTooltipHandler#getFluidTooltip(FluidStack)
+   */
+  public static HtmlSerializable fluidTooltip(FluidStack stack) {
+    HtmlGroup fluidTooltip = HtmlGroup.indent();
+    // need the span to ensure it formats the whole thing as HTML, as fluid display name is unstyled
+    fluidTooltip.add(HtmlElement.span().add(HTMLUtils.toHtml(stack.getDisplayName())));
+
+    List<Component> tooltip = new ArrayList<>();
+    // skip the hold shift tooltip - we don't have that function online
+    FluidTooltipHandler.appendMaterialNoShift(stack.getFluid(), stack.getAmount(), tooltip);
+    tooltip.add(FluidTooltipHandler.formatModName(Loadables.FLUID.getKey(stack.getFluid())));
+    for (Component component : tooltip) {
+      fluidTooltip.add(HTMLUtils.toHtml(component));
+    }
+    return fluidTooltip;
   }
 }
