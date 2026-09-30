@@ -170,21 +170,19 @@ public abstract class PageContent implements IHTML {
   /** Creates a mutable HTML object for the title */
   public HtmlElement makeTitleHTML() {
     String title = getTitle();
+    HtmlElement element = HtmlElement.p().classes("title");
     if (title == null) {
-      return HtmlElement.p();
+      return element;
     }
-    HtmlElement element = HtmlElement.p()
-      .add(title)
-      .classes("underline");
-
-    if (parent != null)
-      element = element.id(parent.parent.name +  "." + parent.name);
-
+    element.add(title).classes("underline");
+    if (parent != null) {
+      element = element.id(parent.parent.name + "." + parent.name);
+    }
     if (isLarge()) {
       element.classes("large");
     }
     if (isCentered()) {
-      element.style("align-self", "center");
+      element.classes("centered");
     }
     return element;
   }
