@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /** Loadable reading block state properties from JSON */
+@SuppressWarnings("unused")  // API
 public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   /** Serializes all state properties */
   ALL {

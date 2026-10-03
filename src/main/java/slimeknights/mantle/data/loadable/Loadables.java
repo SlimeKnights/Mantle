@@ -35,13 +35,16 @@ import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable.IntNetwork;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+import slimeknights.mantle.data.loadable.registry.DatapackRegistryLoadable;
+import slimeknights.mantle.data.loadable.registry.HolderLoadable;
 import slimeknights.mantle.data.loadable.registry.LazyRegistryLoadable;
+import slimeknights.mantle.data.loadable.registry.RegistryHolderLoadable;
 import slimeknights.mantle.data.loadable.registry.RegistryLoadable;
 
 import java.util.function.BiFunction;
 
 /** Various loadable instances provided by this mod */
-@SuppressWarnings({"deprecation", "unused"})
+@SuppressWarnings("unused")
 public class Loadables {
   private Loadables() {}
 
@@ -56,7 +59,6 @@ public class Loadables {
   public static final ResourceLocationLoadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(BuiltInRegistries.SOUND_EVENT);
   public static final ResourceLocationLoadable<Fluid> FLUID = new RegistryLoadable<>(BuiltInRegistries.FLUID);
   public static final ResourceLocationLoadable<FluidType> FLUID_TYPE = new LazyRegistryLoadable<>(NeoForgeRegistries.Keys.FLUID_TYPES);
-  public static final ResourceLocationLoadable<MobEffect> MOB_EFFECT = new RegistryLoadable<>(BuiltInRegistries.MOB_EFFECT);
   public static final ResourceLocationLoadable<Block> BLOCK = new RegistryLoadable<>(BuiltInRegistries.BLOCK);
   public static final ResourceLocationLoadable<EntityType<?>> ENTITY_TYPE = new RegistryLoadable<>(BuiltInRegistries.ENTITY_TYPE);
   public static final ResourceLocationLoadable<Item> ITEM = new RegistryLoadable<>(BuiltInRegistries.ITEM);
@@ -70,6 +72,11 @@ public class Loadables {
   public static final StringLoadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid cannot be empty");
   public static final StringLoadable<Block> NON_EMPTY_BLOCK = notValue(BLOCK, Blocks.AIR, "Block cannot be air");
   public static final StringLoadable<Item> NON_EMPTY_ITEM = notValue(ITEM, Items.AIR, "Item cannot be empty");
+
+  /* Registry holders */
+  public static final HolderLoadable<MobEffect> MOB_EFFECT = new RegistryHolderLoadable<>(BuiltInRegistries.MOB_EFFECT);
+  /* Datapack registry holders - require a lookup as context to use. */
+  public static final HolderLoadable<Enchantment> ENCHANTMENT = new DatapackRegistryLoadable<>(Registries.ENCHANTMENT);
 
   /* Tag keys */
   public static final StringLoadable<TagKey<Fluid>> FLUID_TAG = tagKey(Registries.FLUID);

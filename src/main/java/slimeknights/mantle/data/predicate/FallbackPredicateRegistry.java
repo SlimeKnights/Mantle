@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /** Predicate registry that upon failure to find a predicate type will fallback to the fallback type */
+@SuppressWarnings("unused")  // API
 public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
   private final Function<T,F> getter;
   private final PredicateRegistry<F> fallback;

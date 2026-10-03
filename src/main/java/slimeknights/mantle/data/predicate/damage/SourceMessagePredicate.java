@@ -5,6 +5,7 @@ import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 /** Predicate that matches a named source */
+@SuppressWarnings("unused")  // API
 public record SourceMessagePredicate(String message) implements DamageSourcePredicate {
   public static final RecordLoadable<SourceMessagePredicate> LOADER = RecordLoadable.create(StringLoadable.DEFAULT.requiredField("message", SourceMessagePredicate::message), SourceMessagePredicate::new);
 

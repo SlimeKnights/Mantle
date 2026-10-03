@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 /**
  * Predicate that checks for properties of the attacker in a damage source
  */
+@SuppressWarnings("unused")  // API
 public record SourceAttackerPredicate(IJsonPredicate<LivingEntity> attacker, WhichEntity which) implements DamageSourcePredicate {
   public static final RecordLoadable<SourceAttackerPredicate> LOADER = RecordLoadable.create(
     LivingEntityPredicate.LOADER.directField("entity_type", SourceAttackerPredicate::attacker),
@@ -44,6 +45,7 @@ public record SourceAttackerPredicate(IJsonPredicate<LivingEntity> attacker, Whi
   /** Which entity is being considered */
   enum WhichEntity {
     CAUSING {
+      @Nullable
       @Override
       public Entity get(DamageSource source) {
         return source.getEntity();
