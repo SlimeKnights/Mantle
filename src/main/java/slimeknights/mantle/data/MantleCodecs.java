@@ -8,6 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import slimeknights.mantle.util.RegistryHelper;
 
@@ -25,4 +26,6 @@ public class MantleCodecs {
     ).apply(instance, (registry, location) -> TagKey.create(RegistryHelper.castKey(registry), location)));
   /** Codec for a block tag */
   public static final Codec<TagKey<Block>> BLOCK_TAG = TagKey.codec(Registries.BLOCK);
+  /** Codec for a block tag */
+  public static final Codec<TagKey<Item>> ITEM_TAG = TagKey.codec(Registries.ITEM);
 }
