@@ -3,6 +3,8 @@ package slimeknights.mantle.client.screen.book;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+@SuppressWarnings("UnusedReturnValue")
 public class BookScreen extends Screen {
 
   public static boolean debug = false;
@@ -467,16 +470,21 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public boolean mouseScrolled(double unKnown1, double unKnown2, double scrollDelta) {
-    if (scrollDelta < 0.0D) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    // scroll left/right to navigate in the book previous or next
+    // if no horizontal scroll, use up for previous and down for next
+    if (scrollX < 0) {
+      previousPage();
+      return true;
+    } else if (scrollX > 0 || scrollY < 0) {
       nextPage();
       return true;
-    } else if (scrollDelta > 0.0D) {
+    } else if (scrollY > 0) {
       previousPage();
       return true;
     }
 
-    return super.mouseScrolled(scrollDelta, unKnown1, unKnown2);
+    return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
   }
 
   @Override
@@ -643,7 +651,7 @@ public class BookScreen extends Screen {
       bookPage = (page - 2) / 2 + 1;
     }
 
-    if (bookPage >= -1 && bookPage < this.book.getFullPageCount(this.advancementCache)) {
+    if (bookPage < this.book.getFullPageCount(this.advancementCache)) {
       if (returner) {
         this.oldPage = this.page;
       }
@@ -790,55 +798,60 @@ public class BookScreen extends Screen {
     return builder.toString();
   }
 
+  /** Cache for showing or hiding book pages based on advancement progress. */
   public static class AdvancementCache implements ClientAdvancements.Listener {
-
-    private final HashMap<Advancement, AdvancementProgress> progress = new HashMap<>();
+    private final HashMap<ResourceLocation, AdvancementProgress> progress = new HashMap<>();
     private final HashMap<ResourceLocation, Advancement> nameCache = new HashMap<>();
 
+    /** Gets the current progress for the given advancement ID */
+    @Nullable
+    public AdvancementProgress getProgress(ResourceLocation id) {
+      return this.progress.get(id);
+    }
+
+    /** Gets the current progress for the given advancement ID */
     @Nullable
     public AdvancementProgress getProgress(String id) {
-      return this.getProgress(this.getAdvancement(id));
+      return getProgress(ResourceLocation.parse(id));
     }
 
-    @Nullable
-    public AdvancementProgress getProgress(Advancement advancement) {
-      return this.progress.get(advancement);
-    }
-
+    /** Gets advacement data for the given advancement */
     public Advancement getAdvancement(String id) {
-      return this.nameCache.get(new ResourceLocation(id));
+      return this.nameCache.get(ResourceLocation.parse(id));
     }
 
     @Override
-    public void onUpdateAdvancementProgress(Advancement advancement, AdvancementProgress advancementProgress) {
-      this.progress.put(advancement, advancementProgress);
+    public void onUpdateAdvancementProgress(AdvancementNode advancement, AdvancementProgress advancementProgress) {
+      this.progress.put(advancement.holder().id(), advancementProgress);
     }
 
     @Override
-    public void onSelectedTabChanged(@Nullable Advancement advancement) {
+    public void onSelectedTabChanged(@Nullable AdvancementHolder advancementHolder) {
       // noop
     }
 
     @Override
-    public void onAddAdvancementRoot(Advancement advancement) {
-      this.nameCache.put(advancement.getId(), advancement);
+    public void onAddAdvancementRoot(AdvancementNode advancement) {
+      this.nameCache.put(advancement.holder().id(), advancement.advancement());
     }
 
     @Override
-    public void onRemoveAdvancementRoot(Advancement advancement) {
-      this.progress.remove(advancement);
-      this.nameCache.remove(advancement.getId());
+    public void onRemoveAdvancementRoot(AdvancementNode advancement) {
+      ResourceLocation id = advancement.holder().id();
+      this.progress.remove(id);
+      this.nameCache.remove(id);
     }
 
     @Override
-    public void onAddAdvancementTask(Advancement advancement) {
-      this.nameCache.put(advancement.getId(), advancement);
+    public void onAddAdvancementTask(AdvancementNode advancement) {
+      this.nameCache.put(advancement.holder().id(), advancement.advancement());
     }
 
     @Override
-    public void onRemoveAdvancementTask(Advancement advancement) {
-      this.progress.remove(advancement);
-      this.nameCache.remove(advancement.getId());
+    public void onRemoveAdvancementTask(AdvancementNode advancement) {
+      ResourceLocation id = advancement.holder().id();
+      this.progress.remove(id);
+      this.nameCache.remove(id);
     }
 
     @Override

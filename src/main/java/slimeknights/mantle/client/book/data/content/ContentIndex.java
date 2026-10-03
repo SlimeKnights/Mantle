@@ -3,7 +3,6 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.transformer.IndexTransformer;
 import slimeknights.mantle.client.screen.book.element.BookElement;
@@ -15,7 +14,7 @@ import java.util.Set;
 /**
  * This content makes up a configurable index page in the book.
  *
- * Configuration:
+ * <p>Configuration:
  * <ul>
  *   <li>{@code hidden} Any elements in this array will be skipped in the index</li>
  *   <li>{@code operations} Applies extra transformations to the list</li>
@@ -29,7 +28,7 @@ import java.util.Set;
  */
 @SuppressWarnings("unused")
 public class ContentIndex extends ContentListing {
-  public static final transient ResourceLocation ID = Mantle.getResource("index");
+  public static final ResourceLocation ID = Mantle.getResource("index");
 
   private transient boolean loaded = false;
   private String[] hidden;
@@ -67,7 +66,6 @@ public class ContentIndex extends ContentListing {
   }
 
   /** Data class for extra index operations we can perform */
-  @SuppressWarnings("ClassCanBeRecord") // messes with GSON
   @RequiredArgsConstructor
   protected static final class Operation {
     private final String before;

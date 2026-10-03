@@ -7,13 +7,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions.FontContext;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.FontContext;
 import org.joml.Vector2i;
 import slimeknights.mantle.client.screen.book.BookScreen;
 
@@ -22,12 +22,9 @@ import java.util.stream.Stream;
 
 public abstract class BookElement {
   // TODO: consider renaming to screen, we have too many chains of parent.parent.parent
-  @Getter
-  @Setter
+  @Getter @Setter
   protected BookScreen parent;
-
   protected Minecraft mc = Minecraft.getInstance();
-  protected TextureManager renderEngine = this.mc.textureManager;
 
   public int x, y;
 
@@ -54,7 +51,7 @@ public abstract class BookElement {
   }
 
   public void renderToolTip(GuiGraphics graphics, Font fontRenderer, ItemStack stack, int x, int y) {
-    List<Component> list = stack.getTooltipLines(this.mc.player, this.mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
+    List<Component> list = stack.getTooltipLines(TooltipContext.of(this.mc.level), this.mc.player, this.mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
 
     Font font = IClientItemExtensions.of(stack).getFont(stack, FontContext.TOOLTIP);
     if (font == null) {
@@ -89,10 +86,9 @@ public abstract class BookElement {
 
   /**
    * Renders a tooltip in a book.
-   * Based on {@link net.minecraftforge.client.ForgeHooksClient#gatherTooltipComponents(ItemStack, List, int, int, int, Font)}, but with three notable changes:
+   * Based on {@link net.neoforged.neoforge.client.ClientHooks#gatherTooltipComponents(ItemStack, List, int, int, int, Font)}, but with three notable changes:
    * Uses the book page size (since mouseX and mouseY tend to be page relative), actually uses the updated tooltipX position, and drops the unused non-text component code.
    */
-  @SuppressWarnings("UnstableApiUsage")  // this is a javadoc my dude
   public void drawTooltip(GuiGraphics graphics, List<Component> textLines, int mouseX, int mouseY, Font font) {
     // find max width of the tooltip
     int tooltipTextWidth = textLines.stream().mapToInt(font::width).max().orElse(0);

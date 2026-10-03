@@ -10,29 +10,27 @@ import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.element.TextData;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
+// TODO: can we merge this with TextComponentDataRenderer, put the differences in TextData vs TextComponentData?
 public class TextDataRenderer {
 
   /**
-   * @deprecated Call drawText with tooltip param and then call drawTooltip separately on the tooltip layer to prevent overlap
+   * Renders the given Text Components on the screen and returns the action if any of them have one.
+   *
+   * @param graphics the matrix stack to render with
+   * @param x           the x position to render at
+   * @param y           the y position to render at
+   * @param boxWidth    the width of the given render box
+   * @param boxHeight   the height of the given render box
+   * @param data        the list of text component data to draw
+   * @param mouseX      the mouseY
+   * @param mouseY      the mouseX
+   * @param fr          the font renderer
+   * @param tooltip     List of tooltips to fill. Tooltips will be rendered in a separate hook.
+   * @return the action if there's any
    */
-  @Deprecated
-  public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, BookScreen parent) {
-    List<Component> tooltip = new ArrayList<>();
-    String action = drawText(graphics, x, y, boxWidth, boxHeight, data, mouseX, mouseY, fr, tooltip);
-
-    if (!tooltip.isEmpty()) {
-      graphics.renderTooltip(fr, tooltip, Optional.empty(), mouseX, mouseY);
-    }
-
-    return action;
-  }
-
-  // TODO: can we merge this with TextComponentDataRenderer, put the differences in TextData vs TextComponentData?
   public static String drawText(GuiGraphics graphics, int x, int y, int boxWidth, int boxHeight, TextData[] data, int mouseX, int mouseY, Font fr, List<Component> tooltip) {
     String action = "";
 

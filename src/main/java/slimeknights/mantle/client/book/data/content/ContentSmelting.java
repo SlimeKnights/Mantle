@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.StringUtils;
@@ -32,22 +32,23 @@ import java.util.List;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_SMELTING;
 
+/** Page that shows a smelting, blasting, or smoking recipe. Technically works for campfires too but the slot arrangement is wrong. */
 public class ContentSmelting extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("smelting");
 
   private static final NonNullList<ItemStack> FUELS;
 
-  public static final transient int TEX_SIZE = 128;
-  public static final transient ImageData IMG_SMELTING = new ImageData(TEX_SMELTING, 0, 0, 110, 114, TEX_SIZE, TEX_SIZE);
+  public static final int TEX_SIZE = 128;
+  public static final ImageData IMG_SMELTING = new ImageData(TEX_SMELTING, 0, 0, 110, 114, TEX_SIZE, TEX_SIZE);
 
-  public static final transient int INPUT_X = 5;
-  public static final transient int INPUT_Y = 5;
-  public static final transient int RESULT_X = 74;
-  public static final transient int RESULT_Y = 41;
-  public static final transient int FUEL_X = 5;
-  public static final transient int FUEL_Y = 77;
+  public static final int INPUT_X = 5;
+  public static final int INPUT_Y = 5;
+  public static final int RESULT_X = 74;
+  public static final int RESULT_Y = 41;
+  public static final int FUEL_X = 5;
+  public static final int FUEL_Y = 77;
 
-  public static final transient float ITEM_SCALE = 2.0F;
+  public static final float ITEM_SCALE = 2.0F;
 
   @Getter
   public String title = "Smelting";
@@ -100,16 +101,17 @@ public class ContentSmelting extends PageContent {
   @Override
   public void load() {
     super.load();
-
-    if (!StringUtils.isEmpty(this.recipe) && ResourceLocation.isValidResourceLocation(this.recipe)) {
-      Level level = Minecraft.getInstance().level;
-      assert level != null;
-      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
-
-      if (recipe instanceof AbstractCookingRecipe) {
-        this.input = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, recipe.getIngredients().get(0).getItems()));
-        this.cookTime = ((AbstractCookingRecipe) recipe).getCookingTime();
-        this.result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
+    if (!StringUtils.isEmpty(this.recipe)) {
+      ResourceLocation id = ResourceLocation.tryParse(this.recipe);
+      if (id != null) {
+        Level level = Minecraft.getInstance().level;
+        assert level != null;
+        RecipeHolder<?> recipe = level.getRecipeManager().byKey(id).orElse(null);
+        if (recipe != null && recipe.value() instanceof AbstractCookingRecipe cookingRecipe) {
+          this.input = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, cookingRecipe.getIngredients().getFirst().getItems()));
+          this.cookTime = cookingRecipe.getCookingTime();
+          this.result = IngredientData.getItemStackData(cookingRecipe.getResultItem(level.registryAccess()));
+        }
       }
     }
   }

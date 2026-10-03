@@ -7,9 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.apache.commons.lang3.StringUtils;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_CRAFTING;
 
+/** Page showing a crafting table recipe. */
 public class ContentCrafting extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("crafting");
 
@@ -111,50 +113,56 @@ public class ContentCrafting extends PageContent {
   @Override
   public void load() {
     super.load();
+    if (StringUtils.isEmpty(recipe)) return;
 
-    if (!StringUtils.isEmpty(recipe) && ResourceLocation.isValidResourceLocation(recipe)) {
-      int w = 0, h = 0;
+    ResourceLocation id = ResourceLocation.tryParse(recipe);
+    if (id != null) {
 
       Level level = Minecraft.getInstance().level;
       assert level != null;
-      Recipe<?> recipe = level.getRecipeManager().byKey(new ResourceLocation(this.recipe)).orElse(null);
-      if (recipe instanceof CraftingRecipe) {
-        if(grid_size.equalsIgnoreCase("auto")) {
-          if(recipe.canCraftInDimensions(2, 2)) {
-            grid_size = "small";
-          } else {
-            grid_size = "large";
-          }
-        }
-
-        switch (grid_size.toLowerCase()) {
-          case "large" -> w = h = 3;
-          case "small" -> w = h = 2;
-        }
-
-        if (!recipe.canCraftInDimensions(w, h)) {
-          throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + w + "x" + h + " crafting grid");
-        }
-
+      RecipeHolder<CraftingRecipe> recipeHolder = level.getRecipeManager().byKeyTyped(RecipeType.CRAFTING, ResourceLocation.parse(this.recipe));
+      if (recipeHolder != null) {
+        CraftingRecipe recipe = recipeHolder.value();
         result = IngredientData.getItemStackData(recipe.getResultItem(level.registryAccess()));
 
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
 
-        if (recipe instanceof IShapedRecipe<?> shaped) {
-          grid = new IngredientData[shaped.getRecipeHeight()][shaped.getRecipeWidth()];
+        // find grid size
+        int size;
+        switch (grid_size.toLowerCase()) {
+          case "large" -> size = 3;
+          case "small" -> size = 2;
+          case "auto" -> {
+            if (recipe.canCraftInDimensions(2, 2)) {
+              grid_size = "small";
+              size = 2;
+            } else {
+              grid_size = "large";
+              size = 3;
+            }
+          }
+          default -> throw new BookLoadException("Invalid grid size: " + grid_size);
+        }
+        // validate grid size
+        if (!recipe.canCraftInDimensions(size, size)) {
+          throw new BookLoadException("Recipe " + this.recipe + " cannot fit in a " + size + "x" + size + " crafting grid");
+        }
+
+        // for shaped, each ingredient matches a specific location
+        if (recipe instanceof ShapedRecipe shaped) {
+          grid = new IngredientData[shaped.getHeight()][shaped.getWidth()];
 
           for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
               grid[y][x] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(x + y * grid[y].length).getItems()));
             }
           }
-
-          return;
-        }
-
-        grid = new IngredientData[h][w];
-        for (int i = 0; i < ingredients.size(); i++) {
-          grid[i / h][i % w] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(i).getItems()));
+        } else {
+          // for shapeless, stop when we run out of ingredients
+          grid = new IngredientData[size][size];
+          for (int i = 0; i < ingredients.size(); i++) {
+            grid[i / size][i % size] = IngredientData.getItemStackData(NonNullList.of(ItemStack.EMPTY, ingredients.get(i).getItems()));
+          }
         }
       }
     }

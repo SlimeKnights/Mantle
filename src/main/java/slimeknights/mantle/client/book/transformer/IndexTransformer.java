@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** Transformer adding an index page which shows links to each section. */
 public class IndexTransformer extends BookTransformer {
   public static final IndexTransformer INSTANCE = new IndexTransformer();
   public static final ResourceLocation INDEX_EXTRA_DATA = Mantle.getResource("index");
@@ -48,7 +49,7 @@ public class IndexTransformer extends BookTransformer {
         if (visibleSections.isEmpty()) {
           return;
         }
-        visibleSections.remove(0);
+        visibleSections.removeFirst();
         PageData[] pages = new PageData[ceilingDivide(visibleSections.size(), sectionsPerPage)];
         for (int i = 0; i < pages.length; i++) {
           pages[i] = new PageData(true);
@@ -80,7 +81,7 @@ public class IndexTransformer extends BookTransformer {
     }
 
     index.name = "index";
-    book.sections.add(0, index);
+    book.sections.addFirst(index);
   }
 
   /**

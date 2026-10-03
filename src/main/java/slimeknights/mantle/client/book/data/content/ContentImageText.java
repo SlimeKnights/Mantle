@@ -16,6 +16,7 @@ import slimeknights.mantle.util.html.HtmlSerializable;
 
 import java.util.ArrayList;
 
+/** Page that an image with text below. */
 public class ContentImageText extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("image_text");
 

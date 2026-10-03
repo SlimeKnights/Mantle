@@ -13,6 +13,8 @@ import slimeknights.mantle.util.html.HtmlSerializable;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/** Data element for displaying text components */
+@SuppressWarnings("unused")  // API
 @Accessors(fluent = true)
 @Setter
 public class TextComponentData implements IHTML {

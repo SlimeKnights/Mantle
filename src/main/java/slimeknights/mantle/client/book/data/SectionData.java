@@ -5,8 +5,9 @@ import com.google.gson.JsonElement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.TrueCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.TrueCondition;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.IHTML;
 import slimeknights.mantle.client.book.data.content.ContentError;
@@ -76,10 +77,10 @@ public class SectionData implements IDataItem, IConditional, IHTML {
             this.pages = new ArrayList<>();
             PageData pdError = new PageData(true);
             pdError.name = "errorrenous";
-            pdError.content = new ContentError("Failed to load section " + this.name + ".", e);
+            String error = "Failed to load section " + this.name + ".";
+            pdError.content = new ContentError(error, e);
             this.pages.add(pdError);
-
-            e.printStackTrace();
+            Mantle.logger.error("{}", error, e);
           }
         }
       }
@@ -119,7 +120,7 @@ public class SectionData implements IDataItem, IConditional, IHTML {
   }
 
   public boolean isUnlocked(@Nullable BookScreen.AdvancementCache advancementCache) {
-    if (advancementCache == null || this.requirements == null || this.requirements.size() == 0) {
+    if (advancementCache == null || this.requirements == null || this.requirements.isEmpty()) {
       return true;
     }
 

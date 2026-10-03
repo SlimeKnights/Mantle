@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.screen.book.element;
 
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Transformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -15,10 +15,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.structure.StructureInfo;
 import slimeknights.mantle.client.book.structure.level.TemplateLevel;
 import slimeknights.mantle.client.render.MantleRenderTypes;
@@ -31,9 +32,9 @@ public class StructureElement extends SizedBookElement {
 
   public boolean canTick = false;
 
-  public float scale = 50f;
-  public float transX = 0;
-  public float transY = 0;
+  public float scale;
+  public float transX;
+  public float transY;
   public Transformation additionalTransform;
   public final StructureInfo renderInfo;
   public final TemplateLevel structureWorld;
@@ -65,7 +66,8 @@ public class StructureElement extends SizedBookElement {
 
   @Override
   public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, Font fontRenderer) {
-    MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+    // 1536 is the number mojang randomly picks elsewhere, it might be significant?
+    MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(new ByteBufferBuilder(1536));
     PoseStack transform = graphics.pose();
     PoseStack.Pose lastEntryBeforeTry = transform.last();
 
@@ -144,7 +146,7 @@ public class StructureElement extends SizedBookElement {
       final long now = System.currentTimeMillis();
 
       if (now > this.lastPrintedErrorTimeMs + 1000) {
-        e.printStackTrace();
+        Mantle.logger.error("Failed to render structure", e);
         this.lastPrintedErrorTimeMs = now;
       }
 

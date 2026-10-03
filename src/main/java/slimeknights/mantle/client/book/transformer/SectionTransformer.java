@@ -8,6 +8,7 @@ import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.book.data.content.PageContent;
 
 /** Transformer that locates a specific section to transform */
+@SuppressWarnings("unused")  // API
 @RequiredArgsConstructor
 public abstract class SectionTransformer extends BookTransformer {
   /** Name of the section to transform */

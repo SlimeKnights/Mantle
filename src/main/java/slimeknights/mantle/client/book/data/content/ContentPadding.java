@@ -3,15 +3,15 @@ package slimeknights.mantle.client.book.data.content;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.book.transformer.BookTransformer;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.PageData;
 import slimeknights.mantle.client.book.data.SectionData;
+import slimeknights.mantle.client.book.transformer.BookTransformer;
 
 import java.util.Iterator;
 
 /**
- * Variant of blank pages that only adds the page on a specific side, useful to force the next page to the left or right regardless of the number of pages before
+ * Variant of blank pages that only adds the page on a specific side, useful to force the next page to the left or right regardless of the number of pages before.
  */
 @Getter
 public abstract class ContentPadding extends ContentBlank {

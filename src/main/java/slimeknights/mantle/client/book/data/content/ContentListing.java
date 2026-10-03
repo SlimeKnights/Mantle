@@ -50,7 +50,7 @@ public class ContentListing extends PageContent {
     if (link != null) {
       data.action = "mantle:go-to-page-rtn " + link.parent.name + "." + link.name;
     }
-    this.entries.get(this.entries.size() - 1).add(data);
+    this.entries.getLast().add(data);
   }
 
   /**
@@ -64,7 +64,7 @@ public class ContentListing extends PageContent {
 
   /** Forces a column break */
   public void addColumnBreak() {
-    if (!this.entries.get(this.entries.size() - 1).isEmpty()) {
+    if (!this.entries.getLast().isEmpty()) {
       if (this.entries.size() == 3) {
         Mantle.logger.warn("Too many columns in content listing, you should create a second listing instead");
       }
@@ -74,7 +74,7 @@ public class ContentListing extends PageContent {
 
   /** If true, there are entries in this listing */
   public boolean hasEntries() {
-    return !this.entries.get(0).isEmpty();
+    return !this.entries.getFirst().isEmpty();
   }
 
   /** Gets the height for a column in pixels */
@@ -188,8 +188,9 @@ public class ContentListing extends PageContent {
         HtmlElement column = HtmlElement.div();
         columns.add(column);
         int i = 0;
-        if (entry.get(0).bold) {
-          column.add(entry.get(0).toHTML(book));
+        TextData first = entry.getFirst();
+        if (first.bold) {
+          column.add(first.toHTML(book));
           i++;
         }
         HtmlElement list = HtmlElement.ul().classes("link-list");
@@ -205,7 +206,7 @@ public class ContentListing extends PageContent {
 
           list.add(HtmlElement.li().add(entry.get(i).toHTML(book)));
         }
-      };
+      }
     }
     return group;
   }

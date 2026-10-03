@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+/** Logic mapping a local book location to a global resource. */
 public abstract class BookRepository {
 
   @SuppressWarnings("StaticInitializerReferencesSubClass") // will only occur in very specific threaded environment
@@ -35,11 +36,11 @@ public abstract class BookRepository {
   /** Checks if the given resource exists */
   @SuppressWarnings("unused") // API
   public boolean resourceExists(@Nullable String location) {
-    if(location == null) {
+    if (location == null) {
       return false;
     }
 
-    return this.resourceExists(new ResourceLocation(location));
+    return this.resourceExists(ResourceLocation.parse(location));
   }
 
   /** Checks if the given resource exists */

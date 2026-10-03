@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 /** Page that showcases an item with text below */
 public class ContentShowcase extends PageContent {
-  public static final transient ResourceLocation ID = Mantle.getResource("showcase");
+  public static final ResourceLocation ID = Mantle.getResource("showcase");
 
   /** Title of the page */
   @Getter

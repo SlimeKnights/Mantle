@@ -13,6 +13,7 @@ import slimeknights.mantle.util.html.HtmlSerializable;
 
 import java.util.ArrayList;
 
+/** Page containing just text */
 public class ContentText extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("text");
 

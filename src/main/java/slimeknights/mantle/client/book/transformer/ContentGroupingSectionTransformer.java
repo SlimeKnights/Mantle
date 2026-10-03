@@ -51,7 +51,6 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
     // create pages for each listing if any exist
     if (builder.hasEntries()) {
       // add padding page to keep indexes stretching over two pages together
-      int i = 0;
       List<ContentListing> finishedListings = builder.getFinishedListings();
       List<PageData> newPages = new ArrayList<>(finishedListings.size() + 1);
       if (finishedListings.size() % 2 == 0) {
@@ -93,6 +92,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
   }
 
   /** Builder to create a all content listing pages */
+  @SuppressWarnings("unused")  // API
   public static class GroupingBuilder {
     private static final int COLUMN_WIDTH = BookScreen.PAGE_WIDTH / 3;
 
@@ -138,7 +138,7 @@ public class ContentGroupingSectionTransformer extends SectionTransformer {
       // already have 3 columns? start a new one
       if (columns == 3) {
         currentListing = new ContentListing();
-        ContentListing firstListing = finishedListings.get(0);
+        ContentListing firstListing = finishedListings.getFirst();
         currentListing.title = firstListing.title;
         currentListing.setLargeTitle(firstListing.getLargeTitle());
         currentListing.setCenterTitle(firstListing.getCenterTitle());

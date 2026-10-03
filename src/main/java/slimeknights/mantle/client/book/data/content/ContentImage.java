@@ -12,6 +12,7 @@ import slimeknights.mantle.util.html.HtmlSerializable;
 
 import java.util.ArrayList;
 
+/** Page showing an image wiht no text. */
 public class ContentImage extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("image");
 

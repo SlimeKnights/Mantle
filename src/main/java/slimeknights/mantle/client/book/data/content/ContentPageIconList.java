@@ -24,6 +24,7 @@ import java.util.List;
  * Index page where each link in the index is an icon rather than text. Used notably for material pages in Tinkers' Construct.
  * Generally created in a custom {@link slimeknights.mantle.client.book.transformer.BookTransformer}.
  */
+@SuppressWarnings("unused")  // API
 public class ContentPageIconList extends PageContent {
 
   protected final int width;

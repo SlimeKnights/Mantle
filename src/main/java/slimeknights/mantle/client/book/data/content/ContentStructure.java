@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -27,9 +28,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Page that shows a structure from structure NBT */
 public class ContentStructure extends PageContent {
-
-  public static final transient ResourceLocation ID = Mantle.getResource("structure");
+  public static final ResourceLocation ID = Mantle.getResource("structure");
 
   @Getter
   public String title;
@@ -56,14 +57,14 @@ public class ContentStructure extends PageContent {
     }
 
     try {
-      CompoundTag compoundnbt = NbtIo.readCompressed(resource.open());
+      CompoundTag compoundnbt = NbtIo.readCompressed(resource.open(), NbtAccounter.unlimitedHeap());
       this.template.load(BuiltInRegistries.BLOCK.asLookup(), compoundnbt);
     } catch (IOException e) {
-      e.printStackTrace();
+      Mantle.logger.error("Failed to load structure from {}", location, e);
       return;
     }
 
-    this.templateBlocks = this.template.palettes.get(0).blocks();
+    this.templateBlocks = this.template.palettes.getFirst().blocks();
 
     for (int i = 0; i < this.templateBlocks.size(); i++) {
       StructureTemplate.StructureBlockInfo info = this.templateBlocks.get(i);

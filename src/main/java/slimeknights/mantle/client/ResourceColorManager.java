@@ -2,12 +2,11 @@ package slimeknights.mantle.client;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import com.mojang.serialization.DataResult;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.listener.ISafeManagerReloadListener;
 import slimeknights.mantle.util.JsonHelper;
 
@@ -21,8 +20,7 @@ import java.util.Map.Entry;
 /**
  * Class allowing the resource pack to set colors for various things. Safe to call in serverside code, but will have no effect
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Log4j2
+@SuppressWarnings("unused") // API
 public class ResourceColorManager implements ISafeManagerReloadListener {
   /** Modifier file to load, has merging behavior but forge prevents multiple mods from loading the same file */
   private static final String COLORS_PATH = "mantle/colors.json";
@@ -33,6 +31,8 @@ public class ResourceColorManager implements ISafeManagerReloadListener {
 
   /** Model overrides, if not in this map the default is used */
   private static Map<String,TextColor> COLORS = Collections.emptyMap();
+
+  private ResourceColorManager() {}
 
   /**
    * Initializes this manager, registering it with the resource manager
@@ -55,16 +55,16 @@ public class ResourceColorManager implements ISafeManagerReloadListener {
         String fullPath = prefix + key;
         if (!colors.containsKey(fullPath)) {
           String text = element.getAsString();
-          TextColor color = TextColor.parseColor(text);
-          if (color == null) {
-            log.error("Color at key '{}' could not be parsed, got '{}'", fullPath, text);
+          DataResult<TextColor> color = TextColor.parseColor(text);
+          if (color.isError()) {
+            Mantle.logger.error("Color '{}' at key '{}' could not be parsed: {}", text, fullPath, color.error().map(DataResult.Error::message).orElse(""));
           } else {
-            colors.put(fullPath, color);
+            colors.put(fullPath, color.getOrThrow());
           }
         }
         // treat nulls as comments
       } else if (!element.isJsonNull()) {
-        log.error("Skipping color key '{}' as the value is not a string", key);
+        Mantle.logger.error("Skipping color key '{}' as the value is not a string", key);
       }
     }
   }

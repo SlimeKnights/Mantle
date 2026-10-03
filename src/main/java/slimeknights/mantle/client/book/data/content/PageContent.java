@@ -18,8 +18,8 @@ import java.util.ArrayList;
 /** Base for all page content */
 public abstract class PageContent implements IHTML {
 
-  public static final transient int TITLE_HEIGHT = 16;
-  public static final transient int LARGE_TITLE_HEIGHT = 20;
+  public static final int TITLE_HEIGHT = 16;
+  public static final int LARGE_TITLE_HEIGHT = 20;
 
   public transient PageData parent;
   public transient BookRepository source;

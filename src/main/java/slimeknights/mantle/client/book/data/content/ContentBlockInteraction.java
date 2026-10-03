@@ -20,19 +20,20 @@ import java.util.ArrayList;
 
 import static slimeknights.mantle.client.screen.book.Textures.TEX_MISC;
 
+/** Page showing an interaction from using an item on a block. */
 public class ContentBlockInteraction extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("block_interaction");
 
-  public static final transient int TEX_SIZE = 512;
-  public static final transient ImageData IMG_SMITHING = new ImageData(TEX_MISC, 0, 0, 88, 55, TEX_SIZE, TEX_SIZE);
+  public static final int TEX_SIZE = 512;
+  public static final ImageData IMG_SMITHING = new ImageData(TEX_MISC, 0, 0, 88, 55, TEX_SIZE, TEX_SIZE);
 
-  public static final transient int INPUT_X = 6;
-  public static final transient int INPUT_Y = 18;
-  public static final transient int BLOCK_X = 40;
-  public static final transient int BLOCK_Y = 26;
+  public static final int INPUT_X = 6;
+  public static final int INPUT_Y = 18;
+  public static final int BLOCK_X = 40;
+  public static final int BLOCK_Y = 26;
 
-  public static final transient float ITEM_SCALE = 2.0F;
-  public static final transient float BLOCK_SCALE = 5.0F;
+  public static final float ITEM_SCALE = 2.0F;
+  public static final float BLOCK_SCALE = 5.0F;
 
   @Getter
   public String title = "Block Interaction";

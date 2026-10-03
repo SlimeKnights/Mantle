@@ -10,6 +10,7 @@ import slimeknights.mantle.client.screen.book.element.TextElement;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
+/** Page showing an error. Used when something fails in book loading. */
 public class ContentError extends PageContent {
 
   private final String errorStage;

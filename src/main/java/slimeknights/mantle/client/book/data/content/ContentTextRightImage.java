@@ -16,6 +16,7 @@ import slimeknights.mantle.util.html.HtmlSerializable;
 
 import java.util.ArrayList;
 
+/** Page content that shows an image top right with text around. */
 public class ContentTextRightImage extends PageContent {
   public static final ResourceLocation ID = Mantle.getResource("text_right_image");
 

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/** Repository with no contents. */
 public class DummyRepository extends BookRepository {
 
   @Override
@@ -16,6 +17,7 @@ public class DummyRepository extends BookRepository {
     return Collections.emptyList();
   }
 
+  @Nullable
   @Override
   public ResourceLocation getResourceLocation(@Nullable String path, boolean safe) {
     return null;

@@ -28,7 +28,7 @@ public class TextComponentDataRenderer {
    * @param mouseX      the mouseY
    * @param mouseY      the mouseX
    * @param fr          the font renderer
-   * @param tooltip     the list of tooltips
+   * @param tooltip     List of tooltips to fill. Tooltips will be rendered in a separate hook.
    * @return the action if there's any
    */
   // TODO: can we merge this with TextDataRenderer, put the differences in TextData vs TextComponentData?

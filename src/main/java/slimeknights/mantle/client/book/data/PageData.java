@@ -3,8 +3,8 @@ package slimeknights.mantle.client.book.data;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.TrueCondition;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.TrueCondition;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.content.ContentError;
@@ -82,8 +82,9 @@ public class PageData implements IDataItem, IConditional {
             try {
               this.content = BookLoader.getGson().fromJson(data, ctype);
             } catch (Exception e) {
-              this.content = new ContentError("Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?", e);
-              e.printStackTrace();
+              String error = "Failed to create a page of type \"" + this.type + "\", perhaps the page file \"" + this.data + "\" is missing or invalid?";
+              this.content = new ContentError(error, e);
+              Mantle.logger.error("{}", error, e);
             }
           } else {
             this.content = new ContentError("Failed to create a page of type \"" + this.type + "\" as it is not registered.");
@@ -97,8 +98,9 @@ public class PageData implements IDataItem, IConditional {
         try {
           this.content = ctype.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NullPointerException | NoSuchMethodException | InvocationTargetException e) {
-          this.content = new ContentError("Failed to create a page of type \"" + this.type + "\".", e);
-          e.printStackTrace();
+          String error = "Failed to create a page of type \"" + this.type + "\".";
+          this.content = new ContentError(error, e);
+          Mantle.logger.error("{}", error, e);
         }
       } else {
         this.content = new ContentError("Failed to create a page of type \"" + this.type + "\" as it is not registered.");
@@ -109,8 +111,9 @@ public class PageData implements IDataItem, IConditional {
       this.content.parent = this;
       this.content.load();
     } catch (Exception e) {
-      this.content = new ContentError("Failed to load page " + this.parent.name + "." + this.name + ".", e);
-      e.printStackTrace();
+      String error = "Failed to load page " + this.parent.name + "." + this.name + ".";
+      this.content = new ContentError(error, e);
+      Mantle.logger.error("{}", error, e);
     }
 
     this.content.source = this.source;
@@ -123,8 +126,7 @@ public class PageData implements IDataItem, IConditional {
   private void processField(Field f) {
     f.setAccessible(true);
 
-    if (Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier
-      .isFinal(f.getModifiers())) {
+    if (Modifier.isTransient(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())) {
       return;
     }
 
@@ -134,7 +136,7 @@ public class PageData implements IDataItem, IConditional {
         this.processObject(o, 0);
       }
     } catch (IllegalAccessException e) {
-      e.printStackTrace();
+      Mantle.logger.error("Caught exception while processing field {} of class {}", f.getName(), f.getDeclaringClass().getSimpleName(), e);
     }
   }
 

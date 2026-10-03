@@ -103,11 +103,11 @@ public class BookLoader implements ResourceManagerReloadListener {
   }
 
   /**
-   * Registers a type of page prefabricate
+   * Registers a type of page prefabricate.
+   * Should call before resource load. {@link net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent} or constructor are both sufficient.
    *
    * @param id    The name of the page type
    * @param clazz The PageContent class for this page type
-   * @RecommendedInvoke init
    */
   public static void registerPageType(ResourceLocation id, Class<? extends PageContent> clazz) {
     if (typeToContentMap.containsKey(id)) {
@@ -136,6 +136,7 @@ public class BookLoader implements ResourceManagerReloadListener {
    * @param repositories All the repositories the book will load the sections from
    * @return The book object, not immediately populated
    */
+  @SuppressWarnings("UnusedReturnValue")  // API
   public static BookData registerBook(ResourceLocation id, BookRepository... repositories) {
     return registerBook(id, true, true, repositories);
   }
