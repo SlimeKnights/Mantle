@@ -38,6 +38,7 @@ import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
@@ -65,8 +66,10 @@ import java.util.function.Predicate;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
+  /** Model loader ID */
+  public static final ResourceLocation ID = Mantle.getResource("connected");
   /** Loader instance */
-  public static IGeometryLoader<ConnectedModel> LOADER = ConnectedModel::deserialize;
+  public static final IGeometryLoader<ConnectedModel> LOADER = ConnectedModel::deserialize;
 
   /** Property of the connections cache key. Contains a 6 bit number with each bit representing a direction */
   private static final ModelProperty<Byte> CONNECTIONS = new ModelProperty<>();

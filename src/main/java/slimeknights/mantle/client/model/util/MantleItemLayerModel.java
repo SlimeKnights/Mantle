@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.neoforged.neoforge.client.model.pipeline.TransformingVertexPipeline;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.common.ColorLoadable;
@@ -56,6 +57,8 @@ import java.util.function.Function;
  */
 @RequiredArgsConstructor
 public class MantleItemLayerModel implements IUnbakedGeometry<MantleItemLayerModel> {
+  /** Model loader ID */
+  public static final ResourceLocation ID = Mantle.getResource("item_layer");
   /** Model loader instance */
   public static final IGeometryLoader<MantleItemLayerModel> LOADER = MantleItemLayerModel::deserialize;
 

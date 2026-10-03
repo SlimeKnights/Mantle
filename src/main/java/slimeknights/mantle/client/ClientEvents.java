@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.AttackIndicatorStatus;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
@@ -19,29 +20,26 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.block.GaugeBlock;
 import slimeknights.mantle.client.book.BookLoader;
@@ -63,7 +61,6 @@ import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.MantleRegistrations;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
-import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +82,6 @@ public class ClientEvents {
     }
   }
 
-  @SuppressWarnings("removal")
   @SubscribeEvent
   static void registerListeners(RegisterClientReloadListenersEvent event) {
     event.registerReloadListener(ModelHelper.LISTENER);
@@ -109,25 +105,26 @@ public class ClientEvents {
   @SubscribeEvent
   static void registerModelLoaders(RegisterGeometryLoaders event) {
     // standard models - useful in resource packs for any model
-    event.register("connected", ConnectedModel.LOADER);
-    event.register("item_layer", MantleItemLayerModel.LOADER);
-    event.register("colored_block", ColoredBlockModel.LOADER);
-    event.register("fallback", FallbackModelLoader.INSTANCE);
+    event.register(ConnectedModel.ID, ConnectedModel.LOADER);
+    event.register(MantleItemLayerModel.ID, MantleItemLayerModel.LOADER);
+    event.register(ColoredBlockModel.ID, ColoredBlockModel.LOADER);
+    event.register(FallbackModelLoader.ID, FallbackModelLoader.INSTANCE);
 
     // NBT dynamic models - require specific data defined in the block/item to use
-    event.register("item_key", ItemKeyModel.LOADER);
-    event.register("retextured", RetexturedModel.LOADER);
+    event.register(ItemKeyModel.ID, ItemKeyModel.LOADER);
+    event.register(RetexturedModel.ID, RetexturedModel.LOADER);
   }
 
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
-    MinecraftForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiOverlayEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
-    MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiOverlayEvent.Post.class, ClientEvents::renderGaugeTooltip);
+    NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
+    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiLayerEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
+    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiLayerEvent.Post.class, ClientEvents::renderGaugeTooltip);
   }
 
   // registered with FORGE bus
-  private static void renderOffhandAttackIndicator(RenderGuiOverlayEvent.Post event) {
+  /** Renders the offhand attack indicator. Based on {@link Gui#renderCrosshair(GuiGraphics, DeltaTracker)} and {@link Gui#renderItemHotbar(GuiGraphics, DeltaTracker)} */
+  private static void renderOffhandAttackIndicator(RenderGuiLayerEvent.Post event) {
     // must have a player, not be in spectator, and have the indicator enabled
     Minecraft minecraft = Minecraft.getInstance();
     Options settings = minecraft.options;
@@ -137,10 +134,10 @@ public class ClientEvents {
     }
 
     // only care about hotbar and crosshair
-    NamedGuiOverlay overlay = event.getOverlay();
+    ResourceLocation name = event.getName();
     // will be true for hotbar, false for crosshair
-    boolean isHotbar = VanillaGuiOverlay.HOTBAR.type() == overlay;
-    if (!isHotbar && VanillaGuiOverlay.CROSSHAIR.type() != overlay) {
+    boolean isHotbar = VanillaGuiLayers.HOTBAR == name;
+    if (!isHotbar && VanillaGuiLayers.CROSSHAIR != name) {
       return;
     }
 
@@ -159,17 +156,17 @@ public class ClientEvents {
     switch (indicator) {
       case CROSSHAIR:
         if (!isHotbar && minecraft.options.getCameraType().isFirstPerson()) {
-          if (!settings.renderDebug || settings.hideGui || minecraft.player.isReducedDebugInfo() || settings.reducedDebugInfo().get()) {
+          if (!minecraft.gui.getDebugOverlay().showDebugScreen() || minecraft.player.isReducedDebugInfo() || settings.reducedDebugInfo().get()) {
             // mostly cloned from vanilla attack indicator
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             int scaledHeight = minecraft.getWindow().getGuiScaledHeight();
-            // integer division makes this a pain to line up, there might be a simplier version of this formula but I cannot think of one
+            // integer division makes this a pain to line up, there might be a simplier version of this formula, but I cannot think of one
             int y = (scaledHeight / 2) - 14 + (2 * (scaledHeight % 2));
             int x = minecraft.getWindow().getGuiScaledWidth() / 2 - 8;
             int width = (int)(cooldown * 17.0F);
-            graphics.blit(Gui.GUI_ICONS_LOCATION, x, y, 36, 94, 16, 4);
-            graphics.blit(Gui.GUI_ICONS_LOCATION, x, y, 52, 94, width, 4);
+            graphics.blitSprite(Gui.CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_SPRITE, x, y, 16, 4);
+            graphics.blitSprite(Gui.CROSSHAIR_ATTACK_INDICATOR_PROGRESS_SPRITE, 16, 4, 0, 0, x, y, width, 4);
             RenderSystem.defaultBlendFunc();
           }
         }
@@ -185,11 +182,9 @@ public class ClientEvents {
           } else {
             x = centerWidth + 91 + 6 + 32;
           }
-//          RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
-          int l1 = (int)(cooldown * 19.0F);
-          RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-          graphics.blit(Gui.GUI_ICONS_LOCATION, x, y, 0, 94, 18, 18);
-          graphics.blit(Gui.GUI_ICONS_LOCATION, x, y + 18 - l1, 18, 112 - l1, 18, l1);
+          int height = (int)(cooldown * 19.0F);
+          graphics.blitSprite(Gui.HOTBAR_ATTACK_INDICATOR_BACKGROUND_SPRITE, x, y, 18, 18);
+          graphics.blitSprite(Gui.HOTBAR_ATTACK_INDICATOR_PROGRESS_SPRITE, 18, 18, 0, 18 - height, x, y + 18 - height, 18, height);
         }
         break;
     }
@@ -198,8 +193,9 @@ public class ClientEvents {
 
 
   /** Renders the tooltip when targeting the gauge block */
-  private static void renderGaugeTooltip(RenderGuiOverlayEvent.Post event) {
-    if (event.getOverlay() != VanillaGuiOverlay.CROSSHAIR.type()) {
+  private static void renderGaugeTooltip(RenderGuiLayerEvent.Post event) {
+    // those RLs are passed into the event constructor, so instance comparison should be fine
+    if (event.getName() != VanillaGuiLayers.CROSSHAIR) {
       return;
     }
     // must not be in a screen, though chat is fine
@@ -219,22 +215,23 @@ public class ClientEvents {
     if (!targeted.is(MantleTags.Blocks.GAUGES)) {
       return;
     }
-    BlockEntity gaugeContainer;
+    BlockState fluidBlock = targeted;
+    BlockPos fluidPos = pos;
     Direction side;
     if (targeted.is(MantleTags.Blocks.ATTACHED_GAUGES)) {
       side = targeted.getValue(BlockStateProperties.FACING);
-      gaugeContainer = minecraft.level.getBlockEntity(pos.relative(side.getOpposite()));
+      fluidPos = pos.relative(side.getOpposite());
+      fluidBlock = minecraft.level.getBlockState(fluidPos);
     } else {
       side = blockHit.getDirection();
-      gaugeContainer = minecraft.level.getBlockEntity(pos);
     }
-    // must have a block entity behind the gauge that is not blacklisted
-    if (gaugeContainer == null || RegistryHelper.contains(BuiltInRegistries.BLOCK_ENTITY_TYPE, MantleTags.BlockEntities.GAUGE_BLACKLIST, gaugeContainer.getType())) {
+    // targeted block must not be blacklisted
+    if (fluidBlock.is(MantleTags.Blocks.GAUGE_BLACKLIST)) {
       return;
     }
     // block entity must have a fluid handler
-    IFluidHandler handler = gaugeContainer.getCapability(ForgeCapabilities.FLUID_HANDLER, side).orElse(EmptyFluidHandler.INSTANCE);
-    if (handler.getTanks() <= 0) {
+    IFluidHandler handler = minecraft.level.getCapability(Capabilities.FluidHandler.BLOCK, fluidPos, side);
+    if (handler == null || handler.getTanks() <= 0) {
       return;
     }
     // if the fluid is empty, just render the capacity
@@ -242,11 +239,11 @@ public class ClientEvents {
     List<Component> tooltip;
     if (fluid.isEmpty()) {
       tooltip = List.of(GaugeBlock.formatCapacity(handler.getTankCapacity(0)));
-    } else if (RegistryHelper.contains(BuiltInRegistries.BLOCK_ENTITY_TYPE, MantleTags.BlockEntities.HIDES_GAUGE_AMOUNT, gaugeContainer.getType())) {
+    } else if (fluidBlock.is(MantleTags.Blocks.HIDES_GAUGE_AMOUNT)) {
       // in the tag, don't show capacity
       ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid.getFluid());
       tooltip = new ArrayList<>(3);
-      tooltip.add(fluid.getDisplayName());
+      tooltip.add(fluid.getHoverName());
       FluidTooltipHandler.appendAdvanced(id, tooltip);
       tooltip.add(GaugeBlock.formatCapacity(handler.getTankCapacity(0)).withStyle(ChatFormatting.GRAY));
       tooltip.add(FluidTooltipHandler.formatModName(id));

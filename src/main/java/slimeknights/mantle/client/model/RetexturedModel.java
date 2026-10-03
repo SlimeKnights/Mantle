@@ -34,6 +34,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
 import slimeknights.mantle.client.model.util.GeometryContextWrapper;
@@ -57,6 +58,8 @@ import java.util.function.Function;
 @SuppressWarnings("WeakerAccess")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class RetexturedModel implements IUnbakedGeometry<RetexturedModel> {
+  /** Model loader ID */
+  public static final ResourceLocation ID = Mantle.getResource("retextured");
   /** Loader instance */
   public static IGeometryLoader<RetexturedModel> LOADER = RetexturedModel::deserialize;
 

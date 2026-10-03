@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.joml.Vector3f;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.data.loadable.primitive.BooleanLoadable;
@@ -49,6 +50,8 @@ import static net.minecraft.client.renderer.block.model.BlockModel.FACE_BAKERY;
  */
 @SuppressWarnings("unused")  // API
 public class ColoredBlockModel extends SimpleBlockModel {
+  /** Model loader ID */
+  public static final ResourceLocation ID = Mantle.getResource("colored_block");
   /** Model loader to allow doing basic coloring outside of other models */
   public static final IGeometryLoader<SimpleBlockModel> LOADER = ColoredBlockModel::deserialize;
 

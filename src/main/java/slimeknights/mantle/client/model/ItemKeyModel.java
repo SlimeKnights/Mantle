@@ -25,6 +25,7 @@ import net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.ModelTextureIteratable;
 import slimeknights.mantle.util.JsonHelper;
@@ -39,6 +40,8 @@ import java.util.function.Function;
 /** Model which uses a key in NBT to select which texture variant to load. */
 @RequiredArgsConstructor
 public class ItemKeyModel implements IUnbakedGeometry<ItemKeyModel> {
+  /** Model loader ID */
+  public static final ResourceLocation ID = Mantle.getResource("item_key");
   /** Model loader instance */
   public static final IGeometryLoader<ItemKeyModel> LOADER = ItemKeyModel::deserialize;
 

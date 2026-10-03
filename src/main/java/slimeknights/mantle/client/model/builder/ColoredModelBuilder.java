@@ -5,14 +5,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.ColoredBlockModel.ColorData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builder for {@link slimeknights.mantle.client.model.util.ColoredBlockModel}, used as a base for other model builders.
+ * Builder for {@link ColoredBlockModel}, used as a base for other model builders.
  * @param <T>  Builder type
  */
 @SuppressWarnings("unused")  // API
@@ -20,7 +20,7 @@ public class ColoredModelBuilder<T extends ModelBuilder<T>> extends CustomLoader
   private final List<ColorData> colors = new ArrayList<>();
 
   public ColoredModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    this(Mantle.getResource("colored_block"), parent, existingFileHelper, allowInlineElements);
+    this(ColoredBlockModel.ID, parent, existingFileHelper, allowInlineElements);
   }
 
   protected ColoredModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {

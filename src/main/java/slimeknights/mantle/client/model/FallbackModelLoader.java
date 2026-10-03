@@ -19,6 +19,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.function.Function;
@@ -29,6 +30,9 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public enum FallbackModelLoader implements IGeometryLoader<FallbackModelLoader.BlockModelWrapper> {
   INSTANCE;
+
+  /** Model loader ID */
+  public static final ResourceLocation ID = Mantle.getResource("fallback");
 
   @Override
   public BlockModelWrapper read(JsonObject data, JsonDeserializationContext context) {

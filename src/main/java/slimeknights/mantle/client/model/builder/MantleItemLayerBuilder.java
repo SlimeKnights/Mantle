@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.model.util.MantleItemLayerModel;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel.LayerData;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class MantleItemLayerBuilder<T extends ModelBuilder<T>> extends CustomLoa
   }
 
   public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    this(Mantle.getResource("item_layer"), parent, existingFileHelper, allowInlineElements);
+    this(MantleItemLayerModel.ID, parent, existingFileHelper, allowInlineElements);
   }
 
   /** Adds data for the next element */

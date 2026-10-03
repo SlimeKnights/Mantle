@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.model.FallbackModelLoader;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
 public class FallbackModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<DomainModel<T>> models = new ArrayList<>();
   public FallbackModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(Mantle.getResource("fallback"), parent, existingFileHelper, allowInlineElements);
+    super(FallbackModelLoader.ID, parent, existingFileHelper, allowInlineElements);
   }
 
   /** Adds a fallback model with a domain restriction */

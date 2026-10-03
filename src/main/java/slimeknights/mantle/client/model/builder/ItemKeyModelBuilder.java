@@ -7,18 +7,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.ItemKey;
 import slimeknights.mantle.client.model.ItemKeyModel;
 
 /** Loader for {@link ItemKeyModel} */
+@SuppressWarnings("unused")  // API
 @Setter
 @Accessors(fluent = true)
 public class ItemKeyModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private ItemKey key = null;
   private ResourceLocation extraTexturesKey = null;
   public ItemKeyModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(Mantle.getResource("item_key"), parent, existingFileHelper, allowInlineElements);
+    super(ItemKeyModel.ID, parent, existingFileHelper, allowInlineElements);
   }
 
   @Override

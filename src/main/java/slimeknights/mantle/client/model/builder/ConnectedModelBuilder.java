@@ -5,12 +5,12 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import slimeknights.mantle.Mantle;
+import slimeknights.mantle.client.model.connected.ConnectedModel;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-/** Builder for {@link slimeknights.mantle.client.model.connected.ConnectedModel} */
+/** Builder for {@link ConnectedModel} */
 @SuppressWarnings("unused")  // API
 public class ConnectedModelBuilder<T extends ModelBuilder<T>> extends ColoredModelBuilder<T> {
   private final JsonObject connectedTextures = new JsonObject();
@@ -18,7 +18,7 @@ public class ConnectedModelBuilder<T extends ModelBuilder<T>> extends ColoredMod
   private String predicate = null;
 
   public ConnectedModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(Mantle.getResource("connected"), parent, existingFileHelper, allowInlineElements);
+    super(ConnectedModel.ID, parent, existingFileHelper, allowInlineElements);
   }
 
   /**
