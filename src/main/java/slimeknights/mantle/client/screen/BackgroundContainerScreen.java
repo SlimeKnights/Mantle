@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
  * Generic container screen that simply draws the given background
  * @param <T> Container type
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"}) // API
 public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
 	/**
 	 * Background drawn for this screen
@@ -42,7 +42,7 @@ public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends 
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(graphics);
+		this.renderBackground(graphics, mouseX, mouseY, partialTicks);
 		super.render(graphics, mouseX, mouseY, partialTicks);
 		this.renderTooltip(graphics, mouseX, mouseY);
 	}
@@ -64,7 +64,7 @@ public class BackgroundContainerScreen<T extends AbstractContainerMenu> extends 
 		 * @param name   Name of this container
 		 */
 		public static <T extends AbstractContainerMenu> Factory<T> ofName(int height, ResourceLocation name) {
-			return of(new ResourceLocation(name.getNamespace(), String.format("textures/gui/%s.png", name.getPath())), height);
+			return of(name.withPath("textures/gui/" + name.getPath() + ".png"), height);
 		}
 
     @Override

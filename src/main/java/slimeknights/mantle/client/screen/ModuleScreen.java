@@ -8,7 +8,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
-// a sub-gui. Mostly the same as a separate ContainerScreen, but doesn't do the calls that affect the game as if this were the only gui
+/**
+ * A sub-gui. Mostly the same as a separate ContainerScreen, but doesn't do the calls that affect the game as if this were the only gui
+ * TODO: can this be replaced with {@link net.minecraft.client.gui.components.AbstractWidget}?
+ */
 public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends AbstractContainerMenu> extends AbstractContainerScreen<C> {
 
   protected final P parent;
@@ -135,7 +138,7 @@ public abstract class ModuleScreen<P extends MultiModuleScreen<?>, C extends Abs
    *
    * @return True to prevent the main container handling the mouseclick
    */
-  public boolean handleMouseScrolled(double mouseX, double mouseY, double delta) {
+  public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
     return false;
   }
 }
