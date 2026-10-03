@@ -3,21 +3,19 @@ package slimeknights.mantle.recipe.data;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.registration.object.IdAwareObject;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Interface for common resource location and condition methods
@@ -35,7 +33,7 @@ public interface IRecipeHelper {
    * @return  Location for the mod
    */
   default ResourceLocation location(String name) {
-    return new ResourceLocation(getModId(), name);
+    return ResourceLocation.fromNamespaceAndPath(getModId(), name);
   }
 
   /**
@@ -52,7 +50,6 @@ public interface IRecipeHelper {
    * @param item  Item to fetch ID
    * @return  ID for the item put in your namespace
    */
-  @SuppressWarnings("deprecation")  // won't be for long
   default ResourceLocation id(ItemLike item) {
     return id(BuiltInRegistries.ITEM, item.asItem());
   }
@@ -70,17 +67,26 @@ public interface IRecipeHelper {
 
   /* Location extending with namespace */
 
-  /** Wraps the given path under our ID */
+  /**
+   * Wraps the given path under our ID.
+   * @see slimeknights.mantle.util.JsonHelper#wrap(ResourceLocation, String, String)
+   */
   default ResourceLocation wrap(ResourceLocation location, String prefix, String suffix) {
     return location(prefix + location.getPath() + suffix);
   }
 
-  /** Prefixes the given path under our ID */
+  /**
+   * Prefixes the given path under our ID.
+   * @see ResourceLocation#withPrefix(String)
+   */
   default ResourceLocation prefix(ResourceLocation location, String prefix) {
     return location(prefix + location.getPath());
   }
 
-  /** Suffixes the given path under our ID */
+  /**
+   * Suffixes the given path under our ID.
+   * @see ResourceLocation#withSuffix(String)
+   */
   default ResourceLocation suffix(ResourceLocation location, String suffix) {
     return location(location.getPath() + suffix);
   }
@@ -95,7 +101,7 @@ public interface IRecipeHelper {
    * @param suffix    Path suffix
    * @return  Location with the given prefix and suffix
    */
-  default ResourceLocation wrap(RegistryObject<?> location, String prefix, String suffix) {
+  default ResourceLocation wrap(DeferredHolder<?,?> location, String prefix, String suffix) {
     return wrap(location.getId(), prefix, suffix);
   }
 
@@ -105,7 +111,7 @@ public interface IRecipeHelper {
    * @param prefix    Path prefix
    * @return  Location with the given prefix
    */
-  default ResourceLocation prefix(RegistryObject<?> location, String prefix) {
+  default ResourceLocation prefix(DeferredHolder<?,?> location, String prefix) {
     return prefix(location.getId(), prefix);
   }
 
@@ -115,7 +121,7 @@ public interface IRecipeHelper {
    * @param suffix    Path suffix
    * @return  Location with the given suffix
    */
-  default ResourceLocation suffix(RegistryObject<?> location, String suffix) {
+  default ResourceLocation suffix(DeferredHolder<?,?> location, String suffix) {
     return suffix(location.getId(), suffix);
   }
 
@@ -163,7 +169,7 @@ public interface IRecipeHelper {
    * @return  Tag instance
    */
   default TagKey<Item> getItemTag(String modId, String name) {
-    return TagKey.create(Registries.ITEM, new ResourceLocation(modId, name));
+    return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(modId, name));
   }
 
   /**
@@ -173,7 +179,7 @@ public interface IRecipeHelper {
    * @return  Tag instance
    */
   default TagKey<Fluid> getFluidTag(String modId, String name) {
-    return TagKey.create(Registries.FLUID, new ResourceLocation(modId, name));
+    return TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(modId, name));
   }
 
   /**
@@ -183,19 +189,5 @@ public interface IRecipeHelper {
    */
   default ICondition tagCondition(String name) {
     return new TagFilledCondition<>(ItemTags.create(Mantle.commonResource(name)));
-  }
-
-  /**
-   * Creates a consumer instance with the added conditions
-   * @param consumer    Base consumer
-   * @param conditions  Extra conditions
-   * @return  Wrapped consumer
-   */
-  default Consumer<FinishedRecipe> withCondition(Consumer<FinishedRecipe> consumer, ICondition... conditions) {
-    ConsumerWrapperBuilder builder = ConsumerWrapperBuilder.wrap();
-    for (ICondition condition : conditions) {
-      builder.addCondition(condition);
-    }
-    return builder.build(consumer);
   }
 }
