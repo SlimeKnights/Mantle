@@ -2,10 +2,9 @@ package slimeknights.mantle.client.model.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
@@ -13,10 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Builder for {@link slimeknights.mantle.client.model.FallbackModelLoader} */
+@SuppressWarnings("unused")  // API
 public class FallbackModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<DomainModel<T>> models = new ArrayList<>();
-  public FallbackModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(Mantle.getResource("fallback"), parent, existingFileHelper);
+  public FallbackModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    super(Mantle.getResource("fallback"), parent, existingFileHelper, allowInlineElements);
   }
 
   /** Adds a fallback model with a domain restriction */

@@ -6,15 +6,15 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.BakedModelWrapper;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Cross between {@link BakedModelWrapper} and {@link net.minecraftforge.client.model.IDynamicBakedModel}.
+ * Cross between {@link BakedModelWrapper} and {@link net.neoforged.neoforge.client.model.IDynamicBakedModel}.
  * Used to create a baked model wrapper that has a dynamic {@link #getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)} (BlockState, Direction, Random, IModelData)} without worrying about overriding the deprecated variant.
  * @param <T>  Baked model parent
  */

@@ -33,11 +33,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import slimeknights.mantle.block.IMultipartConnectedBlock;
 import slimeknights.mantle.client.model.util.ColoredBlockModel;
 import slimeknights.mantle.client.model.util.DynamicBakedWrapper;
@@ -98,8 +98,6 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
       Material base = owner.getMaterial(name);
       ResourceLocation atlas = base.atlasLocation();
       ResourceLocation texture = base.texture();
-      String namespace = texture.getNamespace();
-      String path = texture.getPath();
 
       // use base atlas and texture, but suffix the name
       String[] suffixes = entry.getValue();
@@ -115,7 +113,7 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
           if (owner.hasMaterial(suffixedName)) {
             mat = owner.getMaterial(suffixedName);
           } else {
-            mat = new Material(atlas, new ResourceLocation(namespace, path + "/" + suffix));
+            mat = new Material(atlas, texture.withSuffix("/" + suffix));
           }
           // cache the texture name, we use it a lot in rebaking
           extraTextures.put(suffixedName, mat);
@@ -127,8 +125,8 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
   }
 
   @Override
-  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides, ResourceLocation location) {
-    BakedModel baked = model.bake(owner, baker, spriteGetter, transform, overrides, location);
+  public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material,TextureAtlasSprite> spriteGetter, ModelState transform, ItemOverrides overrides) {
+    BakedModel baked = model.bake(owner, baker, spriteGetter, transform, overrides);
     return new Baked(this, new ExtraTextureContext(owner, extraTextures), transform, baked);
   }
 
@@ -306,14 +304,15 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
 
           // follow the texture name back to the original name
           // if it never reaches a connected texture, skip
-          String connectedTexture = getConnectedName(original.texture);
+          String connectedTexture = getConnectedName(original.texture());
           if (!connectedTexture.isEmpty()) {
             // if empty string, we can keep the old face
-            String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, original.uv));
+            BlockFaceUV uv = original.uv();
+            String suffix = getTextureSuffix(connectedTexture, connections, getTransform(dir, uv));
             if (!suffix.isEmpty()) {
               // suffix the texture
               String fullTexture = connectedTexture + suffix;
-              face = new BlockElementFace(original.cullForDirection, original.tintIndex, "#" + fullTexture, original.uv);
+              face = new BlockElementFace(original.cullForDirection(), original.tintIndex(), "#" + fullTexture, uv);
             }
           }
           // add the updated face
@@ -336,7 +335,7 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
       byte connections = 0;
       for (Direction dir : Direction.values()) {
         if (predicate.test(dir)) {
-          connections |= 1 << dir.get3DDataValue();
+          connections |= (byte) (1 << dir.get3DDataValue());
         }
       }
       return connections;
@@ -412,7 +411,7 @@ public class ConnectedModel implements IUnbakedGeometry<ConnectedModel> {
 
     // need at least one connected texture
     JsonObject connected = GsonHelper.getAsJsonObject(data, "textures");
-    if (connected.size() == 0) {
+    if (connected.isEmpty()) {
       throw new JsonSyntaxException("Must have at least one texture in connected");
     }
 

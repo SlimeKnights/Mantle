@@ -3,21 +3,22 @@ package slimeknights.mantle.client.model.builder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Direction;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 
 import java.util.EnumSet;
 import java.util.Set;
 
 /** Builder for {@link slimeknights.mantle.client.model.connected.ConnectedModel} */
+@SuppressWarnings("unused")  // API
 public class ConnectedModelBuilder<T extends ModelBuilder<T>> extends ColoredModelBuilder<T> {
   private final JsonObject connectedTextures = new JsonObject();
   private Set<Direction> sides = null;
   private String predicate = null;
 
-  public ConnectedModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-    super(Mantle.getResource("connected"), parent, existingFileHelper);
+  public ConnectedModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    super(Mantle.getResource("connected"), parent, existingFileHelper, allowInlineElements);
   }
 
   /**

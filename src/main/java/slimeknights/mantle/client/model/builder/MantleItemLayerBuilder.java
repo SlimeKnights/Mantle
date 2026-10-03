@@ -2,9 +2,9 @@ package slimeknights.mantle.client.model.builder;
 
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.util.MantleItemLayerModel.LayerData;
 
@@ -15,12 +15,12 @@ import java.util.List;
 @SuppressWarnings("unused")  // API
 public class MantleItemLayerBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<LayerData> layers = new ArrayList<>();
-  protected MantleItemLayerBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(loaderId, parent, existingFileHelper);
+  protected MantleItemLayerBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    super(loaderId, parent, existingFileHelper, allowInlineElements);
   }
 
-  public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper) {
-    this(Mantle.getResource("item_layer"), parent, existingFileHelper);
+  public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    this(Mantle.getResource("item_layer"), parent, existingFileHelper, allowInlineElements);
   }
 
   /** Adds data for the next element */

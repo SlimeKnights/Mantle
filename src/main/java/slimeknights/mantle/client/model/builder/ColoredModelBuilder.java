@@ -2,9 +2,9 @@ package slimeknights.mantle.client.model.builder;
 
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.model.util.ColoredBlockModel.ColorData;
 
@@ -15,15 +15,16 @@ import java.util.List;
  * Builder for {@link slimeknights.mantle.client.model.util.ColoredBlockModel}, used as a base for other model builders.
  * @param <T>  Builder type
  */
+@SuppressWarnings("unused")  // API
 public class ColoredModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<ColorData> colors = new ArrayList<>();
 
-  public ColoredModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-    this(Mantle.getResource("colored_block"), parent, existingFileHelper);
+  public ColoredModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    this(Mantle.getResource("colored_block"), parent, existingFileHelper, allowInlineElements);
   }
 
-  protected ColoredModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
-    super(loaderId, parent, existingFileHelper);
+  protected ColoredModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    super(loaderId, parent, existingFileHelper, allowInlineElements);
   }
 
   /** Adds a full color data for the next element */

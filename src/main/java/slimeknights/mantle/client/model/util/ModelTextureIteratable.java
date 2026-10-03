@@ -4,14 +4,15 @@ import com.mojang.datafixers.util.Either;
 import lombok.AllArgsConstructor;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraftforge.client.model.geometry.BlockGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+/** Iterator for processing textures on parents of {@link net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry} */
 @AllArgsConstructor
 public class ModelTextureIteratable implements Iterable<Map<String,Either<Material, String>>> {
   /** Initial map for iteration */
@@ -25,6 +26,7 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Materi
    * Creates an iterable over the given model
    * @param model  Model
    */
+  @SuppressWarnings("unused") // API
   public ModelTextureIteratable(BlockModel model) {
     this(null, model);
   }
@@ -43,7 +45,7 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Materi
   }
 
   @Override
-  public MapIterator iterator() {
+  public Iterator<Map<String,Either<Material, String>>> iterator() {
     return new MapIterator(startMap, startModel);
   }
 
