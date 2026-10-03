@@ -1,11 +1,10 @@
-package slimeknights.mantle.network.packet;
+package slimeknights.mantle.network;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.util.BlockEntityHelper;
 
 import javax.annotation.Nullable;
@@ -14,19 +13,19 @@ import javax.annotation.Nullable;
  * Helper to create a packet that updates a block entity on the client.
  * @param <T> class type receiving updates.
  */
-public interface BlockEntityPacket<T> extends IThreadsafePacket {
+public interface BlockEntityPacket<T> extends ISimplePacket {
   /** Gets the block position for this packet */
   BlockPos pos();
 
-  /** Gets the class for the filter */
-  Class<T> type();
+  /** Gets the class for the block entity filter */
+  Class<T> blockEntityType();
 
   @Override
-  default void handleThreadsafe(Context context) {
+  default void handle(IPayloadContext context) {
     BlockPos pos = pos();
-    BlockEntity be = getBlockEntity(pos, this);
+    BlockEntity be = getBlockEntity(context, pos, this);
     if (be != null) {
-      Class<T> type = type();
+      Class<T> type = blockEntityType();
       if (type.isInstance(be)) {
         handleBlockEntity(context, type.cast(be));
       } else {
@@ -38,7 +37,7 @@ public interface BlockEntityPacket<T> extends IThreadsafePacket {
   }
 
   /** Handles the block entity, assuming it's not null and the correct type */
-  void handleBlockEntity(Context context, T be);
+  void handleBlockEntity(IPayloadContext context, T be);
 
 
   /* Helpers */
@@ -61,13 +60,14 @@ public interface BlockEntityPacket<T> extends IThreadsafePacket {
   }
 
   /**
-   * Gets a block entity in a packet client side, ensuring the world is loaded before attempting. Only works on the client side.
+   * Gets a block entity in a packet using the context level.
+   * @param context Packet context
    * @param pos     Position
    * @param packet  Object to print for debug
    * @return Block entity instance. Null if: not client, position not loaded, or block entity does not exist.
    */
   @Nullable
-  static BlockEntity getBlockEntity(BlockPos pos, Object packet) {
-    return getBlockEntity(SafeClientAccess.getLevel(), pos, packet);
+  static BlockEntity getBlockEntity(IPayloadContext context, BlockPos pos, Object packet) {
+    return getBlockEntity(context.player().level(), pos, packet);
   }
 }

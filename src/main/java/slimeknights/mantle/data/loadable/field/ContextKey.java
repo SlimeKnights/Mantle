@@ -2,6 +2,7 @@ package slimeknights.mantle.data.loadable.field;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import slimeknights.mantle.data.loadable.ErrorFactory;
@@ -23,6 +24,8 @@ public class ContextKey<T> implements Key<T> {
   public static final ContextKey<String> DEBUG = new ContextKey<>("debug info");
   /** Key for adding condition context, used in {@link slimeknights.mantle.data.loadable.mapping.ConditionalLoadable} */
   public static final ContextKey<IContext> CONDITION_CONTEXT = new ContextKey<>("condition context");
+  /** Context field for fetching registries */
+  public static final ContextKey<HolderLookup.Provider> REGISTRY_LOOKUP = new ContextKey<>("registry lookup");
 
   /** Name of the field, used primarily for debug */
   @Getter
