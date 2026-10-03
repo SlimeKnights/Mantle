@@ -2,10 +2,12 @@ package slimeknights.mantle.client.model.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 
+/** Builder for using {@link slimeknights.mantle.client.model.RetexturedModel} in Neo block model datagen. */
+@SuppressWarnings("unused") // API
 public class RetexturedModelBuilder<T extends ModelBuilder<T>> extends ColoredModelBuilder<T> {
   private final JsonArray retextured = new JsonArray();
   public RetexturedModelBuilder(T parent, ExistingFileHelper existingFileHelper) {

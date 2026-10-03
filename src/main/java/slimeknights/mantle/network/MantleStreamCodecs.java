@@ -9,6 +9,7 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +22,8 @@ public class MantleStreamCodecs {
 
   /** Stream codec for player hands. */
   public static final StreamCodec<ByteBuf, InteractionHand> INTERACTION_HAND = enumCodec(InteractionHand.class, OutOfBoundsStrategy.ZERO);
+  /** Stream codec for a block */
+  public static final StreamCodec<RegistryFriendlyByteBuf, Block> BLOCK = ByteBufCodecs.registry(Registries.BLOCK);
   /** Stream codec for an item */
   public static final StreamCodec<RegistryFriendlyByteBuf, Item> ITEM = ByteBufCodecs.registry(Registries.ITEM);
 

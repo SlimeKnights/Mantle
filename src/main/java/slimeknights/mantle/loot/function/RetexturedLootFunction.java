@@ -47,7 +47,7 @@ public class RetexturedLootFunction extends LootItemConditionalFunction {
   protected ItemStack run(ItemStack stack, LootContext context) {
     BlockEntity te = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
     if (te instanceof IRetexturedBlockEntity retextured) {
-      RetexturedHelper.setTexture(stack, retextured.getTextureName());
+      RetexturedHelper.setTexture(stack, retextured.getTexture());
     } else {
       String name = te == null ? "null" : te.getClass().getName();
       Mantle.logger.warn("Found wrong tile entity for loot function, expected IRetexturedTileEntity, found {}", name);
