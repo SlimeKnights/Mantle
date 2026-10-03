@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -18,7 +19,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -26,19 +26,23 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import slimeknights.mantle.Mantle;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -47,12 +51,13 @@ import java.util.Map;
 import java.util.Set;
 
 /** Helpers for attacking with weapons */
+@SuppressWarnings("unused")  // API
 public class CombatHelper {
   private static final float TO_RADIAN = (float)Math.PI / 180f;
   /** Attribute modifier to disable knockback on a target */
-  private static final AttributeModifier ANTI_KNOCKBACK_MODIFIER = new AttributeModifier(Mantle.modId + ".anti_knockback", 1f, Operation.ADDITION);
+  private static final AttributeModifier ANTI_KNOCKBACK_MODIFIER = new AttributeModifier(Mantle.getResource("anti_knockback"), 1f, Operation.ADD_VALUE);
   /** Tool action to disable the base knockback of the weapon. Requires replacing left click behavior of your weapon. */
-  public static final ToolAction NO_BASE_KNOCKBACK = ToolAction.get("no_base_knockback");
+  public static final ItemAbility NO_BASE_KNOCKBACK = ItemAbility.get("no_base_knockback");
 
   private CombatHelper() {}
 
@@ -81,8 +86,25 @@ public class CombatHelper {
     return modifiers;
   }
 
+  /**
+   * Gets a mutable list of modifiers on the given stack for the given slot.
+   * @param stack   Stack instance
+   * @param slot    Slot to check
+   * @param match   Attribute to match
+   * @return  List of modifiers.
+   */
+  public static List<AttributeModifier> getModifiers(ItemStack stack, EquipmentSlot slot, Holder<Attribute> match) {
+    List<AttributeModifier> modifiers = new ArrayList<>();
+    stack.forEachModifier(slot, (attribute, modifier) -> {
+      if (match.equals(attribute)) {
+        modifiers.add(modifier);
+      }
+    });
+    return modifiers;
+  }
+
   /** Gets the attribute for the offhand by subtracting mainhand attributes and adding in offhand stack attributes. */
-  public static float getOffhandAttribute(ItemStack stack, LivingEntity entity, Attribute attribute) {
+  public static float getOffhandAttribute(ItemStack stack, LivingEntity entity, Holder<Attribute> attribute) {
     AttributeInstance instance = entity.getAttribute(attribute);
     if (instance == null) {
       return (float) entity.getAttributeBaseValue(attribute);
@@ -92,9 +114,9 @@ public class CombatHelper {
     ItemStack mainStack = getMainhandAttributeStack(entity);
     Collection<AttributeModifier> mainModifiers = List.of();
     if (!mainStack.isEmpty()) {
-      mainModifiers = mainStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(attribute);
+      mainModifiers = getModifiers(mainStack, EquipmentSlot.MAINHAND, attribute);
     }
-    Collection<AttributeModifier> offhandModifiers = stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(attribute);
+    Collection<AttributeModifier> offhandModifiers = getModifiers(stack, EquipmentSlot.MAINHAND, attribute);
 
     // if no modifier changed, can save some work by just using the cached value
     if (mainModifiers.isEmpty() && offhandModifiers.isEmpty()) {
@@ -105,34 +127,43 @@ public class CombatHelper {
     Map<Operation, Set<AttributeModifier>> modifiers = copyModifiers(instance);
     // remove all mainhand modifiers
     for (AttributeModifier modifier : mainModifiers) {
-      modifiers.get(modifier.getOperation()).remove(modifier);
+      modifiers.get(modifier.operation()).remove(modifier);
     }
     // add in all offhand modifiers
     for (AttributeModifier modifier : offhandModifiers) {
       // while there should be no duplicates due to mainhand modifiers above,
       // this will remove duplicates due to AttributeModifier equals only checking UUID
-      modifiers.get(modifier.getOperation()).add(modifier);
+      modifiers.get(modifier.operation()).add(modifier);
     }
     // compute the value
     return (float) computeAttribute(attribute, instance.getBaseValue(), modifiers);
   }
 
   /** Computes the value for the given attribute. Copied from {@link AttributeInstance#calculateValue} */
-  public static double computeAttribute(Attribute attribute, double base, Map<Operation,Set<AttributeModifier>> modifiers) {
+  public static double computeAttribute(Holder<Attribute> attribute, double base, Map<Operation,Set<AttributeModifier>> modifiers) {
     // addition modifiers
-    for (AttributeModifier modifier : modifiers.get(Operation.ADDITION)) {
-      base += modifier.getAmount();
+    for (AttributeModifier modifier : modifiers.get(Operation.ADD_VALUE)) {
+      base += modifier.amount();
     }
     // multiply base
     double value = base;
-    for (AttributeModifier modifier : modifiers.get(Operation.MULTIPLY_BASE)) {
-      value += base * modifier.getAmount();
+    for (AttributeModifier modifier : modifiers.get(Operation.ADD_MULTIPLIED_BASE)) {
+      value += base * modifier.amount();
     }
     // multiply total
-    for (AttributeModifier modifier : modifiers.get(Operation.MULTIPLY_TOTAL)) {
-      value *= 1.0 + modifier.getAmount();
+    for (AttributeModifier modifier : modifiers.get(Operation.ADD_MULTIPLIED_TOTAL)) {
+      value *= 1.0 + modifier.amount();
     }
-    return attribute.sanitizeValue(value);
+    return attribute.value().sanitizeValue(value);
+  }
+
+  /** Gets the value of the attribute for the given hand, using {@link #getOffhandAttribute(ItemStack, LivingEntity, Holder)} for the offhand and {@link LivingEntity#getAttributeValue(Holder)} for mainhand. */
+  public static float getAttribute(ItemStack stack, LivingEntity entity, Holder<Attribute> attribute, InteractionHand hand) {
+    if (hand == InteractionHand.MAIN_HAND) {
+      return (float) entity.getAttributeValue(attribute);
+    } else {
+      return getOffhandAttribute(stack, entity, attribute);
+    }
   }
 
   /** Checks if the given entity can be attacked. */
@@ -143,11 +174,11 @@ public class CombatHelper {
   /**
    * Performs an attack, mimicking  {@link Player#attack(Entity)}.
    * For use in {@link net.minecraft.world.item.Item#interactLivingEntity(ItemStack, Player, LivingEntity, InteractionHand)} primarily,
-   * but can also be used to fake an attack similar to {@link net.minecraftforge.common.extensions.IForgeItem#onLeftClickEntity(ItemStack, Player, Entity)}.
+   * but can also be used to fake an attack similar to {@link net.neoforged.neoforge.common.extensions.IItemExtension#onLeftClickEntity(ItemStack, Player, Entity)}.
    *
    * @param stack         Stack used for attacking.
    * @param target        Entity target
-   * @param targetLiving  Living entity target. May be different in the case of multipart entities.
+   * @param targetLiving  Target as a living entity. Should be the same instance as {@code target} even for multipart.
    * @param hand          Hand used for attacking.
    */
   public static boolean attack(ItemStack stack, Player player, Entity target, @Nullable LivingEntity targetLiving, InteractionHand hand) {
@@ -157,11 +188,11 @@ public class CombatHelper {
   /**
    * Performs an attack, mimicking {@link Player#attack(Entity)} but allowing the damage source to be swapped.
    * For use in {@link net.minecraft.world.item.Item#interactLivingEntity(ItemStack, Player, LivingEntity, InteractionHand)} primarily,
-   * but can also be used to fake an attack similar to {@link net.minecraftforge.common.extensions.IForgeItem#onLeftClickEntity(ItemStack, Player, Entity)}.
+   * but can also be used to fake an attack similar to {@link net.neoforged.neoforge.common.extensions.IItemExtension#onLeftClickEntity(ItemStack, Player, Entity)}.
    *
    * @param stack         Stack used for attacking.
    * @param target        Entity target
-   * @param targetLiving  Living entity target. May be different in the case of multipart entities.
+   * @param targetLiving  Target as a living entity. Should be the same instance as {@code target} even for multipart.
    * @param hand          Hand used for attacking.
    * @param damageSource  Damage source to apply
    */
@@ -169,67 +200,63 @@ public class CombatHelper {
     if (isAttackable(player, target)) {
       // find damage to deal
       float damage;
+      // offhand always takes charge. spin attacks from offhand will go via the main hand logic
       if (hand == InteractionHand.OFF_HAND) {
         damage = getOffhandAttribute(stack, player, Attributes.ATTACK_DAMAGE);
+      } else if (player.isAutoSpinAttack()) {
+        damage = player.autoSpinAttackDmg;
       } else {
         damage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
       }
-
       // find enchantment damage
-      float enchantmentDamage;
-      if (targetLiving != null) {
-        enchantmentDamage = EnchantmentHelper.getDamageBonus(stack, targetLiving.getMobType());
-      } else {
-        enchantmentDamage = EnchantmentHelper.getDamageBonus(stack, MobType.UNDEFINED);
-      }
-
+      float enchantmentDamage = player.getEnchantedDamage(target, damage, damageSource) - damage;
       // scale damage cooldown
       float cooldown = hand == InteractionHand.OFF_HAND ? OffhandCooldownTracker.getCooldown(player) : player.getAttackStrengthScale(0.5F);
       damage *= 0.2F + cooldown * cooldown * 0.8F;
       enchantmentDamage *= cooldown;
+
+      // reflect projectiles
+      Level level = player.level();
+      if (target.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && target instanceof Projectile projectile) {
+        if (projectile.deflect(ProjectileDeflection.AIM_DEFLECT, player, player, true)) {
+          level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, player.getSoundSource());
+          return true;
+        }
+      }
+
+      // if dealing damage, time to deal
       if (damage > 0.0F || enchantmentDamage > 0.0F) {
         boolean fullyCharged = cooldown > 0.9F;
 
-        // find knockback
-        float knockback;
-        if (hand == InteractionHand.OFF_HAND) {
-          knockback = getOffhandAttribute(stack, player, Attributes.ATTACK_KNOCKBACK);
-        } else {
-          knockback = (float) player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-        }
-
-        knockback += EnchantmentHelper.getKnockbackBonus(player);
+        // sprinting plays a sound and boosts knockback, along with changing some interactions
         boolean sprinting = false;
-        if (player.isSprinting() && fullyCharged) {
-          player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, player.getSoundSource(), 1.0F, 1.0F);
-          knockback += 1;
+        if (fullyCharged && player.isSprinting()) {
+          level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, player.getSoundSource(), 1.0F, 1.0F);
           sprinting = true;
         }
 
+        damage += stack.getItem().getAttackDamageBonus(target, damage, damageSource);
+
         // find critical
-        boolean critical = fullyCharged && player.fallDistance > 0.0F && !player.onGround() && !player.onClimbable() && !player.isSprinting() && !player.isInWater() && !player.hasEffect(MobEffects.BLINDNESS) && !player.isPassenger() && targetLiving != null;
-        CriticalHitEvent hitResult = ForgeHooks.getCriticalHit(player, target, critical, critical ? 1.5f : 1f);
-        critical = hitResult != null;
+        boolean critical = fullyCharged && player.fallDistance > 0 && !player.onGround() && !player.onClimbable() && !player.isSprinting() && !player.isInWater() && !player.hasEffect(MobEffects.BLINDNESS) && !player.isPassenger() && targetLiving != null;
+        CriticalHitEvent critEvent = CommonHooks.fireCriticalHit(player, target, critical, critical ? 1.5f : 1f);
+        critical = critEvent.isCriticalHit();
         if (critical) {
-          damage *= hitResult.getDamageModifier();
+          damage *= critEvent.getDamageMultiplier();
         }
 
         // finish damage enchantments
-        damage += enchantmentDamage;
+        float combinedDamage = damage + enchantmentDamage;
 
         // check if we can do a sweep attack
-        boolean canSweep = fullyCharged && !critical && !sprinting && player.onGround() && (player.walkDist - player.walkDistO) < player.getSpeed() && stack.canPerformAction(ToolActions.SWORD_SWEEP);
+        boolean canSweep = fullyCharged && !sprinting && !(critical && critEvent.disableSweep()) && player.onGround() && (player.walkDist - player.walkDistO) < player.getSpeed() && stack.canPerformAction(ItemAbilities.SWORD_SWEEP);
+        SweepAttackEvent sweepEvent = CommonHooks.fireSweepAttack(player, target, canSweep);
+        canSweep = sweepEvent.isSweeping();
 
-        // apply fire aspect and fetch health
+        // fetch health
         float health = 0.0F;
-        boolean fakeFire = false;
-        int fire = EnchantmentHelper.getFireAspect(player);
         if (targetLiving != null) {
           health = targetLiving.getHealth();
-          if (fire > 0 && !target.isOnFire()) {
-            fakeFire = true;
-            target.setSecondsOnFire(1);
-          }
         }
 
         // hit the target
@@ -237,27 +264,41 @@ public class CombatHelper {
         boolean hit;
 
         // cancel knockback if requested
-        if (stack.canPerformAction(NO_BASE_KNOCKBACK) && targetLiving != null) {
-          AttributeInstance knockbackAttribute = targetLiving.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
-          if (knockbackAttribute != null && !knockbackAttribute.hasModifier(ANTI_KNOCKBACK_MODIFIER)) {
-            knockbackAttribute.addTransientModifier(ANTI_KNOCKBACK_MODIFIER);
-            hit = target.hurt(damageSource, damage);
-            knockbackAttribute.removeModifier(ANTI_KNOCKBACK_MODIFIER);
-          } else {
-            hit = target.hurt(damageSource, damage);
+        applyHit: {
+          if (stack.canPerformAction(NO_BASE_KNOCKBACK) && targetLiving != null) {
+            AttributeInstance knockbackAttribute = targetLiving.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+            if (knockbackAttribute != null && !knockbackAttribute.hasModifier(ANTI_KNOCKBACK_MODIFIER.id())) {
+              knockbackAttribute.addTransientModifier(ANTI_KNOCKBACK_MODIFIER);
+              hit = target.hurt(damageSource, combinedDamage);
+              knockbackAttribute.removeModifier(ANTI_KNOCKBACK_MODIFIER);
+              break applyHit;
+            }
           }
-        } else {
-          hit = target.hurt(damageSource, damage);
+          // standard hit if no need for no-knockback hit
+          hit = target.hurt(damageSource, combinedDamage);
         }
 
         // apply hit effects
         if (hit) {
+          ServerLevel server = level instanceof ServerLevel s ? s : null;
+          // determine knockback
+          float knockback;
+          if (hand == InteractionHand.OFF_HAND) {
+            // recreation of LivingEntity#getKnockback except swapping the attribute getter for offhand attribute
+            knockback = getOffhandAttribute(stack, player, Attributes.ATTACK_KNOCKBACK);
+            if (server != null) {
+              knockback = EnchantmentHelper.modifyKnockback(server, stack, target, damageSource, knockback);
+            }
+          } else {
+            // call the hook directly in case it has additional logic
+            knockback = player.getKnockback(target, damageSource);
+          }
           // apply knockback
           if (knockback > 0) {
             if (targetLiving != null) {
               targetLiving.knockback(knockback * 0.5f, Mth.sin(player.getYRot() * TO_RADIAN), -Mth.cos(player.getYRot() * TO_RADIAN));
             } else {
-              target.push(-Mth.sin(player.getYRot() * TO_RADIAN) * knockback * 0.5F, 0.1D, Mth.cos(player.getYRot() * TO_RADIAN) * knockback * 0.5f);
+              target.push(-Mth.sin(player.getYRot() * TO_RADIAN) * knockback * 0.5F, 0.1, Mth.cos(player.getYRot() * TO_RADIAN) * knockback * 0.5f);
             }
 
             player.setDeltaMovement(player.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
@@ -266,80 +307,85 @@ public class CombatHelper {
 
           // sweep attack
           if (canSweep) {
-            float sweepDamage = 1 + EnchantmentHelper.getSweepingDamageRatio(player) * damage;
+            // scales base damage
+            float sweepDamage = 1 + getAttribute(stack, player, Attributes.SWEEPING_DAMAGE_RATIO, hand) * damage;
             for (LivingEntity living : player.level().getEntitiesOfClass(LivingEntity.class, stack.getSweepHitBox(player, target))) {
-              double entityReachSq = Mth.square(player.getEntityReach());
-              if (living != player && living != targetLiving && !player.isAlliedTo(living) && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker()) && player.distanceToSqr(living) < entityReachSq) {
+              double entityReachSq = Mth.square(player.entityInteractionRange());
+              // hits anything that is not yourself, the target, a marker armor stand, and is within range
+              if (living != player && living != target && !player.isAlliedTo(living) && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker()) && player.distanceToSqr(living) < entityReachSq) {
+                // apply enchantments to each AOE target
+                float targetDamage = player.getEnchantedDamage(living, sweepDamage, damageSource) * cooldown;
                 living.knockback(0.4f, Mth.sin(player.getYRot() * TO_RADIAN), -Mth.cos(player.getYRot() * TO_RADIAN));
-                living.hurt(player.damageSources().playerAttack(player), sweepDamage);
+                living.hurt(damageSource, targetDamage);
+                if (server != null) {
+                  EnchantmentHelper.doPostAttackEffects(server, living, damageSource);
+                }
               }
             }
-
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+            // sweep effects
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
             player.sweepAttack();
           }
 
           // sync player motion
-          if (target instanceof ServerPlayer serverTarget && target.hurtMarked) {
-            serverTarget.connection.send(new ClientboundSetEntityMotionPacket(target));
+          if (target instanceof ServerPlayer playerTarget && target.hurtMarked) {
+            playerTarget.connection.send(new ClientboundSetEntityMotionPacket(target));
             target.hurtMarked = false;
             target.setDeltaMovement(movement);
           }
 
           // apply hit effects
           if (critical) {
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, player.getSoundSource(), 1.0F, 1.0F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, player.getSoundSource(), 1, 1);
             player.crit(target);
-          } else if (fullyCharged) {
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, player.getSoundSource(), 1.0F, 1.0F);
-          } else {
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_WEAK, player.getSoundSource(), 1.0F, 1.0F);
+          } else if (!canSweep) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), fullyCharged ? SoundEvents.PLAYER_ATTACK_STRONG : SoundEvents.PLAYER_ATTACK_WEAK, player.getSoundSource(), 1, 1);
           }
           if (enchantmentDamage > 0.0F) {
             player.magicCrit(target);
           }
-
-          // enchantment post effects
           player.setLastHurtMob(target);
-          if (targetLiving != null) {
-            EnchantmentHelper.doPostHurtEffects(targetLiving, player);
-          }
-          EnchantmentHelper.doPostDamageEffects(player, target);
 
           // handle multipart
-          Entity parent = target;
+          ;
+          LivingEntity parent;
           if (target instanceof PartEntity<?> part) {
-            parent = part.getParent();
+            parent = part.getParent() instanceof LivingEntity l ? l : null;
+          } else {
+            parent = targetLiving;
           }
 
-          // damage the tool
-          if (!player.level().isClientSide && !stack.isEmpty() && parent instanceof LivingEntity living) {
-            ItemStack copy = stack.copy();
-            stack.hurtEnemy(living, player);
+          // enchantment and stack post effects - includes damaging the tool
+          boolean didUseWeapon = false;
+          ItemStack copy = stack.copy();
+          if (server != null) {
+            if (parent != null) {
+              didUseWeapon = stack.hurtEnemy(parent, player);
+            }
+            EnchantmentHelper.doPostAttackEffects(server, target, damageSource);
+          }
+          if (!level.isClientSide && !stack.isEmpty() && parent != null) {
+            if (didUseWeapon) {
+              stack.postHurtEnemy(parent, player);
+            }
             if (stack.isEmpty()) {
-              ForgeEventFactory.onPlayerDestroyItem(player, copy, hand);
+              EventHooks.onPlayerDestroyItem(player, copy, hand);
               player.setItemInHand(hand, ItemStack.EMPTY);
             }
           }
 
-          // stats
+          // damage particles and stat
           if (targetLiving != null) {
             float damageDealt = health - targetLiving.getHealth();
             player.awardStat(Stats.DAMAGE_DEALT, Math.round(damageDealt * 10f));
-            if (fire > 0) {
-              target.setSecondsOnFire(fire * 4);
-            }
-            // particles
-            if (player.level() instanceof ServerLevel server && damageDealt > 2f) {
-              server.sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5D), target.getZ(), (int)((double)damageDealt * 0.5D), 0.1D, 0.0D, 0.1D, 0.2D);
+            if (server != null && damageDealt > 2) {
+              server.sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5), target.getZ(), (int)(damageDealt * 0.5), 0.1, 0, 0.1, 0.2);
             }
           }
-          player.causeFoodExhaustion(0.1F);
+          // exhaustion
+          player.causeFoodExhaustion(0.1f);
         } else {
-          player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, player.getSoundSource(), 1.0F, 1.0F);
-          if (fakeFire) {
-            target.clearFire();
-          }
+          level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, player.getSoundSource(), 1.0F, 1.0F);
         }
       }
       // apply cooldown
