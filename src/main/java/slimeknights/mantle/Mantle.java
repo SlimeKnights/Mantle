@@ -44,8 +44,10 @@ import slimeknights.mantle.data.predicate.damage.DamageTypePredicate;
 import slimeknights.mantle.data.predicate.damage.SourceAttackerPredicate;
 import slimeknights.mantle.data.predicate.damage.SourceMessagePredicate;
 import slimeknights.mantle.data.predicate.entity.BlockAtEntityPredicate;
+import slimeknights.mantle.data.predicate.entity.EntityPredicate;
 import slimeknights.mantle.data.predicate.entity.HasEnchantmentEntityPredicate;
 import slimeknights.mantle.data.predicate.entity.HasMobEffectPredicate;
+import slimeknights.mantle.data.predicate.entity.LivingEntityEntityPredicate;
 import slimeknights.mantle.data.predicate.entity.LivingEntityPredicate;
 import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.mantle.data.predicate.fluid.FluidTypePredicate;
@@ -173,25 +175,27 @@ public class Mantle {
 
         // entity predicates
         // simple
-        LivingEntityPredicate.LOADER.register(getResource("fire_immune"), LivingEntityPredicate.FIRE_IMMUNE.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("can_freeze"), LivingEntityPredicate.CAN_FREEZE.getLoader());
+        EntityPredicate.LOADER.register(getResource("fire_immune"), EntityPredicate.FIRE_IMMUNE.getLoader());
+        EntityPredicate.LOADER.register(getResource("can_freeze"), EntityPredicate.CAN_FREEZE.getLoader());
+        EntityPredicate.LOADER.register(getResource("on_fire"), EntityPredicate.ON_FIRE.getLoader());
+        EntityPredicate.LOADER.register(getResource("is_freezing"), EntityPredicate.IS_FREEZING.getLoader());
+        EntityPredicate.LOADER.register(getResource("is_in_powdered_snow"), EntityPredicate.IS_IN_POWDERED_SNOW.getLoader());
+        EntityPredicate.LOADER.register(getResource("on_ground"), EntityPredicate.ON_GROUND.getLoader());
+        EntityPredicate.LOADER.register(getResource("crouching"), EntityPredicate.CROUCHING.getLoader());
+        EntityPredicate.LOADER.register(getResource("sprinting"), EntityPredicate.SPRINTING.getLoader());
+        EntityPredicate.LOADER.register(getResource("eyes_in_water"), EntityPredicate.EYES_IN_WATER.getLoader());
+        EntityPredicate.LOADER.register(getResource("feet_in_water"), EntityPredicate.FEET_IN_WATER.getLoader());
+        EntityPredicate.LOADER.register(getResource("underwater"), EntityPredicate.UNDERWATER.getLoader());
+        EntityPredicate.LOADER.register(getResource("raining_at"), EntityPredicate.RAINING.getLoader());
+        // living simple
         LivingEntityPredicate.LOADER.register(getResource("water_sensitive"), LivingEntityPredicate.WATER_SENSITIVE.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("on_fire"), LivingEntityPredicate.ON_FIRE.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("is_freezing"), LivingEntityPredicate.IS_FREEZING.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("is_in_powdered_snow"), LivingEntityPredicate.IS_IN_POWDERED_SNOW.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("on_ground"), LivingEntityPredicate.ON_GROUND.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("crouching"), LivingEntityPredicate.CROUCHING.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("sprinting"), LivingEntityPredicate.SPRINTING.getLoader());
         LivingEntityPredicate.LOADER.register(getResource("blocking"), LivingEntityPredicate.BLOCKING.getLoader());
         LivingEntityPredicate.LOADER.register(getResource("elytra_flying"), LivingEntityPredicate.ELYTRA_FLYING.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("eyes_in_water"), LivingEntityPredicate.EYES_IN_WATER.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("feet_in_water"), LivingEntityPredicate.FEET_IN_WATER.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("underwater"), LivingEntityPredicate.UNDERWATER.getLoader());
-        LivingEntityPredicate.LOADER.register(getResource("raining_at"), LivingEntityPredicate.RAINING.getLoader());
         // property
+        EntityPredicate.LOADER.register(getResource("living"), LivingEntityEntityPredicate.LOADER);
+        EntityPredicate.LOADER.register(getResource("block_at_entity"), BlockAtEntityPredicate.LOADER);
         LivingEntityPredicate.LOADER.register(getResource("has_enchantment"), HasEnchantmentEntityPredicate.LOADER);
         LivingEntityPredicate.LOADER.register(getResource("has_effect"), HasMobEffectPredicate.LOADER);
-        LivingEntityPredicate.LOADER.register(getResource("block_at_entity"), BlockAtEntityPredicate.LOADER);
 
         // damage predicates
         // simple
