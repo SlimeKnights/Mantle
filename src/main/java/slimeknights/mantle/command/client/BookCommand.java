@@ -6,29 +6,31 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import org.apache.commons.lang3.text.WordUtils;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL11;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
@@ -51,8 +53,11 @@ public class BookCommand {
 
   private static final String EXPORT_SUCCESS = "command.mantle.book.export.success";
   private static final String EXPORT_SUCCESS_HTML = "command.mantle.book.export.html.success";
-  private static final String EXPORT_FAIL = "command.mantle.book.export.error_generic";
   private static final String EXPORT_FAIL_IO = "command.mantle.book.export.error_io";
+
+  /** Failure related to a directory creation */
+  private static final SimpleCommandExceptionType EXPORT_FAIL = new SimpleCommandExceptionType(Component.translatable("command.mantle.book.export.error_generic"));
+  private static final DynamicCommandExceptionType IO_FAILURE = new DynamicCommandExceptionType(directory -> Component.translatable(EXPORT_FAIL_IO, directory));
 
   private static final String DEFAULT_BOOK_VERSION = "20";
   private static final String VERSION_FULL = "1.20";
@@ -120,7 +125,7 @@ public class BookCommand {
    * @param context  Command context
    * @return  Integer return
    */
-  private static int exportImages(CommandContext<CommandSourceStack> context, int scale) {
+  private static int exportImages(CommandContext<CommandSourceStack> context, int scale) throws CommandSyntaxException {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
     return doExport(book, scale, false, DEFAULT_BOOK_VERSION);
   }
@@ -130,7 +135,7 @@ public class BookCommand {
    * @param context  Command context
    * @return  Integer return
    */
-  private static int exportDomainImages(CommandContext<CommandSourceStack> context, int scale) {
+  private static int exportDomainImages(CommandContext<CommandSourceStack> context, int scale) throws CommandSyntaxException {
     String domain = StringArgumentType.getString(context, "domain");
     for (ResourceLocation book : BookLoader.getAllBooks()) {
       if (domain.equals(book.getNamespace())) {
@@ -146,7 +151,7 @@ public class BookCommand {
    * @param context Command context
    * @return Integer return
    */
-  private static int exportHTML(CommandContext<CommandSourceStack> context, String version) {
+  private static int exportHTML(CommandContext<CommandSourceStack> context, String version) throws CommandSyntaxException {
     ResourceLocation book = ResourceLocationArgument.getId(context, "id");
     return doExport(book, 2, true, version);
   }
@@ -156,7 +161,7 @@ public class BookCommand {
    * @param context Command context
    * @return Integer return
    */
-  private static int exportDomainHtml(CommandContext<CommandSourceStack> context, String version) {
+  private static int exportDomainHtml(CommandContext<CommandSourceStack> context, String version) throws CommandSyntaxException {
     String domain = StringArgumentType.getString(context, "domain");
     for (ResourceLocation book : BookLoader.getAllBooks()) {
       if (domain.equals(book.getNamespace())) {
@@ -175,7 +180,7 @@ public class BookCommand {
    * @param version  version in each files header
    * @return  Integer return
    */
-  private static int doExport(ResourceLocation book, int scale, boolean html, String version) {
+  private static int doExport(ResourceLocation book, int scale, boolean html, String version) throws CommandSyntaxException {
     BookData bookData = BookLoader.getBook(book);
 
     Path gameDirectory = Minecraft.getInstance().gameDirectory.toPath();
@@ -186,10 +191,10 @@ public class BookCommand {
     if (bookData != null) {
       // ensure outputs exist
       if (!screenshotDir.toFile().mkdirs() && !screenshotDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO, screenshotDir));
+        throw IO_FAILURE.create(screenshotDir);
       }
       if (htmlDir != null && !htmlDir.toFile().mkdirs() && !htmlDir.toFile().exists()) {
-        throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL_IO, htmlDir));
+        throw IO_FAILURE.create(htmlDir);
       }
 
       int width = BookScreen.PAGE_WIDTH_UNSCALED * 2 * scale;
@@ -207,9 +212,9 @@ public class BookCommand {
       Matrix4f matrix = (new Matrix4f()).setOrtho(0.0F, width, height, 0.0F, 1000.0F, zFar);
       RenderSystem.setProjectionMatrix(matrix, VertexSorting.ORTHOGRAPHIC_Z);
 
-      PoseStack stack = RenderSystem.getModelViewStack();
-      stack.pushPose();
-      stack.setIdentity();
+      Matrix4fStack stack = RenderSystem.getModelViewStack();
+      stack.pushMatrix();
+      stack.identity();
       stack.translate(0, 0, 1000F - zFar);
       stack.scale(scale, scale, 1);
       RenderSystem.applyModelViewMatrix();
@@ -268,14 +273,14 @@ public class BookCommand {
                 scaled.writeToFile(path);
               } catch (Exception e) {
                 Mantle.logger.error("Failed to save screenshot", e);
-                throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+                throw EXPORT_FAIL.create();
               }
             } else {
               image.writeToFile(path);
             }
           } catch (Exception e) {
             Mantle.logger.error("Failed to save screenshot", e);
-            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+            throw EXPORT_FAIL.create();
           }
 
           if (html) {
@@ -284,7 +289,7 @@ public class BookCommand {
               writer.write(page < 0 ? screen.coverToHtml(bookKey, exportTitle, VERSION_FULL, modName) : screen.pageToHtml(bookKey, exportTitle, VERSION_FULL, modName));
             } catch (IOException e) {
               Mantle.logger.error("Failed to export HTML", e);
-              throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+              throw EXPORT_FAIL.create();
             }
           }
         } while (screen.nextPage());
@@ -296,11 +301,11 @@ public class BookCommand {
             writer.write(galleryHtml(bookKey, exportTitle, modName));
           } catch (IOException e) {
             Mantle.logger.error("Failed to export HTML", e);
-            throw new CommandRuntimeException(Component.translatable(EXPORT_FAIL));
+            throw EXPORT_FAIL.create();
           }
         }
       } finally {
-        stack.popPose();
+        stack.popMatrix();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.defaultBlendFunc();
         target.unbindWrite();

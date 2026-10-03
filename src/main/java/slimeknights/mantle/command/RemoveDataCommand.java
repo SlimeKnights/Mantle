@@ -15,14 +15,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.world.BiomeModifier;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.nio.file.Path;
 
-import static net.minecraftforge.registries.ForgeRegistries.Keys.BIOME_MODIFIERS;
+import static net.neoforged.neoforge.registries.NeoForgeRegistries.Keys.BIOME_MODIFIERS;
 
 /**
  * Helpers to remove various non-recipe data.
@@ -93,7 +93,7 @@ public class RemoveDataCommand {
     // start by fetching the existing structure set JSON
     ResourceLocation modifierLocation = JsonHelper.wrap(id.location(), BIOME_MODIFIERS.location().getNamespace() + '/' + BIOME_MODIFIERS.location().getPath() + '/', ".json");
     JsonObject json = new JsonObject();
-    json.addProperty("type", ForgeMod.NONE_BIOME_MODIFIER_TYPE.getId().toString());
+    json.addProperty("type", NeoForgeMod.NONE_BIOME_MODIFIER_TYPE.getId().toString());
 
     // determine the path for the resulting datapack
     Path pack = GeneratePackHelper.getDatapackPath(context.getSource().getServer());

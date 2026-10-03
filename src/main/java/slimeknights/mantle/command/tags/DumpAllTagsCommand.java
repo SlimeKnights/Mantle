@@ -17,7 +17,6 @@ import slimeknights.mantle.command.argument.TagSource;
 import slimeknights.mantle.command.argument.TagSourceArgument;
 import slimeknights.mantle.util.JsonHelper;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class DumpAllTagsCommand {
 
   /** Dumps all tags to the game directory */
   private static int runAll(CommandContext<CommandSourceStack> context) {
-    File output = GeneratePackHelper.getDataDumpFile(context);
+    Path output = GeneratePackHelper.getDataDumpPath(context);
     int tagsDumped = TagSourceArgument.allSources(context).mapToInt(reg -> runForFolder(context, reg, output)).sum();
     // print the output path
     context.getSource().sendSuccess(() -> Component.translatable("command.mantle.dump_all_tags.success", GeneratePackHelper.getOutputComponent(output)), true);
@@ -48,7 +47,7 @@ public class DumpAllTagsCommand {
 
   /** Dumps a single type of tags to the game directory */
   private static int runType(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-    File output = GeneratePackHelper.getDataDumpFile(context);
+    Path output = GeneratePackHelper.getDataDumpPath(context);
     TagSource<?> registry = TagSourceArgument.get(context);
     int result = runForFolder(context, registry, output);
     // print result
@@ -61,7 +60,7 @@ public class DumpAllTagsCommand {
    * @param context  Tag context
    * @return  Integer return
    */
-  private static int runForFolder(CommandContext<CommandSourceStack> context, TagSource<?> registry, File output) {
+  private static int runForFolder(CommandContext<CommandSourceStack> context, TagSource<?> registry, Path output) {
     Map<ResourceLocation,List<TagLoader.EntryWithSource>> foundTags = Maps.newHashMap();
     MinecraftServer server = context.getSource().getServer();
     ResourceManager manager = server.getResourceManager();
@@ -78,7 +77,7 @@ public class DumpAllTagsCommand {
     // save all tags
     for (Entry<ResourceLocation, List<TagLoader.EntryWithSource>> entry : foundTags.entrySet()) {
       ResourceLocation location = entry.getKey();
-      Path path = output.toPath().resolve(location.getNamespace() + "/" + location.getPath());
+      Path path = output.resolve(location.getNamespace() + "/" + location.getPath());
       TagEntriesCommand.saveTag(entry.getValue(), path);
     }
 

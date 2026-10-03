@@ -9,9 +9,11 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -87,5 +89,11 @@ public class SourcesCommand {
   /** Suggests values using the passed suggestion provider */
   public static void register(String folder, SuggestionProvider<CommandSourceStack> suggestionProvider) {
     register(folder, folder, ".json", suggestionProvider);
+  }
+
+  /** Suggests values as from a registry */
+  public static void register(ResourceKey<? extends Registry<?>> registry) {
+    register(registry.location().getPath(), (context, builder) ->
+      SharedSuggestionProvider.suggestResource(context.getSource().registryAccess().registryOrThrow(registry).keySet(), builder));
   }
 }

@@ -137,7 +137,7 @@ public record ResourceOrTagKeyArgument<T>(@Nullable ResourceKey<? extends Regist
       if (str.isEmpty()) {
         return new Template(null);
       }
-      return new Template(ResourceKey.createRegistryKey(new ResourceLocation(str)));
+      return new Template(ResourceKey.createRegistryKey(ResourceLocation.parse(str)));
     }
 
     @Override

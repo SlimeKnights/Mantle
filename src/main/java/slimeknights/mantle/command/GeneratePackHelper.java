@@ -40,8 +40,13 @@ public class GeneratePackHelper {
   private GeneratePackHelper() {}
 
   /** Gets the path for the output */
-  public static File getDataDumpFile(CommandContext<CommandSourceStack> context) {
+  public static Path getDataDumpPath(CommandContext<CommandSourceStack> context) {
     return context.getSource().getServer().getFile(DATA_DUMP_PATH);
+  }
+
+  /** Gets the path for the output */
+  public static Path getDataDumpPath(CommandContext<CommandSourceStack> context, String path) {
+    return context.getSource().getServer().getFile(DATA_DUMP_PATH + '/' + path);
   }
 
   /** Gets the path to the datapack */

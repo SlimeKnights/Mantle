@@ -206,7 +206,7 @@ public class RemoveRecipesCommand {
 
     // create the object for removing recipes
     JsonObject json = new JsonObject();
-    json.add("conditions", JsonHelper.serializeArray(ICondition.CODEC, FalseCondition.INSTANCE));
+    json.add("neoforge:conditions", JsonHelper.serializeArray(ICondition.CODEC, FalseCondition.INSTANCE));
     String jsonString = DEFAULT_GSON.toJson(json);
 
     int successes = 0;
