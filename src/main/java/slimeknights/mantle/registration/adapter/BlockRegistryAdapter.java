@@ -30,8 +30,6 @@ import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallHangingSignBlock;
 import slimeknights.mantle.block.MantleWallSignBlock;
 import slimeknights.mantle.block.StrippableLogBlock;
-import slimeknights.mantle.block.entity.MantleHangingSignBlockEntity;
-import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.deferred.FluidDeferredRegister;
 import slimeknights.mantle.registration.object.BuildingBlockObject;
@@ -159,10 +157,10 @@ public class BlockRegistryAdapter extends EnumRegistryAdapter<Block> {
     MantleCeilingHangingSignBlock hangingSign = register(new MantleCeilingHangingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F), woodType), name + "_hanging_sign");
     MantleWallHangingSignBlock wallHangingSign = register(new MantleWallHangingSignBlock(behaviorCreator.apply(WoodVariant.PLANKS).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).dropsLike(hangingSign), woodType), name + "_wall_hanging_sign");
     // tell mantle to inject these into the TE
-    MantleSignBlockEntity.registerSignBlock(() -> standingSign);
-    MantleSignBlockEntity.registerSignBlock(() -> wallSign);
-    MantleHangingSignBlockEntity.registerSignBlock(() -> hangingSign);
-    MantleHangingSignBlockEntity.registerSignBlock(() -> wallHangingSign);
+    RegistrationHelper.registerSignBlock(() -> standingSign);
+    RegistrationHelper.registerSignBlock(() -> wallSign);
+    RegistrationHelper.registerHangingSignBlock(() -> hangingSign);
+    RegistrationHelper.registerHangingSignBlock(() -> wallHangingSign);
     // finally, return
     return new WoodBlockObject(getResource(name), woodType, planks, log, strippedLog, wood, strippedWood, fence, fenceGate, door, trapdoor, pressurePlate, button, standingSign, wallSign, hangingSign, wallHangingSign);
   }

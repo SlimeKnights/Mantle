@@ -35,8 +35,6 @@ import slimeknights.mantle.block.MantleStandingSignBlock;
 import slimeknights.mantle.block.MantleWallHangingSignBlock;
 import slimeknights.mantle.block.MantleWallSignBlock;
 import slimeknights.mantle.block.StrippableLogBlock;
-import slimeknights.mantle.block.entity.MantleHangingSignBlockEntity;
-import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.item.BurnableBlockItem;
 import slimeknights.mantle.item.BurnableHangingSignItem;
 import slimeknights.mantle.item.BurnableSignItem;
@@ -274,10 +272,10 @@ public class BlockDeferredRegister extends DeferredRegisterWrapper<Block> {
     DeferredHolder<Block,MantleCeilingHangingSignBlock> hangingSign = registerNoItem(name + "_hanging_sign", () -> new MantleCeilingHangingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), woodType));
     DeferredHolder<Block,MantleWallHangingSignBlock> wallHangingSign = registerNoItem(name + "_wall_hanging_sign", () -> new MantleWallHangingSignBlock(behaviorCreator.apply(WoodBlockObject.WoodVariant.PLANKS).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F).lootFrom(hangingSign), woodType));
     // tell mantle to inject these into the TE
-    MantleSignBlockEntity.registerSignBlock(standingSign);
-    MantleSignBlockEntity.registerSignBlock(wallSign);
-    MantleHangingSignBlockEntity.registerSignBlock(hangingSign);
-    MantleHangingSignBlockEntity.registerSignBlock(wallHangingSign);
+    RegistrationHelper.registerSignBlock(standingSign);
+    RegistrationHelper.registerSignBlock(wallSign);
+    RegistrationHelper.registerHangingSignBlock(hangingSign);
+    RegistrationHelper.registerHangingSignBlock(wallHangingSign);
     // sign is included automatically in asItem of the standing sign
     this.itemRegister.register(name + "_sign", () -> burnableSignItem.apply(standingSign.get(), wallSign.get()));
     this.itemRegister.register(name + "_hanging_sign", () -> burnableHangingSignItem.apply(hangingSign.get(), wallHangingSign.get()));

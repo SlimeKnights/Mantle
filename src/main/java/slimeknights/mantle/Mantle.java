@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -26,14 +26,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.block.entity.MantleHangingSignBlockEntity;
-import slimeknights.mantle.block.entity.MantleSignBlockEntity;
 import slimeknights.mantle.client.ClientEvents;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.command.argument.ResourceOrTagKeyArgument;
@@ -74,11 +73,9 @@ import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.registration.MantleDataComponents;
 import slimeknights.mantle.registration.RegistrationHelper;
-import slimeknights.mantle.registration.adapter.BlockEntityTypeRegistryAdapter;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -111,6 +108,7 @@ public class Mantle {
     modEventBus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
     modEventBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
     modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
+    modEventBus.addListener(EventPriority.NORMAL, false, BlockEntityTypeAddBlocksEvent.class, this::registerBlockEntityBlocks);
     modEventBus.addListener(EventPriority.NORMAL, false, RegisterPayloadHandlersEvent.class, MantleNetwork::registerPackets);
     MantleRecipes.init(modEventBus);
     MantleLoot.init(modEventBus);
@@ -206,17 +204,6 @@ public class Mantle {
         DamageSourcePredicate.LOADER.register(getResource("attacker"), SourceAttackerPredicate.LOADER);
       }
     }
-    else if (key == Registries.BLOCK_ENTITY_TYPE) {
-      BlockEntityTypeRegistryAdapter adapter = new BlockEntityTypeRegistryAdapter(event.getRegistry(Registries.BLOCK_ENTITY_TYPE));
-      Set<Block> signs = MantleSignBlockEntity.buildSignBlocks();
-      if (!signs.isEmpty()) {
-        adapter.register(MantleSignBlockEntity::new, signs, "sign");
-      }
-      signs = MantleHangingSignBlockEntity.buildSignBlocks();
-      if (!signs.isEmpty()) {
-        adapter.register(MantleHangingSignBlockEntity::new, signs, "hanging_sign");
-      }
-    }
     else if (key == Registries.COMMAND_ARGUMENT_TYPE) {
       RegistryAdapter<ArgumentTypeInfo<?,?>> adapter = new RegistryAdapter<>(event.getRegistry(Registries.COMMAND_ARGUMENT_TYPE));
       ResourceOrTagKeyArgument.Info<?> info = new ResourceOrTagKeyArgument.Info<>();
@@ -226,6 +213,11 @@ public class Mantle {
     else {
       MantleLoot.registerGlobalLootModifiers(event);
     }
+  }
+
+  private void registerBlockEntityBlocks(BlockEntityTypeAddBlocksEvent event) {
+    event.modify(BlockEntityType.SIGN, RegistrationHelper.buildSignBlocks());
+    event.modify(BlockEntityType.HANGING_SIGN, RegistrationHelper.buildHangingSignBlocks());
   }
 
   private void gatherData(final GatherDataEvent event) {

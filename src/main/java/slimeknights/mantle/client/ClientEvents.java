@@ -11,8 +11,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +30,6 @@ import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
@@ -58,7 +55,6 @@ import slimeknights.mantle.command.client.MantleClientCommand;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.texture.FluidTextureManager;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
-import slimeknights.mantle.registration.MantleRegistrations;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
@@ -70,17 +66,6 @@ import java.util.Optional;
 public class ClientEvents {
   /** Called on construct to initiatlize things that need early entry */
   public static void onConstruct() {}
-
-  @SuppressWarnings("ConstantConditions")
-  @SubscribeEvent
-  static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-    if (MantleRegistrations.SIGN != null) {
-      event.registerBlockEntityRenderer(MantleRegistrations.SIGN, SignRenderer::new);
-    }
-    if (MantleRegistrations.HANGING_SIGN != null) {
-      event.registerBlockEntityRenderer(MantleRegistrations.HANGING_SIGN, HangingSignRenderer::new);
-    }
-  }
 
   @SubscribeEvent
   static void registerListeners(RegisterClientReloadListenersEvent event) {

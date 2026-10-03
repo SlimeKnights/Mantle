@@ -1,43 +1,25 @@
 package slimeknights.mantle.registration;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.neoforged.neoforge.registries.MissingMappingsEvent;
-import net.neoforged.neoforge.registries.MissingMappingsEvent.Mapping;
 import slimeknights.mantle.util.RegistryHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+/** Helpers for registering things */
 public class RegistrationHelper {
-  /** Wood types to register with the texture atlas */
-  private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
+  private RegistrationHelper() {}
 
   /** Properties for a standard bucket item */
   public static final Item.Properties BUCKET_PROPS = new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1);
-
-  /**
-   * Used to mark injected registry objects, as despite being set to null they will be nonnull at runtime.
-   * @param <T>  Class type
-   * @return  Null, its a lie
-   */
-  @SuppressWarnings("ConstantConditions")
-  public static <T> T injected() {
-    return null;
-  }
 
   /**
    * Gets a holder for a registry object
@@ -49,28 +31,21 @@ public class RegistrationHelper {
    */
   @SuppressWarnings("unchecked")  // we know the entry is the given type
   public static <T, R extends T> Supplier<R> getCastedHolder(DefaultedRegistry<T> registry, T entry) {
-    Supplier<T> holder = RegistryHelper.getHolder(registry, entry);
-    return () -> (R) holder.get();
+    Holder.Reference<T> holder = RegistryHelper.getHolder(registry, entry);
+    return () -> (R) holder.value();
   }
 
-  /**
-   * Handles missing mappings for the given registry
-   * @param event    Mappings event
-   * @param handler  Mapping handler
-   * @param <T>      Event type
-   */
-  public static <T> void handleMissingMappings(MissingMappingsEvent event, String modID, ResourceKey<? extends Registry<T>> registry, Function<String, T> handler) {
-    // event is kinda nice, automatically filters mappings to the registry type via the key
-    for (Mapping<T> mapping : event.getAllMappings(registry)) {
-      ResourceLocation id = mapping.getKey();
-      if (modID.equals(id.getNamespace())) {
-        @Nullable T value = handler.apply(id.getPath());
-        if (value != null) {
-          mapping.remap(value);
-        }
-      }
-    }
+  /** Casts the class type to make it a valid argument type */
+  @SuppressWarnings("unchecked")
+  public static <T extends ArgumentType<?>> Class<T> genericArgumentType(Class<? super T> type) {
+    return (Class<T>) type;
   }
+
+
+  /* Wood types */
+
+  /** Wood types to register with the texture atlas */
+  private static final List<WoodType> WOOD_TYPES = new ArrayList<>();
 
   /** Registers a wood type to be injected into the atlas, should be called before client setup */
   public static void registerWoodType(WoodType type) {
@@ -85,9 +60,41 @@ public class RegistrationHelper {
     WOOD_TYPES.forEach(consumer);
   }
 
-  /** Casts the class type to make it a valid argument type */
-  @SuppressWarnings("unchecked")
-  public static <T extends ArgumentType<?>> Class<T> genericArgumentType(Class<? super T> type) {
-    return (Class<T>) type;
+
+  /* Sign blocks */
+
+  /** Sign blocks to use for the block entity valid blocks */
+  private static final List<Supplier<? extends Block>> SIGN_BLOCKS = new ArrayList<>();
+  /** Hanging sign blocks to use for the block entity valid blocks */
+  private static final List<Supplier<? extends Block>> HANGING_SIGN_BLOCKS = new ArrayList<>();
+
+  /**
+   * Registers a sign block to be injected into the tile entity, should be called during registration
+   * @param sign  Sign block supplier
+   */
+  public static void registerSignBlock(Supplier<? extends Block> sign) {
+    synchronized (SIGN_BLOCKS) {
+      SIGN_BLOCKS.add(sign);
+    }
+  }
+
+  /** Builds the list of sign blocks for TE registration */
+  public static Block[] buildSignBlocks() {
+    return SIGN_BLOCKS.stream().map(Supplier::get).toArray(Block[]::new);
+  }
+
+  /**
+   * Registers a sign block to be injected into the tile entity, should be called during registration
+   * @param sign  Sign block supplier
+   */
+  public static void registerHangingSignBlock(Supplier<? extends Block> sign) {
+    synchronized (HANGING_SIGN_BLOCKS) {
+      HANGING_SIGN_BLOCKS.add(sign);
+    }
+  }
+
+  /** Builds the list of sign blocks for TE registration */
+  public static Block[] buildHangingSignBlocks() {
+    return HANGING_SIGN_BLOCKS.stream().map(Supplier::get).toArray(Block[]::new);
   }
 }
