@@ -1,11 +1,11 @@
 package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.IForgeRegistry;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.mapping.EnumMapLoadable;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
@@ -40,12 +40,12 @@ public enum DisplayContextLoadable implements ResourceLocationLoadable<ItemDispl
   }
 
   @Override
-  public ItemDisplayContext decode(FriendlyByteBuf buffer, TypedMap context) {
+  public ItemDisplayContext decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return buffer.readRegistryIdUnsafe(ForgeRegistries.DISPLAY_CONTEXTS.get());
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, ItemDisplayContext value) {
+  public void encode(RegistryFriendlyByteBuf buffer, ItemDisplayContext value) {
     buffer.writeRegistryIdUnsafe(ForgeRegistries.DISPLAY_CONTEXTS.get(), value);
   }
 

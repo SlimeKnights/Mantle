@@ -2,7 +2,7 @@ package slimeknights.mantle.data.loadable.mapping;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -48,12 +48,12 @@ public record SimpleRecordLoadable<T>(Loadable<T> loadable, String key, @Nullabl
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, T value) {
+  public void encode(RegistryFriendlyByteBuf buffer, T value) {
     loadable.encode(buffer, value);
   }
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap context) {
+  public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return loadable.decode(buffer, context);
   }
 }

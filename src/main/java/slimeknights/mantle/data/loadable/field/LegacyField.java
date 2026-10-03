@@ -1,7 +1,7 @@
 package slimeknights.mantle.data.loadable.field;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.LegacyLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -40,12 +40,12 @@ public record LegacyField<T,P>(LoadableField<T,P> base, String fallback) impleme
   }
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap context) {
+  public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return base.decode(buffer, context);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, P parent) {
+  public void encode(RegistryFriendlyByteBuf buffer, P parent) {
     base.encode(buffer, parent);
   }
 }

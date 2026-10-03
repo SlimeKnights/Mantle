@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -91,7 +92,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public BlockPropertiesPredicate decode(FriendlyByteBuf buffer, TypedMap context) {
+    public BlockPropertiesPredicate decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       Block block = Loadables.BLOCK.decode(buffer, context);
       int size = buffer.readVarInt();
       List<Matcher> builder = new ArrayList<>(size);
@@ -102,7 +103,7 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, BlockPropertiesPredicate object) {
+    public void encode(RegistryFriendlyByteBuf buffer, BlockPropertiesPredicate object) {
       Loadables.BLOCK.encode(buffer, object.block);
       buffer.writeVarInt(object.properties.size());
       for (Matcher matcher : object.properties) {

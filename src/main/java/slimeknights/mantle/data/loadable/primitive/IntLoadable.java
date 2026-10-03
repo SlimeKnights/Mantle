@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
@@ -78,12 +79,12 @@ public class IntLoadable implements Loadable<Integer> {
   /* Networking */
 
   @Override
-  public Integer decode(FriendlyByteBuf buffer, TypedMap context) {
+  public Integer decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return network.fromNetwork(buffer);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, Integer object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Integer object) {
     network.toNetwork(object, buffer);
   }
 

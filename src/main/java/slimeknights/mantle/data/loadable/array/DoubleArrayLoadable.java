@@ -2,7 +2,7 @@ package slimeknights.mantle.data.loadable.array;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -45,7 +45,7 @@ public record DoubleArrayLoadable(Loadable<Double> base, int minSize, int maxSiz
   }
 
   @Override
-  public double[] decode(FriendlyByteBuf buffer, TypedMap context) {
+  public double[] decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     int max = buffer.readVarInt();
     double[] array = new double[max];
     for (int i = 0; i < max; i++) {
@@ -55,7 +55,7 @@ public record DoubleArrayLoadable(Loadable<Double> base, int minSize, int maxSiz
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, double[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, double[] array) {
     buffer.writeVarInt(array.length);
     for (double element : array) {
       base.encode(buffer, element);

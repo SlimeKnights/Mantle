@@ -3,7 +3,7 @@ package slimeknights.mantle.data.loadable.common;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -107,12 +107,12 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public BlockState decode(FriendlyByteBuf buffer, TypedMap context) {
+  public BlockState decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return Block.stateById(buffer.readVarInt());
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, BlockState object) {
+  public void encode(RegistryFriendlyByteBuf buffer, BlockState object) {
     buffer.writeVarInt(Block.getId(object));
   }
 }

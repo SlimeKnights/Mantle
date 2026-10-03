@@ -4,7 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import net.minecraft.core.Registry;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.mapping.SetLoadable;
@@ -48,7 +48,7 @@ public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
   }
 
   @Override
-  default T decode(FriendlyByteBuf buffer, TypedMap context) {
+  default T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     int id = buffer.readVarInt();
     Registry<T> registry = registry();
     if (registry != null) {
@@ -61,12 +61,16 @@ public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
   }
 
   @Override
-  default void encode(FriendlyByteBuf buffer, T object) {
+  default void encode(RegistryFriendlyByteBuf buffer, T object) {
     Registry<T> registry = registry();
     if (registry == null) {
       throw new EncoderException("Registry " + registryId() + " cannot be located");
     }
-    buffer.writeId(registry, object);
+    int id = registry.getId(object);
+    if (id == -1) {
+      throw new EncoderException("Can't find ID for " + object + " in registry " + registryId());
+    }
+    buffer.writeVarInt(id);
   }
 
   @Override

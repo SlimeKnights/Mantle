@@ -2,7 +2,7 @@ package slimeknights.mantle.data.loadable.array;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -45,7 +45,7 @@ public record BooleanArrayLoadable(Loadable<Boolean> base, int minSize, int maxS
   }
 
   @Override
-  public boolean[] decode(FriendlyByteBuf buffer, TypedMap context) {
+  public boolean[] decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     int max = buffer.readVarInt();
     boolean[] array = new boolean[max];
     for (int i = 0; i < max; i++) {
@@ -55,7 +55,7 @@ public record BooleanArrayLoadable(Loadable<Boolean> base, int minSize, int maxS
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, boolean[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, boolean[] array) {
     buffer.writeVarInt(array.length);
     for (boolean element : array) {
       base.encode(buffer, element);

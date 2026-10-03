@@ -1,13 +1,13 @@
 package slimeknights.mantle.data.loadable.field;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
 /**
  * Interface for fields in a {@link RecordLoadable}.
- * Unlike {@link LoadableField}, this interface is not designed for use outside of loadables..
+ * Unlike {@link LoadableField}, this interface is not designed for use outside loadables.
  * @param <P>  Parent object
  * @param <T>  Loadable type
  */
@@ -38,7 +38,7 @@ public interface RecordField<T,P> {
    * @return  Parsed field value
    * @throws io.netty.handler.codec.DecoderException  If unable to decode a value from network
    */
-  T decode(FriendlyByteBuf buffer, TypedMap context);
+  T decode(RegistryFriendlyByteBuf buffer, TypedMap context);
 
   /**
    * Writes this field to the buffer
@@ -46,5 +46,5 @@ public interface RecordField<T,P> {
    * @param parent  Parent to read values from
    * @throws io.netty.handler.codec.EncoderException  If unable to encode a value to network
    */
-  void encode(FriendlyByteBuf buffer, P parent);
+  void encode(RegistryFriendlyByteBuf buffer, P parent);
 }

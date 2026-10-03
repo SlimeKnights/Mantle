@@ -2,7 +2,7 @@ package slimeknights.mantle.data.loadable.primitive;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -47,12 +47,12 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
   }
 
   @Override
-  public E decode(FriendlyByteBuf buffer, TypedMap context) {
+  public E decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return buffer.readEnum(enumClass);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, E object) {
+  public void encode(RegistryFriendlyByteBuf buffer, E object) {
     buffer.writeEnum(object);
   }
 
@@ -89,7 +89,7 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
 
     @Nullable
     @Override
-    public E decode(FriendlyByteBuf buffer, TypedMap context) {
+    public E decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       int index = buffer.readVarInt();
       E[] values = loadable.enumClass.getEnumConstants();
       // if the index is the array size, that represents null
@@ -100,7 +100,7 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, P parent) {
+    public void encode(RegistryFriendlyByteBuf buffer, P parent) {
       E value = getter.apply(parent);
       // if null, write the length of the enum values
       if (value == null) {

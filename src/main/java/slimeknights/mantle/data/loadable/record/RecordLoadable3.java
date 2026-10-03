@@ -2,7 +2,7 @@ package slimeknights.mantle.data.loadable.record;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Function3;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.util.typed.TypedMap;
 
@@ -30,7 +30,7 @@ record RecordLoadable3<A,B,C,R>(
   }
 
   @Override
-  public R decode(FriendlyByteBuf buffer, TypedMap context) {
+  public R decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return constructor.apply(
       fieldA.decode(buffer, context),
       fieldB.decode(buffer, context),
@@ -39,7 +39,7 @@ record RecordLoadable3<A,B,C,R>(
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, R object) {
+  public void encode(RegistryFriendlyByteBuf buffer, R object) {
     fieldA.encode(buffer, object);
     fieldB.encode(buffer, object);
     fieldC.encode(buffer, object);

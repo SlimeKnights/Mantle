@@ -1,7 +1,7 @@
 package slimeknights.mantle.data.loadable.primitive;
 
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.util.typed.TypedMap;
 
 /**
@@ -26,12 +26,12 @@ record MaxLengthStringLoadable(int maxLength) implements StringLoadable<String> 
   }
 
   @Override
-  public String decode(FriendlyByteBuf buffer, TypedMap context) {
+  public String decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return buffer.readUtf(maxLength);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, String object) {
+  public void encode(RegistryFriendlyByteBuf buffer, String object) {
     buffer.writeUtf(object, maxLength);
   }
 }

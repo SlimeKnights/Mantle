@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
@@ -124,20 +124,20 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements RecordLoada
 
   /** Writes the object to the network, fighting generics */
   @SuppressWarnings("unchecked")
-  protected  <L> void encode(RecordLoadable<L> loader, FriendlyByteBuf buffer, T src) {
+  protected  <L> void encode(RecordLoadable<L> loader, RegistryFriendlyByteBuf buffer, T src) {
     loader.encode(buffer, (L)src);
   }
 
   @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
-  public void encode(FriendlyByteBuf buffer, T src) {
+  public void encode(RegistryFriendlyByteBuf buffer, T src) {
     RecordLoadable<? extends IHaveLoader> loader = src.getLoader();
     loaders.encode(buffer, (RecordLoadable<? extends T>)loader);
     encode(loader, buffer, src);
   }
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap context) {
+  public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return loaders.decode(buffer, context).decode(buffer, context);
   }
 

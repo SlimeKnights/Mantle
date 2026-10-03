@@ -1,6 +1,6 @@
 package slimeknights.mantle.data.loadable.primitive;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.util.JsonHelper;
@@ -26,12 +26,12 @@ public interface ResourceLocationLoadable<T> extends StringLoadable<T> {
     }
 
     @Override
-    public ResourceLocation decode(FriendlyByteBuf buffer, TypedMap context) {
+    public ResourceLocation decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       return buffer.readResourceLocation();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, ResourceLocation value) {
+    public void encode(RegistryFriendlyByteBuf buffer, ResourceLocation value) {
       buffer.writeResourceLocation(value);
     }
   };

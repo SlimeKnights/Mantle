@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -63,12 +63,12 @@ public class CompactLoadable<T> implements Loadable<T> {
   /* Networking */
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap context) {
+  public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return loadable.decode(buffer, context);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, T object) {
+  public void encode(RegistryFriendlyByteBuf buffer, T object) {
     loadable.encode(buffer, object);
   }
 
@@ -91,7 +91,7 @@ public class CompactLoadable<T> implements Loadable<T> {
     }
 
     @Override
-    public T decode(FriendlyByteBuf buffer, TypedMap context) {
+    public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       return loadable.decode(buffer, context);
     }
   }

@@ -1,6 +1,6 @@
 package slimeknights.mantle.data.loadable;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.util.typed.TypedMap;
 
@@ -13,11 +13,11 @@ public interface Streamable<T> {
    * @return  Parsed object
    * @throws io.netty.handler.codec.DecoderException  If unable to decode
    */
-  T decode(FriendlyByteBuf buffer, TypedMap context);
+  T decode(RegistryFriendlyByteBuf buffer, TypedMap context);
 
-  /** Same as {@link #decode(FriendlyByteBuf, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  /** Same as {@link #decode(RegistryFriendlyByteBuf, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
   @NonExtendable
-  default T decode(FriendlyByteBuf buffer) {
+  default T decode(RegistryFriendlyByteBuf buffer) {
     return decode(buffer, TypedMap.EMPTY);
   }
 
@@ -27,5 +27,5 @@ public interface Streamable<T> {
    * @param value  Object to write
    * @throws io.netty.handler.codec.EncoderException  If unable to encode a value to network
    */
-  void encode(FriendlyByteBuf buffer, T value);
+  void encode(RegistryFriendlyByteBuf buffer, T value);
 }

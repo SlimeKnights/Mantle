@@ -1,7 +1,7 @@
 package slimeknights.mantle.data.loadable.primitive;
 
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.array.CharArrayLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -27,12 +27,12 @@ public enum CharacterLoadable implements StringLoadable<Character> {
   }
 
   @Override
-  public Character decode(FriendlyByteBuf buffer, TypedMap context) {
+  public Character decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return buffer.readChar();
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, Character value) {
+  public void encode(RegistryFriendlyByteBuf buffer, Character value) {
     buffer.writeChar(value);
   }
 

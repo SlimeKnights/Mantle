@@ -3,7 +3,7 @@ package slimeknights.mantle.data.loadable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -34,12 +34,12 @@ public abstract class LegacyLoadable<T> implements RecordLoadable<T> {
   /* NBT */
 
   @Override
-  public void encode(FriendlyByteBuf buffer, T value) {
+  public void encode(RegistryFriendlyByteBuf buffer, T value) {
     base.encode(buffer, value);
   }
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap context) {
+  public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return base.decode(buffer, context);
   }
 

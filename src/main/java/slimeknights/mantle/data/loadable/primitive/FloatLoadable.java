@@ -3,7 +3,7 @@ package slimeknights.mantle.data.loadable.primitive;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
@@ -52,7 +52,7 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
   }
 
   @Override
-  public Float decode(FriendlyByteBuf buffer, TypedMap context) {
+  public Float decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return buffer.readFloat();
   }
 
@@ -62,7 +62,7 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, Float object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Float object) {
     buffer.writeFloat(object);
   }
 

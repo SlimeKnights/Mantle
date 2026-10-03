@@ -1,7 +1,7 @@
 package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonElement;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.crafting.Ingredient;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -25,12 +25,12 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   }
 
   @Override
-  public Ingredient decode(FriendlyByteBuf buffer, TypedMap context) {
+  public Ingredient decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return Ingredient.fromNetwork(buffer);
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, Ingredient object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Ingredient object) {
     object.toNetwork(buffer);
   }
 }

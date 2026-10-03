@@ -3,7 +3,7 @@ package slimeknights.mantle.data.loadable.record;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.Function;
@@ -30,12 +30,12 @@ public class SingletonLoader<T> implements RecordLoadable<T> {
   public void serialize(T object, JsonObject json) {}
 
   @Override
-  public T decode(FriendlyByteBuf buffer, TypedMap context) {
+  public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     return instance;
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, T value) {}
+  public void encode(RegistryFriendlyByteBuf buffer, T value) {}
 
   /** Helper to create a singleton object as an anonymous class */
   public static <T> T singleton(Function<RecordLoadable<T>,T> instance) {

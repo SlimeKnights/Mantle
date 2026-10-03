@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.netty.handler.codec.EncoderException;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -142,7 +142,7 @@ public class ItemStackLoadable {
     /* Buffer */
 
     @Override
-    public ItemStack decode(FriendlyByteBuf buffer, TypedMap context) {
+    public ItemStack decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       // not using makeItemStack as we need to set the share tag NBT here
       Item item = ITEM.decode(buffer, context);
       int count = 1;
@@ -160,7 +160,7 @@ public class ItemStackLoadable {
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, ItemStack stack) throws EncoderException {
+    public void encode(RegistryFriendlyByteBuf buffer, ItemStack stack) throws EncoderException {
       ITEM.encode(buffer, stack);
       if (this == READ_COUNT) {
         COUNT.encode(buffer, stack);

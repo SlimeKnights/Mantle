@@ -8,7 +8,7 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -53,7 +53,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public CompoundTag decode(FriendlyByteBuf buffer, TypedMap context) {
+  public CompoundTag decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
     CompoundTag tag = buffer.readNbt();
     if (tag == null) {
       return new CompoundTag();
@@ -62,7 +62,7 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
   }
 
   @Override
-  public void encode(FriendlyByteBuf buffer, CompoundTag object) {
+  public void encode(RegistryFriendlyByteBuf buffer, CompoundTag object) {
     buffer.writeNbt(object);
   }
 
@@ -90,12 +90,12 @@ public enum NBTLoadable implements RecordLoadable<CompoundTag> {
 
     @Nullable
     @Override
-    public CompoundTag decode(FriendlyByteBuf buffer, TypedMap context) {
+    public CompoundTag decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
       return buffer.readNbt();
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer, P parent) {
+    public void encode(RegistryFriendlyByteBuf buffer, P parent) {
       buffer.writeNbt(getter.apply(parent));
     }
   }
