@@ -1,6 +1,7 @@
 package slimeknights.mantle.util.typed;
 
 import org.jetbrains.annotations.Contract;
+import slimeknights.mantle.data.loadable.ErrorFactory;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -28,6 +29,15 @@ public interface TypedMap {
   @Nullable
   default <K> K get(Key<K> key) {
     return getOrDefault(key, null);
+  }
+
+  /** Gets the value from the map, or throws using the error factory if missing */
+  default <K> K getOrThrow(Key<K> key, ErrorFactory error) {
+    K value = get(key);
+    if (value == null) {
+      throw error.create("Unable to fetch " + key + ", this usually indicates a broken serializer");
+    }
+    return value;
   }
 
   /** Gets a set of all keys in the map */

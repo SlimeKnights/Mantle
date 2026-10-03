@@ -74,11 +74,7 @@ public class ContextKey<T> implements Key<T> {
   private record Required<T,M>(ContextKey<T> key, BiFunction<T,ErrorFactory,M> mapper) implements ContextField<M> {
     @Override
     public M get(TypedMap context, ErrorFactory error) {
-      T value = context.get(key);
-      if (value != null) {
-        return mapper.apply(value, error);
-      }
-      throw error.create("Unable to fetch " + key.name + " from context, this usually implements a broken JSON deserializer");
+      return mapper.apply(context.getOrThrow(key, error), error);
     }
   }
 
