@@ -1,4 +1,4 @@
-package slimeknights.mantle.data.loadable.common;
+package slimeknights.mantle.data.loadable.registry;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -11,6 +11,7 @@ import java.util.Objects;
 /**
  * Loadable for a registry entry from a  built-in registry.
  * @see LazyRegistryLoadable
+ * @see RegistryHolderLoadable
  */
 @SuppressWarnings("unused")  // API
 public record RegistryLoadable<T>(Registry<T> registry, ResourceLocation registryId) implements BaseRegistryLoadable<T> {

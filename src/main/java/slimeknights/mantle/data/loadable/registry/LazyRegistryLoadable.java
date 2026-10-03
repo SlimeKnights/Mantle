@@ -1,4 +1,4 @@
-package slimeknights.mantle.data.loadable.common;
+package slimeknights.mantle.data.loadable.registry;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Registry;

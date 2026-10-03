@@ -30,13 +30,13 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.loadable.common.CodecLoadable;
-import slimeknights.mantle.data.loadable.common.LazyRegistryLoadable;
-import slimeknights.mantle.data.loadable.common.RegistryLoadable;
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable.IntNetwork;
 import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
+import slimeknights.mantle.data.loadable.registry.LazyRegistryLoadable;
+import slimeknights.mantle.data.loadable.registry.RegistryLoadable;
 
 import java.util.function.BiFunction;
 

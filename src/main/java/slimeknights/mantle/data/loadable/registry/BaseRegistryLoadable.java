@@ -1,4 +1,4 @@
-package slimeknights.mantle.data.loadable.common;
+package slimeknights.mantle.data.loadable.registry;
 
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.DecoderException;
