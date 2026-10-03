@@ -2,11 +2,12 @@ package slimeknights.mantle.client.render;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import slimeknights.mantle.data.datamap.RegistryDataMapLoader;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 /** Data class for rendering the fluids in a casting channel */
+@SuppressWarnings("unused")  // API
 public record ChannelFluids(FluidCuboid down, Center center, Side side) {
   public static final RecordLoadable<ChannelFluids> LOADABLE = RecordLoadable.create(
     FluidCuboid.LOADABLE.requiredField("down", ChannelFluids::down),
@@ -22,7 +23,6 @@ public record ChannelFluids(FluidCuboid down, Center center, Side side) {
       Side::new).requiredField("side", ChannelFluids::side),
     ChannelFluids::new);
   /** Registry for loading channel fluids */
-  @SuppressWarnings("deprecation")
   public static final RegistryDataMapLoader<Block,ChannelFluids> REGISTRY = new RegistryDataMapLoader<>("Channel fluids", "mantle/model/channel_fluids", BuiltInRegistries.BLOCK, LOADABLE);
 
   /** Used to prevent being initialized multiple times */

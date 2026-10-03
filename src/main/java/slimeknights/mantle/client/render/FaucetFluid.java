@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.joml.Vector3f;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.datamap.BlockStateDataMapLoader;
@@ -46,6 +46,7 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
   /**
    * Call during the event to register the reload listener
    */
+  @SuppressWarnings("unused")  // API
   public static void initialize(RegisterClientReloadListenersEvent event) {
     if (initialized) {
       return;

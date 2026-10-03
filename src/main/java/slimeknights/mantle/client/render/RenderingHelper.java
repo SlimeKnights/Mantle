@@ -15,8 +15,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.joml.Vector3f;
 
-@SuppressWarnings("WeakerAccess")
+/** Utilizes for rendering, used by Mantle mods. */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class RenderingHelper {
+  private RenderingHelper() {}
+
   /* Rotation */
 
   /**

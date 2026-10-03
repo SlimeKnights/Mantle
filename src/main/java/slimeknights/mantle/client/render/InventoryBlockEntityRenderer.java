@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
+/** Block entity renderer that renders 1 or more items using {@link RenderItem} */
+@SuppressWarnings("unused")  // API
 public class InventoryBlockEntityRenderer<T extends BlockEntity & Container> implements BlockEntityRenderer<T> {
   public InventoryBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 

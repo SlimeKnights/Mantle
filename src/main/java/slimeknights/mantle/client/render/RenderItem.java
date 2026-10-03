@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.render;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -99,6 +101,8 @@ public class RenderItem {
   }
 
   /** Builder logic */
+  @CanIgnoreReturnValue
+  @SuppressWarnings("unused")  // API
   @Accessors(fluent = true)
   public static class Builder {
     private Vector3f center = new Vector3f(8, 8, 8);
@@ -134,6 +138,7 @@ public class RenderItem {
     }
 
     /** Builds the final instance */
+    @CheckReturnValue
     public RenderItem build() {
       return new RenderItem(center, size, x, y, transform);
     }

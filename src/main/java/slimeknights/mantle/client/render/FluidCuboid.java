@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.render;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -113,6 +115,8 @@ public class FluidCuboid {
   }
 
   /** Builder logic */
+  @SuppressWarnings("unused")  // API
+  @CanIgnoreReturnValue
   public static class Builder {
     private Vector3f from = new Vector3f(0, 0, 0);
     private Vector3f to = new Vector3f(16, 16, 16);
@@ -157,6 +161,7 @@ public class FluidCuboid {
     }
 
     /** Builds the final instance */
+    @CheckReturnValue
     public FluidCuboid build() {
       return new FluidCuboid(from, to, faces.isEmpty() ? DEFAULT_FACES : faces);
     }
