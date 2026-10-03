@@ -1,7 +1,8 @@
-package slimeknights.mantle.client.screen;
+package slimeknights.mantle.client.screen.widget;
 
 import net.minecraft.client.gui.GuiGraphics;
 
+// TODO: adapt to Mojang's widget system?
 public abstract class Widget {
 
   public int xPos;

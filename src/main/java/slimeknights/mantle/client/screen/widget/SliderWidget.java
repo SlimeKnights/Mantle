@@ -1,18 +1,22 @@
-package slimeknights.mantle.client.screen;
+package slimeknights.mantle.client.screen.widget;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
+import slimeknights.mantle.client.screen.element.ScreenElement;
 
-// a vertical slider!
+/** Creates a vertical slider widget */
+@SuppressWarnings({"UnusedReturnValue", "unused"})  // API
 public class SliderWidget extends Widget {
 
   // gui info
-  public final ElementScreen slider;
-  public final ElementScreen sliderHighlighted;
-  public final ElementScreen sliderDisabled;
-  public final ElementScreen slideBarTop;
-  public final ElementScreen slideBarBottom;
-  public final ScalableElementScreen slideBar;
+  public final ScreenElement slider;
+  public final ScreenElement sliderHighlighted;
+  public final ScreenElement sliderDisabled;
+  public final ScreenElement slideBarTop;
+  public final ScreenElement slideBarBottom;
+  public final ScreenElement slideBar;
 
   // slider info
   protected int minValue;
@@ -22,7 +26,9 @@ public class SliderWidget extends Widget {
   // positioning info
   protected int currentValue;
   public int sliderOffset; // x-offset of the slider to the left edge of the slideBar
+  @Getter @Setter
   protected boolean enabled;
+  @Getter @Setter
   protected boolean hidden;
 
   protected boolean isScrolling;
@@ -34,7 +40,7 @@ public class SliderWidget extends Widget {
   private boolean clickedBar; // if the bar has already been clicked and not released
   private boolean leftMouseDown = false;
 
-  public SliderWidget(ElementScreen slider, ElementScreen sliderHighlighted, ElementScreen sliderDisabled, ElementScreen slideBarTop, ElementScreen slideBarBottom, ScalableElementScreen slideBar) {
+  public SliderWidget(ScreenElement slider, ScreenElement sliderHighlighted, ScreenElement sliderDisabled, ScreenElement slideBarTop, ScreenElement slideBarBottom, ScreenElement slideBar) {
     this.slider = slider;
     this.sliderHighlighted = sliderHighlighted;
     this.sliderDisabled = sliderDisabled;
@@ -42,13 +48,13 @@ public class SliderWidget extends Widget {
     this.slideBarTop = slideBarTop;
     this.slideBarBottom = slideBarBottom;
 
-    this.height = slideBar.h;
-    this.width = slideBar.w;
+    this.height = slideBar.height();
+    this.width = slideBar.width();
     this.currentValue = this.minValue = 0;
-    this.maxValue = slideBar.h;
+    this.maxValue = slideBar.height();
     this.increment = 1;
 
-    this.sliderOffset = Mth.abs(slideBar.w - slider.w) / 2;
+    this.sliderOffset = Mth.abs(slideBar.width() - slider.width()) / 2;
 
     this.isScrolling = false;
     this.isHighlighted = false;
@@ -83,24 +89,12 @@ public class SliderWidget extends Widget {
     return Math.min(this.maxValue, Math.max(this.minValue, this.currentValue));
   }
 
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
   public void enable() {
     this.enabled = true;
   }
 
   public void disable() {
     this.enabled = false;
-  }
-
-  public boolean isEnabled() {
-    return this.enabled;
-  }
-
-  public void setHidden(boolean hidden) {
-    this.hidden = hidden;
   }
 
   public void hide() {
@@ -111,10 +105,6 @@ public class SliderWidget extends Widget {
     this.hidden = false;
   }
 
-  public boolean isHidden() {
-    return this.hidden;
-  }
-
   @Override
   public void draw(GuiGraphics graphics) {
     if (this.hidden) {
@@ -123,8 +113,8 @@ public class SliderWidget extends Widget {
 
     // slide bar background
     this.slideBarTop.draw(graphics, this.xPos, this.yPos);
-    this.slideBar.drawScaledY(graphics, this.xPos, this.yPos + this.slideBarTop.h, this.getUsableSlidebarHeight());
-    this.slideBarBottom.draw(graphics, this.xPos, this.yPos + this.height - this.slideBarBottom.h);
+    this.slideBar.drawScaledDown(graphics, this.xPos, this.yPos + this.slideBarTop.height(), 0, this.getUsableSlidebarHeight());
+    this.slideBarBottom.draw(graphics, this.xPos, this.yPos + this.height - this.slideBarBottom.height());
 
     int x = this.xPos + this.sliderOffset;
     int y = this.yPos + this.getSliderTop();
@@ -164,7 +154,7 @@ public class SliderWidget extends Widget {
     // button pressed and scrolling -> update position of slider
     else if (this.isScrolling) {
       float d = this.maxValue - this.minValue;
-      float val = (float) (y - this.clickY) / (float) (this.getUsableSlidebarHeight() - this.slider.h);
+      float val = (float) (y - this.clickY) / (float) (this.getUsableSlidebarHeight() - this.slider.height());
       val *= d;
 
       if (val < (float) this.increment / 2f) {
@@ -180,7 +170,7 @@ public class SliderWidget extends Widget {
     }
     // not scrolling yet but possibly inside the slider
     else if (x >= 0 && y >= this.getSliderTop() &&
-      x - this.sliderOffset <= this.slider.w && y <= this.getSliderTop() + this.slider.h) {
+      x - this.sliderOffset <= this.slider.width() && y <= this.getSliderTop() + this.slider.height()) {
       this.isHighlighted = true;
       if (this.leftMouseDown) {
         this.isScrolling = true;
@@ -191,7 +181,7 @@ public class SliderWidget extends Widget {
     // not on the slider but clicked on the bar
     else if (this.leftMouseDown && !this.clickedBar &&
       x >= 0 && y >= 0 &&
-      x <= this.slideBar.w && y <= this.height) {
+      x <= this.slideBar.width() && y <= this.height) {
       if (y < this.getSliderTop()) {
         this.decrement();
       } else {
@@ -255,12 +245,12 @@ public class SliderWidget extends Widget {
   private int getSliderTop() {
     float d = this.maxValue - this.minValue;
     d = (float) (this.currentValue - this.minValue) / d;
-    d *= this.getUsableSlidebarHeight() - this.slider.h;
+    d *= this.getUsableSlidebarHeight() - this.slider.height();
 
-    return (int) d + this.slideBarTop.h;
+    return (int) d + this.slideBarTop.height();
   }
 
   private int getUsableSlidebarHeight() {
-    return this.height - this.slideBarTop.h - this.slideBarBottom.h;
+    return this.height - this.slideBarTop.height() - this.slideBarBottom.height();
   }
 }

@@ -1,19 +1,18 @@
-package slimeknights.mantle.client.screen;
+package slimeknights.mantle.client.screen.widget;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import slimeknights.mantle.client.screen.MultiModuleScreen;
+import slimeknights.mantle.client.screen.element.ScreenElement;
 
 import java.util.List;
 
+/** Widget for showing tabs above a screen */
 @SuppressWarnings("unused")
 public class TabsWidget extends Widget {
-
-  private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
-
-  private final ElementScreen[] tabActive = new ElementScreen[3];
-  private final ElementScreen[] tab = new ElementScreen[3];
+  private final ScreenElement[] tabActive = new ScreenElement[3];
+  private final ScreenElement[] tab = new ScreenElement[3];
 
   // changes the y-offset of the tab row
   public int yOffset = 4;
@@ -28,7 +27,7 @@ public class TabsWidget extends Widget {
   private boolean clicked = false;
   private boolean leftMouseDown = false;
 
-  public TabsWidget(MultiModuleScreen<?> parent, ElementScreen tabLeft, ElementScreen tabCenter, ElementScreen tabRight, ElementScreen activeLeft, ElementScreen activeCenter, ElementScreen activeRight) {
+  public TabsWidget(MultiModuleScreen<?> parent, ScreenElement tabLeft, ScreenElement tabCenter, ScreenElement tabRight, ScreenElement activeLeft, ScreenElement activeCenter, ScreenElement activeRight) {
     this.parent = parent;
 
     this.tab[0] = tabLeft;
@@ -70,18 +69,18 @@ public class TabsWidget extends Widget {
     // update highlighted
     this.highlighted = -1;
 
-    if (mouseY >= 0 && mouseY <= this.tab[1].h) {
+    if (mouseY >= 0 && mouseY <= this.tab[1].height()) {
       // which one did we click?
       int x = 0;
 
       for (int i = 0; i < this.icons.size(); i++) {
         // clicking on spacing has no effect
-        if (mouseX >= x && mouseX < x + this.tab[1].w) {
+        if (mouseX >= x && mouseX < x + this.tab[1].width()) {
           this.highlighted = i;
           break;
         }
 
-        x += this.tab[1].w;
+        x += this.tab[1].width();
         x += this.spacing;
       }
     }
@@ -113,20 +112,20 @@ public class TabsWidget extends Widget {
   public void draw(GuiGraphics graphics) {
     int y = this.yPos + this.yOffset;
     for (int i = 0; i < this.icons.size(); i++) {
-      int x = this.xPos + i * this.tab[0].w;
+      int x = this.xPos + i * this.tab[0].width();
 
       if (i > 0) {
         x += i * this.spacing;
       }
 
-      ElementScreen[] toDraw;
+      ScreenElement[] toDraw;
       if (i == this.selected) {
         toDraw = this.tabActive;
       } else {
         toDraw = this.tab;
       }
 
-      ElementScreen actualTab;
+      ScreenElement actualTab;
       if (i == 0 && x == this.parent.cornerX) {
         actualTab = toDraw[0];
       } else if (x == this.parent.cornerX + this.parent.width) {
@@ -141,7 +140,7 @@ public class TabsWidget extends Widget {
 
       ItemStack icon = this.icons.get(i);
       if (icon != null) {
-        graphics.renderItem(icon, x + (actualTab.w - 16) / 2, y + (actualTab.h - 16) / 2);
+        graphics.renderItem(icon, x + (actualTab.width() - 16) / 2, y + (actualTab.height() - 16) / 2);
       }
     }
   }
