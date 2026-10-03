@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Common logic to create a recipe builder class
@@ -25,6 +26,14 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   /** Group for this recipe */
   @Nonnull
   protected String group = "";
+  /** Whether the recipe shows a notification when granted */
+  protected boolean showNotification = true;
+
+  /** Gets the builder instance casted to the builder type */
+  @SuppressWarnings("unchecked")
+  protected T self() {
+    return (T) this;
+  }
 
   /**
    * Adds a criteria to the recipe
@@ -32,10 +41,9 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @param criteria  Criteria instance
    * @return  Builder
    */
-  @SuppressWarnings("unchecked")
   public T unlockedBy(String name, Criterion<?> criteria) {
     this.criteria.put(name, criteria);
-    return (T)this;
+    return self();
   }
 
   /**
@@ -43,10 +51,15 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @param group  Recipe group
    * @return  Builder
    */
-  @SuppressWarnings("unchecked")
-  public T group(String group) {
-    this.group = group;
-    return (T)this;
+  public T group(@Nullable String group) {
+    this.group = Objects.requireNonNull(group);
+    return self();
+  }
+
+  /** Sets whether the recipe shows a notification */
+  public T showNotification(boolean showNotification) {
+    this.showNotification = showNotification;
+    return self();
   }
 
   /**
