@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/** Implementation of an entity getter for a world with no entities */
-public class FakeEntityGetter implements LevelEntityGetter<Entity> {
+/** Implementation of an entity getter for a world with no entities, used for {@link TemplateLevel} */
+class FakeEntityGetter implements LevelEntityGetter<Entity> {
   public static final FakeEntityGetter INSTANCE = new FakeEntityGetter();
 
   private FakeEntityGetter() {}

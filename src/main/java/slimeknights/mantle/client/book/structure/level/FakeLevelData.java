@@ -2,57 +2,30 @@
 // See: https://github.com/BluSunrize/ImmersiveEngineering/blob/1.18/src/main/java/blusunrize/immersiveengineering/common/util/fakeworld/FakeSpawnInfo.java
 package slimeknights.mantle.client.book.structure.level;
 
+import lombok.Getter;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.WritableLevelData;
 
-public class FakeLevelData implements WritableLevelData {
+/** Fake level data for {@link TemplateLevel} */
+class FakeLevelData implements WritableLevelData {
+  public static final FakeLevelData INSTANCE = new FakeLevelData();
 
-  private static final GameRules RULES = new GameRules();
+  private FakeLevelData() {}
 
-  private int spawnX;
-  private int spawnY;
-  private int spawnZ;
+  @Getter
+  private final GameRules gameRules = new GameRules();
+
+  @Getter
+  private BlockPos spawnPos = BlockPos.ZERO;
+  @Getter
   private float spawnAngle;
 
   @Override
-  public void setXSpawn(int x) {
-    this.spawnX = x;
-  }
-
-  @Override
-  public void setYSpawn(int y) {
-    this.spawnY = y;
-  }
-
-  @Override
-  public void setZSpawn(int z) {
-    this.spawnZ = z;
-  }
-
-  @Override
-  public void setSpawnAngle(float angle) {
+  public void setSpawn(BlockPos blockPos, float angle) {
+    this.spawnPos = blockPos;
     this.spawnAngle = angle;
-  }
-
-  @Override
-  public int getXSpawn() {
-    return this.spawnX;
-  }
-
-  @Override
-  public int getYSpawn() {
-    return this.spawnY;
-  }
-
-  @Override
-  public int getZSpawn() {
-    return this.spawnZ;
-  }
-
-  @Override
-  public float getSpawnAngle() {
-    return this.spawnAngle;
   }
 
   @Override
@@ -76,18 +49,11 @@ public class FakeLevelData implements WritableLevelData {
   }
 
   @Override
-  public void setRaining(boolean isRaining) {
-
-  }
+  public void setRaining(boolean isRaining) {}
 
   @Override
   public boolean isHardcore() {
     return false;
-  }
-
-  @Override
-  public GameRules getGameRules() {
-    return RULES;
   }
 
   @Override

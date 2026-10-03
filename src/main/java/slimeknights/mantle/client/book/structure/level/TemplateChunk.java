@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class TemplateChunk extends EmptyLevelChunk {
-
+/** Chunk instance for {@link TemplateChunkSource} */
+class TemplateChunk extends EmptyLevelChunk {
   private final Map<BlockPos, StructureBlockInfo> blocksInChunk;
   private final Map<BlockPos, BlockEntity> tiles;
   private final Predicate<BlockPos> shouldShow;
@@ -36,7 +36,7 @@ public class TemplateChunk extends EmptyLevelChunk {
       this.blocksInChunk.put(info.pos(), info);
 
       if (info.nbt() != null) {
-        BlockEntity tile = BlockEntity.loadStatic(info.pos(), info.state(), info.nbt());
+        BlockEntity tile = BlockEntity.loadStatic(info.pos(), info.state(), info.nbt(), level.registryAccess());
 
         if (tile != null) {
           tile.setLevel(level);
