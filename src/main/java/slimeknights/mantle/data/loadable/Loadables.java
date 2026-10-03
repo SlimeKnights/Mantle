@@ -77,6 +77,7 @@ public class Loadables {
   public static final HolderLoadable<MobEffect> MOB_EFFECT = new RegistryHolderLoadable<>(BuiltInRegistries.MOB_EFFECT);
   /* Datapack registry holders - require a lookup as context to use. */
   public static final HolderLoadable<Enchantment> ENCHANTMENT = new DatapackRegistryLoadable<>(Registries.ENCHANTMENT);
+  public static final HolderLoadable<DamageType> DAMAGE_TYPE = new DatapackRegistryLoadable<>(Registries.DAMAGE_TYPE);
 
   /* Tag keys */
   public static final StringLoadable<TagKey<Fluid>> FLUID_TAG = tagKey(Registries.FLUID);
