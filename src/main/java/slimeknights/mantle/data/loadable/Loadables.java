@@ -38,7 +38,6 @@ import slimeknights.mantle.data.loadable.primitive.ResourceLocationLoadable;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.registry.DatapackRegistryLoadable;
 import slimeknights.mantle.data.loadable.registry.HolderLoadable;
-import slimeknights.mantle.data.loadable.registry.LazyRegistryLoadable;
 import slimeknights.mantle.data.loadable.registry.RegistryHolderLoadable;
 import slimeknights.mantle.data.loadable.registry.RegistryLoadable;
 
@@ -59,14 +58,13 @@ public class Loadables {
   /* Registries */
   public static final ResourceLocationLoadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(BuiltInRegistries.SOUND_EVENT);
   public static final ResourceLocationLoadable<Fluid> FLUID = new RegistryLoadable<>(BuiltInRegistries.FLUID);
-  public static final ResourceLocationLoadable<FluidType> FLUID_TYPE = new LazyRegistryLoadable<>(NeoForgeRegistries.Keys.FLUID_TYPES);
+  public static final ResourceLocationLoadable<FluidType> FLUID_TYPE = new RegistryLoadable<>(NeoForgeRegistries.FLUID_TYPES);
   public static final ResourceLocationLoadable<Block> BLOCK = new RegistryLoadable<>(BuiltInRegistries.BLOCK);
   public static final ResourceLocationLoadable<EntityType<?>> ENTITY_TYPE = new RegistryLoadable<>(BuiltInRegistries.ENTITY_TYPE);
   public static final ResourceLocationLoadable<Item> ITEM = new RegistryLoadable<>(BuiltInRegistries.ITEM);
   public static final ResourceLocationLoadable<Potion> POTION = new RegistryLoadable<>(BuiltInRegistries.POTION);
   public static final ResourceLocationLoadable<ParticleType<?>> PARTICLE_TYPE = new RegistryLoadable<>(BuiltInRegistries.PARTICLE_TYPE);
   public static final ResourceLocationLoadable<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new RegistryLoadable<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
-  public static final ResourceLocationLoadable<Attribute> ATTRIBUTE = new RegistryLoadable<>(BuiltInRegistries.ATTRIBUTE);
   public static final ResourceLocationLoadable<RecipeType<?>> RECIPE_TYPE = new RegistryLoadable<>(BuiltInRegistries.RECIPE_TYPE);
 
   /* Non-default registries */
@@ -75,6 +73,7 @@ public class Loadables {
   public static final StringLoadable<Item> NON_EMPTY_ITEM = notValue(ITEM, Items.AIR, "Item cannot be empty");
 
   /* Registry holders */
+  public static final HolderLoadable<Attribute> ATTRIBUTE = new RegistryHolderLoadable<>(BuiltInRegistries.ATTRIBUTE);
   public static final HolderLoadable<MobEffect> MOB_EFFECT = new RegistryHolderLoadable<>(BuiltInRegistries.MOB_EFFECT);
   /* Datapack registry holders - require a lookup as context to use. */
   public static final HolderLoadable<Enchantment> ENCHANTMENT = new DatapackRegistryLoadable<>(Registries.ENCHANTMENT);

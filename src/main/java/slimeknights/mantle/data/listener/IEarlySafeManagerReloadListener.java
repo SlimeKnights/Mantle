@@ -3,7 +3,7 @@ package slimeknights.mantle.data.listener;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.fml.ModLoader;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -13,7 +13,7 @@ public interface IEarlySafeManagerReloadListener extends PreparableReloadListene
   @Override
   default CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
     return CompletableFuture.runAsync(() -> {
-      if (ModLoader.isLoadingStateValid()) {
+      if (!ModLoader.hasErrors()) {
         onReloadSafe(resourceManager);
       }
     }, backgroundExecutor).thenCompose(stage::wait);
