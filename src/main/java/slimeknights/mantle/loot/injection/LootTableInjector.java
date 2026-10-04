@@ -2,6 +2,7 @@ package slimeknights.mantle.loot.injection;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -14,8 +15,11 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.listener.IEarlyReloadListener;
+import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.loot.injection.LootTableInjection.LootPoolInjection;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
+import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -37,11 +41,14 @@ public enum LootTableInjector implements IEarlyReloadListener {
   public static void init() {
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, event -> {
       event.addListener(INSTANCE);
+      INSTANCE.registry = event.getRegistryAccess();
       INSTANCE.context = event.getConditionContext();
     });
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, LootTableLoadEvent.class, INSTANCE::lootTableLoad);
   }
 
+  /** Registry access for loot table stuff */
+  private RegistryAccess registry = RegistryAccess.EMPTY;
   /** Condition context for preventing load */
   private IContext context = IContext.EMPTY;
   /** Map of injections to use on loot table load */
@@ -51,24 +58,21 @@ public enum LootTableInjector implements IEarlyReloadListener {
   public void onResourceManagerReload(ResourceManager manager) {
     long time = System.nanoTime();
     Map<ResourceLocation,LootTableInjection.Builder> builders = new HashMap<>();
+    TypedMap context = TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, registry).put(ContextKey.CONDITION_CONTEXT, this.context).build();
     int loaded = 0;
     for (Entry<ResourceLocation,Resource> entry : manager.listResources(FOLDER, loc -> loc.getPath().endsWith(".json")).entrySet()) {
       try (Reader reader = entry.getValue().openAsReader()) {
         JsonObject json = GsonHelper.fromJson(JsonHelper.DEFAULT_GSON, reader, JsonObject.class);
-        if (json != null) {
-          // skip if empty for easy removals
-          if (!json.keySet().isEmpty() && JsonHelper.processConditions(json, "conditions", context)) {
-            // the builder allows us to merge from multiple sources, for efficiency
-            // ensures a given table name and pool name both show just once
-            LootTableInjection injection = LootTableInjection.LOADABLE.deserialize(json);
-            LootTableInjection.Builder builder = builders.computeIfAbsent(injection.name(), id -> new LootTableInjection.Builder());
-            for (LootPoolInjection pool : injection.pools()) {
-              builder.addToPool(pool);
-            }
-            loaded++;
+        // skip if empty for easy removals
+        if (!json.keySet().isEmpty() && JsonHelper.processConditions(json, "conditions", this.context)) {
+          // the builder allows us to merge from multiple sources, for efficiency
+          // ensures a given table name and pool name both show just once
+          LootTableInjection injection = LootTableInjection.LOADABLE.deserialize(json, context);
+          LootTableInjection.Builder builder = builders.computeIfAbsent(injection.name(), id -> new LootTableInjection.Builder());
+          for (LootPoolInjection pool : injection.pools()) {
+            builder.addToPool(pool);
           }
-        } else {
-          Mantle.logger.error("Couldn't parse loot table injection from {} as it's null or empty", entry.getKey());
+          loaded++;
         }
       } catch (IllegalArgumentException | IOException | JsonParseException ex) {
         Mantle.logger.error("Couldn't parse loot injection from {}", entry.getKey(), ex);

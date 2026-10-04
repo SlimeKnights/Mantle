@@ -1,9 +1,14 @@
 package slimeknights.mantle.data.loadable.field;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -36,6 +41,19 @@ public class ContextKey<T> implements Key<T> {
   @Override
   public String toString() {
     return "ContextKey('" + name + "')'";
+  }
+
+
+  /* Helpers */
+
+  /** Gets dynamic ops for the given context and error factory. */
+  public static DynamicOps<JsonElement> createSerializationContext(TypedMap context, ErrorFactory errorFactory) {
+    RegistryOps<JsonElement> ops = context.getOrThrow(REGISTRY_LOOKUP, errorFactory).createSerializationContext(JsonOps.INSTANCE);
+    IContext conditionContext = context.get(CONDITION_CONTEXT);
+    if (conditionContext != null) {
+      return new ConditionalOps<>(ops, conditionContext);
+    }
+    return ops;
   }
 
 

@@ -2,6 +2,7 @@ package slimeknights.mantle.data.loadable;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -79,6 +80,7 @@ public class Loadables {
   public static final HolderLoadable<Enchantment> ENCHANTMENT = new DatapackRegistryLoadable<>(Registries.ENCHANTMENT);
   public static final HolderLoadable<DamageType> DAMAGE_TYPE = new DatapackRegistryLoadable<>(Registries.DAMAGE_TYPE);
 
+
   /* Tag keys */
   public static final StringLoadable<TagKey<Fluid>> FLUID_TAG = tagKey(Registries.FLUID);
   public static final StringLoadable<TagKey<MobEffect>> MOB_EFFECT_TAG = tagKey(Registries.MOB_EFFECT);
@@ -93,9 +95,9 @@ public class Loadables {
   /* Resource keys */
   public static final StringLoadable<ResourceKey<DamageType>> DAMAGE_TYPE_KEY = resourceKey(Registries.DAMAGE_TYPE);
 
-  /* Loot tables */
-  /** Loadable for a loot entry instance */
-  public static final Loadable<LootPoolEntryContainer> LOOT_ENTRY = new CodecLoadable<>(LootPoolEntries.CODEC);
+  /* Registry codecs */
+  public static final Loadable<DataComponentPatch> DATA_COMPONENTS = new CodecLoadable.Registry<>(DataComponentPatch.CODEC, DataComponentPatch.STREAM_CODEC);
+  public static final Loadable<LootPoolEntryContainer> LOOT_ENTRY = new CodecLoadable.Registry<>(LootPoolEntries.CODEC);
 
   /** Loadable for a rotation value, from 0 to 270 */
   public static final Loadable<Integer> ROTATION = new IntLoadable(0, 270, IntNetwork.SHORT).validate((value, error) -> {
