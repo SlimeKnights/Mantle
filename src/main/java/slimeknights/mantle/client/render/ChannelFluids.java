@@ -4,12 +4,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import slimeknights.mantle.data.datamap.RegistryDataMapLoader;
+import slimeknights.mantle.data.loadable.field.LegacyField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 /** Data class for rendering the fluids in a casting channel */
-public record ChannelFluids(FluidCuboid down, Center center, Side side) {
+public record ChannelFluids(FluidCuboid down, FluidCuboid up, Center center, Side side) {
   public static final RecordLoadable<ChannelFluids> LOADABLE = RecordLoadable.create(
     FluidCuboid.LOADABLE.requiredField("down", ChannelFluids::down),
+    new LegacyField<>(FluidCuboid.LOADABLE.requiredField("up", ChannelFluids::up), "down"),
     RecordLoadable.create(
       FluidCuboid.LOADABLE.requiredField("still",   Center::still),
       FluidCuboid.LOADABLE.requiredField("flowing", Center::flowing),
