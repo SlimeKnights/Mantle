@@ -11,7 +11,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.Mantle;
 
@@ -21,7 +20,6 @@ public class MantleTags {
     Blocks.init();
     Items.init();
     Fluids.init();
-    BlockEntities.init();
   }
 
   public static class Blocks {
@@ -34,8 +32,15 @@ public class MantleTags {
      * @see slimeknights.mantle.block.GaugeBlock
      */
     public static final TagKey<Block> ATTACHED_GAUGES = tag("gauges/attached");
-    /** Blocks in this tag will show the fluid contained. Must have a block entity with a fluid handler capability. */
+    /** Blocks in this tag will show the fluid contained. Must have a fluid handler capability. */
     public static final TagKey<Block> GAUGE_TANKS = tag("gauges/tank");
+    /** Any blocks in this tag will not show any gauge information when a gauge is placed on them */
+    public static final TagKey<Block> GAUGE_BLACKLIST = tag("gauges/blacklist");
+    /**
+     * Any block entities in this tag will show just the fluid name, no capacity when viewed in a gauge.
+     * Useful for blocks that don't fully sync the fluid to client, such as channels.
+     */
+    public static final TagKey<Block> HIDES_GAUGE_AMOUNT = tag("gauges/hides_amount");
 
     /** Adds a mantle domain tag */
     private static TagKey<Block> tag(String name) {
@@ -95,25 +100,6 @@ public class MantleTags {
     /** Adds a common domain tag */
     private static TagKey<Fluid> common(String name) {
       return TagKey.create(Registries.FLUID, Mantle.commonResource(name));
-    }
-  }
-
-  public static class BlockEntities {
-    private static void init() {}
-
-    /**
-     * Any block entities in this tag will show just the fluid name, no capacity when viewed in a gauge.
-     * Useful for blocks that don't fully sync the fluid to client, such as channels.
-     */
-    public static final TagKey<BlockEntityType<?>> HIDES_GAUGE_AMOUNT = tag("hides_gauge_amount");
-
-    /** Any block entities in this tag will not show any gauge information. */
-    public static final TagKey<BlockEntityType<?>> GAUGE_BLACKLIST = tag("gauge_blacklist");
-
-
-    /** Adds a mantle domain tag */
-    private static TagKey<BlockEntityType<?>> tag(String name) {
-      return TagKey.create(Registries.BLOCK_ENTITY_TYPE, Mantle.getResource(name));
     }
   }
 
