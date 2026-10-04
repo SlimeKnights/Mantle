@@ -18,7 +18,7 @@ record MaxLengthStringLoadable(int maxLength) implements StringLoadable<String> 
   }
 
   @Override
-  public String getString(String object) {
+  public String getString(String object, TypedMap context) {
     if (object.length() > maxLength) {
       throw new RuntimeException("String may not be longer than " + maxLength);
     }
@@ -31,7 +31,7 @@ record MaxLengthStringLoadable(int maxLength) implements StringLoadable<String> 
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, String object) {
+  public void encode(RegistryFriendlyByteBuf buffer, String object, TypedMap context) {
     buffer.writeUtf(object, maxLength);
   }
 }

@@ -3,6 +3,7 @@ package slimeknights.mantle.data.registry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.minecraft.resources.ResourceLocation;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -39,7 +40,7 @@ public class NamedComponentRegistry<T> extends AbstractNamedComponentRegistry<T>
   }
 
   @Override
-  public ResourceLocation getKey(T value) {
+  public ResourceLocation getKey(T value, TypedMap context) {
     ResourceLocation key = getOptionalKey(value);
     if (key == null) {
       throw new IllegalStateException(errorText + value);

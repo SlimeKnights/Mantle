@@ -28,8 +28,13 @@ public interface CodecLoadable<T> extends Loadable<T> {
   StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec();
 
   @Override
-  default JsonElement serialize(T object) {
+  default JsonElement serialize(T object, TypedMap context) {
     return JsonHelper.serialize(codec(), object);
+  }
+
+  /** Gets the ops to use for the buffer when writing using the codec. */
+  default DynamicOps<Tag> bufferOps(RegistryFriendlyByteBuf buffer, TypedMap context) {
+    return NbtOps.INSTANCE;
   }
 
   @SuppressWarnings("deprecation")  // if its removed we will just throw instead
@@ -39,18 +44,18 @@ public interface CodecLoadable<T> extends Loadable<T> {
     if (stream != null) {
       return stream.decode(buffer);
     } else {
-      return buffer.readWithCodecTrusted(NbtOps.INSTANCE, codec());
+      return buffer.readWithCodecTrusted(bufferOps(buffer, context), codec());
     }
   }
 
   @SuppressWarnings("deprecation")  // if its removed we will just throw instead
   @Override
-  default void encode(RegistryFriendlyByteBuf buffer, T object) {
+  default void encode(RegistryFriendlyByteBuf buffer, T object, TypedMap context) {
     StreamCodec<? super RegistryFriendlyByteBuf, T> stream = streamCodec();
     if (stream != null) {
       stream.encode(buffer, object);
     } else {
-      buffer.writeWithCodec(NbtOps.INSTANCE, codec(), object);
+      buffer.writeWithCodec(bufferOps(buffer, context), codec(), object);
     }
   }
 
@@ -77,23 +82,21 @@ public interface CodecLoadable<T> extends Loadable<T> {
       return JsonHelper.parse(ContextKey.createSerializationContext(context, ErrorFactory.JSON_SYNTAX_ERROR), codec, element);
     }
 
-    @SuppressWarnings("deprecation")  // if its removed we will just throw instead
     @Override
-    public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
-      StreamCodec<? super RegistryFriendlyByteBuf, T> stream = streamCodec();
-      if (stream != null) {
-        return stream.decode(buffer);
-      } else {
-        // use registry ops for writing
-        RegistryOps<Tag> registryOps = buffer.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-        // include condition context if present
-        DynamicOps<Tag> ops = registryOps;
-        IContext conditionContext = context.get(ContextKey.CONDITION_CONTEXT);
-        if (conditionContext != null) {
-          ops = new ConditionalOps<>(registryOps, conditionContext);
-        }
-        return buffer.readWithCodecTrusted(ops, codec());
+    public JsonElement serialize(T object, TypedMap context) {
+      return JsonHelper.serialize(ContextKey.createSerializationContext(context, ErrorFactory.RUNTIME), codec, object);
+    }
+
+    @Override
+    public DynamicOps<Tag> bufferOps(RegistryFriendlyByteBuf buffer, TypedMap context) {
+      // use registry ops
+      RegistryOps<Tag> registryOps = buffer.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+      // include condition context if present
+      IContext conditionContext = context.get(ContextKey.CONDITION_CONTEXT);
+      if (conditionContext != null) {
+        return new ConditionalOps<>(registryOps, conditionContext);
       }
+      return registryOps;
     }
   }
 }

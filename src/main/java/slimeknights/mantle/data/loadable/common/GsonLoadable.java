@@ -20,7 +20,7 @@ public record GsonLoadable<T>(Gson gson, Class<T> classType) implements Loadable
   }
 
   @Override
-  public JsonElement serialize(T object) {
+  public JsonElement serialize(T object, TypedMap context) {
     return gson.toJsonTree(object, classType);
   }
 
@@ -34,7 +34,7 @@ public record GsonLoadable<T>(Gson gson, Class<T> classType) implements Loadable
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T object) {
+  public void encode(RegistryFriendlyByteBuf buffer, T object, TypedMap context) {
     // TODO: do we need to support lists here? probably not as loadable gives us lists
     Tag tag = JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, gson.toJsonTree(object, classType));
     if (tag.getId() == Tag.TAG_COMPOUND) {

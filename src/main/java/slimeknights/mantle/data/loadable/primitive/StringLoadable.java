@@ -3,6 +3,7 @@ package slimeknights.mantle.data.loadable.primitive;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.mapping.MapLoadable;
@@ -38,6 +39,7 @@ public interface StringLoadable<T> extends Loadable<T> {
   T parseString(String value, String key, TypedMap context);
 
   /** Same as {@link #parseString(String, String, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  @NonExtendable
   default T parseString(String value, String key) {
     return parseString(value, key, TypedMap.EMPTY);
   }
@@ -53,10 +55,16 @@ public interface StringLoadable<T> extends Loadable<T> {
    * @return  String representation of the object.
    * @throws RuntimeException  if unable to serialize this to a string
    */
-  String getString(T object);
+  String getString(T object, TypedMap context);
+
+  /** Same as {@link #getString(Object, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  @NonExtendable
+  default String getString(T object) {
+    return getString(object, TypedMap.EMPTY);
+  }
 
   @Override
-  default JsonElement serialize(T object) {
+  default JsonElement serialize(T object, TypedMap context) {
     return new JsonPrimitive(getString(object));
   }
 

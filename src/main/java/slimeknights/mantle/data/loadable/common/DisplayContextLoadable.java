@@ -30,7 +30,7 @@ public enum DisplayContextLoadable implements ResourceLocationLoadable<ItemDispl
   }
 
   @Override
-  public ResourceLocation getKey(ItemDisplayContext object) {
+  public ResourceLocation getKey(ItemDisplayContext object, TypedMap context) {
     IForgeRegistry<ItemDisplayContext> registry = ForgeRegistries.DISPLAY_CONTEXTS.get();
     ResourceLocation location = registry.getKey(object);
     if (location == null) {
@@ -45,7 +45,7 @@ public enum DisplayContextLoadable implements ResourceLocationLoadable<ItemDispl
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, ItemDisplayContext value) {
+  public void encode(RegistryFriendlyByteBuf buffer, ItemDisplayContext value, TypedMap context) {
     buffer.writeRegistryIdUnsafe(ForgeRegistries.DISPLAY_CONTEXTS.get(), value);
   }
 

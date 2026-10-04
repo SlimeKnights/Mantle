@@ -33,14 +33,14 @@ public record LongArrayLoadable(Loadable<Long> base, int minSize, int maxSize) i
   }
 
   @Override
-  public JsonElement serializeFirst(long[] object) {
-    return base.serialize(object[0]);
+  public JsonElement serializeFirst(long[] object, TypedMap context) {
+    return base.serialize(object[0], context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, long[] object) {
+  public void serializeAll(JsonArray array, long[] object, TypedMap context) {
     for (long element : object) {
-      array.add(base.serialize(element));
+      array.add(base.serialize(element, context));
     }
   }
 
@@ -55,10 +55,10 @@ public record LongArrayLoadable(Loadable<Long> base, int minSize, int maxSize) i
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, long[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, long[] array, TypedMap context) {
     buffer.writeVarInt(array.length);
     for (long element : array) {
-      base.encode(buffer, element);
+      base.encode(buffer, element, context);
     }
   }
 

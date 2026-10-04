@@ -21,21 +21,21 @@ public abstract class LegacyLoadable<T> implements RecordLoadable<T> {
   protected final RecordLoadable<T> base;
 
   @Override
-  public JsonElement serialize(T object) {
-    return base.serialize(object);
+  public JsonElement serialize(T object, TypedMap context) {
+    return base.serialize(object, context);
   }
 
   @Override
-  public void serialize(T object, JsonObject json) {
-    base.serialize(object, json);
+  public void serializeInto(T object, JsonObject json, TypedMap context) {
+    base.serializeInto(object, json);
   }
 
 
   /* NBT */
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T value) {
-    base.encode(buffer, value);
+  public void encode(RegistryFriendlyByteBuf buffer, T value, TypedMap context) {
+    base.encode(buffer, value, context);
   }
 
   @Override

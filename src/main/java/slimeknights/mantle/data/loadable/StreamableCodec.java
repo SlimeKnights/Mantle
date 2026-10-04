@@ -19,6 +19,6 @@ public record StreamableCodec<T>(Streamable<T> streamable, Supplier<TypedMap> co
 
   @Override
   public void encode(RegistryFriendlyByteBuf buffer, T value) {
-    streamable.encode(buffer, value);
+    streamable.encode(buffer, value, context.get());
   }
 }

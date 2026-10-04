@@ -40,7 +40,7 @@ public enum Vector3fLoadable implements RecordLoadable<Vector3f> {
   }
 
   @Override
-  public JsonElement serialize(Vector3f vector) {
+  public JsonElement serialize(Vector3f vector, TypedMap context) {
     JsonArray array = new JsonArray();
     array.add(vector.x());
     array.add(vector.y());
@@ -49,7 +49,7 @@ public enum Vector3fLoadable implements RecordLoadable<Vector3f> {
   }
 
   @Override
-  public void serialize(Vector3f vector, JsonObject json) {
+  public void serializeInto(Vector3f vector, JsonObject json, TypedMap context) {
     if (vector.x != 0) json.addProperty("x", vector.x);
     if (vector.y != 0) json.addProperty("y", vector.y);
     if (vector.z != 0) json.addProperty("z", vector.z);
@@ -61,7 +61,7 @@ public enum Vector3fLoadable implements RecordLoadable<Vector3f> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Vector3f value) {
+  public void encode(RegistryFriendlyByteBuf buffer, Vector3f value, TypedMap context) {
     buffer.writeVector3f(value);
   }
 }

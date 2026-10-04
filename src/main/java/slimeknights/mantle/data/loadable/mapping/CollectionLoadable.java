@@ -66,14 +66,14 @@ public abstract class CollectionLoadable<T,C extends Collection<T>> implements A
   }
 
   @Override
-  public JsonElement serializeFirst(C collection) {
-    return base.serialize(collection.iterator().next());
+  public JsonElement serializeFirst(C collection, TypedMap context) {
+    return base.serialize(collection.iterator().next(), context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, C collection) {
+  public void serializeAll(JsonArray array, C collection, TypedMap context) {
     for (T element : collection) {
-      array.add(base.serialize(element));
+      array.add(base.serialize(element, context));
     }
   }
 
@@ -88,10 +88,10 @@ public abstract class CollectionLoadable<T,C extends Collection<T>> implements A
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, C collection) {
+  public void encode(RegistryFriendlyByteBuf buffer, C collection, TypedMap context) {
     buffer.writeVarInt(collection.size());
     for (T element : collection) {
-      base.encode(buffer, element);
+      base.encode(buffer, element, context);
     }
   }
 }

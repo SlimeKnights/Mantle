@@ -33,14 +33,14 @@ public record CharArrayLoadable(Loadable<Character> base, int minSize, int maxSi
   }
 
   @Override
-  public JsonElement serializeFirst(char[] object) {
-    return base.serialize(object[0]);
+  public JsonElement serializeFirst(char[] object, TypedMap context) {
+    return base.serialize(object[0], context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, char[] object) {
+  public void serializeAll(JsonArray array, char[] object, TypedMap context) {
     for (char element : object) {
-      array.add(base.serialize(element));
+      array.add(base.serialize(element, context));
     }
   }
 
@@ -55,10 +55,10 @@ public record CharArrayLoadable(Loadable<Character> base, int minSize, int maxSi
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, char[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, char[] array, TypedMap context) {
     buffer.writeVarInt(array.length);
     for (char element : array) {
-      base.encode(buffer, element);
+      base.encode(buffer, element, context);
     }
   }
 

@@ -57,12 +57,12 @@ public record FloatLoadable(float min, float max) implements Loadable<Float> {
   }
 
   @Override
-  public JsonElement serialize(Float object) {
+  public JsonElement serialize(Float object, TypedMap context) {
     return new JsonPrimitive(validate(object, "Value"));
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Float object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Float object, TypedMap context) {
     buffer.writeFloat(object);
   }
 

@@ -27,7 +27,7 @@ public interface ContextField<T> extends RecordField<T,Object> {
   }
 
   @Override
-  default void serialize(Object parent, JsonObject json) {}
+  default void serializeInto(Object parent, JsonObject json, TypedMap context) {}
 
   @Override
   default T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
@@ -35,5 +35,5 @@ public interface ContextField<T> extends RecordField<T,Object> {
   }
 
   @Override
-  default void encode(RegistryFriendlyByteBuf buffer, Object parent) {}
+  default void encode(RegistryFriendlyByteBuf buffer, Object parent, TypedMap context) {}
 }

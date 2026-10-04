@@ -36,7 +36,7 @@ public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
   }
 
   @Override
-  default ResourceLocation getKey(T object) {
+  default ResourceLocation getKey(T object, TypedMap context) {
     Registry<T> registry = registry();
     if (registry != null) {
       ResourceLocation location = registry.getKey(object);
@@ -61,7 +61,7 @@ public interface BaseRegistryLoadable<T> extends ResourceLocationLoadable<T> {
   }
 
   @Override
-  default void encode(RegistryFriendlyByteBuf buffer, T object) {
+  default void encode(RegistryFriendlyByteBuf buffer, T object, TypedMap context) {
     Registry<T> registry = registry();
     if (registry == null) {
       throw new EncoderException("Registry " + registryId() + " cannot be located");

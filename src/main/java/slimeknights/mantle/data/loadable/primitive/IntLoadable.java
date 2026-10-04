@@ -71,7 +71,7 @@ public class IntLoadable implements Loadable<Integer> {
   }
 
   @Override
-  public JsonElement serialize(Integer value) {
+  public JsonElement serialize(Integer value, TypedMap context) {
     return new JsonPrimitive(validate(value, "Value"));
   }
 
@@ -84,7 +84,7 @@ public class IntLoadable implements Loadable<Integer> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Integer object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Integer object, TypedMap context) {
     network.toNetwork(object, buffer);
   }
 
@@ -227,12 +227,12 @@ public class IntLoadable implements Loadable<Integer> {
     }
 
     @Override
-    public String getString(Integer value) {
+    public String getString(Integer value, TypedMap context) {
       return Integer.toString(value, radix);
     }
 
     @Override
-    public JsonElement serialize(Integer value) {
+    public JsonElement serialize(Integer value, TypedMap context) {
       return new JsonPrimitive(getString(value));
     }
   }

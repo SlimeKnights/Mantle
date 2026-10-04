@@ -82,27 +82,27 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public JsonElement serialize(BlockState state) {
+  public JsonElement serialize(BlockState state, TypedMap context) {
     Block block = state.getBlock();
     if (this == DIFFERENCE && state == block.defaultBlockState()) {
-      return Loadables.BLOCK.serialize(block);
+      return Loadables.BLOCK.serialize(block, context);
     }
-    return RecordLoadable.super.serialize(state);
+    return RecordLoadable.super.serialize(state, context);
   }
 
   /** Serializes the property if it differs in the default state */
   protected abstract <T extends Comparable<T>> void serializeProperty(BlockState serialize, Property<T> property, BlockState defaultState, JsonObject json);
 
   @Override
-  public void serialize(BlockState state, JsonObject json) {
+  public void serializeInto(BlockState state, JsonObject json, TypedMap context) {
     Block block = state.getBlock();
-    json.add("block", Loadables.BLOCK.serialize(block));
+    json.add("block", Loadables.BLOCK.serialize(block, context));
     BlockState defaultState = block.defaultBlockState();
     JsonObject properties = new JsonObject();
     for (Property<?> property : block.getStateDefinition().getProperties()) {
       serializeProperty(state, property, defaultState, properties);
     }
-    if (properties.size() > 0) {
+    if (!properties.isEmpty()) {
       json.add("properties", properties);
     }
   }
@@ -113,7 +113,7 @@ public enum BlockStateLoadable implements RecordLoadable<BlockState> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, BlockState object) {
+  public void encode(RegistryFriendlyByteBuf buffer, BlockState object, TypedMap context) {
     buffer.writeVarInt(Block.getId(object));
   }
 }

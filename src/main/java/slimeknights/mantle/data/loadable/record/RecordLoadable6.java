@@ -30,13 +30,13 @@ record RecordLoadable6<A,B,C,D,E,F,G,R>(
   }
 
   @Override
-  public void serialize(R object, JsonObject json) {
-    fieldA.serialize(object, json);
-    fieldB.serialize(object, json);
-    fieldC.serialize(object, json);
-    fieldD.serialize(object, json);
-    fieldE.serialize(object, json);
-    fieldF.serialize(object, json);
+  public void serializeInto(R object, JsonObject json, TypedMap context) {
+    fieldA.serializeInto(object, json, context);
+    fieldB.serializeInto(object, json, context);
+    fieldC.serializeInto(object, json, context);
+    fieldD.serializeInto(object, json, context);
+    fieldE.serializeInto(object, json, context);
+    fieldF.serializeInto(object, json, context);
   }
 
   @Override
@@ -52,12 +52,12 @@ record RecordLoadable6<A,B,C,D,E,F,G,R>(
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, R object) {
-    fieldA.encode(buffer, object);
-    fieldB.encode(buffer, object);
-    fieldC.encode(buffer, object);
-    fieldD.encode(buffer, object);
-    fieldE.encode(buffer, object);
-    fieldF.encode(buffer, object);
+  public void encode(RegistryFriendlyByteBuf buffer, R object, TypedMap context) {
+    fieldA.encode(buffer, object, context);
+    fieldB.encode(buffer, object, context);
+    fieldC.encode(buffer, object, context);
+    fieldD.encode(buffer, object, context);
+    fieldE.encode(buffer, object, context);
+    fieldF.encode(buffer, object, context);
   }
 }

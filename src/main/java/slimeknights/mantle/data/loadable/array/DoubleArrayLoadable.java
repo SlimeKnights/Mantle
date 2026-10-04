@@ -33,14 +33,14 @@ public record DoubleArrayLoadable(Loadable<Double> base, int minSize, int maxSiz
   }
 
   @Override
-  public JsonElement serializeFirst(double[] object) {
-    return base.serialize(object[0]);
+  public JsonElement serializeFirst(double[] object, TypedMap context) {
+    return base.serialize(object[0], context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, double[] object) {
+  public void serializeAll(JsonArray array, double[] object, TypedMap context) {
     for (double element : object) {
-      array.add(base.serialize(element));
+      array.add(base.serialize(element, context));
     }
   }
 
@@ -55,10 +55,10 @@ public record DoubleArrayLoadable(Loadable<Double> base, int minSize, int maxSiz
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, double[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, double[] array, TypedMap context) {
     buffer.writeVarInt(array.length);
     for (double element : array) {
-      base.encode(buffer, element);
+      base.encode(buffer, element, context);
     }
   }
 

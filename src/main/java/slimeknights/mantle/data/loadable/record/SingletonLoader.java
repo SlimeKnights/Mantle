@@ -27,7 +27,7 @@ public class SingletonLoader<T> implements RecordLoadable<T> {
   }
 
   @Override
-  public void serialize(T object, JsonObject json) {}
+  public void serializeInto(T object, JsonObject json, TypedMap context) {}
 
   @Override
   public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
@@ -35,7 +35,7 @@ public class SingletonLoader<T> implements RecordLoadable<T> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T value) {}
+  public void encode(RegistryFriendlyByteBuf buffer, T value, TypedMap context) {}
 
   /** Helper to create a singleton object as an anonymous class */
   public static <T> T singleton(Function<RecordLoadable<T>,T> instance) {

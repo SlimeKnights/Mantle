@@ -22,7 +22,7 @@ public enum CharacterLoadable implements StringLoadable<Character> {
   }
 
   @Override
-  public String getString(Character object) {
+  public String getString(Character object, TypedMap context) {
     return object.toString();
   }
 
@@ -32,7 +32,7 @@ public enum CharacterLoadable implements StringLoadable<Character> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Character value) {
+  public void encode(RegistryFriendlyByteBuf buffer, Character value, TypedMap context) {
     buffer.writeChar(value);
   }
 

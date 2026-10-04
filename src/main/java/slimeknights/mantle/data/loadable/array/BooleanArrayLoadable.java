@@ -33,14 +33,14 @@ public record BooleanArrayLoadable(Loadable<Boolean> base, int minSize, int maxS
   }
 
   @Override
-  public JsonElement serializeFirst(boolean[] object) {
-    return base.serialize(object[0]);
+  public JsonElement serializeFirst(boolean[] object, TypedMap context) {
+    return base.serialize(object[0], context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, boolean[] object) {
+  public void serializeAll(JsonArray array, boolean[] object, TypedMap context) {
     for (boolean element : object) {
-      array.add(base.serialize(element));
+      array.add(base.serialize(element, context));
     }
   }
 
@@ -55,10 +55,10 @@ public record BooleanArrayLoadable(Loadable<Boolean> base, int minSize, int maxS
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, boolean[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, boolean[] array, TypedMap context) {
     buffer.writeVarInt(array.length);
     for (boolean element : array) {
-      base.encode(buffer, element);
+      base.encode(buffer, element, context);
     }
   }
 

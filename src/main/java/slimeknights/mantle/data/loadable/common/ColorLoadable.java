@@ -35,7 +35,7 @@ public enum ColorLoadable implements StringLoadable<Integer> {
     }
 
     @Override
-    public String getString(Integer color) {
+    public String getString(Integer color, TypedMap context) {
       return String.format("%08X", color);
     }
   },
@@ -54,7 +54,7 @@ public enum ColorLoadable implements StringLoadable<Integer> {
     }
 
     @Override
-    public String getString(Integer color) {
+    public String getString(Integer color, TypedMap context) {
       return String.format("%06X", color & 0xFFFFFF);
     }
   };
@@ -65,7 +65,7 @@ public enum ColorLoadable implements StringLoadable<Integer> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Integer color) {
+  public void encode(RegistryFriendlyByteBuf buffer, Integer color, TypedMap context) {
     buffer.writeInt(color);
   }
 

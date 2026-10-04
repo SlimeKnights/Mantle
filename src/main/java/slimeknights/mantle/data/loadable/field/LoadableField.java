@@ -38,9 +38,21 @@ public interface LoadableField<T,P> extends RecordField<T,P> {
     return get(json, TypedMap.EMPTY);
   }
 
+  /** Same as {@link #serializeInto(Object, JsonObject, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  @NonExtendable
+  default void serializeInto(P parent, JsonObject json) {
+    serializeInto(parent, json, TypedMap.EMPTY);
+  }
+
   /** Same as {@link RecordField#decode(RegistryFriendlyByteBuf, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
   @NonExtendable
   default T decode(RegistryFriendlyByteBuf buffer) {
     return decode(buffer, TypedMap.EMPTY);
+  }
+
+  /** Same as {@link RecordField#encode(RegistryFriendlyByteBuf, Object, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  @NonExtendable
+  default void encode(RegistryFriendlyByteBuf buffer, P parent) {
+    encode(buffer, parent, TypedMap.EMPTY);
   }
 }

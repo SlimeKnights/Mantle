@@ -35,10 +35,10 @@ public interface ArrayLoadable<A> extends Loadable<A> {
 
 
   /** Serializes the first elements into a JSON element */
-  JsonElement serializeFirst(A object);
+  JsonElement serializeFirst(A object, TypedMap context);
 
   /** Serializes all elements into the passed JSON array*/
-  void serializeAll(JsonArray array, A object);
+  void serializeAll(JsonArray array, A object, TypedMap context);
 
 
   /* Implementation */
@@ -56,11 +56,11 @@ public interface ArrayLoadable<A> extends Loadable<A> {
 
 
   @Override
-  default JsonElement serialize(A object) {
+  default JsonElement serialize(A object, TypedMap context) {
     // if we support compact, serialize compact
     int length = getLength(object);
     if (allowCompact() && length == 1) {
-      JsonElement element = serializeFirst(object);
+      JsonElement element = serializeFirst(object, context);
       // only return if its not an array; arrays means a conflict with deserializing
       // there is a small waste of work here in the case of array, but you shouldn't be using compact with array serializing elements anyway
       if (!element.isJsonArray()) {
@@ -69,7 +69,7 @@ public interface ArrayLoadable<A> extends Loadable<A> {
     }
     checkSize("Collection", length, ErrorFactory.RUNTIME);
     JsonArray array = new JsonArray();
-    serializeAll(array, object);
+    serializeAll(array, object, context);
     return array;
   }
 

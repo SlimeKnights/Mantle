@@ -58,12 +58,12 @@ public record DoubleLoadable(double min, double max) implements Loadable<Double>
   }
 
   @Override
-  public JsonElement serialize(Double object) {
+  public JsonElement serialize(Double object, TypedMap context) {
     return new JsonPrimitive(validate(object, "Value"));
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Double object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Double object, TypedMap context) {
     buffer.writeDouble(object);
   }
 

@@ -50,7 +50,7 @@ public abstract class AbstractNamedComponentRegistry<T> implements ResourceLocat
 
   /** Writes the value to the buffer */
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T value) {
+  public void encode(RegistryFriendlyByteBuf buffer, T value, TypedMap context) {
     buffer.writeResourceLocation(getKey(value));
   }
 
@@ -107,10 +107,10 @@ public abstract class AbstractNamedComponentRegistry<T> implements ResourceLocat
     }
 
     @Override
-    public void serialize(P parent, JsonObject json) {
+    public void serializeInto(P parent, JsonObject json, TypedMap context) {
       T object = getter.apply(parent);
       if (object != null) {
-        json.add(key, registry.serialize(object));
+        json.add(key, registry.serialize(object, context));
       }
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractNamedComponentRegistry<T> implements ResourceLocat
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, P parent) {
+    public void encode(RegistryFriendlyByteBuf buffer, P parent, TypedMap context) {
       registry.encodeOptional(buffer, getter.apply(parent));
     }
   }

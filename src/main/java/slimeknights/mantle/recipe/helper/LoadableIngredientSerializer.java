@@ -3,8 +3,8 @@ package slimeknights.mantle.recipe.helper;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.crafting.IIngredientSerializer;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 import java.util.Objects;
@@ -30,7 +30,7 @@ public record LoadableIngredientSerializer<T extends Ingredient>(RecordLoadable<
   public JsonObject serialize(T ingredient) {
     JsonObject json = new JsonObject();
     json.addProperty("type", Objects.requireNonNull(CraftingHelper.getID(this)).toString());
-    loadable.serialize(ingredient, json);
+    loadable.serializeInto(ingredient, json);
     return json;
   }
 }

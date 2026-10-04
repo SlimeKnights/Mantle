@@ -100,12 +100,12 @@ public class ItemStackLoadable {
     }
 
     @Override
-    public void serialize(ItemStack stack, JsonObject json) {
-      ITEM.serialize(stack, json);
+    public void serializeInto(ItemStack stack, JsonObject json, TypedMap context) {
+      ITEM.serializeInto(stack, json, context);
       if (this == READ_COUNT) {
-        COUNT.serialize(stack, json);
+        COUNT.serializeInto(stack, json, context);
       }
-      COMPONENTS.serialize(stack, json);
+      COMPONENTS.serializeInto(stack, json, context);
     }
 
 
@@ -120,11 +120,11 @@ public class ItemStackLoadable {
     }
 
     @Override
-    public JsonElement serialize(ItemStack stack) {
+    public JsonElement serialize(ItemStack stack, TypedMap context) {
       if ((this == FIXED_COUNT || stack.getCount() == 1) && !stack.getComponentsPatch().isEmpty()) {
-        return OPTIONAL_ITEM.serialize(stack);
+        return OPTIONAL_ITEM.serialize(stack, context);
       }
-      return RecordLoadable.super.serialize(stack);
+      return RecordLoadable.super.serialize(stack, context);
     }
 
 
@@ -142,12 +142,12 @@ public class ItemStackLoadable {
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, ItemStack stack) throws EncoderException {
-      ITEM.encode(buffer, stack);
+    public void encode(RegistryFriendlyByteBuf buffer, ItemStack stack, TypedMap context) throws EncoderException {
+      ITEM.encode(buffer, stack, context);
       if (this == READ_COUNT) {
-        COUNT.encode(buffer, stack);
+        COUNT.encode(buffer, stack, context);
       }
-      COMPONENTS.encode(buffer, stack);
+      COMPONENTS.encode(buffer, stack, context);
     }
   }
 }

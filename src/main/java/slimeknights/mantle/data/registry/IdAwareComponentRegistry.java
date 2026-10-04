@@ -2,6 +2,7 @@ package slimeknights.mantle.data.registry;
 
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.registration.object.IdAwareObject;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -37,7 +38,7 @@ public class IdAwareComponentRegistry<T extends IdAwareObject> extends AbstractN
   }
 
   @Override
-  public ResourceLocation getKey(T object) {
+  public ResourceLocation getKey(T object, TypedMap context) {
     return object.getId();
   }
 

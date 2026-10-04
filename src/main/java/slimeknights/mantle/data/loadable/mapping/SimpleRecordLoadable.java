@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
  * @param defaultValue  If non-null, will be used as the value if the object is empty.
  * @param compact       If true, serializes using the loadable instead of in object form.
  */
+@SuppressWarnings("unused")  // API
 public record SimpleRecordLoadable<T>(Loadable<T> loadable, String key, @Nullable T defaultValue, boolean compact) implements RecordLoadable<T> {
   @Override
   public T convert(JsonElement element, String key, TypedMap context) {
@@ -35,21 +36,21 @@ public record SimpleRecordLoadable<T>(Loadable<T> loadable, String key, @Nullabl
   }
 
   @Override
-  public JsonElement serialize(T object) {
+  public JsonElement serialize(T object, TypedMap context) {
     if (compact) {
-      return loadable.serialize(object);
+      return loadable.serialize(object, context);
     }
-    return RecordLoadable.super.serialize(object);
+    return RecordLoadable.super.serialize(object, context);
   }
 
   @Override
-  public void serialize(T object, JsonObject json) {
-    json.add(key, loadable.serialize(object));
+  public void serializeInto(T object, JsonObject json, TypedMap context) {
+    json.add(key, loadable.serialize(object, context));
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T value) {
-    loadable.encode(buffer, value);
+  public void encode(RegistryFriendlyByteBuf buffer, T value, TypedMap context) {
+    loadable.encode(buffer, value, context);
   }
 
   @Override

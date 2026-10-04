@@ -185,7 +185,7 @@ public class EitherLoadable {
       // size 1 means we have a fixed network logic, use that
       int size = networks.size();
       if (size == 1) {
-        return networks.get(0);
+        return networks.getFirst();
       }
       // the integer should be guaranteed to be a valid loadable, but just in case give a better exception
       int networkIndex = buffer.readVarInt();
@@ -196,11 +196,11 @@ public class EitherLoadable {
     }
 
     @Override
-    default void encode(RegistryFriendlyByteBuf buffer, T object) {
+    default void encode(RegistryFriendlyByteBuf buffer, T object, TypedMap context) {
       List<? extends Streamable<T>> networks = network();
       // size 1 means we have a fixed network logic, use that
       if (networks.size() == 1) {
-        networks.get(0).encode(buffer, object);
+        networks.getFirst().encode(buffer, object, context);
       } else {
         // we need to be able to recover which loadable was used on deserialization, so use the index in our list
         Loadable<?> objectLoadable = object.loadable();
@@ -209,7 +209,7 @@ public class EitherLoadable {
           // indexof would do deep comparison, but reference comparison is way more efficient here
           if (network == objectLoadable) {
             buffer.writeVarInt(i);
-            network.encode(buffer, object);
+            network.encode(buffer, object, context);
             return;
           }
         }
@@ -237,8 +237,8 @@ public class EitherLoadable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public JsonElement serialize(T object) {
-      return ((Loadable<T>)object.loadable()).serialize(object);
+    public JsonElement serialize(T object, TypedMap context) {
+      return ((Loadable<T>)object.loadable()).serialize(object, context);
     }
 
     @Override
@@ -256,8 +256,8 @@ public class EitherLoadable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void serialize(T object, JsonObject json) {
-      ((RecordLoadable<T>)object.loadable()).serialize(object, json);
+    public void serializeInto(T object, JsonObject json, TypedMap context) {
+      ((RecordLoadable<T>)object.loadable()).serializeInto(object, json, context);
     }
 
     @Override
@@ -266,8 +266,8 @@ public class EitherLoadable {
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, T object) {
-      EitherImpl.super.encode(buffer, object);
+    public void encode(RegistryFriendlyByteBuf buffer, T object, TypedMap context) {
+      EitherImpl.super.encode(buffer, object, context);
     }
   }
 }

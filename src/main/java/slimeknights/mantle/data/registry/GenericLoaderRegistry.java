@@ -97,19 +97,19 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements RecordLoada
 
   /** Serializes the object to json, fighting generics */
   @SuppressWarnings("unchecked")
-  private <L> void serialize(RecordLoadable<L> loader, T src, JsonObject json) {
+  private <L> void serializeInto(RecordLoadable<L> loader, T src, JsonObject json, TypedMap context) {
     JsonElement type = new JsonPrimitive(loaders.getKey((RecordLoadable<? extends T>)loader).toString());
     json.add("type", type);
-    loader.serialize((L)src, json);
+    loader.serializeInto((L)src, json, context);
     if (json.get("type") != type) {
       throw new IllegalStateException(name + " serializer " + type.getAsString() + " modified the type key, this is not allowed as it breaks deserialization");
     }
   }
 
   @Override
-  public JsonElement serialize(T src) {
+  public JsonElement serialize(T src, TypedMap context) {
     JsonObject json = new JsonObject();
-    serialize(src.getLoader(), src, json);
+    serializeInto(src.getLoader(), src, json, context);
     // nothing to serialize? use type directly
     if (compact && json.entrySet().size() == 1) {
       return json.get("type");
@@ -118,22 +118,22 @@ public class GenericLoaderRegistry<T extends IHaveLoader> implements RecordLoada
   }
 
   @Override
-  public void serialize(T object, JsonObject json) {
-    serialize(object.getLoader(), object, json);
+  public void serializeInto(T object, JsonObject json, TypedMap context) {
+    serializeInto(object.getLoader(), object, json, context);
   }
 
   /** Writes the object to the network, fighting generics */
   @SuppressWarnings("unchecked")
-  protected  <L> void encode(RecordLoadable<L> loader, RegistryFriendlyByteBuf buffer, T src) {
-    loader.encode(buffer, (L)src);
+  protected  <L> void encode(RecordLoadable<L> loader, RegistryFriendlyByteBuf buffer, T src, TypedMap context) {
+    loader.encode(buffer, (L)src, context);
   }
 
   @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T src) {
+  public void encode(RegistryFriendlyByteBuf buffer, T src, TypedMap context) {
     RecordLoadable<? extends IHaveLoader> loader = src.getLoader();
-    loaders.encode(buffer, (RecordLoadable<? extends T>)loader);
-    encode(loader, buffer, src);
+    loaders.encode(buffer, (RecordLoadable<? extends T>)loader, context);
+    encode(loader, buffer, src, context);
   }
 
   @Override

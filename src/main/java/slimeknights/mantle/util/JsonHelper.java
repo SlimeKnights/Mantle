@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
@@ -296,18 +296,28 @@ public class JsonHelper {
   /* Codecs */
 
   /** Parses the given JSON element using the passed codec */
-  public static <T> T parse(Codec<T> codec, Reader reader) throws JsonParseException {
-    return parse(codec, GsonHelper.parse(reader));
+  public static <T> T parse(DynamicOps<JsonElement> ops, Codec<T> codec, JsonElement json) throws JsonParseException {
+    return codec.parse(ops, json).getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
   }
 
   /** Parses the given JSON element using the passed codec */
   public static <T> T parse(Codec<T> codec, JsonElement json) throws JsonParseException {
-    return codec.parse(new Dynamic<>(JsonOps.INSTANCE, json)).getOrThrow(ErrorFactory.JSON_SYNTAX_ERROR);
+    return parse(JsonOps.INSTANCE, codec, json);
+  }
+
+  /** Parses the given JSON element using the passed codec */
+  public static <T> T parse(Codec<T> codec, Reader reader) throws JsonParseException {
+    return parse(codec, GsonHelper.parse(reader));
+  }
+
+  /** Serializes the given object using the passed codec */
+  public static <T> JsonElement serialize(DynamicOps<JsonElement> ops, Codec<T> codec, T object) {
+    return codec.encodeStart(ops, object).getOrThrow(ErrorFactory.RUNTIME);
   }
 
   /** Serializes the given object using the passed codec */
   public static <T> JsonElement serialize(Codec<T> codec, T object) {
-    return codec.encodeStart(JsonOps.INSTANCE, object).getOrThrow(ErrorFactory.RUNTIME);
+    return serialize(JsonOps.INSTANCE, codec, object);
   }
 
   /** Serializes the given list of objects using the passed codec */

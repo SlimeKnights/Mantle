@@ -65,15 +65,15 @@ public class MapLoadable<K, V> implements Loadable<Map<K,V>> {
   }
 
   @Override
-  public JsonElement serialize(Map<K,V> map) {
+  public JsonElement serialize(Map<K,V> map, TypedMap context) {
     if (map.size() < minSize) {
       throw new RuntimeException("Collection must have at least " + minSize + " elements");
     }
     JsonObject json = new JsonObject();
     for (Entry<K,V> entry : map.entrySet()) {
       json.add(
-        keyLoadable.getString(entry.getKey()),
-        valueLoadable.serialize(entry.getValue()));
+        keyLoadable.getString(entry.getKey(), context),
+        valueLoadable.serialize(entry.getValue(), context));
     }
     return json;
   }
@@ -91,11 +91,11 @@ public class MapLoadable<K, V> implements Loadable<Map<K,V>> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Map<K,V> map) {
+  public void encode(RegistryFriendlyByteBuf buffer, Map<K,V> map, TypedMap context) {
     buffer.writeVarInt(map.size());
     for (Entry<K,V> entry : map.entrySet()) {
-      keyLoadable.encode(buffer, entry.getKey());
-      valueLoadable.encode(buffer, entry.getValue());
+      keyLoadable.encode(buffer, entry.getKey(), context);
+      valueLoadable.encode(buffer, entry.getValue(), context);
     }
   }
 

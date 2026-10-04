@@ -26,7 +26,7 @@ public enum BooleanLoadable implements StringLoadable<Boolean> {
   }
 
   @Override
-  public JsonElement serialize(Boolean object) {
+  public JsonElement serialize(Boolean object, TypedMap context) {
     return new JsonPrimitive(object);
   }
 
@@ -36,7 +36,7 @@ public enum BooleanLoadable implements StringLoadable<Boolean> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Boolean object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Boolean object, TypedMap context) {
     buffer.writeBoolean(object);
   }
 
@@ -69,7 +69,7 @@ public enum BooleanLoadable implements StringLoadable<Boolean> {
   }
 
   @Override
-  public String getString(Boolean object) {
+  public String getString(Boolean object, TypedMap context) {
     return object.toString();
   }
 }

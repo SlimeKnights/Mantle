@@ -17,6 +17,7 @@ import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.DirectField;
@@ -61,12 +62,18 @@ public interface RecordLoadable<T> extends Loadable<T> {
   /* Serializing */
 
   /** Writes this object to json */
-  void serialize(T object, JsonObject json);
+  void serializeInto(T object, JsonObject json, TypedMap context);
+
+  /** same as {@link #serializeInto(Object, JsonObject, TypedMap)} but passes {@link TypedMap#EMPTY} as context. */
+  @NonExtendable
+  default void serializeInto(T object, JsonObject json) {
+    serializeInto(object, json, TypedMap.EMPTY);
+  }
 
   @Override
-  default JsonElement serialize(T object) {
+  default JsonElement serialize(T object, TypedMap context) {
     JsonObject json = new JsonObject();
-    serialize(object, json);
+    serializeInto(object, json, context);
     return json;
   }
 

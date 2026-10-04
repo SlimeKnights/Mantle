@@ -25,7 +25,14 @@ public interface Streamable<T> {
    * Writes this object to the packet buffer
    * @param buffer  Buffer instance
    * @param value  Object to write
+   * @param context Additional parsing context. Not directly needed but included for parity.
    * @throws io.netty.handler.codec.EncoderException  If unable to encode a value to network
    */
-  void encode(RegistryFriendlyByteBuf buffer, T value);
+  void encode(RegistryFriendlyByteBuf buffer, T value, TypedMap context);
+
+  /** same as {@link #encode(RegistryFriendlyByteBuf, Object, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  @NonExtendable
+  default void encode(RegistryFriendlyByteBuf buffer, T value) {
+    encode(buffer, value, TypedMap.EMPTY);
+  }
 }

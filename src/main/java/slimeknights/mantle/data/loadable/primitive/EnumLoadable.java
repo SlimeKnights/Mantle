@@ -42,7 +42,7 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
   }
 
   @Override
-  public String getString(E object) {
+  public String getString(E object, TypedMap context) {
     return object.name().toLowerCase(Locale.ROOT);
   }
 
@@ -52,7 +52,7 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, E object) {
+  public void encode(RegistryFriendlyByteBuf buffer, E object, TypedMap context) {
     buffer.writeEnum(object);
   }
 
@@ -80,10 +80,10 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
     }
 
     @Override
-    public void serialize(P parent, JsonObject json) {
+    public void serializeInto(P parent, JsonObject json, TypedMap context) {
       E value = getter.apply(parent);
       if (value != null) {
-        json.add(key, loadable.serialize(value));
+        json.add(key, loadable.serialize(value, context));
       }
     }
 
@@ -100,7 +100,7 @@ public record EnumLoadable<E extends Enum<E>>(Class<E> enumClass, E[] allowedVal
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, P parent) {
+    public void encode(RegistryFriendlyByteBuf buffer, P parent, TypedMap context) {
       E value = getter.apply(parent);
       // if null, write the length of the enum values
       if (value == null) {

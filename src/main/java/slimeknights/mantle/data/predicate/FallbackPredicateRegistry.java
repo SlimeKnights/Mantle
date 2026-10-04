@@ -77,21 +77,21 @@ public class FallbackPredicateRegistry<T,F> extends PredicateRegistry<T> {
 
   @SuppressWarnings("unchecked")
   @Override
-  public JsonElement serialize(IJsonPredicate<T> src) {
+  public JsonElement serialize(IJsonPredicate<T> src, TypedMap context) {
     // write the fallback directly to JSON instead of as a nested type
     if (src instanceof NestedPredicate<?>) {
-      return this.fallback.serialize(((NestedPredicate<F>)src).predicate());
+      return this.fallback.serialize(((NestedPredicate<F>)src).predicate(), context);
     }
-    return super.serialize(src);
+    return super.serialize(src, context);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public void serialize(IJsonPredicate<T> src, JsonObject json) {
+  public void serializeInto(IJsonPredicate<T> src, JsonObject json, TypedMap context) {
     if (src instanceof NestedPredicate<?>) {
-      this.fallback.serialize(((NestedPredicate<F>)src).predicate(), json);
+      this.fallback.serializeInto(((NestedPredicate<F>)src).predicate(), json, context);
     } else {
-      super.serialize(src, json);
+      super.serializeInto(src, json, context);
     }
   }
 

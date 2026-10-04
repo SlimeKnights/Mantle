@@ -18,8 +18,8 @@ record RecordLoadable1<A,R>(
   }
 
   @Override
-  public void serialize(R object, JsonObject json) {
-    fieldA.serialize(object, json);
+  public void serializeInto(R object, JsonObject json, TypedMap context) {
+    fieldA.serializeInto(object, json, context);
   }
 
   @Override
@@ -28,7 +28,7 @@ record RecordLoadable1<A,R>(
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, R object) {
-    fieldA.encode(buffer, object);
+  public void encode(RegistryFriendlyByteBuf buffer, R object, TypedMap context) {
+    fieldA.encode(buffer, object, context);
   }
 }

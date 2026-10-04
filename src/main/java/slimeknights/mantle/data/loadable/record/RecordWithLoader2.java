@@ -22,9 +22,9 @@ record RecordWithLoader2<A,B,R>(
   }
 
   @Override
-  public void serialize(R object, JsonObject json) {
-    fieldA.serialize(object, json);
-    fieldB.serialize(object, json);
+  public void serializeInto(R object, JsonObject json, TypedMap context) {
+    fieldA.serializeInto(object, json, context);
+    fieldB.serializeInto(object, json, context);
   }
 
   @Override
@@ -37,8 +37,8 @@ record RecordWithLoader2<A,B,R>(
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, R object) {
-    fieldA.encode(buffer, object);
-    fieldB.encode(buffer, object);
+  public void encode(RegistryFriendlyByteBuf buffer, R object, TypedMap context) {
+    fieldA.encode(buffer, object, context);
+    fieldB.encode(buffer, object, context);
   }
 }

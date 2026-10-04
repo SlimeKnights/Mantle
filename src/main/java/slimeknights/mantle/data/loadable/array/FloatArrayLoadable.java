@@ -33,14 +33,14 @@ public record FloatArrayLoadable(Loadable<Float> base, int minSize, int maxSize)
   }
 
   @Override
-  public JsonElement serializeFirst(float[] object) {
-    return base.serialize(object[0]);
+  public JsonElement serializeFirst(float[] object, TypedMap context) {
+    return base.serialize(object[0], context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, float[] object) {
+  public void serializeAll(JsonArray array, float[] object, TypedMap context) {
     for (float element : object) {
-      array.add(base.serialize(element));
+      array.add(base.serialize(element, context));
     }
   }
 
@@ -55,10 +55,10 @@ public record FloatArrayLoadable(Loadable<Float> base, int minSize, int maxSize)
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, float[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, float[] array, TypedMap context) {
     buffer.writeVarInt(array.length);
     for (float element : array) {
-      base.encode(buffer, element);
+      base.encode(buffer, element, context);
     }
   }
 

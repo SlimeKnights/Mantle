@@ -71,8 +71,9 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
    * Writes this output to JSON
    * @param  writeCount  If true, serializes the count
    * @return  Json element
+   * @apiNote use {@link Loadable} for serialization.
    */
-  public abstract JsonElement serialize(boolean writeCount);
+  protected abstract JsonElement serialize(boolean writeCount, TypedMap context);
 
   /**
    * Creates a new output for the given stack
@@ -169,8 +170,8 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize(boolean writeCount) {
-      JsonElement item = Loadables.ITEM.serialize(this.item);
+    protected JsonElement serialize(boolean writeCount, TypedMap context) {
+      JsonElement item = Loadables.ITEM.serialize(this.item, context);
       if (writeCount && count > 1) {
         JsonObject json = new JsonObject();
         json.add("item", item);
@@ -198,11 +199,11 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize(boolean writeCount) {
+    protected JsonElement serialize(boolean writeCount, TypedMap context) {
       if (writeCount) {
-        return ItemStackLoadable.OPTIONAL_STACK_DATA.serialize(stack);
+        return ItemStackLoadable.OPTIONAL_STACK_DATA.serialize(stack, context);
       }
-      return ItemStackLoadable.OPTIONAL_ITEM_DATA.serialize(stack);
+      return ItemStackLoadable.OPTIONAL_ITEM_DATA.serialize(stack, context);
     }
   }
 
@@ -237,7 +238,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize(boolean writeCount) {
+    protected JsonElement serialize(boolean writeCount, TypedMap context) {
       JsonObject json = new JsonObject();
       if (!writeCount || count > 0) {
         json.addProperty("tag", tag.location().toString());
@@ -246,7 +247,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
         json.addProperty("count", count);
       }
       if (count > 0 && !components.isEmpty()) {
-        json.add("nbt", Loadables.DATA_COMPONENTS.serialize(components));
+        json.add("components", Loadables.DATA_COMPONENTS.serialize(components, context));
       }
       return json;
     }
@@ -306,8 +307,8 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public void serialize(ItemOutput object, JsonObject json) {
-      JsonElement element = serialize(object);
+    public void serializeInto(ItemOutput object, JsonObject json, TypedMap context) {
+      JsonElement element = serialize(object, context);
       if (element.isJsonObject()) {
         for (Entry<String,JsonElement> entry : element.getAsJsonObject().entrySet()) {
           json.add(entry.getKey(), entry.getValue());
@@ -319,11 +320,11 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public JsonElement serialize(ItemOutput output) {
+    public JsonElement serialize(ItemOutput output, TypedMap context) {
       if (nonEmpty && output.isEmpty()) {
         throw new IllegalArgumentException("ItemOutput cannot be empty for this recipe");
       }
-      return output.serialize(readCount);
+      return output.serialize(readCount, context);
     }
 
     @Override
@@ -332,8 +333,8 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, ItemOutput object) {
-      stack.encode(buffer, object.get());
+    public void encode(RegistryFriendlyByteBuf buffer, ItemOutput object, TypedMap context) {
+      stack.encode(buffer, object.get(), context);
     }
 
 

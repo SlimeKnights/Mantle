@@ -82,8 +82,8 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public void serialize(BlockPropertiesPredicate object, JsonObject json) {
-      json.add("block", Loadables.BLOCK.serialize(object.block));
+    public void serializeInto(BlockPropertiesPredicate object, JsonObject json, TypedMap context) {
+      json.add("block", Loadables.BLOCK.serialize(object.block, context));
       JsonObject properties = new JsonObject();
       for (Matcher matcher : object.properties) {
         properties.add(matcher.property().getName(), matcher.serialize());
@@ -103,8 +103,8 @@ public record BlockPropertiesPredicate(Block block, List<Matcher> properties) im
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, BlockPropertiesPredicate object) {
-      Loadables.BLOCK.encode(buffer, object.block);
+    public void encode(RegistryFriendlyByteBuf buffer, BlockPropertiesPredicate object, TypedMap context) {
+      Loadables.BLOCK.encode(buffer, object.block, context);
       buffer.writeVarInt(object.properties.size());
       for (Matcher matcher : object.properties) {
         matcher.toNetwork(buffer);

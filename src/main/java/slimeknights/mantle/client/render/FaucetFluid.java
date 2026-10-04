@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.state.BlockState;
@@ -151,18 +151,18 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
       }
 
       @Override
-      public void serialize(FaucetFluid object, JsonObject json) {
-        LOADABLE.serialize(object, json);
+      public void serializeInto(FaucetFluid object, JsonObject json, TypedMap context) {
+        LOADABLE.serializeInto(object, json, context);
       }
 
       @Override
-      public FaucetFluid decode(FriendlyByteBuf buffer, TypedMap context) {
+      public FaucetFluid decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
         return LOADABLE.decode(buffer, context);
       }
 
       @Override
-      public void encode(FriendlyByteBuf buffer, FaucetFluid value) {
-        LOADABLE.encode(buffer, value);
+      public void encode(RegistryFriendlyByteBuf buffer, FaucetFluid value, TypedMap context) {
+        LOADABLE.encode(buffer, value, context);
       }
     }
   }

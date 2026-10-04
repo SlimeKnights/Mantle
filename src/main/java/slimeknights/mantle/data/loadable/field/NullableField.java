@@ -19,10 +19,10 @@ public record NullableField<T,P>(Loadable<T> loadable, String key, Function<P,T>
   }
 
   @Override
-  public void serialize(P parent, JsonObject json) {
+  public void serializeInto(P parent, JsonObject json, TypedMap context) {
     T object = getter.apply(parent);
     if (object != null) {
-      json.add(key, loadable.serialize(object));
+      json.add(key, loadable.serialize(object, context));
     }
   }
 
@@ -35,11 +35,11 @@ public record NullableField<T,P>(Loadable<T> loadable, String key, Function<P,T>
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, P parent) {
+  public void encode(RegistryFriendlyByteBuf buffer, P parent, TypedMap context) {
     T object = getter.apply(parent);
     if (object != null) {
       buffer.writeBoolean(true);
-      loadable.encode(buffer, object);
+      loadable.encode(buffer, object, context);
     } else {
       buffer.writeBoolean(false);
     }

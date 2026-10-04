@@ -54,10 +54,22 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Str
   /**
    * Writes the passed object to json
    * @param object  Object to serialize
+   * @param context Additional serialization context, used notably to pass in {@link net.minecraft.core.HolderLookup.Provider} for vanilla registries.
    * @return  Serialized object
    * @throws RuntimeException  If unable to serialize the object
    */
-  JsonElement serialize(T object);
+  JsonElement serialize(T object, TypedMap context);
+
+  /**
+   * Writes the passed object to json
+   * @param object  Object to serialize
+   * @return  Serialized object
+   * @throws RuntimeException  If unable to serialize the object
+   */
+  @NonExtendable
+  default JsonElement serialize(T object) {
+    return serialize(object, TypedMap.EMPTY);
+  }
 
 
   /* GSON methods, lets us easily use loadables with GSON adapters. */

@@ -38,17 +38,17 @@ record RecordLoadable10<A,B,C,D,E,F,G,H,I,J,R>(
   }
 
   @Override
-  public void serialize(R object, JsonObject json) {
-    fieldA.serialize(object, json);
-    fieldB.serialize(object, json);
-    fieldC.serialize(object, json);
-    fieldD.serialize(object, json);
-    fieldE.serialize(object, json);
-    fieldF.serialize(object, json);
-    fieldG.serialize(object, json);
-    fieldH.serialize(object, json);
-    fieldI.serialize(object, json);
-    fieldJ.serialize(object, json);
+  public void serializeInto(R object, JsonObject json, TypedMap context) {
+    fieldA.serializeInto(object, json, context);
+    fieldB.serializeInto(object, json, context);
+    fieldC.serializeInto(object, json, context);
+    fieldD.serializeInto(object, json, context);
+    fieldE.serializeInto(object, json, context);
+    fieldF.serializeInto(object, json, context);
+    fieldG.serializeInto(object, json, context);
+    fieldH.serializeInto(object, json, context);
+    fieldI.serializeInto(object, json, context);
+    fieldJ.serializeInto(object, json, context);
   }
 
   @Override
@@ -68,16 +68,16 @@ record RecordLoadable10<A,B,C,D,E,F,G,H,I,J,R>(
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, R object) {
-    fieldA.encode(buffer, object);
-    fieldB.encode(buffer, object);
-    fieldC.encode(buffer, object);
-    fieldD.encode(buffer, object);
-    fieldE.encode(buffer, object);
-    fieldF.encode(buffer, object);
-    fieldG.encode(buffer, object);
-    fieldH.encode(buffer, object);
-    fieldI.encode(buffer, object);
-    fieldJ.encode(buffer, object);
+  public void encode(RegistryFriendlyByteBuf buffer, R object, TypedMap context) {
+    fieldA.encode(buffer, object, context);
+    fieldB.encode(buffer, object, context);
+    fieldC.encode(buffer, object, context);
+    fieldD.encode(buffer, object, context);
+    fieldE.encode(buffer, object, context);
+    fieldF.encode(buffer, object, context);
+    fieldG.encode(buffer, object, context);
+    fieldH.encode(buffer, object, context);
+    fieldI.encode(buffer, object, context);
+    fieldJ.encode(buffer, object, context);
   }
 }

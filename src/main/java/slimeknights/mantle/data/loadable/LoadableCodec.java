@@ -20,6 +20,6 @@ public record LoadableCodec<T>(Loadable<T> loadable, Supplier<TypedMap> context)
 
   @Override
   public JsonElement serialize(T object, DynamicOps<?> ops) {
-    return loadable.serialize(object);
+    return loadable.serialize(object, context.get());
   }
 }

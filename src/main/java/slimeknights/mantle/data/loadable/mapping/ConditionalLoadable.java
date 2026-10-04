@@ -38,13 +38,13 @@ public record ConditionalLoadable<T extends IHaveLoader>(GenericLoaderRegistry<T
 
   @SuppressWarnings("unchecked") // loader is invalid if not
   @Override
-  public void serialize(T object, JsonObject json) {
+  public void serializeInto(T object, JsonObject json, TypedMap context) {
     ConditionalObject<T> conditional = (ConditionalObject<T>) object;
     json.add("conditions", JsonHelper.serializeArray(ICondition.CODEC, conditional.conditions()));
-    json.add("if_true", registry.serialize(conditional.ifTrue()));
+    json.add("if_true", registry.serialize(conditional.ifTrue(), context));
     T ifFalse = conditional.ifFalse();
     if (ifFalse != defaultIfFalse) {
-      json.add("if_false", registry.serialize(ifFalse));
+      json.add("if_false", registry.serialize(ifFalse, context));
     }
   }
 
@@ -54,7 +54,7 @@ public record ConditionalLoadable<T extends IHaveLoader>(GenericLoaderRegistry<T
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T value) {
+  public void encode(RegistryFriendlyByteBuf buffer, T value, TypedMap context) {
     throw new UnsupportedOperationException("Conditional loadable should always resolve to a specific instance. This should never happen.");
   }
 

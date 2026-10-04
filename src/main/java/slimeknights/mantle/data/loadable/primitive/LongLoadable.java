@@ -62,7 +62,7 @@ public class LongLoadable implements Loadable<Long> {
   }
 
   @Override
-  public JsonElement serialize(Long value) {
+  public JsonElement serialize(Long value, TypedMap context) {
     return new JsonPrimitive(validate(value, "Value"));
   }
 
@@ -75,7 +75,7 @@ public class LongLoadable implements Loadable<Long> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Long value) {
+  public void encode(RegistryFriendlyByteBuf buffer, Long value, TypedMap context) {
     if (var) {
       buffer.writeVarLong(value);
     } else {
@@ -134,12 +134,12 @@ public class LongLoadable implements Loadable<Long> {
     }
 
     @Override
-    public String getString(Long value) {
+    public String getString(Long value, TypedMap context) {
       return Long.toString(value, radix);
     }
 
     @Override
-    public JsonElement serialize(Long value) {
+    public JsonElement serialize(Long value, TypedMap context) {
       return new JsonPrimitive(getString(value));
     }
   }

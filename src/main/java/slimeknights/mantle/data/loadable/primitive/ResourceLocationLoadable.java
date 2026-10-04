@@ -2,6 +2,7 @@ package slimeknights.mantle.data.loadable.primitive;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -21,7 +22,7 @@ public interface ResourceLocationLoadable<T> extends StringLoadable<T> {
     }
 
     @Override
-    public ResourceLocation getKey(ResourceLocation object) {
+    public ResourceLocation getKey(ResourceLocation object, TypedMap context) {
       return object;
     }
 
@@ -31,7 +32,7 @@ public interface ResourceLocationLoadable<T> extends StringLoadable<T> {
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, ResourceLocation value) {
+    public void encode(RegistryFriendlyByteBuf buffer, ResourceLocation value, TypedMap context) {
       buffer.writeResourceLocation(value);
     }
   };
@@ -47,6 +48,7 @@ public interface ResourceLocationLoadable<T> extends StringLoadable<T> {
   T fromKey(ResourceLocation name, String key, TypedMap context);
 
   /** Same as {@link #fromKey(ResourceLocation, String, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
+  @NonExtendable
   default T fromKey(ResourceLocation name, String key) {
     return fromKey(name, key, TypedMap.EMPTY);
   }
@@ -62,10 +64,16 @@ public interface ResourceLocationLoadable<T> extends StringLoadable<T> {
    * @return  String representation of the object.
    * @throws RuntimeException  if unable to serialize this to a string
    */
-  ResourceLocation getKey(T object);
+  ResourceLocation getKey(T object, TypedMap context);
+
+  /** same as {@link #getKey(Object, TypedMap)} but passes {@link TypedMap#EMPTY} as context. */
+  @NonExtendable
+  default ResourceLocation getKey(T object) {
+    return getKey(object, TypedMap.EMPTY);
+  }
 
   @Override
-  default String getString(T object) {
-    return getKey(object).toString();
+  default String getString(T object, TypedMap context) {
+    return getKey(object, context).toString();
   }
 }

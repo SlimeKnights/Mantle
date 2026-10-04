@@ -21,8 +21,8 @@ public record ConstantField<T>(T fromJson, T fromBuffer) implements RecordField<
   }
 
   @Override
-  public void serialize(Object parent, JsonObject json) {}
+  public void serializeInto(Object parent, JsonObject json, TypedMap context) {}
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Object parent) {}
+  public void encode(RegistryFriendlyByteBuf buffer, Object parent, TypedMap context) {}
 }

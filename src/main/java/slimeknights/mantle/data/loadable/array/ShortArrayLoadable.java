@@ -34,14 +34,14 @@ public record ShortArrayLoadable<T extends Number>(Loadable<T> base, int minSize
   }
 
   @Override
-  public JsonElement serializeFirst(short[] object) {
-    return base.serialize(mapper.get(object[0]));
+  public JsonElement serializeFirst(short[] object, TypedMap context) {
+    return base.serialize(mapper.get(object[0]), context);
   }
 
   @Override
-  public void serializeAll(JsonArray array, short[] object) {
+  public void serializeAll(JsonArray array, short[] object, TypedMap context) {
     for (short element : object) {
-      array.add(base.serialize(mapper.get(element)));
+      array.add(base.serialize(mapper.get(element), context));
     }
   }
 
@@ -56,10 +56,10 @@ public record ShortArrayLoadable<T extends Number>(Loadable<T> base, int minSize
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, short[] array) {
+  public void encode(RegistryFriendlyByteBuf buffer, short[] array, TypedMap context) {
     buffer.writeVarInt(array.length);
     for (short element : array) {
-      base.encode(buffer, mapper.get(element));
+      base.encode(buffer, mapper.get(element), context);
     }
   }
 

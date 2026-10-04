@@ -45,8 +45,8 @@ public record TryDirectField<T,P>(Loadable<T> loadable, String key, Function<P,T
   }
 
   @Override
-  public void serialize(P parent, JsonObject json) {
-    JsonElement element = loadable.serialize(getter.apply(parent));
+  public void serializeInto(P parent, JsonObject json, TypedMap context) {
+    JsonElement element = loadable.serialize(getter.apply(parent), context);
     if (element.isJsonObject()) {
       JsonObject serialized = element.getAsJsonObject();
       // if the serialized element contains the key, we cannot store it directly as that will confuse deserializing

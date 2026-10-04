@@ -17,7 +17,7 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   }
 
   @Override
-  public JsonElement serialize(Ingredient object) {
+  public JsonElement serialize(Ingredient object, TypedMap context) {
     if (object.isEmpty() && this == DISALLOW_EMPTY) {
       throw new IllegalArgumentException("Ingredient cannot be empty");
     }
@@ -30,7 +30,7 @@ public enum IngredientLoadable implements Loadable<Ingredient> {
   }
 
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, Ingredient object) {
+  public void encode(RegistryFriendlyByteBuf buffer, Ingredient object, TypedMap context) {
     object.toNetwork(buffer);
   }
 }

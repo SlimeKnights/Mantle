@@ -59,8 +59,11 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     return null;
   }
 
-  /** Writes this output to JSON */
-  public abstract void serialize(JsonObject json);
+  /**
+   * Writes this output to JSON
+   * @apiNote use {@link Loadable} for serialization.
+   */
+  protected abstract void serialize(JsonObject json, TypedMap context);
 
   /**
    * Creates a new output for the given stack
@@ -139,9 +142,9 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    protected void serialize(JsonObject json, TypedMap context) {
       if (amount > 0) {
-        json.add("fluid", Loadables.FLUID.serialize(this.fluid));
+        json.add("fluid", Loadables.FLUID.serialize(this.fluid, context));
       }
       json.addProperty("amount", amount);
     }
@@ -163,8 +166,8 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     }
 
     @Override
-    public void serialize(JsonObject json) {
-      FluidStackLoadable.OPTIONAL_STACK_DATA.serialize(stack, json);
+    protected void serialize(JsonObject json, TypedMap context) {
+      FluidStackLoadable.OPTIONAL_STACK_DATA.serializeInto(stack, json, context);
     }
   }
 
@@ -199,13 +202,13 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    protected void serialize(JsonObject json, TypedMap context) {
       if (amount > 0) {
         json.addProperty("tag", tag.location().toString());
       }
       json.addProperty("amount", amount);
       if (amount > 0 && !components.isEmpty()) {
-        json.add("components", Loadables.DATA_COMPONENTS.serialize(components));
+        json.add("components", Loadables.DATA_COMPONENTS.serialize(components, context));
       }
     }
   }
@@ -243,11 +246,11 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     }
 
     @Override
-    public void serialize(FluidOutput output, JsonObject json) {
+    public void serializeInto(FluidOutput output, JsonObject json, TypedMap context) {
       if (nonEmpty && output.isEmpty()) {
         throw new IllegalArgumentException("FluidOutput cannot be empty for this recipe");
       }
-      output.serialize(json);
+      output.serialize(json, context);
     }
 
     @Override
@@ -256,8 +259,8 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     }
 
     @Override
-    public void encode(RegistryFriendlyByteBuf buffer, FluidOutput object) {
-      stack.encode(buffer, object.get());
+    public void encode(RegistryFriendlyByteBuf buffer, FluidOutput object, TypedMap context) {
+      stack.encode(buffer, object.get(), context);
     }
 
 

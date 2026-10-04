@@ -141,7 +141,7 @@ public abstract class RegistryDataMapProvider<R,D> extends GenericDataProvider {
     @Override
     public JsonObject get() {
       JsonObject json = new JsonObject();
-      loadable.serialize(data, json);
+      loadable.serializeInto(data, json);
       return json;
     }
 

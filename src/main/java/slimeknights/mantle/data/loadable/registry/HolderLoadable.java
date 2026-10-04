@@ -18,7 +18,7 @@ public interface HolderLoadable<T> extends ResourceLocationLoadable<Holder<T>> {
   StreamCodec<RegistryFriendlyByteBuf,Holder<T>> streamCodec();
 
   @Override
-  default ResourceLocation getKey(Holder<T> holder) {
+  default ResourceLocation getKey(Holder<T> holder, TypedMap context) {
     ResourceKey<T> key = holder.getKey();
     if (key != null) {
       return key.location();
@@ -32,7 +32,7 @@ public interface HolderLoadable<T> extends ResourceLocationLoadable<Holder<T>> {
   }
 
   @Override
-  default void encode(RegistryFriendlyByteBuf buffer, Holder<T> holder) {
+  default void encode(RegistryFriendlyByteBuf buffer, Holder<T> holder, TypedMap context) {
     streamCodec().encode(buffer, holder);
   }
 }

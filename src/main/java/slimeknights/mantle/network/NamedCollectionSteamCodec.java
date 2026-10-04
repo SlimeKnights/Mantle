@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** Helper for creating packets using {@link Streamable} with objects that know their own ID but receive it via {@link TypedMap} context. */
+@SuppressWarnings("unused")  // API
 public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends StreamCodec<RegistryFriendlyByteBuf, Collection<T>> {
   /** Gets the name to use in any errors related to this packet. */
   String debugName();
@@ -24,7 +25,12 @@ public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends Stre
   /** Gets the streamable instance for reading and writing the object. */
   Streamable<T> streamable();
 
-  /** Gets the context for the given ID. By default, includes  */
+  /** Gets the context without ID. Used for both encoding and decoding. */
+  default TypedMapBuilder prepareContext(RegistryAccess access) {
+    return TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, access);
+  }
+
+  /** Gets the context for the given ID. By default, includes ID, debug, and registry lookup. Used specifically on decoding. */
   default TypedMap makeContext(ResourceLocation id, RegistryAccess access) {
     return TypedMapBuilder.builder()
       .put(ContextKey.ID, id)
@@ -35,15 +41,17 @@ public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends Stre
 
   @Override
   default void encode(RegistryFriendlyByteBuf buffer, Collection<T> collection) {
+    TypedMap context = prepareContext(buffer.registryAccess()).build();
     Streamable<T> streamable = streamable();
     buffer.writeVarInt(collection.size());
     for (T value : collection) {
-      buffer.writeResourceLocation(value.getId());
+      ResourceLocation id = value.getId();
+      buffer.writeResourceLocation(id);
       // add more context to error message and ensure its logged
       try {
-        streamable.encode(buffer, value);
+        streamable.encode(buffer, value, context);
       } catch (RuntimeException e) {
-        Mantle.logger.error("Failed to encode {} with ID {}", debugName(), value.getId(), e);
+        Mantle.logger.error("Failed to encode {} with ID {}", debugName(), id, e);
         // can't recover as packet has too little data for what it said
         throw e;
       }

@@ -90,14 +90,14 @@ public class DefaultingLoaderRegistry<T extends IHaveLoader> extends GenericLoad
 
   @SuppressWarnings("unchecked")  // the cast is safe here as its just doing a map lookup, shouldn't cause harm if it fails. Besides, the loader has to extend T to work
   @Override
-  public void encode(RegistryFriendlyByteBuf buffer, T src) {
+  public void encode(RegistryFriendlyByteBuf buffer, T src, TypedMap context) {
     if (src == defaultInstance) {
       loaders.encodeOptional(buffer, null);
       return;
     }
     RecordLoadable<? extends IHaveLoader> loader = src.getLoader();
     loaders.encodeOptional(buffer, (RecordLoadable<? extends T>)loader);
-    encode(loader, buffer, src);
+    encode(loader, buffer, src, context);
   }
 
   @Override
