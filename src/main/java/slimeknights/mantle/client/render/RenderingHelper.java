@@ -117,7 +117,7 @@ public class RenderingHelper {
       matrices.pushPose();
       matrices.translate(delta.getX() * i, delta.getY() * i, delta.getZ() * i);
       for (FluidCuboid cube : faucetFluid.getFluids(direction)) {
-        FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, direction == Direction.UP);
+        FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, false);
       }
       matrices.popPose();
     } while (faucetFluid.isContinued());
