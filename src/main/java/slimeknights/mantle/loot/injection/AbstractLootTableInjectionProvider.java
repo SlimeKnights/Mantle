@@ -1,13 +1,14 @@
 package slimeknights.mantle.loot.injection;
 
 import com.google.gson.JsonObject;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import slimeknights.mantle.data.GenericDataProvider;
+import slimeknights.mantle.data.GenericRegistryDataProvider;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,24 +16,25 @@ import java.util.concurrent.CompletableFuture;
 
 /** Data provider for adding new loot table injections */
 @SuppressWarnings("unused") // API
-public abstract class AbstractLootTableInjectionProvider extends GenericDataProvider {
+public abstract class AbstractLootTableInjectionProvider extends GenericRegistryDataProvider {
   private final List<Builder> builders = new ArrayList<>();
   private final String domain;
 
-  public AbstractLootTableInjectionProvider(PackOutput output, String domain) {
-    super(output, Target.DATA_PACK, LootTableInjector.FOLDER);
+  public AbstractLootTableInjectionProvider(PackOutput output, String domain, CompletableFuture<HolderLookup.Provider> registries) {
+    super(output, LootTableInjector.FOLDER, registries);
     this.domain = domain;
   }
 
   /** Method to add all relevant tables */
-  protected abstract void addTables();
+  protected abstract void addTables(HolderLookup.Provider lookup);
 
   @Override
-  public final CompletableFuture<?> run(CachedOutput output) {
-    addTables();
+  public final CompletableFuture<?> run(CachedOutput output, HolderLookup.Provider lookup) {
+    addTables(lookup);
+    TypedMap context = buildContext(lookup);
     // add all builders to the output
     return allOf(builders.stream().map(builder -> {
-      JsonObject json = LootTableInjection.LOADABLE.serialize(builder.build()).getAsJsonObject();
+      JsonObject json = LootTableInjection.LOADABLE.serialize(builder.build(), context).getAsJsonObject();
       if (builder.conditions.length > 0) {
         json.add("conditions", JsonHelper.serializeArray(ICondition.CODEC, builder.conditions));
       }

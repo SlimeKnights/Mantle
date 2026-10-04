@@ -1,6 +1,7 @@
 package slimeknights.mantle.fluid.transfer;
 
 import com.google.gson.JsonElement;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
@@ -18,6 +19,7 @@ import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,10 +51,10 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericData
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidOutput fill, FluidIngredient drain, boolean nbt, ICondition... conditions) {
-    if (nbt) {
-      addTransfer(prefix + "empty", new EmptyFluidWithNBTTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill), conditions);
-      addTransfer(prefix + "fill", new FillFluidWithNBTTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain), conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidOutput fill, FluidIngredient drain, List<DataComponentType<?>> copy, ICondition... conditions) {
+    if (!copy.isEmpty()) {
+      addTransfer(prefix + "empty", new EmptyFluidWithNBTTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill, copy), conditions);
+      addTransfer(prefix + "fill", new FillFluidWithNBTTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain, copy), conditions);
     } else {
       addTransfer(prefix + "empty", new EmptyFluidContainerTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill), conditions);
       addTransfer(prefix + "fill", new FillFluidContainerTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain), conditions);
@@ -60,18 +62,18 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericData
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, boolean nbt, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, FluidOutput.fromFluid(fluid, amount), FluidIngredient.of(tag, amount), nbt, conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
+    addFillEmpty(prefix, item, container, FluidOutput.fromFluid(fluid, amount), FluidIngredient.of(tag, amount), copy, conditions);
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, TagKey<Fluid> tag, int amount, boolean nbt, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, FluidOutput.fromTag(tag, amount), FluidIngredient.of(tag, amount), nbt, conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, TagKey<Fluid> tag, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
+    addFillEmpty(prefix, item, container, FluidOutput.fromTag(tag, amount), FluidIngredient.of(tag, amount), copy, conditions);
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidObject<?> fluid, int amount, boolean nbt, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, fluid.result(amount), fluid.ingredient(amount), nbt, conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidObject<?> fluid, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
+    addFillEmpty(prefix, item, container, fluid.result(amount), fluid.ingredient(amount), copy, conditions);
   }
 
   @Override

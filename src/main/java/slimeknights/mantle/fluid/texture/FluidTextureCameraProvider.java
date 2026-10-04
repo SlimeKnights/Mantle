@@ -2,14 +2,15 @@ package slimeknights.mantle.fluid.texture;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.data.client.DeanimateTextureGenerator;
 
 import java.util.Map.Entry;
 import java.util.Set;
 
 /** Generates fluid camera textures using the first frame of the still texture */
+@SuppressWarnings("unused")  // API
 public class FluidTextureCameraProvider extends DeanimateTextureGenerator {
   private final AbstractFluidTextureProvider provider;
   /** Fluid types from the provider to ignore */

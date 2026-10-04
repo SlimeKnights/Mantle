@@ -12,7 +12,7 @@ import net.minecraft.data.PackOutput.Target;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.GenericDataProvider;
 
@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 /** Data generator to create png image files */
+@SuppressWarnings("unused")  // API
 public abstract class GenericTextureGenerator extends GenericDataProvider {
   @Nullable
   protected final ExistingFileHelper existingFileHelper;
