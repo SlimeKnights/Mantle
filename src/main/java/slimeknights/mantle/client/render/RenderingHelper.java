@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -105,6 +106,8 @@ public class RenderingHelper {
    */
   public static void renderFaucetFluids(LevelAccessor world, BlockPos pos, Direction direction, PoseStack matrices, VertexConsumer buffer, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light) {
     int i = 0;
+    Vec3i delta = direction.getNormal();
+
     FaucetFluid faucetFluid;
     do {
       // get the faucet data for the block
@@ -112,9 +115,9 @@ public class RenderingHelper {
       faucetFluid = FaucetFluid.REGISTRY.get(world.getBlockState(pos.below(i)));
       // render all down cubes with the given offset
       matrices.pushPose();
-      matrices.translate(0, -i, 0);
+      matrices.translate(delta.getX() * i, delta.getY() * i, delta.getZ() * i);
       for (FluidCuboid cube : faucetFluid.getFluids(direction)) {
-        FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, false);
+        FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, direction == Direction.UP);
       }
       matrices.popPose();
     } while (faucetFluid.isContinued());
