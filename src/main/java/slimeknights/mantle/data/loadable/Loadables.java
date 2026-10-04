@@ -3,6 +3,7 @@ package slimeknights.mantle.data.loadable;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
@@ -66,6 +68,7 @@ public class Loadables {
   public static final ResourceLocationLoadable<ParticleType<?>> PARTICLE_TYPE = new RegistryLoadable<>(BuiltInRegistries.PARTICLE_TYPE);
   public static final ResourceLocationLoadable<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new RegistryLoadable<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
   public static final ResourceLocationLoadable<RecipeType<?>> RECIPE_TYPE = new RegistryLoadable<>(BuiltInRegistries.RECIPE_TYPE);
+  public static final ResourceLocationLoadable<DataComponentType<?>> DATA_COMPONENT_TYPE = new RegistryLoadable<>(BuiltInRegistries.DATA_COMPONENT_TYPE);
 
   /* Non-default registries */
   public static final StringLoadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid cannot be empty");
@@ -78,7 +81,6 @@ public class Loadables {
   /* Datapack registry holders - require a lookup as context to use. */
   public static final HolderLoadable<Enchantment> ENCHANTMENT = new DatapackRegistryLoadable<>(Registries.ENCHANTMENT);
   public static final HolderLoadable<DamageType> DAMAGE_TYPE = new DatapackRegistryLoadable<>(Registries.DAMAGE_TYPE);
-
 
   /* Tag keys */
   public static final StringLoadable<TagKey<Fluid>> FLUID_TAG = tagKey(Registries.FLUID);
@@ -94,9 +96,14 @@ public class Loadables {
   /* Resource keys */
   public static final StringLoadable<ResourceKey<DamageType>> DAMAGE_TYPE_KEY = resourceKey(Registries.DAMAGE_TYPE);
 
-  /* Registry codecs */
+  /* Registry access codecs */
   public static final Loadable<DataComponentPatch> DATA_COMPONENTS = new CodecLoadable.Registry<>(DataComponentPatch.CODEC, DataComponentPatch.STREAM_CODEC);
   public static final Loadable<LootPoolEntryContainer> LOOT_ENTRY = new CodecLoadable.Registry<>(LootPoolEntries.CODEC);
+  /* Ingredients */
+  /** Loadable for an item ingredient allowing empty. */
+  public static final Loadable<Ingredient> ITEM_INGREDIENT = new CodecLoadable.Registry<>(Ingredient.CODEC, Ingredient.CONTENTS_STREAM_CODEC);
+  /** Loadable for an item ingredient disallowing empty. */
+  public static final Loadable<Ingredient> ITEM_INGREDIENT_NONEMPTY = new CodecLoadable.Registry<>(Ingredient.CODEC_NONEMPTY, Ingredient.CONTENTS_STREAM_CODEC);
 
   /** Loadable for a rotation value, from 0 to 270 */
   public static final Loadable<Integer> ROTATION = new IntLoadable(0, 270, IntNetwork.SHORT).validate((value, error) -> {

@@ -7,7 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.data.loadable.common.IngredientLoadable;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
@@ -26,7 +26,7 @@ public class SizedIngredient implements Predicate<ItemStack> {
   public static final SizedIngredient EMPTY = of(Ingredient.EMPTY, 0);
 
   public static final RecordLoadable<SizedIngredient> LOADABLE = RecordLoadable.create(
-    IngredientLoadable.DISALLOW_EMPTY.tryDirectField("ingredient", SizedIngredient::getIngredient, "amount_needed"),
+    Loadables.ITEM_INGREDIENT_NONEMPTY.tryDirectField("ingredient", SizedIngredient::getIngredient, "amount_needed"),
     IntLoadable.FROM_ONE.defaultField("amount_needed", 1, SizedIngredient::getAmountNeeded),
     SizedIngredient::new);
 
