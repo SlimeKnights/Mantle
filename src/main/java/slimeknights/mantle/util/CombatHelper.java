@@ -271,7 +271,7 @@ public class CombatHelper {
               double entityReachSq = Mth.square(player.getEntityReach());
               if (living != player && living != targetLiving && !player.isAlliedTo(living) && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker()) && player.distanceToSqr(living) < entityReachSq) {
                 living.knockback(0.4f, Mth.sin(player.getYRot() * TO_RADIAN), -Mth.cos(player.getYRot() * TO_RADIAN));
-                living.hurt(player.damageSources().playerAttack(player), sweepDamage);
+                living.hurt(damageSource, sweepDamage);
               }
             }
 
@@ -290,10 +290,8 @@ public class CombatHelper {
           if (critical) {
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, player.getSoundSource(), 1.0F, 1.0F);
             player.crit(target);
-          } else if (fullyCharged) {
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, player.getSoundSource(), 1.0F, 1.0F);
-          } else {
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_WEAK, player.getSoundSource(), 1.0F, 1.0F);
+          } else if (!canSweep) {
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(), fullyCharged ? SoundEvents.PLAYER_ATTACK_STRONG : SoundEvents.PLAYER_ATTACK_WEAK, player.getSoundSource(), 1, 1);
           }
           if (enchantmentDamage > 0.0F) {
             player.magicCrit(target);
