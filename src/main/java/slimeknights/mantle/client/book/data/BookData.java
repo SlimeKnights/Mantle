@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")  // API
@@ -36,6 +37,13 @@ public class BookData implements IDataItem, BookScreenOpener {
   public transient ArrayList<SectionData> sections = new ArrayList<>();
   public transient AppearanceData appearance = new AppearanceData();
   public transient HashMap<String, String> strings = new HashMap<>();
+  /**
+   * Translations from the book's English language file, used by {@link #translate(String)} as a last resort for keys missing from {@link #strings}.
+   * Holds only the keys {@link #strings} lacks, and is left empty when English is the selected language.
+   * Kept out of {@link #strings} as the presence of a key there doubles as a flag for optional translations, notably page title overrides and listing subtext.
+   * Merging the two maps would make those elements show up in English instead of staying absent.
+   */
+  public transient HashMap<String, String> fallbackStrings = new HashMap<>();
   public transient Font fontRenderer;
   private transient boolean initialized = false;
 
@@ -64,7 +72,11 @@ public class BookData implements IDataItem, BookScreenOpener {
       this.initialized = true;
       this.sections.clear();
       this.strings.clear();
+      this.fallbackStrings.clear();
       this.appearance = new AppearanceData();
+
+      // English is only worth loading as a fallback when it is not the language being displayed
+      boolean loadEnglishFallback = !BookRepository.DEFAULT_LANGUAGE.equals(BookRepository.getSelectedLanguage());
 
       for (BookRepository repo : this.repositories) {
         try {
@@ -100,27 +112,20 @@ public class BookData implements IDataItem, BookScreenOpener {
         ResourceLocation languageLocation = repo.getResourceLocation("language.lang");
 
         if (repo.resourceExists(languageLocation)) {
-          try {
-            Resource resource = repo.getResource(languageLocation);
-            if (resource != null) {
-              BufferedReader br = new BufferedReader(new InputStreamReader(resource.open(), StandardCharsets.UTF_8));
-              String next = br.readLine();
+          loadStrings(repo, languageLocation, this.strings);
 
-              while (next != null) {
-                if (!next.startsWith("//") && next.contains("=")) {
-                  String key = next.substring(0, next.indexOf('='));
-                  String value = next.substring(next.indexOf('=') + 1);
-
-                  this.strings.put(key, value);
-                }
-
-                next = br.readLine();
-              }
+          if (loadEnglishFallback) {
+            // the book may have no file for the selected language at all, in which case the cascade above already landed on English
+            ResourceLocation fallbackLocation = repo.getLanguageResourceLocation("language.lang", BookRepository.DEFAULT_LANGUAGE);
+            if (fallbackLocation != null && !fallbackLocation.equals(languageLocation)) {
+              loadStrings(repo, fallbackLocation, this.fallbackStrings);
             }
-          } catch (Exception ignored) {
           }
         }
       }
+
+      // the fallback is only ever read for keys the selected language is missing, so drop everything the language already defines to save memory
+      this.fallbackStrings.keySet().removeAll(this.strings.keySet());
 
       // set unicode font if requested
       if (this.appearance.uniformFont) {
@@ -194,6 +199,29 @@ public class BookData implements IDataItem, BookScreenOpener {
     }
 
     Mantle.logger.info("Finished loading book");
+  }
+
+  /** Reads every key value pair from the given language file into the given map */
+  private static void loadStrings(BookRepository repo, ResourceLocation location, Map<String, String> strings) {
+    try {
+      Resource resource = repo.getResource(location);
+      if (resource != null) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(resource.open(), StandardCharsets.UTF_8));
+        String next = br.readLine();
+
+        while (next != null) {
+          if (!next.startsWith("//") && next.contains("=")) {
+            String key = next.substring(0, next.indexOf('='));
+            String value = next.substring(next.indexOf('=') + 1);
+
+            strings.put(key, value);
+          }
+
+          next = br.readLine();
+        }
+      }
+    } catch (Exception ignored) {
+    }
   }
 
   /** Finds the section with the given name, ignoring advancements */
@@ -342,9 +370,12 @@ public class BookData implements IDataItem, BookScreenOpener {
     return visible;
   }
 
-  /** Translates the given string using the book language */
+  /** Translates the given string using the book language, falling back to English and then to the key itself */
   public String translate(String string) {
     String out = this.strings.get(string);
+    if (out == null) {
+      out = this.fallbackStrings.get(string);
+    }
     return out != null ? out : string;
   }
 

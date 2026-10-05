@@ -36,31 +36,14 @@ public class FileRepository extends BookRepository {
     }
 
     if (!path.contains(":")) {
-      String langPath = null;
-
-      //noinspection ConstantConditions - this was proven to be null once
-      if (Minecraft.getInstance().getLanguageManager() != null && Minecraft.getInstance().getLanguageManager().getSelected() != null) {
-        langPath = Minecraft.getInstance().getLanguageManager().getSelected();
-      }
-
-      String defaultLangPath = "en_us";
-
-      ResourceLocation res;
-
       // TODO: this can be optimized if we return the resource instead of the location, how feasible is that in practice?
-      //noinspection ConstantConditions - see above
-      if (langPath != null) {
-        res = new ResourceLocation(this.location + "/" + langPath + "/" + path);
-        if (this.resourceExists(res)) {
-          return res;
-        }
-      }
-      res = new ResourceLocation(this.location + "/" + defaultLangPath + "/" + path);
-      if (this.resourceExists(res)) {
+      ResourceLocation res = this.getLocalized(getSelectedLanguage(), path);
+      if (res != null) {
         return res;
       }
-      res = new ResourceLocation(this.location + "/" + path);
-      if (this.resourceExists(res)) {
+      // English, then the language agnostic root
+      res = this.getLanguageResourceLocation(path, DEFAULT_LANGUAGE);
+      if (res != null) {
         return res;
       }
     } else {
@@ -71,6 +54,31 @@ public class FileRepository extends BookRepository {
     }
 
     return safe ? new ResourceLocation("") : null;
+  }
+
+  @Nullable
+  @Override
+  public ResourceLocation getLanguageResourceLocation(@Nullable String path, String language) {
+    // paths with a namespace point at an exact file, so they have no language variants
+    if (path == null || path.contains(":")) {
+      return null;
+    }
+
+    ResourceLocation res = this.getLocalized(language, path);
+    if (res != null) {
+      return res;
+    }
+
+    // books are allowed to skip the language folder, those files act as the book's default language
+    res = new ResourceLocation(this.location + "/" + path);
+    return this.resourceExists(res) ? res : null;
+  }
+
+  /** Gets the location of the given path within the given language folder, or null if it does not exist */
+  @Nullable
+  private ResourceLocation getLocalized(String language, String path) {
+    ResourceLocation res = new ResourceLocation(this.location + "/" + language + "/" + path);
+    return this.resourceExists(res) ? res : null;
   }
 
   @Override
