@@ -156,17 +156,16 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
     /* Block */
 
     /** Creates the block form using the given supplier */
-    @SuppressWarnings({"unchecked", "rawtypes"})  // if you are calling this method, you must have a flowing fluid by the end, we throw later if not
-    public Builder block(Function<Supplier<? extends FlowingFluid>, LiquidBlock> constructor) {
+    public Builder block(Function<FlowingFluid, LiquidBlock> constructor) {
       if (this.block != null) {
         throw new IllegalStateException("Block already created for " + name);
       }
-      return block(blockRegister.register(name + "_fluid", () -> constructor.apply((Supplier<FlowingFluid>)(Supplier)stillDelayed)));
+      return block(blockRegister.register(name + "_fluid", () -> constructor.apply((FlowingFluid) stillDelayed.get())));
     }
 
     /** Creates the default block from the given material and light level */
     public Builder block(MapColor color, int lightLevel) {
-      return block(sup -> new LiquidBlock(sup.get(), createProperties(color, lightLevel)));
+      return block(fluid -> new LiquidBlock(fluid, createProperties(color, lightLevel)));
     }
 
     /** Creates a block that lights entities on fire and damages them over time */
