@@ -18,13 +18,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 import java.util.Map;
 
 /** Fluid where up is down and down is up */
-public abstract class InvertedFluid extends ForgeFlowingFluid {
+public abstract class InvertedFluid extends BaseFlowingFluid {
   protected InvertedFluid(Properties properties) {
     super(properties);
   }
@@ -113,7 +113,7 @@ public abstract class InvertedFluid extends ForgeFlowingFluid {
       BlockState sideBlock = level.getBlockState(side);
       FluidState sideFluid = sideBlock.getFluidState();
       if (sideFluid.getType().isSame(this) && this.canPassThroughWall(direction, level, pos, block, side, sideBlock)) {
-        if (sideFluid.isSource() && ForgeEventFactory.canCreateFluidSource(level, side, sideBlock, sideFluid.canConvertToSource(level, side))) {
+        if (sideFluid.isSource() && EventHooks.canCreateFluidSource(level, side, sideBlock)) {
           sourceSides++;
         }
         maxSide = Math.max(maxSide, sideFluid.getAmount());
@@ -153,11 +153,12 @@ public abstract class InvertedFluid extends ForgeFlowingFluid {
         });
         BlockState sideBlock = state.getFirst();
         FluidState sideFluid = state.getSecond();
-        if (this.canPassThrough(level, this.getFlowing(), spreadPos, spreadBlock, horizontal, side, sideBlock, sideFluid)) {
+        Fluid flowing = getFlowing();
+        if (this.canPassThrough(level, flowing, spreadPos, spreadBlock, horizontal, side, sideBlock, sideFluid)) {
           boolean isWaterHole = waterHoleCache.computeIfAbsent(key, k -> {
             BlockPos above = side.above();
             BlockState aboveState = level.getBlockState(above);
-            return this.isWaterHole(level, this.getFlowing(), side, sideBlock, above, aboveState);
+            return this.isWaterHole(level, flowing, side, sideBlock, above, aboveState);
           });
           if (isWaterHole) {
             return distance;
