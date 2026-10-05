@@ -81,7 +81,7 @@ public class ExtraHeartRenderHandler {
   @SubscribeEvent(priority = EventPriority.LOW)
   public void renderHealthbar(RenderGuiLayerEvent.Pre event) {
     HeartRenderer renderer = Config.HEART_RENDERER.get();
-    if (renderer == HeartRenderer.DISABLE || event.isCanceled() || event.getName() != VanillaGuiLayers.PLAYER_HEALTH) {
+    if (renderer == HeartRenderer.DISABLE || event.isCanceled() || event.getName() != VanillaGuiLayers.PLAYER_HEALTH || this.mc.gameMode == null || !this.mc.gameMode.canHurtPlayer()) {
       return;
     }
     // ensure its visible
