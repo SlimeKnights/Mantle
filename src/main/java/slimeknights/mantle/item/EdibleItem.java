@@ -1,39 +1,70 @@
 package slimeknights.mantle.item;
 
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.food.FoodProperties.PossibleEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.util.TranslationHelper;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+/** Food item that includes food effects in the tooltip and easily overriding the food animation. */
+@SuppressWarnings("unused")  // API
 public class EdibleItem extends Item {
-  public EdibleItem(FoodProperties foodIn) {
-    this(new Properties().food(foodIn));
+  private final UseAnim useAnim;
+  public EdibleItem(UseAnim useAnim, Item.Properties properties) {
+    super(properties);
+    this.useAnim = useAnim;
+    Objects.requireNonNull(components().get(DataComponents.FOOD), "Must set food to make an EdibleItem");
   }
 
   public EdibleItem(Item.Properties properties) {
-    super(properties);
-    Objects.requireNonNull(foodProperties, "Must set food to make an EdibleItem");
+    this(UseAnim.EAT, properties);
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-    TranslationHelper.addOptionalTooltip(stack, tooltip);
-    // TODO: use ContainerFoodItem helper for more potion like effects?
-    for (Pair<MobEffectInstance, Float> pair : Objects.requireNonNull(stack.getItem().getFoodProperties(stack, null)).getEffects()) {
-      if (pair.getFirst() != null) {
-        tooltip.add(Component.literal(I18n.get(pair.getFirst().getDescriptionId()).trim()).withStyle(ChatFormatting.GRAY));
-      }
+  public UseAnim getUseAnimation(ItemStack stack) {
+    return useAnim;
+  }
+
+  /** Adds effects to the tooltip */
+  public static void addEffectTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip) {
+    FoodProperties food = stack.getFoodProperties(null);
+    if (food == null) {
+      return;
     }
+    float ticksPerSecond = 20;
+    Level level = context.level();
+    if (level != null) {
+      ticksPerSecond = level.tickRateManager().tickrate();
+    }
+
+    // add effects to the tooltip, code based on potion items
+    for (PossibleEffect possibleEffect : food.effects()) {
+      MobEffectInstance effect = possibleEffect.effect();
+      MutableComponent mutable = Component.translatable(effect.getDescriptionId());
+      if (effect.getAmplifier() > 0) {
+        mutable = Component.translatable("potion.withAmplifier", mutable, Component.translatable("potion.potency." + effect.getAmplifier()));
+      }
+      if (effect.getDuration() > 20) {
+        mutable = Component.translatable("potion.withDuration", mutable, MobEffectUtil.formatDuration(effect, 1, ticksPerSecond));
+      }
+      tooltip.add(mutable.withStyle(effect.getEffect().value().getCategory().getTooltipFormatting()));
+    }
+  }
+
+  @Override
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    TranslationHelper.addOptionalTooltip(stack, tooltip);
+    addEffectTooltip(stack, context, tooltip);
   }
 }
