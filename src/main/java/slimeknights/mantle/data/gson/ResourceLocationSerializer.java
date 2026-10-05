@@ -7,22 +7,20 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import java.lang.reflect.Type;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /** Extension to Resource Location serializer to change the default mod ID. */
-@RequiredArgsConstructor
-public class ResourceLocationSerializer<T extends ResourceLocation> implements JsonDeserializer<T>, JsonSerializer<T> {
-  private final Function<String,T> constructor;
-  private final String modId;
-
+public record ResourceLocationSerializer<T extends ResourceLocation>(
+  BiFunction<String, String, T> constructor,
+  String modId
+) implements JsonDeserializer<T>, JsonSerializer<T> {
   /** Creates an instance for resource locations */
   public static ResourceLocationSerializer<ResourceLocation> resourceLocation(String modId) {
-    return new ResourceLocationSerializer<>(ResourceLocation::new, modId);
+    return new ResourceLocationSerializer<>(ResourceLocation::fromNamespaceAndPath, modId);
   }
 
   @Override
@@ -32,10 +30,18 @@ public class ResourceLocationSerializer<T extends ResourceLocation> implements J
 
   @Override
   public T deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-    String loc = GsonHelper.convertToString(element, "location");
-    if (!loc.contains(":")) {
-      loc = modId + ":" + loc;
+    String location = GsonHelper.convertToString(element, "location");
+    // if no :, use default namespace
+    int index = location.indexOf(':');
+    if (index == -1) {
+      return constructor.apply(modId, location);
     }
-    return constructor.apply(loc);
+    String path = location.substring(index);
+    // if empty string before :, use default namespace after trimming :
+    if (index > 0) {
+      return constructor.apply(location.substring(0, index), path);
+    } else {
+      return constructor.apply(modId, path);
+    }
   }
 }
