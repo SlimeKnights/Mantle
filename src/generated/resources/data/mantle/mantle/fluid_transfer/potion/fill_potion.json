@@ -1,15 +1,16 @@
 {
-  "type": "mantle:fill_nbt",
+  "type": "mantle:fill_copy_data",
   "conditions": [
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
-      "tag": "forge:potion"
+      "tag": "c:potion"
     }
   ],
+  "copy": "minecraft:potion_contents",
   "fluid": {
     "amount": 250,
-    "tag": "forge:potion"
+    "tag": "c:potion"
   },
   "input": {
     "item": "minecraft:glass_bottle"

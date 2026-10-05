@@ -4,12 +4,12 @@
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
-      "tag": "forge:rabbit_stew"
+      "tag": "c:rabbit_stew"
     }
   ],
   "fluid": {
     "amount": 250,
-    "tag": "forge:rabbit_stew"
+    "tag": "c:rabbit_stew"
   },
   "input": {
     "item": "minecraft:rabbit_stew"

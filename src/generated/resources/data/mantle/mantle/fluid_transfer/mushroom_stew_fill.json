@@ -4,12 +4,12 @@
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
-      "tag": "forge:mushroom_stew"
+      "tag": "c:mushroom_stew"
     }
   ],
   "fluid": {
     "amount": 250,
-    "tag": "forge:mushroom_stew"
+    "tag": "c:mushroom_stew"
   },
   "input": {
     "item": "minecraft:bowl"

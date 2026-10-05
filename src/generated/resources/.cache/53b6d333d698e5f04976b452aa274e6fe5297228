@@ -1,7 +1,7 @@
-// 1.20.1	2026-09-08T04:27:33.972295	Mantle Fluid Tooltip Provider
+// 1.21.1	2026-10-05T15:37:18.2050977	Mantle Fluid Tooltip Provider
 6c39e8c33d64aa609a4e670bd09bdc7b37edb0bf assets/mantle/mantle/fluid_tooltips/buckets.json
 533c075aaa912eb68ef9779052ca7a04f0026b74 assets/mantle/mantle/fluid_tooltips/fallback.json
-453fa8eaae5704fdeb75b18b66968d03e8a82d3c assets/mantle/mantle/fluid_tooltips/honey.json
-f564ae052a472b03932a341758cef43503fe653d assets/mantle/mantle/fluid_tooltips/potion.json
+cdf37fba41c48d059187d8e0bdada78bce61fa47 assets/mantle/mantle/fluid_tooltips/honey.json
+c829c5683b8aa81f53bdc3afb2b0b815d44bb04b assets/mantle/mantle/fluid_tooltips/potion.json
 04298ee7b19639ec15df6b4d417e09e7dd9fbb20 assets/mantle/mantle/fluid_tooltips/soup.json
 294d27b247ab37e41a2922b16b66e9eb30aab451 assets/mantle/mantle/fluid_tooltips/water.json

@@ -4,13 +4,13 @@
   "conditions": [
     {
       "type": "mantle:tag_filled",
-      "tag": "forge:bottles/lingering"
+      "tag": "c:bottles/lingering"
     }
   ],
   "input": {
     "item": "minecraft:lingering_potion"
   },
   "result": {
-    "tag": "forge:bottles/lingering"
+    "tag": "c:bottles/lingering"
   }
 }

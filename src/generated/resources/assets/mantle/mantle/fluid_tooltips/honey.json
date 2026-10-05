@@ -1,7 +1,7 @@
 {
   "fluid": {
     "type": "mantle:tag",
-    "tag": "forge:honey"
+    "tag": "c:honey"
   },
   "units": [
     {

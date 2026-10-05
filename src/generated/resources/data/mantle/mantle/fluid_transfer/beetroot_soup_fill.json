@@ -4,12 +4,12 @@
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
-      "tag": "forge:beetroot_soup"
+      "tag": "c:beetroot_soup"
     }
   ],
   "fluid": {
     "amount": 250,
-    "tag": "forge:beetroot_soup"
+    "tag": "c:beetroot_soup"
   },
   "input": {
     "item": "minecraft:bowl"
