@@ -467,7 +467,7 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public boolean mouseScrolled(double unKnown1, double unKnown2, double scrollDelta) {
+  public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
     if (scrollDelta < 0.0D) {
       nextPage();
       return true;
@@ -476,7 +476,7 @@ public class BookScreen extends Screen {
       return true;
     }
 
-    return super.mouseScrolled(scrollDelta, unKnown1, unKnown2);
+    return super.mouseScrolled(mouseX, mouseY, scrollDelta);
   }
 
   @Override
