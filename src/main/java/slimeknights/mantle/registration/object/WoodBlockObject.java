@@ -78,7 +78,7 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
 
   public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
                          Block log, Block strippedLog, Block wood, Block strippedWood,
-                         Block fence, FenceGateBlock fenceGate, DoorBlock door, TrapDoorBlock trapdoor,
+                         FenceBlock fence, FenceGateBlock fenceGate, DoorBlock door, TrapDoorBlock trapdoor,
                          PressurePlateBlock pressurePlate, ButtonBlock button,
                          StandingSignBlock sign, WallSignBlock wallSign, CeilingHangingSignBlock hangingSign, WallHangingSignBlock wallHangingSign) {
     super(planks, fence);
