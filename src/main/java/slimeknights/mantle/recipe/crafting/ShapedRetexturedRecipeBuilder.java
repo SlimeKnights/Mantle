@@ -4,7 +4,6 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe.Pattern;
 
@@ -57,7 +56,6 @@ public class ShapedRetexturedRecipeBuilder extends ShapedExtensionBuilder<Shaped
     if (!this.key.containsKey(textureKey)) {
       throw new IllegalStateException("Texture references symbol '" + textureKey + "' but it's not defined in the key");
     }
-    ShapedRecipePattern shapedrecipepattern = getPattern();
     output.accept(id,
       new ShapedRetexturedRecipe(group, getBookCategory(), new Pattern(getPattern(), Ingredient.EMPTY, textureKey), result, showNotification, matchAll),
       buildAdvancement(output, id, category.getFolderName())

@@ -1,26 +1,37 @@
 package slimeknights.mantle.recipe.crafting;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import slimeknights.mantle.recipe.MantleRecipes;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
 /** Builder for a shaped recipe with fallbacks */
-@SuppressWarnings("unused")
-@RequiredArgsConstructor(staticName = "fallback")
-public class ShapedFallbackRecipeBuilder {
-  private final ShapedRecipeBuilder base;
+@SuppressWarnings("unused")  // API
+public class ShapedFallbackRecipeBuilder extends ShapedExtensionBuilder<ShapedFallbackRecipeBuilder> {
   private final List<ResourceLocation> alternatives = new ArrayList<>();
+
+  protected ShapedFallbackRecipeBuilder(ItemStack result) {
+    super(result);
+  }
+
+  /** Creates a builder for the given stack */
+  public static ShapedFallbackRecipeBuilder shaped(ItemStack result) {
+    return new ShapedFallbackRecipeBuilder(result);
+  }
+
+  /** Creates a builder for the given item and count */
+  public static ShapedFallbackRecipeBuilder shaped(ItemLike result, int count) {
+    return shaped(new ItemStack(result, count));
+  }
+
+  /** Creates a builder for the given item */
+  public static ShapedFallbackRecipeBuilder shaped(ItemLike result) {
+    return shaped(result, 1);
+  }
 
   /**
    * Adds a single alternative to this recipe. Any matching alternative causes this recipe to fail
@@ -42,52 +53,11 @@ public class ShapedFallbackRecipeBuilder {
     return this;
   }
 
-  /**
-   * Builds the recipe using the output as the name
-   * @param consumer  Recipe consumer
-   */
-  public void build(Consumer<FinishedRecipe> consumer) {
-    base.save(base -> consumer.accept(new Result(base, alternatives)));
-  }
-
-  /**
-   * Builds the recipe using the given ID
-   * @param consumer  Recipe consumer
-   * @param id        Recipe ID
-   */
-  public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
-    base.save(base -> consumer.accept(new Result(base, alternatives)), id);
-  }
-
-  private record Result(FinishedRecipe base, List<ResourceLocation> alternatives) implements FinishedRecipe {
-    @Override
-    public void serializeRecipeData(JsonObject json) {
-      base.serializeRecipeData(json);
-      json.add("alternatives", alternatives.stream()
-                                           .map(ResourceLocation::toString)
-                                           .collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
-    }
-
-    @Override
-    public RecipeSerializer<?> getType() {
-      return MantleRecipes.CRAFTING_SHAPED_FALLBACK.get();
-    }
-
-    @Override
-    public ResourceLocation getId() {
-      return base.getId();
-    }
-
-    @Nullable
-    @Override
-    public JsonObject serializeAdvancement() {
-      return base.serializeAdvancement();
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementId() {
-      return base.getAdvancementId();
-    }
+  @Override
+  public void save(RecipeOutput output, ResourceLocation id) {
+    output.accept(id,
+      new ShapedFallbackRecipe(group, getBookCategory(), getPattern(), result, showNotification, alternatives),
+      buildAdvancement(output, id, category.getFolderName())
+    );
   }
 }
