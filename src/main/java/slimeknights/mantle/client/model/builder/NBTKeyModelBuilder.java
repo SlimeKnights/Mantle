@@ -15,8 +15,15 @@ import slimeknights.mantle.Mantle;
 public class NBTKeyModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private String key = null;
   private ResourceLocation extraTexturesKey = null;
-  public NBTKeyModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
+  public NBTKeyModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
     super(Mantle.getResource("nbt_key"), parent, existingFileHelper);
+  }
+
+  /** @deprecated use {@link #NBTKeyModelBuilder(T, ExistingFileHelper)} */
+  @SuppressWarnings("unused")
+  @Deprecated(forRemoval = true)
+  public NBTKeyModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper) {
+    this(parent, existingFileHelper);
   }
 
   @Override
