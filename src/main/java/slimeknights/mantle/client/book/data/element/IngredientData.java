@@ -16,13 +16,17 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import slimeknights.mantle.client.SafeClientAccess;
 import slimeknights.mantle.client.book.repository.BookRepository;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.recipe.ingredient.SizedIngredient;
+import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.recipe.ingredient.IngredientHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Represents an item or list of items parsed from an ingredient */
@@ -63,7 +67,7 @@ public class IngredientData implements IDataElement {
         continue;
       }
 
-      stacks.addAll(ingredient.getMatchingStacks());
+      Collections.addAll(stacks, ingredient.getItems());
     }
 
     if(ingredients == null || stacks.isEmpty() || !StringUtil.isNullOrEmpty(error)) {
@@ -95,31 +99,35 @@ public class IngredientData implements IDataElement {
 
   public static class Deserializer implements JsonDeserializer<IngredientData> {
     @Override
-    public IngredientData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public IngredientData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext jsonContext) throws JsonParseException {
       IngredientData data = new IngredientData();
+      TypedMap context = ContextKey.registryContext(SafeClientAccess.getRegistryAccess());
 
+      // array - parse each element as an ingredient
       if (json.isJsonArray()) {
         JsonArray array = json.getAsJsonArray();
         data.ingredients = new SizedIngredient[array.size()];
 
-        for(int i = 0; i < array.size(); i++) {
+        for (int i = 0; i < array.size(); i++) {
           try {
-            data.ingredients[i] = readIngredient(array.get(i));
+            data.ingredients[i] = readIngredient(array.get(i), "ingredient[" + i + ']', context);
           } catch (Exception e) {
-            data.ingredients[i] = SizedIngredient.of(Ingredient.of(data.getMissingItem(e.getMessage())));
+            data.ingredients[i] = IngredientHelper.sized(data.getMissingItem(e.getMessage()));
           }
         }
 
         return data;
       }
 
+      // otherwise, parse as a single ingredient
       try {
-        data.ingredients = new SizedIngredient[]{ readIngredient(json) };
+        data.ingredients = new SizedIngredient[]{ readIngredient(json, "ingredient", context) };
       } catch (Exception e) {
         data.error = e.getMessage();
         return data;
       }
 
+      // if it's an object, also fetch the action
       if (json.isJsonObject()) {
         JsonObject object = json.getAsJsonObject();
         if (object.has("action")) {
@@ -137,15 +145,15 @@ public class IngredientData implements IDataElement {
     }
 
     /** Reads the ingredient from a json element */
-    private SizedIngredient readIngredient(JsonElement json) {
+    private SizedIngredient readIngredient(JsonElement json, String key, TypedMap context) {
       if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
-        return SizedIngredient.fromItems(Loadables.ITEM.parseString(json.getAsString(), "item"));
+        return SizedIngredient.of(Loadables.ITEM.parseString(json.getAsString(), key, context), 1);
       }
       if (!json.isJsonObject()) {
         throw new JsonParseException("Must be an array, string or JSON object");
       }
       JsonObject object = json.getAsJsonObject();
-      return SizedIngredient.LOADABLE.deserialize(object);
+      return Loadables.SIZED_ITEM_INGREDIENT.convert(object, key, context);
     }
   }
 }

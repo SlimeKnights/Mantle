@@ -6,6 +6,7 @@ import com.mojang.serialization.JsonOps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -13,8 +14,10 @@ import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMap.Key;
+import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
@@ -45,6 +48,11 @@ public class ContextKey<T> implements Key<T> {
 
 
   /* Helpers */
+
+  /** Builds a context from the given registry lookup */
+  public static TypedMap registryContext(@Nullable HolderLookup.Provider registryLookup) {
+    return TypedMapBuilder.builder().put(REGISTRY_LOOKUP, Objects.requireNonNullElse(registryLookup, RegistryAccess.EMPTY)).build();
+  }
 
   /** Gets dynamic ops for the given context and error factory. */
   public static DynamicOps<JsonElement> createSerializationContext(TypedMap context, ErrorFactory errorFactory) {

@@ -5,10 +5,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.mantle.util.typed.TypedMap;
-import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -34,8 +31,4 @@ public abstract class GenericRegistryDataProvider extends GenericDataProvider {
   /** Runs the data generator with the registry getter resolved. */
   protected abstract CompletionStage<?> run(CachedOutput output, HolderLookup.Provider lookup);
 
-  /** Builds a loadable context with the given lookup provider */
-  public static TypedMap buildContext(HolderLookup.Provider lookup) {
-    return TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, lookup).build();
-  }
 }

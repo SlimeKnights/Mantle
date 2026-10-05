@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.data.GenericRegistryDataProvider;
+import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 
@@ -31,7 +32,7 @@ public abstract class AbstractLootTableInjectionProvider extends GenericRegistry
   @Override
   public final CompletableFuture<?> run(CachedOutput output, HolderLookup.Provider lookup) {
     addTables(lookup);
-    TypedMap context = buildContext(lookup);
+    TypedMap context = ContextKey.registryContext(lookup);
     // add all builders to the output
     return allOf(builders.stream().map(builder -> {
       JsonObject json = LootTableInjection.LOADABLE.serialize(builder.build(), context).getAsJsonObject();

@@ -29,6 +29,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.client.model.util.ModelHelper;
@@ -104,6 +105,8 @@ public class Loadables {
   public static final Loadable<Ingredient> ITEM_INGREDIENT = new CodecLoadable.Registry<>(Ingredient.CODEC, Ingredient.CONTENTS_STREAM_CODEC);
   /** Loadable for an item ingredient disallowing empty. */
   public static final Loadable<Ingredient> ITEM_INGREDIENT_NONEMPTY = new CodecLoadable.Registry<>(Ingredient.CODEC_NONEMPTY, Ingredient.CONTENTS_STREAM_CODEC);
+  /** Loadable for an item ingredient that checks size. */
+  public static final Loadable<SizedIngredient> SIZED_ITEM_INGREDIENT = new CodecLoadable.Registry<>(SizedIngredient.FLAT_CODEC, SizedIngredient.STREAM_CODEC);
 
   /** Loadable for a rotation value, from 0 to 270 */
   public static final Loadable<Integer> ROTATION = new IntLoadable(0, 270, IntNetwork.SHORT).validate((value, error) -> {
