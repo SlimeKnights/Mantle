@@ -16,6 +16,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -130,6 +131,8 @@ public class Loadables {
 
   /** Loadable for vanilla direction values */
   public static final EnumLoadable<Direction> DIRECTION = new EnumLoadable<>(Direction.class);
+  /** Loadable for display contexts values */
+  public static final EnumLoadable<ItemDisplayContext> ITEM_DISPLAY_CONTEXT = new EnumLoadable<>(ItemDisplayContext.class);
 
 
   /* Helpers */

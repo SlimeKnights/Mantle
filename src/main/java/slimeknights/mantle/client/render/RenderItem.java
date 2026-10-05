@@ -13,7 +13,6 @@ import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.datamap.BlockStateDataMapLoader;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.common.DisplayContextLoadable;
 import slimeknights.mantle.data.loadable.common.Vector3fLoadable;
 import slimeknights.mantle.data.loadable.mapping.CollectionLoadable;
 import slimeknights.mantle.data.loadable.primitive.FloatLoadable;
@@ -32,7 +31,7 @@ public class RenderItem {
     FloatLoadable.FROM_ZERO.requiredField("size", RenderItem::getSize),
     Loadables.ROTATION.defaultField("x", 0, RenderItem::getX),
     Loadables.ROTATION.defaultField("y", 0, RenderItem::getY),
-    DisplayContextLoadable.INSTANCE.defaultField("transform", ItemDisplayContext.NONE, RenderItem::getTransform),
+    Loadables.ITEM_DISPLAY_CONTEXT.defaultField("transform", ItemDisplayContext.NONE, RenderItem::getTransform),
     RenderItem::new).validate((value, error) -> {
       if (value.size == 0) {
         return EMPTY;
