@@ -211,7 +211,7 @@ public class HtmlElement extends HtmlGroup {
       StringBuilder minetipBuilder = new StringBuilder();
       this.minetip.toHtml(minetipBuilder, indent + "  ");
       builder.append(" data-minetip-title='")
-        .append(minetipBuilder.toString().replaceAll("'", "&quot;"))
+        .append(minetipBuilder.toString().replaceAll("'", "&#39;"))
         .append('\'');
     }
 
