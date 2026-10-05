@@ -22,7 +22,11 @@ import slimeknights.mantle.recipe.MantleRecipes;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** Simple ingredient checking for an item with a specific potion */
+/**
+ * Simple ingredient checking for an item with a specific potion.
+ * @see PotionDisplayIngredient
+ * @see slimeknights.mantle.recipe.ingredient.fluid.PotionFluidIngredient
+ */
 public record PotionIngredient(Holder<Potion> potion, IngredientItems items) implements ICustomIngredient {
   public static final MapCodec<PotionIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
     BuiltInRegistries.POTION.holderByNameCodec().fieldOf("potion").forGetter(PotionIngredient::potion),
@@ -50,7 +54,7 @@ public record PotionIngredient(Holder<Potion> potion, IngredientItems items) imp
 
   @Override
   public IngredientType<PotionIngredient> getType() {
-    return MantleRecipes.POTION.get();
+    return MantleRecipes.POTION_INGREDIENT.get();
   }
 
   @Override

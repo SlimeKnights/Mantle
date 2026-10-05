@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.List;
@@ -30,8 +31,10 @@ public class MantleCodecs {
     ).apply(instance, (registry, location) -> TagKey.create(RegistryHelper.castKey(registry), location)));
   /** Codec for a block tag */
   public static final Codec<TagKey<Block>> BLOCK_TAG = TagKey.codec(Registries.BLOCK);
-  /** Codec for a block tag */
+  /** Codec for an item tag */
   public static final Codec<TagKey<Item>> ITEM_TAG = TagKey.codec(Registries.ITEM);
+  /** Codec for a fluid tag */
+  public static final Codec<TagKey<Fluid>> FLUID_TAG = TagKey.codec(Registries.FLUID);
 
   /** Creates a codec for a list that serializes to a single element when size 1 */
   private static <E> Codec<List<E>> compactList(Codec<E> codec, Codec<List<E>> listCodec) {

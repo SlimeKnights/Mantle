@@ -78,7 +78,7 @@ public record FluidContainerIngredient(FluidIngredient fluid, int amount, List<I
 
   @Override
   public IngredientType<FluidContainerIngredient> getType() {
-    return MantleRecipes.FLUID_CONTAINER.get();
+    return MantleRecipes.FLUID_CONTAINER_INGREDIENT.get();
   }
 
   @Override

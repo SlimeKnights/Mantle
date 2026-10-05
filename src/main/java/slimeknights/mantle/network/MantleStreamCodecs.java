@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +29,8 @@ public class MantleStreamCodecs {
   public static final StreamCodec<RegistryFriendlyByteBuf, Block> BLOCK = ByteBufCodecs.registry(Registries.BLOCK);
   /** Stream codec for an item */
   public static final StreamCodec<RegistryFriendlyByteBuf, Item> ITEM = ByteBufCodecs.registry(Registries.ITEM);
+  /** Stream codec for a fluid */
+  public static final StreamCodec<RegistryFriendlyByteBuf, Fluid> FLUID = ByteBufCodecs.registry(Registries.FLUID);
   /** Stream codec for a potion holder */
   public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Potion>> POTION = ByteBufCodecs.holderRegistry(Registries.POTION);
 

@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -17,6 +18,7 @@ import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe.Serializer;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.helper.SimpleRecipeSerializer;
+import slimeknights.mantle.recipe.ingredient.fluid.PotionFluidIngredient;
 import slimeknights.mantle.recipe.ingredient.item.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.item.PotionDisplayIngredient;
 import slimeknights.mantle.recipe.ingredient.item.PotionIngredient;
@@ -25,6 +27,7 @@ import slimeknights.mantle.recipe.ingredient.item.PotionIngredient;
 public class MantleRecipes {
   private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(Registries.RECIPE_SERIALIZER, Mantle.modId);
   private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, Mantle.modId);
+  private static final DeferredRegister<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_INGREDIENT_TYPES, Mantle.modId);
 
   private MantleRecipes() {}
 
@@ -32,6 +35,7 @@ public class MantleRecipes {
   public static void init(IEventBus bus) {
     RECIPES.register(bus);
     INGREDIENT_TYPES.register(bus);
+    FLUID_INGREDIENT_TYPES.register(bus);
   }
 
   // crafting
@@ -44,7 +48,10 @@ public class MantleRecipes {
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<CampfireResultRecipe>> CAMPFIRE = RECIPES.register("campfire", () -> LoadableRecipeSerializer.of(CampfireResultRecipe.LOADABLE));
 
   // ingredients
-  public static final DeferredHolder<IngredientType<?>,IngredientType<PotionIngredient>> POTION = INGREDIENT_TYPES.register("potion", () -> new IngredientType<>(PotionIngredient.CODEC, PotionIngredient.STREAM_CODEC));
-  public static final DeferredHolder<IngredientType<?>,IngredientType<PotionDisplayIngredient>> POTION_DISPLAY = INGREDIENT_TYPES.register("potion_display", () -> new IngredientType<>(PotionDisplayIngredient.CODEC, PotionDisplayIngredient.STREAM_CODEC));
-  public static final DeferredHolder<IngredientType<?>,IngredientType<FluidContainerIngredient>> FLUID_CONTAINER = INGREDIENT_TYPES.register("fluid_container", () -> new IngredientType<>(FluidContainerIngredient.CODEC, FluidContainerIngredient.STREAM_CODEC));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<PotionIngredient>> POTION_INGREDIENT = INGREDIENT_TYPES.register("potion", () -> new IngredientType<>(PotionIngredient.CODEC, PotionIngredient.STREAM_CODEC));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<PotionDisplayIngredient>> POTION_DISPLAY_INGREDIENT = INGREDIENT_TYPES.register("potion_display", () -> new IngredientType<>(PotionDisplayIngredient.CODEC, PotionDisplayIngredient.STREAM_CODEC));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<FluidContainerIngredient>> FLUID_CONTAINER_INGREDIENT = INGREDIENT_TYPES.register("fluid_container", () -> new IngredientType<>(FluidContainerIngredient.CODEC, FluidContainerIngredient.STREAM_CODEC));
+
+  // fluid ingredients
+  public static final DeferredHolder<FluidIngredientType<?>,FluidIngredientType<PotionFluidIngredient>> POTION_FLUID_INGREDIENT = FLUID_INGREDIENT_TYPES.register("potion", () -> new FluidIngredientType<>(PotionFluidIngredient.CODEC, PotionFluidIngredient.STREAM_CODEC));
 }

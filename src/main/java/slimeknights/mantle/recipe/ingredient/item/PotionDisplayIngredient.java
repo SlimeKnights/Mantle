@@ -19,7 +19,10 @@ import slimeknights.mantle.recipe.MantleRecipes;
 import java.util.List;
 import java.util.stream.Stream;
 
-/** Ingredient that shows all potion variants on the displayed item list */
+/**
+ * Ingredient that shows all potion variants on the displayed item list
+ * @see PotionIngredient
+ */
 public record PotionDisplayIngredient(IngredientItems items) implements ICustomIngredient {
   public static final MapCodec<PotionDisplayIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
     IngredientItems.CODEC.forGetter(PotionDisplayIngredient::items)
@@ -43,7 +46,7 @@ public record PotionDisplayIngredient(IngredientItems items) implements ICustomI
 
   @Override
   public IngredientType<PotionDisplayIngredient> getType() {
-    return MantleRecipes.POTION_DISPLAY.get();
+    return MantleRecipes.POTION_DISPLAY_INGREDIENT.get();
   }
 
   @Override
