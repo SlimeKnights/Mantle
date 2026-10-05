@@ -145,8 +145,6 @@ public class Mantle {
     } else if (key == Registries.RECIPE_SERIALIZER) {
       // TODO: ingredient migration
 //      CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
-//      CraftingHelper.register(getResource("potion"), PotionIngredient.SERIALIZER);
-//      CraftingHelper.register(getResource("potion_display"), PotionDisplayIngredient.SERIALIZER);
 
       // fluid container transfer
       FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidContainerTransfer.ID, EmptyFluidContainerTransfer.DESERIALIZER);

@@ -63,9 +63,9 @@ public class ItemStackLoadable {
   /** Loadable for a stack that may not be empty with variable count */
   public static final RecordLoadable<ItemStack> REQUIRED_STACK = notEmpty(OPTIONAL_STACK);
   /** Loadable for a stack that may not be empty with components and a count of 1 */
-  public static final RecordLoadable<ItemStack> REQUIRED_ITEM_COMPONENTS = notEmpty(OPTIONAL_ITEM_DATA);
+  public static final RecordLoadable<ItemStack> REQUIRED_ITEM_DATA = notEmpty(OPTIONAL_ITEM_DATA);
   /** Loadable for a stack that may not be empty with variable count and components */
-  public static final RecordLoadable<ItemStack> REQUIRED_STACK_COMPONENTS = notEmpty(OPTIONAL_STACK_DATA);
+  public static final RecordLoadable<ItemStack> REQUIRED_STACK_DATA = notEmpty(OPTIONAL_STACK_DATA);
 
 
   /* Helpers */

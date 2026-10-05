@@ -273,7 +273,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
       // figure out the stack serializer to use based on the two parameters
       // we always do NBT, just those that vary
       if (nonEmpty) {
-        this.stack = readCount ? ItemStackLoadable.REQUIRED_STACK_COMPONENTS : ItemStackLoadable.REQUIRED_ITEM_COMPONENTS;
+        this.stack = readCount ? ItemStackLoadable.REQUIRED_STACK_DATA : ItemStackLoadable.REQUIRED_ITEM_DATA;
       } else {
         this.stack = readCount ? ItemStackLoadable.OPTIONAL_STACK_DATA : ItemStackLoadable.OPTIONAL_ITEM_DATA;
       }

@@ -1,6 +1,7 @@
 package slimeknights.mantle.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -9,6 +10,7 @@ import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
@@ -26,6 +28,8 @@ public class MantleStreamCodecs {
   public static final StreamCodec<RegistryFriendlyByteBuf, Block> BLOCK = ByteBufCodecs.registry(Registries.BLOCK);
   /** Stream codec for an item */
   public static final StreamCodec<RegistryFriendlyByteBuf, Item> ITEM = ByteBufCodecs.registry(Registries.ITEM);
+  /** Stream codec for a potion holder */
+  public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Potion>> POTION = ByteBufCodecs.holderRegistry(Registries.POTION);
 
 
   /* Helpers */

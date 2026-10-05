@@ -1,5 +1,6 @@
 package slimeknights.mantle.data;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,6 +12,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import slimeknights.mantle.util.RegistryHelper;
+
+import java.util.List;
+import java.util.function.Function;
 
 /** This class contains codecs for various vanilla things that we need to use in codecs. */
 public class MantleCodecs {
@@ -28,4 +32,22 @@ public class MantleCodecs {
   public static final Codec<TagKey<Block>> BLOCK_TAG = TagKey.codec(Registries.BLOCK);
   /** Codec for a block tag */
   public static final Codec<TagKey<Item>> ITEM_TAG = TagKey.codec(Registries.ITEM);
+
+  /** Creates a codec for a list that serializes to a single element when size 1 */
+  private static <E> Codec<List<E>> compactList(Codec<E> codec, Codec<List<E>> listCodec) {
+    return Codec.either(listCodec, codec).xmap(
+      either -> either.map(Function.identity(), List::of),
+      list -> list.size() == 1 ? Either.right(list.getFirst()) : Either.left(list)
+    );
+  }
+
+  /** Creates a codec for a list that serializes to a single element when size 1. List size may be as small as 0. */
+  public static <E> Codec<List<E>> compactOrEmptyList(Codec<E> codec) {
+    return compactList(codec, codec.listOf());
+  }
+
+  /** Creates a codec for a list that serializes to a single element when size 1. List size must be at least 1. */
+  public static <E> Codec<List<E>> compactList(Codec<E> codec) {
+    return compactList(codec, codec.listOf(1, Integer.MAX_VALUE));
+  }
 }
