@@ -17,7 +17,6 @@ import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe.Serializer;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.helper.SimpleRecipeSerializer;
-import slimeknights.mantle.recipe.ingredient.IngredientHelper;
 import slimeknights.mantle.recipe.ingredient.item.FluidContainerIngredient;
 import slimeknights.mantle.recipe.ingredient.item.PotionDisplayIngredient;
 import slimeknights.mantle.recipe.ingredient.item.PotionIngredient;
@@ -47,5 +46,5 @@ public class MantleRecipes {
   // ingredients
   public static final DeferredHolder<IngredientType<?>,IngredientType<PotionIngredient>> POTION = INGREDIENT_TYPES.register("potion", () -> new IngredientType<>(PotionIngredient.CODEC, PotionIngredient.STREAM_CODEC));
   public static final DeferredHolder<IngredientType<?>,IngredientType<PotionDisplayIngredient>> POTION_DISPLAY = INGREDIENT_TYPES.register("potion_display", () -> new IngredientType<>(PotionDisplayIngredient.CODEC, PotionDisplayIngredient.STREAM_CODEC));
-  public static final DeferredHolder<IngredientType<?>,IngredientType<FluidContainerIngredient>> FLUID_CONTAINER = INGREDIENT_TYPES.register("fluid_container", () -> IngredientHelper.ingredientType(FluidContainerIngredient.LOADABLE));
+  public static final DeferredHolder<IngredientType<?>,IngredientType<FluidContainerIngredient>> FLUID_CONTAINER = INGREDIENT_TYPES.register("fluid_container", () -> new IngredientType<>(FluidContainerIngredient.CODEC, FluidContainerIngredient.STREAM_CODEC));
 }

@@ -9,9 +9,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.helper.FluidOutput;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -82,15 +83,23 @@ public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAw
   }
 
   /**
-   * Creates an ingredient from this object
+   * Creates a sizeless ingredient from this object
+   * @return  Ingredient instance
+   */
+  public FluidIngredient ingredient() {
+    if (commonTag != null) {
+      return FluidIngredient.tag(commonTag);
+    }
+    return FluidIngredient.single(get());
+  }
+
+  /**
+   * Creates a sized ingredient from this object
    * @param amount     Ingredient amount
    * @return  Ingredient instance
    */
-  public FluidIngredient ingredient(int amount) {
-    if (commonTag != null) {
-      return FluidIngredient.of(commonTag, amount);
-    }
-    return FluidIngredient.of(get(), amount);
+  public SizedFluidIngredient ingredient(int amount) {
+    return new SizedFluidIngredient(ingredient(), amount);
   }
 
   /**

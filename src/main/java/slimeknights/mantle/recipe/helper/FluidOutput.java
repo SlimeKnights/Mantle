@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Class representing a fluid stack output. Supports both direct stacks and tag output, behaving like {@link slimeknights.mantle.recipe.ingredient.FluidIngredient} used for output
+ * Class representing a fluid stack output. Supports both direct stacks and tag output, behaving like {@link net.neoforged.neoforge.fluids.crafting.FluidIngredient} used for output
  */
 public abstract class FluidOutput implements Supplier<FluidStack> {
   /** Empty instance */

@@ -11,11 +11,11 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import slimeknights.mantle.data.GenericRegistryDataProvider;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
@@ -53,7 +53,7 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericRegi
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidOutput fill, FluidIngredient drain, List<DataComponentType<?>> copy, ICondition... conditions) {
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidOutput fill, SizedFluidIngredient drain, List<DataComponentType<?>> copy, ICondition... conditions) {
     if (!copy.isEmpty()) {
       addTransfer(prefix + "empty", new EmptyFluidCopyDataTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill, copy), conditions);
       addTransfer(prefix + "fill", new FillFluidCopyDataTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain, copy), conditions);
@@ -65,12 +65,12 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericRegi
 
   /** Adds generic fill and empty for a container */
   protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, FluidOutput.fromFluid(fluid, amount), FluidIngredient.of(tag, amount), copy, conditions);
+    addFillEmpty(prefix, item, container, FluidOutput.fromFluid(fluid, amount), SizedFluidIngredient.of(tag, amount), copy, conditions);
   }
 
   /** Adds generic fill and empty for a container */
   protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, TagKey<Fluid> tag, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, FluidOutput.fromTag(tag, amount), FluidIngredient.of(tag, amount), copy, conditions);
+    addFillEmpty(prefix, item, container, FluidOutput.fromTag(tag, amount), SizedFluidIngredient.of(tag, amount), copy, conditions);
   }
 
   /** Adds generic fill and empty for a container */

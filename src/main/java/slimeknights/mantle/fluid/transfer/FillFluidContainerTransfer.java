@@ -8,13 +8,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.ItemOutput;
-import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
 import java.util.function.Consumer;
 
@@ -23,12 +23,12 @@ import java.util.function.Consumer;
 public class FillFluidContainerTransfer implements IFluidContainerTransfer {
   protected static final LoadableField<Ingredient,FillFluidContainerTransfer> INPUT_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", t -> t.input);
   protected static final LoadableField<ItemOutput,FillFluidContainerTransfer> RESULT_FIELD = ItemOutput.Loadable.REQUIRED_ITEM.requiredField("result", t -> t.result);
-  protected static final LoadableField<FluidIngredient,FillFluidContainerTransfer> FLUID_FIELD = FluidIngredient.LOADABLE.requiredField("fluid", t -> t.fluid);
+  protected static final LoadableField<SizedFluidIngredient,FillFluidContainerTransfer> FLUID_FIELD = Loadables.SIZED_FLUID_INGREDIENT.requiredField("fluid", t -> t.fluid);
   public static final RecordLoadable<FillFluidContainerTransfer> LOADER = RecordLoadable.create(INPUT_FIELD, RESULT_FIELD, FLUID_FIELD, FillFluidContainerTransfer::new);
 
   protected final Ingredient input;
   protected final ItemOutput result;
-  protected final FluidIngredient fluid;
+  protected final SizedFluidIngredient fluid;
 
   @Override
   public RecordLoadable<? extends FillFluidContainerTransfer> getLoader() {
@@ -58,7 +58,7 @@ public class FillFluidContainerTransfer implements IFluidContainerTransfer {
     if (!direction.canFill()) {
       return null;
     }
-    int amount = this.fluid.getAmount(fluid.getFluid());
+    int amount = this.fluid.amount();
     FluidStack toDrain = fluid.copyWithAmount(amount);
     FluidStack simulated = handler.drain(toDrain.copy(), FluidAction.SIMULATE);
     if (simulated.getAmount() == amount) {

@@ -31,6 +31,8 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.loadable.common.CodecLoadable;
@@ -100,13 +102,23 @@ public class Loadables {
   /* Registry access codecs */
   public static final Loadable<DataComponentPatch> DATA_COMPONENTS = new CodecLoadable.Registry<>(DataComponentPatch.CODEC, DataComponentPatch.STREAM_CODEC);
   public static final Loadable<LootPoolEntryContainer> LOOT_ENTRY = new CodecLoadable.Registry<>(LootPoolEntries.CODEC, null);
-  /* Ingredients */
+
+  /* Item Ingredients */
   /** Loadable for an item ingredient allowing empty. */
   public static final Loadable<Ingredient> ITEM_INGREDIENT = new CodecLoadable.Registry<>(Ingredient.CODEC, Ingredient.CONTENTS_STREAM_CODEC);
   /** Loadable for an item ingredient disallowing empty. */
   public static final Loadable<Ingredient> ITEM_INGREDIENT_NONEMPTY = new CodecLoadable.Registry<>(Ingredient.CODEC_NONEMPTY, Ingredient.CONTENTS_STREAM_CODEC);
   /** Loadable for an item ingredient that checks size. */
   public static final Loadable<SizedIngredient> SIZED_ITEM_INGREDIENT = new CodecLoadable.Registry<>(SizedIngredient.FLAT_CODEC, SizedIngredient.STREAM_CODEC);
+
+  /* Fluid Ingredients */
+  /** Loadable for a fluid ingredient allowing empty. */
+  public static final Loadable<FluidIngredient> FLUID_INGREDIENT = new CodecLoadable.Registry<>(FluidIngredient.CODEC, FluidIngredient.STREAM_CODEC);
+  /** Loadable for a fluid ingredient disallowing empty. */
+  public static final Loadable<FluidIngredient> FLUID_INGREDIENT_NONEMPTY = new CodecLoadable.Registry<>(FluidIngredient.CODEC_NON_EMPTY, FluidIngredient.STREAM_CODEC);
+  /** Loadable for a fluid ingredient that checks size. */
+  public static final Loadable<SizedFluidIngredient> SIZED_FLUID_INGREDIENT = new CodecLoadable.Registry<>(SizedFluidIngredient.FLAT_CODEC, SizedFluidIngredient.STREAM_CODEC);
+
 
   /** Loadable for a rotation value, from 0 to 270 */
   public static final Loadable<Integer> ROTATION = new IntLoadable(0, 270, IntNetwork.SHORT).validate((value, error) -> {
