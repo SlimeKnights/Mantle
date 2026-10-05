@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.conditions.FalseCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -171,13 +172,14 @@ public class RemoveRecipesCommand {
   }
 
   /** Runs the command */
-  private static int run(CommandContext<CommandSourceStack> context, List<RecipeType<?>> recipeTypes, @Nullable Predicate<Item> removeResult, @Nullable Predicate<Item> removeInput, long startTime) {
+  @SuppressWarnings("unchecked")  // not like we are using the generics at all
+  private static <C extends RecipeInput, T extends Recipe<C>> int run(CommandContext<CommandSourceStack> context, List<RecipeType<?>> recipeTypes, @Nullable Predicate<Item> removeResult, @Nullable Predicate<Item> removeInput, long startTime) {
     // iterate all recipes for the type storing recipes that craft the tag
     ServerLevel level = context.getSource().getLevel();
     RegistryAccess access = level.registryAccess();
     List<ResourceLocation> recipes = new ArrayList<>();
     for (RecipeType<?> recipeType : recipeTypes) {
-      for (RecipeHolder<?> holder : context.getSource().getLevel().getRecipeManager().getAllRecipesFor(recipeType)) {
+      for (RecipeHolder<T> holder : context.getSource().getLevel().getRecipeManager().getAllRecipesFor((RecipeType<T>) recipeType)) {
         Recipe<?> recipe = holder.value();
         // result must match or not be requested
         if (removeResult == null || removeResult.test(recipe.getResultItem(access).getItem())) {

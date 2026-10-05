@@ -6,6 +6,7 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import slimeknights.mantle.Mantle;
@@ -42,7 +43,7 @@ public interface MultiNamedRecipe<T> {
    * @return  Stream of recipes of the given type.
    * @param <T>  Result recipe type.
    */
-  static <T> Stream<T> streamRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<?> type, Class<T> recipeClass) {
+  static <T, I extends RecipeInput, R extends Recipe<I>> Stream<T> streamRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<R> type, Class<T> recipeClass) {
     return manager.byType(type).stream().sorted(RECIPE_COMPARATOR).flatMap(base -> {
       if (base.value() instanceof MultiNamedRecipe<?> multi) {
         ResourceLocation id = base.id();
@@ -69,7 +70,7 @@ public interface MultiNamedRecipe<T> {
    * @see #getNamedRecipes(Provider, RecipeManager, RecipeType, Class) 
    */
   @SuppressWarnings("unchecked")
-  static <T> Stream<NamedRecipe<T>> streamNamedRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<?> type, Class<T> recipeClass) {
+  static <T, I extends RecipeInput, R extends Recipe<I>> Stream<NamedRecipe<T>> streamNamedRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<R> type, Class<T> recipeClass) {
     return manager.byType(type).stream().sorted(RECIPE_COMPARATOR).flatMap(base -> {
       ResourceLocation id = base.id();
       Recipe<?> recipe = base.value();
@@ -96,7 +97,7 @@ public interface MultiNamedRecipe<T> {
    * @see #streamRecipes(Provider, RecipeManager, RecipeType, Class) 
    * @see #streamNamedRecipes(Provider, RecipeManager, RecipeType, Class)
    */
-  static <T> List<NamedRecipe<T>> getNamedRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<?> type, Class<T> recipeClass) {
+  static <T, I extends RecipeInput, R extends Recipe<I>> List<NamedRecipe<T>> getNamedRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<R> type, Class<T> recipeClass) {
     return streamNamedRecipes(provider, manager, type, recipeClass).toList();
   }
 }
