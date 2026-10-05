@@ -137,7 +137,7 @@ public class TagEntriesCommand {
         // save creates a file in the data dump location of the tag at the proper path
         Path output = GeneratePackHelper.getDataDumpPath(context, path.getNamespace() + "/" + path.getPath());
         saveTag(list, output);
-        context.getSource().sendSuccess(() -> Component.translatable("command.mantle.dump_tag.success_log", regName, name, GeneratePackHelper.getOutputComponent(output)), true);
+        context.getSource().sendSuccess(() -> Component.translatableEscape("command.mantle.dump_tag.success_log", regName, name, GeneratePackHelper.getOutputComponent(output)), true);
       }
       case LOG -> {
         // log writes the merged JSON to the console

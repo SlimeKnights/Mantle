@@ -42,7 +42,7 @@ public class TagValuesCommand {
     Collection<ResourceLocation> values = registry.keysInTag(name);
     if (values != null) {
       // start building output message
-      MutableComponent output = Component.translatable("command.mantle.view_tag.success", registry.key().location(), name);
+      MutableComponent output = Component.translatableEscape("command.mantle.view_tag.success", registry.key().location(), name);
 
       // if no values, print empty
       if (values.isEmpty()) {
