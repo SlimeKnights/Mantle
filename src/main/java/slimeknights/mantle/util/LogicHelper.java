@@ -1,10 +1,9 @@
 package slimeknights.mantle.util;
 
-import net.minecraftforge.common.util.LazyOptional;
-
-import javax.annotation.Nullable;
 import java.util.List;
 
+/** Helpers for basic logic, not relevant to another helper. */
+@SuppressWarnings("unused")  // API
 public class LogicHelper {
   private LogicHelper() {}
 
@@ -45,12 +44,5 @@ public class LogicHelper {
       }
     }
     return false;
-  }
-
-  /** Resolves a lazy optional, returning null if absent. Exists as the base method isn't properly annotated. */
-  @SuppressWarnings("DataFlowIssue")
-  @Nullable
-  public static <T> T orElseNull(LazyOptional<T> optional) {
-    return optional.orElse(null);
   }
 }

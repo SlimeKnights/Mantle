@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
@@ -103,8 +102,8 @@ public class ClientEvents {
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiLayerEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
-    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderGuiLayerEvent.Post.class, ClientEvents::renderGaugeTooltip);
+    NeoForge.EVENT_BUS.addListener(RenderGuiLayerEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
+    NeoForge.EVENT_BUS.addListener(RenderGuiLayerEvent.Post.class, ClientEvents::renderGaugeTooltip);
   }
 
   // registered with FORGE bus
@@ -128,9 +127,6 @@ public class ClientEvents {
 
     // fetch the current cooldown
     OffhandCooldownTracker tracker = OffhandCooldownTracker.get(minecraft.player);
-    if (tracker == null) {
-      return;
-    }
     float cooldown = tracker.getCooldown();
     if (cooldown >= 1.0f) {
       return;

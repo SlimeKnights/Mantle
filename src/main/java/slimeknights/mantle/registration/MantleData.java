@@ -7,21 +7,26 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.util.OffhandCooldownTracker;
 
-/** Handles all custom data component types added by Mantle */
-public class MantleDataComponents {
+/** Handles all custom data component types and attachments added by Mantle */
+public class MantleData {
   private static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Mantle.modId);
+  private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Mantle.modId);
 
-  private MantleDataComponents() {}
+  private MantleData() {}
 
   /** Registers this to the bus */
   public static void init(IEventBus bus) {
     DATA_COMPONENTS.register(bus);
+    ATTACHMENTS.register(bus);
   }
 
   /** Component used by {@link slimeknights.mantle.util.RetexturedHelper} to set the block texture. */
@@ -41,4 +46,7 @@ public class MantleDataComponents {
     .persistent(Codec.STRING)
     .networkSynchronized(ByteBufCodecs.STRING_UTF8)
     .build());
+
+  /** Attachment used by {@link slimeknights.mantle.util.OffhandCooldownTracker} to store the cooldown amount. */
+  public static final DeferredHolder<AttachmentType<?>, AttachmentType<OffhandCooldownTracker>> OFFHAND_COOLDOWN = ATTACHMENTS.register("offhand_cooldown", () -> AttachmentType.builder(OffhandCooldownTracker::new).build());
 }

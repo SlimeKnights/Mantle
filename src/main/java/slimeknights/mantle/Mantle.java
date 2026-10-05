@@ -20,7 +20,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -76,7 +75,6 @@ import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.registration.MantleData;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
-import slimeknights.mantle.util.OffhandCooldownTracker;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -107,7 +105,6 @@ public class Mantle {
 
     instance = this;
     modEventBus.addListener(FMLCommonSetupEvent.class, this::commonSetup);
-    modEventBus.addListener(RegisterCapabilitiesEvent.class, this::registerCapabilities);
     modEventBus.addListener(GatherDataEvent.class, this::gatherData);
     modEventBus.addListener(RegisterEvent.class, this::register);
     modEventBus.addListener(BlockEntityTypeAddBlocksEvent.class, this::registerBlockEntityBlocks);
@@ -122,13 +119,8 @@ public class Mantle {
     }
   }
 
-  private void registerCapabilities(RegisterCapabilitiesEvent event) {
-    OffhandCooldownTracker.register(event);
-  }
-
   private void commonSetup(final FMLCommonSetupEvent event) {
     MantleCommand.init();
-    OffhandCooldownTracker.init();
     TagPreference.init();
     LootTableInjector.init();
   }
