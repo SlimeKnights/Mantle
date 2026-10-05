@@ -5,6 +5,7 @@ import net.minecraft.Util;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -74,14 +75,14 @@ import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.TagPreference;
 import slimeknights.mantle.registration.MantleData;
 import slimeknights.mantle.registration.RegistrationHelper;
-import slimeknights.mantle.registration.adapter.RegistryAdapter;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * Mantle
  *
- * Central mod object for Mantle
+ * <p>Central mod object for Mantle
  *
  * @author Sunstrike <sun@sunstrike.io>
  */
@@ -129,10 +130,11 @@ public class Mantle {
     ResourceKey<?> key = event.getRegistryKey();
 
     if (key == NeoForgeRegistries.Keys.CONDITION_CODECS) {
-      RegistryAdapter<MapCodec<? extends ICondition>> adapter = new RegistryAdapter<>(event.getRegistry(NeoForgeRegistries.Keys.CONDITION_CODECS));
-      adapter.register(TagEmptyCondition.CODEC, "tag_empty");
-      adapter.register(TagFilledCondition.CODEC, "tag_filled");
-      adapter.register(TagCombinationCondition.CODEC, "tag_combination_filled");
+      Registry<MapCodec<? extends ICondition>> registry = Objects.requireNonNull(event.getRegistry(NeoForgeRegistries.Keys.CONDITION_CODECS));
+
+      Registry.register(registry, getResource("tag_empty"), TagEmptyCondition.CODEC);
+      Registry.register(registry, getResource("tag_filled"), TagFilledCondition.CODEC);
+      Registry.register(registry, getResource("tag_combination_filled"), TagCombinationCondition.CODEC);
 
     } else if (key == Registries.RECIPE_SERIALIZER) {
       // fluid container transfer
@@ -196,9 +198,9 @@ public class Mantle {
       }
     }
     else if (key == Registries.COMMAND_ARGUMENT_TYPE) {
-      RegistryAdapter<ArgumentTypeInfo<?,?>> adapter = new RegistryAdapter<>(event.getRegistry(Registries.COMMAND_ARGUMENT_TYPE));
+      Registry<ArgumentTypeInfo<?,?>> registry = Objects.requireNonNull(event.getRegistry(Registries.COMMAND_ARGUMENT_TYPE));
       ResourceOrTagKeyArgument.Info<?> info = new ResourceOrTagKeyArgument.Info<>();
-      adapter.register(info, "resource_or_tag_key");
+      Registry.register(registry, getResource("resource_or_tag_key"), info);
       ArgumentTypeInfos.registerByClass(RegistrationHelper.genericArgumentType(ResourceOrTagKeyArgument.class), info);
     }
     else {

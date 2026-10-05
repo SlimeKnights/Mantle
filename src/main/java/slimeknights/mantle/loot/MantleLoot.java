@@ -2,6 +2,7 @@ package slimeknights.mantle.loot;
 
 import com.google.gson.JsonDeserializer;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -24,10 +25,11 @@ import slimeknights.mantle.loot.modifier.condition.EmptyModifierLootCondition;
 import slimeknights.mantle.loot.modifier.condition.ILootModifierCondition;
 import slimeknights.mantle.loot.modifier.condition.InvertedModifierLootCondition;
 import slimeknights.mantle.recipe.condition.TagEmptyCondition;
-import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.registration.deferred.LootConditionDeferredRegister;
 import slimeknights.mantle.registration.deferred.LootEntryDeferredRegister;
 import slimeknights.mantle.registration.deferred.LootFunctionDeferredRegister;
+
+import java.util.Objects;
 
 import static slimeknights.mantle.loot.modifier.condition.ILootModifierCondition.MODIFIER_CONDITIONS;
 
@@ -70,9 +72,10 @@ public class MantleLoot {
   public static void registerGlobalLootModifiers(final RegisterEvent event) {
     ResourceKey<?> key = event.getRegistryKey();
     if (key == NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS) {
-      RegistryAdapter<MapCodec<? extends IGlobalLootModifier>> adapter = new RegistryAdapter<>(event.getRegistry(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS));
-      adapter.register(AddEntryLootModifier.CODEC, "add_entry");
-      adapter.register(ReplaceItemLootModifier.CODEC, "replace_item");
+      // global loot modifiers
+      Registry<MapCodec<? extends IGlobalLootModifier>> registry = Objects.requireNonNull(event.getRegistry(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS));
+      Registry.register(registry, Mantle.getResource("add_entry"), AddEntryLootModifier.CODEC);
+      Registry.register(registry, Mantle.getResource("replace_item"), ReplaceItemLootModifier.CODEC);
 
       // loot modifier conditions
       MODIFIER_CONDITIONS.registerDeserializer(InvertedModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)InvertedModifierLootCondition::deserialize);
