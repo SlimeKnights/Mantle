@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,7 +53,7 @@ public class ItemStackList extends NonNullList<ItemStack> {
    */
   public static ItemStackList of(ItemStack... element) {
     ItemStackList itemStackList = create();
-    itemStackList.addAll(Arrays.asList(element));
+    Collections.addAll(itemStackList, element);
     return itemStackList;
   }
 
