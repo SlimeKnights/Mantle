@@ -14,7 +14,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -74,7 +73,7 @@ import slimeknights.mantle.recipe.condition.TagCombinationCondition;
 import slimeknights.mantle.recipe.condition.TagEmptyCondition;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.TagPreference;
-import slimeknights.mantle.registration.MantleDataComponents;
+import slimeknights.mantle.registration.MantleData;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.adapter.RegistryAdapter;
 import slimeknights.mantle.util.OffhandCooldownTracker;
@@ -107,16 +106,16 @@ public class Mantle {
     MantleTags.init();
 
     instance = this;
-    modEventBus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, this::commonSetup);
-    modEventBus.addListener(EventPriority.NORMAL, false, RegisterCapabilitiesEvent.class, this::registerCapabilities);
-    modEventBus.addListener(EventPriority.NORMAL, false, GatherDataEvent.class, this::gatherData);
-    modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, this::register);
-    modEventBus.addListener(EventPriority.NORMAL, false, BlockEntityTypeAddBlocksEvent.class, this::registerBlockEntityBlocks);
-    modEventBus.addListener(EventPriority.NORMAL, false, RegisterPayloadHandlersEvent.class, MantleNetwork::registerPackets);
+    modEventBus.addListener(FMLCommonSetupEvent.class, this::commonSetup);
+    modEventBus.addListener(RegisterCapabilitiesEvent.class, this::registerCapabilities);
+    modEventBus.addListener(GatherDataEvent.class, this::gatherData);
+    modEventBus.addListener(RegisterEvent.class, this::register);
+    modEventBus.addListener(BlockEntityTypeAddBlocksEvent.class, this::registerBlockEntityBlocks);
+    modEventBus.addListener(RegisterPayloadHandlersEvent.class, MantleNetwork::registerPackets);
     MantleRecipes.init(modEventBus);
     MantleLoot.init(modEventBus);
-    MantleDataComponents.init(modEventBus);
-    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
+    MantleData.init(modEventBus);
+    NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
 
     if (FMLEnvironment.dist == Dist.CLIENT) {
       ClientEvents.onConstruct();

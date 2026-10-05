@@ -23,7 +23,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.registration.MantleDataComponents;
+import slimeknights.mantle.registration.MantleData;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -92,7 +92,7 @@ public final class RetexturedHelper {
    * @return  Texture, or {@link Blocks#AIR} if none
    */
   public static Block getTexture(ItemStack stack) {
-    return stack.getOrDefault(MantleDataComponents.BLOCK_TEXTURE, Blocks.AIR);
+    return stack.getOrDefault(MantleData.BLOCK_TEXTURE, Blocks.AIR);
   }
 
 
@@ -121,9 +121,9 @@ public final class RetexturedHelper {
    */
   public static ItemStack setTexture(ItemStack stack, @Nullable Block block) {
     if (block == null || block == Blocks.AIR) {
-      stack.remove(MantleDataComponents.BLOCK_TEXTURE);
+      stack.remove(MantleData.BLOCK_TEXTURE);
     } else {
-      stack.set(MantleDataComponents.BLOCK_TEXTURE, block);
+      stack.set(MantleData.BLOCK_TEXTURE, block);
     }
     return stack;
   }

@@ -1,7 +1,7 @@
 package slimeknights.mantle.client.book;
 
 import net.minecraft.world.item.ItemStack;
-import slimeknights.mantle.registration.MantleDataComponents;
+import slimeknights.mantle.registration.MantleData;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,7 @@ public class BookHelper {
    */
   public static String getCurrentSavedPage(@Nullable ItemStack item) {
     if (item != null) {
-      return item.getOrDefault(MantleDataComponents.BOOK_PAGE, "");
+      return item.getOrDefault(MantleData.BOOK_PAGE, "");
     }
     return "";
   }
@@ -28,6 +28,6 @@ public class BookHelper {
    * @param currentPage the current open page
    */
   public static void writeSavedPageToBook(ItemStack stack, String currentPage) {
-    stack.set(MantleDataComponents.BOOK_PAGE, currentPage);
+    stack.set(MantleData.BOOK_PAGE, currentPage);
   }
 }

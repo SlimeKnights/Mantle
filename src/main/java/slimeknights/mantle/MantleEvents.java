@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import slimeknights.mantle.datagen.MantleTags;
-import slimeknights.mantle.registration.MantleDataComponents;
+import slimeknights.mantle.registration.MantleData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public class MantleEvents {
       for (int i = 0; i < totalSize; i++) {
         ItemStack stack = inventory.getItem(i);
         if (!stack.isEmpty() && stack.is(MantleTags.Items.SOULBOUND)) {
-          stack.set(MantleDataComponents.SOULBOUND_SLOT, i);
+          stack.set(MantleData.SOULBOUND_SLOT, i);
         }
       }
     }
@@ -60,7 +60,7 @@ public class MantleEvents {
         ItemEntity itemEntity = iter.next();
         ItemStack stack = itemEntity.getItem();
         // find items with our soulbound tag set and move them back into the inventory, will move them over later
-        int slot = stack.getOrDefault(MantleDataComponents.SOULBOUND_SLOT, -1);
+        int slot = stack.getOrDefault(MantleData.SOULBOUND_SLOT, -1);
         if (slot != -1) {
           // return the tool to its requested slot if possible, remove from the drops
           if (inventory.getItem(slot).isEmpty()) {
@@ -81,7 +81,7 @@ public class MantleEvents {
           // last resort, somehow we just cannot put the stack anywhere, so drop it on the ground
           // this should never happen, but better to be safe
           // ditch the soulbound slot tag, to prevent item stacking issues
-          stack.remove(MantleDataComponents.SOULBOUND_SLOT);
+          stack.remove(MantleData.SOULBOUND_SLOT);
           drops.add(itemEntity);
         }
       }
@@ -108,7 +108,7 @@ public class MantleEvents {
     for(int i = 0; i < size; i++) {
       ItemStack stack = originalInv.getItem(i);
       if (!stack.isEmpty()) {
-        int slot = stack.getOrDefault(MantleDataComponents.SOULBOUND_SLOT, -1);
+        int slot = stack.getOrDefault(MantleData.SOULBOUND_SLOT, -1);
         if (slot != -1) {
           if (cloneInv.getItem(i).isEmpty()) {
             cloneInv.setItem(i, stack);
@@ -116,7 +116,7 @@ public class MantleEvents {
             takenSlot.add(stack);
           }
           // remove the slot component
-          stack.remove(MantleDataComponents.SOULBOUND_SLOT);
+          stack.remove(MantleData.SOULBOUND_SLOT);
         }
       }
     }
