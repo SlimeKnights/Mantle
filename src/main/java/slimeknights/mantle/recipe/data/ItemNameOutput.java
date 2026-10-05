@@ -5,13 +5,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import slimeknights.mantle.data.loadable.common.NBTLoadable;
+import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.recipe.helper.ItemOutput;
-
-import javax.annotation.Nullable;
+import slimeknights.mantle.util.typed.TypedMap;
 
 /**
  * Extension of {@link ItemOutput} for datagen of recipes for compat. Should never be used in an actual recipe
@@ -21,8 +20,7 @@ public class ItemNameOutput extends ItemOutput {
   private final ResourceLocation name;
   @Getter
   private final int count;
-  @Nullable
-  private final CompoundTag nbt;
+  private final DataComponentPatch components;
 
   /**
    * Creates an output for the given item with no NBT
@@ -31,7 +29,7 @@ public class ItemNameOutput extends ItemOutput {
    * @return  Output
    */
   public static ItemNameOutput fromName(ResourceLocation name, int count) {
-    return fromName(name, count, null);
+    return fromName(name, count, DataComponentPatch.EMPTY);
   }
 
   /**
@@ -49,9 +47,9 @@ public class ItemNameOutput extends ItemOutput {
   }
 
   @Override
-  public JsonElement serialize(boolean writeCount) {
+  public JsonElement serialize(boolean writeCount, TypedMap context) {
     String itemName = name.toString();
-    if (nbt == null && (count <= 1 || !writeCount)) {
+    if (components.isEmpty() && (count <= 1 || !writeCount)) {
       return new JsonPrimitive(itemName);
     } else {
       JsonObject jsonResult = new JsonObject();
@@ -59,8 +57,8 @@ public class ItemNameOutput extends ItemOutput {
       if (writeCount) {
         jsonResult.addProperty("count", count);
       }
-      if (nbt != null) {
-        jsonResult.add("nbt", NBTLoadable.ALLOW_STRING.serialize(nbt));
+      if (!components.isEmpty()) {
+        jsonResult.add("nbt", Loadables.DATA_COMPONENTS.serialize(components, context));
       }
       return jsonResult;
     }
