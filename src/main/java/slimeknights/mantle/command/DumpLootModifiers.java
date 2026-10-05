@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -33,7 +32,6 @@ public class DumpLootModifiers {
 
   // loot modifiers
   private static final Component LOOT_MODIFIER_SUCCESS_LOG = Component.translatable("command.mantle.dump_loot_modifiers.success_log");
-  protected static final SimpleCommandExceptionType ERROR_READING_LOOT_MODIFIERS = new SimpleCommandExceptionType(Component.translatable("command.mantle.dump_loot_modifiers.read_error", GLOBAL_LOOT_MODIFIERS));
 
   /**
    * Registers this sub command with the root command
@@ -54,21 +52,16 @@ public class DumpLootModifiers {
     for (Resource resource : manager.getResourceStack(GLOBAL_LOOT_MODIFIERS)) {
       try (Reader reader = resource.openAsReader()) {
         JsonObject json = GsonHelper.fromJson(GeneratePackHelper.GSON, reader, JsonObject.class);
-        if (json == null) {
-          // no json
-          Mantle.logger.error("Couldn't load global loot modifiers from {} in data pack {} as it is empty or null", GLOBAL_LOOT_MODIFIERS, resource.sourcePackId());
-        } else {
-          // replace: remove all lower
-          if (GsonHelper.getAsBoolean(json, "replace", false)) {
-            finalLocations.clear();
-          }
-          JsonArray entryList = GsonHelper.getAsJsonArray(json, "entries");
-          for (JsonElement entry : entryList) {
-            ResourceLocation res = ResourceLocation.tryParse(GsonHelper.convertToString(entry, "entry"));
-            if (res != null) {
-              finalLocations.remove(res);
-              finalLocations.add(res);
-            }
+        // replace: remove all lower
+        if (GsonHelper.getAsBoolean(json, "replace", false)) {
+          finalLocations.clear();
+        }
+        JsonArray entryList = GsonHelper.getAsJsonArray(json, "entries");
+        for (JsonElement entry : entryList) {
+          ResourceLocation res = ResourceLocation.tryParse(GsonHelper.convertToString(entry, "entry"));
+          if (res != null) {
+            finalLocations.remove(res);
+            finalLocations.add(res);
           }
         }
       }
