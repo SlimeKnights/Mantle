@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
  * Interface for containers that can be renamed. Used in {@link slimeknights.mantle.block.InventoryBlock} to set the name on placement
  */
 public interface INameableMenuProvider extends MenuProvider, Nameable {
-
 	/**
 	 * Gets the default name of this tile entity
 	 * @return  Default name
@@ -24,12 +23,6 @@ public interface INameableMenuProvider extends MenuProvider, Nameable {
 	@Override
 	@Nullable
 	Component getCustomName();
-
-	/**
-	 * Sets the name for this tile entity
-	 * @param name  New custom name
-	 */
-	void setCustomName(Component name);
 
 	@Override
 	default Component getName() {
