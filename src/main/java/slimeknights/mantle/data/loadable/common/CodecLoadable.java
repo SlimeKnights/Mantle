@@ -2,14 +2,9 @@ package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.RegistryOps;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.field.ContextKey;
@@ -32,37 +27,29 @@ public interface CodecLoadable<T> extends Loadable<T> {
     return JsonHelper.serialize(codec(), object);
   }
 
-  /** Gets the ops to use for the buffer when writing using the codec. */
-  default DynamicOps<Tag> bufferOps(RegistryFriendlyByteBuf buffer, TypedMap context) {
-    return NbtOps.INSTANCE;
-  }
-
-  @SuppressWarnings("deprecation")  // if its removed we will just throw instead
   @Override
   default T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {
-    StreamCodec<? super RegistryFriendlyByteBuf, T> stream = streamCodec();
-    if (stream != null) {
-      return stream.decode(buffer);
-    } else {
-      return buffer.readWithCodecTrusted(bufferOps(buffer, context), codec());
+    StreamCodec<? super RegistryFriendlyByteBuf, T> codec = streamCodec();
+    if (codec == null) {
+      throw new IllegalStateException("The codec " + codec() + " does not support decoding from network.");
     }
+    return codec.decode(buffer);
   }
 
-  @SuppressWarnings("deprecation")  // if its removed we will just throw instead
   @Override
   default void encode(RegistryFriendlyByteBuf buffer, T object, TypedMap context) {
-    StreamCodec<? super RegistryFriendlyByteBuf, T> stream = streamCodec();
-    if (stream != null) {
-      stream.encode(buffer, object);
-    } else {
-      buffer.writeWithCodec(bufferOps(buffer, context), codec(), object);
+    StreamCodec<? super RegistryFriendlyByteBuf, T> codec = streamCodec();
+    if (codec == null) {
+      throw new IllegalStateException("The codec " + codec() + " does not support encoding to network.");
     }
+    codec.encode(buffer, object);
   }
 
   /** Parses the value directly without registry access */
+  @SuppressWarnings("unused")  // API
   record Direct<T>(Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) implements CodecLoadable<T> {
     public Direct(Codec<T> codec) {
-      this(codec, null);
+      this(codec, ByteBufCodecs.fromCodec(codec));
     }
 
     @Override
@@ -74,7 +61,7 @@ public interface CodecLoadable<T> extends Loadable<T> {
   /** Uses registry access to parse the object. */
   record Registry<T>(Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) implements CodecLoadable<T> {
     public Registry(Codec<T> codec) {
-      this(codec, null);
+      this(codec, ByteBufCodecs.fromCodecWithRegistries(codec));
     }
 
     @Override
@@ -85,18 +72,6 @@ public interface CodecLoadable<T> extends Loadable<T> {
     @Override
     public JsonElement serialize(T object, TypedMap context) {
       return JsonHelper.serialize(ContextKey.createSerializationContext(context, ErrorFactory.RUNTIME), codec, object);
-    }
-
-    @Override
-    public DynamicOps<Tag> bufferOps(RegistryFriendlyByteBuf buffer, TypedMap context) {
-      // use registry ops
-      RegistryOps<Tag> registryOps = buffer.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-      // include condition context if present
-      IContext conditionContext = context.get(ContextKey.CONDITION_CONTEXT);
-      if (conditionContext != null) {
-        return new ConditionalOps<>(registryOps, conditionContext);
-      }
-      return registryOps;
     }
   }
 }

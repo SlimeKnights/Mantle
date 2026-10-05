@@ -99,7 +99,7 @@ public class Loadables {
 
   /* Registry access codecs */
   public static final Loadable<DataComponentPatch> DATA_COMPONENTS = new CodecLoadable.Registry<>(DataComponentPatch.CODEC, DataComponentPatch.STREAM_CODEC);
-  public static final Loadable<LootPoolEntryContainer> LOOT_ENTRY = new CodecLoadable.Registry<>(LootPoolEntries.CODEC);
+  public static final Loadable<LootPoolEntryContainer> LOOT_ENTRY = new CodecLoadable.Registry<>(LootPoolEntries.CODEC, null);
   /* Ingredients */
   /** Loadable for an item ingredient allowing empty. */
   public static final Loadable<Ingredient> ITEM_INGREDIENT = new CodecLoadable.Registry<>(Ingredient.CODEC, Ingredient.CONTENTS_STREAM_CODEC);
