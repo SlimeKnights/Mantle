@@ -12,7 +12,7 @@ import java.util.Set;
 
 /** Packet to sync fluid container transfer */
 public record FluidContainerTransferPacket(Set<Item> items) implements ISimplePacket {
-  public static final Type<FluidContainerTransferPacket> TYPE = new Type<>(Mantle.getResource("update_lectern_page"));
+  public static final Type<FluidContainerTransferPacket> TYPE = new Type<>(Mantle.getResource("sync_fluid_transfers"));
   public static final StreamCodec<RegistryFriendlyByteBuf, FluidContainerTransferPacket> CODEC = StreamCodec.composite(
     MantleStreamCodecs.ITEM.apply(MantleStreamCodecs.set()), FluidContainerTransferPacket::items,
     FluidContainerTransferPacket::new);
