@@ -35,12 +35,12 @@ public class MantleTags {
     /** Blocks in this tag will show the fluid contained. Must have a fluid handler capability. */
     public static final TagKey<Block> GAUGE_TANKS = tag("gauges/tank");
     /** Any blocks in this tag will not show any gauge information when a gauge is placed on them */
-    public static final TagKey<Block> GAUGE_BLACKLIST = tag("gauges/blacklist");
+    public static final TagKey<Block> GAUGE_BLACKLIST = tag("gauge_blacklist");
     /**
      * Any block entities in this tag will show just the fluid name, no capacity when viewed in a gauge.
      * Useful for blocks that don't fully sync the fluid to client, such as channels.
      */
-    public static final TagKey<Block> HIDES_GAUGE_AMOUNT = tag("gauges/hides_amount");
+    public static final TagKey<Block> HIDES_GAUGE_AMOUNT = tag("hides_gauge_amount");
 
     /** Adds a mantle domain tag */
     private static TagKey<Block> tag(String name) {

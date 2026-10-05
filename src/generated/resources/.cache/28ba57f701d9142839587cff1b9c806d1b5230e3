@@ -1,2 +1,6 @@
-// 1.21.1	2026-10-05T15:37:18.217292	Mantle Block Tag Provider
-519ac683489ae47095ab91023f3cba387c4b772b data/mantle/tags/block/gauges.json
+// 1.21.1	2026-10-05T18:17:44.5369617	Mantle Block Tag Provider
+5ed542676dbec6c24992a9af9fc9ef58ab354a03 data/mantle/tags/block/gauges.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/mantle/tags/block/gauges/attached.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/mantle/tags/block/gauges/tank.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/mantle/tags/block/gauge_blacklist.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/mantle/tags/block/hides_gauge_amount.json

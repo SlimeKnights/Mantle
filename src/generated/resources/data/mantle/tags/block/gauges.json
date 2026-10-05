@@ -1,12 +1,6 @@
 {
   "values": [
-    {
-      "id": "#mantle:gauges/attached",
-      "required": false
-    },
-    {
-      "id": "#mantle:gauges/tank",
-      "required": false
-    }
+    "#mantle:gauges/attached",
+    "#mantle:gauges/tank"
   ]
 }
