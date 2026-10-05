@@ -3,12 +3,9 @@ package slimeknights.mantle.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -16,16 +13,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
-import slimeknights.mantle.block.entity.INameableMenuProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import slimeknights.mantle.inventory.BaseContainerMenu;
 
 import javax.annotation.Nullable;
 
 /**
- * Base class for blocks with an inventory
+ * Base class for blocks with an inventory. Can be used with any block that is {@link MenuProvider} and exposes an {@link Capabilities.ItemHandler#BLOCK} capability.
+ * @see slimeknights.mantle.block.entity.InventoryBlockEntity
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class InventoryBlock extends Block implements EntityBlock {
@@ -34,56 +30,38 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
     super(builder);
   }
 
+
+  /* UI */
+
   /**
-   * Called when the block is activated to open the UI. Override to return false for blocks with no inventory
+   * Called when the block is activated to open the UI. Override to return {@link InteractionResult#PASS} for blocks with no UI
    * @param player Player instance
    * @param world  World instance
    * @param pos    Block position
-   * @return true if the GUI opened, false if not
+   * @return {@link InteractionResult#CONSUME} on opening the container, or {@link InteractionResult#SUCCESS} client side if opening is expected.
+   *        {@link InteractionResult#PASS} if no container is opened, should be done both sides.
    */
-  protected boolean openGui(Player player, Level world, BlockPos pos) {
+  protected InteractionResult openGui(BlockState state, Level world, BlockPos pos, Player player) {
     if (!world.isClientSide()) {
-      MenuProvider container = this.getMenuProvider(world.getBlockState(pos), world, pos);
-      if (container != null && player instanceof ServerPlayer serverPlayer) {
-        NetworkHooks.openScreen(serverPlayer, container, pos);
-        if (player.containerMenu instanceof BaseContainerMenu<?> menu) {
+      MenuProvider container = this.getMenuProvider(state, world, pos);
+      if (container != null) {
+        player.openMenu(container, pos);
+        if (player.containerMenu instanceof BaseContainerMenu<?> menu && player instanceof ServerPlayer serverPlayer) {
           menu.syncOnOpen(serverPlayer);
         }
       }
-    }
-
-    return true;
-  }
-
-  @SuppressWarnings("deprecation")
-  @Deprecated
-  @Override
-  public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTraceResult) {
-    if (!world.isClientSide) {
-      return this.openGui(player, world, pos) ? InteractionResult.CONSUME : InteractionResult.PASS;
+      return InteractionResult.CONSUME;
     }
     return InteractionResult.SUCCESS;
   }
 
-
-  /* Naming */
-
   @Override
-  public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-    super.setPlacedBy(worldIn, pos, state, placer, stack);
-
-    // set custom name from named stack
-    if (stack.hasCustomHoverName()) {
-      if (worldIn.getBlockEntity(pos) instanceof INameableMenuProvider provider) {
-        provider.setCustomName(stack.getHoverName());
-      }
-    }
+  protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    return this.openGui(state, level, pos, player);
   }
 
-  @SuppressWarnings({"deprecation", "DeprecatedIsStillUsed"})
   @Override
   @Nullable
-  @Deprecated
   public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
     return worldIn.getBlockEntity(pos) instanceof MenuProvider menu ? menu : null;
   }
@@ -91,19 +69,16 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
 
   /* Inventory handling */
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
-  public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      BlockEntity te = worldIn.getBlockEntity(pos);
-      if (te != null) {
-        te.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(inventory -> dropInventoryItems(state, worldIn, pos, inventory));
-        worldIn.updateNeighbourForOutputSignal(pos, this);
+      IItemHandler inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+      if (inventory != null) {
+        dropInventoryItems(state, level, pos, inventory);
+        level.updateNeighbourForOutputSignal(pos, this);
       }
     }
-
-    super.onRemove(state, worldIn, pos, newState, isMoving);
+    super.onRemove(state, level, pos, newState, isMoving);
   }
 
   /**
@@ -133,12 +108,10 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
     }
   }
 
-  @SuppressWarnings("deprecation")
-  @Deprecated
   @Override
-  public boolean triggerEvent(BlockState state, Level worldIn, BlockPos pos, int id, int param) {
-    super.triggerEvent(state, worldIn, pos, id, param);
-    BlockEntity be = worldIn.getBlockEntity(pos);
+  public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+    super.triggerEvent(state, level, pos, id, param);
+    BlockEntity be = level.getBlockEntity(pos);
     return be != null && be.triggerEvent(id, param);
   }
 }
