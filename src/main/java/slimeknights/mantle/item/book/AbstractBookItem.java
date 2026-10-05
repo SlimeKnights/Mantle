@@ -1,4 +1,4 @@
-package slimeknights.mantle.item;
+package slimeknights.mantle.item.book;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -22,7 +22,6 @@ import slimeknights.mantle.client.book.BookScreenOpener;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.util.RegistryHelper;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /** Item implementing all standard book behaviors, just requires calling methods from {@link slimeknights.mantle.client.book.data.BookData} in a few abstract methods. */
@@ -54,9 +53,10 @@ public abstract class AbstractBookItem extends LecternBookItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+  public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
     // if the stack is in the player inventory, show the right click to open tooltip
-    if (world != null && world.isClientSide) {
+    Level level = context.level();
+    if (level != null && level.isClientSide) {
       Player player = SafeClientAccess.getPlayer();
       if (player != null && isValidContainer(player.containerMenu)) {
         Inventory inventory = player.getInventory();
@@ -65,7 +65,7 @@ public abstract class AbstractBookItem extends LecternBookItem {
         }
       }
     }
-    super.appendHoverText(stack, world, tooltip, flag);
+    super.appendHoverText(stack, context, tooltip, flag);
   }
 
   /** Called on the client to open the screen when used on right click in the hand */

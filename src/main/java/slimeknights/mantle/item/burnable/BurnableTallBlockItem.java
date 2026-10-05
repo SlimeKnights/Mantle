@@ -1,4 +1,4 @@
-package slimeknights.mantle.item;
+package slimeknights.mantle.item.burnable;
 
 import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -7,10 +7,14 @@ import net.minecraft.world.level.block.Block;
 
 import javax.annotation.Nullable;
 
+/**
+ * Tall block item with a burn time, used for doors. Used in {@link slimeknights.mantle.registration.object.WoodBlockObject} registration.
+ * @see BurnableBlockItem
+ */
 public class BurnableTallBlockItem extends DoubleHighBlockItem {
   private final int burnTime;
-  public BurnableTallBlockItem(Block blockIn, Properties builder, int burnTime) {
-    super(blockIn, builder);
+  public BurnableTallBlockItem(Block block, Properties builder, int burnTime) {
+    super(block, builder);
     this.burnTime = burnTime;
   }
 

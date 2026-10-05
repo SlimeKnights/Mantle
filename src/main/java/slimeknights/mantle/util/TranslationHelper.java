@@ -3,9 +3,9 @@ package slimeknights.mantle.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeI18n;
 
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -16,7 +16,7 @@ import java.util.Locale;
 /**
  * Helpers for working with translations
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})  // API
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TranslationHelper {
   /** Formats a number separated by commas every 3 digits (i.e. US standard) */
@@ -28,17 +28,7 @@ public class TranslationHelper {
    * @return  True if its translatable
    */
   public static boolean canTranslate(String key) {
-    return !key.equals(ForgeI18n.getPattern(key));
-  }
-
-  /**
-   * Better documented way to check if something is translated, use instead of {@link #canTranslate(String)} if you want to reuse the result.
-   * @param key        Key to check
-   * @param attempted  Attempted translation result
-   * @return  True if its translatable
-   */
-  public static boolean canTranslate(String key, String attempted) {
-    return !key.equals(attempted);
+    return Language.getInstance().has(key);
   }
 
   /**
@@ -56,9 +46,9 @@ public class TranslationHelper {
    * @param tooltip  List of tooltips
    */
   public static void addOptionalTooltip(String key, List<Component> tooltip) {
-    String translated = ForgeI18n.getPattern(key);
-    if (canTranslate(key, translated)) {
-      addEachLine(translated, tooltip);
+    Language language = Language.getInstance();
+    if (language.has(key)) {
+      addEachLine(language.getOrDefault(key), tooltip);
     }
   }
 
@@ -73,6 +63,7 @@ public class TranslationHelper {
     }
   }
 
+  /** Replaces escaped newlines in the string with actual newlines. */
   @Nullable
   public static String convertNewlines(@Nullable String line) {
     if (line == null) {

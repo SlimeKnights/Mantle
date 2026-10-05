@@ -1,4 +1,4 @@
-package slimeknights.mantle.item;
+package slimeknights.mantle.item.book;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
@@ -9,7 +9,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import slimeknights.mantle.item.tooltip.TooltipItem;
 
 /**
  * Book item that can be placed on lecterns

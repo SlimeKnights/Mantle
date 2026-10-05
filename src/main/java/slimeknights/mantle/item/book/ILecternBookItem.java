@@ -1,4 +1,4 @@
-package slimeknights.mantle.item;
+package slimeknights.mantle.item.book;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;

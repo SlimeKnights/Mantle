@@ -63,7 +63,7 @@ import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidCopyDataTransfer;
 import slimeknights.mantle.fluid.transfer.FluidContainerTransferManager;
 import slimeknights.mantle.fluid.transfer.IFluidContainerTransfer;
-import slimeknights.mantle.item.LecternBookItem;
+import slimeknights.mantle.item.book.LecternBookItem;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.loot.injection.LootTableInjector;
 import slimeknights.mantle.network.MantleNetwork;
