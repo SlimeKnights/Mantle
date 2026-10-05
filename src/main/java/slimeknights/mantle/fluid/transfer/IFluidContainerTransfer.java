@@ -3,16 +3,20 @@ package slimeknights.mantle.fluid.transfer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import slimeknights.mantle.data.gson.GenericRegisteredSerializer.IJsonSerializable;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry;
+import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.fluid.FluidTransferHelper;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /** Interface for transferring fluid either to or from an item */
-public interface IFluidContainerTransfer extends IJsonSerializable {
+public interface IFluidContainerTransfer extends IHaveLoader {
+  /** Registry loader instance */
+  GenericLoaderRegistry<IFluidContainerTransfer> LOADER = new GenericLoaderRegistry<>("Fluid Container Transfer", false);
+
   /** Adds any items matched by this recipe for the sake of enabling transfer client side */
   void addRepresentativeItems(Consumer<Item> consumer);
 

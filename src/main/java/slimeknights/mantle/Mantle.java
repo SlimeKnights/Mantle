@@ -59,11 +59,12 @@ import slimeknights.mantle.datagen.MantleFluidTransferProvider;
 import slimeknights.mantle.datagen.MantleMenuTagProvider;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.transfer.EmptyFluidContainerTransfer;
-import slimeknights.mantle.fluid.transfer.EmptyFluidWithNBTTransfer;
+import slimeknights.mantle.fluid.transfer.EmptyFluidCopyDataTransfer;
 import slimeknights.mantle.fluid.transfer.EmptyPotionTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
-import slimeknights.mantle.fluid.transfer.FillFluidWithNBTTransfer;
+import slimeknights.mantle.fluid.transfer.FillFluidCopyDataTransfer;
 import slimeknights.mantle.fluid.transfer.FluidContainerTransferManager;
+import slimeknights.mantle.fluid.transfer.IFluidContainerTransfer;
 import slimeknights.mantle.item.LecternBookItem;
 import slimeknights.mantle.loot.MantleLoot;
 import slimeknights.mantle.loot.injection.LootTableInjector;
@@ -147,11 +148,11 @@ public class Mantle {
 //      CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
 
       // fluid container transfer
-      FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidContainerTransfer.ID, EmptyFluidContainerTransfer.DESERIALIZER);
-      FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidContainerTransfer.ID, FillFluidContainerTransfer.DESERIALIZER);
-      FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyFluidWithNBTTransfer.ID, EmptyFluidWithNBTTransfer.DESERIALIZER);
-      FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(FillFluidWithNBTTransfer.ID, FillFluidWithNBTTransfer.DESERIALIZER);
-      FluidContainerTransferManager.TRANSFER_LOADERS.registerDeserializer(EmptyPotionTransfer.ID, EmptyPotionTransfer.DESERIALIZER);
+      IFluidContainerTransfer.LOADER.register(getResource("fill_item"), FillFluidContainerTransfer.LOADER);
+      IFluidContainerTransfer.LOADER.register(getResource("fill_copy_data"), FillFluidCopyDataTransfer.LOADER);
+      IFluidContainerTransfer.LOADER.register(getResource("empty_item"), EmptyFluidContainerTransfer.LOADER);
+      IFluidContainerTransfer.LOADER.register(getResource("empty_copy_data"), EmptyFluidCopyDataTransfer.LOADER);
+      IFluidContainerTransfer.LOADER.register(getResource("empty_potion"), EmptyPotionTransfer.LOADER);
 
       // predicates
       {
@@ -232,7 +233,7 @@ public class Mantle {
     generator.addProvider(server, new MantleBlockTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleFluidTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleMenuTagProvider(packOutput, lookupProvider, existingFileHelper));
-    generator.addProvider(server, new MantleFluidTransferProvider(packOutput));
+    generator.addProvider(server, new MantleFluidTransferProvider(packOutput, lookupProvider));
     generator.addProvider(client, new MantleFluidTooltipProvider(packOutput));
   }
 

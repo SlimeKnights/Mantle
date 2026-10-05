@@ -1,5 +1,6 @@
 package slimeknights.mantle.datagen;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
@@ -17,19 +18,20 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.fluid.transfer.AbstractFluidContainerTransferProvider;
 import slimeknights.mantle.fluid.transfer.EmptyPotionTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
-import slimeknights.mantle.fluid.transfer.FillFluidWithNBTTransfer;
+import slimeknights.mantle.fluid.transfer.FillFluidCopyDataTransfer;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.FluidIngredient;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /** Adds fluid transfer for base fluid. Use {@link AbstractFluidContainerTransferProvider} for mods. */
 @Internal
 public class MantleFluidTransferProvider extends AbstractFluidContainerTransferProvider {
-  public MantleFluidTransferProvider(PackOutput packOutput) {
-    super(packOutput, Mantle.modId);
+  public MantleFluidTransferProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
+    super(packOutput, Mantle.modId, registries);
   }
 
   @Override
@@ -38,7 +40,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
   }
 
   @Override
-  protected void addTransfers() {
+  protected void addTransfers(HolderLookup.Provider lookup) {
     addTransfer("wet_sponge", new FillFluidContainerTransfer(Ingredient.of(Items.SPONGE), ItemOutput.fromItem(Items.WET_SPONGE), FluidIngredient.of(MantleTags.Fluids.WATER, MantleValues.BOTTLE)));
 
     // potions
@@ -83,7 +85,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
     }
 
     // filling potions is as simple as a NBT copy, though this requires a potion fluid and possibly a container
-    addTransfer(prefix + "fill_potion", new FillFluidWithNBTTransfer(
+    addTransfer(prefix + "fill_potion", new FillFluidCopyDataTransfer(
       container,
       ItemOutput.fromItem(filled),
       FluidIngredient.of(MantleTags.Fluids.POTION, MantleValues.BOTTLE),

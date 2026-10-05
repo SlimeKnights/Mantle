@@ -1,38 +1,39 @@
 package slimeknights.mantle.fluid.transfer;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import org.apache.commons.lang3.function.TriFunction;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.Loadables;
+import slimeknights.mantle.data.loadable.field.LoadableField;
+import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
-import slimeknights.mantle.util.JsonHelper;
 
-import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
 /** Fluid transfer info that empties a fluid from an item */
 @RequiredArgsConstructor
 public class EmptyFluidContainerTransfer implements IFluidContainerTransfer {
-  public static final ResourceLocation ID = Mantle.getResource("empty_item");
+  protected static final LoadableField<Ingredient,EmptyFluidContainerTransfer> INPUT_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", t -> t.input);
+  protected static final LoadableField<ItemOutput,EmptyFluidContainerTransfer> RESULT_FIELD = ItemOutput.Loadable.OPTIONAL_ITEM.emptyField("result", t -> t.result);
+  protected static final LoadableField<FluidOutput,EmptyFluidContainerTransfer> FLUID_FIELD = FluidOutput.Loadable.REQUIRED.requiredField("fluid", t -> t.fluid);
+  public static final RecordLoadable<EmptyFluidContainerTransfer> LOADER = RecordLoadable.create(INPUT_FIELD, RESULT_FIELD, FLUID_FIELD, EmptyFluidContainerTransfer::new);
 
   protected final Ingredient input;
   protected final ItemOutput result;
   protected final FluidOutput fluid;
+
+  @Override
+  public RecordLoadable<? extends EmptyFluidContainerTransfer> getLoader() {
+    return LOADER;
+  }
 
   @Override
   public void addRepresentativeItems(Consumer<Item> consumer) {
@@ -69,44 +70,5 @@ public class EmptyFluidContainerTransfer implements IFluidContainerTransfer {
       }
     }
     return null;
-  }
-
-  @Override
-  public JsonObject serialize(JsonSerializationContext context) {
-    JsonObject json = new JsonObject();
-    json.addProperty("type", ID.toString());
-    json.add("input", input.toJson());
-    if (!result.isEmpty()) {
-      json.add("result", result.serialize(false));
-    }
-    json.add("fluid", FluidOutput.Loadable.REQUIRED.serialize(fluid));
-    return json;
-  }
-
-  /** Unique loader instance */
-  public static final JsonDeserializer<EmptyFluidContainerTransfer> DESERIALIZER = new Deserializer<>(EmptyFluidContainerTransfer::new);
-
-  /** Gets the result for the fluid transfer. */
-  static ItemOutput getResult(JsonObject json) {
-    String key = "result";
-    if (!json.has(key) && json.has("filled")) {
-      Mantle.logger.warn("Using deprecated field 'filled' for fluid container transfer, use 'result' instead.");
-      key = "filled";
-    }
-    return ItemOutput.Loadable.OPTIONAL_ITEM.getOrEmpty(json, key);
-  }
-
-  /**
-   * Generic deserializer
-   */
-  public record Deserializer<T extends EmptyFluidContainerTransfer>(TriFunction<Ingredient,ItemOutput,FluidOutput,T> factory) implements JsonDeserializer<T> {
-    @Override
-    public T deserialize(JsonElement element, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-      JsonObject json = element.getAsJsonObject();
-      Ingredient input = Ingredient.fromJson(JsonHelper.getElement(json, "input"));
-      ItemOutput result = getResult(json);
-      FluidOutput fluid = FluidOutput.Loadable.REQUIRED.getIfPresent(json, "fluid");
-      return factory.apply(input, result, fluid);
-    }
   }
 }

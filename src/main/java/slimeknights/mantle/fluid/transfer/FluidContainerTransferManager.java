@@ -1,52 +1,43 @@
 package slimeknights.mantle.fluid.transfer;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.conditions.ICondition.IContext;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
-import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
+import slimeknights.mantle.Mantle;
+import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.network.PacketHelper;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
+import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
 /** Logic for filling and emptying fluid containers that are not fluid handlers */
-@Log4j2
 public class FluidContainerTransferManager extends SimpleJsonResourceReloadListener {
-  /** Map of all modifier types that are expected to load in data packs */
-  public static final GenericRegisteredSerializer<IFluidContainerTransfer> TRANSFER_LOADERS = new GenericRegisteredSerializer<>();
   /** Folder for saving the logic */
   public static final String FOLDER = "mantle/fluid_transfer";
-  /** GSON instance */
-  public static final Gson GSON = (new GsonBuilder())
-    .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
-    .registerTypeHierarchyAdapter(IFluidContainerTransfer.class, TRANSFER_LOADERS)
-    .setPrettyPrinting()
-    .disableHtmlEscaping()
-    .create();
   /** Singleton instance of the manager */
   public static final FluidContainerTransferManager INSTANCE = new FluidContainerTransferManager();
 
@@ -57,11 +48,8 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
   @Setter @Nullable
   private Set<Item> containerItems = Collections.emptySet();
 
-  /** Condition context for tags */
-  private IContext context = IContext.EMPTY;
-
   private FluidContainerTransferManager() {
-    super(GSON, FOLDER);
+    super(JsonHelper.DEFAULT_GSON, FOLDER);
   }
 
   /** Lazily initializes the set of container items */
@@ -79,35 +67,30 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
 
   /** For internal use only */
   public void init() {
-    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, e -> {
-      e.addListener(this);
-      this.context = e.getConditionContext();
-    });
+    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, e -> e.addListener(this));
     NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, OnDatapackSyncEvent.class, e -> PacketHelper.syncPackets(e, new FluidContainerTransferPacket(this.getContainerItems())));
-  }
-
-  /** Loads transfer from JSON */
-  @Nullable
-  private IFluidContainerTransfer loadFluidTransfer(ResourceLocation key, JsonObject json) {
-    try {
-      if (JsonHelper.processConditions(json, "conditions", context)) {
-        return GSON.fromJson(json, IFluidContainerTransfer.class);
-      }
-    } catch (JsonSyntaxException e) {
-      log.error("Failed to load fluid container transfer info from {}", key, e);
-    }
-    return null;
   }
 
   @Override
   protected void apply(Map<ResourceLocation,JsonElement> splashList, ResourceManager manager, ProfilerFiller profiler) {
     long time = System.nanoTime();
-    this.transfers = splashList.entrySet().stream()
-                               .map(entry -> loadFluidTransfer(entry.getKey(), entry.getValue().getAsJsonObject()))
-                               .filter(Objects::nonNull)
-                               .toList();
+    ICondition.IContext conditionContext = getContext();
+    TypedMap context = TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, getRegistryLookup()).put(ContextKey.CONDITION_CONTEXT, conditionContext).build();
+    List<IFluidContainerTransfer> transfers = new ArrayList<>(splashList.size());
+    for (Entry<ResourceLocation, JsonElement> entry : splashList.entrySet()) {
+      ResourceLocation key = entry.getKey();
+      try {
+        JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), key.toString());
+        if (JsonHelper.processConditions(json, "conditions", conditionContext)) {
+          transfers.add(IFluidContainerTransfer.LOADER.deserialize(json, context));
+        }
+      } catch (JsonSyntaxException e) {
+        Mantle.logger.error("Failed to load fluid container transfer info from {}", key, e);
+      }
+    }
+    this.transfers = List.copyOf(transfers);
     this.containerItems = null;
-    log.info("Loaded {} dynamic modifiers in {} ms", transfers.size(), (System.nanoTime() - time) / 1000000f);
+    Mantle.logger.info("Loaded {} fluid container transfers in {} ms", transfers.size(), (System.nanoTime() - time) / 1000000f);
   }
 
   /**
