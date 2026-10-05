@@ -15,22 +15,22 @@ Shared code for Slime Knights mods and others.
     displayURL="https://minecraft.curseforge.com/projects/mantle"
 
 [[dependencies.mantle]]
-    modId="forge"
-    mandatory=true
-    versionRange="${forge_range}"
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_range}"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.mantle]]
     modId="minecraft"
-    mandatory=true
+    type="required"
     versionRange="${minecraft_range}"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.mantle]]
     modId="jei"
-    mandatory=false
+    type="optional"
     versionRange="${jei_range}"
     ordering="NONE"
     side="BOTH"
