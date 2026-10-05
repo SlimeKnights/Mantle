@@ -216,8 +216,6 @@ tasks.named('jar', Jar).configure {
     }
 }
 
-jar.finalizedBy('reobfJar')
-
 java {
     withSourcesJar()
 }
