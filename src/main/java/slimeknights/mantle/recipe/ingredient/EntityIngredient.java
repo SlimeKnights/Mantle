@@ -88,7 +88,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
       return EMPTY;
     }
     if (ingredients.size() == 1) {
-      return ingredients.get(0);
+      return ingredients.getFirst();
     }
     return new Compound(ingredients);
   }
@@ -175,7 +175,6 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
       return type.is(tag);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public Set<EntityType<?>> getTypes() {
       if (types == null) {

@@ -8,7 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.loadable.IAmLoadable;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -100,7 +100,7 @@ public abstract class FluidIngredient implements IAmLoadable {
    */
   public static FluidIngredient of(List<FluidIngredient> ingredients) {
     if (ingredients.size() == 1) {
-      return ingredients.get(0);
+      return ingredients.getFirst();
     }
     return new Compound(ingredients);
   }
@@ -215,7 +215,6 @@ public abstract class FluidIngredient implements IAmLoadable {
       return amount;
     }
 
-    @SuppressWarnings("deprecation")  // let me get tags Forge
     @Override
     public List<FluidStack> getAllFluids() {
       return RegistryHelper.getTagValueStream(BuiltInRegistries.FLUID, tag)
