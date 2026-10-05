@@ -31,7 +31,7 @@ import static slimeknights.mantle.Mantle.getResource;
  */
 public class TagSourceArgument {
   /* Name is invalid */
-  private static final DynamicCommandExceptionType NOT_FOUND = new DynamicCommandExceptionType(name -> Component.translatable("command.mantle.tag_source.not_found", name));
+  private static final DynamicCommandExceptionType NOT_FOUND = new DynamicCommandExceptionType(name -> Component.translatableEscape("command.mantle.tag_source.not_found", name));
   /** Map of non-registry tag sources */
   private static final Map<ResourceKey<? extends Registry<?>>,TagSource<?>> CUSTOM_TAG_SOURCES = new HashMap<>();
 

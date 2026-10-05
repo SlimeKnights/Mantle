@@ -141,13 +141,13 @@ public class TagEntriesCommand {
       }
       case LOG -> {
         // log writes the merged JSON to the console
-        Component message = Component.translatable("command.mantle.dump_tag.success", regName, name);
+        Component message = Component.translatableEscape("command.mantle.dump_tag.success", regName, name);
         context.getSource().sendSuccess(() -> message, true);
         Mantle.logger.info("Tag dump of {} tag '{}':\n{}", regName, name, tagToJson(list));
       }
       case SOURCES -> {
         // sources prints a list of each entry and the source of the entry
-        Component message = Component.translatable("command.mantle.dump_tag.success", regName, name);
+        Component message = Component.translatableEscape("command.mantle.dump_tag.success", regName, name);
         context.getSource().sendSuccess(() -> message, true);
         StringBuilder builder = new StringBuilder();
         builder.append("Tag list dump of ").append(regName).append(" tag ").append(name).append(" with sources:");

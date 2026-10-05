@@ -198,9 +198,11 @@ public class ClientEvents {
     }
     BlockState fluidBlock = targeted;
     BlockPos fluidPos = pos;
-    Direction side;
+    Direction side = blockHit.getDirection();
     if (targeted.is(MantleTags.Blocks.ATTACHED_GAUGES)) {
-      side = targeted.getValue(BlockStateProperties.FACING);
+      if (targeted.hasProperty(BlockStateProperties.FACING)) {
+        side = targeted.getValue(BlockStateProperties.FACING);
+      }
       fluidPos = pos.relative(side.getOpposite());
       fluidBlock = minecraft.level.getBlockState(fluidPos);
     } else {

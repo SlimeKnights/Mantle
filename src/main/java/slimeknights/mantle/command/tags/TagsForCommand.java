@@ -57,10 +57,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /** Command to list all tags for an entry. */
-@SuppressWarnings("deprecation")
 public class TagsForCommand {
   /** Tag type cannot be found */
-  protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> Component.translatable("command.mantle.tags_for.not_found", type, name));
+  protected static final Dynamic2CommandExceptionType VALUE_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> Component.translatableEscape("command.mantle.tags_for.not_found", type, name));
 
   /* Missing target errors */
   private static final Component NO_HELD_BLOCK = Component.translatable("command.mantle.tags_for.no_held_block");
@@ -146,7 +145,7 @@ public class TagsForCommand {
    * @return  Number of tags printed
    */
   private static int printOwningTags(CommandContext<CommandSourceStack> context, ResourceKey<? extends Registry<?>> registry, Stream<? extends TagKey<?>> tagStream, @Nullable ResourceLocation key) {
-    MutableComponent output = Component.translatable("command.mantle.tags_for.success", registry.location(), key);
+    MutableComponent output = Component.translatableEscape("command.mantle.tags_for.success", registry.location(), key);
     List<ResourceLocation> tags = tagStream.map(TagKey::location).toList();
     if (tags.isEmpty()) {
       output.append("\n* ").append(NO_TAGS);

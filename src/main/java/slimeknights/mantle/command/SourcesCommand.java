@@ -60,7 +60,7 @@ public class SourcesCommand {
     }
     // print all the packs its found in
     context.getSource().sendSuccess(() -> {
-      MutableComponent component = Component.translatable("command.mantle.sources.success", path);
+      MutableComponent component = Component.translatableEscape("command.mantle.sources.success", path);
       for (String pack : packs) {
         component = component.append(Component.literal("\n* " + (pack.isEmpty() ? "<unnamed>" : pack)));
       }

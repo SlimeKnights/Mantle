@@ -229,7 +229,7 @@ public class RemoveRecipesCommand {
     // send success
     int successFinal = successes;
     float time = (System.nanoTime() - startTime) / 1000000f;
-    context.getSource().sendSuccess(() -> Component.translatable(KEY_SUCCESS, successFinal, time, GeneratePackHelper.getOutputComponent(pack)), true);
+    context.getSource().sendSuccess(() -> Component.translatableEscape(KEY_SUCCESS, successFinal, time, GeneratePackHelper.getOutputComponent(pack)), true);
     return successes;
   }
 

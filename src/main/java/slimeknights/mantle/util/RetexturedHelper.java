@@ -175,7 +175,7 @@ public final class RetexturedHelper {
       tooltip.add(block.getName().withStyle(ChatFormatting.GRAY));
       // advanced includes the ID of the texture
       if (flag.isAdvanced()) {
-        tooltip.add(Component.translatable(KEY_ID, BuiltInRegistries.BLOCK.getKey(block)).withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatableEscape(KEY_ID, BuiltInRegistries.BLOCK.getKey(block)).withStyle(ChatFormatting.DARK_GRAY));
       }
     }
   }

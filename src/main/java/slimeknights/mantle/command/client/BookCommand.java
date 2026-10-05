@@ -57,7 +57,7 @@ public class BookCommand {
 
   /** Failure related to a directory creation */
   private static final SimpleCommandExceptionType EXPORT_FAIL = new SimpleCommandExceptionType(Component.translatable("command.mantle.book.export.error_generic"));
-  private static final DynamicCommandExceptionType IO_FAILURE = new DynamicCommandExceptionType(directory -> Component.translatable(EXPORT_FAIL_IO, directory));
+  private static final DynamicCommandExceptionType IO_FAILURE = new DynamicCommandExceptionType(directory -> Component.translatableEscape(EXPORT_FAIL_IO, directory));
 
   private static final String DEFAULT_BOOK_VERSION = "20";
   private static final String VERSION_FULL = "1.20";
@@ -363,7 +363,7 @@ public class BookCommand {
   public static void bookNotFound(ResourceLocation book) {
     Player player = Minecraft.getInstance().player;
     if (player != null) {
-      player.displayClientMessage(Component.translatable(BOOK_NOT_FOUND, book).withStyle(ChatFormatting.RED), false);
+      player.displayClientMessage(Component.translatableEscape(BOOK_NOT_FOUND, book).withStyle(ChatFormatting.RED), false);
     }
   }
 }

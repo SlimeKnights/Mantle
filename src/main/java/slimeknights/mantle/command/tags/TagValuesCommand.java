@@ -20,7 +20,7 @@ public class TagValuesCommand {
   /** Tag has no values */
   private static final Component EMPTY = Component.translatable("command.mantle.tag.empty");
   /** Tag type cannot be found */
-  protected static final Dynamic2CommandExceptionType TAG_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> Component.translatable("command.mantle.tag.not_found", type, name));
+  protected static final Dynamic2CommandExceptionType TAG_NOT_FOUND = new Dynamic2CommandExceptionType((type, name) -> Component.translatableEscape("command.mantle.tag.not_found", type, name));
 
   /**
    * Registers this sub command with the root command
