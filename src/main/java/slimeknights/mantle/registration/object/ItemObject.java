@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import slimeknights.mantle.util.RegistryHelper;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -32,7 +31,7 @@ public class ItemObject<I extends ItemLike> implements Supplier<I>, ItemLike, Id
    * @param entry  Existing registry entry, typically a vanilla block or a registered block
    */
   public ItemObject(DefaultedRegistry<I> registry, I entry) {
-    this.entry = RegistryHelper.getHolder(registry, entry);
+    this.entry = () -> entry;
     this.id = registry.getKey(entry);
   }
 

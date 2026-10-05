@@ -1,13 +1,10 @@
 package slimeknights.mantle.registration;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,20 +17,6 @@ public class RegistrationHelper {
 
   /** Properties for a standard bucket item */
   public static final Item.Properties BUCKET_PROPS = new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1);
-
-  /**
-   * Gets a holder for a registry object
-   * @param registry  Registry instance
-   * @param entry     Entry to fetch holder
-   * @param <T>       Registry type
-   * @param <R>       Return type, typically but not strictly registry type
-   * @return  Supplier for the given registry casted to the requested type
-   */
-  @SuppressWarnings("unchecked")  // we know the entry is the given type
-  public static <T, R extends T> Supplier<R> getCastedHolder(DefaultedRegistry<T> registry, T entry) {
-    Holder.Reference<T> holder = RegistryHelper.getHolder(registry, entry);
-    return () -> (R) holder.value();
-  }
 
   /** Casts the class type to make it a valid argument type */
   @SuppressWarnings("unchecked")

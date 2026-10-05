@@ -1,7 +1,6 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -23,9 +22,6 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static slimeknights.mantle.registration.RegistrationHelper.getCastedHolder;
-import static slimeknights.mantle.util.RegistryHelper.getHolder;
 
 /** Extension of the fence object with all other wood blocks */
 public class WoodBlockObject extends FenceBuildingBlockObject {
@@ -82,24 +78,24 @@ public class WoodBlockObject extends FenceBuildingBlockObject {
 
   public WoodBlockObject(ResourceLocation name, WoodType woodType, BuildingBlockObject planks,
                          Block log, Block strippedLog, Block wood, Block strippedWood,
-                         Block fence, Block fenceGate, Block door, Block trapdoor,
-                         Block pressurePlate, Block button,
-                         Block sign, Block wallSign, Block hangingSign, Block wallHangingSign) {
+                         Block fence, FenceGateBlock fenceGate, DoorBlock door, TrapDoorBlock trapdoor,
+                         PressurePlateBlock pressurePlate, ButtonBlock button,
+                         StandingSignBlock sign, WallSignBlock wallSign, CeilingHangingSignBlock hangingSign, WallHangingSignBlock wallHangingSign) {
     super(planks, fence);
     this.woodType = woodType;
-    this.log = getHolder(BuiltInRegistries.BLOCK, log);
-    this.strippedLog = getHolder(BuiltInRegistries.BLOCK, strippedLog);
-    this.wood = getHolder(BuiltInRegistries.BLOCK, wood);
-    this.strippedWood = getHolder(BuiltInRegistries.BLOCK, strippedWood);
-    this.fenceGate = getCastedHolder(BuiltInRegistries.BLOCK, fenceGate);
-    this.door = getCastedHolder(BuiltInRegistries.BLOCK, door);
-    this.trapdoor = getCastedHolder(BuiltInRegistries.BLOCK, trapdoor);
-    this.pressurePlate = getCastedHolder(BuiltInRegistries.BLOCK, pressurePlate);
-    this.button = getCastedHolder(BuiltInRegistries.BLOCK, button);
-    this.sign = getCastedHolder(BuiltInRegistries.BLOCK, sign);
-    this.wallSign = getCastedHolder(BuiltInRegistries.BLOCK, wallSign);
-    this.hangingSign = getCastedHolder(BuiltInRegistries.BLOCK, hangingSign);
-    this.wallHangingSign = getCastedHolder(BuiltInRegistries.BLOCK, wallHangingSign);
+    this.log = () -> log;
+    this.strippedLog = () -> strippedLog;
+    this.wood = () -> wood;
+    this.strippedWood = () -> strippedWood;
+    this.fenceGate = () -> fenceGate;
+    this.door = () -> door;
+    this.trapdoor = () -> trapdoor;
+    this.pressurePlate = () -> pressurePlate;
+    this.button = () -> button;
+    this.sign = () -> sign;
+    this.wallSign = () -> wallSign;
+    this.hangingSign = () -> hangingSign;
+    this.wallHangingSign = () -> wallHangingSign;
     ResourceLocation tagName = name.withSuffix("_logs");
     this.logBlockTag = BlockTags.create(tagName);
     this.logItemTag = ItemTags.create(tagName);

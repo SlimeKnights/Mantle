@@ -1,9 +1,7 @@
 package slimeknights.mantle.registration.object;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
-import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,8 +30,8 @@ public class WallBuildingBlockObject extends BuildingBlockObject {
    * @param object  Building block object
    * @param wall    Wall entry
    */
-  public WallBuildingBlockObject(BuildingBlockObject object, Block wall) {
-    this(object, RegistrationHelper.getCastedHolder(BuiltInRegistries.BLOCK, wall));
+  public WallBuildingBlockObject(BuildingBlockObject object, WallBlock wall) {
+    this(object, () -> wall);
   }
 
   /** Gets the wall for this block */

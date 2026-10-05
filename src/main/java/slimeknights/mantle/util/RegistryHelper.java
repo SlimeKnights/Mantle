@@ -105,7 +105,7 @@ public class RegistryHelper {
    * @param registry  Registry instance
    * @param entry     Entry to fetch holder
    * @param <T>       Registry type
-   * @return  Supplier for the given registry
+   * @return  Holder for the given registry
    */
   public static <T> Reference<T> getHolder(DefaultedRegistry<T> registry, T entry) {
     return registry.getHolder(registry.getId(entry)).orElseThrow();

@@ -4,7 +4,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
-import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,12 +22,12 @@ public class BuildingBlockObject extends ItemObject<Block> implements MultiObjec
    * Creates a new building block object from three blocks
    * @param block   Base block
    * @param slab    Slab block, should be an instance of SlabBlock
-   * @param stairs  Stairs block, should be an instance of StairsBlock
+   * @param stairs  Stairs block, should be an instance of StairBlock
    */
-  public BuildingBlockObject(Block block, Block slab, Block stairs) {
+  public BuildingBlockObject(Block block, SlabBlock slab, StairBlock stairs) {
     super(BuiltInRegistries.BLOCK, block);
-    this.slab = RegistrationHelper.getCastedHolder(BuiltInRegistries.BLOCK, slab);
-    this.stairs = RegistrationHelper.getCastedHolder(BuiltInRegistries.BLOCK, stairs);
+    this.slab = () -> slab;
+    this.stairs = () -> stairs;
   }
 
   /**
