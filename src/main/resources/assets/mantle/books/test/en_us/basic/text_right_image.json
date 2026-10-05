@@ -2,7 +2,7 @@
   "title": "Text Right Image",
   "image": {
     "item": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "left_text": [

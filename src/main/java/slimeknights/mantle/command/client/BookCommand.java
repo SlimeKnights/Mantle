@@ -258,7 +258,7 @@ public class BookCommand {
           }
 
           gui.pose().pushPose();
-          screen.render(gui, 0, 0, 0);
+          screen.renderPages(gui, 0, 0, 0);
           gui.flush();
           gui.pose().popPose();
 

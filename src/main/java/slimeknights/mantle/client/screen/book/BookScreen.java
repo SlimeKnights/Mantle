@@ -160,8 +160,14 @@ public class BookScreen extends Screen {
   }
 
   @Override
-  public void render(GuiGraphics graphics, int mouseX ,int mouseY, float partialTicks) {
-    if(this.minecraft == null) {
+  public void renderBackground(GuiGraphics graphics, int mouseX ,int mouseY, float partialTicks) {
+    super.renderBackground(graphics, mouseX, mouseY, partialTicks);
+    renderPages(graphics, mouseX, mouseY, partialTicks);
+  }
+
+  /** Renders all the contents of the book pages. Separate from {@link #renderBackground(GuiGraphics, int, int, float)} to allow the book command to call it directly. */
+  public void renderPages(GuiGraphics graphics, int mouseX ,int mouseY, float partialTicks) {
+    if (this.minecraft == null) {
       return;
     }
 
@@ -253,8 +259,6 @@ public class BookScreen extends Screen {
         }
       }
     }
-
-    super.render(graphics, mouseX, mouseY, partialTicks);
   }
 
   private boolean shouldRenderPage(int pageNum, boolean rightSide) {
