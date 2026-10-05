@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.apache.commons.io.IOUtils;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.data.SectionData;
 
@@ -29,6 +30,7 @@ public class FileRepository extends BookRepository {
     return new ArrayList<>(Arrays.asList(BookLoader.getGson().fromJson(this.resourceToString(this.getResource(this.getResourceLocation("index.json"))), SectionData[].class)));
   }
 
+  @Nullable
   @Override
   public ResourceLocation getResourceLocation(@Nullable String path, boolean safe) {
     if (path == null) {
@@ -50,16 +52,16 @@ public class FileRepository extends BookRepository {
       // TODO: this can be optimized if we return the resource instead of the location, how feasible is that in practice?
       //noinspection ConstantConditions - see above
       if (langPath != null) {
-        res = new ResourceLocation(this.location + "/" + langPath + "/" + path);
+        res = this.location.withSuffix("/" + langPath + "/" + path);
         if (this.resourceExists(res)) {
           return res;
         }
       }
-      res = new ResourceLocation(this.location + "/" + defaultLangPath + "/" + path);
+      res = this.location.withSuffix("/" + defaultLangPath + "/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
-      res = new ResourceLocation(this.location + "/" + path);
+      res = this.location.withSuffix("/" + path);
       if (this.resourceExists(res)) {
         return res;
       }
@@ -119,7 +121,7 @@ public class FileRepository extends BookRepository {
 
       return builder.toString().trim();
     } catch (IOException e) {
-      e.printStackTrace();
+      Mantle.logger.error("Failed to read resource", e);
     }
 
     return "";
