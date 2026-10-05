@@ -6,7 +6,8 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidType;
 
-/** Client logic for {@link slimeknights.mantle.fluid.InvertedFluidType} */
+/** Client logic for {@link slimeknights.mantle.fluid.InvertedFluid}. Register in {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent}. */
+@SuppressWarnings("unused")  // API
 public class ClientInvertedFluidType extends ClientTextureFluidType {
   private ResourceLocation lastFlowing;
   private ResourceLocation invertedFlowing;

@@ -17,7 +17,7 @@ import slimeknights.mantle.client.render.FluidRenderer;
 
 import javax.annotation.Nullable;
 
-/** Implementation of {@link IClientFluidTypeExtensions} using {@link FluidTexture} */
+/** Implementation of {@link IClientFluidTypeExtensions} using {@link FluidTexture}. Register in {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent}. */
 @RequiredArgsConstructor
 public class ClientTextureFluidType implements IClientFluidTypeExtensions {
   protected final FluidType type;

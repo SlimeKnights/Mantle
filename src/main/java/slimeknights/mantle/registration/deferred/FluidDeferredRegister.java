@@ -23,8 +23,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.block.fluid.BurningLiquidBlock;
 import slimeknights.mantle.block.fluid.MobEffectLiquidBlock;
 import slimeknights.mantle.fluid.InvertedFluid;
-import slimeknights.mantle.fluid.InvertedFluidType;
-import slimeknights.mantle.fluid.TextureFluidType;
 import slimeknights.mantle.fluid.UnplaceableFluid;
 import slimeknights.mantle.registration.DelayedSupplier;
 import slimeknights.mantle.registration.FluidBuilder;
@@ -118,22 +116,12 @@ public class FluidDeferredRegister extends DeferredRegisterWrapper<Fluid> {
 
     /** Registers a fluid with the given properties, using the texture fluid type */
     public Builder type(FluidType.Properties properties) {
-      return type(() -> new TextureFluidType(properties));
-    }
-
-    /** Registers a fluid with the given properties, using the inverted fluid type */
-    public Builder invertedType(FluidType.Properties properties) {
-      return type(() -> new InvertedFluidType(properties));
+      return type(() -> new FluidType(properties));
     }
 
     /** Registers a fluid with the given properties, using the texture fluid type */
     public Builder type() {
       return type(FluidType.Properties.create());
-    }
-
-    /** Registers a fluid with the given properties, using the inverted fluid type */
-    public Builder invertedType() {
-      return invertedType(FluidType.Properties.create());
     }
 
 
