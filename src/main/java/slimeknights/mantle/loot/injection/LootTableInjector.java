@@ -8,7 +8,6 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -39,12 +38,8 @@ public enum LootTableInjector implements IEarlyReloadListener {
 
   /** Initializes the loot table injector */
   public static void init() {
-    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, AddReloadListenerEvent.class, event -> {
-      event.addListener(INSTANCE);
-      INSTANCE.registry = event.getRegistryAccess();
-      INSTANCE.context = event.getConditionContext();
-    });
-    NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, LootTableLoadEvent.class, INSTANCE::lootTableLoad);
+    NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, INSTANCE::addReloadListeners);
+    NeoForge.EVENT_BUS.addListener(LootTableLoadEvent.class, INSTANCE::lootTableLoad);
   }
 
   /** Registry access for loot table stuff */
@@ -83,6 +78,13 @@ public enum LootTableInjector implements IEarlyReloadListener {
                          .collect(Collectors.toUnmodifiableMap(LootTableInjection::name, Function.identity()));
     // log timer
     Mantle.logger.info("Loaded {} loot table injectors injecting into {} tables in {} ms", loaded, injections.size(), (System.nanoTime() - time) / 1000000f);
+  }
+
+  /** Called on world load to register the reload listeners and fetch parsing contexts */
+  private void addReloadListeners(AddReloadListenerEvent event) {
+    event.addListener(this);
+    registry = event.getRegistryAccess();
+    context = event.getConditionContext();
   }
 
   /** Called on loot table load to handle the actual injection */

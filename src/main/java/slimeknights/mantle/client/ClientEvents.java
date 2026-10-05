@@ -25,7 +25,6 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -61,7 +60,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = Bus.MOD)
+@EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT)
 public class ClientEvents {
   /** Called on construct to initiatlize things that need early entry */
   public static void onConstruct() {}
@@ -102,13 +101,11 @@ public class ClientEvents {
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
-    NeoForge.EVENT_BUS.addListener(RenderGuiLayerEvent.Post.class, ClientEvents::renderOffhandAttackIndicator);
-    NeoForge.EVENT_BUS.addListener(RenderGuiLayerEvent.Post.class, ClientEvents::renderGaugeTooltip);
   }
 
-  // registered with FORGE bus
   /** Renders the offhand attack indicator. Based on {@link Gui#renderCrosshair(GuiGraphics, DeltaTracker)} and {@link Gui#renderItemHotbar(GuiGraphics, DeltaTracker)} */
-  private static void renderOffhandAttackIndicator(RenderGuiLayerEvent.Post event) {
+  @SubscribeEvent
+  static void renderOffhandAttackIndicator(RenderGuiLayerEvent.Post event) {
     // must have a player, not be in spectator, and have the indicator enabled
     Minecraft minecraft = Minecraft.getInstance();
     Options settings = minecraft.options;
@@ -174,7 +171,8 @@ public class ClientEvents {
 
 
   /** Renders the tooltip when targeting the gauge block */
-  private static void renderGaugeTooltip(RenderGuiLayerEvent.Post event) {
+  @SubscribeEvent
+  static void renderGaugeTooltip(RenderGuiLayerEvent.Post event) {
     // those RLs are passed into the event constructor, so instance comparison should be fine
     if (event.getName() != VanillaGuiLayers.CROSSHAIR) {
       return;
