@@ -18,9 +18,11 @@ import java.io.IOException;
 /** Handles any custom shaders registered by Mantle. */
 @EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT, bus = Bus.MOD)
 public class MantleShaders {
+  /** Shader used for blocks in structures to force them fullbright. Based on ... */
   @Nullable
   @Getter
   private static ShaderInstance blockFullBrightShader;
+  /** Shader used for fluids in block entity renderers. Based on {@link GameRenderer#positionColorTexLightmapShader} nad {@link GameRenderer#rendertypeEntityTranslucentCullShader} */
   @Nullable
   @Getter
   private static ShaderInstance fluidShader;
