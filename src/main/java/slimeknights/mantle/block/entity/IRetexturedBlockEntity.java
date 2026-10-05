@@ -8,8 +8,8 @@ import slimeknights.mantle.util.RetexturedHelper;
 
 /**
  * Standard interface that should be used by retexturable tile entities, allows control over where the texture is saved.
- * Note that in the future, more of these methods will be made abstract, discouraging the use of {@link #getPersistentData()} ()} to store the texture (as we can sync our own tag easier)
- *
+ * Note that in the future, more of these methods will be made abstract, discouraging the use of {@link #getPersistentData()} to store the texture (as we can sync our own tag easier)
+ * <p>
  * Use alongside {@link RetexturedBlock} and {@link RetexturedHelper}. See {@link DefaultRetexturedBlockEntity} for implementation.
  */
 public interface IRetexturedBlockEntity {

@@ -36,7 +36,7 @@ public class BlockEntityHelper {
 
   /**
    * Gets a block entity, checking its chunk is loaded first via {@link #isBlockLoaded(BlockGetter, BlockPos)}.
-   * @see slimeknights.mantle.network.packet.BlockEntityPacket#getBlockEntity(BlockGetter, BlockPos, Object)
+   * @see slimeknights.mantle.network.BlockEntityPacket#getBlockEntity(BlockGetter, BlockPos, Object)
    */
   @SuppressWarnings("unused")
   @Nullable

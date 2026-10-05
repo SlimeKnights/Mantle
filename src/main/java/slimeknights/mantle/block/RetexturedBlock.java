@@ -34,6 +34,7 @@ public abstract class RetexturedBlock extends Block implements EntityBlock {
     updateTextureBlock(world, pos, stack);
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
     return getPickBlock(level, pos, state);

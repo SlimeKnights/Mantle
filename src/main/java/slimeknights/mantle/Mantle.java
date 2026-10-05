@@ -135,9 +135,6 @@ public class Mantle {
       adapter.register(TagCombinationCondition.CODEC, "tag_combination_filled");
 
     } else if (key == Registries.RECIPE_SERIALIZER) {
-      // TODO: ingredient migration
-//      CraftingHelper.register(FluidContainerIngredient.ID, FluidContainerIngredient.SERIALIZER);
-
       // fluid container transfer
       IFluidContainerTransfer.LOADER.register(getResource("fill_item"), FillFluidContainerTransfer.LOADER);
       IFluidContainerTransfer.LOADER.register(getResource("fill_copy_data"), FillFluidCopyDataTransfer.LOADER);
