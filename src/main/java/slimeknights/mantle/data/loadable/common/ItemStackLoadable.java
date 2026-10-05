@@ -121,7 +121,7 @@ public class ItemStackLoadable {
 
     @Override
     public JsonElement serialize(ItemStack stack, TypedMap context) {
-      if ((this == FIXED_COUNT || stack.getCount() == 1) && !stack.getComponentsPatch().isEmpty()) {
+      if ((this == FIXED_COUNT || stack.getCount() == 1) && stack.isComponentsPatchEmpty()) {
         return OPTIONAL_ITEM.serialize(stack, context);
       }
       return RecordLoadable.super.serialize(stack, context);

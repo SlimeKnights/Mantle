@@ -28,7 +28,7 @@ public class FluidStackLoadable {
   /** Getter for an item from a stack */
   private static final Function<FluidStack,Fluid> FLUID_GETTER = FluidStack::getFluid;
   /** Checks if a stack can be serialized to a primitive, ignoring count */
-  private static final Predicate<FluidStack> COMPACT_NBT = stack -> !stack.getComponentsPatch().isEmpty();
+  private static final Predicate<FluidStack> COMPACT_NBT = FluidStack::isComponentsPatchEmpty;
   /** Maps a fluid stack that may be empty to a strictly not empty one */
   private static final BiFunction<FluidStack,ErrorFactory,FluidStack> NOT_EMPTY = (stack, error) -> {
     if (stack.isEmpty()) {
