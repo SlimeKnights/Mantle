@@ -1,84 +1,47 @@
 package slimeknights.mantle.registration.object;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-import javax.annotation.Nullable;
-import java.util.Objects;
-import java.util.function.Supplier;
-
 /**
- * Registry object wrapper to implement {@link ItemLike}.
- * TODO: reevaluate in light of {@link net.neoforged.neoforge.registries.DeferredBlock} and {@link net.neoforged.neoforge.registries.DeferredItem}
+ * Registry object wrapper that also implements {@link ItemLike}. Intended for use with objects that have multiple forms.
  * @param <I>  Item class
+ * @see net.neoforged.neoforge.registries.DeferredBlock
+ * @see net.neoforged.neoforge.registries.DeferredItem
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-@AllArgsConstructor
-public class ItemObject<I extends ItemLike> implements Supplier<I>, ItemLike, IdAwareObject {
-  /** Supplier to the registry entry */
-  private final Supplier<? extends I> entry;
-  /** Registry name for this entry, allows fetching the name before the entry resolves if registry object is used */
-  @Getter
-  private final ResourceLocation id;
+public class ItemObject<R extends ItemLike, I extends R> extends HolderWrapper<R,I> implements ItemLike {
+  /** Creates a new item object from a holder and key. */
+  public ItemObject(ResourceKey<R> key, Holder<R> holder) {
+    super(key, holder);
+  }
 
-  /**
-   * Creates a new item object from a supplier instance. Registry name will be fetched from the supplier entry, so the entry must be present during construction
-   * @param entry  Existing registry entry, typically a vanilla block or a registered block
-   */
-  public ItemObject(DefaultedRegistry<I> registry, I entry) {
-    this.entry = () -> entry;
-    this.id = registry.getKey(entry);
+  /** Creates a new item object from a holder reference. */
+  public ItemObject(Holder<R> holder) {
+    super(holder);
   }
 
   /**
    * Creates a new item object using the given registry object. This variant can resolve its name before the registry object entry resolves
-   * @param object  Object base
+   * @param holder  Object base
    */
-  public ItemObject(DeferredHolder<? super I,? extends I> object) {
-    this.entry = object;
-    this.id = object.getId();
+  public ItemObject(DeferredHolder<R, I> holder) {
+    super(holder);
   }
 
   /**
    * Creates a new item object using another item object. Intended to be used in a subclass to avoid an extra wrapper
    * @param object  Object base
    */
-  protected ItemObject(ItemObject<? extends I> object) {
-    this.entry = object.entry;
-    this.id = object.id;
-  }
-
-  /**
-   * Gets the entry, throwing an exception if not present
-   * @return  Entry
-   * @throws NullPointerException  if not present
-   */
-  @Override
-  public I get() {
-    return Objects.requireNonNull(entry.get(), () -> "Item Object not present " + id);
-  }
-
-  /**
-   * Gets the entry, or null if its not present
-   * @return  entry, or null if missing
-   */
-  @Nullable
-  public I getOrNull() {
-    try {
-      return entry.get();
-    } catch (NullPointerException e) {
-      // thrown by RegistryObject if missing value
-      return null;
-    }
+  protected ItemObject(ItemObject<R, ? extends I> object) {
+    super(object);
   }
 
   @Override
   public Item asItem() {
-    return get().asItem();
+    return holder.value().asItem();
   }
 }

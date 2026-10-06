@@ -2,43 +2,40 @@ package slimeknights.mantle.registration.object;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import net.minecraft.core.Holder;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * Represents an object which is a map of an enum to entry
  * @param <T>  Enum type
- * @param <I>  Entry type
+ * @param <R>  Registry type
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
+public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> {
   /** Singleton empty object, type does not matter as it has no items */
   @SuppressWarnings({"rawtypes", "unchecked"})
   private static final EnumObject EMPTY = new EnumObject(Collections.emptyMap());
 
   /** Internal backing supplier map */
-  private final Map<T,Supplier<? extends I>> map;
+  private final Map<T, Holder<R>> map;
 
   /**
-   * Gets a entry supplier for the given value
-   * @param value  Value to get
-   * @return  Entry supplier
+   * Gets the holder for the given value.
+   * @param value  Enum value
+   * @return  Holder
    */
   @Nullable
-  public Supplier<? extends I> getSupplier(T value) {
+  public Holder<R> getHolder(T value) {
     return map.get(value);
   }
 
@@ -49,12 +46,12 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
    * @throws NoSuchElementException  If the key is not defined
    * @throws NullPointerException    If the supplier at the key returns null
    */
-  public I get(T value) {
-    Supplier<? extends I> supplier = map.get(value);
-    if (supplier == null) {
+  public R get(T value) {
+    Holder<R> holder = map.get(value);
+    if (holder == null) {
       throw new NoSuchElementException("Missing key " + value);
     }
-    return Objects.requireNonNull(supplier.get(), () -> "No enum object value for " + value);
+    return holder.value();
   }
 
   /**
@@ -63,16 +60,31 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
    * @return  Value, or null if missing
    */
   @Nullable
-  public I getOrNull(T value) {
-    Supplier<? extends I> supplier = map.get(value);
-    if (supplier == null) {
+  public R getOrNull(T value) {
+    Holder<R> holder = map.get(value);
+    if (holder == null) {
       return null;
     }
-    try {
-      return supplier.get();
-    } catch (NullPointerException e) {
-      return null;
-    }
+    return holder.value();
+  }
+
+
+  /* Values */
+
+  /** Gets all present keys for this object */
+  public Collection<T> keys() {
+    return this.map.keySet();
+  }
+
+  /** Get all present holders for this object */
+  @Override
+  public Collection<Holder<R>> holders() {
+    return this.map.values();
+  }
+
+  /** Gets the set of entries for this object */
+  public Collection<Entry<T,Holder<R>>> entries() {
+    return this.map.entrySet();
   }
 
   /**
@@ -81,77 +93,77 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
    * @return  True if the value is contained, false otherwise
    */
   public boolean contains(Object value) {
-    return this.map.values().stream().map(Supplier::get).anyMatch(value::equals);
-  }
-
-  /** Gets all present keys for this object */
-  public Collection<T> keys() {
-    return this.map.keySet();
-  }
-
-  /** Gets the set of entries for this object */
-  public Collection<Entry<T,Supplier<? extends I>>> entries() {
-    return this.map.entrySet();
-  }
-
-  /**
-   * Gets a list of values in this enum object. Will error if a {@link net.neoforged.neoforge.registries.DeferredHolder} cannot be resolved, unlike {@link #forEach(Consumer)}
-   * @return  List of values in the object
-   */
-  @Override
-  public List<I> values() {
-    return this.map.values().stream().map(Supplier::get).filter(Objects::nonNull).collect(Collectors.toList());
+    return stream().anyMatch(value::equals);
   }
 
   /**
    * Runs the given consumer on each key in the enum object.
-   * Will ignore any suppliers that have not yet resolved, to work around a Forge error with registry events failing.
+   * @param consumer  Consumer passed each key holder pair
+   */
+  public void forEachHolder(BiConsumer<T, ? super Holder<R>> consumer) {
+    this.map.forEach(consumer);
+  }
+
+  /**
+   * Runs the given consumer on each key in the enum object.
+   * Will ignore any suppliers that have not yet resolved, to work around an error with registry events failing (which may or may not still be a thing).
    * @param consumer  Consumer passed each key value pair
    */
-  public void forEach(BiConsumer<T, ? super I> consumer) {
-    this.map.forEach((key, sup) -> {
-      I value;
-      try {
-        value = sup.get();
-      } catch (NullPointerException e) {
-        // registry object throws null pointer exception on get if the object is not registered, ignore
-        return;
-      }
-      if (value != null) {
-        consumer.accept(key, value);
+  public void forEach(BiConsumer<T, ? super R> consumer) {
+    this.map.forEach((key, holder) -> {
+      if (holder.isBound()) {
+        consumer.accept(key, holder.value());
       }
     });
   }
 
-  /**
-   * Runs the given consumer on each key in the enum object.
-   * Will ignore any suppliers that have not yet resolved, to work around a Forge error with registry events failing.
-   * @param consumer  Consumer passed each key value pair
-   */
-  @Override
-  public void forEach(Consumer<? super I> consumer) {
-    forEach((k, v) -> consumer.accept(v));
-  }
+
+  /* Builders */
 
   /**
-   * Fetches the empty enum object, casted to the given type. This is useful to reduce potential of null pointers by default fields to empty map
+   * Fetches the empty enum object, cast to the given type. This is useful to reduce potential of null pointers by default fields to empty map
    * @param <T>  Key type
-   * @param <I>  Value type
+   * @param <R>  Registry type
    * @return  Empty EnumObject
    */
   @SuppressWarnings("unchecked")
-  public static <T extends Enum<T>, I> EnumObject<T,I> empty() {
-    return (EnumObject<T,I>) EMPTY;
+  public static <T extends Enum<T>, R> EnumObject<T,R> empty() {
+    return (EnumObject<T,R>) EMPTY;
+  }
+
+  /** Creates a new builder instance */
+  public static <T extends Enum<T>, R, I extends R> EnumObject.Builder<T,R> builder(Class<T> clazz) {
+    return new Builder<>(clazz);
+  }
+
+  /**
+   * Registers an item with multiple variants, prefixing the name with the value name
+   * @param values      Enum values to use for this block
+   * @param register    Function to register an entry
+   * @return  EnumObject mapping between different block types
+   */
+  public static <E extends Enum<E>,R> EnumObject<E,R> generate(E[] values, Function<E,@Nullable Holder<R>> register) {
+    if (values.length == 0) {
+      throw new IllegalArgumentException("Must have at least one value");
+    }
+    EnumObject.Builder<E,R> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
+    for (E value : values) {
+      Holder<R> holder = register.apply(value);
+      if (holder != null) {
+        builder.put(value, holder);
+      }
+    }
+    return builder.build();
   }
 
   /**
    * Enum object builder, to more conveiently create it from items, a map, or another enum object
    * @param <T>  Enum type
-   * @param <I>  Entry type
+   * @param <R>  Registry type
    */
   @SuppressWarnings({"UnusedReturnValue", "unused"})
-  public static class Builder<T extends Enum<T>, I> {
-    private final Map<T, Supplier<? extends I>> map;
+  public static class Builder<T extends Enum<T>, R> {
+    private final Map<T,Holder<R>> map;
     public Builder(Class<T> clazz) {
       this.map = new EnumMap<>(clazz);
     }
@@ -162,21 +174,8 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
      * @param value  Value
      * @return  Builder instance
      */
-    public Builder<T,I> put(T key, Supplier<? extends I> value) {
+    public Builder<T,R> put(T key, Holder<R> value) {
       this.map.put(key, value);
-      return this;
-    }
-
-    /**
-     * Adds the given registry delegate to this enum object.
-     * This method does an unchecked cast to add the object, so be absolutely certain the class it right.
-     * @param key    Key
-     * @param value  Registry delegate
-     * @return  Builder instance
-     */
-    public Builder<T,I> put(T key, I value) {
-      // TODO: should we use holders? is there a practical way to fetch one?
-      this.map.put(key, () -> value);
       return this;
     }
 
@@ -185,7 +184,7 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
      * @param map  Map
      * @return  Builder instance
      */
-    public Builder<T,I> putAll(Map<T, Supplier<? extends I>> map) {
+    public Builder<T,R> putAll(Map<T, Holder<R>> map) {
       this.map.putAll(map);
       return this;
     }
@@ -195,7 +194,7 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
      * @param object  Enum object
      * @return  Builder instance
      */
-    public Builder<T,I> putAll(EnumObject<T,? extends I> object) {
+    public Builder<T,R> putAll(EnumObject<T,R> object) {
       this.map.putAll(object.map);
       return this;
     }
@@ -204,7 +203,7 @@ public class EnumObject<T extends Enum<T>, I> implements MultiObject<I> {
      * Creates the final enum object
      * @return  Constructed enum object
      */
-    public EnumObject<T,I> build() {
+    public EnumObject<T,R> build() {
       return new EnumObject<>(map);
     }
   }

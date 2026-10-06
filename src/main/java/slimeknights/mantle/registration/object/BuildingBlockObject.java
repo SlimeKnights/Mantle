@@ -1,22 +1,22 @@
 package slimeknights.mantle.registration.object;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import lombok.Getter;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Object containing a block with slab and stairs variants
  */
 @SuppressWarnings("WeakerAccess")
-public class BuildingBlockObject extends ItemObject<Block> implements MultiObject<Block> {
-  private final Supplier<? extends SlabBlock> slab;
-  private final Supplier<? extends StairBlock> stairs;
+@Getter
+public class BuildingBlockObject extends ItemObject<Block,Block> implements MultiObject.Holders<Block> {
+  protected final Holder<Block> slabHolder;
+  protected final Holder<Block> stairsHolder;
 
   /**
    * Creates a new building block object from three blocks
@@ -24,10 +24,10 @@ public class BuildingBlockObject extends ItemObject<Block> implements MultiObjec
    * @param slab    Slab block, should be an instance of SlabBlock
    * @param stairs  Stairs block, should be an instance of StairBlock
    */
-  public BuildingBlockObject(Block block, SlabBlock slab, StairBlock stairs) {
-    super(BuiltInRegistries.BLOCK, block);
-    this.slab = () -> slab;
-    this.stairs = () -> stairs;
+  public BuildingBlockObject(Holder<Block> block, Holder<Block> slab, Holder<Block> stairs) {
+    super(block);
+    this.slabHolder = slab;
+    this.stairsHolder = stairs;
   }
 
   /**
@@ -36,10 +36,10 @@ public class BuildingBlockObject extends ItemObject<Block> implements MultiObjec
    * @param slab    Slab block
    * @param stairs  Stairs block
    */
-  public BuildingBlockObject(ItemObject<? extends Block> block, Supplier<? extends SlabBlock> slab, Supplier<? extends StairBlock> stairs) {
+  public BuildingBlockObject(DeferredHolder<Block,? extends Block> block, Holder<Block> slab, Holder<Block> stairs) {
     super(block);
-    this.slab = slab;
-    this.stairs = stairs;
+    this.slabHolder = slab;
+    this.stairsHolder = stairs;
   }
 
   /**
@@ -48,29 +48,22 @@ public class BuildingBlockObject extends ItemObject<Block> implements MultiObjec
    */
   protected BuildingBlockObject(BuildingBlockObject object) {
     super(object);
-    this.slab = object.slab;
-    this.stairs = object.stairs;
+    this.slabHolder = object.slabHolder;
+    this.stairsHolder = object.stairsHolder;
   }
 
   /** Gets the slab for this block */
   public SlabBlock getSlab() {
-    return Objects.requireNonNull(slab.get(), "Building Block Object missing slab");
+    return (SlabBlock) slabHolder.value();
   }
 
   /** Gets the stairs for this block */
   public StairBlock getStairs() {
-    return Objects.requireNonNull(stairs.get(), "Building Block Object missing stairs");
+    return (StairBlock) stairsHolder.value();
   }
 
   @Override
-  public List<Block> values() {
-    return List.of(get(), getSlab(), getStairs());
-  }
-
-  @Override
-  public void forEach(Consumer<? super Block> consumer) {
-    consumer.accept(get());
-    consumer.accept(getSlab());
-    consumer.accept(getStairs());
+  public List<Holder<Block>> holders() {
+    return List.of(holder, slabHolder, stairsHolder);
   }
 }

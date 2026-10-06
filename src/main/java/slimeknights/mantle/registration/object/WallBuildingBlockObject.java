@@ -1,52 +1,37 @@
 package slimeknights.mantle.registration.object;
 
+import lombok.Getter;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Object containing a block with slab, stairs, and wall variants
  */
 @SuppressWarnings("unused")
+@Getter
 public class WallBuildingBlockObject extends BuildingBlockObject {
-  private final Supplier<? extends WallBlock> wall;
+  protected final Holder<Block> wallHolder;
 
   /**
    * Creates a new object from a building block object plus a wall.
    * @param object  Previous building block object
    * @param wall    Wall object
    */
-  public WallBuildingBlockObject(BuildingBlockObject object, Supplier<? extends WallBlock> wall) {
+  public WallBuildingBlockObject(BuildingBlockObject object, Holder<Block> wall) {
     super(object);
-    this.wall = wall;
-  }
-
-  /**
-   * Creates a new wall building block object from the given blocks
-   * @param object  Building block object
-   * @param wall    Wall entry
-   */
-  public WallBuildingBlockObject(BuildingBlockObject object, WallBlock wall) {
-    this(object, () -> wall);
+    this.wallHolder = wall;
   }
 
   /** Gets the wall for this block */
   public WallBlock getWall() {
-    return Objects.requireNonNull(wall.get(), "Wall Building Block Object missing wall");
+    return (WallBlock) wallHolder.value();
   }
 
   @Override
-  public void forEach(Consumer<? super Block> consumer) {
-    super.forEach(consumer);
-    consumer.accept(getWall());
-  }
-
-  @Override
-  public List<Block> values() {
-    return List.of(get(), getSlab(), getStairs(), getWall());
+  public List<Holder<Block>> holders() {
+    return List.of(holder, slabHolder, stairsHolder, wallHolder);
   }
 }

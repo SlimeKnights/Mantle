@@ -1,23 +1,23 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
+import net.minecraft.core.Holder;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static slimeknights.mantle.Mantle.commonResource;
 
 /** Object wrapper containing ingots, nuggets, and blocks */
-public class MetalItemObject extends ItemObject<Block> implements MultiObject<ItemLike> {
-  private final Supplier<? extends Item> ingot;
-  private final Supplier<? extends Item> nugget;
+public class MetalItemObject extends ItemObject<Block,Block> implements MultiObject<ItemLike> {
+  private final Holder<Item> ingotHolder;
+  private final Holder<Item> nuggetHolder;
   @Getter
   private final TagKey<Block> blockTag;
   @Getter
@@ -27,10 +27,10 @@ public class MetalItemObject extends ItemObject<Block> implements MultiObject<It
   @Getter
   private final TagKey<Item> nuggetTag;
 
-  public MetalItemObject(String tagName, ItemObject<? extends Block> block, Supplier<? extends Item> ingot, Supplier<? extends Item> nugget) {
+  public MetalItemObject(String tagName, DeferredHolder<Block,? extends Block> block, Holder<Item> ingot, Holder<Item> nugget) {
     super(block);
-    this.ingot = ingot;
-    this.nugget = nugget;
+    this.ingotHolder = ingot;
+    this.nuggetHolder = nugget;
     this.blockTag = BlockTags.create(commonResource("storage_blocks/" + tagName));
     this.blockItemTag = getTag("storage_blocks/" + tagName);
     this.ingotTag = getTag("ingots/" + tagName);
@@ -39,12 +39,12 @@ public class MetalItemObject extends ItemObject<Block> implements MultiObject<It
 
   /** Gets the ingot for this object */
   public Item getIngot() {
-    return ingot.get();
+    return ingotHolder.value();
   }
 
   /** Gets the ingot for this object */
   public Item getNugget() {
-    return nugget.get();
+    return nuggetHolder.value();
   }
 
   /**
@@ -59,12 +59,5 @@ public class MetalItemObject extends ItemObject<Block> implements MultiObject<It
   @Override
   public List<ItemLike> values() {
     return List.of(get(), getIngot(), getIngot());
-  }
-
-  @Override
-  public void forEach(Consumer<? super ItemLike> consumer) {
-    consumer.accept(get());
-    consumer.accept(getIngot());
-    consumer.accept(getNugget());
   }
 }
