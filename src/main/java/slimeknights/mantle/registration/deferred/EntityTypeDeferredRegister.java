@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.object.EntityObject;
 
 import java.util.function.Supplier;
@@ -16,12 +17,16 @@ import java.util.function.Supplier;
  * Deferred register for an entity, building the type from a builder instance and adding an egg
  */
 @SuppressWarnings("unused")
-public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityType<?>> {
+public class EntityTypeDeferredRegister extends DeferredRegister<EntityType<?>> {
+  private final DeferredRegister<Item> itemRegistry;
 
-  private final SynchronizedDeferredRegister<Item> itemRegistry;
-  public EntityTypeDeferredRegister(String modID) {
+  public EntityTypeDeferredRegister(String modID, DeferredRegister<Item> itemRegistry) {
     super(Registries.ENTITY_TYPE, modID);
-    itemRegistry = SynchronizedDeferredRegister.create(Registries.ITEM, modID);
+    this.itemRegistry = itemRegistry;
+  }
+
+  public EntityTypeDeferredRegister(String modID) {
+    this(modID, DeferredRegister.create(Registries.ITEM, modID));
   }
 
   @Override
@@ -31,14 +36,14 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
   }
 
   /**
-   * Registers a entity type for the given entity type builder
+   * Registers an entity type for the given entity type builder with no spawn egg.
    * @param name  Entity name
    * @param sup   Entity builder instance
    * @param <T>   Entity class type
    * @return  Entity registry object
    */
-  public <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, Supplier<EntityType.Builder<T>> sup) {
-    return register.register(name, () -> sup.get().build(resourceName(name)));
+  public <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> registerNoEgg(String name, Supplier<EntityType.Builder<T>> sup) {
+    return register(name, id -> sup.get().build(id.toString()));
   }
 
   /**
@@ -51,7 +56,7 @@ public class EntityTypeDeferredRegister extends DeferredRegisterWrapper<EntityTy
    * @return  Entity registry object
    */
   public <T extends Mob> EntityObject<T> registerWithEgg(String name, Supplier<EntityType.Builder<T>> sup, int primary, int secondary) {
-    DeferredHolder<EntityType<?>, EntityType<T>> object = register(name, sup);
+    DeferredHolder<EntityType<?>, EntityType<T>> object = registerNoEgg(name, sup);
     return new EntityObject<>(object, itemRegistry.register(name + "_spawn_egg", () -> new DeferredSpawnEggItem(object, primary, secondary, new Item.Properties())));
   }
 }

@@ -6,21 +6,16 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Locale;
-import java.util.function.Supplier;
 
 /** Helper for registering potions */
 @SuppressWarnings("unused")  // API
-public class PotionDeferredRegister extends DeferredRegisterWrapper<Potion> {
+public class PotionDeferredRegister extends DeferredRegister<Potion> {
   public PotionDeferredRegister(String modID) {
     super(Registries.POTION, modID);
-  }
-
-  /** Registers a standalone potion */
-  public DeferredHolder<Potion,Potion> register(String name, Supplier<Potion> potion) {
-    return register.register(name, potion);
   }
 
   /** Registers a group of potions with the same effect */
@@ -65,7 +60,7 @@ public class PotionDeferredRegister extends DeferredRegisterWrapper<Potion> {
     /** Adds the given potion type */
     private Builder with(PotionType type, int duration, int amplifier) {
       String prefix = type == PotionType.NORMAL ? "" : type.toString().toLowerCase(Locale.ROOT) + '_';
-      builder.put(type, register(prefix + name, () -> new Potion(modID + "." + name, new MobEffectInstance(effect, duration, amplifier))));
+      builder.put(type, register(prefix + name, () -> new Potion(getNamespace() + "." + name, new MobEffectInstance(effect, duration, amplifier))));
       return this;
     }
 

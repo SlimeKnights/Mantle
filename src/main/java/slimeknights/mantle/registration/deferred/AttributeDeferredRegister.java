@@ -4,10 +4,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 /** Deferred register for making attribute instances */
 @SuppressWarnings("unused")  // API
-public class AttributeDeferredRegister extends DeferredRegisterWrapper<Attribute> {
+public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
   public AttributeDeferredRegister(String modID) {
     super(Registries.ATTRIBUTE, modID);
   }
@@ -22,7 +23,7 @@ public class AttributeDeferredRegister extends DeferredRegisterWrapper<Attribute
    * @return  Registered attribute
    */
   public DeferredHolder<Attribute,Attribute> register(String name, double defaultValue, double min, double max, boolean syncable) {
-    return register.register(name, () -> new RangedAttribute("attribute.name." + modID + "." + name, defaultValue, min, max).setSyncable(syncable));
+    return register(name, () -> new RangedAttribute("attribute.name." + getNamespace() + "." + name, defaultValue, min, max).setSyncable(syncable));
   }
 
   /**

@@ -14,7 +14,7 @@ public class LootConditionDeferredRegister extends DeferredRegister<LootItemCond
   }
 
   /** Registers a loot condition from the given codec */
-  public  DeferredHolder<LootItemConditionType, LootItemConditionType> register(String name, MapCodec<? extends LootItemCondition> codec) {
+  public DeferredHolder<LootItemConditionType, LootItemConditionType> register(String name, MapCodec<? extends LootItemCondition> codec) {
     return register(name, () -> new LootItemConditionType(codec));
   }
 }

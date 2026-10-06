@@ -2,22 +2,48 @@ package slimeknights.mantle.registration.deferred;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.object.EnumObject;
 
+import java.util.Locale;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /** Generic deferred register for an object using registry objects and wanting enums */
-public class EnumDeferredRegister<T> extends DeferredRegisterWrapper<T> {
-  public EnumDeferredRegister(ResourceKey<Registry<T>> reg, String modID) {
+@SuppressWarnings("unused")  // API
+public class EnumDeferredRegister<R> extends DeferredRegister<R> {
+  public EnumDeferredRegister(ResourceKey<Registry<R>> reg, String modID) {
     super(reg, modID);
   }
 
-  /** Registers a standard object */
-  public <I extends T> DeferredHolder<T,I> register(String name, Supplier<? extends I> value) {
-    return register.register(name, value);
+  /**
+   * Gets a resource location object for the given name
+   * @param name  Name
+   * @return  Resource location string
+   */
+  protected ResourceLocation resource(String name) {
+    return ResourceLocation.fromNamespaceAndPath(getNamespace(), name);
+  }
+
+  /**
+   * Gets a resource location string for the given name
+   * @param name  Name
+   * @return  Resource location string
+   */
+  protected String resourceName(String name) {
+    return getNamespace() + ":" + name;
+  }
+
+  /**
+   * Registers an object with multiple variants, using the given name mapper.
+   * @param values      Enum values to use for this item
+   * @param nameGetter  Function to get the name from each enum element
+   * @param mapper      Function to get an object for the given enum value
+   * @return  EnumObject mapping between different item types
+   */
+  public <E extends Enum<E>> EnumObject<E,R> registerEnum(E[] values, Function<? super E,String> nameGetter, Function<E,? extends R> mapper) {
+    return EnumObject.generate(values, value -> register(nameGetter.apply(value), () -> mapper.apply(value)));
   }
 
   /**
@@ -27,8 +53,8 @@ public class EnumDeferredRegister<T> extends DeferredRegisterWrapper<T> {
    * @param mapper   Function to get an object for the given enum value
    * @return  EnumObject mapping between different item types
    */
-  public <E extends Enum<E> & StringRepresentable, I extends T> EnumObject<E,I> registerEnum(E[] values, String name, Function<E,? extends I> mapper) {
-    return registerEnum(values, name, (fullName, type) -> register(fullName, () -> mapper.apply(type)));
+  public <E extends Enum<E>> EnumObject<E,R> registerEnum(E[] values, String name, Function<E,? extends R> mapper) {
+    return registerEnum(values, suffix(name), mapper);
   }
 
   /**
@@ -38,7 +64,25 @@ public class EnumDeferredRegister<T> extends DeferredRegisterWrapper<T> {
    * @param mapper   Function to get an object for the given enum value
    * @return  EnumObject mapping between different item types
    */
-  public <E extends Enum<E> & StringRepresentable, I extends T> EnumObject<E,I> registerEnum(String name, E[] values, Function<E,? extends I> mapper) {
-    return registerEnum(name, values, (fullName, type) -> register(fullName, () -> mapper.apply(type)));
+  public <E extends Enum<E>> EnumObject<E,R> registerEnum(String name, E[] values, Function<E,? extends R> mapper) {
+    return registerEnum(values, prefix(name), mapper);
+  }
+
+
+  /* Static helpers */
+
+  /** Gets the name of an enum value */
+  private static String getName(Enum<?> value) {
+    return value instanceof StringRepresentable representable ? representable.getSerializedName() : value.name().toLowerCase(Locale.ROOT);
+  }
+
+  /** Creates a name function for prefixing the enum name. */
+  public static Function<Enum<?>,String> prefix(String prefix) {
+    return e -> prefix + '_' + getName(e);
+  }
+
+  /** Creates a name function for suffixing the enum name. */
+  public static Function<Enum<?>,String> suffix(String suffix) {
+    return e -> getName(e) + '_' + suffix;
   }
 }

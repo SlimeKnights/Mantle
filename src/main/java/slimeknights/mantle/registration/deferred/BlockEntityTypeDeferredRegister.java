@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import javax.annotation.Nullable;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  * Deferred register to register tile entity instances.
  */
 @SuppressWarnings("unused")  // API
-public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<BlockEntityType<?>> {
+public class BlockEntityTypeDeferredRegister extends DeferredRegister<BlockEntityType<?>> {
   public BlockEntityTypeDeferredRegister(String modID) {
     super(Registries.BLOCK_ENTITY_TYPE, modID);
   }
@@ -32,7 +33,7 @@ public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<Blo
    */
   @Nullable
   private Type<?> getType(String name) {
-    return Util.fetchChoiceType(References.BLOCK_ENTITY, resourceName(name));
+    return Util.fetchChoiceType(References.BLOCK_ENTITY, getNamespace() + ':' + name);
   }
 
   /**
@@ -45,7 +46,7 @@ public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<Blo
    */
   @SuppressWarnings("ConstantConditions")
   public <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> register(String name, BlockEntitySupplier<? extends T> factory, Supplier<? extends Block> block) {
-    return register.register(name, () ->  BlockEntityType.Builder.<T>of(factory, block.get()).build(getType(name)));
+    return register(name, () ->  BlockEntityType.Builder.<T>of(factory, block.get()).build(getType(name)));
   }
 
   /**
@@ -58,7 +59,7 @@ public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<Blo
    */
   @SuppressWarnings("ConstantConditions")
   public <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> register(String name, BlockEntitySupplier<? extends T> factory, EnumObject<?, ? extends Block> blocks) {
-    return register.register(name, () ->  new BlockEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)));
+    return register(name, () ->  new BlockEntityType<>(factory, ImmutableSet.copyOf(blocks.values()), getType(name)));
   }
 
   /**
@@ -71,7 +72,7 @@ public class BlockEntityTypeDeferredRegister extends DeferredRegisterWrapper<Blo
    */
   @SuppressWarnings("ConstantConditions")
   public <T extends BlockEntity> DeferredHolder<BlockEntityType<?>,BlockEntityType<T>> register(String name, BlockEntitySupplier<? extends T> factory, Consumer<ImmutableSet.Builder<Block>> blockCollector) {
-    return register.register(name, () ->  {
+    return register(name, () ->  {
       ImmutableSet.Builder<Block> blocks = ImmutableSet.builder();
       blockCollector.accept(blocks);
       return new BlockEntityType<>(factory, blocks.build(), getType(name));

@@ -6,13 +6,14 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.RegistrationHelper;
 
 import java.util.function.Supplier;
 
 /** Register for argument types that automatically handles registering with {@link ArgumentTypeInfos#registerByClass(Class, ArgumentTypeInfo)} */
-@SuppressWarnings("UnusedReturnValue")
-public class ArgumentTypeDeferredRegister extends DeferredRegisterWrapper<ArgumentTypeInfo<?,?>> {
+@SuppressWarnings("unused")  // API
+public class ArgumentTypeDeferredRegister extends DeferredRegister<ArgumentTypeInfo<?,?>> {
   public ArgumentTypeDeferredRegister(String modID) {
     super(Registries.COMMAND_ARGUMENT_TYPE, modID);
   }
@@ -28,7 +29,7 @@ public class ArgumentTypeDeferredRegister extends DeferredRegisterWrapper<Argume
    * @return  Registry object
    */
   public <A extends ArgumentType<?>,T extends ArgumentTypeInfo.Template<A>,I extends ArgumentTypeInfo<A,T>> DeferredHolder<ArgumentTypeInfo<?,?>,I> register(String name, Class<? super A> argumentClass, Supplier<I> supplier) {
-    return register.register(name, () -> {
+    return register(name, () -> {
       I info = supplier.get();
       ArgumentTypeInfos.registerByClass(RegistrationHelper.genericArgumentType(argumentClass), info);
       return info;
