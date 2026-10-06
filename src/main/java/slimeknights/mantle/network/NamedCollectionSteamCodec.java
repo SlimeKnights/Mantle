@@ -26,22 +26,20 @@ public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends Stre
   Streamable<T> streamable();
 
   /** Gets the context without ID. Used for both encoding and decoding. */
-  default TypedMapBuilder prepareContext(RegistryAccess access) {
+  default TypedMapBuilder encoderContext(RegistryAccess access) {
     return TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, access);
   }
 
   /** Gets the context for the given ID. By default, includes ID, debug, and registry lookup. Used specifically on decoding. */
-  default TypedMap makeContext(ResourceLocation id, RegistryAccess access) {
-    return TypedMapBuilder.builder()
+  default TypedMapBuilder decoderContext(ResourceLocation id, RegistryAccess access) {
+    return encoderContext(access)
       .put(ContextKey.ID, id)
-      .put(ContextKey.DEBUG, debugName() + ' ' + id)
-      .put(ContextKey.REGISTRY_LOOKUP, access)
-      .build();
+      .put(ContextKey.DEBUG, debugName() + ' ' + id);
   }
 
   @Override
   default void encode(RegistryFriendlyByteBuf buffer, Collection<T> collection) {
-    TypedMap context = prepareContext(buffer.registryAccess()).build();
+    TypedMap context = encoderContext(buffer.registryAccess()).build();
     Streamable<T> streamable = streamable();
     buffer.writeVarInt(collection.size());
     for (T value : collection) {
@@ -67,7 +65,7 @@ public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends Stre
       ResourceLocation id = buffer.readResourceLocation();
       // add more context to error message and ensure its logged
       try {
-        collection.add(streamable().decode(buffer, makeContext(id, access)));
+        collection.add(streamable().decode(buffer, decoderContext(id, access).build()));
       } catch (RuntimeException e) {
         Mantle.logger.error("Failed to decode {} with ID {}", debugName(), id, e);
         // if in production, attempt to recover by returning what worked
