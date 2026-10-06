@@ -16,7 +16,6 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.loot.condition.BlockTagLootCondition;
 import slimeknights.mantle.loot.condition.HasLootContextSetCondition;
 import slimeknights.mantle.loot.entry.TagPreferenceLootEntry;
-import slimeknights.mantle.loot.function.RetexturedLootFunction;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.loot.modifier.AddEntryLootModifier;
 import slimeknights.mantle.loot.modifier.ReplaceItemLootModifier;
@@ -59,7 +58,8 @@ public class MantleLoot {
   public static final DeferredHolder<LootItemConditionType,LootItemConditionType> HAS_CONTEXT_SET = LOOT_CONDITIONS.register("has_context_set", HasLootContextSetCondition.CODEC);
 
   /** Function to add block entity texture to a dropped item */
-  public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<RetexturedLootFunction>> RETEXTURED_FUNCTION = LOOT_FUNCTIONS.register("fill_retextured_block", RetexturedLootFunction.CODEC);
+  @SuppressWarnings("removal")
+  public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<slimeknights.mantle.loot.function.RetexturedLootFunction>> RETEXTURED_FUNCTION = LOOT_FUNCTIONS.register("fill_retextured_block", slimeknights.mantle.loot.function.RetexturedLootFunction.CODEC);
   /** Function to add a fluid to an item fluid capability */
   public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<SetFluidLootFunction>> SET_FLUID_FUNCTION = LOOT_FUNCTIONS.register("set_fluid", SetFluidLootFunction.CODEC);
 

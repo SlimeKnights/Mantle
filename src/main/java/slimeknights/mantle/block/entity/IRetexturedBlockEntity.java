@@ -1,9 +1,15 @@
 package slimeknights.mantle.block.entity;
 
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity.DataComponentInput;
 import slimeknights.mantle.block.RetexturedBlock;
+import slimeknights.mantle.registration.MantleData;
 import slimeknights.mantle.util.RetexturedHelper;
 
 /**
@@ -44,6 +50,36 @@ public interface IRetexturedBlockEntity {
     if (!oldName.equals(newName)) {
       // this is an unchecked cast, but no one should be using this interface not on a block entity
       RetexturedHelper.onTextureUpdated((BlockEntity)this);
+    }
+  }
+
+
+  /* Component copying helpers */
+
+  /**
+   * Implementation of {@link BlockEntity#applyImplicitComponents(DataComponentInput)} using {@link #updateTexture(Block)}.
+   * For some implementations it may be easier to manually implement that method and bypass the block updates.
+   */
+  static void applyImplicitComponents(IRetexturedBlockEntity blockEntity, BlockEntity.DataComponentInput input) {
+    blockEntity.updateTexture(input.getOrDefault(MantleData.BLOCK_TEXTURE, Blocks.AIR));
+  }
+
+  /** Implementation of {@link BlockEntity#collectImplicitComponents(Builder)} using {@link #getTexture()}. */
+  static void collectImplicitComponents(IRetexturedBlockEntity blockEntity, DataComponentMap.Builder builder) {
+    Block texture = blockEntity.getTexture();
+    if (texture != Blocks.AIR) {
+      builder.set(MantleData.BLOCK_TEXTURE, texture);
+    }
+  }
+
+  /** Implementation of {@link BlockEntity#collectImplicitComponents(Builder)} using data in {@link BlockEntity#getPersistentData()}. If directly managing the data you can just directly remove it. */
+  static void removeComponentsFromTag(CompoundTag tag) {
+    if (tag.contains("NeoForgeData", Tag.TAG_COMPOUND)) {
+      CompoundTag persistentData = tag.getCompound("NeoForgeData");
+      persistentData.remove(RetexturedHelper.TAG_TEXTURE);
+      if (persistentData.isEmpty()) {
+        tag.remove("NeoForgeData");
+      }
     }
   }
 }

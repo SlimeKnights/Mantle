@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -19,9 +20,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.block.entity.IRetexturedBlockEntity;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.registration.MantleData;
 
@@ -211,5 +214,15 @@ public final class RetexturedHelper {
       }
     }
     return added;
+  }
+
+  /**
+   * Creates a {@link net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction.Builder} for copying the block texture.
+   * Relies on the block properly implementing {@link BlockEntity#collectImplicitComponents(Builder)}.
+   * @see slimeknights.mantle.block.entity.IRetexturedBlockEntity#collectImplicitComponents(IRetexturedBlockEntity, Builder).
+   */
+  public static CopyComponentsFunction.Builder copyTexture() {
+    return CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
+      .include(MantleData.BLOCK_TEXTURE.get());
   }
 }

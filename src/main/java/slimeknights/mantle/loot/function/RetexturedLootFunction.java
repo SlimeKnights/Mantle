@@ -20,8 +20,11 @@ import java.util.Set;
 
 /**
  * Applies the data for a retextured block to the dropped item. No configuration needed.
+ * @see RetexturedHelper#copyTexture()
+ * @deprecated use {@link net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction} with {@link slimeknights.mantle.registration.MantleData#BLOCK_TEXTURE}.
  */
 @SuppressWarnings("unused") // API
+@Deprecated(forRemoval = true)
 public class RetexturedLootFunction extends LootItemConditionalFunction {
   public static final MapCodec<RetexturedLootFunction> CODEC = RecordCodecBuilder.mapCodec(inst -> commonFields(inst).apply(inst, RetexturedLootFunction::new));
 

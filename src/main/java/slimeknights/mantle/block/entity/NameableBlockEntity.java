@@ -36,6 +36,9 @@ public abstract class NameableBlockEntity extends MantleBlockEntity implements I
     this.defaultName = defaultTitle;
   }
 
+
+  /* Item stack components */
+
   @Override
   protected void applyImplicitComponents(DataComponentInput componentInput) {
     super.applyImplicitComponents(componentInput);
@@ -47,6 +50,17 @@ public abstract class NameableBlockEntity extends MantleBlockEntity implements I
     super.collectImplicitComponents(components);
     components.set(DataComponents.CUSTOM_NAME, this.customName);
   }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void removeComponentsFromTag(CompoundTag tag) {
+    // custom name is passed to the stack directly, don't keep it in BE data
+    super.removeComponentsFromTag(tag);
+    tag.remove(TAG_CUSTOM_NAME);
+  }
+
+
+  /* BE NBT */
 
   @Override
   protected void loadAdditional(CompoundTag tags, Provider registries) {
