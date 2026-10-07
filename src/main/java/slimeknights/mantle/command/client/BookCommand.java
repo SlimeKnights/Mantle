@@ -59,8 +59,8 @@ public class BookCommand {
   private static final SimpleCommandExceptionType EXPORT_FAIL = new SimpleCommandExceptionType(Component.translatable("command.mantle.book.export.error_generic"));
   private static final DynamicCommandExceptionType IO_FAILURE = new DynamicCommandExceptionType(directory -> Component.translatableEscape(EXPORT_FAIL_IO, directory));
 
-  private static final String DEFAULT_BOOK_VERSION = "20";
-  private static final String VERSION_FULL = "1.20";
+  private static final String DEFAULT_BOOK_VERSION = "21";
+  private static final String VERSION_FULL = "1.21";
   private static final int DEFAULT_SCALE = 2;
 
   /**
