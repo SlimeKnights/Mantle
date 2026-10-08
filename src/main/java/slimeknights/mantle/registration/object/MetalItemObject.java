@@ -2,7 +2,6 @@ package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
 import net.minecraft.core.Holder;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -19,9 +18,7 @@ public class MetalItemObject extends ItemObject<Block,Block> implements MultiObj
   private final Holder<Item> ingotHolder;
   private final Holder<Item> nuggetHolder;
   @Getter
-  private final TagKey<Block> blockTag;
-  @Getter
-  private final TagKey<Item> blockItemTag;
+  private final BlockItemTagKey blockTag;
   @Getter
   private final TagKey<Item> ingotTag;
   @Getter
@@ -31,8 +28,7 @@ public class MetalItemObject extends ItemObject<Block,Block> implements MultiObj
     super(block);
     this.ingotHolder = ingot;
     this.nuggetHolder = nugget;
-    this.blockTag = BlockTags.create(commonResource("storage_blocks/" + tagName));
-    this.blockItemTag = getTag("storage_blocks/" + tagName);
+    this.blockTag = BlockItemTagKey.create(commonResource("storage_blocks/" + tagName));
     this.ingotTag = getTag("ingots/" + tagName);
     this.nuggetTag = getTag("nuggets/" + tagName);
   }

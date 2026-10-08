@@ -182,9 +182,9 @@ public interface ICommonRecipeHelper extends IRecipeHelper {
     Criterion<?> hasPlanks = RecipeProvider.has(wood);
 
     // planks
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, wood, 4).requires(wood.getLogItemTag())
+    ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, wood, 4).requires(wood.getLogTag().item())
                           .group("planks")
-                          .unlockedBy("has_log", RecipeProvider.inventoryTrigger(ItemPredicate.Builder.item().of(wood.getLogItemTag()).build()))
+                          .unlockedBy("has_log", RecipeProvider.inventoryTrigger(ItemPredicate.Builder.item().of(wood.getLogTag().item()).build()))
                           .save(output, location(folder + "planks"));
     // slab
     ItemLike slab = wood.getSlab();
