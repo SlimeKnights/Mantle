@@ -20,6 +20,7 @@ import slimeknights.mantle.util.ItemStackList;
 
 /**
  * Standard implementation of a block entity with an inventory using Mojang's {@link Container}.
+ * Note that the item handler capability is not automatically registered. You will want to register it for your types in {@link net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent}.
  * @see slimeknights.mantle.block.InventoryBlock
  */
 @SuppressWarnings("unused")
