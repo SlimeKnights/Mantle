@@ -43,7 +43,7 @@ public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends Stre
     Streamable<T> streamable = streamable();
     buffer.writeVarInt(collection.size());
     for (T value : collection) {
-      ResourceLocation id = value.getId();
+      ResourceLocation id = value.id();
       buffer.writeResourceLocation(id);
       // add more context to error message and ensure its logged
       try {

@@ -136,7 +136,7 @@ public interface IRecipeHelper {
    * @return  Location with the given prefix and suffix
    */
   default ResourceLocation wrap(IdAwareObject location, String prefix, String suffix) {
-    return wrap(location.getId(), prefix, suffix);
+    return wrap(location.id(), prefix, suffix);
   }
 
   /**
@@ -146,7 +146,7 @@ public interface IRecipeHelper {
    * @return  Location with the given prefix
    */
   default ResourceLocation prefix(IdAwareObject location, String prefix) {
-    return prefix(location.getId(), prefix);
+    return prefix(location.id(), prefix);
   }
 
   /**
@@ -156,7 +156,7 @@ public interface IRecipeHelper {
    * @return  Location with the given suffix
    */
   default ResourceLocation suffix(IdAwareObject location, String suffix) {
-    return suffix(location.getId(), suffix);
+    return suffix(location.id(), suffix);
   }
 
 

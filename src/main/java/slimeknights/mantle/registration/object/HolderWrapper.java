@@ -51,7 +51,7 @@ public abstract class HolderWrapper<R,T extends R> implements Supplier<T>, IdAwa
   }
 
   @Override
-  public ResourceLocation getId() {
+  public ResourceLocation id() {
     return key.location();
   }
   /**

@@ -1,6 +1,7 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
@@ -14,7 +15,6 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("WeakerAccess")
 public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAwareObject {
   /** Fluid name, used for tag creation */
-  @Getter @Nonnull
+  @Getter @Accessors(fluent = true)
   protected final ResourceLocation id;
 
   /** Tag in the forge namespace, crafting equivalence */

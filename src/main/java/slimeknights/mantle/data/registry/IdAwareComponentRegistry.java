@@ -23,7 +23,7 @@ public class IdAwareComponentRegistry<T extends IdAwareObject> extends AbstractN
 
   /** Registers the value with the given name */
   public synchronized <V extends T> V register(V value) {
-    ResourceLocation name = value.getId();
+    ResourceLocation name = value.id();
     if (values.putIfAbsent(name, value) != null) {
       throw new IllegalArgumentException("Duplicate registration " + name);
     }
@@ -39,7 +39,7 @@ public class IdAwareComponentRegistry<T extends IdAwareObject> extends AbstractN
 
   @Override
   public ResourceLocation getKey(T object, TypedMap context) {
-    return object.getId();
+    return object.id();
   }
 
   @Override
