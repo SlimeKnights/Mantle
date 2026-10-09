@@ -8,6 +8,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Contract;
 
@@ -46,8 +47,8 @@ public class DataComponentHelper {
     return stack;
   }
 
-  /** Copies the given data component to the given item stack */
-  public static <T> ItemStack copy(ItemStack to, DataComponentHolder from, DataComponentType<T> type) {
+  /** Copies the given data component to the given stack */
+  public static <T, S extends MutableDataComponentHolder> S copy(S to, DataComponentHolder from, DataComponentType<T> type) {
     T value = from.get(type);
     if (value != null) {
       to.set(type, value);
@@ -55,27 +56,9 @@ public class DataComponentHelper {
     return to;
   }
 
-  /** Copies the given data components to the given item stack */
+  /** Copies the given data components to the given stack */
   @Contract("_,_,_->param1")
-  public static ItemStack copy(ItemStack to, DataComponentHolder from, List<DataComponentType<?>> types) {
-    for (DataComponentType<?> type : types) {
-      copy(to, from, type);
-    }
-    return to;
-  }
-
-  /** Copies the given data component to the given fluid stack */
-  public static <T> FluidStack copy(FluidStack to, DataComponentHolder from, DataComponentType<T> type) {
-    T value = from.get(type);
-    if (value != null) {
-      to.set(type, value);
-    }
-    return to;
-  }
-
-  /** Copies the given data component to the given item stack */
-  @Contract("_,_,_->param1")
-  public static FluidStack copy(FluidStack to, DataComponentHolder from, List<DataComponentType<?>> types) {
+  public static <S extends MutableDataComponentHolder> S copy(S to, DataComponentHolder from, List<DataComponentType<?>> types) {
     for (DataComponentType<?> type : types) {
       copy(to, from, type);
     }
