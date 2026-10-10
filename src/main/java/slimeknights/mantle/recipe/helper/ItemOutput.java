@@ -290,7 +290,7 @@ public abstract class ItemOutput implements Supplier<ItemStack> {
         return fromTag(
           Loadables.ITEM_TAG.getIfPresent(json, "tag", context),
           count,
-          Loadables.DATA_COMPONENTS.getOrDefault(json, "components", DataComponentPatch.EMPTY)
+          Loadables.DATA_COMPONENTS.getOrDefault(json, "components", DataComponentPatch.EMPTY, context)
         );
       }
       return fromStack(stack.deserialize(json, context));

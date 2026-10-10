@@ -240,7 +240,7 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
         return fromTag(
           Loadables.FLUID_TAG.getIfPresent(json, "tag", context),
           IntLoadable.FROM_ONE.getIfPresent(json, "amount", context),
-          Loadables.DATA_COMPONENTS.getOrDefault(json, "components", DataComponentPatch.EMPTY));
+          Loadables.DATA_COMPONENTS.getOrDefault(json, "components", DataComponentPatch.EMPTY, context));
       }
       return fromStack(stack.deserialize(json, context));
     }
