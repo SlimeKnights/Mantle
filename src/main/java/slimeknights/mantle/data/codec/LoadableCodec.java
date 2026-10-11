@@ -1,8 +1,8 @@
-package slimeknights.mantle.data.loadable;
+package slimeknights.mantle.data.codec;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.DynamicOps;
-import slimeknights.mantle.data.JsonCodec;
+import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.Supplier;

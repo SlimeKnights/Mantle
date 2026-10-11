@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.serialization.Codec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import slimeknights.mantle.data.JsonCodec.GsonCodec;
+import slimeknights.mantle.data.codec.JsonCodec.GsonCodec;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer.IJsonSerializable;
 

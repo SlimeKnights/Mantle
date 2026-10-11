@@ -1,7 +1,8 @@
-package slimeknights.mantle.data.loadable;
+package slimeknights.mantle.network.codec;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import slimeknights.mantle.data.loadable.Streamable;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.Supplier;

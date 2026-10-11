@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.ISimplePacket;
-import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
 /** Packet to tell a client to swing an entity arm, as the vanilla one resets cooldown */

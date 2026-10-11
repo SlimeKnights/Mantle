@@ -6,7 +6,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.ISimplePacket;
-import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 
 import java.util.Set;
 

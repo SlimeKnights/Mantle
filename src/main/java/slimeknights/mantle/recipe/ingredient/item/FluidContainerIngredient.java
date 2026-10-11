@@ -19,7 +19,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.data.MantleCodecs;
+import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.registration.object.FluidObject;
 

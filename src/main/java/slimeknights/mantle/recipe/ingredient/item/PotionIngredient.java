@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
 
 import java.util.List;

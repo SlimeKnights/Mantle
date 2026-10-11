@@ -12,14 +12,14 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.data.MantleCodecs;
+import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.field.UnsyncedField;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 

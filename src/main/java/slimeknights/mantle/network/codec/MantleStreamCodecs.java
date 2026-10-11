@@ -1,4 +1,4 @@
-package slimeknights.mantle.network;
+package slimeknights.mantle.network.codec;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;

@@ -13,7 +13,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
 /** Handles all custom data component types and attachments added by Mantle */

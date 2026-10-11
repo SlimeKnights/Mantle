@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import slimeknights.mantle.data.MantleCodecs;
+import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.loot.MantleLoot;
 
 import java.util.Optional;

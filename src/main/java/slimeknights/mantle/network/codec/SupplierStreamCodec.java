@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.network.codec;
 
 import net.minecraft.network.codec.StreamCodec;
 

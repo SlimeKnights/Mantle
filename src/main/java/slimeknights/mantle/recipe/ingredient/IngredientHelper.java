@@ -11,9 +11,9 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
-import slimeknights.mantle.data.loadable.LoadableCodec;
-import slimeknights.mantle.data.loadable.StreamableCodec;
+import slimeknights.mantle.data.codec.LoadableCodec;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
+import slimeknights.mantle.network.codec.StreamableCodec;
 
 /** Helpers for working with ingredients. Largely bringing back lost but useful behavior from the removed Mantle ingredients. */
 public class IngredientHelper {

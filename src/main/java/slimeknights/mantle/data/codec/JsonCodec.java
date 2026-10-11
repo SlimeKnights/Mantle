@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.codec;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

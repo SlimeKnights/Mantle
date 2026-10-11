@@ -1,4 +1,4 @@
-package slimeknights.mantle.network;
+package slimeknights.mantle.network.codec;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;

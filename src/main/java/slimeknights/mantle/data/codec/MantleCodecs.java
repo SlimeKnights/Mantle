@@ -1,4 +1,4 @@
-package slimeknights.mantle.data;
+package slimeknights.mantle.data.codec;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import slimeknights.mantle.datagen.MantleTags;
-import slimeknights.mantle.network.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
 
 import java.util.List;
