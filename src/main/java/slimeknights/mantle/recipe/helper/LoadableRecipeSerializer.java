@@ -14,18 +14,18 @@ import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.network.codec.StreamableCodec;
-import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Recipe serializer instance using loadables. Use {@link ContextKey#ID} to get the recipe ID.
  * @param <T>  Recipe type
  */
-@Accessors(fluent = true)
 @Getter
-public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T>, Supplier<TypedMap> {
+@Accessors(fluent = true)
+public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T>, Consumer<TypedMapBuilder> {
   /** Context key to use if you want the recipe serializer passed into your recipe */
   public static final ContextKey<RecipeSerializer<?>> SERIALIZER = new ContextKey<>("serializer");
   /** Context key to use if you want a type aware serializer in the recipe, requires {@link #of(RecordLoadable, Supplier)} for your serializer. */
@@ -35,9 +35,8 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
   /** Field for a group key in a recipe (common requirement) */
   public static final LoadableField<String,Recipe<?>> RECIPE_GROUP = StringLoadable.DEFAULT.defaultField("group", "", Recipe::getGroup);
 
-
   private final MapCodec<T> codec;
-  private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
+  private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
 
   protected LoadableRecipeSerializer(RecordLoadable<T> loadable) {
     // TODO: can we use a more direct mapping from RecordLoadable to a MapCodec? they are conceptually similar
@@ -45,15 +44,10 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
     this.streamCodec = new StreamableCodec<>(loadable, this);
   }
 
-  /** Creates the map context for the codecs */
+  /** Applies the serializer to the context */
   @Override
-  public TypedMap get() {
-    return buildContext().build();
-  }
-
-  /** Builds a context */
-  protected TypedMapBuilder buildContext() {
-    return TypedMapBuilder.builder().put(SERIALIZER, this);
+  public void accept(TypedMapBuilder builder) {
+    builder.put(SERIALIZER, this);
   }
 
 
@@ -78,8 +72,10 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
     }
 
     @Override
-    protected TypedMapBuilder buildContext() {
-      return super.buildContext().put(TYPE, getType()).put(TYPED_SERIALIZER, this);
+    public void accept(TypedMapBuilder builder) {
+      super.accept(builder);
+      builder.put(TYPE, getType());
+      builder.put(TYPED_SERIALIZER, this);
     }
 
     @Override

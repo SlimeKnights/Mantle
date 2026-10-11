@@ -2,6 +2,7 @@ package slimeknights.mantle.data.loadable.common;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -22,9 +23,17 @@ public interface CodecLoadable<T> extends Loadable<T> {
   @Nullable
   StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec();
 
+  /** Gets the ops for the given context */
+  DynamicOps<JsonElement> getOps(TypedMap context, ErrorFactory error);
+
+  @Override
+  default T convert(JsonElement element, String key, TypedMap context) {
+    return JsonHelper.parse(getOps(context, ErrorFactory.JSON_SYNTAX_ERROR), codec(), element);
+  }
+
   @Override
   default JsonElement serialize(T object, TypedMap context) {
-    return JsonHelper.serialize(codec(), object);
+    return JsonHelper.serialize(getOps(context, ErrorFactory.RUNTIME), codec(), object);
   }
 
   @Override
@@ -53,8 +62,8 @@ public interface CodecLoadable<T> extends Loadable<T> {
     }
 
     @Override
-    public T convert(JsonElement element, String key, TypedMap context) {
-      return JsonHelper.parse(codec, element);
+    public DynamicOps<JsonElement> getOps(TypedMap context, ErrorFactory error) {
+      return ContextKey.optionalRegistryOps(context);
     }
   }
 
@@ -65,13 +74,8 @@ public interface CodecLoadable<T> extends Loadable<T> {
     }
 
     @Override
-    public T convert(JsonElement element, String key, TypedMap context) {
-      return JsonHelper.parse(ContextKey.createSerializationContext(context, ErrorFactory.JSON_SYNTAX_ERROR), codec, element);
-    }
-
-    @Override
-    public JsonElement serialize(T object, TypedMap context) {
-      return JsonHelper.serialize(ContextKey.createSerializationContext(context, ErrorFactory.RUNTIME), codec, object);
+    public DynamicOps<JsonElement> getOps(TypedMap context, ErrorFactory error) {
+      return ContextKey.createRegistryOps(context, error);
     }
   }
 }

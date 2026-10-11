@@ -7,11 +7,15 @@ import slimeknights.mantle.util.typed.TypedMap.Key;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /** Builder for a typed map, ensures key value pairs are consistent */
 @SuppressWarnings("unused")  // API
 @NoArgsConstructor(staticName = "builder")
 public class TypedMapBuilder {
+  /** Empty consumer for {@link slimeknights.mantle.data.codec.LoadableCodec} and {@link slimeknights.mantle.network.codec.StreamableCodec}. */
+  public static Consumer<TypedMapBuilder> EMPTY_CONSUMER = builder -> {};
+
   private final Map<Key<?>,Object> builder = new HashMap<>();
 
   /** Adds all values from the passed map to this map. */

@@ -17,6 +17,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.List;
@@ -48,6 +50,8 @@ public class MantleCodecs {
   /** Codec for a fluid that is not empty */
   public static final Codec<Fluid> NON_EMPTY_FLUID = notValue(BuiltInRegistries.FLUID, Fluids.EMPTY);
 
+  /** Codec for the condition context from conditional ops. */
+  public static final Codec<ICondition.IContext> CONDITION_CONTEXT = ConditionalOps.retrieveContext().codec();
 
   /* Helpers */
 

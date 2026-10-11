@@ -54,14 +54,29 @@ public class ContextKey<T> implements Key<T> {
     return TypedMapBuilder.builder().put(REGISTRY_LOOKUP, Objects.requireNonNullElse(registryLookup, RegistryAccess.EMPTY)).build();
   }
 
-  /** Gets dynamic ops for the given context and error factory. */
-  public static DynamicOps<JsonElement> createSerializationContext(TypedMap context, ErrorFactory errorFactory) {
-    RegistryOps<JsonElement> ops = context.getOrThrow(REGISTRY_LOOKUP, errorFactory).createSerializationContext(JsonOps.INSTANCE);
+  /** Creates the context for the given holder lookup provider */
+  private static RegistryOps<JsonElement> createSerializationContext(TypedMap context, HolderLookup.Provider lookup) {
+    RegistryOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);
     IContext conditionContext = context.get(CONDITION_CONTEXT);
     if (conditionContext != null) {
       return new ConditionalOps<>(ops, conditionContext);
     }
     return ops;
+  }
+
+  /** Gets dynamic ops for the given context, using the error factory if its missing. */
+  public static RegistryOps<JsonElement> createRegistryOps(TypedMap context, ErrorFactory errorFactory) {
+    return createSerializationContext(context, context.getOrThrow(REGISTRY_LOOKUP, errorFactory));
+  }
+
+  /** Gets dynamic ops for the given context. If no registry ops are provided will skip. */
+  public static DynamicOps<JsonElement> optionalRegistryOps(TypedMap context) {
+    HolderLookup.Provider lookup = context.get(REGISTRY_LOOKUP);
+    if (lookup != null) {
+      return createSerializationContext(context, lookup);
+    } else {
+      return JsonOps.INSTANCE;
+    }
   }
 
 
