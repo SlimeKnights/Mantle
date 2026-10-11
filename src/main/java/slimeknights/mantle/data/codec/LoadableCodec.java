@@ -5,6 +5,8 @@ import com.mojang.serialization.DynamicOps;
 import net.minecraft.resources.RegistryOps;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.SimpleJsonDeserializer;
+import slimeknights.mantle.data.loadable.SimpleJsonSerializer;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
@@ -17,7 +19,11 @@ import java.util.function.Consumer;
  * Consider just writing a codec directly if that is needed.
  * @see slimeknights.mantle.data.loadable.common.CodecLoadable
  */
-public record LoadableCodec<T>(Loadable<T> loadable, Consumer<TypedMapBuilder> context) implements JsonCodec<T> {
+public record LoadableCodec<T>(SimpleJsonDeserializer<? extends T> deserializer, SimpleJsonSerializer<? super T> serializer, Consumer<TypedMapBuilder> context) implements JsonCodec<T> {
+  public LoadableCodec(Loadable<T> loadable, Consumer<TypedMapBuilder> context) {
+    this(loadable, loadable, context);
+  }
+
   public LoadableCodec(Loadable<T> loadable) {
     this(loadable, TypedMapBuilder.EMPTY_CONSUMER);
   }
@@ -41,11 +47,11 @@ public record LoadableCodec<T>(Loadable<T> loadable, Consumer<TypedMapBuilder> c
 
   @Override
   public T deserialize(JsonElement element, DynamicOps<?> ops) {
-    return loadable.convert(element, "codec", createContext(ops));
+    return deserializer.convert(element, "codec", createContext(ops));
   }
 
   @Override
   public JsonElement serialize(T object, DynamicOps<?> ops) {
-    return loadable.serialize(object, createContext(ops));
+    return serializer.serialize(object, createContext(ops));
   }
 }

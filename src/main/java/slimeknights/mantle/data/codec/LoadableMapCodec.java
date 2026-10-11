@@ -3,6 +3,8 @@ package slimeknights.mantle.data.codec;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DynamicOps;
 import lombok.RequiredArgsConstructor;
+import slimeknights.mantle.data.loadable.record.RecordJsonDeserializer;
+import slimeknights.mantle.data.loadable.record.RecordJsonSerializer;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
@@ -16,8 +18,13 @@ import java.util.stream.Stream;
  */
 @RequiredArgsConstructor
 public class LoadableMapCodec<T> extends JsonMapCodec<T> {
-  private final RecordLoadable<T> loadable;
+  private final RecordJsonDeserializer<? extends T> deserializer;
+  private final RecordJsonSerializer<? super T> serializer;
   private final Consumer<TypedMapBuilder> context;
+
+  public LoadableMapCodec(RecordLoadable<T> loadable, Consumer<TypedMapBuilder> context) {
+    this(loadable, loadable, context);
+  }
 
   public LoadableMapCodec(RecordLoadable<T> loadable) {
     this(loadable, TypedMapBuilder.EMPTY_CONSUMER);
@@ -38,13 +45,13 @@ public class LoadableMapCodec<T> extends JsonMapCodec<T> {
 
   @Override
   protected T deserialize(JsonObject json, DynamicOps<?> ops) {
-    return loadable.deserialize(json, createContext(ops));
+    return deserializer.deserialize(json, createContext(ops));
   }
 
   @Override
   protected JsonObject serialize(T object, DynamicOps<?> ops) {
     JsonObject json = new JsonObject();
-    loadable.serializeInto(object, json, createContext(ops));
+    serializer.serializeInto(object, json, createContext(ops));
     return json;
   }
 }
