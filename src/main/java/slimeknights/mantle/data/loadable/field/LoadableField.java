@@ -8,6 +8,9 @@ import slimeknights.mantle.util.typed.TypedMap;
 
 /**
  * Interface for a field in a JSON object loaded from a single field, typically used in {@link RecordLoadable} but also usable statically.
+ * The key difference from {@link RecordField} apart from utility methods is {@link #key()}, which allows nesting fields to override keys.
+ * <p>
+ * See {@link RecordField} for more info on the usage of fields.
  * @param <P>  Parent object
  * @param <T>  Loadable type
  */

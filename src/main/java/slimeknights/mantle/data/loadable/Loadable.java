@@ -19,7 +19,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-/** Interface for a generic loadable object */
+/**
+ * Interface for a generic loadable object. Handles serializing from and to JSON and decoding and encoding using binary byte buffers.
+ * <p>
+ * Acts as a sort of combination of {@link com.mojang.serialization.Codec} and {@link net.minecraft.network.codec.StreamCodec} though less efficient for types other than JSON.
+ * @see slimeknights.mantle.data.codec.LoadableCodec
+ * @see slimeknights.mantle.network.codec.StreamableCodec
+ */
 @SuppressWarnings("unused")  // API
 public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserializer<T>, Streamable<T> {
   /* Fields */

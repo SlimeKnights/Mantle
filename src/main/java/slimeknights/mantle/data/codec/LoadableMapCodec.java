@@ -10,7 +10,10 @@ import slimeknights.mantle.util.typed.TypedMapBuilder;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-/** Implementation of {@link com.mojang.serialization.MapCodec} using {@link RecordLoadable} */
+/**
+ * Implementation of {@link com.mojang.serialization.MapCodec} using {@link RecordLoadable}.
+ * @see LoadableCodec
+ */
 @RequiredArgsConstructor
 public class LoadableMapCodec<T> extends JsonMapCodec<T> {
   private final RecordLoadable<T> loadable;

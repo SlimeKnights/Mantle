@@ -30,7 +30,12 @@ import java.util.function.Predicate;
 /**
  * Base interface for record type loadables, and the home of their factory methods.
  * Record loaders directly serialize into JSON objects, meaning they are compatible with {@link slimeknights.mantle.data.registry.GenericLoaderRegistry}.
+ * <p>
+ * Analogous to {@link com.mojang.serialization.MapCodec}, though since this extends {@link Loadable} it can also be used directly as a {@link com.mojang.serialization.Codec}.
+ * Contains builder methods similar to {@link com.mojang.serialization.codecs.RecordCodecBuilder} or {@link net.minecraft.network.codec.StreamCodec}.
  * @param <T>  Type being loaded
+ * @see slimeknights.mantle.data.codec.LoadableCodec
+ * @see slimeknights.mantle.data.codec.LoadableMapCodec
  */
 @SuppressWarnings("unused")  // API
 public interface RecordLoadable<T> extends RecordJsonSerializer<T>, RecordJsonDeserializer<T>, Loadable<T> {

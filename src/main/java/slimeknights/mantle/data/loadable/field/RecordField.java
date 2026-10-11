@@ -5,9 +5,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
+import java.util.function.Function;
+
 /**
- * Interface for fields in a {@link RecordLoadable}.
- * Unlike {@link LoadableField}, this interface is not designed for use outside loadables.
+ * Interface for fields in a {@link RecordLoadable}, used to serialize and deserialize an object type. Unlike {@link LoadableField}, this interface is not designed for use outside loadables.
+ * <p>
+ * Analogous to {@link com.mojang.serialization.codecs.RecordCodecBuilder} created from {@link com.mojang.serialization.MapCodec#forGetter(Function)}.
  * @param <P>  Parent object
  * @param <T>  Loadable type
  */

@@ -12,7 +12,7 @@ import slimeknights.mantle.Mantle;
 
 /**
  * Simple implementation of a codec mapping to a JSON serializer.
- * @param <T> Object type
+ * @see JsonMapCodec
  */
 public interface JsonCodec<T> extends Codec<T> {
   /**

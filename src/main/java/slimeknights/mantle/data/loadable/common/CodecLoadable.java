@@ -14,7 +14,10 @@ import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
 
-/** Implementation of a loadable using a codec. Note this will be inefficient when reading from and writing to the network */
+/**
+ * Implementation of a loadable using a {@link Codec} and {@link StreamCodec} pair.
+ * @see slimeknights.mantle.data.codec.LoadableCodec
+ */
 public interface CodecLoadable<T> extends Loadable<T> {
   /** Codec used for JSON. */
   Codec<T> codec();
@@ -57,6 +60,7 @@ public interface CodecLoadable<T> extends Loadable<T> {
   /** Parses the value directly without registry access */
   @SuppressWarnings("unused")  // API
   record Direct<T>(Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) implements CodecLoadable<T> {
+    /** Uses {@link ByteBufCodecs#fromCodec(Codec)} for network. */
     public Direct(Codec<T> codec) {
       this(codec, ByteBufCodecs.fromCodec(codec));
     }
@@ -69,6 +73,7 @@ public interface CodecLoadable<T> extends Loadable<T> {
 
   /** Uses registry access to parse the object. */
   record Registry<T>(Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) implements CodecLoadable<T> {
+    /** Uses {@link ByteBufCodecs#fromCodec(Codec)} for network. */
     public Registry(Codec<T> codec) {
       this(codec, ByteBufCodecs.fromCodecWithRegistries(codec));
     }

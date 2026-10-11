@@ -13,7 +13,10 @@ import slimeknights.mantle.Mantle;
 
 import java.util.Map.Entry;
 
-/** Implementation of {@link MapCodec} from a JSON serializer */
+/**
+ * Implementation of {@link MapCodec} from a JSON serializer
+ * @see JsonCodec
+ */
 public abstract class JsonMapCodec<T> extends MapCodec<T> {
   /** Deserializes the object from JSON */
   protected abstract T deserialize(JsonObject json, DynamicOps<?> ops);

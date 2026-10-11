@@ -11,7 +11,12 @@ import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import java.util.function.Consumer;
 
-/** Implementation of a codec using a loadable. Note this will be inefficient comparatively when using {@link net.minecraft.nbt.NbtOps} */
+/**
+ * Implementation of a codec using a loadable.
+ * Note this will be inefficient comparatively when using dynamic ops other than {@link com.mojang.serialization.JsonOps}.
+ * Consider just writing a codec directly if that is needed.
+ * @see slimeknights.mantle.data.loadable.common.CodecLoadable
+ */
 public record LoadableCodec<T>(Loadable<T> loadable, Consumer<TypedMapBuilder> context) implements JsonCodec<T> {
   public LoadableCodec(Loadable<T> loadable) {
     this(loadable, TypedMapBuilder.EMPTY_CONSUMER);

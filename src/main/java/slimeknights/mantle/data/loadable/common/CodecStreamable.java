@@ -5,7 +5,10 @@ import net.minecraft.network.codec.StreamCodec;
 import slimeknights.mantle.data.loadable.Streamable;
 import slimeknights.mantle.util.typed.TypedMap;
 
-/** {@link Streamable} made from a {@link StreamCodec} */
+/**
+ * {@link Streamable} made from a {@link StreamCodec}
+ * @see slimeknights.mantle.network.codec.StreamableCodec
+ */
 public record CodecStreamable<T>(StreamCodec<? super RegistryFriendlyByteBuf,T> codec) implements Streamable<T> {
   @Override
   public T decode(RegistryFriendlyByteBuf buffer, TypedMap context) {

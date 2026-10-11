@@ -9,7 +9,10 @@ import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import java.util.function.Consumer;
 
-/** Creates a {@link StreamCodec} from a {@link Streamable}. */
+/**
+ * Creates a {@link StreamCodec} from a {@link Streamable}.
+ * @see slimeknights.mantle.data.loadable.common.CodecStreamable
+ */
 public record StreamableCodec<T>(Streamable<T> streamable, Consumer<TypedMapBuilder> context) implements StreamCodec<RegistryFriendlyByteBuf,T> {
   public StreamableCodec(Streamable<T> streamable) {
     this(streamable, TypedMapBuilder.EMPTY_CONSUMER);

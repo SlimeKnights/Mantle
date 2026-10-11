@@ -4,7 +4,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.util.typed.TypedMap;
 
-/** This interface partially implements Mojang's future {@code StreamCodec} for the sake of ensuring all {@link Loadable} are automatically compatible with stream codecs. */
+/**
+ * Interface for a serializer to and from the network buffer.
+ * <p>
+ * Analogous to {@link net.minecraft.network.codec.StreamCodec}. Does not directly implement for the sake of our {@link TypedMap} context and to avoid clashing composition helpers.
+ * @see slimeknights.mantle.network.codec.StreamableCodec
+ */
 public interface Streamable<T> {
   /**
    * Decodes this loadable from the network
