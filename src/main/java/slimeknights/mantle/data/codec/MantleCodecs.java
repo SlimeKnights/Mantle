@@ -2,16 +2,21 @@ package slimeknights.mantle.data.codec;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import slimeknights.mantle.util.RegistryHelper;
 
 import java.util.List;
@@ -35,6 +40,22 @@ public class MantleCodecs {
   public static final Codec<TagKey<Item>> ITEM_TAG = TagKey.codec(Registries.ITEM);
   /** Codec for a fluid tag */
   public static final Codec<TagKey<Fluid>> FLUID_TAG = TagKey.codec(Registries.FLUID);
+
+  /** Codec for a block that is not air */
+  public static final Codec<Block> NON_AIR_BLOCK = notValue(BuiltInRegistries.BLOCK, Blocks.AIR);
+  /** Codec for an item that is not air */
+  public static final Codec<Item> NON_AIR_ITEM = notValue(BuiltInRegistries.ITEM, Items.AIR);
+  /** Codec for a fluid that is not empty */
+  public static final Codec<Fluid> NON_EMPTY_FLUID = notValue(BuiltInRegistries.FLUID, Fluids.EMPTY);
+
+
+  /* Helpers */
+
+  /** Codec for a registry that is not the default value. */
+  public static <T> Codec<T> notValue(Registry<T> registry, T notValue) {
+    String errorMsg = registry.key().location() + " must not be " + registry.getKey(notValue);
+    return registry.byNameCodec().validate(value -> value == notValue ? DataResult.error(() -> errorMsg) : DataResult.success(value));
+  }
 
   /** Creates a codec for a list that serializes to a single element when size 1 */
   private static <E> Codec<List<E>> compactList(Codec<E> codec, Codec<List<E>> listCodec) {

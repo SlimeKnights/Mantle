@@ -16,8 +16,11 @@ import javax.annotation.Nullable;
  * @param defaultValue  If non-null, will be used as the value if the object is empty.
  * @param compact       If true, serializes using the loadable instead of in object form.
  */
-@SuppressWarnings("unused")  // API
 public record SimpleRecordLoadable<T>(Loadable<T> loadable, String key, @Nullable T defaultValue, boolean compact) implements RecordLoadable<T> {
+  public SimpleRecordLoadable(Loadable<T> loadable, String key) {
+    this(loadable, key, null, false);
+  }
+
   @Override
   public T convert(JsonElement element, String key, TypedMap context) {
     if (!element.isJsonObject()) {

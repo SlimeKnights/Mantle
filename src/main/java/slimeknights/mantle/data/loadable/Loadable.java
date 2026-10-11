@@ -219,6 +219,11 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Str
 
   /* Mapping */
 
+  /** Creates a copy of this loadable overriding the network to use the given streamable. */
+  default Loadable<T> withNetwork(Streamable<T> network) {
+    return CompositeLoadable.of(this, network);
+  }
+
   /** Maps this loader to another type, with error factory on both from and to */
   default <M> Loadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
     return MappedLoadable.of(this, from, to);

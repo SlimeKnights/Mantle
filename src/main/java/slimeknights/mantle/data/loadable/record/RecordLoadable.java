@@ -18,8 +18,10 @@ import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import slimeknights.mantle.data.loadable.CompositeLoadable;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.Streamable;
 import slimeknights.mantle.data.loadable.field.DirectField;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.mapping.CompactLoadable;
@@ -92,6 +94,11 @@ public interface RecordLoadable<T> extends Loadable<T> {
 
 
   /* Mapping - switches to the record version of the methods */
+
+  @Override
+  default RecordLoadable<T> withNetwork(Streamable<T> network) {
+    return CompositeLoadable.of(this, network);
+  }
 
   @Override
   default <M> RecordLoadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {

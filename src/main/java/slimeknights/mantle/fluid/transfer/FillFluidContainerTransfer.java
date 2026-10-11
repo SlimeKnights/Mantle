@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class FillFluidContainerTransfer implements IFluidContainerTransfer {
   protected static final LoadableField<Ingredient,FillFluidContainerTransfer> INPUT_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", t -> t.input);
-  protected static final LoadableField<ItemOutput,FillFluidContainerTransfer> RESULT_FIELD = ItemOutput.Loadable.REQUIRED_ITEM.requiredField("result", t -> t.result);
+  protected static final LoadableField<ItemOutput,FillFluidContainerTransfer> RESULT_FIELD = ItemOutput.REQUIRED_ITEM_LOADABLE.requiredField("result", t -> t.result);
   protected static final LoadableField<SizedFluidIngredient,FillFluidContainerTransfer> FLUID_FIELD = Loadables.SIZED_FLUID_INGREDIENT.requiredField("fluid", t -> t.fluid);
   public static final RecordLoadable<FillFluidContainerTransfer> LOADER = RecordLoadable.create(INPUT_FIELD, RESULT_FIELD, FLUID_FIELD, FillFluidContainerTransfer::new);
 
