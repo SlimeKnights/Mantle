@@ -1,6 +1,7 @@
 package slimeknights.mantle.recipe.ingredient;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,12 +11,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import org.jetbrains.annotations.Nullable;
-import slimeknights.mantle.data.loadable.IAmLoadable;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.mapping.EitherLoadable;
+import slimeknights.mantle.data.loadable.SimpleJsonSerializer;
+import slimeknights.mantle.data.loadable.mapping.DispatchLoadable;
+import slimeknights.mantle.data.loadable.mapping.DispatchLoadable.Builder;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.RegistryHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +30,7 @@ import java.util.function.Predicate;
  * Ingredient accepting an entity or an entity tag as an input
  */
 @SuppressWarnings("unused")
-public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmLoadable {
+public abstract class EntityIngredient implements Predicate<EntityType<?>> {
   /** Empty entity ingredient, matching nothing. This ingredient does not parse from JSON, use defaulting methods if you wish to use it */
   public static final EntityIngredient EMPTY = new Compound(Collections.emptyList());
 
@@ -35,8 +38,8 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
   /* Loadables */
 
   /** Creates a builder with set and tag */
-  private static EitherLoadable.TypedBuilder<EntityIngredient> loadableBuilder() {
-    return EitherLoadable.<EntityIngredient>typed().key("types", SET_MATCH).key("type", ENTRY_MATCH).key("tag", TAG_MATCH);
+  private static Builder<EntityIngredient> loadableBuilder() {
+    return DispatchLoadable.<EntityIngredient>builder().network(SET_MATCH).direct(SET_MATCH, "types").direct(ENTRY_MATCH, "type").direct(TAG_MATCH, "tag");
   }
   /** Loadable for a single value, notably not used for networking (though that probably would still work fine due to how EitherLoadable works) */
   private static final RecordLoadable<EntityIngredient> ENTRY_MATCH = RecordLoadable.create(Loadables.ENTITY_TYPE.requiredField("type", i -> {
@@ -46,14 +49,15 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
     }
     throw new IllegalStateException("Cannot use entry match to serialize more than 1 entity");
   }), EntityIngredient::of);
+  private static final SimpleJsonSerializer<EntityIngredient> SERIALIZER = EntityIngredient::serialize;
   /** Loadable for a set match */
   private static final RecordLoadable<EntityIngredient> SET_MATCH = RecordLoadable.create(Loadables.ENTITY_TYPE.set().requiredField("types", EntityIngredient::getTypes), EntityIngredient::of);
   /** Loadable for a tag match */
   private static final RecordLoadable<TagMatch> TAG_MATCH = RecordLoadable.create(Loadables.ENTITY_TYPE_TAG.requiredField("tag", t -> t.tag), TagMatch::new);
   /** Loadable disallows nested lists, just handles nested tags and sets */
-  private static final Loadable<Compound> COMPOUND = EntityIngredient.loadableBuilder().build(SET_MATCH).list(2).flatXmap(Compound::new, c -> c.ingredients);
+  private static final Loadable<Compound> COMPOUND = EntityIngredient.loadableBuilder().build(SERIALIZER).list(2).flatXmap(Compound::new, c -> c.ingredients);
   /** Loadable for any fluid ingredient */
-  public static final Loadable<EntityIngredient> LOADABLE = loadableBuilder().array(COMPOUND).build(SET_MATCH);
+  public static final Loadable<EntityIngredient> LOADABLE = loadableBuilder().array(COMPOUND).build(SERIALIZER);
 
   /* Constructors */
 
@@ -102,6 +106,9 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
    */
   public abstract Set<EntityType<?>> getTypes();
 
+  /** Serializes this into JSON */
+  protected abstract JsonElement serialize(TypedMap context);
+
 
   /* JEI */
 
@@ -144,11 +151,6 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
     private final Set<EntityType<?>> types;
 
     @Override
-    public Loadable<? extends EntityIngredient> loadable() {
-      return types.size() == 1 ? ENTRY_MATCH : SET_MATCH;
-    }
-
-    @Override
     public boolean test(EntityType<?> type) {
       return types.contains(type);
     }
@@ -157,6 +159,11 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
     public Set<EntityType<?>> getTypes() {
       return types;
     }
+
+    @Override
+    protected JsonElement serialize(TypedMap context) {
+      return (types.size() == 1 ? ENTRY_MATCH : SET_MATCH).serialize(this, context);
+    }
   }
 
   /** Ingredient that matches any entity from a tag */
@@ -164,11 +171,6 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
   private static class TagMatch extends EntityIngredient {
     private final TagKey<EntityType<?>> tag;
     private Set<EntityType<?>> types;
-
-    @Override
-    public Loadable<TagMatch> loadable() {
-      return TAG_MATCH;
-    }
 
     @Override
     public boolean test(EntityType<?> type) {
@@ -182,6 +184,11 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
       }
       return types;
     }
+
+    @Override
+    protected JsonElement serialize(TypedMap context) {
+      return TAG_MATCH.serialize(this, context);
+    }
   }
 
   /** Ingredient combining multiple */
@@ -189,11 +196,6 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
   private static class Compound extends EntityIngredient {
     private final List<EntityIngredient> ingredients;
     private Set<EntityType<?>> allTypes;
-
-    @Override
-    public Loadable<Compound> loadable() {
-      return COMPOUND;
-    }
 
     @Override
     public boolean test(EntityType<?> type) {
@@ -213,6 +215,11 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
                               .collect(ImmutableSet.toImmutableSet());
       }
       return allTypes;
+    }
+
+    @Override
+    protected JsonElement serialize(TypedMap context) {
+      return COMPOUND.serialize(this, context);
     }
   }
 
