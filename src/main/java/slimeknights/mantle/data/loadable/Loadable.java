@@ -1,15 +1,5 @@
 package slimeknights.mantle.data.loadable;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonSyntaxException;
-import org.jetbrains.annotations.ApiStatus.NonExtendable;
-import org.jetbrains.annotations.ApiStatus.OverrideOnly;
-import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.data.loadable.array.ArrayLoadable;
 import slimeknights.mantle.data.loadable.array.ObjectArrayLoadable;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
@@ -21,10 +11,7 @@ import slimeknights.mantle.data.loadable.mapping.AnyCollectionLoadable;
 import slimeknights.mantle.data.loadable.mapping.ListLoadable;
 import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
 import slimeknights.mantle.data.loadable.mapping.SetLoadable;
-import slimeknights.mantle.util.typed.TypedMap;
 
-import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,118 +21,7 @@ import java.util.function.IntFunction;
 
 /** Interface for a generic loadable object */
 @SuppressWarnings("unused")  // API
-public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Streamable<T> {
-  /**
-   * Deserializes the object from the passed JSON element
-   * @param element  Element of an unknown type to parse
-   * @param key      Key that contained this element
-   * @param context  Additional parsing context, used notably by recipe serializers to store the ID and serializer.
-   * @return  Parsed loadable value
-   * @throws com.google.gson.JsonSyntaxException  If unable to read from JSON
-   */
-  T convert(JsonElement element, String key, TypedMap context);
-
-  /** Same as {@link #convert(JsonElement, String, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
-  @NonExtendable
-  default T convert(JsonElement element, String key) {
-    return convert(element, key, TypedMap.EMPTY);
-  }
-
-  /**
-   * Writes the passed object to json
-   * @param object  Object to serialize
-   * @param context Additional serialization context, used notably to pass in {@link net.minecraft.core.HolderLookup.Provider} for vanilla registries.
-   * @return  Serialized object
-   * @throws RuntimeException  If unable to serialize the object
-   */
-  JsonElement serialize(T object, TypedMap context);
-
-  /**
-   * Writes the passed object to json
-   * @param object  Object to serialize
-   * @return  Serialized object
-   * @throws RuntimeException  If unable to serialize the object
-   */
-  @NonExtendable
-  default JsonElement serialize(T object) {
-    return serialize(object, TypedMap.EMPTY);
-  }
-
-
-  /* GSON methods, lets us easily use loadables with GSON adapters. */
-
-  /** This method exists just to implement {@link JsonSerializer}, use {@link #convert(JsonElement, String, TypedMap)}. */
-  @OverrideOnly
-  @Override
-  default T deserialize(JsonElement json, Type type, JsonDeserializationContext context) {
-    return convert(json, type.getTypeName(), TypedMap.EMPTY);
-  }
-
-  /** This method exists just to implement {@link JsonSerializer}, use {@link #serialize(Object)}. */
-  @OverrideOnly
-  @Override
-  default JsonElement serialize(T object, Type type, JsonSerializationContext context) {
-    return serialize(object);
-  }
-
-
-  /* Helpers for raw loadable use */
-
-  /**
-   * Gets then deserializes the given fieldm throwing if it is missing
-   * You should not override this method as we wish to leave that handling missing up to the RecordLoadable.
-   * Instead, consider a custom implementation of defaultField if you have a standard default.
-   * @param parent  Parent to fetch field from
-   * @param key     Field to get
-   * @param context Additional parsing context, used notably by recipe serializers to store the ID and serializer.
-   * @return  Value, or throws if missing
-   * @throws JsonSyntaxException  If the field is missing or cannot be parsed.
-   */
-  @NonExtendable
-  default T getIfPresent(JsonObject parent, String key, TypedMap context) {
-    if (parent.has(key)) {
-      return convert(parent.get(key), key, context);
-    }
-    throw new JsonSyntaxException("Missing JSON field '" + key + "'");
-  }
-
-  /** Same as {@link #getIfPresent(JsonObject, String, TypedMap)} but passes {@link TypedMap#EMPTY} for the context */
-  @NonExtendable
-  default T getIfPresent(JsonObject parent, String key) {
-    return getIfPresent(parent, key, TypedMap.EMPTY);
-  }
-
-  /**
-   * Gets then deserializes the given field, or returns a default value if its missing.
-   * You should not override this method as we wish to leave that handling missing up to the RecordLoadable.
-   * Instead, consider a custom implementation of defaultField if you have a standard default.
-   * @param parent        Parent to fetch field from
-   * @param key           Field to get
-   * @param defaultValue  Default value to fetch
-   * @param context       Additional parsing context, used notably by recipe serializers to store the ID and serializer.
-   * @return  Value or default.
-   * @throws JsonSyntaxException  If the field cannot be parsed.
-   */
-  @NonExtendable
-  @Nullable
-  @Contract("_, _, !null, _ -> !null")
-  default T getOrDefault(JsonObject parent, String key, @Nullable T defaultValue, TypedMap context) {
-    JsonElement element = parent.get(key);
-    if (element != null && !element.isJsonNull()) {
-      return convert(element, key, context);
-    }
-    return defaultValue;
-  }
-
-  /** Same as {@link #getOrDefault(JsonObject, String, Object, TypedMap)} but passes {@link TypedMap#EMPTY} for context. */
-  @NonExtendable
-  @Nullable
-  @Contract("_, _, !null -> !null")
-  default T getOrDefault(JsonObject parent, String key, @Nullable T defaultValue) {
-    return getOrDefault(parent, key, defaultValue, TypedMap.EMPTY);
-  }
-
-
+public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserializer<T>, Streamable<T> {
   /* Fields */
 
   /** Creates a required field from this loadable */

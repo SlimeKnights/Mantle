@@ -1,7 +1,5 @@
 package slimeknights.mantle.data.loadable.record;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Function10;
 import com.mojang.datafixers.util.Function11;
 import com.mojang.datafixers.util.Function12;
@@ -16,8 +14,6 @@ import com.mojang.datafixers.util.Function6;
 import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
-import net.minecraft.util.GsonHelper;
-import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import slimeknights.mantle.data.loadable.CompositeLoadable;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.Loadable;
@@ -26,7 +22,6 @@ import slimeknights.mantle.data.loadable.field.DirectField;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.mapping.CompactLoadable;
 import slimeknights.mantle.data.loadable.mapping.MappedLoadable;
-import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -38,48 +33,7 @@ import java.util.function.Predicate;
  * @param <T>  Type being loaded
  */
 @SuppressWarnings("unused")  // API
-public interface RecordLoadable<T> extends Loadable<T> {
-  /* Deserializing */
-
-  /**
-   * Deserializes the object from json.
-   * @param json     JSON object
-   * @param context  Additional parsing context, used notably by recipe serializers to store the ID and serializer.
-   * @return  Parsed loadable value
-   * @throws com.google.gson.JsonSyntaxException  If unable to read from JSON
-   */
-  T deserialize(JsonObject json, TypedMap context);
-
-  /** Same as {@link #deserialize(JsonObject, TypedMap)} but uses {@link TypedMap#EMPTY} as the context. */
-  default T deserialize(JsonObject json) {
-    return deserialize(json, TypedMap.EMPTY);
-  }
-
-  @Override
-  default T convert(JsonElement element, String key, TypedMap context) {
-    return deserialize(GsonHelper.convertToJsonObject(element, key), context);
-  }
-
-
-  /* Serializing */
-
-  /** Writes this object to json */
-  void serializeInto(T object, JsonObject json, TypedMap context);
-
-  /** same as {@link #serializeInto(Object, JsonObject, TypedMap)} but passes {@link TypedMap#EMPTY} as context. */
-  @NonExtendable
-  default void serializeInto(T object, JsonObject json) {
-    serializeInto(object, json, TypedMap.EMPTY);
-  }
-
-  @Override
-  default JsonElement serialize(T object, TypedMap context) {
-    JsonObject json = new JsonObject();
-    serializeInto(object, json, context);
-    return json;
-  }
-
-
+public interface RecordLoadable<T> extends RecordJsonSerializer<T>, RecordJsonDeserializer<T>, Loadable<T> {
   /* Fields */
 
   /** Creates a field that loads this object directly into the parent JSON object. May conflict if any key overlaps exist */
