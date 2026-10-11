@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")  // API
 @NoArgsConstructor(staticName = "builder")
 public class TypedMapBuilder {
-  /** Empty consumer for {@link slimeknights.mantle.data.codec.LoadableCodec} and {@link slimeknights.mantle.network.codec.StreamableCodec}. */
+  /** Empty consumer for {@link slimeknights.mantle.data.codec.LoadableCodec}, {@link slimeknights.mantle.data.codec.LoadableMapCodec} and {@link slimeknights.mantle.network.codec.StreamableCodec}. */
   public static Consumer<TypedMapBuilder> EMPTY_CONSUMER = builder -> {};
 
   private final Map<Key<?>,Object> builder = new HashMap<>();

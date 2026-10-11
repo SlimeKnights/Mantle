@@ -17,14 +17,19 @@ public record LoadableCodec<T>(Loadable<T> loadable, Consumer<TypedMapBuilder> c
     this(loadable, TypedMapBuilder.EMPTY_CONSUMER);
   }
 
-  /** Creates the context for this method */
-  private <O> TypedMap createContext(DynamicOps<O> ops) {
+  /** Shared logic with {@link LoadableMapCodec} to prepare context from ops */
+  public static <O> TypedMapBuilder prepareContext(DynamicOps<O> ops) {
     TypedMapBuilder builder = TypedMap.builder();
     if (ops instanceof RegistryOps<?> registryOps) {
       builder.put(ContextKey.REGISTRY_LOOKUP, registryOps.lookupProvider);
-      // grab the condition context, or empty context if its missing
       builder.put(ContextKey.CONDITION_CONTEXT, MantleCodecs.CONDITION_CONTEXT.parse(ops, ops.empty()).result().orElse(IContext.EMPTY));
     }
+    return builder;
+  }
+
+  /** Creates the context for this method */
+  private TypedMap createContext(DynamicOps<?> ops) {
+    TypedMapBuilder builder = prepareContext(ops);
     this.context.accept(builder);
     return builder.build();
   }

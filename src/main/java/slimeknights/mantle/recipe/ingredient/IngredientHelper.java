@@ -1,6 +1,5 @@
 package slimeknights.mantle.recipe.ingredient;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -11,7 +10,7 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
-import slimeknights.mantle.data.codec.LoadableCodec;
+import slimeknights.mantle.data.codec.LoadableMapCodec;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.network.codec.StreamableCodec;
 
@@ -32,7 +31,7 @@ public class IngredientHelper {
   /** Creates an ingredient type from the given loadable. */
   public static <T extends ICustomIngredient> IngredientType<T> itemType(RecordLoadable<T> loadable) {
     return new IngredientType<>(
-      MapCodec.assumeMapUnsafe(new LoadableCodec<>(loadable)),
+      new LoadableMapCodec<>(loadable),
       new StreamableCodec<>(loadable)
     );
   }
@@ -40,7 +39,7 @@ public class IngredientHelper {
   /** Creates an ingredient type from the given loadable. */
   public static <T extends FluidIngredient> FluidIngredientType<T> fluidType(RecordLoadable<T> loadable) {
     return new FluidIngredientType<>(
-      MapCodec.assumeMapUnsafe(new LoadableCodec<>(loadable)),
+      new LoadableMapCodec<>(loadable),
       new StreamableCodec<>(loadable)
     );
   }

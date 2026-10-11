@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import slimeknights.mantle.data.codec.LoadableCodec;
+import slimeknights.mantle.data.codec.LoadableMapCodec;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.data.loadable.field.LoadableField;
 import slimeknights.mantle.data.loadable.primitive.StringLoadable;
@@ -39,8 +39,7 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
   private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
 
   protected LoadableRecipeSerializer(RecordLoadable<T> loadable) {
-    // TODO: can we use a more direct mapping from RecordLoadable to a MapCodec? they are conceptually similar
-    this.codec = MapCodec.assumeMapUnsafe(new LoadableCodec<>(loadable, this));
+    this.codec = new LoadableMapCodec<>(loadable, this);
     this.streamCodec = new StreamableCodec<>(loadable, this);
   }
 
