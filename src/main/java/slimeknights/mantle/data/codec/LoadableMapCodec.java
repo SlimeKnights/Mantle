@@ -10,7 +10,6 @@ import slimeknights.mantle.util.typed.TypedMap;
 import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * Implementation of {@link com.mojang.serialization.MapCodec} using {@link RecordLoadable}.
@@ -35,12 +34,6 @@ public class LoadableMapCodec<T> extends JsonMapCodec<T> {
     TypedMapBuilder builder = LoadableCodec.prepareContext(ops);
     this.context.accept(builder);
     return builder.build();
-  }
-
-  @Override
-  public <O> Stream<O> keys(final DynamicOps<O> ops) {
-    // TODO: add keys interface to record loadable and map using ops.createString?
-    return Stream.of();
   }
 
   @Override
