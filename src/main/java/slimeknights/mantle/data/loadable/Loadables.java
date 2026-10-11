@@ -75,9 +75,9 @@ public class Loadables {
   public static final ResourceLocationLoadable<DataComponentType<?>> DATA_COMPONENT_TYPE = new RegistryLoadable<>(BuiltInRegistries.DATA_COMPONENT_TYPE);
 
   /* Non-default registries */
-  public static final StringLoadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid cannot be empty");
-  public static final StringLoadable<Block> NON_EMPTY_BLOCK = notValue(BLOCK, Blocks.AIR, "Block cannot be air");
-  public static final StringLoadable<Item> NON_EMPTY_ITEM = notValue(ITEM, Items.AIR, "Item cannot be empty");
+  public static final StringLoadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid");
+  public static final StringLoadable<Block> NON_EMPTY_BLOCK = notValue(BLOCK, Blocks.AIR, "Block");
+  public static final StringLoadable<Item> NON_EMPTY_ITEM = notValue(ITEM, Items.AIR, "Item");
 
   /* Registry holders */
   public static final HolderLoadable<Attribute> ATTRIBUTE = new RegistryHolderLoadable<>(BuiltInRegistries.ATTRIBUTE);
@@ -148,7 +148,8 @@ public class Loadables {
   }
 
   /** Maps a loadable to a variant that disallows a particular value */
-  public static <T> StringLoadable<T> notValue(StringLoadable<T> loadable, T notValue, String errorMsg) {
+  public static <T> StringLoadable<T> notValue(StringLoadable<T> loadable, T notValue, String registry) {
+    String errorMsg = registry + " must not be " + loadable.getString(notValue);
     BiFunction<T,ErrorFactory,T> mapper = (value, error) -> {
       if (value == notValue) {
         throw error.create(errorMsg);
