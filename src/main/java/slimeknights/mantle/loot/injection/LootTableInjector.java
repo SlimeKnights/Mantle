@@ -18,7 +18,6 @@ import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.loot.injection.LootTableInjection.LootPoolInjection;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
-import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -53,7 +52,7 @@ public enum LootTableInjector implements IEarlyReloadListener {
   public void onResourceManagerReload(ResourceManager manager) {
     long time = System.nanoTime();
     Map<ResourceLocation,LootTableInjection.Builder> builders = new HashMap<>();
-    TypedMap context = TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, registry).put(ContextKey.CONDITION_CONTEXT, this.context).build();
+    TypedMap context = ContextKey.lookupContext(registry).put(ContextKey.CONDITION_CONTEXT, this.context).build();
     int loaded = 0;
     for (Entry<ResourceLocation,Resource> entry : manager.listResources(FOLDER, loc -> loc.getPath().endsWith(".json")).entrySet()) {
       try (Reader reader = entry.getValue().openAsReader()) {

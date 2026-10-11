@@ -17,8 +17,7 @@ public record StreamableCodec<T>(Streamable<T> streamable, Consumer<TypedMapBuil
 
   /** Creates the context for the given buffer */
   private TypedMap createContext(RegistryFriendlyByteBuf buffer) {
-    TypedMapBuilder builder = TypedMap.builder();
-    builder.put(ContextKey.REGISTRY_LOOKUP, buffer.registryAccess());
+    TypedMapBuilder builder = ContextKey.lookupContext(buffer.registryAccess());
     context.accept(builder);
     return builder.build();
   }

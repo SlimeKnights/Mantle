@@ -101,7 +101,7 @@ public class IngredientData implements IDataElement {
     @Override
     public IngredientData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext jsonContext) throws JsonParseException {
       IngredientData data = new IngredientData();
-      TypedMap context = ContextKey.registryContext(SafeClientAccess.getRegistryAccess());
+      TypedMap context = ContextKey.lookupContext(SafeClientAccess.getRegistryAccess()).build();
 
       // array - parse each element as an ingredient
       if (json.isJsonArray()) {

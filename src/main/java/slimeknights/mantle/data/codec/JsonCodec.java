@@ -44,7 +44,7 @@ public interface JsonCodec<T> extends Codec<T> {
   default <O> DataResult<O> encode(T input, DynamicOps<O> ops, O prefix) {
     try {
       return DataResult.success(JsonOps.INSTANCE.convertTo(ops, serialize(input, ops)));
-    } catch (JsonParseException e) {
+    } catch (RuntimeException e) {
       Mantle.logger.warn("Unable to encode {}", codecError(), e);
       return DataResult.error(e::getMessage);
     }

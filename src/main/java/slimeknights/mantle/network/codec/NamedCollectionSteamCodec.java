@@ -27,7 +27,7 @@ public interface NamedCollectionSteamCodec<T extends IdAwareObject> extends Stre
 
   /** Gets the context without ID. Used for both encoding and decoding. */
   default TypedMapBuilder encoderContext(RegistryAccess access) {
-    return TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, access);
+    return ContextKey.lookupContext(access);
   }
 
   /** Gets the context for the given ID. By default, includes ID, debug, and registry lookup. Used specifically on decoding. */

@@ -6,7 +6,9 @@ import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.RegistryOps.RegistryInfoLookup;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -130,5 +133,10 @@ public class RegistryHelper {
       }
     }
     return true;
+  }
+
+  /** Fetches the given entry from the given registry info lookup, as it lacks then nice helpers {@link net.minecraft.core.HolderLookup.Provider} contains. */
+  public static <T> Optional<Holder.Reference<T>> lookup(RegistryInfoLookup lookup, ResourceKey<? extends Registry<T>> registry, ResourceLocation name) {
+    return lookup.lookup(registry).flatMap(info -> info.getter().get(ResourceKey.create(registry, name)));
   }
 }

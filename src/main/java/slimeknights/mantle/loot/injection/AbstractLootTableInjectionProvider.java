@@ -32,7 +32,7 @@ public abstract class AbstractLootTableInjectionProvider extends GenericRegistry
   @Override
   public final CompletableFuture<?> run(CachedOutput output, HolderLookup.Provider lookup) {
     addTables(lookup);
-    TypedMap context = ContextKey.registryContext(lookup);
+    TypedMap context = ContextKey.lookupContext(lookup).build();
     // add all builders to the output
     return allOf(builders.stream().map(builder -> {
       JsonObject json = LootTableInjection.LOADABLE.serialize(builder.build(), context).getAsJsonObject();

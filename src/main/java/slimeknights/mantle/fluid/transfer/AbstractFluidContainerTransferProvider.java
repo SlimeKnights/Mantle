@@ -81,7 +81,7 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericRegi
   @Override
   public CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider lookup) {
     addTransfers(lookup);
-    TypedMap context = ContextKey.registryContext(lookup);
+    TypedMap context = ContextKey.lookupContext(lookup).build();
     return allOf(allTransfers.entrySet().stream().map(entry -> saveJson(cache, entry.getKey(), entry.getValue().toJson(context))));
   }
 

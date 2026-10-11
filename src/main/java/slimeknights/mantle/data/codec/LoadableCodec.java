@@ -20,8 +20,8 @@ public record LoadableCodec<T>(Loadable<T> loadable, Consumer<TypedMapBuilder> c
   /** Creates the context for this method */
   private <O> TypedMap createContext(DynamicOps<O> ops) {
     TypedMapBuilder builder = TypedMap.builder();
-    if (ops instanceof RegistryOps<?> registryOps && registryOps.lookupProvider instanceof RegistryOps.HolderLookupAdapter adapter) {
-      builder.put(ContextKey.REGISTRY_LOOKUP, adapter.lookupProvider);
+    if (ops instanceof RegistryOps<?> registryOps) {
+      builder.put(ContextKey.REGISTRY_LOOKUP, registryOps.lookupProvider);
       // grab the condition context, or empty context if its missing
       builder.put(ContextKey.CONDITION_CONTEXT, MantleCodecs.CONDITION_CONTEXT.parse(ops, ops.empty()).result().orElse(IContext.EMPTY));
     }

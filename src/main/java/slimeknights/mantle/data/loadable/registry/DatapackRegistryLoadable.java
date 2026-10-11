@@ -8,10 +8,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.RegistryOps.RegistryInfoLookup;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.data.loadable.ErrorFactory;
 import slimeknights.mantle.data.loadable.field.ContextKey;
+import slimeknights.mantle.util.RegistryHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.Optional;
@@ -32,8 +34,8 @@ public record DatapackRegistryLoadable<T>(ResourceKey<? extends Registry<T>> key
 
   @Override
   public Holder<T> fromKey(ResourceLocation name, String key, TypedMap context) {
-    HolderLookup.Provider lookup = context.getOrThrow(ContextKey.REGISTRY_LOOKUP, ErrorFactory.JSON_SYNTAX_ERROR);
-    Optional<Reference<T>> holder = lookup.lookupOrThrow(this.key).get(ResourceKey.create(this.key, name));
+    RegistryInfoLookup lookup = context.getOrThrow(ContextKey.REGISTRY_LOOKUP, ErrorFactory.JSON_SYNTAX_ERROR);
+    Optional<Reference<T>> holder = RegistryHelper.lookup(lookup, this.key, name);
     if (holder.isPresent()) {
       return holder.get();
     }

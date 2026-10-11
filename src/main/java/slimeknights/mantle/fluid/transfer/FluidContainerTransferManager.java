@@ -22,7 +22,6 @@ import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.network.PacketHelper;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
-import slimeknights.mantle.util.typed.TypedMapBuilder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
   protected void apply(Map<ResourceLocation,JsonElement> splashList, ResourceManager manager, ProfilerFiller profiler) {
     long time = System.nanoTime();
     ICondition.IContext conditionContext = getContext();
-    TypedMap context = TypedMapBuilder.builder().put(ContextKey.REGISTRY_LOOKUP, getRegistryLookup()).put(ContextKey.CONDITION_CONTEXT, conditionContext).build();
+    TypedMap context = ContextKey.lookupContext(getRegistryLookup()).put(ContextKey.CONDITION_CONTEXT, conditionContext).build();
     List<IFluidContainerTransfer> transfers = new ArrayList<>(splashList.size());
     for (Entry<ResourceLocation, JsonElement> entry : splashList.entrySet()) {
       ResourceLocation key = entry.getKey();

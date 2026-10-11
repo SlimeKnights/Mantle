@@ -6,8 +6,11 @@ import com.mojang.serialization.JsonOps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.RegistryOps.HolderLookupAdapter;
+import net.minecraft.resources.RegistryOps.RegistryInfoLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
@@ -32,8 +35,8 @@ public class ContextKey<T> implements Key<T> {
   public static final ContextKey<String> DEBUG = new ContextKey<>("debug info");
   /** Key for adding condition context, used in {@link slimeknights.mantle.data.loadable.mapping.ConditionalLoadable} */
   public static final ContextKey<IContext> CONDITION_CONTEXT = new ContextKey<>("condition context");
-  /** Context field for fetching registries */
-  public static final ContextKey<HolderLookup.Provider> REGISTRY_LOOKUP = new ContextKey<>("registry lookup");
+  /** Context field for fetching registries. Uses {@link RegistryInfoLookup} as that is easiest to fetch during datagen. See {@link #lookupContext(Provider)} to construct. */
+  public static final ContextKey<RegistryInfoLookup> REGISTRY_LOOKUP = new ContextKey<>("registry lookup");
 
   /** Name of the field, used primarily for debug */
   @Getter
@@ -50,13 +53,13 @@ public class ContextKey<T> implements Key<T> {
   /* Helpers */
 
   /** Builds a context from the given registry lookup */
-  public static TypedMap registryContext(@Nullable HolderLookup.Provider registryLookup) {
-    return TypedMapBuilder.builder().put(REGISTRY_LOOKUP, Objects.requireNonNullElse(registryLookup, RegistryAccess.EMPTY)).build();
+  public static TypedMapBuilder lookupContext(@Nullable HolderLookup.Provider lookup) {
+    return TypedMapBuilder.builder().put(REGISTRY_LOOKUP, new HolderLookupAdapter(Objects.requireNonNullElse(lookup, RegistryAccess.EMPTY)));
   }
 
   /** Creates the context for the given holder lookup provider */
-  private static RegistryOps<JsonElement> createSerializationContext(TypedMap context, HolderLookup.Provider lookup) {
-    RegistryOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);
+  private static RegistryOps<JsonElement> createSerializationContext(TypedMap context, RegistryInfoLookup lookup) {
+    RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, lookup);
     IContext conditionContext = context.get(CONDITION_CONTEXT);
     if (conditionContext != null) {
       return new ConditionalOps<>(ops, conditionContext);
@@ -71,7 +74,7 @@ public class ContextKey<T> implements Key<T> {
 
   /** Gets dynamic ops for the given context. If no registry ops are provided will skip. */
   public static DynamicOps<JsonElement> optionalRegistryOps(TypedMap context) {
-    HolderLookup.Provider lookup = context.get(REGISTRY_LOOKUP);
+    RegistryInfoLookup lookup = context.get(REGISTRY_LOOKUP);
     if (lookup != null) {
       return createSerializationContext(context, lookup);
     } else {
