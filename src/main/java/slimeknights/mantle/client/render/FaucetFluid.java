@@ -100,6 +100,10 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
     // primitives set the default to the given value
     if (element.isJsonPrimitive()) {
       int value = element.getAsInt();
+      // 16 means above the block, effectively the block doesn't want fluid rendered inside.
+      if (value >= 16) {
+        return List.of();
+      }
       return def.stream().map(cuboid -> {
         Vector3f from = new Vector3f(cuboid.getFrom());
         from.y = value;
