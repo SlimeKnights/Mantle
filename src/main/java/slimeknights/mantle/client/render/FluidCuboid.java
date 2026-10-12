@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.With;
 import net.minecraft.core.Direction;
 import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
@@ -46,10 +45,10 @@ public class FluidCuboid {
   public static final BlockStateDataMapLoader<List<FluidCuboid>> REGISTRY = new BlockStateDataMapLoader<>("Block entity fluids", "mantle/model/block_fluids", LIST_LOADABLE);
 
   /** Fluid start, scaled for block models */
-  @Getter @With
+  @Getter
   private final Vector3f from;
   /** Fluid end, scaled for block models */
-  @Getter @With
+  @Getter
   private final Vector3f to;
   /** Block faces for the fluid */
   @Getter
@@ -94,6 +93,16 @@ public class FluidCuboid {
       toScaled.mul(1 / 16f);
     }
     return toScaled;
+  }
+
+  /** Creates a new fluid cuboid, replacing the start vector. */
+  public FluidCuboid withFrom(Vector3f from) {
+    return new FluidCuboid(from, to, faces, null, toScaled);
+  }
+
+  /** Creates a new fluid cuboid, replacing the end vector. */
+  public FluidCuboid withTo(Vector3f to) {
+    return new FluidCuboid(from, to, faces, fromScaled, null);
   }
 
   /** Represents a single fluid face in the model */
