@@ -1,8 +1,10 @@
 package slimeknights.mantle.client.render;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 import net.minecraft.core.Direction;
 import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Class representing a cube of fluid, which appears in many model types. */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class FluidCuboid {
   protected static final Map<Direction, FluidFace> DEFAULT_FACES;
@@ -41,10 +44,10 @@ public class FluidCuboid {
   public static final BlockStateDataMapLoader<List<FluidCuboid>> REGISTRY = new BlockStateDataMapLoader<>("Block entity fluids", "mantle/model/block_fluids", LIST_LOADABLE);
 
   /** Fluid start, scaled for block models */
-  @Getter
+  @Getter @With
   private final Vector3f from;
   /** Fluid end, scaled for block models */
-  @Getter
+  @Getter @With
   private final Vector3f to;
   /** Block faces for the fluid */
   @Getter

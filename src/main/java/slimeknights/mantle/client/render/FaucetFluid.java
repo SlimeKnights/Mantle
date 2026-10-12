@@ -102,7 +102,7 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
       return def.stream().map(cuboid -> {
         Vector3f from = new Vector3f(cuboid.getFrom());
         from.y = value;
-        return new FluidCuboid(from, cuboid.getTo(), cuboid.getFaces());
+        return cuboid.withFrom(from);
       }).collect(Collectors.toList());
     } else {
       return FluidCuboid.LIST_LOADABLE.getIfPresent(json, tag);
@@ -112,25 +112,33 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
   /** Loader implementation */
   public static class Loader extends BlockStateDataMapLoader<FaucetFluid> {
     /** Name of the default fluid model, shared between Ceramics and Tinkers Construct */
-    private static final ResourceLocation DEFAULT_NAME = Mantle.getResource("_default");
+    private final ResourceLocation defaultName;
     @Getter
     private FaucetFluid defaultInstance = FaucetFluid.EMPTY;
     private final DefaultingFaucetFluidLoader dataLoader = new DefaultingFaucetFluidLoader();
-    public Loader() {
-      super("Faucet Fluids", "mantle/model/faucet_fluid", LOADABLE);
+
+    /** Constructor to extend to override fields */
+    protected Loader(String name, String folder, ResourceLocation defaultName) {
+      super(name, folder, LOADABLE);
+      this.defaultName = defaultName;
+    }
+
+    /** Local constructor for the Mantle instance. */
+    private Loader() {
+      this("Faucet Fluids", "mantle/model/faucet_fluid", Mantle.getResource("_default"));
     }
 
     @Override
     protected RecordLoadable<FaucetFluid> prepareLoader(Map<ResourceLocation,JsonElement> jsons) {
-      JsonElement json = jsons.get(DEFAULT_NAME);
+      JsonElement json = jsons.get(defaultName);
       defaultInstance = EMPTY;
       if (json == null) {
         Mantle.logger.warn("Found no default fluid model, this is likely a problem with the resource pack");
       } else {
         try {
-          defaultInstance = LOADABLE.convert(json, DEFAULT_NAME.toString());
+          defaultInstance = LOADABLE.convert(json, defaultInstance.toString());
         } catch (Exception exception) {
-          Mantle.logger.error("Failed to load default faucet fluid model {}", DEFAULT_NAME, exception);
+          Mantle.logger.error("Failed to load default faucet fluid model {}", defaultName, exception);
         }
       }
       return dataLoader;
@@ -142,11 +150,16 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
       return get(state, defaultInstance);
     }
 
+    /** Overridable method controlling how the default instance is mapped using the bottom field. */
+    public FaucetFluid fromJson(JsonObject json) {
+      return FaucetFluid.fromJson(json, defaultInstance);
+    }
+
     /** Nested loadable to allow us to swap out the default instance for the deserializer */
     private class DefaultingFaucetFluidLoader implements RecordLoadable<FaucetFluid> {
       @Override
       public FaucetFluid deserialize(JsonObject json, TypedMap context) {
-        return fromJson(json, defaultInstance);
+        return fromJson(json);
       }
 
       @Override
