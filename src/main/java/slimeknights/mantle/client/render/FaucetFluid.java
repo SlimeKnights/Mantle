@@ -33,8 +33,8 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
   public static final FaucetFluid EMPTY = new FaucetFluid(List.of(), List.of(), false);
   /** Loader instance */
   public static final RecordLoadable<FaucetFluid> LOADABLE = RecordLoadable.create(
-    FluidCuboid.LIST_LOADABLE.requiredField("side", FaucetFluid::side),
-    FluidCuboid.LIST_LOADABLE.requiredField("center", FaucetFluid::center),
+    FluidCuboid.EMPTY_LIST_LOADABLE.requiredField("side", FaucetFluid::side),
+    FluidCuboid.EMPTY_LIST_LOADABLE.requiredField("center", FaucetFluid::center),
     BooleanLoadable.INSTANCE.defaultField("continue", false, FaucetFluid::isContinued),
     FaucetFluid::new);
   /** Loader registry for faucet fluids */
@@ -109,7 +109,7 @@ public record FaucetFluid(List<FluidCuboid> side, List<FluidCuboid> center, bool
         return cuboid.withFrom(from);
       }).collect(Collectors.toList());
     } else {
-      return FluidCuboid.LIST_LOADABLE.getIfPresent(json, tag);
+      return FluidCuboid.EMPTY_LIST_LOADABLE.getIfPresent(json, tag);
     }
   }
 

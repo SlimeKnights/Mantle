@@ -37,8 +37,10 @@ public class FluidCuboid {
     Vector3fLoadable.INSTANCE.requiredField("to", FluidCuboid::getTo),
     Loadables.DIRECTION.mapWithValues(FluidFace.LOADABLE, 1).defaultField("faces", DEFAULT_FACES, FluidCuboid::getFaces),
     FluidCuboid::new);
-  /** Loader for a list of size 1 */
+  /** Loader for a list of size 1 or more */
   public static final Loadable<List<FluidCuboid>> LIST_LOADABLE = LOADABLE.list(CollectionLoadable.COMPACT);
+  /** Loader for a list of size 0 or more */
+  public static final Loadable<List<FluidCuboid>> EMPTY_LIST_LOADABLE = LOADABLE.list(CollectionLoadable.COMPACT_OR_EMPTY);
   /** Data loader to fetch a list of fluid cuboids from JSON */
   public static final BlockStateDataMapLoader<List<FluidCuboid>> REGISTRY = new BlockStateDataMapLoader<>("Block entity fluids", "mantle/model/block_fluids", LIST_LOADABLE);
 
