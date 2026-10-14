@@ -19,8 +19,8 @@ import java.util.List;
 public class ColoredModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<ColorData> colors = new ArrayList<>();
 
-  public ColoredModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    this(ColoredBlockModel.ID, parent, existingFileHelper, allowInlineElements);
+  public ColoredModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
+    this(ColoredBlockModel.ID, parent, existingFileHelper, true);
   }
 
   protected ColoredModelBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {

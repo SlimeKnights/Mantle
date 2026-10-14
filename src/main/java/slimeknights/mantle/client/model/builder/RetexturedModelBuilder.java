@@ -10,8 +10,8 @@ import slimeknights.mantle.client.model.RetexturedModel;
 @SuppressWarnings("unused") // API
 public class RetexturedModelBuilder<T extends ModelBuilder<T>> extends ColoredModelBuilder<T> {
   private final JsonArray retextured = new JsonArray();
-  public RetexturedModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(RetexturedModel.ID, parent, existingFileHelper, allowInlineElements);
+  public RetexturedModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
+    super(RetexturedModel.ID, parent, existingFileHelper, true);
   }
 
   /** Marks the given texture as retextured. Uses the texture name, not path. */

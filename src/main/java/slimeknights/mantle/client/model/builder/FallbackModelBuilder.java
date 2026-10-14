@@ -15,8 +15,8 @@ import java.util.List;
 @SuppressWarnings("unused")  // API
 public class FallbackModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private final List<DomainModel<T>> models = new ArrayList<>();
-  public FallbackModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(FallbackModelLoader.ID, parent, existingFileHelper, allowInlineElements);
+  public FallbackModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
+    super(FallbackModelLoader.ID, parent, existingFileHelper, false);
   }
 
   /** Adds a fallback model with a domain restriction */

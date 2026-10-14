@@ -17,8 +17,8 @@ import slimeknights.mantle.client.model.ItemKeyModel;
 public class ItemKeyModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
   private ItemKey key = null;
   private ResourceLocation extraTexturesKey = null;
-  public ItemKeyModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(ItemKeyModel.ID, parent, existingFileHelper, allowInlineElements);
+  public ItemKeyModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
+    super(ItemKeyModel.ID, parent, existingFileHelper, false);
   }
 
   @Override

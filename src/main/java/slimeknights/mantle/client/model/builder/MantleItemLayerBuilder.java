@@ -19,8 +19,8 @@ public class MantleItemLayerBuilder<T extends ModelBuilder<T>> extends CustomLoa
     super(loaderId, parent, existingFileHelper, allowInlineElements);
   }
 
-  public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    this(MantleItemLayerModel.ID, parent, existingFileHelper, allowInlineElements);
+  public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper) {
+    this(MantleItemLayerModel.ID, parent, existingFileHelper, true);
   }
 
   /** Adds data for the next element */

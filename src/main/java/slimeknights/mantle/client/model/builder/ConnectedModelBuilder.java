@@ -17,8 +17,8 @@ public class ConnectedModelBuilder<T extends ModelBuilder<T>> extends ColoredMod
   private Set<Direction> sides = null;
   private String predicate = null;
 
-  public ConnectedModelBuilder(T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
-    super(ConnectedModel.ID, parent, existingFileHelper, allowInlineElements);
+  public ConnectedModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
+    super(ConnectedModel.ID, parent, existingFileHelper, true);
   }
 
   /**
