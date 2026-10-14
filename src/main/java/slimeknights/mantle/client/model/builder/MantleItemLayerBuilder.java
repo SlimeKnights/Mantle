@@ -20,7 +20,7 @@ public class MantleItemLayerBuilder<T extends ModelBuilder<T>> extends CustomLoa
   }
 
   public MantleItemLayerBuilder(T parent, ExistingFileHelper existingFileHelper) {
-    this(MantleItemLayerModel.ID, parent, existingFileHelper, true);
+    this(MantleItemLayerModel.ID, parent, existingFileHelper, false);
   }
 
   /** Adds data for the next element */
