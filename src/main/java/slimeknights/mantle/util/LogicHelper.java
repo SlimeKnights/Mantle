@@ -3,6 +3,7 @@ package slimeknights.mantle.util;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 /** Helpers for basic logic, not relevant to another helper. */
@@ -49,5 +50,22 @@ public class LogicHelper {
       }
     }
     return false;
+  }
+
+  /** Creates a new array by copying the first and appending all elements in the second. */
+  @SafeVarargs
+  public static <T> T[] append(T[] first, T... second) {
+    T[] result = Arrays.copyOf(first, first.length + second.length);
+    System.arraycopy(second, 0, result, first.length, second.length);
+    return result;
+  }
+
+  /** Creates a new array by copying the second array and appending all elements in the first. */
+  @SuppressWarnings("unchecked")
+  @SafeVarargs
+  public static <T> T[] prepend(T[] first, T... second) {
+    T[] result = (T[]) Arrays.copyOf(second, first.length + second.length, first.getClass());
+    System.arraycopy(first, 0, result, second.length, first.length);
+    return result;
   }
 }
