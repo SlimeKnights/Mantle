@@ -322,20 +322,31 @@ public class JsonHelper {
 
   /** Serializes the given list of objects using the passed codec */
   @SafeVarargs
-  public static <T> JsonElement serializeArray(Codec<T> codec, T... objects) {
+  public static <T> JsonArray serializeArray(DynamicOps<JsonElement> ops, Codec<T> codec, T... objects) {
     JsonArray array = new JsonArray();
     for (T object : objects) {
-      array.add(serialize(codec, object));
+      array.add(serialize(ops, codec, object));
     }
     return array;
   }
 
   /** Serializes the given list of objects using the passed codec */
-  public static <T> JsonElement serializeList(Codec<T> codec, Collection<T> objects) {
+  @SafeVarargs
+  public static <T> JsonArray serializeArray(Codec<T> codec, T... objects) {
+    return serializeArray(JsonOps.INSTANCE, codec, objects);
+  }
+
+  /** Serializes the given list of objects using the passed codec */
+  public static <T> JsonArray serializeList(DynamicOps<JsonElement> ops, Codec<T> codec, Collection<T> objects) {
     JsonArray array = new JsonArray();
     for (T object : objects) {
-      array.add(serialize(codec, object));
+      array.add(serialize(ops, codec, object));
     }
     return array;
+  }
+
+  /** Serializes the given list of objects using the passed codec */
+  public static <T> JsonArray serializeList(Codec<T> codec, Collection<T> objects) {
+    return serializeList(JsonOps.INSTANCE, codec, objects);
   }
 }
