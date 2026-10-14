@@ -1,5 +1,8 @@
 package slimeknights.mantle.util;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /** Helpers for basic logic, not relevant to another helper. */
@@ -29,7 +32,9 @@ public class LogicHelper {
    * @param <E>  List type
    * @return  List value or default
    */
-  public static <E> E getOrDefault(List<E> list, int index, E defaultValue) {
+  @Nullable
+  @Contract("_,_,!null->!null")
+  public static <E> E getOrDefault(List<E> list, int index, @Nullable E defaultValue) {
     if (index < 0 || index >= list.size()) {
       return defaultValue;
     }
