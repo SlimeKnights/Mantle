@@ -104,8 +104,7 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
 
 
   /** Helper to save a recipe */
-  @SuppressWarnings("unchecked")
-  private T save(RecipeOutput output, ResourceLocation id, CookingType cookingType) {
+  protected T save(RecipeOutput output, ResourceLocation id, CookingType cookingType) {
     if (ingredient == Ingredient.EMPTY) {
       throw new IllegalStateException("Ingredient must be set");
     }
