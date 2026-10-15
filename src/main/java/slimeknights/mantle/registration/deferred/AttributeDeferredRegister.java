@@ -35,6 +35,7 @@ public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
   public class Builder {
     private final String name;
     private boolean syncable = false;
+    /** Effect sentiment, changing the tooltip colors for positive and negative. Defaults to {@link Attribute.Sentiment#POSITIVE} */
     @Setter @Accessors(fluent = true)
     private Attribute.Sentiment sentiment = Attribute.Sentiment.POSITIVE;
 
@@ -42,6 +43,16 @@ public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
     public Builder sync() {
       syncable = true;
       return this;
+    }
+
+    /** Marks this as a neutral sentiment effect */
+    public Builder neutral() {
+      return sentiment(Attribute.Sentiment.NEUTRAL);
+    }
+
+    /** Marks this as a negative sentiment effect */
+    public Builder negative() {
+      return sentiment(Attribute.Sentiment.NEGATIVE);
     }
 
     /** Builds the final attribute for an arbitrary constructor. */
