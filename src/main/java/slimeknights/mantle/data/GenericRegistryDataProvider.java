@@ -1,11 +1,9 @@
 package slimeknights.mantle.data;
 
-import com.google.gson.Gson;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
-import slimeknights.mantle.util.JsonHelper;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -14,13 +12,13 @@ import java.util.concurrent.CompletionStage;
 public abstract class GenericRegistryDataProvider extends GenericDataProvider {
   private final CompletableFuture<HolderLookup.Provider> registries;
 
-  public GenericRegistryDataProvider(PackOutput output, Target type, String folder, Gson gson, CompletableFuture<HolderLookup.Provider> registries) {
-    super(output, type, folder, gson);
+  public GenericRegistryDataProvider(PackOutput output, Target type, String folder, CompletableFuture<HolderLookup.Provider> registries) {
+    super(output, type, folder);
     this.registries = registries;
   }
 
   public GenericRegistryDataProvider(PackOutput output, String folder, CompletableFuture<HolderLookup.Provider> registries) {
-    this(output, Target.DATA_PACK, folder, JsonHelper.DEFAULT_GSON, registries);
+    this(output, Target.DATA_PACK, folder, registries);
   }
 
   @Override

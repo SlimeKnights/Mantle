@@ -8,7 +8,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.data.GenericDataProvider;
 import slimeknights.mantle.registration.object.FluidObject;
-import slimeknights.mantle.util.JsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ public abstract class AbstractFluidTextureProvider extends GenericDataProvider {
   private final String modId;
 
   public AbstractFluidTextureProvider(PackOutput packOutput, @Nullable String modId) {
-    super(packOutput, Target.RESOURCE_PACK, FluidTextureManager.FOLDER, JsonHelper.DEFAULT_GSON);
+    super(packOutput, Target.RESOURCE_PACK, FluidTextureManager.FOLDER);
     this.modId = modId;
   }
 

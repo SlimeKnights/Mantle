@@ -2,14 +2,12 @@ package slimeknights.mantle.data;
 
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashingOutputStream;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.Codec;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.Target;
@@ -35,33 +33,20 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public abstract class GenericDataProvider implements DataProvider {
   protected final PackOutput.PathProvider pathProvider;
-  private final Gson gson;
-
-  public GenericDataProvider(PackOutput output, Target type, String folder, Gson gson) {
-    this(output.createPathProvider(type, folder), gson);
-  }
-
-  public GenericDataProvider(DataGenerator generator, Target type, String folder, Gson gson) {
-    this(generator.getPackOutput(), type, folder, gson);
-  }
 
   public GenericDataProvider(PackOutput output, Target type, String folder) {
-    this(output, type, folder, JsonHelper.DEFAULT_GSON);
-  }
-
-  public GenericDataProvider(DataGenerator generator, Target type, String folder) {
-    this(generator, type, folder, JsonHelper.DEFAULT_GSON);
+    this(output.createPathProvider(type, folder));
   }
 
   /**
    * Saves the given object to JSON
    * @param output     Output for writing
    * @param location   Location relative to this data provider's root
-   * @param object     Object to save, will be converted using this provider's GSON instance
+   * @param element    Element to save
    */
   @SuppressWarnings("SameParameterValue")  // API
-  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Object object, @Nullable Comparator<String> keyComparator) {
-    return saveStable(output, gson.toJsonTree(object), this.pathProvider.json(location), keyComparator).exceptionally(e -> {
+  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, JsonElement element, @Nullable Comparator<String> keyComparator) {
+    return saveStable(output, element, this.pathProvider.json(location), keyComparator).exceptionally(e -> {
       Mantle.logger.error("Couldn't create data for {}", location, e);
       return null;
     });
@@ -71,10 +56,10 @@ public abstract class GenericDataProvider implements DataProvider {
    * Saves the given object to JSON
    * @param output     Output for writing
    * @param location   Location relative to this data provider's root
-   * @param object     Object to save, will be converted using this provider's GSON instance
+   * @param element    Element to save
    */
-  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, Object object) {
-    return saveJson(output, location, object, DataProvider.KEY_COMPARATOR);
+  protected CompletableFuture<?> saveJson(CachedOutput output, ResourceLocation location, JsonElement element) {
+    return saveJson(output, location, element, DataProvider.KEY_COMPARATOR);
   }
 
   /**
