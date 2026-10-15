@@ -22,7 +22,7 @@ import java.util.Objects;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> {
   /** Map of advancement criteria */
-  private final Map<String, Criterion<?>> criteria = new HashMap<>();
+  protected final Map<String, Criterion<?>> criteria = new HashMap<>();
   /** Group for this recipe */
   @Nonnull
   protected String group = "";
