@@ -76,7 +76,7 @@ public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
     }
 
     /** Builds a percent attribute between 0 and 100 with a default of 1. */
-    public DeferredHolder<Attribute,Attribute> multiplier(float defaultValue) {
+    public DeferredHolder<Attribute,Attribute> multiplier() {
       return percent(1, 0, 100);
     }
 
