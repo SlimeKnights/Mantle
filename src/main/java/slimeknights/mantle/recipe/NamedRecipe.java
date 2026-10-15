@@ -4,10 +4,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
+import java.util.List;
+
 /** Interface for a pair of recipe and name. Like {@link net.minecraft.world.item.crafting.RecipeHolder} but without the strict bound. */
 public interface NamedRecipe<T> {
   /** Gets the ID for the recipe. */
   ResourceLocation id();
+
+  /** Gets a list of source IDs for a dynamic recipe. */
+  default List<ResourceLocation> sourceIds() {
+    return List.of(id());
+  }
 
   /** Gets the recipe instance */
   T recipe();
@@ -32,6 +39,16 @@ public interface NamedRecipe<T> {
     return new Wrapped<>(holder.id(), holder.value());
   }
 
+  /** Creates a new named recipe instance with the given list of parent IDs. */
+  static <T> NamedRecipe<T> of(ResourceLocation id, List<ResourceLocation> parents, T recipe) {
+    return new Wrapped<>(id, parents, recipe);
+  }
+
   /** Wrapper around an ID and recipe pair. */
-  record Wrapped<T>(ResourceLocation id, T recipe) implements NamedRecipe<T> {}
+  record Wrapped<T>(ResourceLocation id, List<ResourceLocation> sourceIds, T recipe) implements NamedRecipe<T> {
+    /** Creates a wrapped recipe using the recipe ID as the parent ID. */
+    public Wrapped(ResourceLocation id, T recipe) {
+      this(id, List.of(id), recipe);
+    }
+  }
 }
