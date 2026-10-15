@@ -1,9 +1,7 @@
 package slimeknights.mantle.data.registry;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import slimeknights.mantle.data.loadable.field.DefaultingField;
 import slimeknights.mantle.data.loadable.field.LoadableField;
@@ -12,7 +10,6 @@ import slimeknights.mantle.data.registry.GenericLoaderRegistry.IHaveLoader;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.function.Function;
 
 /**
@@ -60,14 +57,6 @@ public class DefaultingLoaderRegistry<T extends IHaveLoader> extends GenericLoad
       return defaultInstance;
     }
     return super.convert(element, key, context);
-  }
-
-  @Override
-  public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
-    if (src == defaultInstance) {
-      return JsonNull.INSTANCE;
-    }
-    return serialize(src);
   }
 
   /**

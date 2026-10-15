@@ -1,23 +1,18 @@
 package slimeknights.mantle.data.loadable;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
-import org.jetbrains.annotations.ApiStatus.OverrideOnly;
 import org.jetbrains.annotations.Contract;
 import slimeknights.mantle.data.loadable.mapping.DispatchLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 
 /** Building block for {@link Loadable}, handling the deserializing. Used in {@link CompositeLoadable} and {@link DispatchLoadable} */
 @FunctionalInterface
-public interface SimpleJsonDeserializer<T> extends JsonDeserializer<T> {
+public interface SimpleJsonDeserializer<T> {
   /**
    * Deserializes the object from the passed JSON element
    * @param element  Element of an unknown type to parse
@@ -32,16 +27,6 @@ public interface SimpleJsonDeserializer<T> extends JsonDeserializer<T> {
   @NonExtendable
   default T convert(JsonElement element, String key) {
     return convert(element, key, TypedMap.EMPTY);
-  }
-
-
-  /* GSON methods, lets us easily use loadables with GSON adapters. */
-
-  /** This method exists just to implement {@link JsonSerializer}, use {@link #convert(JsonElement, String, TypedMap)}. */
-  @OverrideOnly
-  @Override
-  default T deserialize(JsonElement json, Type type, JsonDeserializationContext context) {
-    return convert(json, type.getTypeName(), TypedMap.EMPTY);
   }
 
 
