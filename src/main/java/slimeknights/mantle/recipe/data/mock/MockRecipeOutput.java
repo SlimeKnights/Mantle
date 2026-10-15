@@ -49,9 +49,11 @@ public record MockRecipeOutput(MockRecipeConsumer consumer) {
     }
 
     @Override
-    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancementHolder, ICondition... conditions) {
+    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
       output.accept(new MockRecipeWrapper(id, recipe, modifications), conditions);
-      // TODO: advancements
+      if (advancement != null) {
+        output.advancement(advancement, conditions);
+      }
     }
   }
 
