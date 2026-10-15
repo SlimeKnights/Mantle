@@ -13,6 +13,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import slimeknights.mantle.util.LogicHelper;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -50,7 +52,17 @@ public interface MockRecipeConsumer extends Consumer<MockRecipe> {
     advancement(builder.build(id.withPrefix("recipes/" + folder + '/')), conditions);
   }
 
-  /** Adds extra conditions to the given recipe. Generally no need to construct this class, use {@link #accept(MockRecipe, ICondition...)} */
+  /** Wraps this consumer with the given conditions list, which will be added to conditions from arguments. Useful for usage inside recipe builders. */
+  default MockRecipeConsumer withConditions(ICondition... conditions) {
+    return conditions.length == 0 ? this : new Conditional(this, conditions);
+  }
+
+
+  /**
+   * Adds extra conditions to the given recipe.
+   * @apiNote construct with {@link #accept(MockRecipe, ICondition...)}
+   */
+  @Internal
   record WithConditions(MockRecipe recipe, ICondition... conditions) implements MockRecipe {
     @Override
     public ResourceLocation id() {
@@ -62,6 +74,36 @@ public interface MockRecipeConsumer extends Consumer<MockRecipe> {
       JsonObject json = recipe.serializeRecipe(serializer);
       serializer.addConditions(json, conditions);
       return json;
+    }
+  }
+
+  /**
+   * Wraps a recipe consumer with the given conditions list.
+   * @apiNote construct with {@link #withConditions(ICondition...)}.
+   */
+  @Internal
+  record Conditional(MockRecipeConsumer inner, ICondition... conditions) implements MockRecipeConsumer {
+    @Override
+    public void accept(MockRecipe recipe) {
+      inner.accept(recipe, conditions);
+    }
+
+    @Override
+    public void accept(MockRecipe recipe, ICondition... conditions) {
+      if (conditions.length == 0) {
+        inner.accept(recipe, this.conditions);
+      } else {
+        inner.accept(recipe, LogicHelper.append(this.conditions, conditions));
+      }
+    }
+
+    @Override
+    public void advancement(AdvancementHolder advancement, ICondition... conditions) {
+      if (conditions.length == 0) {
+        inner.advancement(advancement, this.conditions);
+      } else {
+        inner.advancement(advancement, LogicHelper.append(this.conditions, conditions));
+      }
     }
   }
 }

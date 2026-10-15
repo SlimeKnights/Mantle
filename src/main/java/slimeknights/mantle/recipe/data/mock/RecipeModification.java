@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Helper to run modifications on a {@link net.minecraft.world.item.crafting.Recipe} after serialization.
  * Could theoretically be used for other JSON objects, but designed for usage in {@link MockRecipe}.
- * Note that {@link net.minecraft.data.recipes.RecipeOutput#withConditions(ICondition...)} should be used for conditions over this system.
+ * Note that {@link net.minecraft.data.recipes.RecipeOutput#withConditions(ICondition...)} or {@link MockRecipeConsumer#withConditions(ICondition...)} should be used for conditions over this system as it provides merging behavior.
  * @see MockRecipeOutput
  */
 public interface RecipeModification {
