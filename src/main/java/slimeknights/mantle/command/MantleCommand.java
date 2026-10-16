@@ -39,7 +39,7 @@ public class MantleCommand {
 
     // register interesting sources
     SourcesCommand.register(Registries.LOOT_TABLE);
-    SourcesCommand.register("recipes", (context, builder)
+    SourcesCommand.register(Registries.elementsDirPath(Registries.RECIPE), (context, builder)
       -> SharedSuggestionProvider.suggestResource(context.getSource().getRecipeNames(), builder));
 
     // add command listener
