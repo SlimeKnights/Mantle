@@ -137,7 +137,7 @@ public class FluidRenderer {
 
     // if rotating by 90 or 270, swap U and V
     float minU, maxU, minV, maxV;
-    float size = flowing ? 8 : 16;
+    float size = flowing ? 0.5f : 1;
     if ((rotation % 180) == 90) {
       minU = sprite.getU(v1 * size);
       maxU = sprite.getU(v2 * size);
