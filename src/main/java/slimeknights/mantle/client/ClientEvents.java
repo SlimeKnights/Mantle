@@ -110,7 +110,7 @@ public class ClientEvents {
     Minecraft minecraft = Minecraft.getInstance();
     Options settings = minecraft.options;
     AttackIndicatorStatus indicator = settings.attackIndicator().get();
-    if (minecraft.player == null || minecraft.gameMode == null || minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR || indicator == AttackIndicatorStatus.OFF) {
+    if (minecraft.options.hideGui || minecraft.player == null || minecraft.gameMode == null || minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR || indicator == AttackIndicatorStatus.OFF) {
       return;
     }
 
@@ -179,7 +179,7 @@ public class ClientEvents {
     }
     // must not be in a screen, though chat is fine
     Minecraft minecraft = Minecraft.getInstance();
-    if (minecraft.screen != null && minecraft.screen.getClass() != ChatScreen.class) {
+    if (minecraft.options.hideGui ||minecraft.screen != null && minecraft.screen.getClass() != ChatScreen.class) {
       return;
     }
     // must have a hit result
