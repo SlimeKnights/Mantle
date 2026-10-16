@@ -49,8 +49,6 @@ public class BlockStateDataMapLoader<T> extends SimpleJsonResourceReloadListener
     return dataLoader;
   }
 
-
-  @SuppressWarnings("deprecation")  // no its not
   @Override
   protected void apply(Map<ResourceLocation,JsonElement> jsons, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
     long time = System.nanoTime();
