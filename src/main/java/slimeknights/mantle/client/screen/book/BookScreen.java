@@ -771,7 +771,8 @@ public class BookScreen extends Screen {
         .append("page_num: ").append(this.page).append('\n');
 
       // figure out what section we are in
-      SectionData section = Objects.requireNonNullElse(rightData, leftData).parent;
+      // prioritize left as it may not be in the same section as right
+      SectionData section = Objects.requireNonNullElse(leftData, rightData).parent;
       if (section != null) {
         int sectionStart = section.parent.getFirstPageNumber(section, null) / 2;
         // if it starts before the current page, store it as the section start
