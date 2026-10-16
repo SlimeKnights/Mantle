@@ -5,6 +5,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+/** @deprecated not difficult to implement, and most implementations will want {@link SmartItemHandlerSlot} */
+@Deprecated(forRemoval = true)
 public class RestrictedItemSlot extends Slot {
 
   private final Item allowedItem;
