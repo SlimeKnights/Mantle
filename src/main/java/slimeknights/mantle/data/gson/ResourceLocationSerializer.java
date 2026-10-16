@@ -36,7 +36,7 @@ public record ResourceLocationSerializer<T extends ResourceLocation>(
     if (index == -1) {
       return constructor.apply(modId, location);
     }
-    String path = location.substring(index);
+    String path = location.substring(index + 1);
     // if empty string before :, use default namespace after trimming :
     if (index > 0) {
       return constructor.apply(location.substring(0, index), path);
