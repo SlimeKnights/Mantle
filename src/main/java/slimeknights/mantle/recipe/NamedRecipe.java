@@ -44,6 +44,12 @@ public interface NamedRecipe<T> {
     return new Wrapped<>(id, parents, recipe);
   }
 
+  /** Gets a recipe class for JEI with the given type. */
+  @SuppressWarnings({"unchecked", "RedundantCast"})
+  static <T> Class<? extends NamedRecipe<T>> recipeClass() {
+    return (Class<? extends NamedRecipe<T>>)(Class<?>) NamedRecipe.class;
+  }
+
   /** Wrapper around an ID and recipe pair. */
   record Wrapped<T>(ResourceLocation id, List<ResourceLocation> sourceIds, T recipe) implements NamedRecipe<T> {
     /** Creates a wrapped recipe using the recipe ID as the parent ID. */
