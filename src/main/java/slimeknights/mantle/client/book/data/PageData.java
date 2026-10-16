@@ -161,11 +161,13 @@ public class PageData implements IDataItem, IConditional {
 
   /** Gets the title for the page data, which can be overridden by translation */
   public String getTitle() {
-    String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
-    if (title != null) {
-      return title;
+    if (this.parent != null) {
+      String title = this.parent.parent.strings.get(this.parent.name + "." + this.name);
+      if (title != null) {
+        return title;
+      }
     }
-    title = content.getTitle();
+    String title = content.getTitle();
     if (title != null && !title.isEmpty()) {
       return title;
     }

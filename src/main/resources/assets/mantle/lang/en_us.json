@@ -73,6 +73,8 @@
   "command.mantle.tag_preference.empty_tag": "No preference for %s tag %s",
   "command.mantle.tag_preference.preference": "Preferred value for %s tag %s is %s",
 
+  "book.mantle.section_list": "Section List",
+
   "gui.mantle.fluid.capacity": "Capacity: %s mb",
   "gui.mantle.fluid.contents": "Contains: %s",
   "gui.mantle.fluid.format": "%s / %s mb %s",

@@ -1,5 +1,7 @@
 package slimeknights.mantle.client.book.data.content;
 
+import net.minecraft.locale.Language;
+import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.book.data.BookData;
 import slimeknights.mantle.client.book.data.SectionData;
 import slimeknights.mantle.client.screen.book.BookScreen;
@@ -15,11 +17,17 @@ import java.util.ArrayList;
  * @see slimeknights.mantle.client.book.transformer.IndexTransformer
  */
 public class ContentSectionList extends PageContent {
+  private static final String TITLE_KEY = Mantle.makeDescriptionId("book", "section_list");
 
   protected ArrayList<SectionData> sections = new ArrayList<>();
 
   public boolean addSection(SectionData data) {
     return this.sections.size() < 12 && this.sections.add(data);
+  }
+
+  @Override
+  public String getTitle() {
+    return Language.getInstance().getOrDefault(TITLE_KEY);
   }
 
   @Override
