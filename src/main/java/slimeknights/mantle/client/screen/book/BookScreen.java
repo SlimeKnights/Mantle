@@ -762,11 +762,31 @@ public class BookScreen extends Screen {
 
     // create page if we have data on either side
     if (leftData != null || rightData != null) {
+      HtmlSerializable left = leftData != null ? leftData.content.toHTML(book) : null;
+      HtmlSerializable right = rightData != null ? rightData.content.toHTML(book) : null;
+
       builder.append("---\n")
         .append("layout: book-page\n")
         .append("title: ").append(title).append(" (").append(version).append(") - page ").append(this.page).append('\n')
         .append("breadcrumb: ").append(this.page).append('\n')
-        .append("description: Interactive ").append(title).append(" from ").append(mod).append(" in Minecraft ").append(version).append(".\n")
+        .append("description: Interactive ").append(title).append(" from ").append(mod).append(" in Minecraft ").append(version);
+
+      // add page titles to description
+      // working off the assumption that any page with content to export has a name to export
+      String leftTitle = left != null ? leftData.getTitle() : "";
+      String rightTitle = right != null ? rightData.getTitle() : "";
+      // if we have either title, add the "showing" text
+      if (!leftTitle.isEmpty() || !rightTitle.isEmpty()) {
+        builder.append(" showing ");
+        builder.append(leftTitle);
+        // if we have both, separate them with "and"
+        if (!leftTitle.isEmpty() && !rightTitle.isEmpty()) {
+          builder.append(" and ");
+        }
+        builder.append(rightTitle);
+      }
+
+      builder.append(".\n")
         .append("book: ").append(bookName).append('\n')
         .append("page_num: ").append(this.page).append('\n');
 
@@ -782,22 +802,16 @@ public class BookScreen extends Screen {
       }
 
       builder.append("---\n\n");
-    }
 
-    // add page data
-    if (leftData != null) {
-      HtmlSerializable left = leftData.content.toHTML(book);
+      // add page data
       if (left != null) {
         HtmlElement.div().classes("left").add(left).toHtml(builder, "");
+        builder.append('\n');
       }
-      builder.append('\n');
-    }
-    if (rightData != null) {
-      HtmlSerializable right = rightData.content.toHTML(book);
       if (right != null) {
         HtmlElement.div().classes("right").add(right).toHtml(builder, "");
+        builder.append('\n');
       }
-      builder.append('\n');
     }
     return builder.toString();
   }
