@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -51,6 +52,11 @@ public class WrapperSlot extends Slot {
   }
 
   @Override
+  public void setByPlayer(ItemStack newStack, ItemStack oldStack) {
+    this.parent.setByPlayer(newStack, oldStack);
+  }
+
+  @Override
   public void set(ItemStack stack) {
     this.parent.set(stack);
   }
@@ -70,6 +76,7 @@ public class WrapperSlot extends Slot {
     return this.parent.getMaxStackSize(stack);
   }
 
+  @Nullable
   @Override
   public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
     return this.parent.getNoItemIcon();
@@ -104,6 +111,10 @@ public class WrapperSlot extends Slot {
   public ItemStack safeTake(int pCount, int pDecrement, Player pPlayer) {
     return this.parent.safeTake(pCount, pDecrement, pPlayer);
   }
+  @Override
+  public ItemStack safeInsert(ItemStack stack) {
+    return this.parent.safeInsert(stack);
+  }
 
   @Override
   public ItemStack safeInsert(ItemStack pStack, int pIncrement) {
@@ -118,5 +129,10 @@ public class WrapperSlot extends Slot {
   @Override
   public boolean isHighlightable() {
     return this.parent.isHighlightable();
+  }
+
+  @Override
+  public boolean isFake() {
+    return this.parent.isFake();
   }
 }
