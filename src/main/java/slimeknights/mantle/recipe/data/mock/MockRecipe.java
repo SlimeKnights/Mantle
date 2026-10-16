@@ -13,9 +13,12 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import slimeknights.mantle.data.loadable.Loadable;
+import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.util.JsonHelper;
+import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.List;
 
@@ -50,9 +53,9 @@ public interface MockRecipe {
 
 
   /* Helper for serializing using registry ops and codecs. */
-  record Serializer(RegistryOps<JsonElement> ops, HolderLookup.Provider registries) {
+  record Serializer(RegistryOps<JsonElement> ops, TypedMap context, HolderLookup.Provider registries) {
     public Serializer(HolderLookup.Provider registries) {
-      this(registries.createSerializationContext(JsonOps.INSTANCE), registries);
+      this(registries.createSerializationContext(JsonOps.INSTANCE), ContextKey.lookupContext(registries).build(), registries);
     }
 
 
@@ -72,6 +75,11 @@ public interface MockRecipe {
     @SafeVarargs
     public final <T> JsonArray serializeArray(Codec<T> codec, T... objects) {
       return JsonHelper.serializeArray(ops, codec, objects);
+    }
+
+    /** Serializes the given element */
+    public <T> JsonElement serialize(Loadable<T> loadable, T object) {
+      return loadable.serialize(object, context);
     }
 
 
