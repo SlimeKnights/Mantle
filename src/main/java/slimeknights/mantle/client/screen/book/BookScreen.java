@@ -780,8 +780,19 @@ public class BookScreen extends Screen {
         .append("breadcrumb: ").append(this.page).append('\n')
         .append("description: Interactive ").append(title).append(" from ").append(mod).append(" in Minecraft ").append(version).append(".\n")
         .append("book: ").append(bookName).append('\n')
-        .append("page_num: ").append(this.page).append('\n')
-        .append("---\n\n");
+        .append("page_num: ").append(this.page).append('\n');
+
+      // figure out what section we are in
+      SectionData section = Objects.requireNonNullElse(rightData, leftData).parent;
+      if (section != null) {
+        int sectionStart = section.parent.getFirstPageNumber(section, null) / 2;
+        // if it starts before the current page, store it as the section start
+        if (sectionStart < this.page) {
+          builder.append("section_start: ").append(sectionStart).append('\n');
+        }
+      }
+
+      builder.append("---\n\n");
     }
 
     // add page data
