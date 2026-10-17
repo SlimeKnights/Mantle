@@ -1,6 +1,7 @@
 package slimeknights.mantle.data.loadable;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -36,6 +37,7 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.client.model.util.ModelHelper;
+import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.data.loadable.common.CodecLoadable;
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
@@ -46,6 +48,7 @@ import slimeknights.mantle.data.loadable.registry.DatapackRegistryLoadable;
 import slimeknights.mantle.data.loadable.registry.HolderLoadable;
 import slimeknights.mantle.data.loadable.registry.RegistryHolderLoadable;
 import slimeknights.mantle.data.loadable.registry.RegistryLoadable;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 
 import java.util.function.BiFunction;
 
@@ -73,6 +76,10 @@ public class Loadables {
   public static final ResourceLocationLoadable<BlockEntityType<?>> BLOCK_ENTITY_TYPE = new RegistryLoadable<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
   public static final ResourceLocationLoadable<RecipeType<?>> RECIPE_TYPE = new RegistryLoadable<>(BuiltInRegistries.RECIPE_TYPE);
   public static final ResourceLocationLoadable<DataComponentType<?>> DATA_COMPONENT_TYPE = new RegistryLoadable<>(BuiltInRegistries.DATA_COMPONENT_TYPE);
+
+  /* Holder sets */
+  public static final Loadable<HolderSet<Item>> ITEM_SET = new CodecLoadable.Registry<>(MantleCodecs.ITEM_SET, MantleStreamCodecs.ITEM_SET);
+  public static final Loadable<HolderSet<Fluid>> FLUID_SET = new CodecLoadable.Registry<>(MantleCodecs.FLUID_SET, MantleStreamCodecs.FLUID_SET);
 
   /* Non-default registries */
   public static final StringLoadable<Fluid> NON_EMPTY_FLUID = notValue(FLUID, Fluids.EMPTY, "Fluid");
