@@ -401,7 +401,7 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> {
   /** Registers a potted form of the given block using the vanilla pot with the given name getter. */
   public <E extends Enum<E> & StringRepresentable> EnumObject<E,Block> registerPottedEnum(E[] values, Function<? super E,String> nameGetter, EnumObject<E,Block> block) {
     return EnumObject.generate(values, value -> {
-      Holder<Block> holder = block.getHolder(value);
+      Holder<Block> holder = block.getHolderOrNull(value);
       if (holder != null) {
         return registerPotted(nameGetter.apply(value), holder::value);
       }

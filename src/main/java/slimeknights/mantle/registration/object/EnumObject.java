@@ -30,17 +30,30 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
   private final Map<T, Holder<R>> map;
 
   /**
-   * Gets the holder for the given value.
+   * Gets the value for the given enum, assuring it's not null
+   * @param value  Enum value
+   * @return  Holder
+   */
+  public Holder<R> getHolder(T value) {
+    Holder<R> holder = map.get(value);
+    if (holder == null) {
+      throw new NoSuchElementException("Missing key " + value);
+    }
+    return holder;
+  }
+
+  /**
+   * Gets the holder for the given value, or null if its missing.
    * @param value  Enum value
    * @return  Holder
    */
   @Nullable
-  public Holder<R> getHolder(T value) {
+  public Holder<R> getHolderOrNull(T value) {
     return map.get(value);
   }
 
   /**
-   * Gets the value for the given enum, assuring its not null
+   * Gets the value for the given enum, assuring it's not null
    * @param value  Value to get
    * @return  Value
    * @throws NoSuchElementException  If the key is not defined
