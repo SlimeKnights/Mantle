@@ -15,7 +15,7 @@ public class PacketHelper {
    * @param player  Player receiving the packet
    * @param packet  Packet
    */
-  public static void sendVanillaPacket(Packet<?> packet, Entity player) {
+  public static void sendVanillaPacket(Entity player, Packet<?> packet) {
     if (player instanceof ServerPlayer sPlayer) {
       sPlayer.connection.send(packet);
     }
