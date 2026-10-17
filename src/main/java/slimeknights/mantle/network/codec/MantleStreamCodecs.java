@@ -2,6 +2,7 @@ package slimeknights.mantle.network.codec;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,6 +37,13 @@ public class MantleStreamCodecs {
   public static final StreamCodec<RegistryFriendlyByteBuf, Fluid> FLUID = ByteBufCodecs.registry(Registries.FLUID);
   /** Stream codec for a potion holder */
   public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Potion>> POTION = ByteBufCodecs.holderRegistry(Registries.POTION);
+
+  /** Stream codec for a holder set of items */
+  public static final StreamCodec<RegistryFriendlyByteBuf, HolderSet<Item>> ITEM_SET = ByteBufCodecs.holderSet(Registries.ITEM);
+  /** Stream codec for a holder set of fluids */
+  public static final StreamCodec<RegistryFriendlyByteBuf, HolderSet<Fluid>> FLUID_SET = ByteBufCodecs.holderSet(Registries.FLUID);
+  /** Stream codec for a holder set of potions */
+  public static final StreamCodec<RegistryFriendlyByteBuf, HolderSet<Potion>> POTION_SET = ByteBufCodecs.holderSet(Registries.POTION);
 
   /** Streams a list of resource locations on the network. */
   public static final StreamCodec<ByteBuf, List<ResourceLocation>> RESOURCE_LOCATION_LIST = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list());

@@ -5,14 +5,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.block.Block;
@@ -45,6 +48,13 @@ public class MantleCodecs {
   /** Codec for a fluid tag */
   public static final Codec<TagKey<Fluid>> FLUID_TAG = TagKey.codec(Registries.FLUID);
 
+  /** Codec for a holder set of items */
+  public static final Codec<HolderSet<Item>> ITEM_SET = holderSet(BuiltInRegistries.ITEM);
+  /** Codec for a holder set of fluids */
+  public static final Codec<HolderSet<Fluid>> FLUID_SET = holderSet(BuiltInRegistries.FLUID);
+  /** Codec for a holder set of potions */
+  public static final Codec<HolderSet<Potion>> POTION_SET = holderSet(BuiltInRegistries.POTION);
+
   /** Codec for a block that is not air */
   public static final Codec<Block> NON_AIR_BLOCK = notValue(BuiltInRegistries.BLOCK, Blocks.AIR);
   /** Codec for an item that is not air */
@@ -67,6 +77,11 @@ public class MantleCodecs {
 
 
   /* Helpers */
+
+  /** Creates a holder set codec for the given registry. */
+  public static <T> Codec<HolderSet<T>> holderSet(Registry<T> registry) {
+    return HolderSetCodec.create(registry.key(), registry.holderByNameCodec(), false);
+  }
 
   /** Codec for a registry that is not the default value. */
   public static <T> Codec<T> notValue(Registry<T> registry, T notValue) {

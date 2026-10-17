@@ -5,8 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
@@ -17,9 +17,12 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
+import slimeknights.mantle.data.codec.MantleCodecs;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
+import slimeknights.mantle.recipe.ingredient.IngredientHelper;
+import slimeknights.mantle.recipe.ingredient.item.PotionIngredient;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -32,20 +35,30 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class PotionFluidIngredient extends FluidIngredient {
   public static final MapCodec<PotionFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-    BuiltInRegistries.POTION.holderByNameCodec().fieldOf("potion").forGetter(i -> i.potion),
-    IngredientFluids.CODEC.forGetter(i -> i.fluids)
+    MantleCodecs.POTION_SET.fieldOf("potion").forGetter(i -> i.potion),
+    MantleCodecs.FLUID_SET.fieldOf("fluids").forGetter(i -> i.fluids)
   ).apply(instance, PotionFluidIngredient::new));
   public static final StreamCodec<RegistryFriendlyByteBuf, PotionFluidIngredient> STREAM_CODEC = StreamCodec.composite(
-    MantleStreamCodecs.POTION, i -> i.potion,
-    IngredientFluids.STREAM_CODEC, i -> i.fluids,
+    MantleStreamCodecs.POTION_SET, i -> i.potion,
+    MantleStreamCodecs.FLUID_SET, i -> i.fluids,
     PotionFluidIngredient::new);
 
-  private final Holder<Potion> potion;
-  private final IngredientFluids fluids;
+  private final HolderSet<Potion> potion;
+  private final HolderSet<Fluid> fluids;
+
+  /** Creates a potion ingredient matching a list of fluids */
+  public static FluidIngredient of(HolderSet<Potion> potion, HolderSet<Fluid> fluids) {
+    return new PotionFluidIngredient(potion, fluids);
+  }
+
+  /** Creates a potion ingredient matching a list of fluids */
+  public static FluidIngredient of(Holder<Potion> potion, HolderSet<Fluid> fluids) {
+    return of(HolderSet.direct(potion), fluids);
+  }
 
   /** Creates a potion ingredient matching a list of fluids */
   public static FluidIngredient of(Holder<Potion> potion, List<Fluid> fluids) {
-    return new PotionFluidIngredient(potion, IngredientFluids.of(fluids));
+    return of(potion, IngredientHelper.fluidSet(fluids));
   }
 
   /** Creates a potion ingredient matching a list of fluids */
@@ -55,7 +68,7 @@ public class PotionFluidIngredient extends FluidIngredient {
 
   /** Creates a potion ingredient matching a tag */
   public static FluidIngredient of(Holder<Potion> potion, TagKey<Fluid> tag) {
-    return new PotionFluidIngredient(potion, IngredientFluids.of(tag));
+    return of(potion, IngredientHelper.fluidSet(tag));
   }
 
   /** Creates a potion ingredient using the standard potion tag */
@@ -71,7 +84,7 @@ public class PotionFluidIngredient extends FluidIngredient {
   @Override
   public boolean test(FluidStack stack) {
     // must match a fluid, and potion must match
-    return fluids.test(stack) && stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).is(potion);
+    return fluids.contains(stack.getFluidHolder()) && PotionIngredient.matches(stack, potion);
   }
 
   @Override
@@ -81,11 +94,13 @@ public class PotionFluidIngredient extends FluidIngredient {
 
   @Override
   protected Stream<FluidStack> generateStacks() {
-    PotionContents contents = new PotionContents(potion);
-    return fluids.getAllFluids().stream().map(fluid -> {
-      FluidStack stack = new FluidStack(fluid, FluidType.BUCKET_VOLUME);
-      stack.set(DataComponents.POTION_CONTENTS, contents);
-      return stack;
+    return this.potion.stream().flatMap(potion -> {
+      PotionContents contents = new PotionContents(potion);
+      return fluids.stream().map(fluid -> {
+        FluidStack stack = new FluidStack(fluid, FluidType.BUCKET_VOLUME);
+        stack.set(DataComponents.POTION_CONTENTS, contents);
+        return stack;
+      });
     });
   }
 }

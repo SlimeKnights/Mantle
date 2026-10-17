@@ -1,12 +1,11 @@
 package slimeknights.mantle.recipe.ingredient.item;
 
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -14,34 +13,37 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
+import slimeknights.mantle.data.codec.MantleCodecs;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
+import slimeknights.mantle.recipe.ingredient.IngredientHelper;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Ingredient that shows all potion variants on the displayed item list
+ * Ingredient that shows all potion variants on the displayed item list.
+ * <p>
+ * Matches any potion, even those with custom potion contents. If you need to just match real potions use {@link PotionIngredient} with {@link net.neoforged.neoforge.registries.holdersets.AnyHolderSet}.
  * @see PotionIngredient
  */
-public record PotionDisplayIngredient(IngredientItems items) implements ICustomIngredient {
-  public static final MapCodec<PotionDisplayIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-    IngredientItems.CODEC.forGetter(PotionDisplayIngredient::items)
-  ).apply(instance, PotionDisplayIngredient::new));
-  public static final StreamCodec<RegistryFriendlyByteBuf,PotionDisplayIngredient> STREAM_CODEC = IngredientItems.STREAM_CODEC.map(PotionDisplayIngredient::new, PotionDisplayIngredient::items);
+public record PotionDisplayIngredient(HolderSet<Item> items) implements ICustomIngredient {
+  public static final MapCodec<PotionDisplayIngredient> CODEC = MantleCodecs.ITEM_SET.fieldOf("items").xmap(PotionDisplayIngredient::new, PotionDisplayIngredient::items);
+  public static final StreamCodec<RegistryFriendlyByteBuf,PotionDisplayIngredient> STREAM_CODEC = MantleStreamCodecs.ITEM_SET.map(PotionDisplayIngredient::new, PotionDisplayIngredient::items);
+
+  /** Creates an ingredient matching a list of items */
+  public static Ingredient of(HolderSet<Item> items) {
+    return new PotionDisplayIngredient(items).toVanilla();
+  }
 
   /** Creates an ingredient matching a list of items */
   public static Ingredient of(List<ItemLike> items) {
-    return new PotionDisplayIngredient(IngredientItems.of(items)).toVanilla();
+    return of(IngredientHelper.itemSet(items));
   }
 
   /** Creates an ingredient matching a list of items */
   public static Ingredient of(ItemLike... items) {
     return of(List.of(items));
-  }
-
-  /** Creates an ingredient matching a tag */
-  public static Ingredient of(TagKey<Item> tag) {
-    return new PotionDisplayIngredient(IngredientItems.of(tag)).toVanilla();
   }
 
   @Override
@@ -51,23 +53,25 @@ public record PotionDisplayIngredient(IngredientItems items) implements ICustomI
 
   @Override
   public boolean test(ItemStack stack) {
-    return items.test(stack);
+    return items.contains(stack.getItemHolder());
   }
 
   @Override
   public boolean isSimple() {
-    // TODO: this causes it to sync as all the items, is that fine?
-    return true;
+    // even though this is logically simple, Neo syncs simple ingredients as a list of items which makes it less efficient on matches
+    return false;
   }
 
   @Override
   public Stream<ItemStack> getItems() {
-    List<Item> items = this.items.getAllItems();
     return BuiltInRegistries.POTION.holders()
-      .flatMap(potion -> items.stream().map(item -> {
-        ItemStack stack = new ItemStack(item);
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
-        return stack;
-      }));
+      .flatMap(potion -> {
+        PotionContents contents = new PotionContents(potion);
+        return this.items.stream().map(item -> {
+          ItemStack stack = new ItemStack(item);
+          stack.set(DataComponents.POTION_CONTENTS, contents);
+          return stack;
+        });
+      });
   }
 }
