@@ -8,6 +8,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Locale;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /** Generic deferred register for an object using registry objects and wanting enums */
@@ -47,6 +48,17 @@ public class EnumDeferredRegister<R> extends DeferredRegister<R> {
   }
 
   /**
+   * Registers an object with multiple variants, using the given name mapper.
+   * @param values      Enum values to use for this item
+   * @param nameGetter  Function to get the name from each enum element
+   * @param mapper      Function to get an object for the given ID and enum value
+   * @return  EnumObject mapping between different item types
+   */
+  public <E extends Enum<E>> EnumObject<E,R> registerEnum(E[] values, Function<? super E,String> nameGetter, BiFunction<ResourceLocation,E,? extends R> mapper) {
+    return EnumObject.generate(values, value -> register(nameGetter.apply(value), id -> mapper.apply(id, value)));
+  }
+
+  /**
    * Registers an object with multiple variants, prefixing the name with the value name
    * @param values   Enum values to use for this item
    * @param name     Name of the object
@@ -58,6 +70,17 @@ public class EnumDeferredRegister<R> extends DeferredRegister<R> {
   }
 
   /**
+   * Registers an object with multiple variants, prefixing the name with the value name
+   * @param values   Enum values to use for this item
+   * @param name     Name of the object
+   * @param mapper   Function to get an object for the given ID and enum value
+   * @return  EnumObject mapping between different item types
+   */
+  public <E extends Enum<E>> EnumObject<E,R> registerEnum(E[] values, String name, BiFunction<ResourceLocation,E,? extends R> mapper) {
+    return registerEnum(values, suffix(name), mapper);
+  }
+
+  /**
    * Registers an object with multiple variants, suffixing the name with the value name
    * @param values   Enum values to use for this item
    * @param name     Name of the object
@@ -65,6 +88,17 @@ public class EnumDeferredRegister<R> extends DeferredRegister<R> {
    * @return  EnumObject mapping between different item types
    */
   public <E extends Enum<E>> EnumObject<E,R> registerEnum(String name, E[] values, Function<E,? extends R> mapper) {
+    return registerEnum(values, prefix(name), mapper);
+  }
+
+  /**
+   * Registers an object with multiple variants, suffixing the name with the value name
+   * @param values   Enum values to use for this item
+   * @param name     Name of the object
+   * @param mapper   Function to get an object for the given ID and enum value
+   * @return  EnumObject mapping between different item types
+   */
+  public <E extends Enum<E>> EnumObject<E,R> registerEnum(String name, E[] values, BiFunction<ResourceLocation,E,? extends R> mapper) {
     return registerEnum(values, prefix(name), mapper);
   }
 
