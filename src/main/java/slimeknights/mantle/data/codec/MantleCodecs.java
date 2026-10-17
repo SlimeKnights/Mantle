@@ -13,6 +13,7 @@ import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
@@ -54,6 +55,8 @@ public class MantleCodecs {
   public static final Codec<HolderSet<Fluid>> FLUID_SET = holderSet(BuiltInRegistries.FLUID);
   /** Codec for a holder set of potions */
   public static final Codec<HolderSet<Potion>> POTION_SET = holderSet(BuiltInRegistries.POTION);
+  /** Codec for a holder set of entity types */
+  public static final Codec<HolderSet<EntityType<?>>> ENTITY_SET = holderSet(BuiltInRegistries.ENTITY_TYPE);
 
   /** Codec for a block that is not air */
   public static final Codec<Block> NON_AIR_BLOCK = notValue(BuiltInRegistries.BLOCK, Blocks.AIR);

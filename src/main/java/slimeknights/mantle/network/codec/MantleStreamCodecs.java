@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -44,6 +45,8 @@ public class MantleStreamCodecs {
   public static final StreamCodec<RegistryFriendlyByteBuf, HolderSet<Fluid>> FLUID_SET = ByteBufCodecs.holderSet(Registries.FLUID);
   /** Stream codec for a holder set of potions */
   public static final StreamCodec<RegistryFriendlyByteBuf, HolderSet<Potion>> POTION_SET = ByteBufCodecs.holderSet(Registries.POTION);
+  /** Stream codec for a holder set of entity types */
+  public static final StreamCodec<RegistryFriendlyByteBuf, HolderSet<EntityType<?>>> ENTITY_SET = ByteBufCodecs.holderSet(Registries.ENTITY_TYPE);
 
   /** Streams a list of resource locations on the network. */
   public static final StreamCodec<ByteBuf, List<ResourceLocation>> RESOURCE_LOCATION_LIST = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list());
