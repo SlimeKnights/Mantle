@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -28,6 +29,13 @@ public class PacketHelper {
   public static void sendToPlayer(Player player, CustomPacketPayload payload, CustomPacketPayload... payloads) {
     if (player instanceof ServerPlayer sPlayer) {
       PacketDistributor.sendToPlayer(sPlayer, payload, payloads);
+    }
+  }
+
+  /** Sends a packet to a player, handling the server player check */
+  public static void sendToPlayersTrackingPosition(Level level, BlockPos pos, CustomPacketPayload payload, CustomPacketPayload... payloads) {
+    if (!level.isClientSide && level instanceof ServerLevel sLevel) {
+      sendToPlayersTrackingPosition(sLevel, pos, payload, payloads);
     }
   }
 
