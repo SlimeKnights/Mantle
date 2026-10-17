@@ -12,7 +12,7 @@ import net.minecraft.world.level.ItemLike;
 @SuppressWarnings("unused") // API
 @Accessors(fluent = true)
 public abstract class ShapelessExtensionBuilder<T extends ShapelessExtensionBuilder<T>> extends CraftingExtensionBuilder<T> {
-  private final NonNullList<Ingredient> ingredients = NonNullList.create();
+  protected final NonNullList<Ingredient> ingredients = NonNullList.create();
 
   protected ShapelessExtensionBuilder(ItemStack result) {
     super(result);

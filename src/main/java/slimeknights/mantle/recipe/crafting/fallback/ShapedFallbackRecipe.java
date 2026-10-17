@@ -1,4 +1,4 @@
-package slimeknights.mantle.recipe.crafting;
+package slimeknights.mantle.recipe.crafting.fallback;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -12,19 +12,17 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.Level;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ShapedFallbackRecipe extends ShapedRecipe {
+/** Standard shaped crafting recipe that fails if any of the fallback recipes matches. Used to allow adding specific recipes that are ignored by the general recipe. */
+public class ShapedFallbackRecipe extends ShapedRecipe implements FallbackCraftingRecipe {
   /** Codec for JSON */
   public static final MapCodec<ShapedFallbackRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
     Codec.STRING.optionalFieldOf("group", "").forGetter(Recipe::getGroup),
@@ -41,7 +39,7 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     ShapedRecipePattern.STREAM_CODEC, r -> r.pattern,
     ItemStack.STREAM_CODEC, r -> r.result,
     ByteBufCodecs.BOOL, Recipe::showNotification,
-    ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.alternatives,
+    MantleStreamCodecs.RESOURCE_LOCATION_LIST, r -> r.alternatives,
     ShapedFallbackRecipe::new);
 
   /** Recipes to skip if they match */
@@ -54,30 +52,17 @@ public class ShapedFallbackRecipe extends ShapedRecipe {
     this.alternatives = alternatives;
   }
 
-  /** Gets the alternative recipes */
-  private List<CraftingRecipe> getAlternatives(Level level) {
+  @Override
+  public List<CraftingRecipe> getAlternatives(Level level) {
     if (alternativeCache == null) {
-      List<CraftingRecipe> alternatives = new ArrayList<>();
-      RecipeManager manager = level.getRecipeManager();
-      for (ResourceLocation id : this.alternatives) {
-        RecipeHolder<CraftingRecipe> holder = manager.byKeyTyped(RecipeType.CRAFTING, id);
-        if (holder != null) {
-          alternatives.add(holder.value());
-        }
-      }
-      alternativeCache = List.copyOf(alternatives);
+      alternativeCache = FallbackCraftingRecipe.computeAlternatives(level, alternatives);
     }
     return alternativeCache;
   }
 
   @Override
   public boolean matches(CraftingInput inv, Level world) {
-    // if this recipe does not match, fail it
-    if (!super.matches(inv, world)) {
-      return false;
-    }
-    // fail if any alternative matches
-    return getAlternatives(world).stream().noneMatch(recipe -> recipe.matches(inv, world));
+    return super.matches(inv, world) && matchesAlternatives(inv, world);
   }
 
   @Override

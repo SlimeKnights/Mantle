@@ -6,15 +6,18 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
@@ -33,6 +36,11 @@ public class MantleStreamCodecs {
   public static final StreamCodec<RegistryFriendlyByteBuf, Fluid> FLUID = ByteBufCodecs.registry(Registries.FLUID);
   /** Stream codec for a potion holder */
   public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Potion>> POTION = ByteBufCodecs.holderRegistry(Registries.POTION);
+
+  /** Streams a list of resource locations on the network. */
+  public static final StreamCodec<ByteBuf, List<ResourceLocation>> RESOURCE_LOCATION_LIST = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list());
+  /** Streams a list of resource locations on the network. */
+  public static final StreamCodec<RegistryFriendlyByteBuf, List<Ingredient>> INGREDIENT_LIST = Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list());
 
 
   /* Helpers */

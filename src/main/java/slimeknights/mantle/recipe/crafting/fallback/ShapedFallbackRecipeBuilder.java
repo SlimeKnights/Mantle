@@ -1,15 +1,19 @@
-package slimeknights.mantle.recipe.crafting;
+package slimeknights.mantle.recipe.crafting.fallback;
 
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import slimeknights.mantle.recipe.crafting.ShapedExtensionBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/** Builder for a shaped recipe with fallbacks */
+/**
+ * Builder for a shaped recipe with fallbacks. If any fallback matches then the base recipe will not.
+ * @see ShapelessFallbackRecipe
+ */
 @SuppressWarnings("unused")  // API
 public class ShapedFallbackRecipeBuilder extends ShapedExtensionBuilder<ShapedFallbackRecipeBuilder> {
   private final List<ResourceLocation> alternatives = new ArrayList<>();

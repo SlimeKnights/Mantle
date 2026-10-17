@@ -13,6 +13,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -52,6 +54,17 @@ public class MantleCodecs {
 
   /** Codec for the condition context from conditional ops. */
   public static final Codec<ICondition.IContext> CONDITION_CONTEXT = ConditionalOps.retrieveContext().codec();
+
+  /** Codec for the list of ingredients in a shapeless crafting recipe */
+  public static final Codec<List<Ingredient>> SHAPELESS_INGREDIENTS = Ingredient.CODEC_NONEMPTY.listOf(1, Short.MAX_VALUE).flatXmap(list -> {
+    int max = ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth();
+    if (list.size() > max) {
+      return DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: " + max);
+    } else {
+      return DataResult.success(list);
+    }
+  }, DataResult::success);
+
 
   /* Helpers */
 

@@ -13,8 +13,9 @@ import slimeknights.mantle.recipe.cooking.BlastingResultRecipe;
 import slimeknights.mantle.recipe.cooking.CampfireResultRecipe;
 import slimeknights.mantle.recipe.cooking.SmeltingResultRecipe;
 import slimeknights.mantle.recipe.cooking.SmokingResultRecipe;
-import slimeknights.mantle.recipe.crafting.ShapedFallbackRecipe;
 import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.crafting.fallback.ShapedFallbackRecipe;
+import slimeknights.mantle.recipe.crafting.fallback.ShapelessFallbackRecipe;
 import slimeknights.mantle.recipe.helper.LoadableRecipeSerializer;
 import slimeknights.mantle.recipe.helper.SimpleRecipeSerializer;
 import slimeknights.mantle.recipe.ingredient.fluid.PotionFluidIngredient;
@@ -39,6 +40,7 @@ public class MantleRecipes {
 
   // crafting
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<ShapedFallbackRecipe>> CRAFTING_SHAPED_FALLBACK = RECIPES.register("crafting_shaped_fallback", () -> new SimpleRecipeSerializer<>(ShapedFallbackRecipe.CODEC, ShapedFallbackRecipe.STREAM_CODEC));
+  public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<ShapelessFallbackRecipe>> CRAFTING_SHAPELESS_FALLBACK = RECIPES.register("crafting_shapeless_fallback", () -> new SimpleRecipeSerializer<>(ShapelessFallbackRecipe.CODEC, ShapelessFallbackRecipe.STREAM_CODEC));
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<ShapedRetexturedRecipe>> CRAFTING_SHAPED_RETEXTURED = RECIPES.register("crafting_shaped_retextured", () -> new SimpleRecipeSerializer<>(ShapedRetexturedRecipe.CODEC, ShapedRetexturedRecipe.STREAM_CODEC));
   // cooking
   public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<SmeltingResultRecipe>> SMELTING = RECIPES.register("smelting", () -> LoadableRecipeSerializer.of(SmeltingResultRecipe.LOADABLE));
