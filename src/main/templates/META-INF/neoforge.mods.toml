@@ -12,7 +12,7 @@ license="MIT"
     description='''
 Shared code for Slime Knights mods and others.
     '''
-    displayURL="https://minecraft.curseforge.com/projects/mantle"
+    displayURL="https://slimeknights.github.io/projects/#mantle"
 
 [[dependencies.mantle]]
     modId="neoforge"
