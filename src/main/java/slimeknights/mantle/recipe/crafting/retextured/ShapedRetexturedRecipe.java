@@ -1,4 +1,4 @@
-package slimeknights.mantle.recipe.crafting;
+package slimeknights.mantle.recipe.crafting.retextured;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

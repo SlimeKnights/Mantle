@@ -1,11 +1,12 @@
-package slimeknights.mantle.recipe.crafting;
+package slimeknights.mantle.recipe.crafting.retextured;
 
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe.Pattern;
+import slimeknights.mantle.recipe.crafting.ShapedExtensionBuilder;
+import slimeknights.mantle.recipe.crafting.retextured.ShapedRetexturedRecipe.Pattern;
 
 /** Builder for {@link ShapedRetexturedRecipe} */
 @SuppressWarnings("unused")

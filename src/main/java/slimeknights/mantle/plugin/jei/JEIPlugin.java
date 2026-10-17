@@ -25,7 +25,7 @@ import slimeknights.mantle.inventory.MultiModuleContainerMenu;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientHelper;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientRenderer;
 import slimeknights.mantle.recipe.MultiRecipeHolder;
-import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.crafting.retextured.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient.EntityInput;
 
 import java.util.Collections;

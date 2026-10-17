@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.recipe.crafting.ShapedRetexturedRecipe;
+import slimeknights.mantle.recipe.crafting.retextured.ShapedRetexturedRecipe;
 
 import java.util.Arrays;
 import java.util.List;
