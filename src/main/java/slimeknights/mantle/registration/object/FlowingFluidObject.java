@@ -1,6 +1,8 @@
 package slimeknights.mantle.registration.object;
 
 import lombok.Getter;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
@@ -9,10 +11,11 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import slimeknights.mantle.recipe.ingredient.IngredientHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -24,12 +27,12 @@ public class FlowingFluidObject<F extends FlowingFluid> extends FluidObject<F> {
   /** Tag in the mod namespace, exact match */
   @Getter @Nonnull
   private final TagKey<Fluid> localTag;
-  private final Supplier<? extends F> flowing;
+  private final DeferredHolder<Fluid,F> flowing;
   @Nullable
   private final Supplier<? extends LiquidBlock> block;
 
   /** Main constructor */
-  public FlowingFluidObject(ResourceLocation id, @Nullable String tagName, Supplier<? extends FluidType> type, Supplier<? extends F> still, Supplier<? extends F> flowing, @Nullable Supplier<? extends LiquidBlock> block) {
+  public FlowingFluidObject(ResourceLocation id, @Nullable String tagName, Supplier<? extends FluidType> type, DeferredHolder<Fluid,F> still, DeferredHolder<Fluid,F> flowing, @Nullable Supplier<? extends LiquidBlock> block) {
     super(id, tagName, type, still);
     this.localTag = FluidTags.create(id);
     this.flowing = flowing;
@@ -45,12 +48,14 @@ public class FlowingFluidObject<F extends FlowingFluid> extends FluidObject<F> {
     return get();
   }
 
-  /**
-   * Gets the flowing form of this fluid
-   * @return  flowing form
-   */
+  /** {@return  flowing form} */
   public F getFlowing() {
-    return Objects.requireNonNull(flowing.get(), "Fluid object missing flowing fluid");
+    return flowing.get();
+  }
+
+  /** {@return holder of the flowing form} */
+  public Holder<Fluid> getFlowingHolder() {
+    return flowing;
   }
 
   /**
@@ -71,6 +76,11 @@ public class FlowingFluidObject<F extends FlowingFluid> extends FluidObject<F> {
   /** Gets the primary tag used for recipes with this object */
   public TagKey<Fluid> getTag() {
     return commonTag != null ? commonTag : localTag;
+  }
+
+  @Override
+  public HolderSet<Fluid> holderSet() {
+    return IngredientHelper.fluidSet(getTag());
   }
 
   @Override
