@@ -3,6 +3,8 @@ package slimeknights.mantle.client.book;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -46,6 +48,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class BookLoader implements ResourceManagerReloadListener {
 
@@ -94,6 +97,7 @@ public class BookLoader implements ResourceManagerReloadListener {
     registerGsonTypeAdapter(int.class, new HexStringDeserializer());
     registerGsonTypeAdapter(ICondition.class, CodecSerializer.CONDITION);
     registerGsonTypeAdapter(IngredientData.class, new IngredientData.Deserializer());
+    registerGsonTypeAdapter(Component.class, new CodecSerializer<>(ComponentSerialization.CODEC));
 
     // Register page types that are implicitly hidden from indexes
     IndexTransformer.addHiddenPageType(ContentBlank.ID);
@@ -225,8 +229,8 @@ public class BookLoader implements ResourceManagerReloadListener {
     if(gson == null || gsonDirty) {
       GsonBuilder builder = new GsonBuilder();
 
-      for(Type type : gsonTypeAdapters.keySet()) {
-        builder.registerTypeAdapter(type, gsonTypeAdapters.get(type));
+      for(Entry<Type,Object> entry : gsonTypeAdapters.entrySet()) {
+        builder.registerTypeAdapter(entry.getKey(), entry.getValue());
       }
 
       gson = builder.create();
