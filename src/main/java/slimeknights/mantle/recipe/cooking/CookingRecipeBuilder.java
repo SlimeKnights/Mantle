@@ -33,6 +33,7 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
   protected Ingredient ingredient = Ingredient.EMPTY;
   protected CookingBookCategory category = CookingBookCategory.MISC;
   protected CookingType type = CookingType.SMELTING;
+  protected boolean forceItemOutput = false;
 
   protected CookingRecipeBuilder(ItemOutput result) {
     this.result = result;
@@ -102,13 +103,19 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
     return (T) this;
   }
 
+  /** Forces the recipe to serialize using the Mantle serializers with {@link ItemOutput} even if it could serialize as {@link ItemStack}. Useful in {@link slimeknights.mantle.recipe.data.mock.MockRecipeOutput}. */
+  public T forceItemOutput() {
+    this.forceItemOutput = true;
+    return (T) this;
+  }
+
 
   /** Helper to save a recipe */
   protected T save(RecipeOutput output, ResourceLocation id, CookingType cookingType) {
     if (ingredient == Ingredient.EMPTY) {
       throw new IllegalStateException("Ingredient must be set");
     }
-    output.accept(id, cookingType.create(group, category, ingredient, result, experience, cookingTime), buildOptionalAdvancement(output, id, "cooking"));
+    output.accept(id, cookingType.create(group, category, ingredient, result, experience, cookingTime, forceItemOutput), buildOptionalAdvancement(output, id, "cooking"));
     return (T) this;
   }
 
@@ -166,9 +173,9 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
     }
 
     /** Creates a recipe of this type */
-    public Recipe<?> create(String group,CookingBookCategory category, Ingredient ingredient, ItemOutput result, float experience, int cookTime) {
+    public Recipe<?> create(String group, CookingBookCategory category, Ingredient ingredient, ItemOutput result, float experience, int cookTime, boolean forceItemOutput) {
       // use vanilla constructor if possible
-      if (result.getValueOrTag().left().isPresent()) {
+      if (forceItemOutput || result.getValueOrTag().left().isPresent()) {
         return vanillaConstructor.apply(group, category, ingredient, result.get(), experience, getTime(cookTime));
       } else {
         // use mantle if required
