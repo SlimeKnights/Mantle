@@ -73,6 +73,7 @@ import slimeknights.mantle.recipe.condition.TagCombinationCondition;
 import slimeknights.mantle.recipe.condition.TagEmptyCondition;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.TagPreference;
+import slimeknights.mantle.registration.MantleAttributes;
 import slimeknights.mantle.registration.MantleData;
 import slimeknights.mantle.registration.RegistrationHelper;
 
@@ -113,6 +114,7 @@ public class Mantle {
     MantleRecipes.init(modEventBus);
     MantleLoot.init(modEventBus);
     MantleData.init(modEventBus);
+    MantleAttributes.init(modEventBus);
     NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
 
     if (FMLEnvironment.dist == Dist.CLIENT) {
