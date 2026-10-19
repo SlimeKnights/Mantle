@@ -4,15 +4,20 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.neoforge.common.BooleanAttribute;
 import net.neoforged.neoforge.common.PercentageAttribute;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import slimeknights.mantle.registration.object.DeferredAttribute;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Deferred register for making attribute instances */
 @SuppressWarnings("unused")  // API
@@ -26,11 +31,29 @@ public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
     return "attribute.name." + getNamespace() + "." + name;
   }
 
+  @Override
+  protected <T extends Attribute> DeferredHolder<Attribute, T> createHolder(ResourceKey<? extends Registry<Attribute>> registryKey, ResourceLocation key) {
+    return DeferredAttribute.createAttribute(ResourceKey.create(registryKey, key));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <I extends Attribute> DeferredAttribute<I> register(String name, Supplier<? extends I> sup) {
+    return (DeferredAttribute<I>) super.register(name, sup);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <I extends Attribute> DeferredAttribute<I> register(String name, Function<ResourceLocation, ? extends I> func) {
+    return (DeferredAttribute<I>) super.register(name, func);
+  }
+
   /** Creates a builder for the given name */
   public Builder register(String name) {
     return new Builder(name);
   }
 
+  /** Builder to create an attribute */
   @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   public class Builder {
     private final String name;
@@ -56,32 +79,36 @@ public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
     }
 
     /** Builds the final attribute for an arbitrary constructor. */
-    public DeferredHolder<Attribute,Attribute> build(Function<String,? extends Attribute> constructor) {
-      return register(name, () -> constructor.apply("attribute.name." + getNamespace() + "." + name).setSyncable(syncable).setSentiment(sentiment));
+    public <T extends Attribute> DeferredAttribute<T> build(Function<String,? extends T> constructor) {
+      return register(name, () -> {
+        T instance = constructor.apply("attribute.name." + getNamespace() + "." + name);
+        instance.setSyncable(syncable).setSentiment(sentiment);
+        return instance;
+      });
     }
 
     /** Builds a ranged attribute with the given min and max. */
-    public DeferredHolder<Attribute,Attribute> ranged(float defaultValue, float min, float max) {
+    public DeferredAttribute<RangedAttribute> ranged(float defaultValue, float min, float max) {
       return build(tooltip -> new RangedAttribute(tooltip, defaultValue, min, max));
     }
 
     /** Builds a percent attribute with the given min and max. */
-    public DeferredHolder<Attribute,Attribute> percent(float defaultValue, float min, float max) {
+    public DeferredAttribute<PercentageAttribute> percent(float defaultValue, float min, float max) {
       return build(tooltip -> new PercentageAttribute(tooltip, defaultValue, min, max));
     }
 
     /** Builds a percent attribute between 0 and 100%. */
-    public DeferredHolder<Attribute,Attribute> percent(float defaultValue) {
+    public DeferredAttribute<PercentageAttribute> percent(float defaultValue) {
       return percent(defaultValue, 0, 1);
     }
 
     /** Builds a percent attribute between 0 and 100 with a default of 1. */
-    public DeferredHolder<Attribute,Attribute> multiplier() {
+    public DeferredAttribute<PercentageAttribute> multiplier() {
       return percent(1, 0, 100);
     }
 
     /** Builds a boolean attribute with the given default value. */
-    public DeferredHolder<Attribute,Attribute> bool(boolean defaultValue) {
+    public DeferredAttribute<BooleanAttribute> bool(boolean defaultValue) {
       return build(tooltip -> new BooleanAttribute(tooltip, defaultValue));
     }
   }
