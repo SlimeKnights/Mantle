@@ -2,7 +2,9 @@ package slimeknights.mantle.registration.deferred;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.BucketItem;
@@ -32,6 +34,8 @@ import slimeknights.mantle.registration.object.FlowingFluidObject;
 import slimeknights.mantle.registration.object.FluidObject;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -40,6 +44,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class FluidDeferredRegister extends DeferredRegister<Fluid> {
+  private final Map<ResourceLocation,DeferredHolder<Fluid,?>> holders = new HashMap<>();
   protected final DeferredRegister<FluidType> fluidTypes;
   protected final DeferredRegister<Block> blocks;
   protected final DeferredRegister<Item> items;
@@ -77,6 +82,15 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
    */
   protected ResourceLocation resource(String name) {
     return ResourceLocation.fromNamespaceAndPath(getNamespace(), name);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected <I extends Fluid> DeferredHolder<Fluid, I> createHolder(ResourceKey<? extends Registry<Fluid>> registryKey, ResourceLocation key) {
+    // if the same key is requested multiple times, reuse the instance
+    // needed since we have to create the holder for fluids before we can call register due to fluid type weirdness
+    // casting is fine as only a single type will actually happen, there are errors in place to prevent multiple registrations
+    return (DeferredHolder<Fluid, I>) holders.computeIfAbsent(key, k -> DeferredHolder.create(ResourceKey.create(Registries.FLUID, k)));
   }
 
   /** Adds an alias for the given fluid and fluid type */
@@ -126,7 +140,7 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
 
     private Builder(String name) {
       this.name = name;
-      stillHolder = DeferredHolder.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(getNamespace(), name));
+      stillHolder = createHolder(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(getNamespace(), name));
     }
 
     /** Adds a common tag to the builder */
@@ -247,7 +261,7 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
       }
 
       // create props with the suppliers
-      DeferredHolder<Fluid,F> flowingHolder = DeferredHolder.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(getNamespace(), "flowing_" + name));
+      DeferredHolder<Fluid,F> flowingHolder = createHolder(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(getNamespace(), "flowing_" + name));
       Properties props = build(type, stillHolder, flowingHolder);
 
       // create fluids now that we have props
