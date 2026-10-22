@@ -3,9 +3,11 @@ package slimeknights.mantle.recipe.cooking;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.datafixers.util.Function6;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.BlastingRecipe;
@@ -20,11 +22,13 @@ import slimeknights.mantle.data.loadable.Loadables;
 import slimeknights.mantle.recipe.data.AbstractRecipeBuilder;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 
+import java.util.Optional;
+
 /**
  * Builder for {@link SmeltingResultRecipe}, {@link BlastingResultRecipe}, {@link SmokingResultRecipe}, and {@link CampfireResultRecipe}.
  * Can also be used as a single builder for {@link SmeltingRecipe}, {@link BlastingRecipe}, {@link SmokingRecipe}, and {@link CampfireCookingRecipe)} to share fields.
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unused")
 @CanIgnoreReturnValue
 public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends AbstractRecipeBuilder<T> {
   protected final ItemOutput result;
@@ -37,6 +41,17 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
 
   protected CookingRecipeBuilder(ItemOutput result) {
     this.result = result;
+    // automatically set the category based on the result item, as long as it's not a tag
+    // based off how furnace recipes set categories
+    Optional<Item> optional = result.getValueOrTag().left();
+    if (optional.isPresent()) {
+      Item item = optional.get();
+      if (item.components().has(DataComponents.FOOD)) {
+        category = CookingBookCategory.FOOD;
+      } else if (item instanceof BlockItem) {
+        category = CookingBookCategory.BLOCKS;
+      }
+    }
   }
 
   /** Creates a new builder instance */
@@ -64,6 +79,12 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
     return builder(result, 1);
   }
 
+  /** Gets this builder casted to the given type. */
+  @Override
+  @SuppressWarnings("unchecked")
+  protected T self() {
+    return (T) this;
+  }
 
   /**
    * Sets the type of {@link #save(RecipeOutput, ResourceLocation)}.
@@ -72,13 +93,19 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
    */
   public T type(CookingType type) {
     this.type = type;
-    return (T) this;
+    return self();
+  }
+
+  /** Sets the recipe book category for this recipe. */
+  public T category(CookingBookCategory category) {
+    this.category = category;
+    return self();
   }
 
   /** Sets the input ingredient */
   public T requires(Ingredient ingredient) {
     this.ingredient = ingredient;
-    return (T) this;
+    return self();
   }
 
   /** Sets the input ingredient */
@@ -94,19 +121,19 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
   /** Sets the XP gain from this recipe */
   public T experience(float experience) {
     this.experience = experience;
-    return (T) this;
+    return self();
   }
 
   /** Sets the cooking time for this recipe relative to smelting. Note its halved for {@link CookingType#BLASTING} and {@link CookingType#SMOKING} and tripled for {@link CookingType#CAMPFIRE} */
   public T cookingTime(int cookingTime) {
     this.cookingTime = cookingTime;
-    return (T) this;
+    return self();
   }
 
   /** Forces the recipe to serialize using the Mantle serializers with {@link ItemOutput} even if it could serialize as {@link ItemStack}. Useful in {@link slimeknights.mantle.recipe.data.mock.MockRecipeOutput}. */
   public T forceItemOutput() {
     this.forceItemOutput = true;
-    return (T) this;
+    return self();
   }
 
 
@@ -116,7 +143,7 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
       throw new IllegalStateException("Ingredient must be set");
     }
     output.accept(id, cookingType.create(group, category, ingredient, result, experience, cookingTime, forceItemOutput), buildOptionalAdvancement(output, id, "cooking"));
-    return (T) this;
+    return self();
   }
 
   /** Saves the smelting recipe */
