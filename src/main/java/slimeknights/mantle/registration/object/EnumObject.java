@@ -144,9 +144,20 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
     return (EnumObject<T,R>) EMPTY;
   }
 
-  /** Creates a new builder instance */
-  public static <T extends Enum<T>, R, I extends R> EnumObject.Builder<T,R> builder(Class<T> clazz) {
+  /**
+   * Creates a new builder instance
+   * @param clazz  Enum class
+   */
+  public static <T extends Enum<T>, R> EnumObject.Builder<T,R> builder(Class<T> clazz) {
     return new Builder<>(clazz);
+  }
+
+  /**
+   * Creates a new builder instance
+   * @param clazz  Enum class
+   */
+  public static <T extends Enum<T>, R, V> EnumObject.MappedBuilder<T,R,V> builder(Class<T> clazz, Function<V,Holder<R>> mapper) {
+    return new MappedBuilder<>(clazz, mapper);
   }
 
   /**
@@ -159,7 +170,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
     if (values.length == 0) {
       throw new IllegalArgumentException("Must have at least one value");
     }
-    EnumObject.Builder<E,R> builder = new EnumObject.Builder<>(values[0].getDeclaringClass());
+    EnumObject.Builder<E,R> builder = EnumObject.builder(values[0].getDeclaringClass());
     for (E value : values) {
       Holder<R> holder = register.apply(value);
       if (holder != null) {
@@ -177,7 +188,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
   @SuppressWarnings({"UnusedReturnValue", "unused"})
   public static class Builder<T extends Enum<T>, R> {
     private final Map<T,Holder<R>> map;
-    public Builder(Class<T> clazz) {
+    private Builder(Class<T> clazz) {
       this.map = new EnumMap<>(clazz);
     }
 
@@ -218,6 +229,40 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
      */
     public EnumObject<T,R> build() {
       return new EnumObject<>(map);
+    }
+  }
+
+  /** Builder supporting adding objects through a holder getter. Meant for use with methods such as {@link net.minecraft.world.level.block.Block#builtInRegistryHolder()} */
+  public static class MappedBuilder<T extends Enum<T>, R, V> extends Builder<T, R> {
+    private final Function<V,Holder<R>> holderGetter;
+
+    private MappedBuilder(Class<T> clazz, Function<V,Holder<R>> holderGetter) {
+      super(clazz);
+      this.holderGetter = holderGetter;
+    }
+
+    /** Puts the given value into the builder using the holder getter */
+    public MappedBuilder<T,R,V> put(T key, V value) {
+      put(key, holderGetter.apply(value));
+      return this;
+    }
+
+    @Override
+    public MappedBuilder<T,R,V> put(T key, Holder<R> holder) {
+      super.put(key, holder);
+      return this;
+    }
+
+    @Override
+    public MappedBuilder<T,R,V> putAll(Map<T, Holder<R>> map) {
+      super.putAll(map);
+      return this;
+    }
+
+    @Override
+    public MappedBuilder<T,R,V> putAll(EnumObject<T, R> object) {
+      super.putAll(object);
+      return this;
     }
   }
 }

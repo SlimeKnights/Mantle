@@ -49,7 +49,7 @@ public class PotionDeferredRegister extends DeferredRegister<Potion> {
     private final int amplifier;
 
     private Builder(String name, Holder<MobEffect> effect, int duration, int amplifier) {
-      this.builder = new EnumObject.Builder<>(PotionType.class);
+      this.builder = EnumObject.builder(PotionType.class);
       this.name = name;
       this.effect = effect;
       this.duration = duration;
