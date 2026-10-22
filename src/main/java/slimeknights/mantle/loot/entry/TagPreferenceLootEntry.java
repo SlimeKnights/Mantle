@@ -31,7 +31,7 @@ public class TagPreferenceLootEntry extends LootPoolSingletonContainer {
 
   @Override
   public LootPoolEntryType getType() {
-    return MantleLoot.TAG_PREFERENCE.get();
+    return MantleLoot.TAG_PREFERENCE.value();
   }
 
   @Override

@@ -14,12 +14,12 @@ import net.neoforged.neoforge.common.BooleanAttribute;
 import net.neoforged.neoforge.common.PercentageAttribute;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import slimeknights.mantle.registration.object.DeferredAttribute;
+import slimeknights.mantle.registration.holder.DeferredAttribute;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/** Deferred register for making attribute instances */
+/** {@link DeferredRegister} for {@link Attribute}. Has a builder for common attribute types. */
 @SuppressWarnings("unused")  // API
 public class AttributeDeferredRegister extends DeferredRegister<Attribute> {
   public AttributeDeferredRegister(String modID) {

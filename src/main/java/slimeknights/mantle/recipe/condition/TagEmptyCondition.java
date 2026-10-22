@@ -30,7 +30,7 @@ public class TagEmptyCondition<T> extends TagCondition<T> implements LootItemCon
 
   @Override
   public LootItemConditionType getType() {
-    return MantleLoot.TAG_EMPTY.get();
+    return MantleLoot.TAG_EMPTY.value();
   }
 
   @Override

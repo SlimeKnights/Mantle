@@ -6,8 +6,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import slimeknights.mantle.registration.holder.DeferredEntity;
 
-/** Object holding an entity and it's egg */
+/**
+ * Object holding an entity type and it's egg
+ * <p>
+ * For entities without spawn eggs, see {@link DeferredEntity}.
+ */
 public class EntityObject<T extends Entity> extends HolderWrapper<EntityType<?>,EntityType<T>> implements ItemLike {
   private final Holder<Item> spawnEgg;
 

@@ -21,7 +21,7 @@ public record HasLootContextSetCondition(LootContextParamSet set) implements Loo
 
   @Override
   public LootItemConditionType getType() {
-    return MantleLoot.HAS_CONTEXT_SET.get();
+    return MantleLoot.HAS_CONTEXT_SET.value();
   }
 
   @Override

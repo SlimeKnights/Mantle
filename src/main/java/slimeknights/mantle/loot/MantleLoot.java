@@ -2,14 +2,13 @@ package slimeknights.mantle.loot;
 
 import com.google.gson.JsonDeserializer;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import slimeknights.mantle.Mantle;
@@ -27,6 +26,7 @@ import slimeknights.mantle.recipe.condition.TagEmptyCondition;
 import slimeknights.mantle.registration.deferred.LootConditionDeferredRegister;
 import slimeknights.mantle.registration.deferred.LootEntryDeferredRegister;
 import slimeknights.mantle.registration.deferred.LootFunctionDeferredRegister;
+import slimeknights.mantle.registration.holder.DeferredLootFunction;
 
 import java.util.Objects;
 
@@ -49,22 +49,22 @@ public class MantleLoot {
   }
 
   /** Matches if the passed tag is empty */
-  public static final DeferredHolder<LootItemConditionType,LootItemConditionType> TAG_EMPTY = LOOT_CONDITIONS.register("tag_empty", TagEmptyCondition.CODEC);
+  public static final Holder<LootItemConditionType> TAG_EMPTY = LOOT_CONDITIONS.register("tag_empty", TagEmptyCondition.CODEC);
   /** Matches if the passed tag is filled */
-  public static final DeferredHolder<LootItemConditionType,LootItemConditionType> TAG_FILLED = LOOT_CONDITIONS.register("tag_filled", TagEmptyCondition.CODEC);
+  public static final Holder<LootItemConditionType> TAG_FILLED = LOOT_CONDITIONS.register("tag_filled", TagEmptyCondition.CODEC);
   /** Condition to match a block tag and property predicate */
-  public static final DeferredHolder<LootItemConditionType,LootItemConditionType> BLOCK_TAG_CONDITION = LOOT_CONDITIONS.register("block_tag", BlockTagLootCondition.CODEC);
+  public static final Holder<LootItemConditionType> BLOCK_TAG_CONDITION = LOOT_CONDITIONS.register("block_tag", BlockTagLootCondition.CODEC);
   /** Condition for global loot modifiers that ensures a context set is present. Useful to check if we are in a specific context like entity. */
-  public static final DeferredHolder<LootItemConditionType,LootItemConditionType> HAS_CONTEXT_SET = LOOT_CONDITIONS.register("has_context_set", HasLootContextSetCondition.CODEC);
+  public static final Holder<LootItemConditionType> HAS_CONTEXT_SET = LOOT_CONDITIONS.register("has_context_set", HasLootContextSetCondition.CODEC);
 
   /** Function to add block entity texture to a dropped item */
   @SuppressWarnings("removal")
-  public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<slimeknights.mantle.loot.function.RetexturedLootFunction>> RETEXTURED_FUNCTION = LOOT_FUNCTIONS.register("fill_retextured_block", slimeknights.mantle.loot.function.RetexturedLootFunction.CODEC);
+  public static final DeferredLootFunction<slimeknights.mantle.loot.function.RetexturedLootFunction> RETEXTURED_FUNCTION = LOOT_FUNCTIONS.register("fill_retextured_block", slimeknights.mantle.loot.function.RetexturedLootFunction.CODEC);
   /** Function to add a fluid to an item fluid capability */
-  public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<SetFluidLootFunction>> SET_FLUID_FUNCTION = LOOT_FUNCTIONS.register("set_fluid", SetFluidLootFunction.CODEC);
+  public static final DeferredLootFunction<SetFluidLootFunction> SET_FLUID_FUNCTION = LOOT_FUNCTIONS.register("set_fluid", SetFluidLootFunction.CODEC);
 
   /** Entry to pull a value from a tag preference */
-  public static final DeferredHolder<LootPoolEntryType, LootPoolEntryType> TAG_PREFERENCE = LOOT_ENTRIES.register("tag_preference", TagPreferenceLootEntry.CODEC);
+  public static final Holder<LootPoolEntryType> TAG_PREFERENCE = LOOT_ENTRIES.register("tag_preference", TagPreferenceLootEntry.CODEC);
 
   /**
    * Called during serializer registration to register any relevant loot logic

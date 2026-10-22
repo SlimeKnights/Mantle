@@ -46,6 +46,6 @@ public record BlockTagLootCondition(TagKey<Block> tag, Optional<StatePropertiesP
 
   @Override
   public LootItemConditionType getType() {
-    return MantleLoot.BLOCK_TAG_CONDITION.get();
+    return MantleLoot.BLOCK_TAG_CONDITION.value();
   }
 }

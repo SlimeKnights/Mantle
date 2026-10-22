@@ -30,7 +30,7 @@ public class TagFilledCondition<T> extends TagCondition<T> implements LootItemCo
 
   @Override
   public LootItemConditionType getType() {
-    return MantleLoot.TAG_FILLED.get();
+    return MantleLoot.TAG_FILLED.value();
   }
 
   @Override
