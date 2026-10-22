@@ -28,8 +28,6 @@ import java.util.function.Supplier;
 public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T>, Consumer<TypedMapBuilder> {
   /** Context key to use if you want the recipe serializer passed into your recipe */
   public static final ContextKey<RecipeSerializer<?>> SERIALIZER = new ContextKey<>("serializer");
-  /** Context key to use if you want a type aware serializer in the recipe, requires {@link #of(RecordLoadable, Supplier)} for your serializer. */
-  public static final ContextKey<TypeAwareRecipeSerializer<?>> TYPED_SERIALIZER = new ContextKey<>("typed_serializer");
   /** Context key to use if you want the recipe type passed into your recipe, requires {@link #of(RecordLoadable, Supplier)} for your serializer. */
   public static final ContextKey<RecipeType<?>> TYPE = new ContextKey<>("type");
   /** Field for a group key in a recipe (common requirement) */
@@ -58,12 +56,12 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
   }
 
   /** Creates a type aware serializer from a loadable */
-  public static <T extends R, R extends Recipe<?>> TypeAwareRecipeSerializer<T> of(RecordLoadable<T> loadable, Supplier<? extends RecipeType<R>> type) {
+  public static <T extends R, R extends Recipe<?>> RecipeSerializer<T> of(RecordLoadable<T> loadable, Supplier<? extends RecipeType<R>> type) {
     return new TypeAware<>(loadable, type);
   }
 
-  /** Recipe serializer that passes the recipe type to the recipe class */
-  private static class TypeAware<T extends Recipe<?>> extends LoadableRecipeSerializer<T> implements TypeAwareRecipeSerializer<T> {
+  /** Recipe serializer that passes the recipe type to the recipe constructor */
+  private static class TypeAware<T extends Recipe<?>> extends LoadableRecipeSerializer<T> {
     private final Supplier<? extends RecipeType<?>> type;
     protected TypeAware(RecordLoadable<T> loadable, Supplier<? extends RecipeType<?>> type) {
       super(loadable);
@@ -73,13 +71,7 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
     @Override
     public void accept(TypedMapBuilder builder) {
       super.accept(builder);
-      builder.put(TYPE, getType());
-      builder.put(TYPED_SERIALIZER, this);
-    }
-
-    @Override
-    public RecipeType<?> getType() {
-      return type.get();
+      builder.put(TYPE, type.get());
     }
   }
 }
