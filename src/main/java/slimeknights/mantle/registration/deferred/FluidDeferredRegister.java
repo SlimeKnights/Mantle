@@ -39,9 +39,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * Deferred register solving the nightmare that is registering fluids with Forge
- */
+/** {@link DeferredRegister} solving the nightmare that is registering {@link Fluid} with Minecraft. */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class FluidDeferredRegister extends DeferredRegister<Fluid> {
   private final Map<ResourceLocation,DeferredHolder<Fluid,?>> holders = new HashMap<>();

@@ -11,7 +11,10 @@ import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/** Generic deferred register for an object using registry objects and wanting enums */
+/**
+ * Generic {@link DeferredRegister} for registering groups of objects at once from an {@link Enum}.
+ * @see EnumObject
+ */
 @SuppressWarnings("unused")  // API
 public class EnumDeferredRegister<R> extends DeferredRegister<R> {
   public EnumDeferredRegister(ResourceKey<Registry<R>> reg, String modID) {

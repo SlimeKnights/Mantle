@@ -7,7 +7,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/** Deferred register extension for registering loot item condition types. */
+/** {@link DeferredRegister} for {@link LootPoolEntryType}, providing a non-supplier register method. */
 public class LootEntryDeferredRegister extends DeferredRegister<LootPoolEntryType> {
   public LootEntryDeferredRegister(String namespace) {
     super(Registries.LOOT_POOL_ENTRY_TYPE, namespace);

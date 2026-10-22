@@ -11,7 +11,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Deferred register that registers items.
+ * {@link net.neoforged.neoforge.registries.DeferredRegister} for {@link Item}. Provides helpers for registering common items.
+ * Unlike {@link net.neoforged.neoforge.registries.DeferredRegister.Items}, does not handle {@link net.minecraft.world.item.BlockItem} as we use {@link BlockDeferredRegister} for that.
  */
 @SuppressWarnings("unused")
 public class ItemDeferredRegister extends EnumDeferredRegister<Item> {

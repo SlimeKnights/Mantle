@@ -11,7 +11,7 @@ import slimeknights.mantle.registration.object.EnumObject;
 
 import java.util.Locale;
 
-/** Helper for registering potions */
+/** Helper for registering potions. Simplifies creating groups of potions for brewing. */
 @SuppressWarnings("unused")  // API
 public class PotionDeferredRegister extends DeferredRegister<Potion> {
   public PotionDeferredRegister(String modID) {

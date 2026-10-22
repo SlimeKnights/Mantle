@@ -61,9 +61,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * Deferred register to handle registering blocks with possible item forms.
- */
+/** {@link DeferredRegister} for {@link Block}. Has helpers to automatically register the {@link BlockItem}. */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class BlockDeferredRegister extends EnumDeferredRegister<Block> {
   /** Default item properties instance for the fallback */

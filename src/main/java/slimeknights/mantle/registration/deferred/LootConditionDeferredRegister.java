@@ -7,7 +7,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/** Deferred register extension for registering loot item condition types. */
+/** {@link DeferredRegister} for {@link LootItemConditionType}, providing a non-supplier register method. */
 public class LootConditionDeferredRegister extends DeferredRegister<LootItemConditionType> {
   public LootConditionDeferredRegister(String namespace) {
     super(Registries.LOOT_CONDITION_TYPE, namespace);
