@@ -178,7 +178,7 @@ public class FluidTransferHelper {
   /** Plays the sound from draining a TE */
   public static void playFillSound(Level world, BlockPos pos, Player player, FluidStack transferred) {
     world.playSound(null, pos, getFillSound(transferred), SoundSource.BLOCKS, 1.0F, 1.0F);
-    player.displayClientMessage(Component.translatable(KEY_DRAINED, COMMA_FORMAT.format(transferred.getAmount()), transferred.getFluid()), true);
+    player.displayClientMessage(Component.translatable(KEY_DRAINED, COMMA_FORMAT.format(transferred.getAmount()), transferred.getHoverName()), true);
   }
 
   /**
