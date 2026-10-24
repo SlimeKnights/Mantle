@@ -153,6 +153,6 @@ public abstract class SingleItemHandler<T extends MantleBlockEntity> implements 
    * @param nbt  NBT
    */
   public void readFromNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-    stack = ItemStack.parse(provider, nbt).orElse(ItemStack.EMPTY);
+    stack = ItemStack.parseOptional(provider, nbt);
   }
 }
