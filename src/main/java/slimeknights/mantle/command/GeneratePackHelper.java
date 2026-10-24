@@ -94,7 +94,7 @@ public class GeneratePackHelper {
 
   /** Saves a JSON that removes the given resource using forge conditions */
   public static boolean saveConditionRemove(Path path) {
-    return saveConditionRemove(path, "forge:conditions");
+    return saveConditionRemove(path, "neoforge:conditions");
   }
 
   /** Creates a mcmeta to make a valid pack */

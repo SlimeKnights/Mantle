@@ -53,7 +53,7 @@
   "command.mantle.hunger.subtract.single":   "Gave %s -%d hunger",
   "command.mantle.hunger.subtract.multiple": "Gave %d players -%d hunger",
 
-  "command.mantle.remove_recipes": "Successfully removed %s recipes in %s seconds. Run /reload to activate pack at %s",
+  "command.mantle.remove_recipes": "Successfully removed %s recipes with %s advancements in %s seconds. Run /reload to activate pack at %s",
   "command.mantle.remove_recipes.preset_not_found": "Recipe removal preset '%s' was missing or invalid. Check the log for more information.",
   "command.mantle.remove.failed_save": "Failed to save JSON at '%s'.",
 
