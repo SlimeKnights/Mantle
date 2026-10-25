@@ -3,7 +3,6 @@ package slimeknights.mantle.fluid.texture;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.data.client.DeanimateTextureGenerator;
 
 import java.util.Map.Entry;
@@ -14,9 +13,9 @@ import java.util.Set;
 public class FluidTextureCameraProvider extends DeanimateTextureGenerator {
   private final AbstractFluidTextureProvider provider;
   /** Fluid types from the provider to ignore */
-  private final Set<FluidType> skip;
+  private final Set<ResourceLocation> skip;
 
-  public FluidTextureCameraProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper, AbstractFluidTextureProvider provider, Set<FluidType> skip) {
+  public FluidTextureCameraProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper, AbstractFluidTextureProvider provider, Set<ResourceLocation> skip) {
     super(packOutput, existingFileHelper);
     this.provider = provider;
     this.skip = skip;
@@ -28,7 +27,7 @@ public class FluidTextureCameraProvider extends DeanimateTextureGenerator {
 
   @Override
   protected void addTextures() {
-    for (Entry<FluidType, FluidTexture.Builder> entry : provider.getAllTextures().entrySet()) {
+    for (Entry<ResourceLocation, FluidTexture.Builder> entry : provider.getAllTextures().entrySet()) {
       if (!skip.contains(entry.getKey())) {
         FluidTexture.Builder builder = entry.getValue();
         ResourceLocation camera = builder.getCamera();

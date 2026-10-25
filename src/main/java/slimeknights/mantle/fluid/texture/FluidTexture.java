@@ -11,8 +11,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import slimeknights.mantle.client.model.TextureColorHelper;
 import slimeknights.mantle.data.loadable.common.ColorLoadable;
 import slimeknights.mantle.data.loadable.primitive.EnumLoadable;
@@ -124,19 +122,15 @@ public final class FluidTexture {
   }
 
 
-  /**
-   * Builder for this object
-   */
+  /** Builder for this object */
   @SuppressWarnings("unused") // API
   @Setter
   @Accessors(fluent = true)
   @RequiredArgsConstructor
   public static class Builder {
-
-    private final FluidType fluid;
-    /**
-     * Base path, make sure to include the trailing "_" or "/"
-     */
+    /** Base fluid ID */
+    private final ResourceLocation fluid;
+    /** Base texture path, make sure to include the trailing "_" or "/" */
     private ResourceLocation root;
     private ResourceLocation still;
     private ResourceLocation flowing;
@@ -160,7 +154,7 @@ public final class FluidTexture {
      * @return Builder instance
      */
     public Builder wrapId(String prefix, String suffix) {
-      return root(JsonHelper.wrap(Objects.requireNonNull(NeoForgeRegistries.FLUID_TYPES.getKey(fluid)), prefix, suffix));
+      return root(JsonHelper.wrap(fluid, prefix, suffix));
     }
 
     /**
