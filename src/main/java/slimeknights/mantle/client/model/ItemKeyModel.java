@@ -1,13 +1,11 @@
 package slimeknights.mantle.client.model;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -37,27 +35,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-/** Model which uses a key in NBT to select which texture variant to load. */
+/** Model which uses a key in item components to select which texture variant to load. */
 @RequiredArgsConstructor
 public class ItemKeyModel implements IUnbakedGeometry<ItemKeyModel> {
   /** Model loader ID */
   public static final ResourceLocation ID = Mantle.getResource("item_key");
   /** Model loader instance */
   public static final IGeometryLoader<ItemKeyModel> LOADER = ItemKeyModel::deserialize;
-
-  /** Map of statically registered extra textures, used for addon mods */
-  private static final Multimap<ResourceLocation,Pair<String,ResourceLocation>> EXTRA_TEXTURES = HashMultimap.create();
-
-  /**
-   * Registers an extra variant texture for the model with the given key. Note that resource packs can override the extra texture
-   * @param key          Model key, should be defined in the model JSON if supported
-   * @param textureName  Name of the texture defined, corresponds to a possible value of the NBT key
-   * @param texture      Texture to use, same format as in resource packs
-   */
-  @SuppressWarnings("unused")  // API
-  public static void registerExtraTexture(ResourceLocation key, String textureName, ResourceLocation texture) {
-    EXTRA_TEXTURES.put(key, Pair.of(textureName, texture));
-  }
 
   /** Key getter */
   private final ItemKey key;
@@ -97,10 +81,11 @@ public class ItemKeyModel implements IUnbakedGeometry<ItemKeyModel> {
     }
     // fetch extra textures
     if (extraTexturesKey != null) {
-      for (Pair<String,ResourceLocation> extra : EXTRA_TEXTURES.get(extraTexturesKey)) {
-        String key = extra.getFirst();
+      Map<String,ResourceLocation> extraTextures = TextureMapManager.INSTANCE.getTextureMap(Minecraft.getInstance().getResourceManager(), extraTexturesKey);
+      for (Entry<String,ResourceLocation> extra : extraTextures.entrySet()) {
+        String key = extra.getKey();
         if (!textures.containsKey(key)) {
-          textures.put(key, new Material(InventoryMenu.BLOCK_ATLAS, extra.getSecond()));
+          textures.put(key, new Material(InventoryMenu.BLOCK_ATLAS, extra.getValue()));
         }
       }
     }
