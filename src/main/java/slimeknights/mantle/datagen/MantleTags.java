@@ -65,30 +65,9 @@ public class MantleTags {
   }
 
   public static class Fluids {
-    /**
-     * This tag represents vanilla water, but is not used by vanilla logic.
-     * Means it's not going to be filled with random mod entries that are not water making it safe for recipes
-     */
-    public static final TagKey<Fluid> WATER = tag("water");
-    /**
-     * This tag represents vanilla lava, but is not used by vanilla logic.
-     * Means it's not going to be filled with random mod entries that are not water making it safe for recipes
-     */
-    public static final TagKey<Fluid> LAVA = tag("lava");
-
     // common fluids with Mantle compat
     /** Anything classified as a soup, notably used for tooltips */
     public static final TagKey<Fluid> SOUP = tag("soup");
-    /** Fluid inside honey bottles, at 250mb per bottle */
-    public static final TagKey<Fluid> HONEY = common("honey");
-    /** Fluid inside beetroot soup bowls, at 250mb per bowl */
-    public static final TagKey<Fluid> BEETROOT_SOUP = common("beetroot_soup");
-    /** Fluid inside mushroom stew bowls, at 250mb per bowl */
-    public static final TagKey<Fluid> MUSHROOM_STEW = common("mushroom_stew");
-    /** Fluid inside rabbit stew bowls, at 250mb per bowl */
-    public static final TagKey<Fluid> RABBIT_STEW = common("rabbit_stew");
-    /** Fluid inside potion bottles, at 250mb per bottle */
-    public static final TagKey<Fluid> POTION = common("potion");
 
     /** Fluids in this tag won't show in lists populated from all fluids such as bucket transfer recipes */
     public static final TagKey<Fluid> HIDE_IN_DISPLAY = tag("hide_in_display");
@@ -97,11 +76,6 @@ public class MantleTags {
     /** Adds a mantle domain tag */
     private static TagKey<Fluid> tag(String name) {
       return TagKey.create(Registries.FLUID, Mantle.getResource(name));
-    }
-
-    /** Adds a common domain tag */
-    private static TagKey<Fluid> common(String name) {
-      return TagKey.create(Registries.FLUID, Mantle.commonResource(name));
     }
   }
 

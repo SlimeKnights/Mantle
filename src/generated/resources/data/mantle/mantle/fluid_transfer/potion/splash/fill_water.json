@@ -8,7 +8,7 @@
   ],
   "fluid": {
     "amount": 500,
-    "tag": "mantle:water"
+    "tag": "c:water"
   },
   "input": {
     "tag": "c:bottles/splash"

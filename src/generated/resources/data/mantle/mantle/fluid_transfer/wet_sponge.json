@@ -2,7 +2,7 @@
   "type": "mantle:fill_item",
   "fluid": {
     "amount": 1000,
-    "tag": "mantle:water"
+    "tag": "c:water"
   },
   "input": {
     "item": "minecraft:sponge"

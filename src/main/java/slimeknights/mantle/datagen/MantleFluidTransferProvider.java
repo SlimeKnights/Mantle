@@ -13,6 +13,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -46,17 +47,17 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
 
   @Override
   protected void addTransfers(HolderLookup.Provider lookup) {
-    addTransfer("wet_sponge", new FillFluidContainerTransfer(Ingredient.of(Items.SPONGE), ItemOutput.fromItem(Items.WET_SPONGE), SizedFluidIngredient.of(MantleTags.Fluids.WATER, FluidType.BUCKET_VOLUME)));
+    addTransfer("wet_sponge", new FillFluidContainerTransfer(Ingredient.of(Items.SPONGE), ItemOutput.fromItem(Items.WET_SPONGE), SizedFluidIngredient.of(Tags.Fluids.WATER, FluidType.BUCKET_VOLUME)));
 
     // potions
     addPotion("potion/",           Items.POTION,  null);
     addPotion("potion/splash/",    Items.SPLASH_POTION,    MantleTags.Items.SPLASH_BOTTLE);
     addPotion("potion/lingering/", Items.LINGERING_POTION, MantleTags.Items.LINGERING_BOTTLE);
     // foods
-    optionalFillEmpty("honey_bottle_",  Items.HONEY_BOTTLE,  Items.GLASS_BOTTLE, MantleTags.Fluids.HONEY,         MantleValues.BOTTLE);
-    optionalFillEmpty("beetroot_soup_", Items.BEETROOT_SOUP, Items.BOWL,         MantleTags.Fluids.BEETROOT_SOUP, MantleValues.BOWL);
-    optionalFillEmpty("mushroom_stew_", Items.MUSHROOM_STEW, Items.BOWL,         MantleTags.Fluids.MUSHROOM_STEW, MantleValues.BOWL);
-    optionalFillEmpty("rabbit_stew_",   Items.RABBIT_STEW,   Items.BOWL,         MantleTags.Fluids.RABBIT_STEW,   MantleValues.BOWL);
+    optionalFillEmpty("honey_bottle_",  Items.HONEY_BOTTLE,  Items.GLASS_BOTTLE, Tags.Fluids.HONEY,         MantleValues.BOTTLE);
+    optionalFillEmpty("beetroot_soup_", Items.BEETROOT_SOUP, Items.BOWL,         Tags.Fluids.BEETROOT_SOUP, MantleValues.BOWL);
+    optionalFillEmpty("mushroom_stew_", Items.MUSHROOM_STEW, Items.BOWL,         Tags.Fluids.MUSHROOM_STEW, MantleValues.BOWL);
+    optionalFillEmpty("rabbit_stew_",   Items.RABBIT_STEW,   Items.BOWL,         Tags.Fluids.RABBIT_STEW,   MantleValues.BOWL);
   }
 
   /** Adds generic fill and empty for a container */
@@ -70,7 +71,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
     // for emptying, if they are absent just use glass bottles
     // for filling, if they are absent then we can't do the fill recipes
     Ingredient container;
-    ICondition potionCondition = new TagFilledCondition<>(MantleTags.Fluids.POTION);
+    ICondition potionCondition = new TagFilledCondition<>(Tags.Fluids.POTION);
     ICondition[] potionConditions;
     ICondition[] waterConditions;
     if (bottleTag != null) {
@@ -103,7 +104,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
     addTransfer(prefix + "fill_water", new FillFluidContainerTransfer(
       container,
       ItemOutput.fromStack(PotionContents.createItemStack(filled.asItem(), Potions.WATER)),
-        SizedFluidIngredient.of(MantleTags.Fluids.WATER, MantleValues.BOTTLE * 2)),
+        SizedFluidIngredient.of(Tags.Fluids.WATER, MantleValues.BOTTLE * 2)),
       waterConditions);
   }
 }

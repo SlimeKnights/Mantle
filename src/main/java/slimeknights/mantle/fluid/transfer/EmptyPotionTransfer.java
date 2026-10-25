@@ -10,10 +10,10 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import slimeknights.mantle.data.loadable.primitive.IntLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
-import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.helper.TagPreference;
@@ -44,7 +44,7 @@ public class EmptyPotionTransfer extends EmptyFluidContainerTransfer {
   public boolean matches(ItemStack stack, FluidStack fluid) {
     // to match, must either have water in the stack, or a potion fluid
     return super.matches(stack, fluid)
-      && (TagPreference.getPreference(MantleTags.Fluids.POTION).isPresent() || stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).is(Potions.WATER));
+      && (TagPreference.getPreference(Tags.Fluids.POTION).isPresent() || stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).is(Potions.WATER));
   }
 
   @Override
@@ -54,7 +54,7 @@ public class EmptyPotionTransfer extends EmptyFluidContainerTransfer {
       return fluid.copy();
     }
     // if it's not water, we need a potion fluid to return anything
-    return TagPreference.getPreference(MantleTags.Fluids.POTION)
+    return TagPreference.getPreference(Tags.Fluids.POTION)
       .map(value -> DataComponentHelper.copy(new FluidStack(value, fluid.getAmount()), stack, DataComponents.POTION_CONTENTS))
       .orElse(FluidStack.EMPTY);
   }
@@ -83,7 +83,7 @@ public class EmptyPotionTransfer extends EmptyFluidContainerTransfer {
       }
 
       // if we have a potion fluid, add all other potions
-      Optional<Fluid> potionFluidOptional = TagPreference.getPreference(MantleTags.Fluids.POTION);
+      Optional<Fluid> potionFluidOptional = TagPreference.getPreference(Tags.Fluids.POTION);
       if (potionFluidOptional.isPresent()) {
         Fluid potionFluid = potionFluidOptional.get();
         Iterator<Holder.Reference<Potion>> iterator = BuiltInRegistries.POTION.holders().iterator();

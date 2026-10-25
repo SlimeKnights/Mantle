@@ -13,12 +13,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import slimeknights.mantle.data.codec.MantleCodecs;
-import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.recipe.MantleRecipes;
 import slimeknights.mantle.recipe.ingredient.IngredientHelper;
@@ -78,12 +78,12 @@ public class PotionFluidIngredient extends FluidIngredient {
 
   /** Creates a potion ingredient using the standard potion tag */
   public static FluidIngredient of(HolderSet<Potion> potion) {
-    return of(potion, MantleTags.Fluids.POTION);
+    return of(potion, Tags.Fluids.POTION);
   }
 
   /** Creates a potion ingredient using the standard potion tag */
   public static FluidIngredient of(Holder<Potion> potion) {
-    return of(potion, MantleTags.Fluids.POTION);
+    return of(potion, Tags.Fluids.POTION);
   }
 
   @Override

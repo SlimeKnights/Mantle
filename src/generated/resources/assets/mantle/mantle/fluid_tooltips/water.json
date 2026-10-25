@@ -1,7 +1,7 @@
 {
   "fluid": {
     "type": "mantle:tag",
-    "tag": "mantle:water"
+    "tag": "c:water"
   },
   "units": [
     {
