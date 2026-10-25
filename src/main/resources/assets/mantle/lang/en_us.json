@@ -9,6 +9,10 @@
   "item.mantle.potion_bucket.effect.water": "Water Bucket",
   "item.mantle.potion_bucket.contents": "%s Bucket",
 
+  "attribute.name.mantle.generic.knockback_multiplier": "Knockback",
+  "attribute.name.mantle.player.experience_multiplier": "Experience",
+  "attribute.name.mantle.player.equipment_drop_chance_boost": "Equipment Drop Chance",
+
   "command.mantle.view_tag.success": "Values for %s tag '%s':",
 
   "command.mantle.tags_for.success": "%s tags for '%s':",
