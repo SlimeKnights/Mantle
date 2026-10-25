@@ -1,21 +1,21 @@
 package slimeknights.mantle.fluid.transfer;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.network.ISimplePacket;
-import slimeknights.mantle.network.codec.MantleStreamCodecs;
+import slimeknights.mantle.network.codec.StreamableCodec;
+import slimeknights.mantle.recipe.NamedRecipe;
 
-import java.util.Set;
+import java.util.List;
 
-/** Packet to sync fluid container transfer */
-public record FluidContainerTransferPacket(Set<Item> items) implements ISimplePacket {
+/** Packet to sync fluid container transfers */
+public record FluidContainerTransferPacket(List<NamedRecipe<IFluidContainerTransfer>> transfers) implements ISimplePacket {
   public static final Type<FluidContainerTransferPacket> TYPE = new Type<>(Mantle.getResource("sync_fluid_transfers"));
-  public static final StreamCodec<RegistryFriendlyByteBuf, FluidContainerTransferPacket> CODEC = StreamCodec.composite(
-    MantleStreamCodecs.ITEM.apply(MantleStreamCodecs.set()), FluidContainerTransferPacket::items,
-    FluidContainerTransferPacket::new);
+  public static final StreamCodec<RegistryFriendlyByteBuf, FluidContainerTransferPacket> CODEC = NamedRecipe.streamCodec(new StreamableCodec<>(IFluidContainerTransfer.LOADER))
+    .apply(ByteBufCodecs.list()).map(FluidContainerTransferPacket::new, FluidContainerTransferPacket::transfers);
 
   @Override
   public Type<FluidContainerTransferPacket> type() {
@@ -24,6 +24,6 @@ public record FluidContainerTransferPacket(Set<Item> items) implements ISimplePa
 
   @Override
   public void handle(IPayloadContext context) {
-    FluidContainerTransferManager.INSTANCE.setContainerItems(items);
+    FluidContainerTransferManager.INSTANCE.setTransfers(transfers);
   }
 }

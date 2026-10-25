@@ -1,5 +1,7 @@
 package slimeknights.mantle.recipe;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -48,6 +50,11 @@ public interface NamedRecipe<T> {
   @SuppressWarnings({"unchecked", "RedundantCast"})
   static <T> Class<? extends NamedRecipe<T>> recipeClass() {
     return (Class<? extends NamedRecipe<T>>)(Class<?>) NamedRecipe.class;
+  }
+
+  /** Creates a stream codec for the given recipe codec. */
+  static <B extends ByteBuf,R> StreamCodec<B,NamedRecipe<R>> streamCodec(StreamCodec<B,R> codec) {
+    return StreamCodec.composite(ResourceLocation.STREAM_CODEC, NamedRecipe::id, codec, NamedRecipe::recipe, NamedRecipe::of);
   }
 
   /** Wrapper around an ID and recipe pair. */

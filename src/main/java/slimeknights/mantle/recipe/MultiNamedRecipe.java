@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 public interface MultiNamedRecipe<T> {
   /** Comparator to sort recipe holders, first sorting multi recipes last, then sorting by ID. */
   Comparator<RecipeHolder<?>> RECIPE_COMPARATOR = Comparator.comparing((RecipeHolder<?> r) -> r.value() instanceof MultiNamedRecipe ? 1 : 0).thenComparing(RecipeHolder::id);
+  /** Comparator to sort named recipes, first sorting multi recipes last, then sorting by ID. */
+  Comparator<NamedRecipe<?>> NAMED_COMPARATOR = Comparator.comparing((NamedRecipe<?> r) -> r.recipe() instanceof MultiNamedRecipe ? 1 : 0).thenComparing(NamedRecipe::id);
 
   /**
    * Gets a list of recipes for display in JEI.
@@ -33,6 +35,15 @@ public interface MultiNamedRecipe<T> {
    */
   List<NamedRecipe<T>> getRecipes(ResourceLocation id, HolderLookup.Provider provider);
 
+  /** Expands the multi-recipe into a stream of recipes, catching errors if any exceptions are thrown. */
+  private static <T> Stream<NamedRecipe<T>> expandMulti(HolderLookup.Provider provider, ResourceLocation id, MultiNamedRecipe<T> multi) {
+    try {
+      return multi.getRecipes(id, provider).stream();
+    } catch (Exception e) {
+      Mantle.logger.error("Failed to fetch JEI recipes for multi recipe {} ({})", id, multi, e);
+      return Stream.empty();
+    }
+  }
 
   /**
    * Gets a stream of recipes without names. More efficient for contexts that do not need recipe IDs such as book display.
@@ -46,13 +57,7 @@ public interface MultiNamedRecipe<T> {
   static <T, I extends RecipeInput, R extends Recipe<I>> Stream<T> streamRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<R> type, Class<T> recipeClass) {
     return manager.byType(type).stream().sorted(RECIPE_COMPARATOR).flatMap(base -> {
       if (base.value() instanceof MultiNamedRecipe<?> multi) {
-        ResourceLocation id = base.id();
-        try {
-         return multi.getRecipes(id, provider).stream().map(NamedRecipe::recipe);
-        } catch (Exception e) {
-          Mantle.logger.error("Failed to fetch JEI recipes for multi recipe {} ({})", id, multi, e);
-          return Stream.empty();
-        }
+        return expandMulti(provider, base.id(), multi).map(NamedRecipe::recipe);
       }
       return Stream.of(base.value());
     }).filter(recipeClass::isInstance).map(recipeClass::cast);
@@ -75,12 +80,7 @@ public interface MultiNamedRecipe<T> {
       ResourceLocation id = base.id();
       Recipe<?> recipe = base.value();
       if (recipe instanceof MultiNamedRecipe<?> multi) {
-        try {
-          return multi.getRecipes(id, provider).stream();
-        } catch (Exception e) {
-          Mantle.logger.error("Failed to fetch JEI recipes for multi recipe {} ({})", id, recipe, e);
-          return Stream.empty();
-        }
+        return expandMulti(provider, id, multi);
       }
       return Stream.of(NamedRecipe.of(id, recipe));
     }).filter(r -> recipeClass.isInstance(r.recipe())).map(r -> (NamedRecipe<T>) r);
@@ -99,5 +99,35 @@ public interface MultiNamedRecipe<T> {
    */
   static <T, I extends RecipeInput, R extends Recipe<I>> List<NamedRecipe<T>> getNamedRecipes(HolderLookup.Provider provider, RecipeManager manager, RecipeType<R> type, Class<T> recipeClass) {
     return streamNamedRecipes(provider, manager, type, recipeClass).toList();
+  }
+
+  /**
+   * Gets a stream of recipes without names. More efficient for contexts that do not need recipe IDs such as book display.
+   * @param recipes      Stream of recipes to display
+   * @param provider     Registry provider
+   * @param recipeClass  Desired final recipe class, used to filter expanded recipes.
+   * @return  Stream of recipes of the given type.
+   * @param <T>  Result recipe type.
+   */
+  @SuppressWarnings("unchecked")
+  static <R,T> Stream<NamedRecipe<T>> streamNamedRecipes(Stream<NamedRecipe<R>> recipes, HolderLookup.Provider provider, Class<T> recipeClass) {
+    return recipes.sorted(NAMED_COMPARATOR).flatMap(base -> {
+      if (base.recipe() instanceof MultiNamedRecipe<?> multi) {
+        return expandMulti(provider, base.id(), multi);
+      }
+      return Stream.of(base);
+    }).filter(r -> recipeClass.isInstance(r.recipe())).map(r -> (NamedRecipe<T>) r);
+  }
+
+  /**
+   * Gets a stream of recipes without names. More efficient for contexts that do not need recipe IDs such as book display.
+   * @param recipes      Stream of recipes to display
+   * @param provider     Registry provider
+   * @param recipeClass  Desired final recipe class, used to filter expanded recipes.
+   * @return  Stream of recipes of the given type.
+   * @param <T>  Result recipe type.
+   */
+  static <R,T> List<NamedRecipe<T>> getNamedRecipes(Stream<NamedRecipe<R>> recipes, HolderLookup.Provider provider, Class<T> recipeClass) {
+    return streamNamedRecipes(recipes, provider, recipeClass).toList();
   }
 }

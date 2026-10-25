@@ -1,7 +1,9 @@
 package slimeknights.mantle.datagen;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -15,6 +17,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.fluid.transfer.AbstractFluidContainerTransferProvider;
@@ -23,6 +26,7 @@ import slimeknights.mantle.fluid.transfer.FillFluidContainerTransfer;
 import slimeknights.mantle.fluid.transfer.FillFluidCopyDataTransfer;
 import slimeknights.mantle.recipe.condition.TagFilledCondition;
 import slimeknights.mantle.recipe.helper.ItemOutput;
+import slimeknights.mantle.recipe.ingredient.fluid.PotionFluidIngredient;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -89,7 +93,9 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
     addTransfer(prefix + "fill_potion", new FillFluidCopyDataTransfer(
       container,
       ItemOutput.fromItem(filled),
-      SizedFluidIngredient.of(MantleTags.Fluids.POTION, MantleValues.BOTTLE),
+      new SizedFluidIngredient(
+        PotionFluidIngredient.of(new NotHolderSet<>(BuiltInRegistries.POTION.asLookup(), HolderSet.direct(Potions.WATER))),
+        MantleValues.BOTTLE),
       List.of(DataComponents.POTION_CONTENTS)
     ), potionConditions);
     // water bottles are 1/3 of a bucket, to prevent water dupes we round up on fill and down on empty, hence fill being 500mb

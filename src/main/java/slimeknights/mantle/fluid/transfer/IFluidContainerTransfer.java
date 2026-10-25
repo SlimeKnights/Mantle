@@ -17,7 +17,7 @@ public interface IFluidContainerTransfer extends IHaveLoader {
   /** Registry loader instance */
   GenericLoaderRegistry<IFluidContainerTransfer> LOADER = new GenericLoaderRegistry<>("Fluid Container Transfer", false);
 
-  /** Adds any items matched by this recipe for the sake of enabling transfer client side */
+  /** Adds any items matched by this recipe for the sake of quickly checking if an item is applicable. */
   void addRepresentativeItems(Consumer<Item> consumer);
 
   /**

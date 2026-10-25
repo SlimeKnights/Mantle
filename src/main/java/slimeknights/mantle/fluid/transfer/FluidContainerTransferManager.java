@@ -3,6 +3,8 @@ package slimeknights.mantle.fluid.transfer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -17,9 +19,11 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.network.PacketHelper;
+import slimeknights.mantle.recipe.NamedRecipe;
 import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 
@@ -39,11 +43,12 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
   /** Singleton instance of the manager */
   public static final FluidContainerTransferManager INSTANCE = new FluidContainerTransferManager();
 
-  /** List of loaded transfer logic, only exists serverside */
-  private List<IFluidContainerTransfer> transfers = Collections.emptyList();
+  /** List of loaded transfer logic */
+  @Internal @Setter(AccessLevel.PACKAGE) @Getter
+  private List<NamedRecipe<IFluidContainerTransfer>> transfers = Collections.emptyList();
 
   /** Set of all items that match a recipe, exists on both sides */
-  @Setter @Nullable
+  @Nullable
   private Set<Item> containerItems = Collections.emptySet();
 
   private FluidContainerTransferManager() {
@@ -55,8 +60,8 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
     if (this.containerItems == null) {
       List<Item> builder = new ArrayList<>();
       Consumer<Item> consumer = builder::add;
-      for (IFluidContainerTransfer transfer : transfers) {
-        transfer.addRepresentativeItems(consumer);
+      for (NamedRecipe<IFluidContainerTransfer> transfer : transfers) {
+        transfer.recipe().addRepresentativeItems(consumer);
       }
       this.containerItems = Set.copyOf(builder);
     }
@@ -66,7 +71,7 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
   /** For internal use only */
   public void init() {
     NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, e -> e.addListener(this));
-    NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, e -> PacketHelper.syncPackets(e, new FluidContainerTransferPacket(this.getContainerItems())));
+    NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, e -> PacketHelper.syncPackets(e, new FluidContainerTransferPacket(transfers)));
   }
 
   @Override
@@ -74,13 +79,13 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
     long time = System.nanoTime();
     ICondition.IContext conditionContext = getContext();
     TypedMap context = ContextKey.lookupContext(getRegistryLookup()).put(ContextKey.CONDITION_CONTEXT, conditionContext).build();
-    List<IFluidContainerTransfer> transfers = new ArrayList<>(splashList.size());
+    List<NamedRecipe<IFluidContainerTransfer>> transfers = new ArrayList<>(splashList.size());
     for (Entry<ResourceLocation, JsonElement> entry : splashList.entrySet()) {
       ResourceLocation key = entry.getKey();
       try {
         JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), key.toString());
         if (JsonHelper.processConditions(json, "conditions", conditionContext)) {
-          transfers.add(IFluidContainerTransfer.LOADER.deserialize(json, context));
+          transfers.add(NamedRecipe.of(key, IFluidContainerTransfer.LOADER.deserialize(json, context)));
         }
       } catch (JsonSyntaxException e) {
         Mantle.logger.error("Failed to load fluid container transfer info from {}", key, e);
@@ -112,7 +117,8 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
   /** Gets the transfer for the given item and fluid, or null if its not a valid item and fluid */
   @Nullable
   public IFluidContainerTransfer getTransfer(ItemStack stack, FluidStack fluid) {
-    for (IFluidContainerTransfer transfer : transfers) {
+    for (NamedRecipe<IFluidContainerTransfer> recipe : transfers) {
+      IFluidContainerTransfer transfer = recipe.recipe();
       if (transfer.matches(stack, fluid)) {
         return transfer;
       }

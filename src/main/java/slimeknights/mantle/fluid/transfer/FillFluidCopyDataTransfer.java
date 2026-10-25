@@ -11,6 +11,7 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.util.DataComponentHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Fluid transfer info that fills a fluid into an item, copying its NBT */
@@ -34,5 +35,27 @@ public class FillFluidCopyDataTransfer extends FillFluidContainerTransfer {
   @Override
   protected ItemStack getFilled(FluidStack drained) {
     return DataComponentHelper.copy(super.getFilled(drained), drained, copyComponents);
+  }
+
+
+  /* JEI */
+  private List<ItemStack> resultItems;
+
+  @Override
+  public List<ItemStack> resultItems() {
+    if (resultItems == null) {
+      List<FluidStack> fluids = inputFluids();
+      List<ItemStack> resultItems = new ArrayList<>(fluids.size());
+      for (FluidStack fluid : fluids) {
+        resultItems.add(DataComponentHelper.copy(result.copy(), fluid, copyComponents));
+      }
+      this.resultItems = List.copyOf(resultItems);
+    }
+    return resultItems;
+  }
+
+  @Override
+  public List<SlotLink> linkedSlots() {
+    return List.of(SlotLink.INPUT_FLUIDS, SlotLink.RESULT_ITEMS);
   }
 }

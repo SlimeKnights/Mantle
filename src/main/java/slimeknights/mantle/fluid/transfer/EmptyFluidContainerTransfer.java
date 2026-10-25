@@ -16,11 +16,13 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 /** Fluid transfer info that empties a fluid from an item */
 @RequiredArgsConstructor
-public class EmptyFluidContainerTransfer implements IFluidContainerTransfer {
+public class EmptyFluidContainerTransfer implements IFluidContainerTransfer, IDisplayFluidTransfer {
   protected static final LoadableField<Ingredient,EmptyFluidContainerTransfer> INPUT_FIELD = Loadables.ITEM_INGREDIENT_NONEMPTY.requiredField("input", t -> t.input);
   protected static final LoadableField<ItemOutput,EmptyFluidContainerTransfer> RESULT_FIELD = ItemOutput.OPTIONAL_ITEM_LOADABLE.defaultField("result", ItemOutput.EMPTY, false, t -> t.result);
   protected static final LoadableField<FluidOutput,EmptyFluidContainerTransfer> FLUID_FIELD = FluidOutput.REQUIRED_LOADABLE.requiredField("fluid", t -> t.fluid);
@@ -70,5 +72,28 @@ public class EmptyFluidContainerTransfer implements IFluidContainerTransfer {
       }
     }
     return null;
+  }
+
+
+  /* JEI */
+
+  @Override
+  public List<ItemStack> inputItems() {
+    return Arrays.asList(input.getItems());
+  }
+
+  @Override
+  public List<ItemStack> resultItems() {
+    return List.of(result.get());
+  }
+
+  @Override
+  public List<FluidStack> inputFluids() {
+    return List.of();
+  }
+
+  @Override
+  public List<FluidStack> resultFluids() {
+    return List.of(fluid.get());
   }
 }

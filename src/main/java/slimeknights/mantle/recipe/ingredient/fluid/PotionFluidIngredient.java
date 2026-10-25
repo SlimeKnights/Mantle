@@ -66,9 +66,19 @@ public class PotionFluidIngredient extends FluidIngredient {
     return of(potion, List.of(fluids));
   }
 
+  /** Creates a potion ingredient matching a tag of fluids */
+  public static FluidIngredient of(HolderSet<Potion> potion, TagKey<Fluid> fluids) {
+    return of(potion, IngredientHelper.fluidSet(fluids));
+  }
+
   /** Creates a potion ingredient matching a tag */
   public static FluidIngredient of(Holder<Potion> potion, TagKey<Fluid> tag) {
     return of(potion, IngredientHelper.fluidSet(tag));
+  }
+
+  /** Creates a potion ingredient using the standard potion tag */
+  public static FluidIngredient of(HolderSet<Potion> potion) {
+    return of(potion, MantleTags.Fluids.POTION);
   }
 
   /** Creates a potion ingredient using the standard potion tag */

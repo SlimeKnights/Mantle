@@ -93,5 +93,7 @@
   "block.mantle.tank.filled": "Filled %s mb %s",
   "block.mantle.retextured.id": "Texture ID: %s",
 
+  "jei.mantle.fluid_transfer": "Fluid Transfer",
+
   "item.mantle.book.click_to_open": "Right click to open"
 }

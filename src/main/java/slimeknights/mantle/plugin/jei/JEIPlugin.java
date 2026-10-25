@@ -4,8 +4,10 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.client.Minecraft;
@@ -21,9 +23,13 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
+import slimeknights.mantle.fluid.transfer.FluidContainerTransferManager;
+import slimeknights.mantle.fluid.transfer.IDisplayFluidTransfer;
 import slimeknights.mantle.inventory.MultiModuleContainerMenu;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientHelper;
 import slimeknights.mantle.plugin.jei.entity.EntityIngredientRenderer;
+import slimeknights.mantle.plugin.jei.fluid.FluidContainerTransferCategory;
+import slimeknights.mantle.recipe.MultiNamedRecipe;
 import slimeknights.mantle.recipe.MultiRecipeHolder;
 import slimeknights.mantle.recipe.crafting.retextured.ShapedRetexturedRecipe;
 import slimeknights.mantle.recipe.ingredient.EntityIngredient.EntityInput;
@@ -52,6 +58,12 @@ public class JEIPlugin implements IModPlugin {
   }
 
   @Override
+  public void registerCategories(IRecipeCategoryRegistration registration) {
+    IGuiHelper guiHelper = registration.getJeiHelpers().getGuiHelper();
+    registration.addRecipeCategories(new FluidContainerTransferCategory(guiHelper));
+  }
+
+  @Override
   public void registerRecipes(IRecipeRegistration registration) {
     Level level = Minecraft.getInstance().level;
     assert level != null;
@@ -64,6 +76,7 @@ public class JEIPlugin implements IModPlugin {
     addMultiRecipes(registration, access, manager, RecipeType.CAMPFIRE_COOKING, RecipeTypes.CAMPFIRE_COOKING);
     addMultiRecipes(registration, access, manager, RecipeType.STONECUTTING, RecipeTypes.STONECUTTING);
     addMultiRecipes(registration, access, manager, RecipeType.SMITHING, RecipeTypes.SMITHING);
+    registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, MultiNamedRecipe.getNamedRecipes(FluidContainerTransferManager.INSTANCE.getTransfers().stream(), access, IDisplayFluidTransfer.class));
   }
 
   @Override

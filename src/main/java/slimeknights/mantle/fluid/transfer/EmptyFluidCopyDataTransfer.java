@@ -11,6 +11,7 @@ import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.util.DataComponentHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Fluid transfer info that empties a fluid from an item, copying the listed components to the stack */
@@ -34,5 +35,27 @@ public class EmptyFluidCopyDataTransfer extends EmptyFluidContainerTransfer {
   @Override
   protected FluidStack getFluid(ItemStack stack) {
     return DataComponentHelper.copy(super.getFluid(stack).copy(), stack, copyComponents);
+  }
+
+
+  /* JEI */
+  private List<FluidStack> resultFluids;
+
+  @Override
+  public List<FluidStack> resultFluids() {
+    if (resultFluids == null) {
+      List<ItemStack> items = inputItems();
+      List<FluidStack> resultFluids = new ArrayList<>(items.size());
+      for (ItemStack item : items) {
+        resultFluids.add(DataComponentHelper.copy(fluid.copy(), item, copyComponents));
+      }
+      this.resultFluids = List.copyOf(resultFluids);
+    }
+    return resultFluids;
+  }
+
+  @Override
+  public List<SlotLink> linkedSlots() {
+    return List.of(SlotLink.INPUT_ITEMS, SlotLink.RESULT_FLUIDS);
   }
 }

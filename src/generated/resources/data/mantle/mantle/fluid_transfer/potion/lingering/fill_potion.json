@@ -13,8 +13,13 @@
   ],
   "copy": "minecraft:potion_contents",
   "fluid": {
+    "type": "mantle:potion",
     "amount": 250,
-    "tag": "c:potion"
+    "fluids": "#c:potion",
+    "potion": {
+      "type": "neoforge:not",
+      "value": "minecraft:water"
+    }
   },
   "input": {
     "tag": "c:bottles/lingering"
