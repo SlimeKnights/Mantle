@@ -4,9 +4,11 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.datagen.MantleTags;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,6 +20,7 @@ import static slimeknights.mantle.datagen.MantleTags.Fluids.SOUP;
 import static slimeknights.mantle.datagen.MantleTags.Fluids.WATER;
 
 /** Provider for tags added by mantle, generally not useful for other mods */
+@SuppressWarnings("unchecked")
 @Internal
 public class MantleFluidTagProvider extends FluidTagsProvider {
   public MantleFluidTagProvider(PackOutput output, CompletableFuture<Provider> holders, ExistingFileHelper existingFileHelper) {
@@ -32,6 +35,8 @@ public class MantleFluidTagProvider extends FluidTagsProvider {
       .addOptionalTag(BEETROOT_SOUP.location())
       .addOptionalTag(MUSHROOM_STEW.location())
       .addOptionalTag(RABBIT_STEW.location());
+    this.tag(MantleTags.Fluids.HIDE_IN_DISPLAY)
+      .addOptionalTags(MantleTags.Fluids.POTION, Tags.Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
   }
 
   @Override

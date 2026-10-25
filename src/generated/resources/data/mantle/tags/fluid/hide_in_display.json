@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "#c:potion",
+      "required": false
+    },
+    {
+      "id": "#c:hidden_from_recipe_viewers",
+      "required": false
+    }
+  ]
+}

@@ -8,10 +8,21 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.transfer.IDisplayFluidTransfer;
 import slimeknights.mantle.fluid.transfer.IDisplayFluidTransfer.SlotLink;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
@@ -20,6 +31,7 @@ import slimeknights.mantle.recipe.NamedRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** Category for displaying fluid container transfer recipes in JEI */
 public class FluidContainerTransferCategory extends NamedRecipeCategory<IDisplayFluidTransfer> {
@@ -70,5 +82,77 @@ public class FluidContainerTransferCategory extends NamedRecipeCategory<IDisplay
   @Override
   public void createRecipeExtras(IRecipeExtrasBuilder builder, NamedRecipe<IDisplayFluidTransfer> recipe, IFocusGroup focuses) {
     builder.addRecipeArrowWidget().setPosition(23, 10);
+  }
+
+
+  /** Generates display recipes based on standard fluid transfer actions. */
+  public static List<NamedRecipe<IDisplayFluidTransfer>> generateRecipes() {
+    List<NamedRecipe<IDisplayFluidTransfer>> recipes = new ArrayList<>();
+    // add recipes for emptying filled containers, as simple as draining the default instance for all it's worth
+    for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(MantleTags.Items.FILLED_FLUID_CONTAINERS)) {
+      ItemStack filled = new ItemStack(item);
+      IFluidHandlerItem fluidHander = filled.getCapability(Capabilities.FluidHandler.ITEM);
+      if (fluidHander != null && fluidHander.getTanks() > 0) {
+        FluidStack fluid = fluidHander.drain(fluidHander.getTankCapacity(0), FluidAction.EXECUTE);
+        if (!fluid.isEmpty()) {
+          recipes.add(
+            NamedRecipe.of(Objects.requireNonNull(item.getKey()).location().withPrefix("/"), List.of(),
+            IDisplayFluidTransfer.builder()
+              .inputItem(new ItemStack(item))
+              .inputFluid(fluid)
+              .resultItem(fluidHander.getContainer())
+              .build()));
+        }
+      }
+    }
+    // add recipes for filling empty containers such as buckets, just try filling with every fluid
+    for (Holder<Item> item : BuiltInRegistries.ITEM.getTagOrEmpty(MantleTags.Items.EMPTY_FLUID_CONTAINERS)) {
+      ItemStack empty = new ItemStack(item);
+      IFluidHandlerItem fluidHander = empty.getCapability(Capabilities.FluidHandler.ITEM);
+      if (fluidHander != null && fluidHander.getTanks() > 0) {
+        int size = fluidHander.getTankCapacity(0);
+        if (size > 0) {
+          int fluidSize = BuiltInRegistries.FLUID.size();
+          List<ItemStack> filled = new ArrayList<>(fluidSize);
+          List<FluidStack> fluids = new ArrayList<>(fluidSize);
+          for (Fluid fluid : BuiltInRegistries.FLUID) {
+            if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState()) || fluid.is(MantleTags.Fluids.HIDE_IN_DISPLAY)) continue;
+            FluidStack stack = new FluidStack(fluid, size);
+            ItemStack copy = empty.copy();
+            fluidHander = copy.getCapability(Capabilities.FluidHandler.ITEM);
+            assert fluidHander != null;
+            if (fluidHander.fill(stack, FluidAction.EXECUTE) == size) {
+              filled.add(fluidHander.getContainer());
+              fluids.add(stack);
+            }
+          }
+          if (!filled.isEmpty() && !fluids.isEmpty()) {
+            filled = List.copyOf(filled);
+            fluids = List.copyOf(fluids);
+            List<ItemStack> emptyList = List.of(empty);
+            ResourceLocation baseKey = Objects.requireNonNull(item.getKey()).location().withPrefix("/");
+            recipes.add(NamedRecipe.of(
+              baseKey.withSuffix("/filling"), List.of(),
+              IDisplayFluidTransfer.builder()
+                .inputItems(emptyList)
+                .inputFluids(fluids)
+                .resultItems(filled)
+                .linkedSlots(SlotLink.INPUT_FLUIDS, SlotLink.RESULT_ITEMS)
+                .build()
+            ));
+            recipes.add(NamedRecipe.of(
+              baseKey.withSuffix("/draining"), List.of(),
+              IDisplayFluidTransfer.builder()
+                .inputItems(filled)
+                .resultFluids(fluids)
+                .resultItems(emptyList)
+                .linkedSlots(SlotLink.INPUT_ITEMS, SlotLink.RESULT_FLUIDS)
+                .build()
+            ));
+          }
+        }
+      }
+    }
+    return recipes;
   }
 }

@@ -49,11 +49,11 @@ import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.mantle.data.predicate.fluid.FluidTypePredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.mantle.datagen.MantleFluidTransferProvider;
-import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.datagen.client.MantleFluidTooltipProvider;
 import slimeknights.mantle.datagen.client.MantleSpriteSourceProvider;
 import slimeknights.mantle.datagen.tag.MantleBlockTagProvider;
 import slimeknights.mantle.datagen.tag.MantleFluidTagProvider;
+import slimeknights.mantle.datagen.tag.MantleItemTagProvider;
 import slimeknights.mantle.datagen.tag.MantleMenuTagProvider;
 import slimeknights.mantle.fluid.transfer.EmptyFluidContainerTransfer;
 import slimeknights.mantle.fluid.transfer.EmptyFluidCopyDataTransfer;
@@ -101,7 +101,6 @@ public class Mantle {
     modContainer.registerConfig(Type.SERVER, Config.SERVER_SPEC);
 
     FluidContainerTransferManager.INSTANCE.init();
-    MantleTags.init();
 
     instance = this;
     modEventBus.addListener(FMLCommonSetupEvent.class, this::commonSetup);
@@ -114,7 +113,6 @@ public class Mantle {
     MantleData.init(modEventBus);
     MantleAttributes.init(modEventBus);
     NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
-
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
@@ -217,7 +215,9 @@ public class Mantle {
     PackOutput packOutput = generator.getPackOutput();
     CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
     ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-    generator.addProvider(server, new MantleBlockTagProvider(packOutput, lookupProvider, existingFileHelper));
+    MantleBlockTagProvider blockTags = new MantleBlockTagProvider(packOutput, lookupProvider, existingFileHelper);
+    generator.addProvider(server, blockTags);
+    generator.addProvider(server, new MantleItemTagProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
     generator.addProvider(server, new MantleFluidTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleMenuTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleFluidTransferProvider(packOutput, lookupProvider));

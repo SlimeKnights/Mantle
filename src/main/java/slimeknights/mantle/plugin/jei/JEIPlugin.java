@@ -77,6 +77,7 @@ public class JEIPlugin implements IModPlugin {
     addMultiRecipes(registration, access, manager, RecipeType.STONECUTTING, RecipeTypes.STONECUTTING);
     addMultiRecipes(registration, access, manager, RecipeType.SMITHING, RecipeTypes.SMITHING);
     registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, MultiNamedRecipe.getNamedRecipes(FluidContainerTransferManager.INSTANCE.getTransfers().stream(), access, IDisplayFluidTransfer.class));
+    registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, FluidContainerTransferCategory.generateRecipes());
   }
 
   @Override
