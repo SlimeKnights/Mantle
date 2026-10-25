@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
@@ -47,6 +48,16 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
 
   protected CookingRecipeBuilder(ItemOutput result) {
     this.result = result;
+    // automatically set the category based on the result item, as long as it's not a tag
+    // based off how furnace recipes set categories
+    if (result.getTag() == null) {
+      Item item = result.get().getItem();
+      if (item.isEdible()) {
+        category = CookingBookCategory.FOOD;
+      } else if (item instanceof BlockItem) {
+        category = CookingBookCategory.BLOCKS;
+      }
+    }
   }
 
   /** Creates a new builder instance */
@@ -82,6 +93,12 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
    */
   public T type(CookingType type) {
     this.type = type;
+    return self();
+  }
+
+  /** Sets the recipe book category for this recipe. */
+  public T category(CookingBookCategory category) {
+    this.category = category;
     return self();
   }
 
