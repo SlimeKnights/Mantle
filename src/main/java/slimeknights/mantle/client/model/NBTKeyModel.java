@@ -8,6 +8,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -52,8 +53,9 @@ public class NBTKeyModel implements IUnbakedGeometry<NBTKeyModel> {
    * @param key          Model key, should be defined in the model JSON if supported
    * @param textureName  Name of the texture defined, corresponds to a possible value of the NBT key
    * @param texture      Texture to use, same format as in resource packs
+   * @deprecated create a JSON under {@link TextureMapManager#FOLDER} at {@code key} with the texture name and texture.
    */
-  @SuppressWarnings("unused")  // API
+  @Deprecated(forRemoval = true)
   public static void registerExtraTexture(ResourceLocation key, String textureName, ResourceLocation texture) {
     EXTRA_TEXTURES.put(key, Pair.of(textureName, texture));
   }
@@ -86,6 +88,15 @@ public class NBTKeyModel implements IUnbakedGeometry<NBTKeyModel> {
     }
     // fetch extra textures
     if (extraTexturesKey != null) {
+      // new system
+      Map<String,ResourceLocation> extraTextures = TextureMapManager.INSTANCE.getTextureMap(Minecraft.getInstance().getResourceManager(), extraTexturesKey);
+      for (Entry<String,ResourceLocation> extra : extraTextures.entrySet()) {
+        String key = extra.getKey();
+        if (!textures.containsKey(key)) {
+          textures.put(key, new Material(InventoryMenu.BLOCK_ATLAS, extra.getValue()));
+        }
+      }
+      // legacy system
       for (Pair<String,ResourceLocation> extra : EXTRA_TEXTURES.get(extraTexturesKey)) {
         String key = extra.getFirst();
         if (!textures.containsKey(key)) {
