@@ -17,10 +17,13 @@ import slimeknights.mantle.loot.entry.TagPreferenceLootEntry;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.loot.modifier.AddEntryLootModifier;
 import slimeknights.mantle.loot.modifier.ReplaceItemLootModifier;
+import slimeknights.mantle.loot.modifier.condition.AndLootModifierCondition;
 import slimeknights.mantle.loot.modifier.condition.ContainsItemLootModifierCondition;
+import slimeknights.mantle.loot.modifier.condition.ContextLootModifierCondition;
 import slimeknights.mantle.loot.modifier.condition.EmptyLootModifierCondition;
 import slimeknights.mantle.loot.modifier.condition.ILootModifierCondition;
 import slimeknights.mantle.loot.modifier.condition.InvertedLootModifierCondition;
+import slimeknights.mantle.loot.modifier.condition.OrLootModifierCondition;
 import slimeknights.mantle.recipe.condition.TagEmptyCondition;
 import slimeknights.mantle.registration.deferred.LootConditionDeferredRegister;
 import slimeknights.mantle.registration.deferred.LootEntryDeferredRegister;
@@ -75,8 +78,12 @@ public class MantleLoot {
       Registry.register(registry, Mantle.getResource("replace_item"), ReplaceItemLootModifier.CODEC);
 
       // loot modifier conditions
-      ILootModifierCondition.LOADER.register(Mantle.getResource("contains_item"), ContainsItemLootModifierCondition.CODEC);
       ILootModifierCondition.LOADER.register(Mantle.getResource("inverted"), InvertedLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("and"), AndLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("or"), OrLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("context"), ContextLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("inverted"), InvertedLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("contains_item"), ContainsItemLootModifierCondition.CODEC);
       ILootModifierCondition.LOADER.register(Mantle.getResource("empty"), EmptyLootModifierCondition.CODEC);
     }
   }
