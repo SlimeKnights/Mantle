@@ -3,6 +3,7 @@ package slimeknights.mantle.client.book;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -94,6 +95,7 @@ public class BookLoader implements ResourceManagerReloadListener {
     registerGsonTypeAdapter(int.class, new HexStringDeserializer());
     registerGsonTypeAdapter(ICondition.class, new ConditionDeserializer());
     registerGsonTypeAdapter(IngredientData.class, new IngredientData.Deserializer());
+    registerGsonTypeAdapter(Component.class, new Component.Serializer());
 
     // Register page types that are implicitly hidden from indexes
     IndexTransformer.addHiddenPageType(ContentBlank.ID);
