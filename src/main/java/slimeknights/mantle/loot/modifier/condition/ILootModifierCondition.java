@@ -20,6 +20,6 @@ public interface ILootModifierCondition {
 
   /** Creates an inverted instance of this condition */
   default ILootModifierCondition inverted() {
-    return new InvertedModifierLootCondition(this);
+    return new InvertedLootModifierCondition(this);
   }
 }

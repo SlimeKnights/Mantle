@@ -17,10 +17,10 @@ import slimeknights.mantle.loot.entry.TagPreferenceLootEntry;
 import slimeknights.mantle.loot.function.SetFluidLootFunction;
 import slimeknights.mantle.loot.modifier.AddEntryLootModifier;
 import slimeknights.mantle.loot.modifier.ReplaceItemLootModifier;
-import slimeknights.mantle.loot.modifier.condition.ContainsItemModifierLootCondition;
-import slimeknights.mantle.loot.modifier.condition.EmptyModifierLootCondition;
+import slimeknights.mantle.loot.modifier.condition.ContainsItemLootModifierCondition;
+import slimeknights.mantle.loot.modifier.condition.EmptyLootModifierCondition;
 import slimeknights.mantle.loot.modifier.condition.ILootModifierCondition;
-import slimeknights.mantle.loot.modifier.condition.InvertedModifierLootCondition;
+import slimeknights.mantle.loot.modifier.condition.InvertedLootModifierCondition;
 import slimeknights.mantle.recipe.condition.TagEmptyCondition;
 import slimeknights.mantle.registration.deferred.LootConditionDeferredRegister;
 import slimeknights.mantle.registration.deferred.LootEntryDeferredRegister;
@@ -75,9 +75,9 @@ public class MantleLoot {
       Registry.register(registry, Mantle.getResource("replace_item"), ReplaceItemLootModifier.CODEC);
 
       // loot modifier conditions
-      ILootModifierCondition.LOADER.register(Mantle.getResource("contains_item"), ContainsItemModifierLootCondition.CODEC);
-      ILootModifierCondition.LOADER.register(Mantle.getResource("inverted"), InvertedModifierLootCondition.CODEC);
-      ILootModifierCondition.LOADER.register(Mantle.getResource("empty"), EmptyModifierLootCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("contains_item"), ContainsItemLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("inverted"), InvertedLootModifierCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("empty"), EmptyLootModifierCondition.CODEC);
     }
   }
 }

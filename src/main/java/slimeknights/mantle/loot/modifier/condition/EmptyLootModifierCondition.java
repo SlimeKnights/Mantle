@@ -7,14 +7,14 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import java.util.List;
 
 /** Loot condition to check if previously generated loot is empty */
-public class EmptyModifierLootCondition implements ILootModifierCondition {
-  public static final EmptyModifierLootCondition INSTANCE = new EmptyModifierLootCondition();
-  public static final MapCodec<EmptyModifierLootCondition> CODEC = MapCodec.unit(INSTANCE);
+public class EmptyLootModifierCondition implements ILootModifierCondition {
+  public static final EmptyLootModifierCondition INSTANCE = new EmptyLootModifierCondition();
+  public static final MapCodec<EmptyLootModifierCondition> CODEC = MapCodec.unit(INSTANCE);
 
-  private EmptyModifierLootCondition() {}
+  private EmptyLootModifierCondition() {}
 
   @Override
-  public MapCodec<EmptyModifierLootCondition> codec() {
+  public MapCodec<EmptyLootModifierCondition> codec() {
     return CODEC;
   }
 

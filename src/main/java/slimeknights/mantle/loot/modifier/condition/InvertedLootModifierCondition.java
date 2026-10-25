@@ -7,11 +7,11 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import java.util.List;
 
 /** Loot modifier condition that inverts the base condition */
-public record InvertedModifierLootCondition(ILootModifierCondition base) implements ILootModifierCondition {
-  public static final MapCodec<InvertedModifierLootCondition> CODEC = ILootModifierCondition.LOADER.codec().fieldOf("base").xmap(InvertedModifierLootCondition::new, InvertedModifierLootCondition::base);
+public record InvertedLootModifierCondition(ILootModifierCondition base) implements ILootModifierCondition {
+  public static final MapCodec<InvertedLootModifierCondition> CODEC = ILootModifierCondition.LOADER.codec().fieldOf("base").xmap(InvertedLootModifierCondition::new, InvertedLootModifierCondition::base);
 
   @Override
-  public MapCodec<InvertedModifierLootCondition> codec() {
+  public MapCodec<InvertedLootModifierCondition> codec() {
     return CODEC;
   }
 
