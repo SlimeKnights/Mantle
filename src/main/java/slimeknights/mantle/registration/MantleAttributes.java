@@ -38,17 +38,17 @@ public class MantleAttributes {
 
   // generic
   /** Multiplier for knockback this entity takes. Similar to {@link Attributes#KNOCKBACK_RESISTANCE} but can be used to increase knockback */
-  public static final DeferredAttribute<PercentageAttribute> KNOCKBACK_MULTIPLIER = ATTRIBUTES.register("generic.knockback_multiplier").sync().negative().multiplier();
+  public static final DeferredAttribute<PercentageAttribute> KNOCKBACK_MULTIPLIER = ATTRIBUTES.register("knockback_multiplier").sync().negative().multiplier();
   /** Boost to looting level in loot tables */
-  public static final DeferredAttribute<RangedAttribute> LOOTING_BOOST = ATTRIBUTES.register("generic.looting_boost").sync().ranged(0, -255, 255);
+  public static final DeferredAttribute<RangedAttribute> LOOTING_BOOST = ATTRIBUTES.register("looting_boost").sync().ranged(0, -255, 255);
   /** Boost to fortune level in loot tables */
-  public static final DeferredAttribute<RangedAttribute> FORTUNE_BOOST = ATTRIBUTES.register("generic.fortune_boost").sync().ranged(0, -255, 255);
+  public static final DeferredAttribute<RangedAttribute> FORTUNE_BOOST = ATTRIBUTES.register("fortune_boost").sync().ranged(0, -255, 255);
 
   // player
   /** Multiplier to amount of gained for players. */
-  public static final DeferredAttribute<PercentageAttribute> EXPERIENCE_MULTIPLIER = ATTRIBUTES.register("player.experience_multiplier").multiplier();
+  public static final DeferredAttribute<PercentageAttribute> EXPERIENCE_MULTIPLIER = ATTRIBUTES.register("experience_multiplier").multiplier();
   /** Boost to the percent chance of monster equipment dropping. */
-  public static final DeferredAttribute<PercentageAttribute> EQUIPMENT_DROP_CHANCE_BOOST = ATTRIBUTES.register("generic.equipment_drop_chance_boost").sync().percent(0, -1, 1);
+  public static final DeferredAttribute<PercentageAttribute> EQUIPMENT_DROP_CHANCE_BOOST = ATTRIBUTES.register("equipment_drop_chance_boost").sync().percent(0, -1, 1);
 
 
   @SubscribeEvent
