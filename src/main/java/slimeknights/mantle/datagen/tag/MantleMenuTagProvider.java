@@ -1,17 +1,20 @@
-package slimeknights.mantle.datagen;
+package slimeknights.mantle.datagen.tag;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.BuiltinRegistryTagProvider;
+import slimeknights.mantle.datagen.MantleTags;
 
 import java.util.concurrent.CompletableFuture;
 
 /** Tag provider for Mantle menu tags */
+@Internal
 public class MantleMenuTagProvider extends BuiltinRegistryTagProvider<MenuType<?>> {
   @SuppressWarnings("deprecation")
   public MantleMenuTagProvider(PackOutput packOutput, CompletableFuture<Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
