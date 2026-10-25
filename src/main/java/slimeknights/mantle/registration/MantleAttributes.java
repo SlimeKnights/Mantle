@@ -10,6 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.PercentageAttribute;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
+import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
@@ -36,6 +37,8 @@ public class MantleAttributes {
   // player
   /** Multiplier to amount of gained for players. */
   public static final DeferredAttribute<PercentageAttribute> EXPERIENCE_MULTIPLIER = ATTRIBUTES.register("player.experience_multiplier").multiplier();
+  /** Boost to the percent chance of monster equipment dropping. */
+  public static final DeferredAttribute<PercentageAttribute> EQUIPMENT_DROP_CHANCE_BOOST = ATTRIBUTES.register("generic.equipment_drop_chance_boost").sync().percent(0, -1, 1);
 
 
   @SubscribeEvent
@@ -44,6 +47,7 @@ public class MantleAttributes {
     addToAll(event, KNOCKBACK_MULTIPLIER);
     // player attributes
     event.add(EntityType.PLAYER, EXPERIENCE_MULTIPLIER);
+    event.add(EntityType.PLAYER, EQUIPMENT_DROP_CHANCE_BOOST);
   }
 
   /** Adds an attribute to all entities with the given default value. */
@@ -81,6 +85,17 @@ public class MantleAttributes {
     Player player = event.getAttackingPlayer();
     if (player != null) {
       event.setDroppedExperience((int) Math.round(event.getDroppedExperience() * player.getAttributeValue(EXPERIENCE_MULTIPLIER)));
+    }
+  }
+
+  /** Applies {@link #EQUIPMENT_DROP_CHANCE_BOOST} from the attacker to boost equipment drop rates. */
+  @SubscribeEvent
+  static void equipmentDropChance(GetEquipmentDropChanceEvent event) {
+    if (!event.isPreserved()) {
+      Player player = event.getEntity().lastHurtByPlayer;
+      if (player != null) {
+        event.setChance((float)(event.getChance() + player.getAttributeValue(EQUIPMENT_DROP_CHANCE_BOOST)));
+      }
     }
   }
 }
