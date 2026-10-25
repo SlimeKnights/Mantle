@@ -5,11 +5,13 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +26,8 @@ public class MantleItemTagProvider extends ItemTagsProvider {
   protected void addTags(Provider pProvider) {
     tag(MantleTags.Items.EMPTY_FLUID_CONTAINERS).add(Items.BUCKET);
     tag(MantleTags.Items.FILLED_FLUID_CONTAINERS);
+    tag(MantleTags.Items.POTION_BUCKETS).addOptional(MantleFluids.potion.id().withSuffix("_bucket"));
+    tag(Tags.Items.POTIONS).addOptionalTag(MantleTags.Items.POTION_BUCKETS);
   }
 
   @Override

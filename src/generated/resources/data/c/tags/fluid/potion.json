@@ -1,0 +1,8 @@
+{
+  "values": [
+    {
+      "id": "mantle:potion",
+      "required": false
+    }
+  ]
+}

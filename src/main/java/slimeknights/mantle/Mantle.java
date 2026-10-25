@@ -49,6 +49,7 @@ import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.mantle.data.predicate.fluid.FluidTypePredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.mantle.datagen.MantleFluidTransferProvider;
+import slimeknights.mantle.datagen.client.MantleFluidTextureProvider;
 import slimeknights.mantle.datagen.client.MantleFluidTooltipProvider;
 import slimeknights.mantle.datagen.client.MantleSpriteSourceProvider;
 import slimeknights.mantle.datagen.tag.MantleBlockTagProvider;
@@ -222,6 +223,7 @@ public class Mantle {
     generator.addProvider(server, new MantleMenuTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleFluidTransferProvider(packOutput, lookupProvider));
     generator.addProvider(client, new MantleFluidTooltipProvider(packOutput));
+    generator.addProvider(client, new MantleFluidTextureProvider(packOutput));
     generator.addProvider(client, new MantleSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
   }
 

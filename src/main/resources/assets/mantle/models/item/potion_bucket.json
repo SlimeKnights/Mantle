@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "mantle:item/potion_bucket_contents",
+    "layer1": "mantle:item/potion_bucket"
+  }
+}

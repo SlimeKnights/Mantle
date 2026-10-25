@@ -1,0 +1,5 @@
+{
+  "color": "FF385DC6",
+  "flowing": "mantle:fluid/potion_flowing",
+  "still": "mantle:fluid/potion_still"
+}

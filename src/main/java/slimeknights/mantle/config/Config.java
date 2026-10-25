@@ -23,9 +23,11 @@ public class Config {
 
   /** If true, enables the fluid fog fix. If false, disables it for better shader compatability. */
   public static final BooleanValue ENABLE_FLUID_FOG_FIX;
-
   /** If true, the fallback shader for fluid uses a text shader, which provides better compatability. */
   public static final BooleanValue FLUID_USE_TEXT_SHADER;
+
+  /** If true, the fallback shader for fluid uses a text shader, which provides better compatability. */
+  public static final BooleanValue SHOW_POTION_FLUID_IN_JEI;
 
 	/** List of preferences for tag outputs */
 	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
@@ -62,6 +64,10 @@ public class Config {
         "Does nothing if enableFluidFogFix is true.")
       .translation("config.mantle.fluidFallbackUseTextShader")
       .define("fluidFallbackUseTextShader", true);
+
+    SHOW_POTION_FLUID_IN_JEI = client
+      .comment("If true, variants of our potion fluid for every potion will show in JEI, provided one of the mods using Mantle enabled the potion fluid. If false it will be hidden, but still usable.")
+      .define("showPotionFluid", true);
 
 		// server options
 		TAG_PREFERENCES = server.comment("Preferences for outputs from tags used in automatic compat in recipes")

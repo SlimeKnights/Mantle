@@ -13,10 +13,12 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -29,10 +31,13 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.block.GaugeBlock;
@@ -51,6 +56,8 @@ import slimeknights.mantle.client.render.FluidCuboid;
 import slimeknights.mantle.client.render.RenderItem;
 import slimeknights.mantle.command.client.MantleClientCommand;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
+import slimeknights.mantle.fluid.texture.ClientPotionFluidType;
 import slimeknights.mantle.fluid.texture.FluidTextureManager;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.RegistrationHelper;
@@ -95,6 +102,24 @@ public class ClientEvents {
     // NBT dynamic models - require specific data defined in the block/item to use
     event.register(ItemKeyModel.ID, ItemKeyModel.LOADER);
     event.register(RetexturedModel.ID, RetexturedModel.LOADER);
+  }
+
+  @SubscribeEvent
+  static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+    if (MantleFluids.potion.isBound()) {
+      FluidType type = MantleFluids.potion.getType();
+      event.registerFluidType(new ClientPotionFluidType(type), type);
+    }
+  }
+
+  @SubscribeEvent
+  static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+    if (MantleFluids.potion.isBound()) {
+      event.register(
+        (stack, index) -> index == 0 ? stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getColor() : -1,
+        MantleFluids.potion
+      );
+    }
   }
 
   /** Renders the offhand attack indicator. Based on {@link Gui#renderCrosshair(GuiGraphics, DeltaTracker)} and {@link Gui#renderItemHotbar(GuiGraphics, DeltaTracker)} */

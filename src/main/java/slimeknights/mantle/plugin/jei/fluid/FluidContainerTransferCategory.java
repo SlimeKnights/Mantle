@@ -9,25 +9,38 @@ import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import net.neoforged.neoforge.registries.holdersets.NotHolderSet;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
+import slimeknights.mantle.fluid.transfer.EmptyPotionTransfer;
+import slimeknights.mantle.fluid.transfer.FillFluidCopyDataTransfer;
 import slimeknights.mantle.fluid.transfer.IDisplayFluidTransfer;
 import slimeknights.mantle.fluid.transfer.IDisplayFluidTransfer.SlotLink;
 import slimeknights.mantle.plugin.jei.MantleJEIConstants;
 import slimeknights.mantle.plugin.jei.NamedRecipeCategory;
 import slimeknights.mantle.recipe.NamedRecipe;
+import slimeknights.mantle.recipe.helper.ItemOutput;
+import slimeknights.mantle.recipe.ingredient.fluid.PotionFluidIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,6 +164,24 @@ public class FluidContainerTransferCategory extends NamedRecipeCategory<IDisplay
             ));
           }
         }
+      }
+      // if the potion is active, add a fake recipe for filling and emptying its bucket since that is handled via bucket logic but hidden in bucket recipe
+      if (MantleFluids.potion.isBound()) {
+        ResourceLocation base = MantleFluids.potion.id().withPrefix("/");
+        recipes.add(NamedRecipe.of(
+          base.withPrefix("/draining"), List.of(),
+          new EmptyPotionTransfer(Ingredient.of(MantleFluids.potion), ItemOutput.fromItem(Items.BUCKET), FluidType.BUCKET_VOLUME))
+        );
+        recipes.add(NamedRecipe.of(
+          base.withPrefix("/filling"), List.of(),
+          new FillFluidCopyDataTransfer(
+            Ingredient.of(Items.BUCKET), ItemOutput.fromItem(MantleFluids.potion),
+            new SizedFluidIngredient(PotionFluidIngredient.of(
+              new NotHolderSet<>(BuiltInRegistries.POTION.asLookup(), HolderSet.direct(Potions.WATER)),
+              BuiltInRegistries.FLUID.getOrCreateTag(Tags.Fluids.POTION)
+            ), FluidType.BUCKET_VOLUME),
+            List.of(DataComponents.POTION_CONTENTS)))
+        );
       }
     }
     return recipes;

@@ -4,6 +4,11 @@
   "config.mantle.enableFluidFogFix": "Enable Fluid Fog Fix",
   "config.mantle.fluidFallbackUseTextShader": "Fluid Fallback Use Text Shader",
 
+  "fluid.mantle.potion": "Potion",
+  "item.mantle.potion_bucket": "Uncraftable Potion Bucket",
+  "item.mantle.potion_bucket.effect.water": "Water Bucket",
+  "item.mantle.potion_bucket.contents": "%s Bucket",
+
   "command.mantle.view_tag.success": "Values for %s tag '%s':",
 
   "command.mantle.tags_for.success": "%s tags for '%s':",

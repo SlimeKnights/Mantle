@@ -8,6 +8,7 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.fluid.MantleFluids;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -27,6 +28,7 @@ public class MantleFluidTagProvider extends FluidTagsProvider {
       .addOptionalTag(Tags.Fluids.BEETROOT_SOUP)
       .addOptionalTag(Tags.Fluids.MUSHROOM_STEW)
       .addOptionalTag(Tags.Fluids.RABBIT_STEW);
+    this.tag(Tags.Fluids.POTION).addOptional(MantleFluids.potion.id());
     this.tag(MantleTags.Fluids.HIDE_IN_DISPLAY)
       .addOptionalTags(Tags.Fluids.POTION, Tags.Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
   }

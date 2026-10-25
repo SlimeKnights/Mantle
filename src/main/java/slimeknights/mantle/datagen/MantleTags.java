@@ -46,6 +46,8 @@ public class MantleTags {
     public static final TagKey<Item> SPLASH_BOTTLE = common("bottles/splash");
     /** Tag of empty glass bottles that would contain a lingering potion */
     public static final TagKey<Item> LINGERING_BOTTLE = common("bottles/lingering");
+    /** Common tag for potion buckets, see {@link net.neoforged.neoforge.common.Tags.Items#POTIONS}. */
+    public static final TagKey<Item> POTION_BUCKETS = common("potions/bucket");
     /** Items in this tag remain on the player after death */
     public static final TagKey<Item> SOULBOUND = tag("soulbound");
     /** Items in this tag will have a fluid transfer recipe generated using {@link IFluidHandlerItem} to fill it. */
