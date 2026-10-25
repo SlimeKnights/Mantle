@@ -12,12 +12,11 @@ import net.neoforged.neoforge.common.PercentageAttribute;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.registration.deferred.AttributeDeferredRegister;
-import slimeknights.mantle.registration.object.DeferredAttribute;
+import slimeknights.mantle.registration.holder.DeferredAttribute;
 
 /** Handles all new attributes added by Mantle */
 @EventBusSubscriber(modid = Mantle.modId)
@@ -35,8 +34,6 @@ public class MantleAttributes {
   public static final DeferredAttribute<PercentageAttribute> KNOCKBACK_MULTIPLIER = ATTRIBUTES.register("generic.knockback_multiplier").sync().negative().multiplier();
 
   // player
-  /** Multiplier for mining speed. Unlike a multiplier on {@link Attributes#MINING_EFFICIENCY}, affects the base mining speed from the pickaxe stats, not just efficiency. */
-  public static final DeferredAttribute<PercentageAttribute> MINING_SPEED_MULTIPLIER = ATTRIBUTES.register("player.mining_speed_multiplier").sync().multiplier();
   /** Multiplier to amount of gained for players. */
   public static final DeferredAttribute<PercentageAttribute> EXPERIENCE_MULTIPLIER = ATTRIBUTES.register("player.experience_multiplier").multiplier();
 
@@ -46,7 +43,6 @@ public class MantleAttributes {
     // general attributes
     addToAll(event, KNOCKBACK_MULTIPLIER);
     // player attributes
-    event.add(EntityType.PLAYER, MINING_SPEED_MULTIPLIER);
     event.add(EntityType.PLAYER, EXPERIENCE_MULTIPLIER);
   }
 
@@ -69,12 +65,6 @@ public class MantleAttributes {
   @SubscribeEvent
   static void onKnockback(LivingKnockBackEvent event) {
     event.setStrength((float) (event.getStrength() * event.getEntity().getAttributeValue(KNOCKBACK_MULTIPLIER)));
-  }
-
-  /** Called as a player mines a block to apply {@link #MINING_SPEED_MULTIPLIER} */
-  @SubscribeEvent
-  static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-    event.setNewSpeed((float) (event.getNewSpeed() * event.getEntity().getAttributeValue(MINING_SPEED_MULTIPLIER)));
   }
 
   /** Called when a block is broken to boost its XP using {@link #EXPERIENCE_MULTIPLIER}. */
