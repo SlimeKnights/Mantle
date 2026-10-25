@@ -82,7 +82,6 @@ public class MantleLoot {
       ILootModifierCondition.LOADER.register(Mantle.getResource("and"), AndLootModifierCondition.CODEC);
       ILootModifierCondition.LOADER.register(Mantle.getResource("or"), OrLootModifierCondition.CODEC);
       ILootModifierCondition.LOADER.register(Mantle.getResource("context"), ContextLootModifierCondition.CODEC);
-      ILootModifierCondition.LOADER.register(Mantle.getResource("inverted"), InvertedLootModifierCondition.CODEC);
       ILootModifierCondition.LOADER.register(Mantle.getResource("contains_item"), ContainsItemLootModifierCondition.CODEC);
       ILootModifierCondition.LOADER.register(Mantle.getResource("empty"), EmptyLootModifierCondition.CODEC);
     }
