@@ -18,7 +18,7 @@ import slimeknights.mantle.recipe.helper.ItemOutput;
 import java.util.function.Consumer;
 
 /** Builder for {@link SmeltingResultRecipe}, {@link BlastingResultRecipe}, {@link SmokingResultRecipe}, and {@link CampfireResultRecipe} */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unused")
 @CanIgnoreReturnValue
 public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends AbstractRecipeBuilder<T> {
   protected final ItemOutput result;
@@ -65,13 +65,13 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
    */
   public T type(CookingType type) {
     this.type = type;
-    return (T) this;
+    return self();
   }
 
   /** Sets the input ingredient */
   public T requires(Ingredient ingredient) {
     this.ingredient = ingredient;
-    return (T) this;
+    return self();
   }
 
   /** Sets the input ingredient */
@@ -87,25 +87,24 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
   /** Sets the XP gain from this recipe */
   public T experience(float experience) {
     this.experience = experience;
-    return (T) this;
+    return self();
   }
 
   /** Sets the cooking time for this recipe relative to smelting. Note its halved for {@link CookingType#BLASTING} and {@link CookingType#SMOKING} and tripled for {@link CookingType#CAMPFIRE} */
   public T cookingTime(int cookingTime) {
     this.cookingTime = cookingTime;
-    return (T) this;
+    return self();
   }
 
 
   /** Helper to save a recipe */
-  @SuppressWarnings("unchecked")
   private <R extends Recipe<?>> T save(Consumer<FinishedRecipe> consumer, ResourceLocation id, RecordLoadable<R> loadable, Function7<ResourceLocation,String,CookingBookCategory,Ingredient,ItemOutput,Float,Integer,R> constructor, int cookingTime) {
     if (ingredient == Ingredient.EMPTY) {
       throw new IllegalStateException("Ingredient must be set");
     }
     ResourceLocation advancementID = buildOptionalAdvancement(id, "cooking");
     consumer.accept(new LoadableFinishedRecipe<>(constructor.apply(id, group, category, ingredient, result, experience, cookingTime), loadable, advancementID));
-    return (T) this;
+    return self();
   }
 
   /** Saves the smelting recipe */

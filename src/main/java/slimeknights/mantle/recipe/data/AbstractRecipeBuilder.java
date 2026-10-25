@@ -31,16 +31,21 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
   @Nonnull
   protected String group = "";
 
+  /** Gets this builder casted to the given type. */
+  @SuppressWarnings("unchecked")
+  protected T self() {
+    return (T) this;
+  }
+
   /**
    * Adds a criteria to the recipe
    * @param name      Criteria name
    * @param criteria  Criteria instance
    * @return  Builder
    */
-  @SuppressWarnings("unchecked")
   public T unlockedBy(String name, CriterionTriggerInstance criteria) {
     this.advancementBuilder.addCriterion(name, criteria);
-    return (T)this;
+    return self();
   }
 
   /**
@@ -48,10 +53,9 @@ public abstract class AbstractRecipeBuilder<T extends AbstractRecipeBuilder<T>> 
    * @param group  Recipe group
    * @return  Builder
    */
-  @SuppressWarnings("unchecked")
   public T group(String group) {
     this.group = group;
-    return (T)this;
+    return self();
   }
 
   /**
