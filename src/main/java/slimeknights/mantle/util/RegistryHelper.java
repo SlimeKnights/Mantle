@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps.RegistryInfoLookup;
 import net.minecraft.resources.ResourceKey;
@@ -22,6 +23,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class RegistryHelper {
+  /** Gets registry access with only builtin registries. */
+  public static final RegistryAccess.Frozen BUILTIN_REGISTRY_ACCESS = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+
   private RegistryHelper() {}
 
   /** Casts the given registry key to a type. Exists for fix generic issues with generic tag registries. */

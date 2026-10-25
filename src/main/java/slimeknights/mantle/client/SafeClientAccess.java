@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
+import slimeknights.mantle.util.RegistryHelper;
 
 import javax.annotation.Nullable;
 
@@ -39,13 +40,12 @@ public class SafeClientAccess {
   }
 
   /** Gets the registry access client side */
-  @Nullable
   public static RegistryAccess getRegistryAccess() {
     Level level = getLevel();
     if (level != null) {
       return level.registryAccess();
     }
-    return null;
+    return RegistryHelper.BUILTIN_REGISTRY_ACCESS;
   }
 
   /** Checks if its advanced tooltips */
