@@ -78,4 +78,9 @@ public abstract class HolderWrapper<R,T extends R> implements Supplier<T>, IdAwa
     }
     return null;
   }
+
+  /** Checks if this object is present */
+  public boolean isBound() {
+    return holder.isBound();
+  }
 }
