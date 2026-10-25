@@ -1,4 +1,4 @@
-package slimeknights.mantle.datagen;
+package slimeknights.mantle.datagen.tag;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
