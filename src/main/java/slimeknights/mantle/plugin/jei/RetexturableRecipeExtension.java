@@ -48,7 +48,7 @@ public class RetexturableRecipeExtension implements ICraftingCategoryExtension<S
       Mantle.logger.error("Failed to create focus link for {} as the layout {} is not 3x3", recipeHolder.id(), builder.getClass().getName());
     } else {
       // link the output to all inputs that match the texture
-      builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(recipe.getTextureSlots()).mapToObj(i -> inputs.get(MantleJEIConstants.getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));
+      builder.createFocusLink(Streams.concat(Stream.of(output), Arrays.stream(recipe.getTextureSlots()).mapToObj(i -> inputs.get(craftingGridHelper.getCraftingIndex(i, width, height)))).toArray(IRecipeSlotBuilder[]::new));
     }
   }
 }
