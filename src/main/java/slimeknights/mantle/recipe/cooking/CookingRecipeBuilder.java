@@ -79,13 +79,6 @@ public class CookingRecipeBuilder<T extends CookingRecipeBuilder<T>> extends Abs
     return builder(result, 1);
   }
 
-  /** Gets this builder casted to the given type. */
-  @Override
-  @SuppressWarnings("unchecked")
-  protected T self() {
-    return (T) this;
-  }
-
   /**
    * Sets the type of {@link #save(RecipeOutput, ResourceLocation)}.
    * Note you can also just directly use {@link #saveSmelting(RecipeOutput, ResourceLocation)}, {@link #saveBlasting(RecipeOutput, ResourceLocation)},
