@@ -1,14 +1,20 @@
 package slimeknights.mantle.registration;
 
+import net.minecraft.core.Holder;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.PercentageAttribute;
+import net.neoforged.neoforge.event.enchanting.EnchantedBlockLootEvent;
+import net.neoforged.neoforge.event.enchanting.EnchantedEntityLootEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.living.GetEquipmentDropChanceEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
@@ -33,6 +39,10 @@ public class MantleAttributes {
   // generic
   /** Multiplier for knockback this entity takes. Similar to {@link Attributes#KNOCKBACK_RESISTANCE} but can be used to increase knockback */
   public static final DeferredAttribute<PercentageAttribute> KNOCKBACK_MULTIPLIER = ATTRIBUTES.register("generic.knockback_multiplier").sync().negative().multiplier();
+  /** Boost to looting level in loot tables */
+  public static final DeferredAttribute<RangedAttribute> LOOTING_BOOST = ATTRIBUTES.register("generic.looting_boost").sync().ranged(0, -255, 255);
+  /** Boost to fortune level in loot tables */
+  public static final DeferredAttribute<RangedAttribute> FORTUNE_BOOST = ATTRIBUTES.register("generic.fortune_boost").sync().ranged(0, -255, 255);
 
   // player
   /** Multiplier to amount of gained for players. */
@@ -45,6 +55,8 @@ public class MantleAttributes {
   static void addAttributes(EntityAttributeModificationEvent event) {
     // general attributes
     addToAll(event, KNOCKBACK_MULTIPLIER);
+    addToAll(event, LOOTING_BOOST);
+    addToAll(event, FORTUNE_BOOST);
     // player attributes
     event.add(EntityType.PLAYER, EXPERIENCE_MULTIPLIER);
     event.add(EntityType.PLAYER, EQUIPMENT_DROP_CHANCE_BOOST);
@@ -96,6 +108,34 @@ public class MantleAttributes {
       if (player != null) {
         event.setChance((float)(event.getChance() + player.getAttributeValue(EQUIPMENT_DROP_CHANCE_BOOST)));
       }
+    }
+  }
+
+  /** Gets the enchantment level from the given attribute value. */
+  private static int getEnchantmentLevel(LivingEntity entity, Holder<Attribute> attribute, int current) {
+    double value = entity.getAttributeValue(attribute);
+    int level = Mth.floor(value);
+    // if we have a partial level, treat it as a random chance to increase the level
+    if (value > level && entity.getRandom().nextFloat() < (value - level)) {
+      level += 1;
+    }
+    // ensure the final level is between 0 and 255, valid enchantment range
+    return Mth.clamp(current + level, 0, 255);
+  }
+
+  /** Applies {@link #FORTUNE_BOOST} from the attacker to boost fortune. */
+  @SubscribeEvent
+  static void blockEnchantment(EnchantedBlockLootEvent event) {
+    if (event.getEnchantment().is(Enchantments.FORTUNE) && event.getEntity() instanceof LivingEntity holder) {
+      event.setEnchantmentLevel(getEnchantmentLevel(holder, FORTUNE_BOOST, event.getEnchantmentLevel()));
+    }
+  }
+
+  /** Applies {@link #LOOTING_BOOST} from the attacker to boost looting. */
+  @SubscribeEvent
+  static void entityEnchantment(EnchantedEntityLootEvent event) {
+    if (event.getEnchantment().is(Enchantments.LOOTING) && event.getAttacker() instanceof LivingEntity attacker) {
+      event.setEnchantmentLevel(getEnchantmentLevel(attacker, LOOTING_BOOST, event.getEnchantmentLevel()));
     }
   }
 }
