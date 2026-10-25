@@ -13,6 +13,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
@@ -41,7 +42,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
 
   @Override
   protected void addTransfers(HolderLookup.Provider lookup) {
-    addTransfer("wet_sponge", new FillFluidContainerTransfer(Ingredient.of(Items.SPONGE), ItemOutput.fromItem(Items.WET_SPONGE), SizedFluidIngredient.of(MantleTags.Fluids.WATER, MantleValues.BOTTLE)));
+    addTransfer("wet_sponge", new FillFluidContainerTransfer(Ingredient.of(Items.SPONGE), ItemOutput.fromItem(Items.WET_SPONGE), SizedFluidIngredient.of(MantleTags.Fluids.WATER, FluidType.BUCKET_VOLUME)));
 
     // potions
     addPotion("potion/",           Items.POTION,  null);
