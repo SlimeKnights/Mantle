@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /** Loot modifier to inject an additional loot entry into an existing table */
 public class AddEntryLootModifier extends LootModifier {
   public static final MapCodec<AddEntryLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).and(inst.group(
-    ILootModifierCondition.CODEC.listOf().fieldOf("post_conditions").forGetter(m -> m.modifierConditions),
+    ILootModifierCondition.LOADER.codec().listOf().fieldOf("post_conditions").forGetter(m -> m.modifierConditions),
     LootPoolEntries.CODEC.fieldOf("entry").forGetter(m -> m.entry),
     LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(m -> m.functions))
   ).apply(inst, AddEntryLootModifier::new));

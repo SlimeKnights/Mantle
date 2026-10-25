@@ -8,7 +8,7 @@ import lombok.Getter;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.data.gson.GenericRegisteredSerializer;
+import slimeknights.mantle.data.codec.SimpleCodecRegistry;
 import slimeknights.mantle.data.loadable.field.RecordField;
 import slimeknights.mantle.data.loadable.mapping.ConditionalLoadable;
 import slimeknights.mantle.data.loadable.record.RecordLoadable;
@@ -21,7 +21,7 @@ import java.util.function.Function;
 /**
  * Generic registry for an object that can both be sent over a friendly byte buffer and serialized into JSON.
  * @param <T>  Type of the serializable object
- * @see GenericRegisteredSerializer GenericRegisteredSerializer for an alternative that does not need to handle network syncing
+ * @see SimpleCodecRegistry SimpleCodecRegistry for an alternative that does not need to handle network syncing
  * @see DefaultingLoaderRegistry
  */
 public class GenericLoaderRegistry<T extends IHaveLoader> implements RecordLoadable<T> {

@@ -1,26 +1,19 @@
 package slimeknights.mantle.loot.modifier.condition;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import slimeknights.mantle.Mantle;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 /** Loot modifier condition that inverts the base condition */
-@RequiredArgsConstructor
-public class InvertedModifierLootCondition implements ILootModifierCondition {
-  public static final ResourceLocation ID = Mantle.getResource("inverted");
+public record InvertedModifierLootCondition(ILootModifierCondition base) implements ILootModifierCondition {
+  public static final MapCodec<InvertedModifierLootCondition> CODEC = ILootModifierCondition.LOADER.codec().fieldOf("base").xmap(InvertedModifierLootCondition::new, InvertedModifierLootCondition::base);
 
-  /** Condition to invert */
-  private final ILootModifierCondition base;
+  @Override
+  public MapCodec<InvertedModifierLootCondition> codec() {
+    return CODEC;
+  }
 
   @Override
   public boolean test(List<ItemStack> generatedLoot, LootContext context) {
@@ -30,20 +23,5 @@ public class InvertedModifierLootCondition implements ILootModifierCondition {
   @Override
   public ILootModifierCondition inverted() {
     return base;
-  }
-
-  @Override
-  public JsonObject serialize(JsonSerializationContext context) {
-    JsonObject json = new JsonObject();
-    json.addProperty("type", ID.toString());
-    json.add("condition", base.serialize(context));
-    return json;
-  }
-
-  /** Deserializes this condition from JSON */
-  public static InvertedModifierLootCondition deserialize(JsonElement object, Type typeOfT, JsonDeserializationContext context) {
-    JsonObject json = GsonHelper.convertToJsonObject(object, "condition");
-    ILootModifierCondition condition = ILootModifierCondition.MODIFIER_CONDITIONS.deserialize(GsonHelper.getAsJsonObject(json, "condition"), ILootModifierCondition.class, context);
-    return new InvertedModifierLootCondition(condition);
   }
 }

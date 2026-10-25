@@ -10,9 +10,9 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import slimeknights.mantle.data.codec.SimpleCodecRegistry;
 import slimeknights.mantle.data.gson.GenericRegisteredSerializer.IJsonSerializable;
 import slimeknights.mantle.data.registry.GenericLoaderRegistry;
-import slimeknights.mantle.data.registry.NamedComponentRegistry;
 import slimeknights.mantle.util.JsonHelper;
 
 import java.lang.reflect.Type;
@@ -23,11 +23,13 @@ import java.util.Map;
  * This is a serialier/deserializer to/from JsonObjects that automatically handles dispatching responsibilities to named serializers.
  * @param <T>  Type of the serializable object
  * @see GenericLoaderRegistry GenericLoaderRegistry for an alternative that also supports network friendly byte buffers
+ * @see SimpleCodecRegistry SimpleCodecRegistry for an implementation of the same idea using codecs
+ * @deprecated use {@link SimpleCodecRegistry} if you need codec parsing, or {@link GenericLoaderRegistry} if you need JSON and packet buffer.
  */
+@Deprecated(forRemoval = true)
 public class GenericRegisteredSerializer<T extends IJsonSerializable> implements JsonSerializer<T>, JsonDeserializer<T> {
   /**
    * Map of all serializers for implementations.
-   * TODO 1.19: would using {@link NamedComponentRegistry} make this implemention simplier?
    */
   private final Map<ResourceLocation,JsonDeserializer<? extends T>> deserializers = new HashMap<>();
 

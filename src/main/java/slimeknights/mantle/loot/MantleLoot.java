@@ -1,6 +1,5 @@
 package slimeknights.mantle.loot;
 
-import com.google.gson.JsonDeserializer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -29,8 +28,6 @@ import slimeknights.mantle.registration.deferred.LootFunctionDeferredRegister;
 import slimeknights.mantle.registration.holder.DeferredLootFunction;
 
 import java.util.Objects;
-
-import static slimeknights.mantle.loot.modifier.condition.ILootModifierCondition.MODIFIER_CONDITIONS;
 
 /** Handles any loot table registration */
 public class MantleLoot {
@@ -78,9 +75,9 @@ public class MantleLoot {
       Registry.register(registry, Mantle.getResource("replace_item"), ReplaceItemLootModifier.CODEC);
 
       // loot modifier conditions
-      MODIFIER_CONDITIONS.registerDeserializer(InvertedModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)InvertedModifierLootCondition::deserialize);
-      MODIFIER_CONDITIONS.registerDeserializer(EmptyModifierLootCondition.ID, EmptyModifierLootCondition.INSTANCE);
-      MODIFIER_CONDITIONS.registerDeserializer(ContainsItemModifierLootCondition.ID, (JsonDeserializer<? extends ILootModifierCondition>)ContainsItemModifierLootCondition::deserialize);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("contains_item"), ContainsItemModifierLootCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("inverted"), InvertedModifierLootCondition.CODEC);
+      ILootModifierCondition.LOADER.register(Mantle.getResource("empty"), EmptyModifierLootCondition.CODEC);
     }
   }
 }
