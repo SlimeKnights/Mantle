@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.datafixers.util.Either;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -48,8 +49,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static slimeknights.mantle.util.JsonHelper.DEFAULT_GSON;
@@ -171,6 +174,52 @@ public class RemoveRecipesCommand {
     throw PRESET_NOT_FOUND.create(preset);
   }
 
+  /** Finds all advancements relevant to the given list of recipes and places their IDs in {@code advancements}. */
+  private static void findAdvancements(ServerLevel level, List<ResourceLocation> recipes, List<ResourceLocation> advancements) {
+    Set<ResourceLocation> isRelevant = new HashSet<>(recipes);
+    for (Advancement advancement : level.getServer().getAdvancements().getAllAdvancements()) {
+      for (ResourceLocation reward : advancement.getRewards().getRecipes()) {
+        if (isRelevant.contains(reward)) {
+          advancements.add(advancement.getId());
+        }
+      }
+    }
+  }
+
+  /** Gets the JSON to remove a recipe */
+  private static String getRemoveJson() {
+    JsonObject json = new JsonObject();
+    json.add("conditions", CraftingHelper.serialize(new ICondition[]{FalseCondition.INSTANCE}));
+    return DEFAULT_GSON.toJson(json);
+  }
+
+  /** Saves the JSON string at the given ID */
+  private static boolean saveJson(Path data, String folder, ResourceLocation id, String json) {
+    Path path = data.resolve(id.getNamespace() + '/' + folder + '/' + id.getPath() + ".json");
+    try {
+      Files.createDirectories(path.getParent());
+      try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+        writer.write(json);
+        return true;
+      }
+    } catch(IOException e){
+      Mantle.logger.error("Couldn't save {} {}", folder, id, e);
+      return false;
+    }
+  }
+
+  /** Saves the JSON string at the given ID */
+  private static int saveJsons(Path data, String folder, List<ResourceLocation> ids, String json) {
+    int successes = 0;
+    for (ResourceLocation id : ids) {
+      if (saveJson(data, folder, id, json)) {
+        successes += 1;
+      }
+    }
+    return successes;
+  }
+
+
   /** Runs the command */
   @SuppressWarnings("unchecked")  // not like we are using the generics at all
   private static <C extends Container, T extends Recipe<C>> int run(CommandContext<CommandSourceStack> context, List<RecipeType<?>> recipeTypes, @Nullable Predicate<Item> removeResult, @Nullable Predicate<Item> removeInput, long startTime) {
@@ -201,35 +250,26 @@ public class RemoveRecipesCommand {
       }
     }
 
+    // find advancements that grant those recipes
+    List<ResourceLocation> advancements = new ArrayList<>();
+    findAdvancements(level, recipes, advancements);
+
     // determine the path for the resulting datapack
     Path pack = GeneratePackHelper.getDatapackPath(level.getServer());
     GeneratePackHelper.saveMcmeta(pack);
 
     // create the object for removing recipes
-    JsonObject json = new JsonObject();
-    json.add("conditions", CraftingHelper.serialize(new ICondition[]{FalseCondition.INSTANCE}));
-    String jsonString = DEFAULT_GSON.toJson(json);
+    String jsonString = getRemoveJson();
 
-    int successes = 0;
+    // save all the removals
     Path data = pack.resolve(PackType.SERVER_DATA.getDirectory());
-    for (ResourceLocation id : recipes) {
-      Path path = data.resolve(id.getNamespace() + "/recipes/" + id.getPath() + ".json");
-      try {
-        Files.createDirectories(path.getParent());
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-          writer.write(jsonString);
-          successes += 1;
-        }
-      } catch(IOException e){
-        Mantle.logger.error("Couldn't save recipe {}", id, e);
-      }
-    }
+    int recipeSuccesses = saveJsons(data, "recipes", recipes, jsonString);
+    int advancementSuccesses = saveJsons(data, "advancements", advancements, jsonString);
 
     // send success
-    int successFinal = successes;
     float time = (System.nanoTime() - startTime) / 1000000f;
-    context.getSource().sendSuccess(() -> Component.translatable(KEY_SUCCESS, successFinal, time, GeneratePackHelper.getOutputComponent(pack)), true);
-    return successes;
+    context.getSource().sendSuccess(() -> Component.translatable(KEY_SUCCESS, recipeSuccesses, time, GeneratePackHelper.getOutputComponent(pack)), true);
+    return recipeSuccesses + advancementSuccesses;
   }
 
   /** Removes a recipe by ID */
@@ -241,6 +281,10 @@ public class RemoveRecipesCommand {
     Path pack = GeneratePackHelper.getDatapackPath(context.getSource().getServer());
     GeneratePackHelper.saveMcmeta(pack);
 
+    // find advancements that grant those recipes
+    List<ResourceLocation> advancements = new ArrayList<>();
+    findAdvancements(context.getSource().getLevel(), List.of(id), advancements);
+
     // create the object for removing recipes
     Path data = pack.resolve(PackType.SERVER_DATA.getDirectory());
     Path path = data.resolve(id.getNamespace() + "/recipes/" + id.getPath() + ".json");
@@ -248,9 +292,13 @@ public class RemoveRecipesCommand {
       throw GeneratePackHelper.FAILED_SAVE.create(id);
     }
 
+    // create the object for removing advancements
+    String jsonString = getRemoveJson();
+    int advancementSuccesses = saveJsons(data, "advancements", advancements, jsonString);
+
     // send success
     float time = (System.nanoTime() - startTime) / 1000000f;
     context.getSource().sendSuccess(() -> Component.translatable(KEY_SUCCESS, 1, time, GeneratePackHelper.getOutputComponent(pack)), true);
-    return 1;
+    return 1 + advancementSuccesses;
   }
 }
