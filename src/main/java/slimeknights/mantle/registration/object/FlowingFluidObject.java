@@ -11,7 +11,6 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.recipe.ingredient.IngredientHelper;
 
 import javax.annotation.Nonnull;
@@ -27,12 +26,12 @@ public class FlowingFluidObject<F extends FlowingFluid> extends FluidObject<F> {
   /** Tag in the mod namespace, exact match */
   @Getter @Nonnull
   private final TagKey<Fluid> localTag;
-  private final DeferredHolder<Fluid,F> flowing;
+  private final Holder<Fluid> flowing;
   @Nullable
   private final Supplier<? extends LiquidBlock> block;
 
   /** Main constructor */
-  public FlowingFluidObject(ResourceLocation id, @Nullable String tagName, Supplier<? extends FluidType> type, DeferredHolder<Fluid,F> still, DeferredHolder<Fluid,F> flowing, @Nullable Supplier<? extends LiquidBlock> block) {
+  public FlowingFluidObject(ResourceLocation id, @Nullable String tagName, Supplier<? extends FluidType> type, Holder<Fluid> still, Holder<Fluid> flowing, @Nullable Supplier<? extends LiquidBlock> block) {
     super(id, tagName, type, still);
     this.localTag = FluidTags.create(id);
     this.flowing = flowing;
@@ -48,9 +47,10 @@ public class FlowingFluidObject<F extends FlowingFluid> extends FluidObject<F> {
     return get();
   }
 
-  /** {@return  flowing form} */
+  /** {@return flowing form} */
+  @SuppressWarnings("unchecked")
   public F getFlowing() {
-    return flowing.get();
+    return (F) flowing.value();
   }
 
   /** {@return holder of the flowing form} */

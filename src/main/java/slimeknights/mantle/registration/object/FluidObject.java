@@ -14,7 +14,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.recipe.helper.FluidOutput;
 import slimeknights.mantle.recipe.ingredient.IngredientHelper;
@@ -28,7 +27,7 @@ import java.util.function.Supplier;
  * @see FlowingFluidObject
  */
 @SuppressWarnings("WeakerAccess")
-public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAwareObject {
+public class FluidObject<F extends Fluid> extends HolderWrapper<Fluid, F> implements ItemLike, IdAwareObject {
   /** Fluid name, used for tag creation */
   @Getter @Accessors(fluent = true)
   protected final ResourceLocation id;
@@ -37,30 +36,18 @@ public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAw
   @Getter @Nullable
   protected final TagKey<Fluid> commonTag;
   private final Supplier<? extends FluidType> type;
-  private final DeferredHolder<Fluid,F> still;
 
   /** Main constructor */
-  public FluidObject(ResourceLocation id, @Nullable String tagName, Supplier<? extends FluidType> type, DeferredHolder<Fluid,F> still) {
+  public FluidObject(ResourceLocation id, @Nullable String tagName, Supplier<? extends FluidType> type, Holder<Fluid> still) {
+    super(still);
     this.id = id;
     this.commonTag = tagName == null ? null : FluidTags.create(Mantle.commonResource(tagName));
     this.type = type;
-    this.still = still;
   }
 
   /** Gets the fluid type for this object */
   public FluidType getType() {
     return type.get();
-  }
-
-  /** {@return still form of fluids} */
-  @Override
-  public F get() {
-    return still.get();
-  }
-
-  /** Gets the holder of the still form. */
-  public Holder<Fluid> getHolder() {
-    return still;
   }
 
   /**
@@ -70,7 +57,7 @@ public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAw
    */
   @Nullable
   public Item getBucket() {
-    Item bucket = still.get().getBucket();
+    Item bucket = asItem();
     if (bucket == Items.AIR) {
       return null;
     }
@@ -84,7 +71,7 @@ public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAw
    */
   @Override
   public Item asItem() {
-    return still.get().getBucket();
+    return get().getBucket();
   }
 
   /** Gets a holder set using either the fluid tag or the still value. */
@@ -92,7 +79,7 @@ public class FluidObject<F extends Fluid> implements Supplier<F>, ItemLike, IdAw
     if (commonTag != null) {
       return IngredientHelper.fluidSet(commonTag);
     }
-    return HolderSet.direct(still);
+    return HolderSet.direct(getHolder());
   }
 
   /**
