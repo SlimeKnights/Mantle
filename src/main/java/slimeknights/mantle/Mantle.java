@@ -14,13 +14,11 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -32,7 +30,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import slimeknights.mantle.client.ClientEvents;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.command.argument.ResourceOrTagKeyArgument;
 import slimeknights.mantle.config.Config;
@@ -118,9 +115,6 @@ public class Mantle {
     MantleAttributes.init(modEventBus);
     NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
 
-    if (FMLEnvironment.dist == Dist.CLIENT) {
-      ClientEvents.onConstruct();
-    }
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {

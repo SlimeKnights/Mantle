@@ -26,7 +26,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
@@ -63,9 +62,6 @@ import java.util.Optional;
 
 @EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT)
 public class ClientEvents {
-  /** Called on construct to initiatlize things that need early entry */
-  public static void onConstruct() {}
-
   @SubscribeEvent
   static void registerListeners(RegisterClientReloadListenersEvent event) {
     event.registerReloadListener(ModelHelper.LISTENER);
@@ -85,6 +81,7 @@ public class ClientEvents {
 
     BookLoader.registerBook(Mantle.getResource("test"), new FileRepository(Mantle.getResource("books/test")));
     MantleClientCommand.init();
+    NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
   }
 
   @SubscribeEvent
@@ -98,11 +95,6 @@ public class ClientEvents {
     // NBT dynamic models - require specific data defined in the block/item to use
     event.register(ItemKeyModel.ID, ItemKeyModel.LOADER);
     event.register(RetexturedModel.ID, RetexturedModel.LOADER);
-  }
-
-  @SubscribeEvent
-  static void commonSetup(FMLCommonSetupEvent event) {
-    NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
   }
 
   /** Renders the offhand attack indicator. Based on {@link Gui#renderCrosshair(GuiGraphics, DeltaTracker)} and {@link Gui#renderItemHotbar(GuiGraphics, DeltaTracker)} */
