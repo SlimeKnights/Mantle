@@ -62,12 +62,12 @@ public class FluidContainerTransferCategory extends NamedRecipeCategory<IDisplay
   public void setRecipe(IRecipeLayoutBuilder builder, NamedRecipe<IDisplayFluidTransfer> holder, IFocusGroup focuses) {
     IDisplayFluidTransfer recipe = holder.recipe();
     // add slots
-    IRecipeSlotBuilder inputItemSlot   = builder.addInputSlot( 2,  1).setStandardSlotBackground().addItemStacks(recipe.inputItems());
-    IRecipeSlotBuilder resultItemSlot  = builder.addOutputSlot(50,  1).setStandardSlotBackground().addItemStacks(recipe.resultItems());
-    IRecipeSlotBuilder inputFluidSlot  = builder.addInputSlot( 2, 20).setStandardSlotBackground()
+    IRecipeSlotBuilder inputItemSlot   = builder.addInputSlot(  1,  1).setStandardSlotBackground().addItemStacks(recipe.inputItems());
+    IRecipeSlotBuilder resultItemSlot  = builder.addOutputSlot(51,  1).setStandardSlotBackground().addItemStacks(recipe.resultItems());
+    IRecipeSlotBuilder inputFluidSlot  = builder.addInputSlot(  1, 20).setStandardSlotBackground()
       .addRichTooltipCallback(FluidTooltipCallback.UNITS)
       .setOverlay(scala, 0, 0).addIngredients(NeoForgeTypes.FLUID_STACK, recipe.inputFluids());
-    IRecipeSlotBuilder resultFluidSlot = builder.addOutputSlot(50, 20).setStandardSlotBackground()
+    IRecipeSlotBuilder resultFluidSlot = builder.addOutputSlot(51, 20).setStandardSlotBackground()
       .addRichTooltipCallback(FluidTooltipCallback.UNITS)
       .setOverlay(scala, 0, 0).addIngredients(NeoForgeTypes.FLUID_STACK, recipe.resultFluids());
 
