@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "mantle:honey",
+      "required": false
+    },
+    {
+      "id": "mantle:flowing_honey",
+      "required": false
+    }
+  ]
+}

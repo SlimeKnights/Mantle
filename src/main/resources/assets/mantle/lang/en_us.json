@@ -11,6 +11,11 @@
 
   "fluid.mantle.powder_snow": "Powder Snow",
 
+  "block.mantle.honey_fluid": "Honey",
+  "fluid.mantle.honey": "Honey",
+  "fluid.mantle.flowing_honey": "Flowing Honey",
+  "item.mantle.honey_bucket": "Honey Bucket",
+
   "attribute.name.mantle.knockback_multiplier": "Knockback",
   "attribute.name.mantle.looting_boost": "Looting",
   "attribute.name.mantle.fortune_boost": "Fortune",

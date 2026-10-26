@@ -1,0 +1,13 @@
+{
+  "camera": "mantle:fluid/honey_camera",
+  "camera_opacity": 0.1,
+  "color": "FFFFFFFF",
+  "flowing": "mantle:fluid/honey_flowing",
+  "fog": {
+    "calculate_color": true,
+    "end": 24.0,
+    "shape": "sphere",
+    "start": -8.0
+  },
+  "still": "mantle:fluid/honey_still"
+}

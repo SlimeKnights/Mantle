@@ -10,6 +10,8 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -62,15 +64,19 @@ import slimeknights.mantle.client.render.FluidCuboid;
 import slimeknights.mantle.client.render.RenderItem;
 import slimeknights.mantle.command.client.MantleClientCommand;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.datagen.client.MantleFluidBlockstateModelProvider;
+import slimeknights.mantle.datagen.client.MantleFluidBucketModelProvider;
 import slimeknights.mantle.datagen.client.MantleFluidTextureProvider;
 import slimeknights.mantle.datagen.client.MantleFluidTooltipProvider;
 import slimeknights.mantle.datagen.client.MantleSpriteSourceProvider;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.ClientPotionFluidType;
 import slimeknights.mantle.fluid.texture.ClientTextureFluidType;
+import slimeknights.mantle.fluid.texture.FluidTextureCameraProvider;
 import slimeknights.mantle.fluid.texture.FluidTextureManager;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.RegistrationHelper;
+import slimeknights.mantle.registration.object.FluidObject;
 import slimeknights.mantle.util.OffhandCooldownTracker;
 
 import java.util.ArrayList;
@@ -100,6 +106,12 @@ public class ClientEvents {
     BookLoader.registerBook(Mantle.getResource("test"), new FileRepository(Mantle.getResource("books/test")));
     MantleClientCommand.init();
     NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
+
+    if (MantleFluids.honey.isBound()) {
+      RenderType translucent = RenderType.translucent();
+      ItemBlockRenderTypes.setRenderLayer(MantleFluids.honey.getStill(), translucent);
+      ItemBlockRenderTypes.setRenderLayer(MantleFluids.honey.getFlowing(), translucent);
+    }
   }
 
   /** Registers all client side data providers */
@@ -111,8 +123,12 @@ public class ClientEvents {
     ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
     boolean client = event.includeClient();
     generator.addProvider(client, new MantleFluidTooltipProvider(packOutput));
-    generator.addProvider(client, new MantleFluidTextureProvider(packOutput));
+    MantleFluidTextureProvider textures = new MantleFluidTextureProvider(packOutput);
+    generator.addProvider(client, textures);
+    generator.addProvider(client, new FluidTextureCameraProvider(packOutput, existingFileHelper, textures));
     generator.addProvider(client, new MantleSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
+    generator.addProvider(client, new MantleFluidBlockstateModelProvider(packOutput));
+    generator.addProvider(client, new MantleFluidBucketModelProvider(packOutput));
   }
 
   @SubscribeEvent
@@ -129,16 +145,22 @@ public class ClientEvents {
     event.register(FluidContainerModel.ID, FluidContainerModel.LOADER);
   }
 
+  /** Registers the texture extension for the given fluid */
+  private static void textureExtension(RegisterClientExtensionsEvent event, FluidObject<?> fluid) {
+    if (fluid.isBound()) {
+      FluidType type = fluid.getType();
+      event.registerFluidType(new ClientTextureFluidType(type), type);
+    }
+  }
+
   @SubscribeEvent
   static void registerClientExtensions(RegisterClientExtensionsEvent event) {
     if (MantleFluids.potion.isBound()) {
       FluidType type = MantleFluids.potion.getType();
       event.registerFluidType(new ClientPotionFluidType(type), type);
     }
-    if (MantleFluids.powderSnow.isBound()) {
-      FluidType type = MantleFluids.powderSnow.getType();
-      event.registerFluidType(new ClientTextureFluidType(type), type);
-    }
+    textureExtension(event, MantleFluids.powderSnow);
+    textureExtension(event, MantleFluids.honey);
   }
 
   @SubscribeEvent

@@ -9,6 +9,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.MantleFluids;
+import slimeknights.mantle.registration.object.FlowingFluidObject;
+import slimeknights.mantle.registration.object.FluidObject;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -29,8 +31,9 @@ public class MantleFluidTagProvider extends FluidTagsProvider {
       .addOptionalTag(Tags.Fluids.BEETROOT_SOUP)
       .addOptionalTag(Tags.Fluids.MUSHROOM_STEW)
       .addOptionalTag(Tags.Fluids.RABBIT_STEW);
-    this.tag(Tags.Fluids.POTION).addOptional(MantleFluids.potion.id());
-    this.tag(Objects.requireNonNull(MantleFluids.powderSnow.getCommonTag())).addOptional(MantleFluids.powderSnow.id());
+    addTags(MantleFluids.potion);
+    addTags(MantleFluids.powderSnow);
+    addTags(MantleFluids.honey);
     this.tag(MantleTags.Fluids.HIDE_IN_DISPLAY)
       .addOptionalTags(Tags.Fluids.POTION, Tags.Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
   }
@@ -38,5 +41,16 @@ public class MantleFluidTagProvider extends FluidTagsProvider {
   @Override
   public String getName() {
     return "Mantle Fluid Tag Provider";
+  }
+
+  /** Tags a fluid object in its common tag */
+  private void addTags(FluidObject<?> fluid) {
+    tag(Objects.requireNonNull(fluid.getCommonTag())).addOptional(fluid.id());
+  }
+
+  /** Tags a fluid object in its common tag */
+  private void addTags(FlowingFluidObject<?> fluid) {
+    tag(Objects.requireNonNull(fluid.getCommonTag())).addOptionalTag(fluid.getLocalTag());
+    tag(fluid.getLocalTag()).addOptional(fluid.id()).addOptional(fluid.id().withPrefix("flowing_"));
   }
 }
