@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import slimeknights.mantle.block.entity.MantleBlockEntity;
@@ -140,12 +141,11 @@ public abstract class SingleItemHandler<T extends MantleBlockEntity> implements 
    * Writes this module to NBT
    * @return  Module in NBT
    */
-  public CompoundTag writeToNBT(HolderLookup.Provider provider) {
-    CompoundTag nbt = new CompoundTag();
+  public Tag writeToNBT(HolderLookup.Provider provider) {
     if (!stack.isEmpty()) {
-      stack.save(provider, nbt);
+      return stack.save(provider);
     }
-    return nbt;
+    return new CompoundTag();
   }
 
   /**
