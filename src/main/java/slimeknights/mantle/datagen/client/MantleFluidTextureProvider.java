@@ -5,6 +5,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.AbstractFluidTextureProvider;
+import slimeknights.mantle.fluid.texture.FluidTexture;
+import slimeknights.mantle.registration.object.FluidObject;
 
 /** Adds fluid textures for Mantle */
 @Internal
@@ -13,9 +15,15 @@ public class MantleFluidTextureProvider extends AbstractFluidTextureProvider {
     super(packOutput, Mantle.modId);
   }
 
+  /** Wraps the texture with the fluid folder and a suffix of underscore for the two textures. */
+  private FluidTexture.Builder root(FluidObject<?> fluid) {
+    return texture(fluid).wrapId("fluid/", "_").still().flowing();
+  }
+
   @Override
   public void addTextures() {
-    texture(MantleFluids.potion).wrapId("fluid/", "_").still().flowing().color(0xff385dc6);
+    root(MantleFluids.potion).color(0xff385dc6);
+    root(MantleFluids.powderSnow);
   }
 
   @Override

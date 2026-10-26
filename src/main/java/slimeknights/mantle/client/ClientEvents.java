@@ -58,6 +58,7 @@ import slimeknights.mantle.command.client.MantleClientCommand;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.ClientPotionFluidType;
+import slimeknights.mantle.fluid.texture.ClientTextureFluidType;
 import slimeknights.mantle.fluid.texture.FluidTextureManager;
 import slimeknights.mantle.fluid.tooltip.FluidTooltipHandler;
 import slimeknights.mantle.registration.RegistrationHelper;
@@ -109,6 +110,10 @@ public class ClientEvents {
     if (MantleFluids.potion.isBound()) {
       FluidType type = MantleFluids.potion.getType();
       event.registerFluidType(new ClientPotionFluidType(type), type);
+    }
+    if (MantleFluids.powderSnow.isBound()) {
+      FluidType type = MantleFluids.powderSnow.getType();
+      event.registerFluidType(new ClientTextureFluidType(type), type);
     }
   }
 

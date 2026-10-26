@@ -10,6 +10,7 @@ import slimeknights.mantle.Mantle;
 import slimeknights.mantle.datagen.MantleTags;
 import slimeknights.mantle.fluid.MantleFluids;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static slimeknights.mantle.datagen.MantleTags.Fluids.SOUP;
@@ -29,6 +30,7 @@ public class MantleFluidTagProvider extends FluidTagsProvider {
       .addOptionalTag(Tags.Fluids.MUSHROOM_STEW)
       .addOptionalTag(Tags.Fluids.RABBIT_STEW);
     this.tag(Tags.Fluids.POTION).addOptional(MantleFluids.potion.id());
+    this.tag(Objects.requireNonNull(MantleFluids.powderSnow.getCommonTag())).addOptional(MantleFluids.powderSnow.id());
     this.tag(MantleTags.Fluids.HIDE_IN_DISPLAY)
       .addOptionalTags(Tags.Fluids.POTION, Tags.Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
   }

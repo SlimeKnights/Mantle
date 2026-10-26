@@ -1,0 +1,5 @@
+{
+  "color": "FFFFFFFF",
+  "flowing": "mantle:fluid/powder_snow_flowing",
+  "still": "mantle:fluid/powder_snow_still"
+}

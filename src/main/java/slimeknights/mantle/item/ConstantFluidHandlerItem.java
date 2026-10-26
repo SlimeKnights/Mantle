@@ -8,8 +8,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import javax.annotation.Nonnull;
 
 /** Represents a fluid handler for an item with a constant fluid. */
-@SuppressWarnings("unused")  // API
-public class ConstantItemFluidHandler implements IFluidHandlerItem {
+public class ConstantFluidHandlerItem implements IFluidHandlerItem {
   /** Contained fluid */
   private final FluidStack fluid;
   /** If true, the container is now empty */
@@ -21,13 +20,13 @@ public class ConstantItemFluidHandler implements IFluidHandlerItem {
   /** Empty version of the container */
   private final ItemStack emptyStack;
 
-  public ConstantItemFluidHandler(FluidStack fluid, ItemStack container, ItemStack emptyStack) {
+  public ConstantFluidHandlerItem(FluidStack fluid, ItemStack container, ItemStack emptyStack) {
     this.fluid = fluid;
     this.container = container;
     this.emptyStack = emptyStack;
   }
 
-  public ConstantItemFluidHandler(FluidStack fluid, ItemStack container) {
+  public ConstantFluidHandlerItem(FluidStack fluid, ItemStack container) {
     this(fluid, container, container.getCraftingRemainingItem());
   }
 

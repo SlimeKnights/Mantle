@@ -9,6 +9,8 @@
   "item.mantle.potion_bucket.effect.water": "Water Bucket",
   "item.mantle.potion_bucket.contents": "%s Bucket",
 
+  "fluid.mantle.powder_snow": "Powder Snow",
+
   "attribute.name.mantle.knockback_multiplier": "Knockback",
   "attribute.name.mantle.looting_boost": "Looting",
   "attribute.name.mantle.fortune_boost": "Fortune",

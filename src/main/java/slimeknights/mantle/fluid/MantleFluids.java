@@ -3,6 +3,7 @@ package slimeknights.mantle.fluid;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,8 +12,10 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import slimeknights.mantle.Mantle;
+import slimeknights.mantle.item.ConstantFluidHandlerItem;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.deferred.FluidDeferredRegister;
 import slimeknights.mantle.registration.object.FluidObject;
@@ -27,6 +30,8 @@ import slimeknights.mantle.registration.object.FluidObject;
 public class MantleFluids {
   /** Deferred register instance for registering potions */
   private static final FluidDeferredRegister POTION_REGISTER = new FluidDeferredRegister(Mantle.modId);
+  /** Deferred register instance for registering powder snow */
+  private static final FluidDeferredRegister POWDER_SNOW_REGISTER = new FluidDeferredRegister(Mantle.modId);
 
   /** Potion fluid, using {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS} to determine type. Use {@link #registerPotion(IEventBus)} to enable. */
   public static final FluidObject<UnplaceableFluid> potion = POTION_REGISTER.register("potion").type(() -> new PotionFluidType(FluidType.Properties.create()
@@ -36,8 +41,17 @@ public class MantleFluids {
     .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BOTTLE_EMPTY)
   )).bucket(fluid -> new PotionBucketItem(fluid, RegistrationHelper.BUCKET_PROPS)).commonTag().unplacable();
 
+  /** Powder snow fluid for {@link Items#POWDER_SNOW_BUCKET}. Use {@link #registerPowderSnow(IEventBus)} to enable. */
+  public static final FluidObject<UnplaceableFluid> powderSnow = POWDER_SNOW_REGISTER.register("powder_snow").bucket(() -> Items.POWDER_SNOW_BUCKET).type(FluidType.Properties.create()
+    .descriptionId(Mantle.makeDescriptionId("fluid", "powder_snow"))
+    .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL_POWDER_SNOW)
+    .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY_POWDER_SNOW)
+    .temperature(270)
+  ).commonTag().unplacable();
+
   /* Method to enable registration */
   private static boolean potionUnregistered = true;
+  private static boolean powderSnowUnregistered = true;
 
   /** Registers the potion fluid */
   public static void registerPotion(IEventBus bus) {
@@ -47,10 +61,22 @@ public class MantleFluids {
     }
   }
 
+  /** Registers the powder snow fluid. Uses {@link Items#POWDER_SNOW_BUCKET} as it's bucket. */
+  public static void registerPowderSnow(IEventBus bus) {
+    if (powderSnowUnregistered) {
+      powderSnowUnregistered = false;
+      POWDER_SNOW_REGISTER.register(bus);
+    }
+  }
+
   @SubscribeEvent
   static void registerCapabilities(RegisterCapabilitiesEvent event) {
     if (potion.isBound()) {
       event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new PotionBucketItem.PotionBucketWrapper(potion.get(), stack), potion.asItem());
+    }
+    // powder snow adds a capability to the vanilla powder snow bucket
+    if (powderSnow.isBound()) {
+      event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ConstantFluidHandlerItem(new FluidStack(powderSnow.get(), FluidType.BUCKET_VOLUME), stack), powderSnow.asItem());
     }
   }
 
