@@ -13,8 +13,11 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
@@ -36,6 +39,8 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -57,6 +62,9 @@ import slimeknights.mantle.client.render.FluidCuboid;
 import slimeknights.mantle.client.render.RenderItem;
 import slimeknights.mantle.command.client.MantleClientCommand;
 import slimeknights.mantle.datagen.MantleTags;
+import slimeknights.mantle.datagen.client.MantleFluidTextureProvider;
+import slimeknights.mantle.datagen.client.MantleFluidTooltipProvider;
+import slimeknights.mantle.datagen.client.MantleSpriteSourceProvider;
 import slimeknights.mantle.fluid.MantleFluids;
 import slimeknights.mantle.fluid.texture.ClientPotionFluidType;
 import slimeknights.mantle.fluid.texture.ClientTextureFluidType;
@@ -68,6 +76,7 @@ import slimeknights.mantle.util.OffhandCooldownTracker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(modid = Mantle.modId, value = Dist.CLIENT)
 public class ClientEvents {
@@ -91,6 +100,19 @@ public class ClientEvents {
     BookLoader.registerBook(Mantle.getResource("test"), new FileRepository(Mantle.getResource("books/test")));
     MantleClientCommand.init();
     NeoForge.EVENT_BUS.register(new ExtraHeartRenderHandler());
+  }
+
+  /** Registers all client side data providers */
+  @SubscribeEvent
+  static void gatherData(final GatherDataEvent event) {
+    DataGenerator generator = event.getGenerator();
+    PackOutput packOutput = generator.getPackOutput();
+    CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+    ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+    boolean client = event.includeClient();
+    generator.addProvider(client, new MantleFluidTooltipProvider(packOutput));
+    generator.addProvider(client, new MantleFluidTextureProvider(packOutput));
+    generator.addProvider(client, new MantleSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
   }
 
   @SubscribeEvent

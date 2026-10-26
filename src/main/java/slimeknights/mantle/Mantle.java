@@ -49,9 +49,6 @@ import slimeknights.mantle.data.predicate.fluid.FluidPredicate;
 import slimeknights.mantle.data.predicate.fluid.FluidTypePredicate;
 import slimeknights.mantle.data.predicate.item.ItemPredicate;
 import slimeknights.mantle.datagen.MantleFluidTransferProvider;
-import slimeknights.mantle.datagen.client.MantleFluidTextureProvider;
-import slimeknights.mantle.datagen.client.MantleFluidTooltipProvider;
-import slimeknights.mantle.datagen.client.MantleSpriteSourceProvider;
 import slimeknights.mantle.datagen.tag.MantleBlockTagProvider;
 import slimeknights.mantle.datagen.tag.MantleFluidTagProvider;
 import slimeknights.mantle.datagen.tag.MantleItemTagProvider;
@@ -209,22 +206,20 @@ public class Mantle {
     event.modify(BlockEntityType.HANGING_SIGN, RegistrationHelper.buildHangingSignBlocks());
   }
 
+  /** Registers all serverside side data providers */
   private void gatherData(final GatherDataEvent event) {
     DataGenerator generator = event.getGenerator();
-    boolean server = event.includeServer();
-    boolean client = event.includeClient();
     PackOutput packOutput = generator.getPackOutput();
     CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
     ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+    // server
+    boolean server = event.includeServer();
     MantleBlockTagProvider blockTags = new MantleBlockTagProvider(packOutput, lookupProvider, existingFileHelper);
     generator.addProvider(server, blockTags);
     generator.addProvider(server, new MantleItemTagProvider(packOutput, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
     generator.addProvider(server, new MantleFluidTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleMenuTagProvider(packOutput, lookupProvider, existingFileHelper));
     generator.addProvider(server, new MantleFluidTransferProvider(packOutput, lookupProvider));
-    generator.addProvider(client, new MantleFluidTooltipProvider(packOutput));
-    generator.addProvider(client, new MantleFluidTextureProvider(packOutput));
-    generator.addProvider(client, new MantleSpriteSourceProvider(packOutput, lookupProvider, existingFileHelper));
   }
 
   /**
