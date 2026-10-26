@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -44,6 +45,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import slimeknights.mantle.command.MantleCommand;
 import slimeknights.mantle.command.argument.RegistryTagSource;
@@ -286,13 +288,24 @@ public class TagsForCommand {
     CommandSourceStack source = context.getSource();
     Player player = source.getPlayerOrException();
     Level level = source.getLevel();
+    // first try fluid block
     BlockHitResult blockTrace = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
     if (blockTrace.getType() == HitResult.Type.BLOCK) {
-      FluidState fluid = level.getFluidState(blockTrace.getBlockPos());
+      BlockPos pos = blockTrace.getBlockPos();
+      FluidState fluid = level.getFluidState(pos);
       if (fluid.getType() != Fluids.EMPTY) {
         return printOwningTags(context, BuiltInRegistries.FLUID, fluid.getType());
       }
+      // next try fluid capability
+      IFluidHandler fluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, blockTrace.getDirection());
+      if (fluidHandler != null && fluidHandler.getTanks() > 0) {
+        FluidStack fluidStack = fluidHandler.getFluidInTank(0);
+        if (!fluidStack.isEmpty()) {
+          return printOwningTags(context, BuiltInRegistries.FLUID, fluidStack.getFluid());
+        }
+      }
     }
+
     // failed
     source.sendSuccess(() -> NO_TARGETED_FLUID, true);
     return 0;
