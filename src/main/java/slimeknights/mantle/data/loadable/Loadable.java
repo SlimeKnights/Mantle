@@ -110,12 +110,12 @@ public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserial
    * Maps this loader to another type.
    * The {@link ErrorFactory} argument can be used to throw a parsing or serialization exception if mapping fails.
    */
-  default <M> Loadable<M> mapChecked(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
+  default <M> Loadable<M> mapChecked(BiFunction<? super T,ErrorFactory,? extends M> from, BiFunction<? super M,ErrorFactory,? extends T> to) {
     return MappedLoadable.of(this, from, to);
   }
 
   /** Uses a {@link Function} as the mapping {@link BiFunction} by ignoring the {@link ErrorFactory} */
-  static <T,R> BiFunction<T,ErrorFactory,R> noErrors(Function<T, R> function) {
+  static <T,R> BiFunction<T,ErrorFactory,R> noErrors(Function<T,R> function) {
     return (value, error) -> function.apply(value);
   }
 
@@ -123,7 +123,7 @@ public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserial
    * Maps this loader to another type. Assumes the mapping always succeeds.
    * Use {@link #mapChecked(BiFunction, BiFunction)} if the mapping may fail to ensure the proper exception type.
    */
-  default <M> Loadable<M> map(Function<T,M> from, Function<M,T> to) {
+  default <M> Loadable<M> map(Function<? super T,? extends M> from, Function<? super M,? extends T> to) {
     return mapChecked(noErrors(from), noErrors(to));
   }
 
