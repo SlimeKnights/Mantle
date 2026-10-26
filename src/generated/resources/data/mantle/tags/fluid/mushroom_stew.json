@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "mantle:mushroom_stew",
+      "required": false
+    },
+    {
+      "id": "mantle:flowing_mushroom_stew",
+      "required": false
+    }
+  ]
+}

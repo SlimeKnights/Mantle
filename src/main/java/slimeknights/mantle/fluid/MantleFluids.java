@@ -53,10 +53,19 @@ public class MantleFluids {
   private static final FluidDeferredRegister POWDER_SNOW_REGISTER = new FluidDeferredRegister(Mantle.modId);
   /** Deferred register instance for registering honey */
   private static final FluidDeferredRegister HONEY_REGISTER = new FluidDeferredRegister(Mantle.modId);
+  /** Deferred register instance for registering honey */
+  private static final FluidDeferredRegister STEW_REGISTER = new FluidDeferredRegister(Mantle.modId);
 
   /** Starts a builder for a Mantle fluid */
   private static FluidType.Properties mantle(String name) {
     return FluidType.Properties.create().descriptionId(Mantle.makeDescriptionId("fluid", name));
+  }
+
+  /** Creates a builder for a stew */
+  private static FluidType.Properties stew(String name) {
+    return mantle(name).motionScale(0.002).canExtinguish(true).temperature(400)
+      .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
+      .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY);
   }
 
   /** Potion fluid, using {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS} to determine type. Use {@link #registerPotion(IEventBus)} to enable. */
@@ -80,11 +89,19 @@ public class MantleFluids {
     .temperature(301).motionScale(0.002).canExtinguish(true)
   ).tickRate(50).bucket().block(MobEffectLiquidBlock.createEffect(MapColor.COLOR_ORANGE, 0, () -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5*20, 1))).commonTag().flowing();
 
+  /** Beetroot soup fluid for {@link Items#BEETROOT_SOUP}. Use {@link #registerStew(IEventBus)} to enable. */
+  public static FlowingFluidObject<BaseFlowingFluid> beetrootSoup = STEW_REGISTER.register("beetroot_soup").type(mantle("beetroot_soup")).bucket().block(MapColor.COLOR_RED, 0).commonTag().flowing();
+  /** Mushroom stew fluid for {@link Items#MUSHROOM_STEW}. Use {@link #registerStew(IEventBus)} to enable. */
+  public static FlowingFluidObject<BaseFlowingFluid> mushroomStew = STEW_REGISTER.register("mushroom_stew").type(mantle("mushroom_stew")).bucket().block(MapColor.DIRT,      0).commonTag().flowing();
+  /** Rabbit stew fluid for {@link Items#RABBIT_STEW}. Use {@link #registerStew(IEventBus)} to enable. */
+  public static FlowingFluidObject<BaseFlowingFluid> rabbitStew   = STEW_REGISTER.register("rabbit_stew"  ).type(mantle("rabbit_stew"  )).bucket().block(MapColor.PODZOL,    0).commonTag().flowing();
+
 
   /* Registration */
   private static boolean potionUnregistered = true;
   private static boolean powderSnowUnregistered = true;
   private static boolean honeyUnregistered = true;
+  private static boolean stewUnregistered = true;
 
   /** Registers the potion fluid */
   public static void registerPotion(IEventBus bus) {
@@ -110,6 +127,14 @@ public class MantleFluids {
     }
   }
 
+  /** Registers fluids for {@link Items#MUSHROOM_STEW}, {@link Items#RABBIT_STEW}, and {@link Items#BEETROOT_SOUP}. */
+  public static void registerStew(IEventBus bus) {
+    if (stewUnregistered) {
+      stewUnregistered = false;
+      STEW_REGISTER.register(bus);
+    }
+  }
+
 
   /* Events */
 
@@ -131,10 +156,20 @@ public class MantleFluids {
     }
   };
 
+  /** Registers dispenser behavior for the given fluid */
+  private static void registerDispenser(FlowingFluidObject<?> fluid) {
+    if (fluid.isBound()) {
+      DispenserBlock.registerBehavior(fluid, DISPENCE_BUCKET);
+    }
+  }
+
   @SubscribeEvent
   static void commonSetup(FMLCommonSetupEvent event) {
     event.enqueueWork(() -> {
-      DispenserBlock.registerBehavior(honey, DISPENCE_BUCKET);
+      registerDispenser(honey);
+      registerDispenser(beetrootSoup);
+      registerDispenser(mushroomStew);
+      registerDispenser(rabbitStew);
     });
   }
 
@@ -170,9 +205,10 @@ public class MantleFluids {
     }
     // most buckets make most sense in tools and utilities as they cannot be directly consumed
     if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-      if (honey.isBound()) {
-        event.accept(honey);
-      }
+      if (honey.isBound()) event.accept(honey);
+      if (beetrootSoup.isBound()) event.accept(beetrootSoup);
+      if (mushroomStew.isBound()) event.accept(mushroomStew);
+      if (rabbitStew.isBound()) event.accept(rabbitStew);
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "mantle:beetroot_soup",
+      "required": false
+    },
+    {
+      "id": "mantle:flowing_beetroot_soup",
+      "required": false
+    }
+  ]
+}

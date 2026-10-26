@@ -17,5 +17,8 @@ public class MantleFluidBlockstateModelProvider extends FluidBlockstateModelProv
   protected void addModels() {
     // since all the fluids are optional, just manually list them instead of a registry scan
     block(MantleFluids.honey);
+    block(MantleFluids.beetrootSoup);
+    block(MantleFluids.mushroomStew);
+    block(MantleFluids.rabbitStew);
   }
 }

@@ -34,6 +34,9 @@ public class MantleFluidTagProvider extends FluidTagsProvider {
     addTags(MantleFluids.potion);
     addTags(MantleFluids.powderSnow);
     addTags(MantleFluids.honey);
+    addTags(MantleFluids.beetrootSoup);
+    addTags(MantleFluids.mushroomStew);
+    addTags(MantleFluids.rabbitStew);
     this.tag(MantleTags.Fluids.HIDE_IN_DISPLAY)
       .addOptionalTags(Tags.Fluids.POTION, Tags.Fluids.HIDDEN_FROM_RECIPE_VIEWERS);
   }

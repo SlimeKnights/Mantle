@@ -1,0 +1,12 @@
+{
+  "camera": "mantle:fluid/stew_camera",
+  "camera_opacity": 0.1,
+  "color": "FFCD8C6F",
+  "flowing": "mantle:fluid/stew_flowing",
+  "fog": {
+    "end": 2.0,
+    "shape": "sphere",
+    "start": 0.25
+  },
+  "still": "mantle:fluid/stew_still"
+}

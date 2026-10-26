@@ -16,6 +16,22 @@
   "fluid.mantle.flowing_honey": "Flowing Honey",
   "item.mantle.honey_bucket": "Honey Bucket",
 
+  "block.mantle.beetroot_soup_fluid": "Beetroot Soup",
+  "fluid.mantle.beetroot_soup": "Beetroot Soup",
+  "fluid.mantle.flowing_beetroot_soup": "Flowing Beetroot Soup",
+  "item.mantle.beetroot_soup_bucket": "Beetroot Soup Bucket",
+
+  "block.mantle.mushroom_stew_fluid": "Mushroom Stew",
+  "fluid.mantle.mushroom_stew": "Mushroom Stew",
+  "fluid.mantle.flowing_mushroom_stew": "Flowing Mushroom Stew",
+  "item.mantle.mushroom_stew_bucket": "Mushroom Stew Bucket",
+
+  "block.mantle.rabbit_stew_fluid": "Rabbit Stew",
+  "fluid.mantle.rabbit_stew": "Rabbit Stew",
+  "fluid.mantle.flowing_rabbit_stew": "Flowing Rabbit Stew",
+  "item.mantle.rabbit_stew_bucket": "Rabbit Stew Bucket",
+
+
   "attribute.name.mantle.knockback_multiplier": "Knockback",
   "attribute.name.mantle.looting_boost": "Looting",
   "attribute.name.mantle.fortune_boost": "Fortune",

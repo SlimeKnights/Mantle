@@ -27,12 +27,23 @@ public class MantleFluidTextureProvider extends AbstractFluidTextureProvider {
     return root(fluid).camera().calculateFogColor(true);
   }
 
+  /** Builder with the stew texture */
+  private FluidTexture.Builder tintedStew(FluidObject<?> fluid) {
+    return texture(fluid)
+      .root(Mantle.getResource("fluid/stew_"))
+      .still().flowing().camera()
+      .fog(FogShape.SPHERE, 0.25f, 2);
+  }
+
   @Override
   public void addTextures() {
     root(MantleFluids.potion).color(0xff385dc6);
     root(MantleFluids.powderSnow);
     // give water-like fog
     flowing(MantleFluids.honey).fog(FogShape.SPHERE, -8, 24);
+    tintedStew(MantleFluids.beetrootSoup).color(0xFF84160D);
+    tintedStew(MantleFluids.mushroomStew).color(0xFFCD8C6F);
+    tintedStew(MantleFluids.rabbitStew).color(0xFF984A2C);
   }
 
   @Override

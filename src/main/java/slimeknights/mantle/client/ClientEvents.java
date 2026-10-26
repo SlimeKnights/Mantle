@@ -161,6 +161,9 @@ public class ClientEvents {
     }
     textureExtension(event, MantleFluids.powderSnow);
     textureExtension(event, MantleFluids.honey);
+    textureExtension(event, MantleFluids.beetrootSoup);
+    textureExtension(event, MantleFluids.mushroomStew);
+    textureExtension(event, MantleFluids.rabbitStew);
   }
 
   @SubscribeEvent

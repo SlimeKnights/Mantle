@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "mantle:rabbit_stew",
+      "required": false
+    },
+    {
+      "id": "mantle:flowing_rabbit_stew",
+      "required": false
+    }
+  ]
+}

@@ -15,6 +15,10 @@ public class MantleFluidBucketModelProvider extends FluidBucketModelProvider {
 
   @Override
   protected void addBuckets() {
+    // since all the fluids are optional, manually add them
     optionalFluid(MantleFluids.honey, false);
+    optionalFluid(MantleFluids.beetrootSoup, false);
+    optionalFluid(MantleFluids.mushroomStew, false);
+    optionalFluid(MantleFluids.rabbitStew, false);
   }
 }
