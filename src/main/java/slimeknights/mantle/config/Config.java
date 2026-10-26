@@ -29,14 +29,18 @@ public class Config {
   /** If true, the fallback shader for fluid uses a text shader, which provides better compatability. */
   public static final BooleanValue SHOW_POTION_FLUID_IN_JEI;
 
+  /** If true and {@link slimeknights.mantle.fluid.MantleFluids#powderSnow} is bound, tries to register it as the fluid for powder snow cauldrons. */
+  public static final BooleanValue POWDER_SNOW_CAULDRON_FLUID;
+
 	/** List of preferences for tag outputs */
 	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
 	public static final ConfigValue<List<? extends String>> TAG_PREFERENCES;
 
-	public static final ModConfigSpec CLIENT_SPEC, SERVER_SPEC;
+	public static final ModConfigSpec CLIENT_SPEC, COMMON_SPEC, SERVER_SPEC;
 
 	static {
     ModConfigSpec.Builder client = new ModConfigSpec.Builder();
+    ModConfigSpec.Builder common = new ModConfigSpec.Builder();
     ModConfigSpec.Builder server = new ModConfigSpec.Builder();
 
 		// client options
@@ -69,12 +73,17 @@ public class Config {
       .comment("If true, variants of our potion fluid for every potion will show in JEI, provided one of the mods using Mantle enabled the potion fluid. If false it will be hidden, but still usable.")
       .define("showPotionFluid", true);
 
+    POWDER_SNOW_CAULDRON_FLUID = common
+      .comment("If true, registers Mantle's powder snow as the fluid for the vanilla powder snow cauldron. May conflict with another mod doing the same but shouldn't crash.")
+      .define("powder_snow_cauldron_fluid", true);
+
 		// server options
 		TAG_PREFERENCES = server.comment("Preferences for outputs from tags used in automatic compat in recipes")
                             .translation("config.mantle.tagPreferences")
                             .defineList("tagPreferences", DEFAULT_TAG_PREFERENCES, str -> true);
 
 		CLIENT_SPEC = client.build();
+    COMMON_SPEC = common.build();
 		SERVER_SPEC = server.build();
 	}
 }

@@ -14,7 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -27,8 +29,10 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.block.fluid.MobEffectLiquidBlock;
+import slimeknights.mantle.config.Config;
 import slimeknights.mantle.item.ConstantFluidHandlerItem;
 import slimeknights.mantle.registration.RegistrationHelper;
 import slimeknights.mantle.registration.deferred.FluidDeferredRegister;
@@ -142,6 +146,17 @@ public class MantleFluids {
     // powder snow adds a capability to the vanilla powder snow bucket
     if (powderSnow.isBound()) {
       event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ConstantFluidHandlerItem(new FluidStack(powderSnow.get(), FluidType.BUCKET_VOLUME), stack), powderSnow.asItem());
+    }
+  }
+
+  @SubscribeEvent
+  static void registerCauldrons(RegisterCauldronFluidContentEvent event) {
+    if (powderSnow.isBound() && Config.POWDER_SNOW_CAULDRON_FLUID.getAsBoolean()) {
+      try {
+        event.register(Blocks.POWDER_SNOW_CAULDRON, powderSnow.get(), 1000, LayeredCauldronBlock.LEVEL);
+      } catch (IllegalArgumentException e) {
+        Mantle.logger.debug("Skipping registering powder snow as the fluid for powder snow cauldron as another mod already registered a fluid.");
+      }
     }
   }
 
