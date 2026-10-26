@@ -109,9 +109,12 @@ public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserial
   /**
    * Maps this loader to another type.
    * The {@link ErrorFactory} argument can be used to throw a parsing or serialization exception if mapping fails.
+   * @param <M>  New type.
+   * @param constructor  Function mapping this type to the new type, typically a constructor call.
+   * @param getter       Function mapping the new type to this type, typically a getter function.
    */
-  default <M> Loadable<M> mapChecked(BiFunction<? super T,ErrorFactory,? extends M> from, BiFunction<? super M,ErrorFactory,? extends T> to) {
-    return MappedLoadable.of(this, from, to);
+  default <M> Loadable<M> mapChecked(BiFunction<? super T,ErrorFactory,? extends M> constructor, BiFunction<? super M,ErrorFactory,? extends T> getter) {
+    return MappedLoadable.of(this, constructor, getter);
   }
 
   /** Uses a {@link Function} as the mapping {@link BiFunction} by ignoring the {@link ErrorFactory} */
@@ -122,9 +125,12 @@ public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserial
   /**
    * Maps this loader to another type. Assumes the mapping always succeeds.
    * Use {@link #mapChecked(BiFunction, BiFunction)} if the mapping may fail to ensure the proper exception type.
+   * @param <M>  New type.
+   * @param constructor  Function mapping this type to the new type, typically a constructor call.
+   * @param getter       Function mapping the new type to this type, typically a getter function.
    */
-  default <M> Loadable<M> map(Function<? super T,? extends M> from, Function<? super M,? extends T> to) {
-    return mapChecked(noErrors(from), noErrors(to));
+  default <M> Loadable<M> map(Function<? super T,? extends M> constructor, Function<? super M,? extends T> getter) {
+    return mapChecked(noErrors(constructor), noErrors(getter));
   }
 
   /**

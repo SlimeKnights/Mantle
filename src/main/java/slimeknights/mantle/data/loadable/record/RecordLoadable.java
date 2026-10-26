@@ -60,13 +60,13 @@ public interface RecordLoadable<T> extends RecordJsonSerializer<T>, RecordJsonDe
   }
 
   @Override
-  default <M> RecordLoadable<M> mapChecked(BiFunction<? super T,ErrorFactory,? extends M> from, BiFunction<? super M,ErrorFactory,? extends T> to) {
-    return MappedLoadable.of(this, from, to);
+  default <M> RecordLoadable<M> mapChecked(BiFunction<? super T,ErrorFactory,? extends M> constructor, BiFunction<? super M,ErrorFactory,? extends T> getter) {
+    return MappedLoadable.of(this, constructor, getter);
   }
 
   @Override
-  default <M> RecordLoadable<M> map(Function<? super T,? extends M> from, Function<? super M,? extends T> to) {
-    return mapChecked(Loadable.noErrors(from), Loadable.noErrors(to));
+  default <M> RecordLoadable<M> map(Function<? super T,? extends M> constructor, Function<? super M,? extends T> getter) {
+    return mapChecked(Loadable.noErrors(constructor), Loadable.noErrors(getter));
   }
 
   @Override
