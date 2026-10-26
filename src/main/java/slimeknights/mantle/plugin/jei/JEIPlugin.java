@@ -30,6 +30,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.client.screen.MultiModuleScreen;
 import slimeknights.mantle.config.Config;
@@ -50,6 +51,8 @@ import slimeknights.mantle.recipe.ingredient.EntityIngredient.EntityInput;
 import java.util.Collections;
 import java.util.List;
 
+/** JEI plugin for Mantle. Anything needed to interact with Mantle JEI content can be found in {@link MantleJEIConstants} or other classes in this package. */
+@Internal
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
   @Override
@@ -86,8 +89,11 @@ public class JEIPlugin implements IModPlugin {
 
   @Override
   public void registerCategories(IRecipeCategoryRegistration registration) {
-    IGuiHelper guiHelper = registration.getJeiHelpers().getGuiHelper();
-    registration.addRecipeCategories(new FluidContainerTransferCategory(guiHelper));
+    // transfer tab is optional as the info is only useful if we have a transfer consumer
+    if (MantleJEIConstants.isTransferTabEnabled()) {
+      IGuiHelper guiHelper = registration.getJeiHelpers().getGuiHelper();
+      registration.addRecipeCategories(new FluidContainerTransferCategory(guiHelper));
+    }
   }
 
   @Override
@@ -103,8 +109,12 @@ public class JEIPlugin implements IModPlugin {
     addMultiRecipes(registration, access, manager, RecipeType.CAMPFIRE_COOKING, RecipeTypes.CAMPFIRE_COOKING);
     addMultiRecipes(registration, access, manager, RecipeType.STONECUTTING, RecipeTypes.STONECUTTING);
     addMultiRecipes(registration, access, manager, RecipeType.SMITHING, RecipeTypes.SMITHING);
-    registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, MultiNamedRecipe.getNamedRecipes(FluidContainerTransferManager.INSTANCE.getTransfers().stream(), access, IDisplayFluidTransfer.class));
-    registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, FluidContainerTransferCategory.generateRecipes());
+
+    // transfer tab is optional
+    if (MantleJEIConstants.isTransferTabEnabled()) {
+      registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, MultiNamedRecipe.getNamedRecipes(FluidContainerTransferManager.INSTANCE.getTransfers().stream(), access, IDisplayFluidTransfer.class));
+      registration.addRecipes(MantleJEIConstants.FLUID_TRANSFER, FluidContainerTransferCategory.generateRecipes());
+    }
   }
 
   @Override
