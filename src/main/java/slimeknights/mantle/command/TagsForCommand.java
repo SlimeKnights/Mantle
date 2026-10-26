@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -266,13 +267,27 @@ public class TagsForCommand {
     CommandSourceStack source = context.getSource();
     Player player = source.getPlayerOrException();
     Level level = source.getLevel();
+    // first try fluid block
     BlockHitResult blockTrace = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
     if (blockTrace.getType() == HitResult.Type.BLOCK) {
-      FluidState fluid = level.getFluidState(blockTrace.getBlockPos());
+      BlockPos pos = blockTrace.getBlockPos();
+      FluidState fluid = level.getFluidState(pos);
       if (fluid.getType() != Fluids.EMPTY) {
         return printOwningTags(context, BuiltInRegistries.FLUID, fluid.getType());
       }
+      // next try fluid capability
+      BlockEntity be = level.getBlockEntity(pos);
+      if (be != null) {
+        IFluidHandler fluidHandler = be.getCapability(ForgeCapabilities.FLUID_HANDLER, blockTrace.getDirection()).orElse(EmptyFluidHandler.INSTANCE);
+        if (fluidHandler.getTanks() > 0) {
+          FluidStack fluidStack = fluidHandler.getFluidInTank(0);
+          if (!fluidStack.isEmpty()) {
+            return printOwningTags(context, BuiltInRegistries.FLUID, fluidStack.getFluid());
+          }
+        }
+      }
     }
+
     // failed
     source.sendSuccess(() -> NO_TARGETED_FLUID, true);
     return 0;
