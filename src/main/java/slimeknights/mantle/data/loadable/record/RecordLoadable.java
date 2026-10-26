@@ -91,11 +91,17 @@ public interface RecordLoadable<T> extends Loadable<T> {
     return MappedLoadable.of(this, from, to);
   }
 
+  /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
   @Override
   default <M> RecordLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
     return xmap(from, MappedLoadable.flatten(to));
   }
 
+  /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
   @Override
   default <M> RecordLoadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
     return xmap(MappedLoadable.flatten(from), to);

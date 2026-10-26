@@ -213,12 +213,14 @@ public interface Loadable<T> extends JsonDeserializer<T>, JsonSerializer<T>, Str
     return MappedLoadable.of(this, from, to);
   }
 
-  /** Maps this loader to another type, with error factory on from */
+  /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
+  @Deprecated(forRemoval = true)
   default <M> Loadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
     return xmap(from, MappedLoadable.flatten(to));
   }
 
-  /** Maps this loader to another type */
+  /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
+  @Deprecated(forRemoval = true)
   default <M> Loadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
     return xmap(MappedLoadable.flatten(from), to);
   }
