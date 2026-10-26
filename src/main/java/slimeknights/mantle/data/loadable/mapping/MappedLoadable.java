@@ -12,7 +12,6 @@ import slimeknights.mantle.data.loadable.record.RecordLoadable;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /** Represents a trivially mapped loadable that serializes/writes to network like another loadable */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,11 +33,6 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   /** Creates a new loadable for a record loadable */
   public static <T,F> StringLoadable<T> of(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
     return new StringMapped<>(base, from, to);
-  }
-
-  /** Flattens the given mapping function */
-  public static <T,R> BiFunction<T,ErrorFactory,R> flatten(Function<T,R> function) {
-    return (value, error) -> function.apply(value);
   }
 
   @Override

@@ -48,7 +48,7 @@ public class ItemStackLoadable {
 
   /* Optional */
   /** Single item which may be empty with a count of 1 */
-  public static final Loadable<ItemStack> OPTIONAL_ITEM = Loadables.ITEM.flatXmap(item -> makeStack(item, 1, DataComponentPatch.EMPTY), ITEM_GETTER);
+  public static final Loadable<ItemStack> OPTIONAL_ITEM = Loadables.ITEM.map(item -> makeStack(item, 1, DataComponentPatch.EMPTY), ITEM_GETTER);
   /** Loadable for a stack that may be empty with variable count */
   public static final RecordLoadable<ItemStack> OPTIONAL_STACK = RecordLoadable.create(ITEM, COUNT, (item, count) -> makeStack(item, count, DataComponentPatch.EMPTY))
                                                                                .compact(OPTIONAL_ITEM, stack -> stack.getCount() == 1);

@@ -23,7 +23,7 @@ public class SetLoadable<T> extends CollectionLoadable<T,Set<T>> {
 
   /** Creates a map from this collection using the given getter to find values for the map */
   public <V> Loadable<Map<T,V>> mapWithValues(Function<T,V> valueGetter) {
-    return flatXmap(collection -> collection.stream().collect(Collectors.toUnmodifiableMap(Function.identity(), valueGetter)), Map::keySet);
+    return map(collection -> collection.stream().collect(Collectors.toUnmodifiableMap(Function.identity(), valueGetter)), Map::keySet);
   }
 
   @Override

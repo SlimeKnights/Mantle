@@ -60,28 +60,18 @@ public interface RecordLoadable<T> extends RecordJsonSerializer<T>, RecordJsonDe
   }
 
   @Override
-  default <M> RecordLoadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
+  default <M> RecordLoadable<M> mapChecked(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
     return MappedLoadable.of(this, from, to);
   }
 
   @Override
-  default <M> RecordLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
-    return xmap(from, MappedLoadable.flatten(to));
-  }
-
-  @Override
-  default <M> RecordLoadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return xmap(MappedLoadable.flatten(from), to);
-  }
-
-  @Override
-  default <M> RecordLoadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
-    return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
+  default <M> RecordLoadable<M> map(Function<T,M> from, Function<M,T> to) {
+    return mapChecked(Loadable.noErrors(from), Loadable.noErrors(to));
   }
 
   @Override
   default RecordLoadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
-    return xmap(validator, validator);
+    return mapChecked(validator, validator);
   }
 
 

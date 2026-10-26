@@ -106,32 +106,33 @@ public interface Loadable<T> extends SimpleJsonSerializer<T>, SimpleJsonDeserial
     return CompositeLoadable.of(this, network);
   }
 
-  /** Maps this loader to another type, with error factory on both from and to */
-  default <M> Loadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
+  /**
+   * Maps this loader to another type.
+   * The {@link ErrorFactory} argument can be used to throw a parsing or serialization exception if mapping fails.
+   */
+  default <M> Loadable<M> mapChecked(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
     return MappedLoadable.of(this, from, to);
   }
 
-  /** Maps this loader to another type, with error factory on from */
-  default <M> Loadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
-    return xmap(from, MappedLoadable.flatten(to));
-  }
-
-  /** Maps this loader to another type */
-  default <M> Loadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return xmap(MappedLoadable.flatten(from), to);
-  }
-
-  /** Maps this loader to another type */
-  default <M> Loadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
-    return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
+  /** Uses a {@link Function} as the mapping {@link BiFunction} by ignoring the {@link ErrorFactory} */
+  static <T,R> BiFunction<T,ErrorFactory,R> noErrors(Function<T, R> function) {
+    return (value, error) -> function.apply(value);
   }
 
   /**
-   * Validates the result of this map using the given function. This is equivelent to {@link #xmap(BiFunction, BiFunction)} with the same argument twice.
+   * Maps this loader to another type. Assumes the mapping always succeeds.
+   * Use {@link #mapChecked(BiFunction, BiFunction)} if the mapping may fail to ensure the proper exception type.
+   */
+  default <M> Loadable<M> map(Function<T,M> from, Function<M,T> to) {
+    return mapChecked(noErrors(from), noErrors(to));
+  }
+
+  /**
+   * Validates the result of this map using the given function. This is equivelent to {@link #mapChecked(BiFunction, BiFunction)} with the same argument twice.
    * @param validator  Validator function, returns instance if valid.
    * @return Validated loadable
    */
   default Loadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
-    return xmap(validator, validator);
+    return mapChecked(validator, validator);
   }
 }

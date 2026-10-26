@@ -254,7 +254,7 @@ public abstract sealed class ItemOutput extends StackOutput<Item,ItemStack> {
   private static final Streamable<ItemOutput> OPTIONAL_STREAMABLE = new CodecStreamable<>(OPTIONAL_STREAM_CODEC);
 
   /** Compact loadable for item string */
-  private static final StringLoadable<ItemOutput> COMPACT_LOADABLE = Loadables.ITEM.flatXmap(ItemOutput::fromItem, output -> output.get().getItem());
+  private static final StringLoadable<ItemOutput> COMPACT_LOADABLE = Loadables.ITEM.map(ItemOutput::fromItem, output -> output.get().getItem());
   /** Predicate for when to serialize compactly */
   private static final Predicate<ItemOutput> IS_COMPACT = output -> output.getCount() == 1 && output.getComponents().isEmpty() && output instanceof OfStack;
 
