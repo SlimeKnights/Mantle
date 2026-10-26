@@ -223,7 +223,6 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
      * @param <F> Resulting fluid type
      * @return  Fluid object instance
      */
-    @SuppressWarnings("unchecked")  // the generics on DeferHolder are made up anyways
     public <F extends Fluid> FluidObject<F> unplacable(Function<FluidBuilder<?>,F> constructor) {
       if (block != null) {
         throw new IllegalStateException("Cannot build an unplacable fluid with a block form");
@@ -232,7 +231,7 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
         this.type();
       }
       register(name, () -> constructor.apply(this));
-      return new FluidObject<>(resource(name), commonTag, type, (DeferredHolder<Fluid,F>)stillHolder);
+      return new FluidObject<>(resource(name), commonTag, type, stillHolder);
     }
 
     /** Builds a flowing fluid with the default constructors */
@@ -252,7 +251,6 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
      * @param <F>  Type of fluids being created
      * @return  Flowing fluid object instance
      */
-    @SuppressWarnings("unchecked")  // generics are what we want them to be
     public <F extends FlowingFluid> FlowingFluidObject<F> flowing(Function<Properties,? extends F> createStill, Function<Properties,? extends F> createFlowing) {
       if (type == null) {
         this.type();
@@ -267,7 +265,7 @@ public class FluidDeferredRegister extends DeferredRegister<Fluid> {
       register("flowing_" + name, () -> createFlowing.apply(props));
 
       // return the final nice object
-      return new FlowingFluidObject<>(resource(name), commonTag, type, (DeferredHolder<Fluid,F>)stillHolder, flowingHolder, this.block);
+      return new FlowingFluidObject<>(resource(name), commonTag, type, stillHolder, flowingHolder, this.block);
     }
   }
 
