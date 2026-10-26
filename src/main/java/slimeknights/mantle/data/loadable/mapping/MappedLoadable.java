@@ -22,18 +22,18 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   protected final BiFunction<T,ErrorFactory,F> to;
 
   /** Creates a new loadable for a non-record loadable */
-  public static <T,F> Loadable<T> of(Loadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
-    return new MappedLoadable<>(base, from, to);
+  public static <T,F> Loadable<T> of(Loadable<F> base, BiFunction<F,ErrorFactory,T> constructor, BiFunction<T,ErrorFactory,F> getter) {
+    return new MappedLoadable<>(base, constructor, getter);
   }
 
   /** Creates a new loadable for a record loadable */
-  public static <T,F> RecordLoadable<T> of(RecordLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
-    return new Record<>(base, from, to);
+  public static <T,F> RecordLoadable<T> of(RecordLoadable<F> base, BiFunction<F,ErrorFactory,T> constructor, BiFunction<T,ErrorFactory,F> getter) {
+    return new Record<>(base, constructor, getter);
   }
 
   /** Creates a new loadable for a record loadable */
-  public static <T,F> StringLoadable<T> of(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
-    return new StringMapped<>(base, from, to);
+  public static <T,F> StringLoadable<T> of(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> constructor, BiFunction<T,ErrorFactory,F> getter) {
+    return new StringMapped<>(base, constructor, getter);
   }
 
   /** Flattens the given mapping function */
@@ -64,8 +64,8 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   /** Implementation for records */
   private static class Record<F,T> extends MappedLoadable<F,T> implements RecordLoadable<T> {
     private final RecordLoadable<F> base;
-    protected Record(RecordLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
-      super(base, from, to);
+    protected Record(RecordLoadable<F> base, BiFunction<F,ErrorFactory,T> constructor, BiFunction<T,ErrorFactory,F> getter) {
+      super(base, constructor, getter);
       this.base = base;
     }
 
@@ -88,8 +88,8 @@ public class MappedLoadable<F,T> implements Loadable<T> {
   /** Implementation for strings */
   private static class StringMapped<F,T> extends MappedLoadable<F,T> implements StringLoadable<T> {
     private final StringLoadable<F> base;
-    protected StringMapped(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> from, BiFunction<T,ErrorFactory,F> to) {
-      super(base, from, to);
+    protected StringMapped(StringLoadable<F> base, BiFunction<F,ErrorFactory,T> constructor, BiFunction<T,ErrorFactory,F> getter) {
+      super(base, constructor, getter);
       this.base = base;
     }
 

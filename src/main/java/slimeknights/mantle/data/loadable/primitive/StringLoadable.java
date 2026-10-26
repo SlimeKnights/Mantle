@@ -85,29 +85,29 @@ public interface StringLoadable<T> extends Loadable<T> {
   }
 
   @Override
-  default <M> StringLoadable<M> xmap(BiFunction<T,ErrorFactory,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return MappedLoadable.of(this, from, to);
+  default <M> StringLoadable<M> xmap(BiFunction<T,ErrorFactory,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
+    return MappedLoadable.of(this, constructor, getter);
   }
 
   /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
   @SuppressWarnings("removal")
   @Deprecated(forRemoval = true)
   @Override
-  default <M> StringLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> from, Function<M,T> to) {
-    return xmap(from, MappedLoadable.flatten(to));
+  default <M> StringLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> constructor, Function<M,T> getter) {
+    return xmap(constructor, MappedLoadable.flatten(getter));
   }
 
   /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
   @SuppressWarnings("removal")
   @Deprecated(forRemoval = true)
   @Override
-  default <M> StringLoadable<M> flatComap(Function<T,M> from, BiFunction<M,ErrorFactory,T> to) {
-    return xmap(MappedLoadable.flatten(from), to);
+  default <M> StringLoadable<M> flatComap(Function<T,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
+    return xmap(MappedLoadable.flatten(constructor), getter);
   }
 
   @Override
-  default <M> StringLoadable<M> flatXmap(Function<T,M> from, Function<M,T> to) {
-    return xmap(MappedLoadable.flatten(from), MappedLoadable.flatten(to));
+  default <M> StringLoadable<M> flatXmap(Function<T,M> constructor, Function<M,T> getter) {
+    return xmap(MappedLoadable.flatten(constructor), MappedLoadable.flatten(getter));
   }
 
   @Override
