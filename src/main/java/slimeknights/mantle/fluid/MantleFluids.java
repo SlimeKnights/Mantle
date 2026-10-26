@@ -1,10 +1,18 @@
 package slimeknights.mantle.fluid;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.DispensibleContainerItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -69,6 +77,26 @@ public class MantleFluids {
     }
   }
 
+
+  /* Events */
+
+  /** Dispenser behavior for a bucket. */
+  public static DispenseItemBehavior DISPENCE_BUCKET = new DefaultDispenseItemBehavior() {
+    private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
+
+    @Override
+    public ItemStack execute(BlockSource source, ItemStack stack) {
+      DispensibleContainerItem container = (DispensibleContainerItem)stack.getItem();
+      BlockPos pos = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
+      Level level = source.level();
+      if (container.emptyContents(null, level, pos, null, stack)) {
+        container.checkExtraContent(null, level, stack, pos);
+        return new ItemStack(Items.BUCKET);
+      } else {
+        return this.defaultDispenseItemBehavior.dispense(source, stack);
+      }
+    }
+  };
   @SubscribeEvent
   static void registerCapabilities(RegisterCapabilitiesEvent event) {
     if (potion.isBound()) {
