@@ -44,6 +44,7 @@ import slimeknights.mantle.block.GaugeBlock;
 import slimeknights.mantle.client.book.BookLoader;
 import slimeknights.mantle.client.book.repository.FileRepository;
 import slimeknights.mantle.client.model.FallbackModelLoader;
+import slimeknights.mantle.client.model.FluidContainerModel;
 import slimeknights.mantle.client.model.ItemKeyModel;
 import slimeknights.mantle.client.model.RetexturedModel;
 import slimeknights.mantle.client.model.TextureColorHelper;
@@ -103,6 +104,7 @@ public class ClientEvents {
     // NBT dynamic models - require specific data defined in the block/item to use
     event.register(ItemKeyModel.ID, ItemKeyModel.LOADER);
     event.register(RetexturedModel.ID, RetexturedModel.LOADER);
+    event.register(FluidContainerModel.ID, FluidContainerModel.LOADER);
   }
 
   @SubscribeEvent
