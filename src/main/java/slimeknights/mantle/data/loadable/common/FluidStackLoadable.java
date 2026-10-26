@@ -81,7 +81,7 @@ public class FluidStackLoadable {
     if (amount <= 0) {
       throw new IllegalArgumentException("Count must be positive, received " + amount);
     }
-    return Loadables.FLUID.flatXmap(fluid -> makeStack(fluid, amount, null), FLUID_GETTER);
+    return Loadables.FLUID.map(fluid -> makeStack(fluid, amount, null), FLUID_GETTER);
   }
 
   /** Creates a loadable for a stack with a single item */

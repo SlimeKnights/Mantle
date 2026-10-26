@@ -41,13 +41,13 @@ public abstract class FluidIngredient implements IAmLoadable {
     return EitherLoadable.<FluidIngredient>typed().key("fluid", FLUID_MATCH).key("tag", TAG_MATCH).key("name", FLUID_MATCH);
   }
   /** Loadable for network writing of fluids, we use optional stack here for the sake of empty ingredients; thats the only way empty gets in here */
-  private static final Loadable<FluidIngredient> NETWORK = FluidStackLoadable.OPTIONAL_STACK.list(0).flatXmap(fluids -> FluidIngredient.of(fluids.stream().map(FluidIngredient::of).toList()), FluidIngredient::getAllFluids);
+  private static final Loadable<FluidIngredient> NETWORK = FluidStackLoadable.OPTIONAL_STACK.list(0).map(fluids -> FluidIngredient.of(fluids.stream().map(FluidIngredient::of).toList()), FluidIngredient::getAllFluids);
   /** Loadable for fluid matches */
   private static final RecordLoadable<FluidMatch> FLUID_MATCH = RecordLoadable.create(new LegacyField<>(Loadables.FLUID.requiredField("fluid", i -> i.fluid), "name"), IntLoadable.FROM_ONE.requiredField("amount", i -> i.amount), FluidIngredient::of);
   /** Loadable for tag matches */
   private static final RecordLoadable<TagMatch> TAG_MATCH = RecordLoadable.create(Loadables.FLUID_TAG.requiredField("tag", i -> i.tag), IntLoadable.FROM_ONE.requiredField("amount", i -> i.amount), FluidIngredient::of);
   /** Loadable for tag matches */
-  private static final Loadable<Compound> COMPOUND = loadableBuilder().build(NETWORK).list(2).flatXmap(Compound::new, c -> c.ingredients);
+  private static final Loadable<Compound> COMPOUND = loadableBuilder().build(NETWORK).list(2).map(Compound::new, c -> c.ingredients);
   /** Loadable for any fluid ingredient */
   public static final Loadable<FluidIngredient> LOADABLE = loadableBuilder().array(COMPOUND).build(NETWORK);
 

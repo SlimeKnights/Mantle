@@ -36,7 +36,8 @@ public class MappedLoadable<F,T> implements Loadable<T> {
     return new StringMapped<>(base, constructor, getter);
   }
 
-  /** Flattens the given mapping function */
+  /** @deprecated moved to {@link Loadable#noErrors(Function)} */
+  @Deprecated(forRemoval = true)
   public static <T,R> BiFunction<T,ErrorFactory,R> flatten(Function<T,R> function) {
     return (value, error) -> function.apply(value);
   }

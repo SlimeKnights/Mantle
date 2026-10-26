@@ -85,33 +85,50 @@ public interface StringLoadable<T> extends Loadable<T> {
   }
 
   @Override
-  default <M> StringLoadable<M> xmap(BiFunction<T,ErrorFactory,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
+  default <M> StringLoadable<M> mapChecked(BiFunction<T,ErrorFactory,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
     return MappedLoadable.of(this, constructor, getter);
   }
 
-  /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
   @Override
-  default <M> StringLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> constructor, Function<M,T> getter) {
-    return xmap(constructor, MappedLoadable.flatten(getter));
-  }
-
-  /** @deprecated use {@link #xmap(BiFunction, BiFunction)} */
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
-  @Override
-  default <M> StringLoadable<M> flatComap(Function<T,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
-    return xmap(MappedLoadable.flatten(constructor), getter);
-  }
-
-  @Override
-  default <M> StringLoadable<M> flatXmap(Function<T,M> constructor, Function<M,T> getter) {
-    return xmap(MappedLoadable.flatten(constructor), MappedLoadable.flatten(getter));
+  default <M> StringLoadable<M> map(Function<T,M> constructor, Function<M,T> getter) {
+    return mapChecked(Loadable.noErrors(constructor), Loadable.noErrors(getter));
   }
 
   @Override
   default StringLoadable<T> validate(BiFunction<T,ErrorFactory,T> validator) {
-    return xmap(validator, validator);
+    return mapChecked(validator, validator);
+  }
+
+
+  /** @deprecated use {@link #mapChecked(BiFunction, BiFunction)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
+  @Override
+  default <M> StringLoadable<M> xmap(BiFunction<T,ErrorFactory,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
+    return MappedLoadable.of(this, constructor, getter);
+  }
+
+  /** @deprecated use {@link #mapChecked(BiFunction, BiFunction)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
+  @Override
+  default <M> StringLoadable<M> comapFlatMap(BiFunction<T,ErrorFactory,M> constructor, Function<M,T> getter) {
+    return mapChecked(constructor, Loadable.noErrors(getter));
+  }
+
+  /** @deprecated use {@link #mapChecked(BiFunction, BiFunction)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
+  @Override
+  default <M> StringLoadable<M> flatComap(Function<T,M> constructor, BiFunction<M,ErrorFactory,T> getter) {
+    return mapChecked(Loadable.noErrors(constructor), getter);
+  }
+
+  /** @deprecated use {@link #map(Function, Function)} */
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
+  @Override
+  default <M> StringLoadable<M> flatXmap(Function<T,M> constructor, Function<M,T> getter) {
+    return mapChecked(Loadable.noErrors(constructor), Loadable.noErrors(getter));
   }
 }
