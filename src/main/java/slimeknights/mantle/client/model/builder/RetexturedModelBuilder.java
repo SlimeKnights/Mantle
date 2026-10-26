@@ -20,6 +20,9 @@ public class RetexturedModelBuilder<T extends ModelBuilder<T>> extends ColoredMo
 
   @Override
   public JsonObject toJson(JsonObject json) {
+    if (retextured.isEmpty()) {
+      throw new IllegalStateException("Must have at least 1 texture to be retextured.");
+    }
     json = super.toJson(json);
     json.add("retextured", retextured);
     return json;
