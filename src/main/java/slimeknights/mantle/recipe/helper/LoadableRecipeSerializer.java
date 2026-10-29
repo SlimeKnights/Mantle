@@ -3,8 +3,10 @@ package slimeknights.mantle.recipe.helper;
 import com.mojang.serialization.MapCodec;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -45,6 +47,13 @@ public class LoadableRecipeSerializer<T extends Recipe<?>> implements RecipeSeri
   @Override
   public void accept(TypedMapBuilder builder) {
     builder.put(SERIALIZER, this);
+    // unfortuantely do not know what recipe we are parsing, but can at least notify which recipe serializer
+    ResourceLocation id = BuiltInRegistries.RECIPE_SERIALIZER.getKey(this);
+    if (id != null) {
+      builder.put(ContextKey.DEBUG, "Recipe of type " + id);
+    } else {
+      builder.put(ContextKey.DEBUG, "Recipe of unregistered serializer " + this);
+    }
   }
 
 
