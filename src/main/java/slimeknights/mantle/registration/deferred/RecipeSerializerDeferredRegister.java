@@ -62,6 +62,16 @@ public class RecipeSerializerDeferredRegister extends DeferredRegister<RecipeSer
     return registerSerializer(name, id -> new SimpleRecipeSerializer<>(codec, streamCodec));
   }
 
+  /** Registers a {@link SimpleRecipeSerializer} from the given singleton instance. */
+  public <T extends Recipe<?>> DeferredRecipeSerializer<T> registerSingleton(String name, T instance) {
+    return registerSerializer(name, id -> SimpleRecipeSerializer.singleton(instance));
+  }
+
+  /** Registers a {@link SimpleRecipeSerializer} from the no arguments given constructor. */
+  public <T extends Recipe<?>> DeferredRecipeSerializer<T> registerNoArguments(String name, Supplier<T> constructor) {
+    return registerSerializer(name, id -> SimpleRecipeSerializer.noArguments(constructor));
+  }
+
   /** Registers a {@link SimpleRecipeSerializer} from the given loadable. */
   public <T extends Recipe<?>> DeferredRecipeSerializer<T> registerLoadable(String name, RecordLoadable<T> loader) {
     return registerSerializer(name, id -> LoadableRecipeSerializer.of(loader));
