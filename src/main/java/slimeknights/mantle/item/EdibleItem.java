@@ -11,7 +11,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
 import slimeknights.mantle.util.TranslationHelper;
 
 import java.util.List;
@@ -39,14 +38,14 @@ public class EdibleItem extends Item {
   /** Adds effects to the tooltip */
   public static void addEffectTooltip(ItemStack stack, TooltipContext context, List<Component> tooltip) {
     FoodProperties food = stack.getFoodProperties(null);
-    if (food == null) {
-      return;
+    if (food != null) {
+      addEffectTooltip(food, context, tooltip);
     }
-    float ticksPerSecond = 20;
-    Level level = context.level();
-    if (level != null) {
-      ticksPerSecond = level.tickRateManager().tickrate();
-    }
+  }
+
+  /** Adds effects to the tooltip */
+  public static void addEffectTooltip(FoodProperties food, TooltipContext context, List<Component> tooltip) {
+    float ticksPerSecond = context.tickRate();
 
     // add effects to the tooltip, code based on potion items
     for (PossibleEffect possibleEffect : food.effects()) {
@@ -55,7 +54,7 @@ public class EdibleItem extends Item {
       if (effect.getAmplifier() > 0) {
         mutable = Component.translatable("potion.withAmplifier", mutable, Component.translatable("potion.potency." + effect.getAmplifier()));
       }
-      if (effect.getDuration() > 20) {
+      if (effect.getDuration() > ticksPerSecond) {
         mutable = Component.translatable("potion.withDuration", mutable, MobEffectUtil.formatDuration(effect, 1, ticksPerSecond));
       }
       tooltip.add(mutable.withStyle(effect.getEffect().value().getCategory().getTooltipFormatting()));
