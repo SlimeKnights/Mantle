@@ -112,7 +112,7 @@ public class EntityIngredient implements Predicate<EntityType<?>> {
    * Gets the list of eggs matching this ingredient, used for focus links in JEI.
    * Note the list may contain null for any entities whose egg does not exist.
    */
-  public List<@Nullable ItemStack> getEggs() {
+  public List<@Nullable ItemStack> getDisplayEggs() {
     if (eggs == null) {
       // use getDisplay to guarantee order is the same, just in case
       eggs = getTypes().stream().map(type -> {
