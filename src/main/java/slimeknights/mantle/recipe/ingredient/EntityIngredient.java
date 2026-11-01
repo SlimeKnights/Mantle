@@ -7,9 +7,12 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraftforge.common.ForgeSpawnEggItem;
+import org.jetbrains.annotations.Nullable;
 import slimeknights.mantle.data.loadable.IAmLoadable;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -127,6 +130,7 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
 
   private List<EntityInput> display;
   private List<ItemStack> eggs;
+  private List<@Nullable ItemStack> displayEggs;
 
   /** Gets the list of eggs matching this ingredient, used for display in JEI as it cannot do entity type */
   public List<EntityInput> getDisplay() {
@@ -136,13 +140,32 @@ public abstract class EntityIngredient implements Predicate<EntityType<?>>, IAmL
     return display;
   }
 
-  /** Gets the list of eggs matching this ingredient, used for focus links in JEI */
+  /** @deprecated use {@link #getDisplayEggs()} as it better supports JEI focus links. */
+  @Deprecated(forRemoval = true)
   public List<ItemStack> getEggs() {
     if (eggs == null) {
       // use getDisplay to guarantee order is the same, just in case
       eggs = getDisplay().stream().map(type -> new ItemStack(Objects.requireNonNullElse(ForgeSpawnEggItem.fromEntityType(type.type), Items.AIR))).toList();
     }
     return eggs;
+  }
+
+  /**
+   * Gets the list of eggs matching this ingredient, used for focus links in JEI.
+   * Note the list may contain null for any entities whose egg does not exist.
+   */
+  public List<@Nullable ItemStack> getDisplayEggs() {
+    if (displayEggs == null) {
+      // use getDisplay to guarantee order is the same, just in case
+      displayEggs = getTypes().stream().map(type -> {
+        Item item = SpawnEggItem.byId(type);
+        if (item == null) {
+          return null;
+        }
+        return new ItemStack(item);
+      }).toList();
+    }
+    return displayEggs;
   }
 
 
