@@ -158,7 +158,7 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> {
    */
   @Override
   public <B extends Block> DeferredBlock<B> register(String name, Function<ResourceLocation, ? extends B> block) {
-    return register(name, block, BLOCK_ITEM);
+    return register(name, block, defaultBlockItem);
   }
 
   /**
@@ -182,7 +182,7 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> {
    */
   @Override
   public <B extends Block> DeferredBlock<B> register(String name, Supplier<? extends B> block) {
-    return register(name, block, BLOCK_ITEM);
+    return register(name, block, defaultBlockItem);
   }
 
   /**
