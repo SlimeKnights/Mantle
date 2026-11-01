@@ -91,6 +91,11 @@ public abstract sealed class FluidOutput extends StackOutput<Fluid,FluidStack> {
     return get().copy();
   }
 
+  /** Creates a copy of the fluid stack with the given amount */
+  public final FluidStack copyWithAmount(int amount) {
+    return get().copyWithAmount(amount);
+  }
+
 
   /* Field getters */
 
