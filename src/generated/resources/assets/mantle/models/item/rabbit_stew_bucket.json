@@ -1,6 +1,9 @@
 {
   "parent": "neoforge:item/bucket_drip",
   "flip_gas": false,
-  "fluid": "mantle:rabbit_stew",
+  "fluid": {
+    "name": "mantle:rabbit_stew",
+    "optional": true
+  },
   "loader": "mantle:fluid_container"
 }

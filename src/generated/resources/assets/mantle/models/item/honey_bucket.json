@@ -1,6 +1,9 @@
 {
   "parent": "neoforge:item/bucket_drip",
   "flip_gas": false,
-  "fluid": "mantle:honey",
+  "fluid": {
+    "name": "mantle:honey",
+    "optional": true
+  },
   "loader": "mantle:fluid_container"
 }

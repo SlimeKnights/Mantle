@@ -1,6 +1,9 @@
 {
   "parent": "neoforge:item/bucket_drip",
   "flip_gas": false,
-  "fluid": "mantle:mushroom_stew",
+  "fluid": {
+    "name": "mantle:mushroom_stew",
+    "optional": true
+  },
   "loader": "mantle:fluid_container"
 }

@@ -1,6 +1,9 @@
 {
   "parent": "neoforge:item/bucket_drip",
   "flip_gas": false,
-  "fluid": "mantle:beetroot_soup",
+  "fluid": {
+    "name": "mantle:beetroot_soup",
+    "optional": true
+  },
   "loader": "mantle:fluid_container"
 }

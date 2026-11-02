@@ -22,6 +22,7 @@ package slimeknights.mantle.client.model;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.math.Transformation;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.CompositeModel;
@@ -90,8 +92,22 @@ public record FluidContainerModel(FluidStack fluid, boolean flipGas) implements 
       DataComponentPatch components = DataComponentPatch.EMPTY;
       if (fluidElement.isJsonObject()) {
         JsonObject fluidObject = fluidElement.getAsJsonObject();
-        fluid = Loadables.FLUID.getIfPresent(fluidObject, "name");
-        components = Loadables.DATA_COMPONENTS.getOrDefault(fluidObject, "components", DataComponentPatch.EMPTY);
+        boolean fluidValid = true;
+        if (GsonHelper.getAsBoolean(fluidObject, "optional")) {
+          try {
+            fluid = Loadables.FLUID.getIfPresent(fluidObject, "name");
+          } catch (JsonSyntaxException e) {
+            Mantle.logger.debug("Caught error parsing optional fluid in mantle:fluid_container model, replacing with lava: {}", e.getMessage());
+            fluid = Fluids.LAVA;
+            fluidValid = false;
+          }
+        } else {
+          fluid = Loadables.FLUID.getIfPresent(fluidObject, "name");
+        }
+        // skip parsing components if we did not find a valid fluid
+        if (fluidValid) {
+          components = Loadables.DATA_COMPONENTS.getOrDefault(fluidObject, "components", DataComponentPatch.EMPTY);
+        }
       } else {
         fluid = Loadables.FLUID.convert(fluidElement, "fluid");
       }

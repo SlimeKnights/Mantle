@@ -1,5 +1,6 @@
 package slimeknights.mantle.client.model.builder;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
@@ -16,6 +17,7 @@ public class FluidContainerModelBuilder<T extends ModelBuilder<T>> extends Custo
   private Fluid fluid = Fluids.EMPTY;
   private DataComponentPatch components;
   private boolean flipGas = true;
+  private boolean optional = false;
 
   public FluidContainerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
     super(FluidContainerModel.ID, parent, existingFileHelper, false);
@@ -39,19 +41,32 @@ public class FluidContainerModelBuilder<T extends ModelBuilder<T>> extends Custo
     return this;
   }
 
+  /** Marks this as optional, preventing errors if the fluid is not registered. */
+  @Override
+  public FluidContainerModelBuilder<T> optional() {
+    this.optional = true;
+    return this;
+  }
+
   @Override
   public JsonObject toJson(JsonObject json) {
     if (this.fluid == Fluids.EMPTY) {
       throw new IllegalStateException("Must set fluid");
     }
     json = super.toJson(json);
-    if (components.isEmpty()) {
-      json.add("fluid", Loadables.FLUID.serialize(this.fluid));
-    } else {
-      JsonObject fluid = new JsonObject();
-      fluid.add("name", Loadables.FLUID.serialize(this.fluid));
-      fluid.add("components", Loadables.DATA_COMPONENTS.serialize(components));
-      json.add("fluid", fluid);
+    if (fluid != Fluids.EMPTY) {
+      JsonElement fluidElement = Loadables.FLUID.serialize(this.fluid);
+      if (components.isEmpty() && !optional) {
+        json.add("fluid", fluidElement);
+      } else {
+        JsonObject fluid = new JsonObject();
+        fluid.add("name", fluidElement);
+        fluid.add("components", Loadables.DATA_COMPONENTS.serialize(components));
+        if (optional) {
+          fluid.addProperty("optional", true);
+        }
+        json.add("fluid", fluid);
+      }
     }
     json.addProperty("flip_gas", flipGas);
     return json;

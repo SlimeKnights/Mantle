@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /** Quick and dirty data provider to generate fluid bucket models */
+@SuppressWarnings("SameParameterValue")
 public class FluidBucketModelProvider extends GenericDataProvider {
   private final String modId;
   private final List<BucketModel> buckets = new ArrayList<>();
@@ -29,7 +30,7 @@ public class FluidBucketModelProvider extends GenericDataProvider {
   }
 
   /** Record for bucket model data */
-  private record BucketModel(ResourceLocation fluid, ResourceLocation bucket, boolean flipGas) {
+  private record BucketModel(ResourceLocation fluid, ResourceLocation bucket, boolean flipGas, boolean optional) {
     /** Creates the JSON for this model */
     public JsonObject serialize() {
       JsonObject json = new JsonObject();
@@ -37,34 +38,41 @@ public class FluidBucketModelProvider extends GenericDataProvider {
       // using our own model as the forge one expects us to use item colors to handle tints, when we could just bake it in
       json.addProperty("loader", FluidContainerModel.ID.toString());
       json.addProperty("flip_gas", flipGas);
-      json.addProperty("fluid", fluid.toString());
+      if (optional) {
+        JsonObject fluid = new JsonObject();
+        fluid.addProperty("name", this.fluid.toString());
+        fluid.addProperty("optional", true);
+        json.add("fluid", fluid);
+      } else {
+        json.addProperty("fluid", this.fluid.toString());
+      }
       return json;
     }
   }
 
   /** Adds a bucket to the list */
-  protected void model(ResourceLocation fluid, ResourceLocation bucket, boolean flipGas) {
-    buckets.add(new BucketModel(fluid, bucket, flipGas));
+  protected void model(ResourceLocation fluid, ResourceLocation bucket, boolean flipGas, boolean optional) {
+    buckets.add(new BucketModel(fluid, bucket, flipGas, optional));
   }
 
   /** Adds a bucket to the list. */
-  protected void model(ResourceLocation fluid, boolean flipGas) {
-    model(fluid, fluid.withSuffix("_bucket"), flipGas);
+  protected void model(ResourceLocation fluid, boolean flipGas, boolean optional) {
+    model(fluid, fluid.withSuffix("_bucket"), flipGas, optional);
   }
 
   /** Adds a bucket to the list from the fluid object, without requiring it to be bound. */
   protected void optionalFluid(FluidObject<?> fluid, boolean flipGas) {
-    model(fluid.id(), flipGas);
+    model(fluid.id(), flipGas, true);
   }
 
   /** Adds a bucket to the list from the fluid object, requires it to be bound. */
   protected void requiredFluid(FluidObject<?> fluid) {
-    optionalFluid(fluid, fluid.getType().isLighterThanAir());
+    model(fluid.id(), fluid.getType().isLighterThanAir(), false);
   }
 
   /** Adds a bucket to the list from a bucket item. */
   protected void bucket(ResourceLocation id, BucketItem bucket) {
-    model(Loadables.FLUID.getKey(bucket.content), id, bucket.content.getFluidType().isLighterThanAir());
+    model(Loadables.FLUID.getKey(bucket.content), id, bucket.content.getFluidType().isLighterThanAir(), false);
   }
 
   /** Adds a bucket to the list from a bucket item. */
