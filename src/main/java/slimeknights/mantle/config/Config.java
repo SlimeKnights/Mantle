@@ -21,11 +21,6 @@ public class Config {
 	/** Heart renderer mode */
   public static final EnumValue<HeartRenderer> HEART_RENDERER;
 
-  /** If true, enables the fluid fog fix. If false, disables it for better shader compatability. */
-  public static final BooleanValue ENABLE_FLUID_FOG_FIX;
-  /** If true, the fallback shader for fluid uses a text shader, which provides better compatability. */
-  public static final BooleanValue FLUID_USE_TEXT_SHADER;
-
   /** If true, the fallback shader for fluid uses a text shader, which provides better compatability. */
   public static final BooleanValue SHOW_POTION_FLUID_IN_JEI;
 
@@ -52,22 +47,6 @@ public class Config {
         "Mod authors: this config is not meant for compatibility with your heart renderer, cancel the RenderGameOverlayEvent.Pre event and our logic won't run")
       .translation("config.mantle.extraHeartRenderer")
       .defineEnum("heartRenderer", HeartRenderer.WITH_MAX);
-
-    ENABLE_FLUID_FOG_FIX = client
-      .comment(
-        "If true, fluids properly have their lighting adjusted under vanilla fog effects such as blindness. If false, they render as nearly fullbright ignoring fog and have limited light level support.",
-        "This config option is provided as the fix breaks shaders, and slightly broken is better than fully broken.",
-        "Best fix is to fix your shaders though, so you can have no broken visuals.")
-      .translation("config.mantle.enableFluidFogFix")
-      .define("enableFluidFogFix", true);
-
-    FLUID_USE_TEXT_SHADER = client
-      .comment(
-        "If true, the fallback shader for fluid uses a text shader, which provides better compatability. If false, uses the generic position color tex lightmap shader.",
-        "The text shader provides a fallback with more functionality than the generic one, but may be unexpected by other custom rendering.",
-        "Does nothing if enableFluidFogFix is true.")
-      .translation("config.mantle.fluidFallbackUseTextShader")
-      .define("fluidFallbackUseTextShader", true);
 
     SHOW_POTION_FLUID_IN_JEI = client
       .comment("If true, variants of our potion fluid for every potion will show in JEI, provided one of the mods using Mantle enabled the potion fluid. If false it will be hidden, but still usable.")

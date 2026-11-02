@@ -5,33 +5,23 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import slimeknights.mantle.Mantle;
 
 /**
  * Class for render types defined by Mantle
  */
 public class MantleRenderTypes extends RenderType {
-
   private MantleRenderTypes(String name, VertexFormat format, Mode mode, int bufferSize, boolean useDelegate, boolean needsSorting, Runnable setupTaskIn, Runnable clearTaskIn) {
     super(name, format, mode, bufferSize, useDelegate, needsSorting, setupTaskIn, clearTaskIn);
   }
 
-  /** Extension of {@link RenderType#POSITION_COLOR_TEX_LIGHTMAP_SHADER} with fog information based on {@link RenderType#ENTITY_TRANSLUCENT_CULL} */
-  public static final RenderStateShard.ShaderStateShard FLUID_SHADER = new RenderStateShard.ShaderStateShard(MantleShaders::getConfiguredFluidShader);
-
-  /**
-   * Render type used for the fluid renderer.
-   * TODO 1.21: can we replace this with {@link RenderType#ENTITY_TRANSLUCENT_CULL}? Would require including normals in our vertex format.
-   */
-  public static final RenderType FLUID = create(
-    Mantle.modId + ":block_render_type",
-    DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true,
-    RenderType.CompositeState.builder()
-      .setLightmapState(LIGHTMAP)
-      .setShaderState(FLUID_SHADER)
-      .setTextureState(BLOCK_SHEET_MIPPED)
-      .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-      .createCompositeState(false));
+  /** Render type for cutout without cull (i.e. two-sided quads). Used for the fluid renderer in blocks where the player may enter the fluid (e.g. smeltery fluid). */
+  @SuppressWarnings("deprecation")
+  public static final RenderType ENTITY_CUTOUT_NO_CULL = RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS, true);
+  /** Render type for translucent without cull (i.e. two-sided quads). Used for the fluid renderer in blocks where the player may enter the fluid (e.g. smeltery fluid). */
+  @SuppressWarnings("deprecation")
+  public static final RenderType ENTITY_TRANSLUCENT_NO_CULL = RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS, true);
 
   /**
    * Render type used for the structure renderer
