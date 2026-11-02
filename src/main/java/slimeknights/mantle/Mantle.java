@@ -111,13 +111,13 @@ public class Mantle {
     MantleLoot.init(modEventBus);
     MantleData.init(modEventBus);
     MantleAttributes.init(modEventBus);
+    LootTableInjector.init(modEventBus);
     NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickBlock.class, LecternBookItem::interactWithBlock);
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
     MantleCommand.init();
     TagPreference.init();
-    LootTableInjector.init();
   }
 
   private void register(RegisterEvent event) {

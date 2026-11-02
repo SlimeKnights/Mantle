@@ -2,14 +2,15 @@ package slimeknights.mantle.loot.injection;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import slimeknights.mantle.Mantle;
-import slimeknights.mantle.data.loadable.Loadables;
-import slimeknights.mantle.data.loadable.primitive.StringLoadable;
-import slimeknights.mantle.data.loadable.record.RecordLoadable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,24 +21,23 @@ import java.util.Map;
  * Record holding a list of entries to inject into the given loot table
  */
 public record LootTableInjection(ResourceLocation name, List<LootPoolInjection> pools) {
-  public static final RecordLoadable<LootTableInjection> LOADABLE = RecordLoadable.create(
-    Loadables.RESOURCE_LOCATION.requiredField("name", LootTableInjection::name),
-    LootPoolInjection.LOADABLE.list(1).requiredField("pools", LootTableInjection::pools),
-    LootTableInjection::new);
+  public static final Codec<LootTableInjection> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    ResourceLocation.CODEC.fieldOf("name").forGetter(LootTableInjection::name),
+    LootPoolInjection.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("pools").forGetter(LootTableInjection::pools)
+  ).apply(instance, LootTableInjection::new));
 
   /**
    * Record holding a list of entries to inject into the given pool
    */
   public record LootPoolInjection(String name, List<LootPoolEntryContainer> entries) {
-    public static final RecordLoadable<LootPoolInjection> LOADABLE = RecordLoadable.create(
-      StringLoadable.DEFAULT.requiredField("name", LootPoolInjection::name),
-      Loadables.LOOT_ENTRY.list(1).requiredField("entries", pool -> pool.entries),
-      LootPoolInjection::new);
+    public static final Codec<LootPoolInjection> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+      ExtraCodecs.NON_EMPTY_STRING.fieldOf("name").forGetter(LootPoolInjection::name),
+      LootPoolEntries.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("entries").forGetter(LootPoolInjection::entries)
+    ).apply(instance, LootPoolInjection::new));
 
     /** Injects this into the given loot pool */
     public void inject(LootTable table) {
       LootPool pool = table.getPool(name);
-      //noinspection ConstantConditions method is annotated wrongly
       if (pool != null) {
         List<LootPoolEntryContainer> entries = new ArrayList<>(pool.entries.size() + this.entries.size());
         entries.addAll(pool.entries);

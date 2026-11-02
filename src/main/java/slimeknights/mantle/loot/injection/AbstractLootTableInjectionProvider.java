@@ -1,15 +1,16 @@
 package slimeknights.mantle.loot.injection;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.data.GenericRegistryDataProvider;
-import slimeknights.mantle.data.loadable.field.ContextKey;
 import slimeknights.mantle.util.JsonHelper;
-import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +33,12 @@ public abstract class AbstractLootTableInjectionProvider extends GenericRegistry
   @Override
   public final CompletableFuture<?> run(CachedOutput output, HolderLookup.Provider lookup) {
     addTables(lookup);
-    TypedMap context = ContextKey.lookupContext(lookup).build();
+    RegistryOps<JsonElement> ops = lookup.createSerializationContext(JsonOps.INSTANCE);
     // add all builders to the output
     return allOf(builders.stream().map(builder -> {
-      JsonObject json = LootTableInjection.LOADABLE.serialize(builder.build(), context).getAsJsonObject();
+      JsonObject json = JsonHelper.serialize(ops, LootTableInjection.CODEC, builder.build()).getAsJsonObject();
       if (builder.conditions.length > 0) {
-        json.add("conditions", JsonHelper.serializeArray(ICondition.CODEC, builder.conditions));
+        json.add("neoforge:conditions", JsonHelper.serializeArray(ICondition.CODEC, builder.conditions));
       }
       return saveJson(output, ResourceLocation.fromNamespaceAndPath(domain, builder.path), json);
     }));
