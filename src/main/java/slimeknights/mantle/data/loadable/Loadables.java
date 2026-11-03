@@ -60,7 +60,7 @@ public class Loadables {
 
   /** Alias for the resource location loadable as it's a common need */
   public static final StringLoadable<ResourceLocation> RESOURCE_LOCATION = ResourceLocationLoadable.DEFAULT;
-  public static final StringLoadable<ItemAbility> ITEM_ABILITY = StringLoadable.DEFAULT.map(ItemAbility::get, ItemAbility::name);
+  public static final StringLoadable<ItemAbility> ITEM_ABILITY = StringLoadable.NON_EMPTY.map(ItemAbility::get, ItemAbility::name);
   /** @deprecated use {@link #ITEM_ABILITY} */
   @Deprecated(forRemoval = true)
   public static final StringLoadable<ItemAbility> TOOL_ACTION = ITEM_ABILITY;

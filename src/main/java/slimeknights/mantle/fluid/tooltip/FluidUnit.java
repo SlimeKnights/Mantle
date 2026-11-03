@@ -13,7 +13,7 @@ import java.util.List;
  */
 public record FluidUnit(String key, int needed) {
   public static final RecordLoadable<FluidUnit> LOADABLE = RecordLoadable.create(
-    StringLoadable.DEFAULT.requiredField("key", FluidUnit::key),
+    StringLoadable.NON_EMPTY.requiredField("key", FluidUnit::key),
     IntLoadable.FROM_ONE.requiredField("needed", FluidUnit::needed),
     FluidUnit::new);
 
