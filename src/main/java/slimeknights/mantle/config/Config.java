@@ -18,7 +18,7 @@ public class Config {
     DISABLE, NO_MAX, WITH_MAX
   }
 
-	/** Heart renderer mode */
+  /** Heart renderer mode */
   public static final EnumValue<HeartRenderer> HEART_RENDERER;
 
   /** If true, the fallback shader for fluid uses a text shader, which provides better compatability. */
@@ -27,18 +27,18 @@ public class Config {
   /** If true and {@link slimeknights.mantle.fluid.MantleFluids#powderSnow} is bound, tries to register it as the fluid for powder snow cauldrons. */
   public static final BooleanValue POWDER_SNOW_CAULDRON_FLUID;
 
-	/** List of preferences for tag outputs */
-	private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
-	public static final ConfigValue<List<? extends String>> TAG_PREFERENCES;
+  /** List of preferences for tag outputs */
+  private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
+  public static final ConfigValue<List<? extends String>> TAG_PREFERENCES;
 
-	public static final ModConfigSpec CLIENT_SPEC, COMMON_SPEC, SERVER_SPEC;
+  public static final ModConfigSpec CLIENT_SPEC, COMMON_SPEC, SERVER_SPEC;
 
-	static {
+  static {
     ModConfigSpec.Builder client = new ModConfigSpec.Builder();
     ModConfigSpec.Builder common = new ModConfigSpec.Builder();
     ModConfigSpec.Builder server = new ModConfigSpec.Builder();
 
-		// client options
+    // client options
     HEART_RENDERER = client
       .comment(
         "If not DISABLE, enables the Mantle heart renderer, which stacks hearts by changing the color instead of vertically stacking them.",
@@ -56,13 +56,13 @@ public class Config {
       .comment("If true, registers Mantle's powder snow as the fluid for the vanilla powder snow cauldron. May conflict with another mod doing the same but shouldn't crash.")
       .define("powder_snow_cauldron_fluid", true);
 
-		// server options
-		TAG_PREFERENCES = server.comment("Preferences for outputs from tags used in automatic compat in recipes")
+    // server options
+    TAG_PREFERENCES = server.comment("Preferences for outputs from tags used in automatic compat in recipes")
                             .translation("config.mantle.tagPreferences")
                             .defineList("tagPreferences", DEFAULT_TAG_PREFERENCES, str -> true);
 
-		CLIENT_SPEC = client.build();
+    CLIENT_SPEC = client.build();
     COMMON_SPEC = common.build();
-		SERVER_SPEC = server.build();
-	}
+    SERVER_SPEC = server.build();
+  }
 }
