@@ -26,6 +26,8 @@ public class Config {
 
   /** If true and {@link slimeknights.mantle.fluid.MantleFluids#powderSnow} is bound, tries to register it as the fluid for powder snow cauldrons. */
   public static final BooleanValue POWDER_SNOW_CAULDRON_FLUID;
+  /** If true and {@link slimeknights.mantle.fluid.MantleFluids#powderSnow} is bound, tries to register it as the fluid for powder snow buckets. */
+  public static final BooleanValue POWDER_SNOW_BUCKET;
 
   /** List of preferences for tag outputs */
   private static final List<String> DEFAULT_TAG_PREFERENCES = Arrays.asList("minecraft", "tconstruct", "tmechworks", "metalborn", "embers", "create", "immersiveengineering", "mekanism", "thermal");
@@ -54,7 +56,10 @@ public class Config {
 
     POWDER_SNOW_CAULDRON_FLUID = common
       .comment("If true, registers Mantle's powder snow as the fluid for the vanilla powder snow cauldron. May conflict with another mod doing the same but shouldn't crash.")
-      .define("powder_snow_cauldron_fluid", true);
+      .define("powder_snow.cauldron_fluid", true);
+    POWDER_SNOW_BUCKET = common
+      .comment("If true, registers Mantle's powder snow as the fluid for the vanilla bucket. May conflict with another mod doing the same but shouldn't crash.")
+      .define("powder_snow.bucket", true);
 
     // server options
     TAG_PREFERENCES = server.comment("Preferences for outputs from tags used in automatic compat in recipes")

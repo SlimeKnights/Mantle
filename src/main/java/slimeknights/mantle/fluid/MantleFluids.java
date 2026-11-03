@@ -179,7 +179,7 @@ public class MantleFluids {
       event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new PotionBucketItem.PotionBucketWrapper(potion.get(), stack), potion.asItem());
     }
     // powder snow adds a capability to the vanilla powder snow bucket
-    if (powderSnow.isBound()) {
+    if (powderSnow.isBound() && Config.POWDER_SNOW_BUCKET.getAsBoolean()) {
       event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ConstantFluidHandlerItem(new FluidStack(powderSnow.get(), FluidType.BUCKET_VOLUME), stack), powderSnow.asItem());
     }
   }
