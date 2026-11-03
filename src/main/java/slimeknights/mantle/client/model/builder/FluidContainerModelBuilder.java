@@ -3,6 +3,7 @@ package slimeknights.mantle.client.model.builder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
@@ -18,6 +19,7 @@ public class FluidContainerModelBuilder<T extends ModelBuilder<T>> extends Custo
   private DataComponentPatch components;
   private boolean flipGas = true;
   private boolean optional = false;
+  private ResourceLocation textureOverride = null;
 
   public FluidContainerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
     super(FluidContainerModel.ID, parent, existingFileHelper, false);
@@ -41,10 +43,18 @@ public class FluidContainerModelBuilder<T extends ModelBuilder<T>> extends Custo
     return this;
   }
 
-  /** Marks this as optional, preventing errors if the fluid is not registered. */
-  @Override
-  public FluidContainerModelBuilder<T> optional() {
+  /** Marks this fluid as optional, preventing errors if the fluid is not registered. */
+  public FluidContainerModelBuilder<T> fluidOptional() {
     this.optional = true;
+    return this;
+  }
+
+  /**
+   * Sets the path to the texture overrides model, for adding additional fluid texture overrides. Only used if {@link #fluid(Fluid)} is empty.
+   * See {@link slimeknights.mantle.client.model.TextureMapManager} for more information.
+   */
+  public FluidContainerModelBuilder<T> textureOverride(ResourceLocation textureOverride) {
+    this.textureOverride = textureOverride;
     return this;
   }
 
@@ -67,6 +77,8 @@ public class FluidContainerModelBuilder<T extends ModelBuilder<T>> extends Custo
         }
         json.add("fluid", fluid);
       }
+    } else if (textureOverride != null) {
+      json.addProperty("texture_override", textureOverride.toString());
     }
     json.addProperty("flip_gas", flipGas);
     return json;
