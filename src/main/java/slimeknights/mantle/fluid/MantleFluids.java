@@ -139,7 +139,7 @@ public class MantleFluids {
   /* Events */
 
   /** Dispenser behavior for a bucket. */
-  public static DispenseItemBehavior DISPENCE_BUCKET = new DefaultDispenseItemBehavior() {
+  public static DispenseItemBehavior DISPENSE_BUCKET = new DefaultDispenseItemBehavior() {
     private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
 
     @Override
@@ -159,7 +159,7 @@ public class MantleFluids {
   /** Registers dispenser behavior for the given fluid */
   private static void registerDispenser(FlowingFluidObject<?> fluid) {
     if (fluid.isBound()) {
-      DispenserBlock.registerBehavior(fluid, DISPENCE_BUCKET);
+      DispenserBlock.registerBehavior(fluid, DISPENSE_BUCKET);
     }
   }
 
