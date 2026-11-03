@@ -44,6 +44,11 @@ public abstract class FluidOutput implements Supplier<FluidStack> {
     return get().copy();
   }
 
+  /** Creates a copy of the fluid stack with the given amount */
+  public final FluidStack copyWithAmount(int amount) {
+    return new FluidStack(get(), amount);
+  }
+
   /**
    * Gets the size of the fluid. Equivelent to {@link #get()} then {@link FluidStack#getAmount()} but saves resolving the fluid.
    */
