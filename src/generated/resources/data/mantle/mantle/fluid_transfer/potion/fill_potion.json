@@ -7,7 +7,6 @@
       "tag": "c:potion"
     }
   ],
-  "copy": "minecraft:potion_contents",
   "fluid": {
     "type": "mantle:potion",
     "amount": 250,

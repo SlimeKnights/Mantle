@@ -2,7 +2,6 @@ package slimeknights.mantle.fluid.transfer;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +20,6 @@ import slimeknights.mantle.util.JsonHelper;
 import slimeknights.mantle.util.typed.TypedMap;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,10 +51,10 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericRegi
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidOutput fill, SizedFluidIngredient drain, List<DataComponentType<?>> copy, ICondition... conditions) {
-    if (!copy.isEmpty()) {
-      addTransfer(prefix + "empty", new EmptyFluidCopyDataTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill, copy), conditions);
-      addTransfer(prefix + "fill", new FillFluidCopyDataTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain, copy), conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidOutput fill, SizedFluidIngredient drain, boolean copyData, ICondition... conditions) {
+    if (copyData) {
+      addTransfer(prefix + "empty", new EmptyFluidCopyDataTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill), conditions);
+      addTransfer(prefix + "fill", new FillFluidCopyDataTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain), conditions);
     } else {
       addTransfer(prefix + "empty", new EmptyFluidContainerTransfer(Ingredient.of(item), ItemOutput.fromItem(container), fill), conditions);
       addTransfer(prefix + "fill", new FillFluidContainerTransfer(Ingredient.of(container), ItemOutput.fromItem(item), drain), conditions);
@@ -64,18 +62,18 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericRegi
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, FluidOutput.fromFluid(fluid, amount), SizedFluidIngredient.of(tag, amount), copy, conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, Fluid fluid, TagKey<Fluid> tag, int amount, boolean copyData, ICondition... conditions) {
+    addFillEmpty(prefix, item, container, FluidOutput.fromFluid(fluid, amount), SizedFluidIngredient.of(tag, amount), copyData, conditions);
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, TagKey<Fluid> tag, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, FluidOutput.fromTag(tag, amount), SizedFluidIngredient.of(tag, amount), copy, conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, TagKey<Fluid> tag, int amount, boolean copyData, ICondition... conditions) {
+    addFillEmpty(prefix, item, container, FluidOutput.fromTag(tag, amount), SizedFluidIngredient.of(tag, amount), copyData, conditions);
   }
 
   /** Adds generic fill and empty for a container */
-  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidObject<?> fluid, int amount, List<DataComponentType<?>> copy, ICondition... conditions) {
-    addFillEmpty(prefix, item, container, fluid.result(amount), fluid.ingredient(amount), copy, conditions);
+  protected void addFillEmpty(String prefix, ItemLike item, ItemLike container, FluidObject<?> fluid, int amount, boolean copyData, ICondition... conditions) {
+    addFillEmpty(prefix, item, container, fluid.result(amount), fluid.ingredient(amount), copyData, conditions);
   }
 
   @Override

@@ -2,7 +2,6 @@ package slimeknights.mantle.datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
@@ -30,7 +29,6 @@ import slimeknights.mantle.recipe.helper.ItemOutput;
 import slimeknights.mantle.recipe.ingredient.fluid.PotionFluidIngredient;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /** Adds fluid transfer for base fluid. Use {@link AbstractFluidContainerTransferProvider} for mods. */
@@ -62,7 +60,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
 
   /** Adds generic fill and empty for a container */
   private void optionalFillEmpty(String prefix, ItemLike item, ItemLike container, TagKey<Fluid> tag, int amount) {
-    addFillEmpty(prefix, item, container, tag, amount, List.of(), new TagFilledCondition<>(tag));
+    addFillEmpty(prefix, item, container, tag, amount, false, new TagFilledCondition<>(tag));
   }
 
   /** Adds generic fill and empty for a container */
@@ -96,8 +94,7 @@ public class MantleFluidTransferProvider extends AbstractFluidContainerTransferP
       ItemOutput.fromItem(filled),
       new SizedFluidIngredient(
         PotionFluidIngredient.of(new NotHolderSet<>(BuiltInRegistries.POTION.asLookup(), HolderSet.direct(Potions.WATER))),
-        MantleValues.BOTTLE),
-      List.of(DataComponents.POTION_CONTENTS)
+        MantleValues.BOTTLE)
     ), potionConditions);
     // water bottles are 1/3 of a bucket, to prevent water dupes we round up on fill and down on empty, hence fill being 500mb
     // we can always fill water bottles, not always fill splash and lingering

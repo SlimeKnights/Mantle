@@ -11,7 +11,6 @@
       "tag": "c:bottles/lingering"
     }
   ],
-  "copy": "minecraft:potion_contents",
   "fluid": {
     "type": "mantle:potion",
     "amount": 250,
