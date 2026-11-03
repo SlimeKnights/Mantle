@@ -29,7 +29,7 @@ import java.util.Objects;
  */
 public class TextureMapManager implements ISafeManagerReloadListener {
   /** Loadable for the map of textures locations in the file */
-  private static final Loadable<Map<String,ResourceLocation>> TEXTURE_MAP = StringLoadable.DEFAULT.mapWithValues(ResourceLocationLoadable.DEFAULT);
+  private static final Loadable<Map<String,ResourceLocation>> TEXTURE_MAP = StringLoadable.NON_EMPTY.mapWithValues(ResourceLocationLoadable.DEFAULT);
   /** Singleton instance of this loader */
   public static final TextureMapManager INSTANCE = new TextureMapManager();
   /** Folder holding the texture maps. */

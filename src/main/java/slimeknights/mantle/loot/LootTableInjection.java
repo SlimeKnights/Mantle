@@ -31,7 +31,7 @@ public record LootTableInjection(ResourceLocation name, List<LootPoolInjection> 
    */
   public record LootPoolInjection(String name, LootPoolEntryContainer[] entries) {
     public static final RecordLoadable<LootPoolInjection> LOADABLE = RecordLoadable.create(
-      StringLoadable.DEFAULT.requiredField("name", LootPoolInjection::name),
+      StringLoadable.NON_EMPTY.requiredField("name", LootPoolInjection::name),
       Loadables.LOOT_ENTRY.list(1).requiredField("entries", pool -> List.of(pool.entries)),
       LootPoolInjection::new);
 

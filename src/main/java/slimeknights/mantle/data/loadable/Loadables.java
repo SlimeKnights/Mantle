@@ -47,7 +47,7 @@ public class Loadables {
 
   /** Alias for the resource location loadable as it's a common need */
   public static final StringLoadable<ResourceLocation> RESOURCE_LOCATION = ResourceLocationLoadable.DEFAULT;
-  public static final StringLoadable<ToolAction> TOOL_ACTION = StringLoadable.DEFAULT.map(ToolAction::get, ToolAction::name);
+  public static final StringLoadable<ToolAction> TOOL_ACTION = StringLoadable.NON_EMPTY.map(ToolAction::get, ToolAction::name);
 
   /* Registries */
   public static final ResourceLocationLoadable<SoundEvent> SOUND_EVENT = new RegistryLoadable<>(BuiltInRegistries.SOUND_EVENT);
