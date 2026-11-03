@@ -5,6 +5,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import slimeknights.mantle.util.TranslationHelper;
 
@@ -13,13 +14,24 @@ import java.util.List;
 import java.util.Objects;
 
 public class EdibleItem extends Item {
+  private final UseAnim useAnim;
   public EdibleItem(FoodProperties foodIn) {
     this(new Properties().food(foodIn));
   }
 
-  public EdibleItem(Item.Properties properties) {
+  public EdibleItem(UseAnim useAnim, Item.Properties properties) {
     super(properties);
+    this.useAnim = useAnim;
     Objects.requireNonNull(foodProperties, "Must set food to make an EdibleItem");
+  }
+
+  public EdibleItem(Item.Properties properties) {
+    this(UseAnim.EAT, properties);
+  }
+
+  @Override
+  public UseAnim getUseAnimation(ItemStack stack) {
+    return useAnim;
   }
 
   @Override
