@@ -1,6 +1,5 @@
 package slimeknights.mantle.util;
 
-import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderSet;
@@ -114,8 +113,20 @@ public class RegistryHelper {
    * @param <T>       Registry type
    * @return  Holder for the given registry
    */
-  public static <T> Reference<T> getHolder(DefaultedRegistry<T> registry, T entry) {
+  public static <T> Reference<T> getHolder(Registry<T> registry, T entry) {
     return registry.getHolder(registry.getId(entry)).orElseThrow();
+  }
+
+  /**
+   * Creates a holder set of the given registry values
+   * @param registry  Registry
+   * @param entries   Registry entries
+   * @param <T>       Registry type
+   * @return Holder set
+   */
+  @SafeVarargs
+  public static <T> HolderSet<T> holderSet(Registry<T> registry, T... entries) {
+    return HolderSet.direct(entry -> RegistryHelper.getHolder(registry, entry), entries);
   }
 
   /**
