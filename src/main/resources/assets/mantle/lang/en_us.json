@@ -129,5 +129,25 @@
 
   "jei.mantle.fluid_transfer": "Fluid Transfer",
 
-  "item.mantle.book.click_to_open": "Right click to open"
+  "item.mantle.book.click_to_open": "Right click to open",
+
+
+  "tag.block.mantle.gauges": "Gauges",
+  "tag.block.mantle.gauges.attached": "Attached Gauges",
+  "tag.block.mantle.gauges.tanks": "Gauge Tanks",
+  "tag.block.mantle.gauge_blacklist": "Gauge Blacklist",
+  "tag.block.mantle.hides_gauge_amount": "Hides Amount in Gauges",
+
+  "tag.item.c.potions.bucket": "Potion Buckets",
+  "tag.item.c.bottles.splash": "Splash Potion Bottles",
+  "tag.item.c.bottles.lingering": "Lingering Potion Bottles",
+  "tag.item.c.soulbound": "Soulbound Items",
+  "tag.item.mantle.fluid_containers.empty": "Empty Fluid Transfer Containers",
+  "tag.item.mantle.fluid_containers.filled": "Filled Fluid Transfer Containers",
+
+  "tag.fluid.c.powder_snow": "Powder Snow",
+  "tag.fluid.mantle.soup": "Soup Fluids",
+  "tag.fluid.mantle.hide_in_display": "Fluids Hidden From Display Tanks",
+
+  "tag.menu.mantle.replaceable": "Menus Replaceable By Inventory Item Menus"
 }
