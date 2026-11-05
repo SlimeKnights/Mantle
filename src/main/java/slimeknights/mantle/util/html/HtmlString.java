@@ -1,5 +1,7 @@
 package slimeknights.mantle.util.html;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 /** Contains a literal string in HTML text */
 public record HtmlString(String value) implements HtmlSerializable {
   @Override
@@ -14,9 +16,6 @@ public record HtmlString(String value) implements HtmlSerializable {
 
   /** Escapes the given string for writing in HTML */
   public static String escapeString(String text) {
-    return text.replace("&", "&amp;")
-      .replace("<", "&lt;")
-      .replace(">", "&gt;")
-      .replace("\"", "&quot;");
+    return StringEscapeUtils.escapeHtml3(text);
   }
 }
