@@ -1,6 +1,8 @@
 {
   "mantle:tooltip.cooktime": "烧炼时间：%ds",
   "config.mantle.extraHeartRenderer": "启用额外爱心渲染层",
+  "config.mantle.enableFluidFogFix": "启用流体迷雾修正",
+  "config.mantle.fluidFallbackUseTextShader": "流体回退使用文本阴影",
 
   "command.mantle.view_tag.success": "%s目录中标签“%s”的值为：",
 
@@ -18,7 +20,8 @@
   "command.mantle.tags_for.no_tags": "无标签",
 
   "command.mantle.book_test.not_found": "未知的手册ID：%s",
-  "command.mantle.book.export.success": "导出手册图片到“%s”",
+  "command.mantle.book.export.success": "已导出手册图片到“%s”",
+  "command.mantle.book.export.html.success": "已导出手册图片到“%s”，导出HTML到“%s”",
   "command.mantle.book.export.error_generic": "无法导出手册图片，详细信息见日志",
   "command.mantle.book.export.error_io": "无法为手册图片“%s”新建目录",
 
@@ -27,24 +30,36 @@
   "command.mantle.dump_all_tags.success": "导出所有标签到“%s”",
   "command.mantle.dump_all_tags.type_success": "导出所有%s标签到“%s”",
 
-  "command.mantle.modify_tag.success.add": "成功向%2$s的标签“%3$s”中添加“%1$s”。使用/reload激活%s处的包",
-  "command.mantle.modify_tag.success.remove": "成功从%2$s的标签“%3$s”中移除“%1$s”。使用/reload激活%s处的包",
-  "command.mantle.modify_tag.success.clear": "成功清除%s的标签“%s”。使用/reload激活%s处的包",
-  "command.mantle.modify_tag.read_error": "无法读取%s的标签“%s”",
-  "command.mantle.modify_tag.write_error": "无法读取%s的标签“%s”",
+  "command.mantle.modify_tag.success.add": "已成功添加“%s”，目标是%s标签“%s”。运行/reload以激活以下位置的包：%s。",
+  "command.mantle.modify_tag.success.remove": "已成功移除“%s”，目标是%s标签“%s”。运行/reload以激活以下位置的包：%s。",
+  "command.mantle.modify_tag.success.clear": "已成功清空%s标签“%s”。运行/reload以激活以下位置的包：%s。",
+  "command.mantle.modify_tag.read_error": "读取%s标签“%s”时发生错误",
+  "command.mantle.modify_tag.write_error": "写入%s标签“%s”时发生错误",
 
-  "command.mantle.dump_loot_modifiers.success_log": "已将合并后的全局战利品表修饰器打印到控制台日志",
-  "command.mantle.dump_loot_modifiers.success_save": "已将合并后的全局战利品表修饰器导出到“%s”",
-  "command.mantle.dump_loot_modifiers.read_error": "读取全局战利品表修饰器失败",
+  "command.mantle.dump_loot_modifiers.success_log": "已在控制台日志中打印合并后的全局战利品表修饰器",
+  "command.mantle.dump_loot_modifiers.success_save": "已导出合并后的全局战利品表修饰器到“%s”",
+  "command.mantle.dump_loot_modifiers.read_error": "读取全局战利品表修饰器时发生错误",
 
-  "command.mantle.harvest_tiers.success_log": "已将排序后的挖掘等级打印到控制台日志",
-  "command.mantle.harvest_tiers.success_save": "已将排序后的挖掘等级导出到“%s”",
+  "command.mantle.harvest_tiers.success_log": "已在控制台日志中打印排序后的挖掘等级",
+  "command.mantle.harvest_tiers.success_save": "已导出排序后的挖掘等级到“%s”",
   "command.mantle.harvest_tiers.success_list": "挖掘等级：",
   "command.mantle.harvest_tiers.tag": "%s：方块标签%s",
   "command.mantle.harvest_tiers.no_tag": "%s：无标签",
 
-  "command.mantle.remove_recipes": "已成功移除%s个配方，用时%s秒。使用/reload激活%s处的包",
+  "command.mantle.hunger.set.single":   "将%s的饥饿值设为%d点",
+  "command.mantle.hunger.set.multiple": "将%d名玩家的饥饿值设为%d点",
+  "command.mantle.hunger.add.single":   "为%s增加%d点饥饿值",
+  "command.mantle.hunger.add.multiple": "为%d名玩家增加%d点饥饿值",
+  "command.mantle.hunger.subtract.single":   "为%s减少%d点饥饿值",
+  "command.mantle.hunger.subtract.multiple": "为%d名玩家减少%d点饥饿值",
+
+  "command.mantle.remove_recipes": "已成功移除%s个配方，用时%s秒。运行/reload以激活以下位置的包：%s。",
   "command.mantle.remove_recipes.preset_not_found": "移除配方预设“%s”缺失或错误。详细信息见日志",
+  "command.mantle.remove.failed_save": "无法保存JSON到“%s”。",
+
+  "command.mantle.key.wrong_registry": "预期资源键“%s”应属于注册表“%s”。",
+  "command.mantle.remove_data.structure.success": "已成功清空结构集“%s”，用时%s秒。运行/reload以激活以下位置的包：%s。",
+  "command.mantle.remove_data.biome_modifier.success": "已成功移除生物群系编辑器“%s”，用时%s秒。运行/reload以激活以下位置的包：%s。",
 
   "command.mantle.sources.success": "%s的标签源：",
   "command.mantle.sources.not_found": "“%s”未发现：",
@@ -57,6 +72,8 @@
 
   "command.mantle.tag_preference.empty_tag": "%s标签%s没有偏好值",
   "command.mantle.tag_preference.preference": "%s标签%s的偏好值是%s",
+
+  "book.mantle.section_list": "章节列表",
 
   "gui.mantle.fluid.capacity": "容量：%s mb",
   "gui.mantle.fluid.contents": "存有：%s",
@@ -74,6 +91,7 @@
 
   "block.mantle.tank.drained": "输出%smB%s",
   "block.mantle.tank.filled": "输入%smB%s",
+  "block.mantle.retextured.id": "纹理ID：%s",
 
   "item.mantle.book.click_to_open": "右击以打开"
 }
