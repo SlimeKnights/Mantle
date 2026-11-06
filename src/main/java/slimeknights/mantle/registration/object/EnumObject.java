@@ -29,6 +29,11 @@ public class EnumObject<E extends Enum<E>, R> implements MultiObject.Holders<R> 
   /** Internal backing supplier map */
   private final Map<E, Holder<R>> map;
 
+  /** Creates this object using another object. Useful for extending for more type specific things, e.g. EnumItem. */
+  protected EnumObject(EnumObject<E,R> enumObject) {
+    this(enumObject.map);
+  }
+
   /**
    * Gets the value for the given enum, assuring it's not null
    * @param value  Enum value
