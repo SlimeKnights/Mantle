@@ -16,25 +16,25 @@ import java.util.function.Function;
 
 /**
  * Represents an object which is a map of an enum to entry
- * @param <T>  Enum type
+ * @param <E>  Enum type
  * @param <R>  Registry type
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> {
+public class EnumObject<E extends Enum<E>, R> implements MultiObject.Holders<R> {
   /** Singleton empty object, type does not matter as it has no items */
   @SuppressWarnings({"rawtypes", "unchecked"})
   private static final EnumObject EMPTY = new EnumObject(Collections.emptyMap());
 
   /** Internal backing supplier map */
-  private final Map<T, Holder<R>> map;
+  private final Map<E, Holder<R>> map;
 
   /**
    * Gets the value for the given enum, assuring it's not null
    * @param value  Enum value
    * @return  Holder
    */
-  public Holder<R> getHolder(T value) {
+  public Holder<R> getHolder(E value) {
     Holder<R> holder = map.get(value);
     if (holder == null) {
       throw new NoSuchElementException("Missing key " + value);
@@ -48,7 +48,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
    * @return  Holder
    */
   @Nullable
-  public Holder<R> getHolderOrNull(T value) {
+  public Holder<R> getHolderOrNull(E value) {
     return map.get(value);
   }
 
@@ -59,7 +59,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
    * @throws NoSuchElementException  If the key is not defined
    * @throws NullPointerException    If the supplier at the key returns null
    */
-  public R get(T value) {
+  public R get(E value) {
     Holder<R> holder = map.get(value);
     if (holder == null) {
       throw new NoSuchElementException("Missing key " + value);
@@ -73,7 +73,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
    * @return  Value, or null if missing
    */
   @Nullable
-  public R getOrNull(T value) {
+  public R getOrNull(E value) {
     Holder<R> holder = map.get(value);
     if (holder == null) {
       return null;
@@ -85,7 +85,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
   /* Values */
 
   /** Gets all present keys for this object */
-  public Collection<T> keys() {
+  public Collection<E> keys() {
     return this.map.keySet();
   }
 
@@ -96,7 +96,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
   }
 
   /** Gets the set of entries for this object */
-  public Collection<Entry<T,Holder<R>>> entries() {
+  public Collection<Entry<E,Holder<R>>> entries() {
     return this.map.entrySet();
   }
 
@@ -113,7 +113,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
    * Runs the given consumer on each key in the enum object.
    * @param consumer  Consumer passed each key holder pair
    */
-  public void forEachHolder(BiConsumer<T, ? super Holder<R>> consumer) {
+  public void forEachHolder(BiConsumer<E, ? super Holder<R>> consumer) {
     this.map.forEach(consumer);
   }
 
@@ -122,7 +122,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
    * Will ignore any suppliers that have not yet resolved, to work around an error with registry events failing (which may or may not still be a thing).
    * @param consumer  Consumer passed each key value pair
    */
-  public void forEach(BiConsumer<T, ? super R> consumer) {
+  public void forEach(BiConsumer<E, ? super R> consumer) {
     this.map.forEach((key, holder) -> {
       if (holder.isBound()) {
         consumer.accept(key, holder.value());
@@ -135,20 +135,20 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
 
   /**
    * Fetches the empty enum object, cast to the given type. This is useful to reduce potential of null pointers by default fields to empty map
-   * @param <T>  Key type
+   * @param <E>  Key type
    * @param <R>  Registry type
    * @return  Empty EnumObject
    */
   @SuppressWarnings("unchecked")
-  public static <T extends Enum<T>, R> EnumObject<T,R> empty() {
-    return (EnumObject<T,R>) EMPTY;
+  public static <E extends Enum<E>, R> EnumObject<E,R> empty() {
+    return (EnumObject<E,R>) EMPTY;
   }
 
   /**
    * Creates a new builder instance
    * @param clazz  Enum class
    */
-  public static <T extends Enum<T>, R> EnumObject.Builder<T,R> builder(Class<T> clazz) {
+  public static <E extends Enum<E>, R> EnumObject.Builder<E,R> builder(Class<E> clazz) {
     return new Builder<>(clazz);
   }
 
@@ -156,7 +156,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
    * Creates a new builder instance
    * @param clazz  Enum class
    */
-  public static <T extends Enum<T>, R, V> EnumObject.MappedBuilder<T,R,V> builder(Class<T> clazz, Function<V,Holder<R>> mapper) {
+  public static <E extends Enum<E>, R, V> EnumObject.MappedBuilder<E,R,V> builder(Class<E> clazz, Function<V,Holder<R>> mapper) {
     return new MappedBuilder<>(clazz, mapper);
   }
 
@@ -182,13 +182,13 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
 
   /**
    * Enum object builder, to more conveiently create it from items, a map, or another enum object
-   * @param <T>  Enum type
+   * @param <E>  Enum type
    * @param <R>  Registry type
    */
   @SuppressWarnings({"UnusedReturnValue", "unused"})
-  public static class Builder<T extends Enum<T>, R> {
-    private final Map<T,Holder<R>> map;
-    private Builder(Class<T> clazz) {
+  public static class Builder<E extends Enum<E>, R> {
+    private final Map<E,Holder<R>> map;
+    private Builder(Class<E> clazz) {
       this.map = new EnumMap<>(clazz);
     }
 
@@ -198,7 +198,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
      * @param value  Value
      * @return  Builder instance
      */
-    public Builder<T,R> put(T key, Holder<R> value) {
+    public Builder<E,R> put(E key, Holder<R> value) {
       this.map.put(key, value);
       return this;
     }
@@ -208,7 +208,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
      * @param map  Map
      * @return  Builder instance
      */
-    public Builder<T,R> putAll(Map<T, Holder<R>> map) {
+    public Builder<E,R> putAll(Map<E, Holder<R>> map) {
       this.map.putAll(map);
       return this;
     }
@@ -218,7 +218,7 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
      * @param object  Enum object
      * @return  Builder instance
      */
-    public Builder<T,R> putAll(EnumObject<T,R> object) {
+    public Builder<E,R> putAll(EnumObject<E,R> object) {
       this.map.putAll(object.map);
       return this;
     }
@@ -227,40 +227,40 @@ public class EnumObject<T extends Enum<T>, R> implements MultiObject.Holders<R> 
      * Creates the final enum object
      * @return  Constructed enum object
      */
-    public EnumObject<T,R> build() {
+    public EnumObject<E,R> build() {
       return new EnumObject<>(map);
     }
   }
 
   /** Builder supporting adding objects through a holder getter. Meant for use with methods such as {@link net.minecraft.world.level.block.Block#builtInRegistryHolder()} */
-  public static class MappedBuilder<T extends Enum<T>, R, V> extends Builder<T, R> {
+  public static class MappedBuilder<E extends Enum<E>, R, V> extends Builder<E, R> {
     private final Function<V,Holder<R>> holderGetter;
 
-    private MappedBuilder(Class<T> clazz, Function<V,Holder<R>> holderGetter) {
+    private MappedBuilder(Class<E> clazz, Function<V,Holder<R>> holderGetter) {
       super(clazz);
       this.holderGetter = holderGetter;
     }
 
     /** Puts the given value into the builder using the holder getter */
-    public MappedBuilder<T,R,V> put(T key, V value) {
+    public MappedBuilder<E,R,V> put(E key, V value) {
       put(key, holderGetter.apply(value));
       return this;
     }
 
     @Override
-    public MappedBuilder<T,R,V> put(T key, Holder<R> holder) {
+    public MappedBuilder<E,R,V> put(E key, Holder<R> holder) {
       super.put(key, holder);
       return this;
     }
 
     @Override
-    public MappedBuilder<T,R,V> putAll(Map<T, Holder<R>> map) {
+    public MappedBuilder<E,R,V> putAll(Map<E, Holder<R>> map) {
       super.putAll(map);
       return this;
     }
 
     @Override
-    public MappedBuilder<T,R,V> putAll(EnumObject<T, R> object) {
+    public MappedBuilder<E,R,V> putAll(EnumObject<E, R> object) {
       super.putAll(object);
       return this;
     }
