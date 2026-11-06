@@ -17,10 +17,21 @@ import java.util.List;
  * @see FixedTooltipBlockItem
  */
 public class FixedTooltipItem extends Item {
+
   private final List<Component> tooltip;
   public FixedTooltipItem(List<Component> tooltip, Properties properties) {
     super(properties);
     this.tooltip = tooltip;
+  }
+
+  /** Makes a component for a tooltip with the proper styling */
+  public static Component makeComponent(String key) {
+    return Component.translatable(key).withStyle(ChatFormatting.GRAY);
+  }
+
+  /** Makes a component for a tooltip from the given ID with the proper styling */
+  public static Component makeComponent(ResourceLocation id) {
+    return makeComponent(Util.makeDescriptionId("item", id) + ".tooltip");
   }
 
   /** Creates a new block item from the given components */
@@ -30,18 +41,18 @@ public class FixedTooltipItem extends Item {
 
   /** Creates a new item from the given translation key for the tooltip */
   public static FixedTooltipItem fromKey(String key, Properties properties) {
-    return fromComponents(properties, Component.translatable(key).withStyle(ChatFormatting.GRAY));
+    return fromComponents(properties, makeComponent(key));
   }
 
   /** Creates a new item from the given registry ID */
   public static FixedTooltipItem fromId(ResourceLocation id, Properties properties) {
-    return fromKey(Util.makeDescriptionId("item", id) + ".tooltip", properties);
+    return fromComponents(properties, makeComponent(id));
   }
 
   /** Creates a new item from the given registry ID */
   public static FixedTooltipItem fromSuffixes(Properties properties, ResourceLocation id, String... suffixes) {
     String root = Util.makeDescriptionId("item", id) + '.';
-    return new FixedTooltipItem(Arrays.stream(suffixes).<Component>map(suffix -> Component.translatable(root + suffix).withStyle(ChatFormatting.GRAY)).toList(), properties);
+    return new FixedTooltipItem(Arrays.stream(suffixes).map(suffix -> makeComponent(root + suffix)).toList(), properties);
   }
 
   @Override

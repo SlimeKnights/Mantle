@@ -1,6 +1,5 @@
 package slimeknights.mantle.item.tooltip;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +23,11 @@ public class FixedTooltipBlockItem extends BlockItem {
     this.tooltip = tooltip;
   }
 
+  /** Makes a component for a tooltip from the given ID with the proper styling */
+  public static Component makeComponent(ResourceLocation id) {
+    return FixedTooltipItem.makeComponent(Util.makeDescriptionId("block", id) + ".tooltip");
+  }
+
   /** Creates a new block item from the given components */
   public static FixedTooltipBlockItem fromComponents(Block block, Properties properties, Component... tooltip) {
     return new FixedTooltipBlockItem(List.of(tooltip), block, properties);
@@ -31,18 +35,18 @@ public class FixedTooltipBlockItem extends BlockItem {
 
   /** Creates a new block item from the given translation key for the tooltip */
   public static FixedTooltipBlockItem fromKey(String key, Block block, Properties properties) {
-    return fromComponents(block, properties, Component.translatable(key).withStyle(ChatFormatting.GRAY));
+    return fromComponents(block, properties, FixedTooltipItem.makeComponent(key));
   }
 
   /** Creates a new block item from the given registry ID for the tooltip prefix */
   public static FixedTooltipBlockItem fromId(ResourceLocation id, Block block, Properties properties) {
-    return fromKey(Util.makeDescriptionId("block", id) + ".tooltip", block, properties);
+    return fromComponents(block, properties, makeComponent(id));
   }
 
   /** Creates a new block item from the given registry ID for the tooltip prefix */
   public static FixedTooltipBlockItem fromSuffixes(Block block, Properties properties, ResourceLocation id, String... suffixes) {
     String root = Util.makeDescriptionId("block", id) + '.';
-    return new FixedTooltipBlockItem(Arrays.stream(suffixes).<Component>map(suffix -> Component.translatable(root + suffix).withStyle(ChatFormatting.GRAY)).toList(), block, properties);
+    return new FixedTooltipBlockItem(Arrays.stream(suffixes).map(suffix -> FixedTooltipItem.makeComponent(root + suffix)).toList(), block, properties);
   }
 
   @Override
