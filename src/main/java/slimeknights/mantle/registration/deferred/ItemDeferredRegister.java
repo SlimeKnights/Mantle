@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
+import slimeknights.mantle.item.tooltip.FixedTooltipItem;
+import slimeknights.mantle.item.tooltip.OptionalTooltipItem;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -66,5 +68,43 @@ public class ItemDeferredRegister extends EnumDeferredRegister<Item> {
    */
   public DeferredItem<Item> register(String name) {
     return register(name, new Item.Properties());
+  }
+
+  /**
+   * Adds a new item to the list to be registered using {@link OptionalTooltipItem}, based on the given item properties.
+   * @param name   Item name
+   * @param props  Item properties
+   * @return  Item registry object
+   */
+  public DeferredItem<Item> registerOptionalTooltip(String name, Item.Properties props) {
+    return register(name, () -> new OptionalTooltipItem(props));
+  }
+
+  /**
+   * Adds a new item to the list to be registered using {@link OptionalTooltipItem}, with default item properties
+   * @param name   Item name
+   * @return  Item registry object
+   */
+  public DeferredItem<Item> registerOptionalTooltip(String name) {
+    return registerOptionalTooltip(name, new Item.Properties());
+  }
+
+  /**
+   * Adds a new item to the list to be registered using {@link FixedTooltipItem}, based on the given item properties.
+   * @param name   Item name
+   * @param props  Item properties
+   * @return  Item registry object
+   */
+  public DeferredItem<Item> registerFixedTooltip(String name, Item.Properties props) {
+    return register(name, id -> FixedTooltipItem.fromId(id, props));
+  }
+
+  /**
+   * Adds a new item to the list to be registered using {@link FixedTooltipItem}, with default item properties
+   * @param name   Item name
+   * @return  Item registry object
+   */
+  public DeferredItem<Item> registerFixedTooltip(String name) {
+    return registerFixedTooltip(name, new Item.Properties());
   }
 }

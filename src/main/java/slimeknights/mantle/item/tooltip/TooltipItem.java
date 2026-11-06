@@ -10,12 +10,13 @@ import java.util.List;
 
 /**
  * Item with automatic optional tooltip support.
- * @see TranslationHelper#addOptionalTooltip(ItemStack, List) 
- * @see ArmorTooltipItem
+ * @see TranslationHelper#addOptionalTooltip(ItemStack, List)
+ * @see FixedTooltipItem
  * @see BlockTooltipItem
+ * @deprecated use {@link slimeknights.mantle.registration.deferred.ItemDeferredRegister#registerOptionalTooltip(String, Properties)} or {@link OptionalTooltipItem}
  */
+@Deprecated(forRemoval = true)
 public class TooltipItem extends Item {
-
   public TooltipItem(Properties properties) {
     super(properties);
   }

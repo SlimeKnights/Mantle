@@ -10,12 +10,12 @@ import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import slimeknights.mantle.item.tooltip.TooltipItem;
+import slimeknights.mantle.item.tooltip.OptionalTooltipItem;
 
 /**
  * Book item that can be placed on lecterns
  */
-public abstract class LecternBookItem extends TooltipItem implements ILecternBookItem {
+public abstract class LecternBookItem extends OptionalTooltipItem implements ILecternBookItem {
   public LecternBookItem(Properties properties) {
     super(properties);
   }
