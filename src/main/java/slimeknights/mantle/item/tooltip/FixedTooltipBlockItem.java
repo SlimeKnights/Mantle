@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Item with automatic mandatory tooltip support.
  * @see FixedTooltipItem
- * @see BlockTooltipItem
+ * @see OptionalTooltipBlockItem
  */
 public class FixedTooltipBlockItem extends BlockItem {
   private final List<Component> tooltip;
@@ -24,8 +24,8 @@ public class FixedTooltipBlockItem extends BlockItem {
   }
 
   /** Makes a component for a tooltip from the given ID with the proper styling */
-  public static Component makeComponent(ResourceLocation id) {
-    return FixedTooltipItem.makeComponent(Util.makeDescriptionId("block", id) + ".tooltip");
+  public static Component makeComponent(Block block) {
+    return FixedTooltipItem.makeComponent(block.getDescriptionId() + ".tooltip");
   }
 
   /** Creates a new block item from the given components */
@@ -39,8 +39,8 @@ public class FixedTooltipBlockItem extends BlockItem {
   }
 
   /** Creates a new block item from the given registry ID for the tooltip prefix */
-  public static FixedTooltipBlockItem fromId(ResourceLocation id, Block block, Properties properties) {
-    return fromComponents(block, properties, makeComponent(id));
+  public static FixedTooltipBlockItem fromBlock(Block block, Properties properties) {
+    return fromComponents(block, properties, makeComponent(block));
   }
 
   /** Creates a new block item from the given registry ID for the tooltip prefix */

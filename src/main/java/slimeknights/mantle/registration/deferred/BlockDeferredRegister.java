@@ -68,7 +68,7 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> implement
 
   protected final DeferredRegister<Item> itemRegister;
   @Setter @Getter @Accessors(fluent = true)
-  protected BiFunction<ResourceLocation,? super Block,? extends BlockItem> blockItem = BLOCK_ITEM;
+  protected Function<? super Block,? extends BlockItem> blockItem = BLOCK_ITEM;
 
   public BlockDeferredRegister(String modID, DeferredRegister<Item> itemRegister) {
     super(Registries.BLOCK, modID);
@@ -132,28 +132,16 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> implement
    * Registers a block with the block registry, using the function for the BlockItem
    * @param name   Block ID
    * @param block  Block constructor
-   * @param item   Function to create a BlockItem from an ID and Block
+   * @param item   Function to create a BlockItem
    * @param <B>    Block class
    * @return  Block item registry object pair
    */
   @SuppressWarnings("unchecked")
-  public <B extends Block> DeferredBlock<B> register(String name, Function<ResourceLocation, ? extends B> block, BiFunction<ResourceLocation,? super B, ? extends BlockItem> item) {
+  public <B extends Block> DeferredBlock<B> register(String name, Function<ResourceLocation, ? extends B> block, Function<? super B, ? extends BlockItem> item) {
     // need to leave super.register alone as the no-item one
     DeferredBlock<B> holder = (DeferredBlock<B>) registerNoItem(name, block);
-    itemRegister.register(name, id -> item.apply(id, holder.get()));
+    itemRegister.register(name, id -> item.apply(holder.get()));
     return holder;
-  }
-
-  /**
-   * Registers a block with the block registry, using the function for the BlockItem
-   * @param name   Block ID
-   * @param block  Block constructor
-   * @param item   Function to create a BlockItem from a Block
-   * @param <B>    Block class
-   * @return  Block item registry object pair
-   */
-  public <B extends Block> DeferredBlock<B> register(String name, Function<ResourceLocation, ? extends B> block, Function<? super B, ? extends BlockItem> item) {
-    return register(name, block, (id, b) -> item.apply(b));
   }
 
   /**
@@ -166,18 +154,6 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> implement
   @Override
   public <B extends Block> DeferredBlock<B> register(String name, Function<ResourceLocation, ? extends B> block) {
     return register(name, block, blockItem);
-  }
-
-  /**
-   * Registers a block with the block registry, using the function for the BlockItem
-   * @param name   Block ID
-   * @param block  Block supplier
-   * @param item   Function to create a BlockItem from a Block
-   * @param <B>    Block class
-   * @return  Block item registry object pair
-   */
-  public <B extends Block> DeferredBlock<B> register(String name, Supplier<? extends B> block, BiFunction<ResourceLocation, ? super B, ? extends BlockItem> item) {
-    return register(name, id -> block.get(), item);
   }
 
   /**
@@ -202,17 +178,6 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> implement
   @Override
   public <B extends Block> DeferredBlock<B> register(String name, Supplier<? extends B> block) {
     return register(name, block, blockItem);
-  }
-
-  /**
-   * Registers a block with the block registry, using the function for the BlockItem
-   * @param name        Block ID
-   * @param blockProps  Block properties
-   * @param item        Function to create a BlockItem from a Block
-   * @return  Block item registry object pair
-   */
-  public DeferredBlock<Block> register(String name, BlockBehaviour.Properties blockProps, BiFunction<ResourceLocation,? super Block, ? extends BlockItem> item) {
-    return register(name, id -> new Block(blockProps), item);
   }
 
   /**
@@ -464,7 +429,7 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> implement
     private Function<BlockBehaviour.Properties,Block> block = Block::new;
     private Function<BlockBehaviour.Properties,SlabBlock> slab = SlabBlock::new;
     private BiFunction<BlockState,BlockBehaviour.Properties,StairBlock> stairs = StairBlock::new;
-    private BiFunction<ResourceLocation, ? super Block, ? extends BlockItem> blockItem = BlockDeferredRegister.this.blockItem;
+    private Function<? super Block, ? extends BlockItem> blockItem = BlockDeferredRegister.this.blockItem;
 
     /** Registers the standard object */
     public BuildingBlockObject build() {
@@ -506,7 +471,7 @@ public class BlockDeferredRegister extends EnumDeferredRegister<Block> implement
     /** Name of the common tag for this object. */
     private String tag;
     /** Constructor for the block item */
-    private BiFunction<ResourceLocation,? super Block,? extends BlockItem> blockItem = BlockDeferredRegister.this.blockItem;
+    private Function<? super Block,? extends BlockItem> blockItem = BlockDeferredRegister.this.blockItem;
     /** Constructor for the ingot */
     private Supplier<Item> ingot;
     /** Constructor for the nugget */

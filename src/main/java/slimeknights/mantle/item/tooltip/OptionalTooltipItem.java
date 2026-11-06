@@ -12,7 +12,7 @@ import java.util.List;
  * Item with automatic optional tooltip support.
  * @see TranslationHelper#addOptionalTooltip(ItemStack, List)
  * @see FixedTooltipItem
- * @see BlockTooltipItem
+ * @see OptionalTooltipBlockItem
  */
 public class OptionalTooltipItem extends Item {
   public OptionalTooltipItem(Properties properties) {
