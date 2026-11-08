@@ -1,5 +1,6 @@
 package slimeknights.mantle.data;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -38,8 +39,18 @@ public abstract class BlockTagProviderExtension extends BlockTagsProvider {
     }
 
     /** Adds the block item tag to the builder */
+    @CanIgnoreReturnValue
     public BlockItemTagAppender addTag(BlockItemTagKey tag) {
       addTag(tag.block());
+      return this;
+    }
+
+    /** Adds the block item tag to the builder */
+    @CanIgnoreReturnValue
+    public BlockItemTagAppender addTags(BlockItemTagKey... tags) {
+      for (BlockItemTagKey tag : tags) {
+        addTag(tag);
+      }
       return this;
     }
   }
