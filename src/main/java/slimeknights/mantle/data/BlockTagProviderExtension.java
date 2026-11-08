@@ -32,7 +32,7 @@ public abstract class BlockTagProviderExtension extends BlockTagsProvider {
     return tag(tag.block());
   }
 
-  /** Extension of {@link IntrinsicTagAppender} adding a helper to add a {@link BlockItemTagKey}. For simplicity it must be called first. */
+  /** Extension of {@link IntrinsicTagAppender} adding a helper to add a {@link BlockItemTagKey}. For simplicity, it must be called first. */
   public static class BlockItemTagAppender extends IntrinsicTagAppender<Block> {
     protected BlockItemTagAppender(TagBuilder builder, Function<Block, ResourceKey<Block>> keyExtractor, String modId) {
       super(builder, keyExtractor, modId);
