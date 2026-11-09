@@ -23,6 +23,12 @@ public class FixedTooltipBlockItem extends BlockItem {
     this.tooltip = tooltip;
   }
 
+  /** Creates a block with the default tooltip component. Equivalent to {@link #fromBlock(Block, Properties)}. */
+  public FixedTooltipBlockItem(Block block, Properties builder) {
+    super(block, builder);
+    this.tooltip = List.of(makeComponent(block));
+  }
+
   /** Makes a component for a tooltip from the given ID with the proper styling */
   public static Component makeComponent(Block block) {
     return FixedTooltipItem.makeComponent(block.getDescriptionId() + ".tooltip");
@@ -38,9 +44,9 @@ public class FixedTooltipBlockItem extends BlockItem {
     return fromComponents(block, properties, FixedTooltipItem.makeComponent(key));
   }
 
-  /** Creates a new block item from the given registry ID for the tooltip prefix */
+  /** Creates a new block item from the given registry ID for the tooltip prefix. Same as {@link FixedTooltipBlockItem(Block,Properties)} but as a static method to mirror the standard item. */
   public static FixedTooltipBlockItem fromBlock(Block block, Properties properties) {
-    return fromComponents(block, properties, makeComponent(block));
+    return new FixedTooltipBlockItem(block, properties);
   }
 
   /** Creates a new block item from the given registry ID for the tooltip prefix */

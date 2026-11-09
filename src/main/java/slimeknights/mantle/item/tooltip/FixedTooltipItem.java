@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Item with automatic mandatory tooltip support.
  * @see OptionalTooltipItem
+ * @see StackTooltipItem
  * @see FixedTooltipBlockItem
  */
 public class FixedTooltipItem extends Item {
