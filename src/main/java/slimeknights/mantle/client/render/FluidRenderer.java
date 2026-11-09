@@ -453,7 +453,7 @@ public class FluidRenderer {
     // render cuboids
     for (FluidCuboid cube : model.getFluids()) {
       // draw cuboid
-      renderCuboid(matrices, consumer, cube, scaledY, still, flowing, color, light, isGas);
+      renderScaledCuboid(matrices, consumer, cube, scaledY, flip, still, flowing, color, light, isGas);
     }
   }
 
