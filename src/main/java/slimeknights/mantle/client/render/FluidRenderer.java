@@ -301,6 +301,44 @@ public class FluidRenderer {
     }
   }
 
+
+  /* Scaling */
+
+  /**
+   * Renders a fluid cuboid scaled to the given height
+   * @param matrices  Matrix stack instance
+   * @param consumer  Vertex consumer for the fluid
+   * @param cube      Fluid cuboid instance
+   * @param still     Still sprite
+   * @param flowing   Flowing sprite
+   * @param scaledY   Y value to stop the fluid. If {@code flip} this is a minimum, otherwise a maximum.
+   * @param light     Quad lighting from TER
+   * @param isGas     If true, fluid is a gas
+   */
+  public static void renderScaledCuboid(PoseStack matrices, VertexConsumer consumer, FluidCuboid cube, float scaledY, boolean flip, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light, boolean isGas) {
+    Vector3f from = cube.getFromScaled();
+    Vector3f to = cube.getToScaled();
+    if (flip) {
+      // if the scaled min is above the end, skip this cube entirely
+      if (scaledY > to.y) return;
+      // if the scaled min is below our start, render the full thing
+      if (scaledY > from.y) {
+        from = new Vector3f(from);
+        from.y = scaledY;
+      }
+    } else {
+      // if the scaled max is below the start, skip this cube entirely
+      if (scaledY < from.y) return;
+      // if the scaled max is above our end, render the full thing
+      if (scaledY < to.y) {
+        to = new Vector3f(to);
+        to.y = scaledY;
+      }
+    }
+    // draw cuboid
+    renderCuboid(matrices, consumer, cube, still, flowing, from, to, color, light, isGas);
+  }
+
   /**
    * Renders a fluid cuboid with partial height based on the capacity
    * @param matrices  Matrix stack instance
@@ -311,10 +349,50 @@ public class FluidRenderer {
    * @param light     Quad lighting from TER
    * @param cube      Fluid cuboid instance
    * @param flipGas   If true, flips gas cubes
+   * @deprecated use {@link #renderScaledModel(PoseStack, MultiBufferSource, FluidModel, FluidStack, float, int, int, boolean)}
    */
+  @Deprecated
   public static void renderScaledCuboid(PoseStack matrices, MultiBufferSource buffer, FluidCuboid cube, FluidStack fluid, float offset, int capacity, int light, boolean flipGas) {
     // nothing to render
     if (fluid.isEmpty() || capacity <= 0) {
+      return;
+    }
+    IClientFluidTypeExtensions clientFluid = IClientFluidTypeExtensions.of(fluid.getFluid());
+    FluidType type = fluid.getFluid().getFluidType();
+    boolean isGas = type.isLighterThanAir();
+
+    // figure out the height to render the fluids
+    float minY = cube.getFromScaled().y;
+    float maxY = cube.getToScaled().y;
+    float height = (fluid.getAmount() - offset) / capacity;
+    boolean flip = isGas && flipGas;
+    float scaledY;
+    if (flip) {
+      scaledY = maxY + (height * (minY - maxY));
+    } else {
+      scaledY = minY + (height * (maxY - minY));
+    }
+    renderScaledCuboid(
+      matrices, buffer.getBuffer(MantleRenderTypes.FLUID), cube, scaledY, flip,
+      getBlockSprite(clientFluid.getStillTexture(fluid)), getBlockSprite(clientFluid.getFlowingTexture(fluid)),
+      clientFluid.getTintColor(fluid), withBlockLight(light, type.getLightLevel(fluid)), isGas
+    );
+  }
+
+  /**
+   * Renders a fluid cuboid with partial height based on the capacity
+   * @param matrices  Matrix stack instance
+   * @param buffer    Render type buffer instance
+   * @param model     Fluid model instance
+   * @param fluid     Fluid to render
+   * @param offset    Fluid amount offset, used to animate transitions
+   * @param capacity  Fluid tank capacity, must be above 0
+   * @param light     Quad lighting from TER
+   * @param flipGas   If true, flips gas cubes
+   */
+  public static void renderScaledModel(PoseStack matrices, MultiBufferSource buffer, FluidModel model, FluidStack fluid, float offset, int capacity, int light, boolean flipGas) {
+    // nothing to render
+    if (fluid.isEmpty() || capacity <= 0 || model.isEmpty()) {
       return;
     }
 
@@ -326,24 +404,25 @@ public class FluidRenderer {
     boolean isGas = type.isLighterThanAir();
     int color = clientFluid.getTintColor(fluid);
     light = withBlockLight(light, type.getLightLevel(fluid));
+    VertexConsumer consumer = buffer.getBuffer(MantleRenderTypes.FLUID);
 
-    // determine height based on fluid amount
-    Vector3f from = cube.getFromScaled();
-    Vector3f to = cube.getToScaled();
-    // gas renders upside down
-    float minY = from.y();
-    float maxY = to.y();
+    // figure out the height to render the fluids
+    float minY = model.getMinScaled().y;
+    float maxY = model.getMaxScaled().y;
     float height = (fluid.getAmount() - offset) / capacity;
-    if (isGas && flipGas) {
-      from = new Vector3f(from);
-      from.y = maxY + (height * (minY - maxY));
+    boolean flip = isGas && flipGas;
+    float scaledY;
+    if (flip) {
+      scaledY = maxY + (height * (minY - maxY));
     } else {
-      to = new Vector3f(to);
-      to.y = minY + (height * (maxY - minY));
+      scaledY = minY + (height * (maxY - minY));
     }
 
-    // draw cuboid
-    renderCuboid(matrices, buffer.getBuffer(MantleRenderTypes.FLUID), cube, still, flowing, from, to, color, light, isGas);
+    // render cuboids
+    for (FluidCuboid cube : model.getFluids()) {
+      // draw cuboid
+      renderScaledCuboid(matrices, consumer, cube, scaledY, flip, still, flowing, color, light, isGas);
+    }
   }
 
   /** Same as {@link net.minecraft.client.renderer.ScreenEffectRenderer#renderFluid(Minecraft, PoseStack, ResourceLocation)} but with opacity and color control */

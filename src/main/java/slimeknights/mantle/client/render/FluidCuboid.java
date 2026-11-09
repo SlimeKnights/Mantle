@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3f;
 import slimeknights.mantle.client.model.util.ModelHelper;
 import slimeknights.mantle.data.datamap.BlockStateDataMapLoader;
@@ -20,7 +21,11 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-/** Class representing a cube of fluid, which appears in many model types. */
+/**
+ * Class representing a cube of fluid, which appears in many model types.
+ * @see FluidModel
+ * @see FluidRenderer
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class FluidCuboid {
@@ -41,8 +46,22 @@ public class FluidCuboid {
   public static final Loadable<List<FluidCuboid>> LIST_LOADABLE = LOADABLE.list(CollectionLoadable.COMPACT);
   /** Loader for a list of size 0 or more */
   public static final Loadable<List<FluidCuboid>> EMPTY_LIST_LOADABLE = LOADABLE.list(CollectionLoadable.COMPACT_OR_EMPTY);
-  /** Data loader to fetch a list of fluid cuboids from JSON */
-  public static final BlockStateDataMapLoader<List<FluidCuboid>> REGISTRY = new BlockStateDataMapLoader<>("Block entity fluids", "mantle/model/block_fluids", LIST_LOADABLE);
+  /** @deprecated use {@link FluidModel#REGISTRY} or the helpers {@link FluidModel#getModel(BlockState)} and {@link FluidModel#getFluids(BlockState)} */
+  @Deprecated(forRemoval = true)
+  public static final BlockStateDataMapLoader<List<FluidCuboid>> REGISTRY = new BlockStateDataMapLoader<>("Block entity fluids", "mantle/model/block_fluids", LIST_LOADABLE) {
+    @Nullable
+    @Override
+    public List<FluidCuboid> get(BlockState state) {
+      FluidModel model = FluidModel.REGISTRY.get(state);
+      return model == null ? null : model.getFluids();
+    }
+
+    @Override
+    public List<FluidCuboid> get(BlockState state, List<FluidCuboid> defaultValue) {
+      FluidModel model = FluidModel.REGISTRY.get(state);
+      return model == null ? List.of() : model.getFluids();
+    }
+  };
 
   /** Fluid start, scaled for block models */
   @Getter
