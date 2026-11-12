@@ -88,13 +88,16 @@ public class FluidRenderer {
    * @return  UV mapped between 0 and 1
    */
   private static float boundUV(float value, boolean upper) {
-    value = value % 1;
-    if (value == 0) {
-      // if it lands exactly on the 0 bound, map that to 1 instead for the larger UV
+    // to get the remainder, we effectively do `value - Math.floor(value)`
+    // its optimized by using the implementation from `Mth.floor`,
+    // and further optimized by inlining the implementation to allow simplifying the zero check
+    int floor = (int) value;
+    if (value == floor) {
+      // if the value is a whole number, map that to 1 for larger UV and 0 for smaller
       return upper ? 1 : 0;
     }
-    // modulo returns a negative result if the input is negative, so add 1 to account for that
-    return value < 0 ? (value + 1) : value;
+    // if negative, need to add an extra 1 to ensure the result is positive
+    return value - (value < floor ? floor - 1 : floor);
   }
 
   /**
@@ -167,7 +170,7 @@ public class FluidRenderer {
     // if rotating by 90 or 270, swap U and V
     float minU, maxU, minV, maxV;
     float size = flowing ? 0.5f : 1;
-    if ((rotation % 180) == 90) {
+    if (rotation == 90 || rotation == 270) {
       minU = sprite.getU(v1 * size);
       maxU = sprite.getU(v2 * size);
       minV = sprite.getV(u1 * size);
@@ -271,12 +274,16 @@ public class FluidRenderer {
    */
   public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, TextureAtlasSprite still, TextureAtlasSprite flowing, Vector3f from, Vector3f to, int color, int light, boolean isGas) {
     PoseStack.Pose pose = matrices.last();
-    int rotation = isGas ? 180 : 0;
     for (Direction dir : Direction.values()) {
       FluidFace face = cube.getFace(dir);
       if (face != null) {
         boolean isFlowing = face.isFlowing();
-        int faceRot = (rotation + face.rotation()) % 360;
+        int faceRot = face.rotation();
+        // if a gas, flip the face 180, but keep bounded between 0 and 270
+        // using piecewise rather than modulo as its faster for having just 2 cases
+        if (isGas) {
+          faceRot += faceRot < 180 ? 180 : -180;
+        }
         putTexturedQuad(buffer, pose, isFlowing ? flowing : still, from, to, dir, color, light, faceRot, isFlowing);
       }
     }
