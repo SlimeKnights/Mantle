@@ -15,8 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.joml.Vector3f;
 
-import java.util.List;
-
 /** Utilizes for rendering, used by Mantle mods. */
 public class RenderingHelper {
   private RenderingHelper() {}
@@ -95,36 +93,9 @@ public class RenderingHelper {
     matrices.popPose();
   }
 
-  /**
-   * Renders faucet fluids at the relevant location
-   * @param world       World instance
-   * @param pos         Base position
-   * @param direction   Direction to render
-   * @param matrices    Matrix instance
-   * @param buffer      Builder instance
-   * @param still       Still fluid texture
-   * @param flowing     Flowing fluid texture
-   * @param color       Color to tint fluid
-   * @param light       Fluid light value
-   */
+  /** @deprecated use {@link FluidRenderer#renderFaucetFluids(LevelAccessor, BlockPos, Direction, PoseStack, VertexConsumer, TextureAtlasSprite, TextureAtlasSprite, int, int)} */
+  @Deprecated(forRemoval = true)
   public static void renderFaucetFluids(LevelAccessor world, BlockPos pos, Direction direction, PoseStack matrices, VertexConsumer buffer, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light) {
-    int i = 0;
-    FaucetFluid faucetFluid;
-    do {
-      // get the faucet data for the block
-      i++;
-      faucetFluid = FaucetFluid.REGISTRY.get(world.getBlockState(pos.below(i)));
-      // if nothing to render, skip the matrix stack work, but allow the next iteration of the loop on the off chance they continue
-      List<FluidCuboid> cubes = faucetFluid.getFluids(direction);
-      if (cubes.isEmpty()) continue;
-
-      // render all down cubes with the given offset
-      matrices.pushPose();
-      matrices.translate(0, -i, 0);
-      for (FluidCuboid cube : cubes) {
-        FluidRenderer.renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light);
-      }
-      matrices.popPose();
-    } while (faucetFluid.isContinued());
+    FluidRenderer.renderFaucetFluids(world, pos, direction, matrices, buffer, still, flowing, color, light);
   }
 }
