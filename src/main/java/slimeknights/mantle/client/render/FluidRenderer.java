@@ -227,6 +227,12 @@ public class FluidRenderer {
     }
   }
 
+  /** @deprecated use {@link #renderCuboid(PoseStack, VertexConsumer, FluidCuboid, TextureAtlasSprite, TextureAtlasSprite, Vector3f, Vector3f, int, int)} */
+  @Deprecated(forRemoval = true)
+  public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, TextureAtlasSprite still, TextureAtlasSprite flowing, Vector3f from, Vector3f to, int color, int light, boolean isGas) {
+    renderCuboid(matrices, buffer, cube, still, flowing, from, to, color, light);
+  }
+
   /**
    * Renders a full fluid cuboid for the given data
    * @param matrices  Matrix stack instance
@@ -238,21 +244,14 @@ public class FluidRenderer {
    * @param to        Fluid end
    * @param color     Fluid color
    * @param light     Quad lighting
-   * @param isGas     If true, fluid is a gas
    */
-  public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, TextureAtlasSprite still, TextureAtlasSprite flowing, Vector3f from, Vector3f to, int color, int light, boolean isGas) {
+  public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, TextureAtlasSprite still, TextureAtlasSprite flowing, Vector3f from, Vector3f to, int color, int light) {
     Matrix4f matrix = matrices.last().pose();
     for (Direction dir : Direction.values()) {
       FluidFace face = cube.getFace(dir);
       if (face != null) {
         boolean isFlowing = face.isFlowing();
-        int faceRot = face.rotation();
-        // if a gas, flip the face 180, but keep bounded between 0 and 270
-        // using piecewise rather than modulo as its faster for having just 2 cases
-        if (isGas) {
-          faceRot += faceRot < 180 ? 180 : -180;
-        }
-        putTexturedQuad(buffer, matrix, isFlowing ? flowing : still, from, to, dir, color, light, faceRot, isFlowing);
+        putTexturedQuad(buffer, matrix, isFlowing ? flowing : still, from, to, dir, color, light, face.rotation(), isFlowing);
       }
     }
   }
@@ -277,11 +276,23 @@ public class FluidRenderer {
     int color = clientFluid.getTintColor(fluid);
     FluidType type = fluid.getFluid().getFluidType();
     light = withBlockLight(light, type.getLightLevel(fluid));
-    boolean isGas = type.isLighterThanAir();
 
     // render all given cuboids
     for (FluidCuboid cube : cubes) {
-      renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, isGas);
+      renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light);
+    }
+  }
+
+  /** @deprecated use {@link #renderCuboid(PoseStack, VertexConsumer, FluidCuboid, TextureAtlasSprite, TextureAtlasSprite, int, int)} */
+  @Deprecated(forRemoval = true)
+  public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, float yOffset, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light, boolean isGas) {
+    if (yOffset != 0) {
+      matrices.pushPose();
+      matrices.translate(0, yOffset, 0);
+    }
+    renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light);
+    if (yOffset != 0) {
+      matrices.popPose();
     }
   }
 
@@ -290,22 +301,13 @@ public class FluidRenderer {
    * @param matrices  Matrix stack instance
    * @param buffer    Buffer type
    * @param cube      Fluid cuboid
-   * @param yOffset   Amount to offset the cube in the Y direction, used in faucets for rendering fluid in lower block
    * @param still     Still sprite
    * @param flowing   Flowing sprite
    * @param color     Fluid color
    * @param light     Quad lighting from TER
-   * @param isGas     If true, fluid is a gas
    */
-  public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, float yOffset, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light, boolean isGas) {
-    if (yOffset != 0) {
-      matrices.pushPose();
-      matrices.translate(0, yOffset, 0);
-    }
-    renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light, isGas);
-    if (yOffset != 0) {
-      matrices.popPose();
-    }
+  public static void renderCuboid(PoseStack matrices, VertexConsumer buffer, FluidCuboid cube, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light) {
+    renderCuboid(matrices, buffer, cube, still, flowing, cube.getFromScaled(), cube.getToScaled(), color, light);
   }
 
 
@@ -320,9 +322,8 @@ public class FluidRenderer {
    * @param flowing   Flowing sprite
    * @param scaledY   Y value to stop the fluid. If {@code flip} this is a minimum, otherwise a maximum.
    * @param light     Quad lighting from TER
-   * @param isGas     If true, fluid is a gas
    */
-  public static void renderScaledCuboid(PoseStack matrices, VertexConsumer consumer, FluidCuboid cube, float scaledY, boolean flip, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light, boolean isGas) {
+  public static void renderScaledCuboid(PoseStack matrices, VertexConsumer consumer, FluidCuboid cube, float scaledY, boolean flip, TextureAtlasSprite still, TextureAtlasSprite flowing, int color, int light) {
     Vector3f from = cube.getFromScaled();
     Vector3f to = cube.getToScaled();
     if (flip) {
@@ -343,7 +344,7 @@ public class FluidRenderer {
       }
     }
     // draw cuboid
-    renderCuboid(matrices, consumer, cube, still, flowing, from, to, color, light, isGas);
+    renderCuboid(matrices, consumer, cube, still, flowing, from, to, color, light);
   }
 
   /**
@@ -366,13 +367,12 @@ public class FluidRenderer {
     }
     IClientFluidTypeExtensions clientFluid = IClientFluidTypeExtensions.of(fluid.getFluid());
     FluidType type = fluid.getFluid().getFluidType();
-    boolean isGas = type.isLighterThanAir();
 
     // figure out the height to render the fluids
     float minY = cube.getFromScaled().y;
     float maxY = cube.getToScaled().y;
     float height = (fluid.getAmount() - offset) / capacity;
-    boolean flip = isGas && flipGas;
+    boolean flip = flipGas && type.isLighterThanAir();
     float scaledY;
     if (flip) {
       scaledY = maxY + (height * (minY - maxY));
@@ -382,7 +382,7 @@ public class FluidRenderer {
     renderScaledCuboid(
       matrices, buffer.getBuffer(MantleRenderTypes.FLUID), cube, scaledY, flip,
       getBlockSprite(clientFluid.getStillTexture(fluid)), getBlockSprite(clientFluid.getFlowingTexture(fluid)),
-      clientFluid.getTintColor(fluid), withBlockLight(light, type.getLightLevel(fluid)), isGas
+      clientFluid.getTintColor(fluid), withBlockLight(light, type.getLightLevel(fluid))
     );
   }
 
@@ -408,7 +408,6 @@ public class FluidRenderer {
     TextureAtlasSprite still = getBlockSprite(clientFluid.getStillTexture(fluid));
     TextureAtlasSprite flowing = getBlockSprite(clientFluid.getFlowingTexture(fluid));
     FluidType type = fluid.getFluid().getFluidType();
-    boolean isGas = type.isLighterThanAir();
     int color = clientFluid.getTintColor(fluid);
     light = withBlockLight(light, type.getLightLevel(fluid));
     VertexConsumer consumer = buffer.getBuffer(MantleRenderTypes.FLUID);
@@ -417,7 +416,7 @@ public class FluidRenderer {
     float minY = model.getMinScaled().y;
     float maxY = model.getMaxScaled().y;
     float height = (fluid.getAmount() - offset) / capacity;
-    boolean flip = isGas && flipGas;
+    boolean flip = flipGas && type.isLighterThanAir();
     float scaledY;
     if (flip) {
       scaledY = maxY + (height * (minY - maxY));
@@ -428,7 +427,7 @@ public class FluidRenderer {
     // render cuboids
     for (FluidCuboid cube : model.getFluids()) {
       // draw cuboid
-      renderScaledCuboid(matrices, consumer, cube, scaledY, flip, still, flowing, color, light, isGas);
+      renderScaledCuboid(matrices, consumer, cube, scaledY, flip, still, flowing, color, light);
     }
   }
 
