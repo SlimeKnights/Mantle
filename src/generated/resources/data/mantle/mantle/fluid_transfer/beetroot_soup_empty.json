@@ -1,12 +1,12 @@
 {
-  "type": "mantle:empty_item",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
       "tag": "c:beetroot_soup"
     }
   ],
+  "type": "mantle:empty_item",
   "fluid": {
     "amount": 250,
     "tag": "c:beetroot_soup"

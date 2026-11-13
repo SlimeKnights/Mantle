@@ -1,12 +1,12 @@
 {
-  "type": "mantle:empty_potion",
-  "amount": 250,
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "mantle:tag_filled",
       "tag": "c:bottles/lingering"
     }
   ],
+  "type": "mantle:empty_potion",
+  "amount": 250,
   "input": {
     "item": "minecraft:lingering_potion"
   },

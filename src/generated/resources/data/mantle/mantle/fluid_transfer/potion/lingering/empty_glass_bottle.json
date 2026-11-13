@@ -1,7 +1,5 @@
 {
-  "type": "mantle:empty_potion",
-  "amount": 250,
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:not",
       "value": {
@@ -10,6 +8,8 @@
       }
     }
   ],
+  "type": "mantle:empty_potion",
+  "amount": 250,
   "input": {
     "item": "minecraft:lingering_potion"
   },

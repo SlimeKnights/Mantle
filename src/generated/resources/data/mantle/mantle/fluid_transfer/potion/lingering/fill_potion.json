@@ -1,6 +1,5 @@
 {
-  "type": "mantle:fill_copy_data",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
@@ -11,6 +10,7 @@
       "tag": "c:bottles/lingering"
     }
   ],
+  "type": "mantle:fill_copy_data",
   "fluid": {
     "type": "mantle:potion",
     "amount": 250,

@@ -1,12 +1,12 @@
 {
-  "type": "mantle:fill_item",
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "mantle:tag_filled",
       "registry": "minecraft:fluid",
       "tag": "c:mushroom_stew"
     }
   ],
+  "type": "mantle:fill_item",
   "fluid": {
     "amount": 250,
     "tag": "c:mushroom_stew"

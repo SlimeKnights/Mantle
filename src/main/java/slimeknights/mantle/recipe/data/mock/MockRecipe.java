@@ -88,7 +88,7 @@ public interface MockRecipe {
     /** Adds the list of conditions to the root recipe json at the proper key. */
     public void addConditions(JsonObject json, ICondition... conditions) {
       if (conditions.length > 0) {
-        json.add("neoforge:conditions", serializeArray(ICondition.CODEC, conditions));
+        json.add(JsonHelper.CONDITIONS_KEY, serializeArray(ICondition.CODEC, conditions));
       }
     }
 

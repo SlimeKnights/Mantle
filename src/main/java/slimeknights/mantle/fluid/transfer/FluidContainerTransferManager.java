@@ -84,7 +84,7 @@ public class FluidContainerTransferManager extends SimpleJsonResourceReloadListe
       ResourceLocation key = entry.getKey();
       try {
         JsonObject json = GsonHelper.convertToJsonObject(entry.getValue(), key.toString());
-        if (JsonHelper.processConditions(json, "conditions", conditionContext)) {
+        if (JsonHelper.processConditions(json, conditionContext)) {
           transfers.add(NamedRecipe.of(key, IFluidContainerTransfer.LOADER.deserialize(json, context)));
         }
       } catch (JsonSyntaxException e) {

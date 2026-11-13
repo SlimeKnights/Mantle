@@ -34,7 +34,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.conditions.FalseCondition;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import slimeknights.mantle.Mantle;
 import slimeknights.mantle.data.loadable.Loadable;
 import slimeknights.mantle.data.loadable.Loadables;
@@ -188,9 +187,7 @@ public class RemoveRecipesCommand {
 
   /** Gets the JSON to remove a recipe */
   private static String getRemoveJson() {
-    JsonObject json = new JsonObject();
-    json.add("neoforge:conditions", JsonHelper.serializeArray(ICondition.CODEC, FalseCondition.INSTANCE));
-    return DEFAULT_GSON.toJson(json);
+    return DEFAULT_GSON.toJson(JsonHelper.serializeConditions(new JsonObject(), FalseCondition.INSTANCE));
   }
 
   /** Saves the JSON string at the given ID */

@@ -37,9 +37,7 @@ public abstract class AbstractLootTableInjectionProvider extends GenericRegistry
     // add all builders to the output
     return allOf(builders.stream().map(builder -> {
       JsonObject json = JsonHelper.serialize(ops, LootTableInjection.CODEC, builder.build()).getAsJsonObject();
-      if (builder.conditions.length > 0) {
-        json.add("neoforge:conditions", JsonHelper.serializeArray(ICondition.CODEC, builder.conditions));
-      }
+      JsonHelper.serializeConditions(json, builder.conditions);
       return saveJson(output, ResourceLocation.fromNamespaceAndPath(domain, builder.path), json);
     }));
   }

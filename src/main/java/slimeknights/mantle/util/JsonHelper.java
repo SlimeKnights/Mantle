@@ -277,9 +277,17 @@ public class JsonHelper {
 
   /* Conditions */
 
+  /** Default conditions key */
+  public static final String CONDITIONS_KEY = "neoforge:conditions";
+
   /** Evaluates the conditions array at the given key, checking that all conditions pass */
   public static boolean processConditions(JsonObject json, String memberName, ICondition.IContext context) {
     return !json.has(memberName) || processConditions(GsonHelper.getAsJsonArray(json, memberName), context);
+  }
+
+  /** Evaluates the conditions array at {@link #CONDITIONS_KEY}, checking that all conditions pass */
+  public static boolean processConditions(JsonObject json, ICondition.IContext context) {
+    return processConditions(json, CONDITIONS_KEY, context);
   }
 
   /** Evaluates the conditions array, checking that all conditions pass */
@@ -290,6 +298,24 @@ public class JsonHelper {
       }
     }
     return true;
+  }
+
+  /** Serializes conditions into the default key of {@link #CONDITIONS_KEY} */
+  @Contract("_,_->param1")
+  public static JsonObject serializeConditions(JsonObject parent, ICondition... conditions) {
+    if (conditions.length > 0) {
+      parent.add(CONDITIONS_KEY, serializeArray(ICondition.CODEC, conditions));
+    }
+    return parent;
+  }
+
+  /** Serializes conditions into the default key of {@link #CONDITIONS_KEY} */
+  @Contract("_,_->param1")
+  public static JsonObject serializeConditions(JsonObject parent, List<ICondition> conditions) {
+    if (!conditions.isEmpty()) {
+      parent.add(CONDITIONS_KEY, serializeList(ICondition.CODEC, conditions));
+    }
+    return parent;
   }
 
 

@@ -89,9 +89,7 @@ public abstract class AbstractFluidContainerTransferProvider extends GenericRegi
     public JsonObject toJson(TypedMap context) {
       JsonObject json = new JsonObject();
       IFluidContainerTransfer.LOADER.serializeInto(transfer, json, context);
-      if (conditions.length != 0) {
-        json.add("conditions", JsonHelper.serializeArray(ICondition.CODEC, conditions));
-      }
+      JsonHelper.serializeConditions(json, conditions);
       return json;
     }
   }
