@@ -11,37 +11,28 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import java.lang.reflect.Type;
-import java.util.function.BiFunction;
 
 /** Extension to Resource Location serializer to change the default mod ID. */
-public record ResourceLocationSerializer<T extends ResourceLocation>(
-  BiFunction<String, String, T> constructor,
-  String modId
-) implements JsonDeserializer<T>, JsonSerializer<T> {
-  /** Creates an instance for resource locations */
-  public static ResourceLocationSerializer<ResourceLocation> resourceLocation(String modId) {
-    return new ResourceLocationSerializer<>(ResourceLocation::fromNamespaceAndPath, modId);
-  }
-
+public record ResourceLocationSerializer(String modId) implements JsonDeserializer<ResourceLocation>, JsonSerializer<ResourceLocation> {
   @Override
   public JsonElement serialize(ResourceLocation loc, Type type, JsonSerializationContext context) {
     return new JsonPrimitive(loc.toString());
   }
 
   @Override
-  public T deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+  public ResourceLocation deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
     String location = GsonHelper.convertToString(element, "location");
     // if no :, use default namespace
     int index = location.indexOf(':');
     if (index == -1) {
-      return constructor.apply(modId, location);
+      return ResourceLocation.fromNamespaceAndPath(modId, location);
     }
     String path = location.substring(index + 1);
     // if empty string before :, use default namespace after trimming :
     if (index > 0) {
-      return constructor.apply(location.substring(0, index), path);
+      return ResourceLocation.fromNamespaceAndPath(location.substring(0, index), path);
     } else {
-      return constructor.apply(modId, path);
+      return ResourceLocation.fromNamespaceAndPath(modId, path);
     }
   }
 }
