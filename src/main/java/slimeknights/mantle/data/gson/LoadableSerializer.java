@@ -21,6 +21,10 @@ public record LoadableSerializer<T>(SimpleJsonDeserializer<? extends T> deserial
     this(loadable, loadable, context);
   }
 
+  public LoadableSerializer(Loadable<T> loadable) {
+    this(loadable, TypedMapBuilder.EMPTY_CONSUMER);
+  }
+
   /** Creates the context for this method */
   private TypedMap createContext() {
     TypedMapBuilder builder = TypedMapBuilder.builder();
