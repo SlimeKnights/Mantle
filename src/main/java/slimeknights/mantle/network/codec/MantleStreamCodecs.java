@@ -10,6 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.ByIdMap.OutOfBoundsStrategy;
+import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -52,6 +53,9 @@ public class MantleStreamCodecs {
   public static final StreamCodec<ByteBuf, List<ResourceLocation>> RESOURCE_LOCATION_LIST = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list());
   /** Streams a list of resource locations on the network. */
   public static final StreamCodec<RegistryFriendlyByteBuf, List<Ingredient>> INGREDIENT_LIST = Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list());
+
+  /** Stream codec for a unit, used in many data components. */
+  public static final StreamCodec<ByteBuf, Unit> UNIT = StreamCodec.unit(Unit.INSTANCE);
 
 
   /* Helpers */

@@ -7,8 +7,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Unit;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import slimeknights.mantle.network.codec.MantleStreamCodecs;
 import slimeknights.mantle.registration.holder.DeferredDataComponent;
 
 import java.util.function.Function;
@@ -55,5 +57,10 @@ public class DataComponentTypeDeferredRegister extends DeferredRegister<DataComp
   /** Registers a data component type that is stored on the data component holder but not saved. */
   public <T> DeferredDataComponent<T> registerVolatile(String name, StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) {
     return registerType(name, builder -> builder.networkSynchronized(streamCodec));
+  }
+
+  /** Registers a unit data component, which uses its presence or absence as a flag. */
+  public DeferredDataComponent<Unit> registerUnit(String name) {
+    return registerPersistent(name, Unit.CODEC, MantleStreamCodecs.UNIT);
   }
 }
