@@ -51,7 +51,7 @@ public class ItemKeyModel implements IUnbakedGeometry<ItemKeyModel> {
 
   /** Deserializes this model from JSON */
   public static ItemKeyModel deserialize(JsonObject json, JsonDeserializationContext context) {
-    ItemKey key = ItemKey.LOADER.getIfPresent(json, "nbt_key");
+    ItemKey key = ItemKey.LOADER.getIfPresent(json, "item_key");
     ResourceLocation extraTexturesKey = null;
     if (json.has("extra_textures_key")) {
       extraTexturesKey = JsonHelper.getResourceLocation(json, "extra_textures_key");
