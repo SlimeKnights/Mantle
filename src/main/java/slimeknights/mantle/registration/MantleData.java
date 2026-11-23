@@ -36,7 +36,7 @@ public class MantleData {
    * Component used by {@link slimeknights.mantle.MantleEvents} to temporarily store the soulbound slot on an item. Is not serialized.
    * May be used by dependencies mods in {@link LivingDeathEvent} to make items soulbound for other reasons.
    */
-  public static final DeferredDataComponent<Integer> SOULBOUND_SLOT = DATA_COMPONENTS.registerVolatile("soulbound_slot", ByteBufCodecs.VAR_INT);
+  public static final DeferredDataComponent<Integer> SOULBOUND_SLOT = DATA_COMPONENTS.registerTransient("soulbound_slot", ByteBufCodecs.VAR_INT);
 
   /** Component used by {@link slimeknights.mantle.client.book.BookHelper} to store the last viewed page. */
   public static final DeferredDataComponent<String> BOOK_PAGE = DATA_COMPONENTS.registerPersistent("book_page", Codec.STRING, ByteBufCodecs.STRING_UTF8);

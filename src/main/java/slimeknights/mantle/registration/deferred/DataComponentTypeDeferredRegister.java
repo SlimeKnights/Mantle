@@ -55,7 +55,7 @@ public class DataComponentTypeDeferredRegister extends DeferredRegister<DataComp
   }
 
   /** Registers a data component type that is stored on the data component holder but not saved. */
-  public <T> DeferredDataComponent<T> registerVolatile(String name, StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) {
+  public <T> DeferredDataComponent<T> registerTransient(String name, StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec) {
     return registerType(name, builder -> builder.networkSynchronized(streamCodec));
   }
 
