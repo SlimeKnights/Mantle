@@ -8,6 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.Capabilities.FluidHandler;
@@ -53,26 +54,26 @@ public record FluidContainerIngredient(FluidIngredient fluid, int amount, List<I
   public static final ResourceLocation ID = Mantle.getResource("fluid_container");
 
   /** Creates an instance from a fluid ingredient with the given stacks for display */
-  public static FluidContainerIngredient withDisplay(FluidIngredient fluid, int amount, ItemStack... display) {
-    return new FluidContainerIngredient(fluid, amount, List.of(display), ItemStack.EMPTY);
+  public static Ingredient withDisplay(FluidIngredient fluid, int amount, ItemStack... display) {
+    return new FluidContainerIngredient(fluid, amount, List.of(display), ItemStack.EMPTY).toVanilla();
   }
   /** Creates an instance from a fluid ingredient with the given items for display */
-  public static FluidContainerIngredient withDisplay(FluidIngredient fluid, int amount, ItemLike... display) {
-    return new FluidContainerIngredient(fluid, amount, Arrays.stream(display).map(ItemStack::new).toList(), ItemStack.EMPTY);
+  public static Ingredient withDisplay(FluidIngredient fluid, int amount, ItemLike... display) {
+    return new FluidContainerIngredient(fluid, amount, Arrays.stream(display).map(ItemStack::new).toList(), ItemStack.EMPTY).toVanilla();
   }
 
   /** Creates an instance that fills the given fluid container for display stacks */
-  public static FluidContainerIngredient forContainer(FluidIngredient fluid, int amount, ItemStack container) {
-    return new FluidContainerIngredient(fluid, amount, List.of(), container);
+  public static Ingredient forContainer(FluidIngredient fluid, int amount, ItemStack container) {
+    return new FluidContainerIngredient(fluid, amount, List.of(), container).toVanilla();
   }
 
   /** Creates an instance that fills the given fluid container for display stacks */
-  public static FluidContainerIngredient forContainer(FluidIngredient fluid, int amount, ItemLike container) {
+  public static Ingredient forContainer(FluidIngredient fluid, int amount, ItemLike container) {
     return forContainer(fluid, amount, new ItemStack(container));
   }
 
   /** Creates an instance for 1 bucket of the given fluid, using the bucket form as the display stack. */
-  public static FluidContainerIngredient fromFluid(FluidObject<?> fluid) {
+  public static Ingredient fromFluid(FluidObject<?> fluid) {
     return withDisplay(fluid.ingredient(), FluidType.BUCKET_VOLUME, fluid);
   }
 
