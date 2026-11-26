@@ -227,7 +227,6 @@ public class TextDataRenderer {
 
         s = s.substring(0, i) + "\r" + StringUtils.stripStart(s.substring(i + (i == oldI ? 0 : 1)), " ");
 
-        i++;
         curWidth = 0;
         curHeight += fr.lineHeight * scale;
 
