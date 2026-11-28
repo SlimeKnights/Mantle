@@ -87,12 +87,12 @@ public class GaugeBlock extends Block {
   /* Visuals */
 
   @Override
-  public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+  protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
     return BOUNDS[state.getValue(FACING).get3DDataValue()];
   }
 
   @Override
-  public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+  protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
     if (world instanceof Level level) {
       Direction direction = state.getValue(FACING);
       return level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction.getOpposite()), direction) != null;
@@ -119,17 +119,17 @@ public class GaugeBlock extends Block {
   }
 
   @Override
-  public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+  protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
     return facing.getOpposite() == state.getValue(FACING) && !state.canSurvive(worldIn, currentPos) ? Blocks.AIR.defaultBlockState() : state;
   }
 
   @Override
-  public BlockState rotate(BlockState state, Rotation rot) {
+  protected BlockState rotate(BlockState state, Rotation rot) {
     return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
   }
 
   @Override
-  public BlockState mirror(BlockState state, Mirror mirror) {
+  protected BlockState mirror(BlockState state, Mirror mirror) {
     return state.rotate(mirror.getRotation(state.getValue(FACING)));
   }
 

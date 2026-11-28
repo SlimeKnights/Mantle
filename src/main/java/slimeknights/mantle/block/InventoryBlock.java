@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class InventoryBlock extends Block implements EntityBlock {
-
   protected InventoryBlock(BlockBehaviour.Properties builder) {
     super(builder);
   }
@@ -62,7 +61,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
 
   @Override
   @Nullable
-  public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
+  protected MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
     return worldIn.getBlockEntity(pos) instanceof MenuProvider menu ? menu : null;
   }
 
@@ -70,7 +69,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
   /* Inventory handling */
 
   @Override
-  public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+  protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
       IItemHandler inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
       if (inventory != null) {
@@ -109,7 +108,7 @@ public abstract class InventoryBlock extends Block implements EntityBlock {
   }
 
   @Override
-  public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+  protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
     super.triggerEvent(state, level, pos, id, param);
     BlockEntity be = level.getBlockEntity(pos);
     return be != null && be.triggerEvent(id, param);

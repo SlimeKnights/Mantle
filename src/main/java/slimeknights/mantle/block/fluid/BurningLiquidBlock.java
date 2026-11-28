@@ -25,7 +25,7 @@ public class BurningLiquidBlock extends LiquidBlock {
   }
 
   @Override
-  public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+  protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
     if (!entity.fireImmune() && entity.getFluidTypeHeight(fluid.getFluidType()) > 0) {
       entity.igniteForSeconds(burnTime);
       if (entity.hurt(entity.damageSources().lava(), damage)) {
